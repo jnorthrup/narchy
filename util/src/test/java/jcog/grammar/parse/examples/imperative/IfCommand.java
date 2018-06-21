@@ -31,9 +31,9 @@ import jcog.grammar.parse.examples.engine.BooleanTerm;
  * @version 1.0
  */
 public class IfCommand extends Command {
-	protected BooleanTerm condition;
-	protected Command ifCommand;
-	protected Command elseCommand;
+	private BooleanTerm condition;
+	private Command ifCommand;
+	private Command elseCommand;
 
 	/**
 	 * Construct an "if" command from the given condition and command.

@@ -54,8 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 public class ArithmeticParser {
-	protected Seq expression;
-	protected Alternation factor;
+	private Seq expression;
+	private Alternation factor;
 
 	/*
 	 * Returns a parser that for the grammar rule:
@@ -65,7 +65,7 @@ public class ArithmeticParser {
 	 * This parser has an assembler that will pop two 
 	 * numbers from the stack and push their quotient.
 	 */
-	protected Parser divideFactor() {
+    private Parser divideFactor() {
 		Seq s = new Seq();
 		s.get(new Symbol('/').ok());
 		s.get(factor());
@@ -82,7 +82,7 @@ public class ArithmeticParser {
 	 * numbers from the stack and push the result of
 	 * exponentiating the lower number to the upper one.
 	 */
-	protected Parser expFactor() {
+    private Parser expFactor() {
 		Seq s = new Seq();
 		s.get(new Symbol('^').ok());
 		s.get(factor());
@@ -97,7 +97,7 @@ public class ArithmeticParser {
 	 * @return a parser that will recognize an arithmetic
 	 *         expression
 	 */
-	public Parser expression() {
+    private Parser expression() {
 		/*
 		 * This use of a static variable avoids the infinite 
 		 * recursion inherent in the grammar.
@@ -122,7 +122,7 @@ public class ArithmeticParser {
 	 *
 	 *     factor = phrase expFactor | phrase;
 	 */
-	protected Parser factor() {
+    private Parser factor() {
 		/*
 		 * This use of a static variable avoids the infinite
 		 * recursion inherent in the grammar; factor depends
@@ -149,7 +149,7 @@ public class ArithmeticParser {
 	 * This parser has an assembler that will pop two 
 	 * numbers from the stack and push their difference.
 	 */
-	protected Parser minusTerm() {
+    private Parser minusTerm() {
 		Seq s = new Seq();
 		s.get(new Symbol('-').ok());
 		s.get(term());
@@ -166,7 +166,7 @@ public class ArithmeticParser {
 	 * replace the top token in the stack with the token's
 	 * Double value.
 	 */
-	protected Parser phrase() {
+    private Parser phrase() {
 		Alternation phrase = new Alternation("phrase");
 
 		Seq s = new Seq();
@@ -187,7 +187,7 @@ public class ArithmeticParser {
 	 * This parser has an assembler that will pop two 
 	 * numbers from the stack and push their sum.
 	 */
-	protected Parser plusTerm() {
+    private Parser plusTerm() {
 		Seq s = new Seq();
 		s.get(new Symbol('+').ok());
 		s.get(term());
@@ -211,7 +211,7 @@ public class ArithmeticParser {
 	 *
 	 *    term = factor (timesFactor | divideFactor)*;
 	 */
-	protected Parser term() {
+    private Parser term() {
 		Seq s = new Seq("term");
 		s.get(factor());
 
@@ -231,7 +231,7 @@ public class ArithmeticParser {
 	 * This parser has an assembler that will pop two 
 	 * numbers from the stack and push their product.
 	 */
-	protected Parser timesFactor() {
+    private Parser timesFactor() {
 		Seq s = new Seq();
 		s.get(new Symbol('*').ok());
 		s.get(factor());
@@ -270,7 +270,7 @@ public class ArithmeticParser {
 	}
 
 	@Test
-	public void examples() throws ArithmeticExpressionException {
+    void examples() throws ArithmeticExpressionException {
 		assertEquals(0.0, ArithmeticParser.value("(5 + 4) * 3 ^ 2 - 81"), 0.01);
 		assertEquals(289.0, ArithmeticParser.value("(5 + 4 * 3) ^ 2"), 0.01);
 		assertEquals(1.9, ArithmeticParser.value("(5.1 + 4.4) * 2 / 10"), 0.01);

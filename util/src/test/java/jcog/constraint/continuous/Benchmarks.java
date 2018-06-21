@@ -11,7 +11,7 @@ import java.util.HashMap;
  */
 public class Benchmarks {
 
-    public static void testAddingLotsOfConstraints() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
+    private static void testAddingLotsOfConstraints() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
         final HashMap<String, DoubleVar> variables = new HashMap<String, DoubleVar>();

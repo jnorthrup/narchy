@@ -13,6 +13,7 @@ import nars.concept.Concept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
@@ -164,9 +165,6 @@ public class Premise {
                 beliefTerm = beliefConcept.term();
             }
 
-
-
-
             long taskStart =
                     //Tense.dither(task.start(), n);
                     task.start();
@@ -232,31 +230,31 @@ public class Premise {
 
                 if ((belief == null) && !bb.isEmpty()) {
 
-                    if (beliefFilter==null) beliefFilter = stampFilter(d); 
+                    if (beliefFilter==null) beliefFilter = stampFilter(d);
 
 
-                    
+
                     belief = bb.match(taskStart, taskEnd, beliefTerm, beliefFilter, n);
-                    if (!validMatch(belief)) belief = null; 
+                    if (!validMatch(belief)) belief = null;
 
                     if (belief == null) {
 
                         long[] focus = n.timeFocus();
                         if (focus[0] != taskStart && focus[1] != taskEnd) {
-                            
+
                             belief = bb.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
-                            if (!validMatch(belief)) belief = null; 
+                            if (!validMatch(belief)) belief = null;
                         }
                     }
 
                     if (belief == null) {
-                        
-                        belief = bb.match(taskStart, taskEnd, beliefTerm, null, n); 
-                        if (!validMatch(belief)) belief = null; 
+
+                        belief = bb.match(taskStart, taskEnd, beliefTerm, null, n);
+                        if (!validMatch(belief)) belief = null;
                     }
 
                 }
-            }
+             }
 
 
             //linkVariable(unifiedBelief, n, beliefConcept);

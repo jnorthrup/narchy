@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class PlaceAssembler implements IAssembler {
+class PlaceAssembler implements IAssembler {
 	/**
 	 * Sets an assembly's target to be a 
 	 * <code>PlaceCommand</code> object and note its location.

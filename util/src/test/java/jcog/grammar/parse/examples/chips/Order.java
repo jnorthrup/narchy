@@ -9,9 +9,9 @@ package jcog.grammar.parse.examples.chips;
  * @version 1.0 
  */
 public class Order {
-	protected Customer customer;
-	protected Chip chip;
-	protected Integer bagsPerMonth;
+	private Customer customer;
+	private Chip chip;
+	private Integer bagsPerMonth;
 
 	/**
 	 * Create an order given a customer, a chip, and a number of 
@@ -25,7 +25,7 @@ public class Order {
 	 * Create an order given a customer, a chip, and a number of 
 	 * bags to ship per month.
 	 */
-	public Order(Customer customer, Chip chip, Integer bagsPerMonth) {
+    private Order(Customer customer, Chip chip, Integer bagsPerMonth) {
 
 		this.customer = customer;
 		this.chip = chip;

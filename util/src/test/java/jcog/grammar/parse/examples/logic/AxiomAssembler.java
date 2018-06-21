@@ -15,7 +15,7 @@ import java.util.Stack;
  *
  * @version 1.0
  */
-public class AxiomAssembler implements IAssembler {
+class AxiomAssembler implements IAssembler {
 	/**
 	 * Pops all of the structures on the stack, builds a rule
 	 * from them, and pushes it.

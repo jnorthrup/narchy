@@ -27,15 +27,15 @@ import java.nio.file.Files;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class JTarAppendTest {
-	static final int BUFFER = 2048;
+class JTarAppendTest {
+	private static final int BUFFER = 2048;
 
 	private File dir;
 	private File outDir;
 	private File inDir;
 
 	@BeforeEach
-	public void setup() throws IOException {
+    void setup() throws IOException {
 		dir = Files.createTempDirectory("apnd").toFile();
 		dir.mkdirs();
 		outDir = new File(dir, "out");
@@ -45,7 +45,7 @@ public class JTarAppendTest {
 	}
 
 	@Test
-	public void testSingleOperation() throws IOException {
+    void testSingleOperation() throws IOException {
 		TarOutputStream tar = new TarOutputStream(new FileOutputStream(new File(dir, "tar.tar")));
 		tar.putNextEntry(new TarEntry(TARTestUtils.writeStringToFile("a", new File(inDir, "afile")), "afile"));
 		copyFileToStream(new File(inDir, "afile"), tar);
@@ -61,7 +61,7 @@ public class JTarAppendTest {
 	}
 
 	@Test
-	public void testAppend() throws IOException {
+    void testAppend() throws IOException {
 		TarOutputStream tar = new TarOutputStream(new FileOutputStream(new File(dir, "tar.tar")));
 		tar.putNextEntry(new TarEntry(TARTestUtils.writeStringToFile("a", new File(inDir, "afile")), "afile"));
 		copyFileToStream(new File(inDir, "afile"), tar);

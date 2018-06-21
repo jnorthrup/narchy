@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class Tests {
+class Tests {
 
     private static double EPSILON = 1.0e-8;
 
     @Test
-    public void simpleNew() throws UnsatisfiableConstraintException, DuplicateConstraintException {
+    void simpleNew() throws UnsatisfiableConstraintException, DuplicateConstraintException {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         DoubleVar x = new DoubleVar("x");
 
@@ -27,7 +27,7 @@ public class Tests {
     }
 
     @Test
-    public void simple0() throws UnsatisfiableConstraintException, DuplicateConstraintException {
+    void simple0() throws UnsatisfiableConstraintException, DuplicateConstraintException {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         DoubleVar x = new DoubleVar("x");
         DoubleVar y = new DoubleVar("y");
@@ -45,7 +45,7 @@ public class Tests {
     }
 
     @Test
-    public void simple1() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void simple1() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         DoubleVar x = new DoubleVar("x");
         DoubleVar y = new DoubleVar("y");
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
@@ -55,7 +55,7 @@ public class Tests {
     }
 
     @Test
-    public void casso1() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void casso1() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         DoubleVar x = new DoubleVar("x");
         DoubleVar y = new DoubleVar("y");
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
@@ -77,7 +77,7 @@ public class Tests {
     }
 
     @Test
-    public void addDelete1() throws DuplicateConstraintException, UnsatisfiableConstraintException, UnknownConstraintException {
+    void addDelete1() throws DuplicateConstraintException, UnsatisfiableConstraintException, UnknownConstraintException {
         DoubleVar x = new DoubleVar("x");
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
@@ -125,7 +125,7 @@ public class Tests {
     }
 
     @Test
-    public void addDelete2() throws DuplicateConstraintException, UnsatisfiableConstraintException, UnknownConstraintException {
+    void addDelete2() throws DuplicateConstraintException, UnsatisfiableConstraintException, UnknownConstraintException {
         DoubleVar x = new DoubleVar("x");
         DoubleVar y = new DoubleVar("y");
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
@@ -170,7 +170,7 @@ public class Tests {
     }
 
     @Test
-    public void inconsistent1() throws InternalError, DuplicateConstraintException, UnsatisfiableConstraintException {
+    void inconsistent1() throws InternalError, DuplicateConstraintException, UnsatisfiableConstraintException {
         assertThrows(UnsatisfiableConstraintException.class, () -> {
             DoubleVar x = new DoubleVar("x");
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
@@ -183,7 +183,7 @@ public class Tests {
     }
 
     @Test
-    public void inconsistent2() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void inconsistent2() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         assertThrows(UnsatisfiableConstraintException.class, () -> {
             DoubleVar x = new DoubleVar("x");
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
@@ -195,7 +195,7 @@ public class Tests {
     }
 
     @Test
-    public void inconsistent3() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void inconsistent3() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         assertThrows(UnsatisfiableConstraintException.class, () -> {
             DoubleVar w = new DoubleVar("w");
             DoubleVar x = new DoubleVar("x");

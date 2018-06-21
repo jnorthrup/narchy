@@ -13,7 +13,7 @@ import jcog.grammar.parse.tokens.Word;
  *
  * @version 1.0 
  */
-public class VolumeQuery2 {
+class VolumeQuery2 {
 	/**
 	 * Return a parser that recognizes the grammar:
 	 * 
@@ -62,7 +62,7 @@ public class VolumeQuery2 {
 	 * This parser stacks the recognized word as an
 	 * argument to "VOL()".
 	 */
-	protected static Parser volume() {
+	private static Parser volume() {
 
 		Parser p = new ReservedWord();
 

@@ -12,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 12/2/16.
  */
-public class Rect1DTest {
+class Rect1DTest {
     @Test
-    public void centroidTest() {
+    void centroidTest() {
 
         RectDouble1D rect = new RectDouble1D.DefaultRect1D(0, 4);
 
@@ -29,7 +29,7 @@ public class Rect1DTest {
      * Verifies the count returned from search AND the number of rectangles results.
      */
     @Test
-    public void rect2DSearchTest() {
+    void rect2DSearchTest() {
 
         final int entryCount = 20;
 

@@ -12,12 +12,12 @@ import static com.insightfullogic.slab.implementation.Primitive.LONG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TypeInspectionTest {
+class TypeInspectionTest {
     
     private static final TypeInspector inspector = new TypeInspector(GameEvent.class);
 
     @Test
-    public void findsGetters() {
+    void findsGetters() {
         assertEquals(3, inspector.getters.size());
         
         List<String> methods = getNames(inspector.getters);
@@ -27,7 +27,7 @@ public class TypeInspectionTest {
     }
     
     @Test
-    public void findsSetters() {
+    void findsSetters() {
         assertEquals(3, inspector.setters.size());
         
         List<String> methods = getNames(inspector.setters.valuesView().toList());
@@ -45,18 +45,18 @@ public class TypeInspectionTest {
     }
 
     @Test
-    public void correctFieldSize() throws Exception {
+    void correctFieldSize() throws Exception {
         Method getStrength = GameEvent.class.getMethod("getStrength");
         assertEquals(LONG.sizeInBytes, TypeInspector.getReturn(getStrength).sizeInBytes);
     }
 
     @Test
-    public void tupleSize() throws Exception {
+    void tupleSize() throws Exception {
         assertEquals(16, inspector.getSizeInBytes());
     }
 
     @Test
-    public void fieldCount() throws Exception {
+    void fieldCount() throws Exception {
         assertEquals(3, inspector.getFieldCount());
     }
 

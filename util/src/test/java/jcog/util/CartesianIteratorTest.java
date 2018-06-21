@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CartesianIteratorTest {
+class CartesianIteratorTest {
 
 
 
@@ -21,7 +21,8 @@ public class CartesianIteratorTest {
 
 
 
-    @Test public void test_0() throws Exception {
+    @Test
+    void test_0() throws Exception {
         CartesianIterator<String> it = new CartesianIterator(String[]::new,
                 List.of(new String[0]));
 
@@ -32,7 +33,8 @@ public class CartesianIteratorTest {
         } catch (Exception e) { /* Ignore exception */ }
     }
 
-    @Test public void test_1() throws Exception {
+    @Test
+    void test_1() throws Exception {
         CartesianIterator<String> it = new CartesianIterator(String[]::new,
                 List.of(new String[] {"a"}));
 
@@ -41,7 +43,8 @@ public class CartesianIteratorTest {
         assertFalse(it.hasNext());
     }
 
-    @Test public void test_2() throws Exception {
+    @Test
+    void test_2() throws Exception {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}));
 
@@ -52,7 +55,8 @@ public class CartesianIteratorTest {
         assertFalse(it.hasNext());
     }
 
-    @Test public void test_2_0() throws Exception {
+    @Test
+    void test_2_0() throws Exception {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}),
                 Arrays.asList(new String[] {}));
@@ -64,7 +68,8 @@ public class CartesianIteratorTest {
         } catch (Exception e) { /* Ignore exception */ }
     }
 
-    @Test public void test_2_2() throws Exception {
+    @Test
+    void test_2_2() throws Exception {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}),
                 Arrays.asList(new String[] {"c", "d"}));
@@ -80,7 +85,8 @@ public class CartesianIteratorTest {
         assertFalse(it.hasNext());
     }
 
-    @Test public void test_2_3_4() throws Exception {
+    @Test
+    void test_2_3_4() throws Exception {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}),
                 Arrays.asList(new String[] {"c", "d", "e"}),

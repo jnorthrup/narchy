@@ -11,7 +11,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0 
  */
-public class AverageAssembler implements IAssembler {
+class AverageAssembler implements IAssembler {
 	/**
 	 * Increases a running average, by the length of the string
 	 * on the stack.

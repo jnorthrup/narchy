@@ -22,7 +22,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class VariableAssembler implements IAssembler {
+class VariableAssembler implements IAssembler {
 	/**
 	 * Pop the name of a variable, lookup the variable in the
 	 * target's scope, and push the variable.

@@ -21,11 +21,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class TestPerfectHashMap
+class TestPerfectHashMap
 {
 
    @Test
-   public void testEmpty()
+   void testEmpty()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
 
@@ -37,7 +37,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testOne()
+   void testOne()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
 
@@ -52,7 +52,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testFirstConstructor()
+   void testFirstConstructor()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>(45, "Hello World!");
 
@@ -65,7 +65,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testPutAfter()
+   void testPutAfter()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
 
@@ -83,7 +83,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testPutBefore()
+   void testPutBefore()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
 
@@ -110,7 +110,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testPutMiddle()
+   void testPutMiddle()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
 
@@ -137,7 +137,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testExists()
+   void testExists()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
       map.put( -14, "First" );
@@ -155,7 +155,7 @@ public class TestPerfectHashMap
    }
    
    @Test
-   public void testRemoveFirst()
+   void testRemoveFirst()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
       map.put( -14, "First" );
@@ -177,7 +177,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testRemoveMiddle()
+   void testRemoveMiddle()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
       map.put( -14, "First" );
@@ -199,7 +199,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testRemoveLast()
+   void testRemoveLast()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
       map.put( -14, "First" );
@@ -223,7 +223,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testRemoveAll()
+   void testRemoveAll()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
       map.put( -14, "First" );
@@ -244,7 +244,7 @@ public class TestPerfectHashMap
    }
 
    @Test
-   public void testClear()
+   void testClear()
    {
       PerfectHashMap<String> map = new PerfectHashMap<>();
       map.put( -14, "First" );

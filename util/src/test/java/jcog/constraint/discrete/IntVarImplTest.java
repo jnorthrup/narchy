@@ -18,12 +18,12 @@ package jcog.constraint.discrete;
 public class IntVarImplTest extends IntVarTest {
 
   @Override
-  public IntVar intVar(DiscreteConstraintSolver solver, int min, int max) {
+  protected IntVar intVar(DiscreteConstraintSolver solver, int min, int max) {
     return solver.intVar(min, max);
   }
   
   @Override
-  public IntVar intVar(DiscreteConstraintSolver solver, int[] values) {
+  protected IntVar intVar(DiscreteConstraintSolver solver, int[] values) {
     return solver.intVar(values);
   }
 }

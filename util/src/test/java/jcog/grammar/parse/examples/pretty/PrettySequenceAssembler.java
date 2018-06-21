@@ -11,9 +11,9 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0 
  */
-public class PrettySequenceAssembler implements IAssembler {
-	protected String name;
-	protected int numberNodes;
+class PrettySequenceAssembler implements IAssembler {
+	private String name;
+	private int numberNodes;
 
 	/**
 	 * Construct an assembler that will replace a given number of 

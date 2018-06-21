@@ -20,7 +20,7 @@ package jcog.grammar.parse.examples.coffee;
  *
  * @version 1.0 
  */
-public class Helper {
+class Helper {
 	/**
 	 * An application that uses a SAX parser should call this
 	 * method upon receiving a <code>characters</code> event.

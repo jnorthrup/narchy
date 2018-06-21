@@ -9,10 +9,10 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TensorTest {
+class TensorTest {
 
     @Test
-    public void testVector() {
+    void testVector() {
         ArrayTensor t = new ArrayTensor(2);
         t.set(0.1f, 0);
         t.set(0.2f, 1);
@@ -22,7 +22,8 @@ public class TensorTest {
         assertEquals("[2]<0.1000\t0.2000>", t.toString());
     }
 
-    @Test public void testMatrix() {
+    @Test
+    void testMatrix() {
         ArrayTensor t = new ArrayTensor(2, 2);
         t.set(0.5f, 0, 0);
         t.set(0.25f, 1, 0);
@@ -54,7 +55,8 @@ public class TensorTest {
         assertEquals("[2, 2]<0.5000\t0.2500\t0.0000\t0.5000>", t.toString());
     }
 
-    @Test public void test1DTensorChain() {
+    @Test
+    void test1DTensorChain() {
         ArrayTensor a = new ArrayTensor(4);
         a.set(1, 2);
         ArrayTensor b = new ArrayTensor(2);

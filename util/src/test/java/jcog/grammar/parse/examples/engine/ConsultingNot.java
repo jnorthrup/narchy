@@ -17,13 +17,13 @@ package jcog.grammar.parse.examples.engine;
  */
 
 public class ConsultingNot extends Gateway {
-	ConsultingStructure consultingStructure;
+	private ConsultingStructure consultingStructure;
 
 	/*
 	 * Contructs a ConsultingNot from the specified consulting structure. This
 	 * constructor is for use by Not.
 	 */
-	protected ConsultingNot(ConsultingStructure consultingStructure) {
+    ConsultingNot(ConsultingStructure consultingStructure) {
 
 		super(consultingStructure.functor, consultingStructure.terms);
 		this.consultingStructure = consultingStructure;

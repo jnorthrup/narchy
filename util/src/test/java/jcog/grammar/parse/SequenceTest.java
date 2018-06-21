@@ -14,21 +14,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SequenceTest extends AbstractParsingTest {
 
-	Seq sequence;
+	private Seq sequence;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		sequence = new Seq();
 	}
 
 	@Test
-	public void noMatch() {
+    void noMatch() {
 		sequence.get(new CaselessLiteral("abc"));
 		assertNoMatch("def");
 	}
 
 	@Test
-	public void fullMatch() {
+    void fullMatch() {
 		sequence.get(new CaselessLiteral("abc"));
 		assertCompleteMatch("abc");
 
@@ -38,7 +38,7 @@ public class SequenceTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void partialMatch() {
+    void partialMatch() {
 		sequence.get(new CaselessLiteral("abc"));
 		Assembly result = bestMatch("abc def");
 		assertEquals(1, result.elementsRemaining());
@@ -47,14 +47,14 @@ public class SequenceTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void children() {
+    void children() {
 		sequence.get(new CaselessLiteral("abc"));
 		sequence.get(new Num());
 		assertEquals(2, size(getParser().children()));
 	}
 
 	@Test
-	public void leftChildren() {
+    void leftChildren() {
 		sequence.get(new CaselessLiteral("abc"));
 		sequence.get(new Num());
 		assertEquals(1, size(getParser().leftChildren()));

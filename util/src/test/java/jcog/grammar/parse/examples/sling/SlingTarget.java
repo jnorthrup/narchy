@@ -18,11 +18,11 @@ import javax.swing.*;
  * @version 1.0 
  */
 public class SlingTarget implements PubliclyCloneable<SlingTarget> {
-	protected static int DEFAULT_NLINE = 100;
-	protected Scope scope = new Scope();
-	protected JSlider s1;
-	protected JSlider s2;
-	protected RenderableCollection renderables = new RenderableCollection();
+	private static int DEFAULT_NLINE = 100;
+	private Scope scope = new Scope();
+	private JSlider s1;
+	private JSlider s2;
+	private RenderableCollection renderables = new RenderableCollection();
 
 	/**
 	 * Construct a target, given two sliders.
@@ -59,7 +59,7 @@ public class SlingTarget implements PubliclyCloneable<SlingTarget> {
 	 * Return true, if the given variable name exists in this
 	 * target's scope.
 	 */
-	public boolean isDefined(String s) {
+    private boolean isDefined(String s) {
 		return scope.isDefined(s);
 	}
 

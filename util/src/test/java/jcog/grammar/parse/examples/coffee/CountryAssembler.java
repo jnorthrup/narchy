@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class CountryAssembler implements IAssembler {
+class CountryAssembler implements IAssembler {
 	/**
 	 * Pop a string, and set the target coffee's country to this
 	 * string.

@@ -11,9 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 9/4/15.
  */
-public class IntervalTreeTest {
+class IntervalTreeTest {
 
-    @Test public void testIntersectionAdjacent() {
+    @Test
+    void testIntersectionAdjacent() {
         
         Longerval x = Longerval.intersect(1, 2, 2, 3);
         assertNotNull(x);
@@ -21,39 +22,39 @@ public class IntervalTreeTest {
     }
 
         @Test
-        public void testCreate(){
+        void testCreate(){
             new IntervalTree<Double, String>();
         }
 
         @Test
-        public void testSinglePut(){
+        void testSinglePut(){
             IntervalTree<Double, String> t = new IntervalTree<>();
             t.put(30.0,50.0, "test");
         }
 
         @Test
-        public void testSingleContainsValue(){
+        void testSingleContainsValue(){
             IntervalTree<Double, String> t = new IntervalTree<>();
             t.put(30.0,50.0, "test");
             t.containsValue("test");
         }
 
         @Test
-        public void testSingleKeyContains(){
+        void testSingleKeyContains(){
             IntervalTree<Double, String> t = new IntervalTree<>();
             t.put(30.0,50.0, "test");
             assertFalse(t.searchContaining(30.0,45.0).isEmpty());
         }
 
         @Test
-        public void testSingleKeyContainsNotOverlap(){
+        void testSingleKeyContainsNotOverlap(){
             IntervalTree<Double, String> t = new IntervalTree<>();
             t.put(30.0,50.0, "test");
             assertTrue(t.searchContaining(20.0,40.0).isEmpty());
         }
 
         @Test
-        public void testSingleKeyOverlapping(){
+        void testSingleKeyOverlapping(){
             IntervalTree<Double, String> t = new IntervalTree<>();
             t.put(30.0,50.0, "test");
             assertFalse(t.searchOverlapping(20.0,40.0).isEmpty());
@@ -72,19 +73,19 @@ public class IntervalTreeTest {
         }
 
         @Test
-        public void testClear(){
+        void testClear(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             t.clear();
             assertTrue(t.isEmpty());
         }
 
         @Test
-        public void testMultiMake(){
+        void testMultiMake(){
             makeIntervalTree();
         }
 
         @Test
-        public void testMultiContainsValue(){
+        void testMultiContainsValue(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             assertTrue(t.containsValue("15-25"));
             assertTrue(t.containsValue("5-15"));
@@ -92,7 +93,7 @@ public class IntervalTreeTest {
         }
 
         @Test
-        public void testMultiSearchContaining(){
+        void testMultiSearchContaining(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             Collection<String> res = t.searchContaining(0, 6);
             assertTrue(res.contains("0-10"));
@@ -100,7 +101,7 @@ public class IntervalTreeTest {
         }
 
         @Test
-        public void testMultiSearchContaining2(){
+        void testMultiSearchContaining2(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             Collection<String> res = t.searchContaining(4, 16);
             assertFalse(res.contains("5-15"));
@@ -108,14 +109,14 @@ public class IntervalTreeTest {
         }
 
         @Test
-        public void testMultiSearchContaining3(){
+        void testMultiSearchContaining3(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             Collection<String> res = t.searchContaining(7, 31);
             assertTrue(res.isEmpty());
         }
 
         @Test
-        public void testMultiSearchContainedBy(){
+        void testMultiSearchContainedBy(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             Collection<String> res = t.searchContainedBy(0, 16);
             assertTrue(res.contains("0-10"));
@@ -124,7 +125,7 @@ public class IntervalTreeTest {
         }
 
         @Test
-        public void testMultiSearchContainedBy2(){
+        void testMultiSearchContainedBy2(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             Collection<String> res = t.searchContainedBy(6, 31);
             assertFalse(res.contains("5-15"));
@@ -132,14 +133,14 @@ public class IntervalTreeTest {
         }
 
         @Test
-        public void testMultiSearchContainedBy3(){
+        void testMultiSearchContainedBy3(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             Collection<String> res = t.searchContainedBy(0, 31);
             assertTrue(res.size() == t.size());
         }
 
         @Test
-        public void testRemove(){
+        void testRemove(){
             IntervalTree<Integer, String> t = makeIntervalTree();
             t.remove("0-10");
             t.remove("5-15");

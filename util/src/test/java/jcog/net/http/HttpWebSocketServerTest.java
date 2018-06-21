@@ -69,7 +69,7 @@ class HttpWebSocketServerTest {
 
     static class JSTest {
 
-        public static class MyInterface {
+        static class MyInterface {
 
             private final Map<String,Object> map = new HashMap();
 

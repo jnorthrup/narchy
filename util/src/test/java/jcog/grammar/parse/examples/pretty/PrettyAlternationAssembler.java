@@ -12,8 +12,8 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0 
  */
-public class PrettyAlternationAssembler implements IAssembler {
-	protected String name;
+class PrettyAlternationAssembler implements IAssembler {
+	private String name;
 
 	/**
 	 * Create an assembler that will replace a <code>ComponentNode

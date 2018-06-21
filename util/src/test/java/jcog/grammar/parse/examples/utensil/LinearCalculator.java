@@ -44,7 +44,7 @@ public class LinearCalculator {
 	 * @param double yFrom
 	 * @param double yTo
 	 */
-	public LinearCalculator(double xFrom, double xTo, double yFrom, double yTo) {
+    LinearCalculator(double xFrom, double xTo, double yFrom, double yTo) {
 		this.xFrom = xFrom;
 		this.xTo = xTo;
 		this.yFrom = yFrom;
@@ -58,7 +58,7 @@ public class LinearCalculator {
 	 * @return the value on the first scale, corresponding to the given value on
 	 *         the second scale
 	 */
-	public double calculateXforGivenY(double y) {
+    double calculateXforGivenY(double y) {
 		if (yTo == yFrom) {
 			return (xFrom + xTo) / 2;
 		}
@@ -72,7 +72,7 @@ public class LinearCalculator {
 	 * @return the value on the second scale, corresponding to the given value
 	 *         on the first scale
 	 */
-	public double calculateYforGivenX(double x) {
+    double calculateYforGivenX(double x) {
 		if (xTo == xFrom) {
 			return (yFrom + yTo) / 2;
 		}

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class HashSlabPerformanceRun {
 
-    public interface FloatWrapper extends Cursor {
+    interface FloatWrapper extends Cursor {
         float getValue();
         void setValue(float value);
     }

@@ -58,9 +58,9 @@ package jcog.grammar.parse.examples.engine;
  */
 
 public class Evaluation extends Gateway {
-	Term term0;
-	Term term1;
-	protected Unification currentUnification;
+	private Term term0;
+	private Term term1;
+	private Unification currentUnification;
 
 	/**
 	 * Constructs an Evaluation that will unify the first term with the second
@@ -127,7 +127,7 @@ public class Evaluation extends Gateway {
 	 * Releases the variable bindings that the last unification produced.
 	 * 
 	 */
-	public void unbind() {
+    private void unbind() {
 		if (currentUnification != null) {
 			currentUnification.unbind();
 		}

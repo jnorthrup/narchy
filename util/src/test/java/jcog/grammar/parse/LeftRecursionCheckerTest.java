@@ -6,41 +6,41 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class LeftRecursionCheckerTest {
+class LeftRecursionCheckerTest {
 
 	private Grammar grammar;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		grammar = new Grammar("test");
 	}
 
 	@Test
-	public void noRecursion() {
+    void noRecursion() {
 		grammar.defineRule("s = '<' '+'");
 		assertNoLeftRecursionException();
 	}
 
 	@Test
-	public void rightRecursionIsFine() {
+    void rightRecursionIsFine() {
 		grammar.defineRule("s = '<' s");
 		assertNoLeftRecursionException();
 	}
 
 	@Test
-	public void ruleReferencesItself() {
+    void ruleReferencesItself() {
 		grammar.defineRule("s = s");
 		assertLeftRecursionException();
 	}
 
 	@Test
-	public void immediateLeftRecursionInSequence() {
+    void immediateLeftRecursionInSequence() {
 		grammar.defineRule("s = s '>'");
 		assertLeftRecursionException();
 	}
 
 	@Test
-	public void immediateLeftRecursionInRepetition() {
+    void immediateLeftRecursionInRepetition() {
 		grammar.defineRule("s = (s '>')*");
 		assertLeftRecursionException();
 
@@ -49,7 +49,7 @@ public class LeftRecursionCheckerTest {
 	}
 
 	@Test
-	public void immediateLeftRecursionInAlternation() {
+    void immediateLeftRecursionInAlternation() {
 		grammar.defineRule("s = ('>' s) | s");
 		assertLeftRecursionException();
 
@@ -58,14 +58,14 @@ public class LeftRecursionCheckerTest {
 	}
 
 	@Test
-	public void indirectLeftRecursion() {
+    void indirectLeftRecursion() {
 		grammar.defineRule("s = a '<'");
 		grammar.defineRule("a = Num | s '+'");
 		assertLeftRecursionException();
 	}
 
 	@Test
-	public void complexExample() {
+    void complexExample() {
 		grammar.defineRule("s = a '<'");
 		grammar.defineRule("a = Num | b '+'");
 		grammar.defineRule("b = Num | (c '+') | ('=' d)");

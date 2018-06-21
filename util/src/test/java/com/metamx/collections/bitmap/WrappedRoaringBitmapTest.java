@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class WrappedRoaringBitmapTest {
+class WrappedRoaringBitmapTest {
     private final RoaringBitmapFactory factory;
 
     WrappedRoaringBitmapTest(RoaringBitmapFactory factory) {
@@ -35,7 +35,7 @@ public class WrappedRoaringBitmapTest {
     }
 
     @TestFactory
-    public static Stream<DynamicTest> factoryClasses() {
+    static Stream<DynamicTest> factoryClasses() {
 
         return List.of(
 

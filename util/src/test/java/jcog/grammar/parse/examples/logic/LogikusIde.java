@@ -22,23 +22,23 @@ import java.awt.*;
  */
 
 public class LogikusIde {
-	protected LogikusMediator mediator;
+	private LogikusMediator mediator;
 
-	protected JTextArea programArea;
-	protected JTextArea resultsArea;
-	protected JTextArea queryArea;
+	private JTextArea programArea;
+	private JTextArea resultsArea;
+	private JTextArea queryArea;
 
-	protected JButton proveNextButton;
-	protected JButton proveRestButton;
-	protected JButton haltButton;
-	protected JButton clearProgramButton;
-	protected JButton clearResultsButton;
+	private JButton proveNextButton;
+	private JButton proveRestButton;
+	private JButton haltButton;
+	private JButton clearProgramButton;
+	private JButton clearResultsButton;
 
 	/*
 	 * Creates and returns the box that contains all of the IDE's
 	 * buttons.
 	 */
-	protected Box buttonBox() {
+    private Box buttonBox() {
 		Box b = Box.createHorizontalBox();
 		b.add(proveButtonPanel());
 		b.add(Box.createHorizontalGlue());
@@ -50,7 +50,7 @@ public class LogikusIde {
 	 * Creates and returns the panel that contains the IDE's
 	 * clear buttons.
 	 */
-	protected JPanel clearButtonPanel() {
+    private JPanel clearButtonPanel() {
 		JPanel p = new JPanel();
 		p.setBorder(SwingUtensil.ideTitledBorder("Clear"));
 		p.add(clearProgramButton());
@@ -61,7 +61,7 @@ public class LogikusIde {
 	/*
 	 * The button that clears the results area.
 	 */
-	protected JButton clearProgramButton() {
+    private JButton clearProgramButton() {
 		if (clearProgramButton == null) {
 			clearProgramButton = new JButton("Program");
 			clearProgramButton.addActionListener(mediator());
@@ -73,7 +73,7 @@ public class LogikusIde {
 	/*
 	 * The button that clears the results area.
 	 */
-	protected JButton clearResultsButton() {
+    private JButton clearResultsButton() {
 		if (clearResultsButton == null) {
 			clearResultsButton = new JButton("Results");
 			clearResultsButton.addActionListener(mediator());
@@ -85,7 +85,7 @@ public class LogikusIde {
 	/*
 	 * The button that halts the proof thread.
 	 */
-	protected JButton haltButton() {
+    private JButton haltButton() {
 		if (haltButton == null) {
 			haltButton = new JButton("Halt");
 			haltButton.setEnabled(false);
@@ -106,7 +106,7 @@ public class LogikusIde {
 	 * Builds and returns the panel that contains all the
 	 * components of the IDE.
 	 */
-	protected JPanel mainPanel() {
+    private JPanel mainPanel() {
 		JPanel p = SwingUtensil.textPanel("Program", programArea(), new Dimension(600, 300), new Dimension(600, 150));
 
 		JPanel q = SwingUtensil.textPanel("Query", queryArea(), new Dimension(600, 60), new Dimension(600, 60));
@@ -130,7 +130,7 @@ public class LogikusIde {
 	 * The object that controls or "mediates" the interaction
 	 * of this development environment's Swing components.
 	 */
-	protected LogikusMediator mediator() {
+    private LogikusMediator mediator() {
 		if (mediator == null) {
 			mediator = new LogikusMediator();
 			mediator.initialize(proveNextButton(), proveRestButton(), haltButton(), clearProgramButton(), clearResultsButton(), programArea(), resultsArea(), queryArea());
@@ -141,7 +141,7 @@ public class LogikusIde {
 	/*
 	 * The program text area.
 	 */
-	protected JTextArea programArea() {
+    private JTextArea programArea() {
 		if (programArea == null) {
 			programArea = SwingUtensil.ideTextArea();
 		}
@@ -152,7 +152,7 @@ public class LogikusIde {
 	 * Creates and returns the panel that contains the IDE's
 	 * proof buttons.
 	 */
-	protected JPanel proveButtonPanel() {
+    private JPanel proveButtonPanel() {
 		JPanel p = new JPanel();
 		p.setBorder(SwingUtensil.ideTitledBorder("Prove"));
 		p.add(proveNextButton());
@@ -164,7 +164,7 @@ public class LogikusIde {
 	/*
 	 * The button that starts the proof thread.
 	 */
-	protected JButton proveNextButton() {
+    private JButton proveNextButton() {
 		if (proveNextButton == null) {
 			proveNextButton = new JButton("Next");
 			proveNextButton.addActionListener(mediator());
@@ -177,7 +177,7 @@ public class LogikusIde {
 	 * The button that starts the proof thread, asking it to
 	 * find all remaining proofs.
 	 */
-	protected JButton proveRestButton() {
+    private JButton proveRestButton() {
 		if (proveRestButton == null) {
 			proveRestButton = new JButton("Rest");
 			proveRestButton.addActionListener(mediator());
@@ -189,7 +189,7 @@ public class LogikusIde {
 	/*
 	 * The query text area.
 	 */
-	protected JTextArea queryArea() {
+    private JTextArea queryArea() {
 		if (queryArea == null) {
 			queryArea = SwingUtensil.ideTextArea();
 		}
@@ -199,7 +199,7 @@ public class LogikusIde {
 	/*
 	 * The results text area.
 	 */
-	protected JTextArea resultsArea() {
+    private JTextArea resultsArea() {
 		if (resultsArea == null) {
 			resultsArea = SwingUtensil.ideTextArea();
 		}

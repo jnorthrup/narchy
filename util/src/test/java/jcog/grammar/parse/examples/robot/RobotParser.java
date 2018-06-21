@@ -43,7 +43,7 @@ public class RobotParser {
 	 *
 	 *     command = pickCommand | placeCommand | scanCommand;
 	 */
-	public Parser command() {
+    private Parser command() {
 		Alternation a = new Alternation();
 		a.get(pickCommand());
 		a.get(placeCommand());
@@ -56,7 +56,7 @@ public class RobotParser {
 	 *
 	 *     location = Word;
 	 */
-	protected Parser location() {
+    private Parser location() {
 		return new Word();
 	}
 
@@ -65,7 +65,7 @@ public class RobotParser {
 	 *
 	 *     pickCommand  = "pick" "carrier" "from" location;
 	 */
-	protected Parser pickCommand() {
+    private Parser pickCommand() {
 		Seq s = new Seq();
 		s.get(new CaselessLiteral("pick"));
 		s.get(new CaselessLiteral("carrier"));
@@ -80,7 +80,7 @@ public class RobotParser {
 	 *
 	 *     placeCommand = "place" "carrier" "at" location;
 	 */
-	protected Parser placeCommand() {
+    private Parser placeCommand() {
 		Seq s = new Seq();
 		s.get(new CaselessLiteral("place"));
 		s.get(new CaselessLiteral("carrier"));
@@ -95,7 +95,7 @@ public class RobotParser {
 	 *
 	 *     scanCommand  = "scan" location;
 	 */
-	protected Parser scanCommand() {
+    private Parser scanCommand() {
 		Seq s = new Seq();
 		s.get(new CaselessLiteral("scan"));
 		s.get(location());

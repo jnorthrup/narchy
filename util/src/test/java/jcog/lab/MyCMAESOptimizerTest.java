@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MyCMAESOptimizerTest {
 
-    static final int DIM = 13;
-    static final int LAMBDA = 4 + (int)(3.* FastMath.log(DIM));
+    private static final int DIM = 13;
+    private static final int LAMBDA = 4 + (int)(3.* FastMath.log(DIM));
 
 
 
@@ -99,8 +99,7 @@ class MyCMAESOptimizerTest {
 
 
     @Test
-    
-    public void testRosen() {
+    void testRosen() {
         double[] startPoint = point(DIM,0.1);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -115,8 +114,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    
-    public void testMaximize() {
+    void testMaximize() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -136,7 +134,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testEllipse() {
+    void testEllipse() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -151,7 +149,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testElliRotated() {
+    void testElliRotated() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -166,7 +164,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testCigar() {
+    void testCigar() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -181,7 +179,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testCigarWithBoundaries() {
+    void testCigarWithBoundaries() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = boundaries(DIM, -1e100, Double.POSITIVE_INFINITY);
@@ -196,7 +194,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testTwoAxes() {
+    void testTwoAxes() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -211,7 +209,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testCigTab() {
+    void testCigTab() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.3);
         double[][] boundaries = null;
@@ -226,7 +224,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testSphere() {
+    void testSphere() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -241,7 +239,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testTablet() {
+    void testTablet() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -256,7 +254,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testDiffPow() {
+    void testDiffPow() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -271,7 +269,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testSsDiffPow() {
+    void testSsDiffPow() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -286,7 +284,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testAckley() {
+    void testAckley() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,1.0);
         double[][] boundaries = null;
@@ -301,7 +299,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testRastrigin() {
+    void testRastrigin() {
         double[] startPoint = point(DIM,0.1);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -316,7 +314,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testConstrainedRosen() {
+    void testConstrainedRosen() {
         double[] startPoint = point(DIM, 0.1);
         double[] insigma = point(DIM, 0.1);
         double[][] boundaries = boundaries(DIM, -1, 2);
@@ -331,7 +329,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testDiagonalRosen() {
+    void testDiagonalRosen() {
         double[] startPoint = point(DIM,0.1);
         double[] insigma = point(DIM,0.1);
         double[][] boundaries = null;
@@ -343,7 +341,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    public void testMath864() {
+    void testMath864() {
         final double[] sigma = { 1e-1 };
         final MyCMAESOptimizer optimizer
                 = new MyCMAESOptimizer(30000, 0, true, 10,
@@ -373,7 +371,7 @@ class MyCMAESOptimizerTest {
      * Cf. MATH-867
      */
     @Test
-    public void testFitAccuracyDependsOnBoundary() {
+    void testFitAccuracyDependsOnBoundary() {
 
         double[] sigma1 = {1e-1};
         MyCMAESOptimizer optimizer
@@ -703,7 +701,7 @@ class MyCMAESOptimizerTest {
             axisratio = axra;
         }
 
-        public Ackley() {
+        Ackley() {
             this(1);
         }
 

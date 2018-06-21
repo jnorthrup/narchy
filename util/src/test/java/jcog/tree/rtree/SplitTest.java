@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SplitTest {
+class SplitTest {
 
         /**
      * Adds many random entries to trees of different types and confirms that
      * no entries are lost during insert/split.
      */
     @Test
-    public void randomEntryTest() {
+    void randomEntryTest() {
 
         int entryCount = 32*1024;
 

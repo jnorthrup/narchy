@@ -17,9 +17,9 @@ package jcog.grammar.parse.examples.string;
  * @version 1.0  
  */
 public class Substring extends StringFunction {
-	protected int from;
-	protected int to;
-	protected boolean rest = false;
+	private int from;
+	private int to;
+	private boolean rest = false;
 
 	/**
 	 * Construct a <code>Substring</code> function that will
@@ -38,7 +38,7 @@ public class Substring extends StringFunction {
 	 * portion of a string from the given <code>from</code> 
 	 * index to the given <code>to</code> index.
 	 */
-	public Substring(StringFunction source, int from, int to) {
+    private Substring(StringFunction source, int from, int to) {
 		super(source);
 		this.from = from;
 		this.to = to;

@@ -32,7 +32,7 @@ import jcog.grammar.parse.tokens.TokenAssembly;
  * @version 1.0 
  */
 public class MinimathParser {
-	protected static Seq e;
+	private static Seq e;
 
 	/**
 	 * Return a parser that will recognize a Minimath
@@ -41,7 +41,7 @@ public class MinimathParser {
 	 * @return   a parser that will recognize a Minimath 
 	 *           expression
 	 */
-	public static Parser e() {
+	private static Parser e() {
 
 		
 
@@ -56,7 +56,7 @@ public class MinimathParser {
 	/*
 	 * a parser for the rule: m = '-' Num;
 	 */
-	protected static Parser m() {
+	private static Parser m() {
 		Seq s = new Seq();
 		s.get(new Symbol('-').ok());
 		s.get(n());
@@ -77,7 +77,7 @@ public class MinimathParser {
 	 * stacks a token. Here we use NumAssembler to replace
 	 * the token with its double value.
 	 */
-	protected static Parser n() {
+	private static Parser n() {
 		return new Num().put(new NumAssembler());
 	}
 
@@ -88,7 +88,7 @@ public class MinimathParser {
 	 * @return   a parser that will recognize a Minimath
 	 *           expression
 	 */
-	public static Parser start() {
+	private static Parser start() {
 		return e();
 	}
 }

@@ -13,23 +13,23 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class GrammarTest {
+class GrammarTest {
 
-    Grammar grammar;
+    private Grammar grammar;
     private boolean called = false;
 
     @BeforeEach
-    public void init() {
+    void init() {
         grammar = new Grammar("Test");
     }
 
     @Test
-    public void name() {
+    void name() {
         assertEquals("Test", grammar.getName());
     }
 
     @Test
-    public void firstRuleIsStartRuleByDefault() {
+    void firstRuleIsStartRuleByDefault() {
         assertCheckFails();
         grammar.addRule("mystart", new Empty());
         grammar.check();
@@ -45,7 +45,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void otherStartruleThanFirst() {
+    void otherStartruleThanFirst() {
         grammar.addRule("nostart", new Empty());
         grammar.addRule("mystart", new RuleReference("nostart", grammar));
         grammar.markAsStartRule("mystart");
@@ -53,7 +53,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void grammarWithSingleRule() {
+    void grammarWithSingleRule() {
         assertNull(grammar.getRule("mystart"));
         grammar.addRule("mystart", new Empty());
         assertTrue(grammar.getRule("mystart") instanceof Empty);
@@ -63,7 +63,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void addingAssemblers() {
+    void addingAssemblers() {
         class MyTarget implements PubliclyCloneable<MyTarget> {
             @Override
             public MyTarget clone() {
@@ -84,7 +84,7 @@ public class GrammarTest {
 
 
     @Test
-    public void assemblersCanOnlyBeAddedToExistingRules() {
+    void assemblersCanOnlyBeAddedToExistingRules() {
         assertThrows(GrammarException.class, () -> {
             grammar.addAssembler("mystart", new IAssembler() {
                 public void accept(Assembly a) {
@@ -94,14 +94,14 @@ public class GrammarTest {
     }
 
     @Test
-    public void resultStack() {
+    void resultStack() {
         grammar.addRule("mystart", new Literal("myliteral"));
         IParsingResult result = grammar.parse("myliteral");
         assertEquals(new Token("myliteral"), result.getStack().peek());
     }
 
     @Test
-    public void ruleReference() {
+    void ruleReference() {
         grammar.addRule("mystart", new RuleReference("referenced", grammar));
         grammar.addRule("referenced", new Empty());
         assertTrue(grammar.parse("").isCompleteMatch());
@@ -124,7 +124,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void ruleReferenceMustReferenceExistingClause() {
+    void ruleReferenceMustReferenceExistingClause() {
         grammar.addRule("mystart", new RuleReference("nothing", grammar));
         assertCheckFails();
 
@@ -133,7 +133,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void allClausesMustBeAccessibleFromStartParser() {
+    void allClausesMustBeAccessibleFromStartParser() {
         grammar.addRule("mystart", new Empty());
         grammar.addRule("unused", new Empty());
         assertCheckFails();
@@ -153,7 +153,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void textualRules() {
+    void textualRules() {
         String ruleName = grammar.defineRule("command = \"go\"");
         assertEquals("command", ruleName);
         assertTrue(grammar.parse("go").isCompleteMatch());
@@ -161,7 +161,7 @@ public class GrammarTest {
 
 
     @Test
-    public void textualRuleWithGroovyClosure() {
+    void textualRuleWithGroovyClosure() {
         final List<Object> expectedMatches = new ArrayList<Object>();
         expectedMatches.add(new Token("test"));
         String ruleName = grammar.defineRule("mystart = \"test\"", (matches, stack) -> {
@@ -175,7 +175,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void readFromReader() throws Exception {
+    void readFromReader() throws Exception {
         String text = "start = '<' more;\nmore = '>';";
         StringReader reader = new StringReader(text);
         grammar.addRulesFrom(reader);
@@ -184,7 +184,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void leftRecursivenessCheckerIsPluggedIn() {
+    void leftRecursivenessCheckerIsPluggedIn() {
         assertThrows(GrammarException.class, () -> {
             grammar.defineRule("r = r '>'");
             grammar.check();
@@ -193,7 +193,7 @@ public class GrammarTest {
 
 
     @Test
-    public void complexScenario() {
+    void complexScenario() {
         defineTrackRobotGrammar();
         String[] sentences = new String[]{"pick carrier from LINE_IN", "place carrier at DB101_IN", "scan DB101_OUT"};
         for (String sentence : sentences) {
@@ -205,7 +205,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void performanceTest() {
+    void performanceTest() {
         defineTrackRobotGrammar();
         grammar.check(); 
         String[] sentences = new String[]{"pick carrier from LINE_IN", "place carrier at DB101_IN", "scan DB101_OUT"};
@@ -220,7 +220,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void defaultTerminalTypes() {
+    void defaultTerminalTypes() {
         assertTrue(grammar.terminal("Num") instanceof Num);
         assertTrue(grammar.terminal("Int") instanceof Int);
         assertTrue(grammar.terminal("Word") instanceof Word);
@@ -228,7 +228,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void registeringTerminalTypes() {
+    void registeringTerminalTypes() {
         grammar.registerTerminal(UpperCaseWord.class);
         grammar.registerTerminal("UCW", UpperCaseWord.class);
         assertTrue(grammar.terminal("UpperCaseWord") instanceof UpperCaseWord);
@@ -236,7 +236,7 @@ public class GrammarTest {
     }
 
     @Test
-    public void automaticConstantsDiscard() {
+    void automaticConstantsDiscard() {
         assertFalse(grammar.areAllConstantsDiscarded());
         grammar.discardAllConstants();
         assertTrue(grammar.areAllConstantsDiscarded());

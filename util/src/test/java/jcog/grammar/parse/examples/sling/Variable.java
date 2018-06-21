@@ -59,7 +59,7 @@ package jcog.grammar.parse.examples.sling;
  * @version 1.0  
  */
 public class Variable extends SlingFunction {
-	protected String name;
+	String name;
 
 	/**
 	 * Create a new variable with the given name.

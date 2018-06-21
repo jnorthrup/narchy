@@ -21,8 +21,8 @@ import java.io.PrintWriter;
  * @version 1.0
  */
 public class PrintlnCommand extends Command {
-	protected Term term;
-	protected PrintWriter out;
+	private Term term;
+	private PrintWriter out;
 
 	/**
 	 * Construct a "print" command to print the supplied term.
@@ -44,7 +44,7 @@ public class PrintlnCommand extends Command {
 	 * @param PrintWriter
 	 *            where to print
 	 */
-	public PrintlnCommand(Term term, PrintWriter out) {
+    private PrintlnCommand(Term term, PrintWriter out) {
 		this.term = term;
 		this.out = out;
 	}

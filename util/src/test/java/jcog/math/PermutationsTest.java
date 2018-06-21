@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * from http:
  */
-public class PermutationsTest {
+class PermutationsTest {
 
     @Test
-    public void testPerm1() {
+    void testPerm1() {
         Permutations perm = new Permutations().restart(3);
         int count = 0;
         String x = "";
@@ -30,22 +30,26 @@ public class PermutationsTest {
         assertEquals("[0, 1, 2] [0, 2, 1] [1, 0, 2] [1, 2, 0] [2, 0, 1] [2, 1, 0] ", x);
     }
 
-    @Test public void testShuffleReset2() {
+    @Test
+    void testShuffleReset2() {
         testShuffleReset(2, 2);
         testShuffleReset(2, 1);
     }
-    @Test public void testShuffleReset3() {
+    @Test
+    void testShuffleReset3() {
         testShuffleReset(3, 2);
         testShuffleReset(3, 1);
     }
-    @Test public void testShuffleReset4() {
+    @Test
+    void testShuffleReset4() {
         testShuffleReset(4, 5);
         testShuffleReset(4, 4);
         testShuffleReset(4, 3);
         testShuffleReset(4, 2);
         testShuffleReset(4, 1);
     }
-    @Test public void testShuffleReset5() {
+    @Test
+    void testShuffleReset5() {
         testShuffleReset(5, 5);
         testShuffleReset(5, 4);
         testShuffleReset(5, 3);
@@ -53,7 +57,7 @@ public class PermutationsTest {
         testShuffleReset(5, 1);
     }
 
-    public void testShuffleReset(int size, int selected) {
+    private void testShuffleReset(int size, int selected) {
 
         int expected = factorial(size);
         int attempts = (1+expected/selected)*(1+expected/selected); 

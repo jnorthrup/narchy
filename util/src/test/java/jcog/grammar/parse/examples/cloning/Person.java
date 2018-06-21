@@ -4,8 +4,8 @@ package jcog.grammar.parse.examples.cloning;
  * This type was created by Steve Metsker
  */
 public class Person implements Cloneable {
-	String name;
-	Person spouse;
+	private String name;
+	private Person spouse;
 
 	/**
 	 * This method was created by Steve Metsker

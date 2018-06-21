@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class CoffeeParserTest {
+class CoffeeParserTest {
 
 	@Test
-	public void examples() {
+    void examples() {
 		Tokenizer t = CoffeeParser.tokenizer();
 		t.setString("Thai Bulenc (Manchester), black, Argentina, 3.0");
 		Assembly result = CoffeeParser.start().bestMatch(new TokenAssembly(t));

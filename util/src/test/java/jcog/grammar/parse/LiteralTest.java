@@ -9,26 +9,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LiteralTest extends AbstractParsingTest {
 
-	Literal literal;
+	private Literal literal;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		literal = new Literal("hello");
 	}
 
 	@Test
-	public void noMatch() {
+    void noMatch() {
 		assertNoMatch("abc");
 		assertNoMatch("HELLO");
 	}
 
 	@Test
-	public void match() {
+    void match() {
 		assertCompleteMatch("hello");
 	}
 
 	@Test
-	public void noChildren() {
+    void noChildren() {
 		assertTrue(size(getParser().children())==0);
 	}
 

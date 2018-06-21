@@ -23,7 +23,7 @@ import jcog.grammar.parse.PubliclyCloneable;
  */
 public class RobotCommand implements PubliclyCloneable<RobotCommand> {
 
-	protected String location;
+	String location;
 
 	/**
 	 * Return a copy of this object. If the location attribute 

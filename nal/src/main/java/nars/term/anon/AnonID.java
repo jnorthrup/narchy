@@ -63,7 +63,7 @@ public interface AnonID extends Term, The {
     /** POS ONLY assumes non-negative; if the input is negative use idToTermPosOrNeg */
     static Term idToTermPos(short /* short */ i) {
         byte num = (byte) (i & 0xff);
-        int m = idtoMask(i);
+        int m = idToMask(i);
         switch (m) {
             case ATOM_MASK:
                 return Anom.the[num];
@@ -85,7 +85,7 @@ public interface AnonID extends Term, The {
             i = (short) -i;
 
         byte num = (byte) (i & 0xff);
-        int m = idtoMask(i);
+        int m = idToMask(i);
         byte varType;
         switch (m) {
             case ATOM_MASK:
@@ -104,7 +104,7 @@ public interface AnonID extends Term, The {
         return NormalizedVariable.the(varType, num).negIf(neg);
     }
 
-    static int idtoMask(short i) {
+    static int idToMask(short i) {
         return i & 0xff00;
     }
 

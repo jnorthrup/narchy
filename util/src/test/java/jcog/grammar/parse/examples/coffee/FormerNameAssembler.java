@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class FormerNameAssembler implements IAssembler {
+class FormerNameAssembler implements IAssembler {
 	/**
 	 * Pop a string, and set the target coffee's former name to
 	 * this string.

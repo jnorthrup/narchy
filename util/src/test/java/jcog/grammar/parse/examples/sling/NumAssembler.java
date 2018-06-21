@@ -22,7 +22,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class NumAssembler implements IAssembler {
+class NumAssembler implements IAssembler {
 	/**
 	 * Pop a number n, and push the function (t, n).
 	 *

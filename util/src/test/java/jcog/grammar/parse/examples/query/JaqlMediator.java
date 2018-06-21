@@ -24,15 +24,15 @@ import java.awt.event.ActionListener;
  * @see JaqlUe
  */
 public class JaqlMediator implements ActionListener {
-	protected JButton goButton;
-	protected JButton clearButton;
-	protected JTextArea metadataArea;
-	protected JTextArea queryArea;
-	protected JTextArea resultArea;
+	private JButton goButton;
+	private JButton clearButton;
+	private JTextArea metadataArea;
+	private JTextArea queryArea;
+	private JTextArea resultArea;
 
-	protected Parser parser;
-	protected ChipSource chipSource;
-	protected Speller speller;
+	private Parser parser;
+	private ChipSource chipSource;
+	private Speller speller;
 
 	/**
 	 * Parse the input as a query, prove it repeatedly,
@@ -61,7 +61,7 @@ public class JaqlMediator implements ActionListener {
 	 * This method provides all the "go" actions and relies on 
 	 * actionPerformed to handle exceptions.
 	 */
-	protected void actionPerformedUnsafe(ActionEvent e) {
+    private void actionPerformedUnsafe(ActionEvent e) {
 		Assembly result = parseInput();
 		if (result == null) {
 			resultArea.append("\nCannot parse input text.");
@@ -76,7 +76,7 @@ public class JaqlMediator implements ActionListener {
 	 * Return a ChipSource, an axiom source for facts about
 	 * chips, customers, and orders. 
 	 */
-	protected ChipSource chipSource() {
+    private ChipSource chipSource() {
 		if (chipSource == null) {
 			chipSource = new ChipSource();
 		}
@@ -99,7 +99,7 @@ public class JaqlMediator implements ActionListener {
 	/*
 	 * Apply the Jaql parser to the input.
 	 */
-	protected Assembly parseInput() {
+    private Assembly parseInput() {
 		String s = queryArea.getText();
 		Assembly a = new TokenAssembly(s);
 		a.setTarget(new QueryBuilder(speller()));
@@ -110,7 +110,7 @@ public class JaqlMediator implements ActionListener {
 	/*
 	 * The parser to use for queries. 
 	 */
-	protected Parser parser() {
+    private Parser parser() {
 		if (parser == null) {
 			parser = new JaqlParser(speller()).start();
 		}
@@ -120,7 +120,7 @@ public class JaqlMediator implements ActionListener {
 	/*
 	 * Show the results of a successfully built query.
 	 */
-	protected void showResults(Query q) {
+    private void showResults(Query q) {
 		Structure head = q.head();
 		DynamicRule tail = q.resolvent();
 		while (true) {
@@ -142,7 +142,7 @@ public class JaqlMediator implements ActionListener {
 	 * Return a speller to use for checking class and variable
 	 * names;
 	 */
-	protected Speller speller() {
+    private Speller speller() {
 		if (speller == null) {
 			speller = new ChipSpeller();
 		}

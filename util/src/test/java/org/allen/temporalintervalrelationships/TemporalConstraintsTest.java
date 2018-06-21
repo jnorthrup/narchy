@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Jörn Franke <jornfranke@gmail.com>
  *
  */
-public class TemporalConstraintsTest {
+class TemporalConstraintsTest {
 
 
 
@@ -27,7 +27,7 @@ public class TemporalConstraintsTest {
      */
 
     @Test
-    public void testPathConsistency1() {
+    void testPathConsistency1() {
         TemporalConstraints<String> n = new TemporalConstraints<>();
         AllenNode<String> nodeA = new AllenNode<>("A");
         n.add(nodeA);
@@ -50,7 +50,7 @@ public class TemporalConstraintsTest {
      */
 
     @Test
-    public void testPathConsistency2() {
+    void testPathConsistency2() {
         TemporalConstraints<String> n = new TemporalConstraints<>();
         AllenNode<String> a = new AllenNode<>("A");
         n.add(a);
@@ -83,7 +83,7 @@ public class TemporalConstraintsTest {
      */
 
     @Test
-    public void testPathConsistency_GithubIssue1_1() {
+    void testPathConsistency_GithubIssue1_1() {
         TemporalConstraints<String> n = new TemporalConstraints<>();
         AllenNode<String> node0 = new AllenNode<>("0");
         n.add(node0);
@@ -127,7 +127,7 @@ public class TemporalConstraintsTest {
      */
 
     @Test
-    public void testPathConsistency_GithubIssue1_2() {
+    void testPathConsistency_GithubIssue1_2() {
         TemporalConstraints<String> n = new TemporalConstraints<>();
         AllenNode<String> node0 = new AllenNode<>("0");
         n.add(node0);

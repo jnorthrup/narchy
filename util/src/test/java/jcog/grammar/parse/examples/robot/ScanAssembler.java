@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class ScanAssembler implements IAssembler {
+class ScanAssembler implements IAssembler {
 	/**
 	 * Sets an assembly's target to be a 
 	 * <code>ScanCommand</code> object and note its location.

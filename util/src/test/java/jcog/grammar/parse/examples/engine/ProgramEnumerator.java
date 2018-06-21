@@ -18,7 +18,7 @@ import java.util.Iterator;
  * @version 1.0
  */
 public class ProgramEnumerator implements AxiomEnumeration {
-	protected Iterator<Axiom> i;
+	private Iterator<Axiom> i;
 
 	/**
 	 * Construct an enumeration of the given program.

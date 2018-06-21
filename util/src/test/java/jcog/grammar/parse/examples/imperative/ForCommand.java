@@ -45,10 +45,10 @@ import jcog.grammar.parse.examples.engine.*;
  * @version 1.0
  */
 public class ForCommand extends Command {
-	protected Command setupCommand;
-	protected BooleanTerm condition;
-	protected Command endCommand;
-	protected Command bodyCommand;
+	private Command setupCommand;
+	private BooleanTerm condition;
+	private Command endCommand;
+	private Command bodyCommand;
 
 	/**
 	 * Construct a "for" command that iterates the supplied variable over the
@@ -71,7 +71,7 @@ public class ForCommand extends Command {
 	 * @param Command
 	 *            the command to repeatedly execute
 	 */
-	public ForCommand(Variable v, double from, double to, double step, Command bodyCommand) {
+    private ForCommand(Variable v, double from, double to, double step, Command bodyCommand) {
 
 		Evaluation setupEv = new Evaluation(v, new NumberFact(from));
 		this.setupCommand = new AssignmentCommand(setupEv);

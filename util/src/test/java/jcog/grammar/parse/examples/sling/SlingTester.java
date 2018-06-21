@@ -18,7 +18,7 @@ public class SlingTester extends TokenTester {
 	/**
 	 * Create a tester for the primary Sling parser.
 	 */
-	public SlingTester() {
+    private SlingTester() {
 		super(new SlingParser().statement());
 	}
 

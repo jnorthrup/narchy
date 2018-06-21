@@ -22,7 +22,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class VerboseRepetition extends Repetition {
+class VerboseRepetition extends Repetition {
 	/**
 	 * Constructs a VerboseRepetition of the given parser.
 	 * 

@@ -10,12 +10,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class InvalidInterfaceTest {
+class InvalidInterfaceTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InvalidInterfaceTest.class);
 
 
-    public static Collection<Class<? extends Cursor>> data() {
+    private static Collection<Class<? extends Cursor>> data() {
         return List.of(
                 NoGettersOrSetters.class, InvalidReturnGetter.class, ParameterGetter.class,
                 InvalidReturnSetter.class, NoParameterSetter.class, IndexField.class);
@@ -23,7 +23,7 @@ public class InvalidInterfaceTest {
 
 
     @ParameterizedTest @MethodSource("data")
-    public void interfaceIsInvalid(Class<? extends Cursor> representingKlass) {
+    void interfaceIsInvalid(Class<? extends Cursor> representingKlass) {
         assertThrows(InvalidInterfaceException.class, () -> {
             Allocator.of(representingKlass);
             LOGGER.error(representingKlass.getName() + " failed");
@@ -33,27 +33,27 @@ public class InvalidInterfaceTest {
 
     
 
-    public interface NoGettersOrSetters extends Cursor {
+    private interface NoGettersOrSetters extends Cursor {
         void neitherGetterNorSetter();
     }
 
-    public interface InvalidReturnGetter extends Cursor {
+    private interface InvalidReturnGetter extends Cursor {
         Object getFoo();
     }
 
-    public interface ParameterGetter extends Cursor {
+    private interface ParameterGetter extends Cursor {
         int getFoo(long bar);
     }
 
-    public interface InvalidReturnSetter extends Cursor {
+    private interface InvalidReturnSetter extends Cursor {
         Object setFoo();
     }
 
-    public interface NoParameterSetter extends Cursor {
+    private interface NoParameterSetter extends Cursor {
         void setFoo();
     }
 
-    public interface IndexField extends Cursor {
+    private interface IndexField extends Cursor {
         @Override
         int getIndex();
 

@@ -25,8 +25,8 @@ import javax.swing.*;
  *
  * @version 1.0
  */
-public class SliderAssembler implements IAssembler {
-	protected int slider; 
+class SliderAssembler implements IAssembler {
+	private int slider;
 
 	/**
 	 * Creates an assembler that will extract the indicated 

@@ -21,17 +21,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class TestTrieSequencerCharSequence
+class TestTrieSequencerCharSequence
 {
 
-   public static final String SEQ1 = "HELLO";
-   public static final String SEQ2 = "HE";
-   public static final String SEQ3 = "WORLD";
-   public static final String SEQ4 = "HELLOWORLD";
-   public static final String SEQ5 = "WOW";
+   private static final String SEQ1 = "HELLO";
+   private static final String SEQ2 = "HE";
+   private static final String SEQ3 = "WORLD";
+   private static final String SEQ4 = "HELLOWORLD";
+   private static final String SEQ5 = "WOW";
    
    @Test
-   public void testMatches()
+   void testMatches()
    {
       TrieSequencer<String> seq = new TrieSequencerCharSequence<>();
       
@@ -43,7 +43,7 @@ public class TestTrieSequencerCharSequence
    }
    
    @Test
-   public void testLengthOf()
+   void testLengthOf()
    {
       TrieSequencer<String> seq = new TrieSequencerCharSequence<>();
       
@@ -55,7 +55,7 @@ public class TestTrieSequencerCharSequence
    }
    
    @Test
-   public void testHashOf()
+   void testHashOf()
    {
       TrieSequencer<String> seq = new TrieSequencerCharSequence<>();
       

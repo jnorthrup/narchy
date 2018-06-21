@@ -10,12 +10,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TokenAsTypeTest {
+class TokenAsTypeTest {
 
 	private Token token;
 
 	@Test
-	public void word() {
+    void word() {
 		token = new Token("hello");
 		assertEquals("hello", token.asType(String.class));
 		assertEquals(BigDecimal.ZERO, token.asType(Number.class));
@@ -27,7 +27,7 @@ public class TokenAsTypeTest {
 	}
 
 	@Test
-	public void number() {
+    void number() {
 		token = new Token(new BigDecimal("1.5"));
 		assertEquals("1.5", token.asType(String.class));
 		assertEquals(new BigDecimal("1.5"), token.asType(Number.class));
@@ -39,7 +39,7 @@ public class TokenAsTypeTest {
 	}
 
 	@Test
-	public void asUnknownType() {
+    void asUnknownType() {
 		assertThrows(RuntimeException.class, ()-> {
 			token = new Token("hello");
 			token.asType(List.class);

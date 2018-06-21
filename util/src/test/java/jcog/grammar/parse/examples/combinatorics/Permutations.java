@@ -61,10 +61,11 @@ import java.util.Iterator;
  */
 
 public class Permutations implements Iterator<Object> {
-	protected Object[] inArray;
-	protected int n, m;
-	protected int[] index;
-	protected boolean hasMore = true;
+	private Object[] inArray;
+	private int n;
+    private int m;
+	private int[] index;
+	private boolean hasMore = true;
 
 	/**
 	 * Create a Permutation to enumerate through all possible lineups of the
@@ -99,7 +100,7 @@ public class Permutations implements Iterator<Object> {
 	 *                if m is greater than the length of inArray, or less than
 	 *                0.
 	 */
-	public Permutations(Object[] inArray, int m) throws CombinatoricException {
+    private Permutations(Object[] inArray, int m) throws CombinatoricException {
 
 		this.inArray = inArray;
 		this.n = inArray.length;
@@ -150,7 +151,7 @@ public class Permutations implements Iterator<Object> {
 	 * The algorithm is from "Applied Combinatorics", by Alan Tucker.
 	 * 
 	 */
-	protected void moveIndex() {
+    private void moveIndex() {
 
 		
 		int i = rightmostDip();
@@ -207,7 +208,7 @@ public class Permutations implements Iterator<Object> {
 	/**
 	 * Reverse the index elements to the right of the specified index.
 	 */
-	protected void reverseAfter(int i) {
+    private void reverseAfter(int i) {
 
 		int start = i + 1;
 		int end = n - 1;
@@ -225,7 +226,7 @@ public class Permutations implements Iterator<Object> {
 	 * @return int the index of the first element from the right that is less
 	 *         than its neighbor on the right.
 	 */
-	protected int rightmostDip() {
+    private int rightmostDip() {
 		for (int i = n - 2; i >= 0; i--) {
 			if (index[i] < index[i + 1]) {
 				return i;

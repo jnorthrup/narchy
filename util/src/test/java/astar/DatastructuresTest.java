@@ -8,10 +8,10 @@ import java.util.Comparator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class DatastructuresTest {
+class DatastructuresTest {
 
 	@Test
-	public void hashPriorityQueueTest() {
+    void hashPriorityQueueTest() {
 
 		
 		

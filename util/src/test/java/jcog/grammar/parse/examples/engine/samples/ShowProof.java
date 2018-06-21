@@ -13,7 +13,7 @@ public class ShowProof {
 	/**
 	 * Return a small database of shipping charges.
 	 */
-	public static Program charges() {
+	private static Program charges() {
 
 		Fact[] facts = new Fact[] { new Fact("charge", "athens", new Integer(23)), new Fact("charge", "sparta", new Integer(13)), new Fact("charge", "milos", new Integer(17)) };
 
@@ -23,7 +23,7 @@ public class ShowProof {
 	/**
 	 * Return a small database of customers.
 	 */
-	public static Program customers() {
+	private static Program customers() {
 
 		Fact[] facts = new Fact[] { new Fact("customer", "Marathon Marble", "sparta"), new Fact("customer", "Acropolis Construction", "athens"), new Fact("customer", "Agora Imports", "sparta") };
 

@@ -27,13 +27,13 @@ import java.util.zip.GZIPInputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class JTarTest {
-	static final int BUFFER = 2048;
+class JTarTest {
+	private static final int BUFFER = 2048;
 
 	private File dir;
 
 	@BeforeEach
-	public void setup() throws IOException {
+    void setup() throws IOException {
 		dir = Files.createTempDirectory("tartest").toFile();
 		dir.mkdirs();
 	}
@@ -44,7 +44,7 @@ public class JTarTest {
 	 * @throws IOException
 	 */
 	@Test
-	public void tar() throws IOException {
+    void tar() throws IOException {
 		FileOutputStream dest = new FileOutputStream(dir.getAbsolutePath() + "/tartest.tar");
 		TarOutputStream out = new TarOutputStream(new BufferedOutputStream(dest));
 
@@ -71,7 +71,7 @@ public class JTarTest {
 	 * @throws IOException
 	 */
 	@Test
-	public void untarTarFile() throws IOException {
+    void untarTarFile() throws IOException {
 		File destFolder = new File(dir, "untartest");
 		destFolder.mkdirs();
 
@@ -91,7 +91,7 @@ public class JTarTest {
 	 * @throws IOException
 	 */
 	@Test
-	public void untarTarFileDefaultSkip() throws IOException {
+    void untarTarFileDefaultSkip() throws IOException {
 		File destFolder = new File(dir, "untartest/skip");
 		destFolder.mkdirs();
 
@@ -113,7 +113,7 @@ public class JTarTest {
 	 * @throws IOException
 	 */
 	@Test
-	public void untarTGzFile() throws IOException {
+    void untarTGzFile() throws IOException {
 		File destFolder = new File(dir, "untargztest");
 		File zf = new File("src/test/resources/tartest.tar.gz");
 
@@ -128,7 +128,7 @@ public class JTarTest {
 
 
 	@Test
-	public void testOffset() throws IOException {
+    void testOffset() throws IOException {
 		File destFolder = new File(dir, "untartest");
 		destFolder.mkdirs();
 
@@ -182,7 +182,7 @@ public class JTarTest {
 		}
 	}
 
-	public void tarFolder(String parent, String path, TarOutputStream out) throws IOException {
+	private void tarFolder(String parent, String path, TarOutputStream out) throws IOException {
 		BufferedInputStream origin = null;
 		File f = new File(path);
 		String files[] = f.list();
@@ -233,7 +233,7 @@ public class JTarTest {
 	}
 
 	@Test
-	public void fileEntry() {
+    void fileEntry() {
 		String fileName = "file.txt";
 		long fileSize = 14523;
 		long modTime = System.currentTimeMillis() / 1000;

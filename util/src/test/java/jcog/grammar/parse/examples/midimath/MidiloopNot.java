@@ -29,7 +29,7 @@ import jcog.grammar.parse.tokens.TokenAssembly;
  * @version 1.0 
  */
 public class MidiloopNot {
-	protected static Seq expression;
+	private static Seq expression;
 
 	/**
 	 * Returns a parser that will recognize a Midimath
@@ -38,7 +38,7 @@ public class MidiloopNot {
 	 * @return   a parser that will recognize a Midimath 
 	 *           expression
 	 */
-	public Parser expression() {
+    private Parser expression() {
 		if (expression == null) {
 			expression = new Seq();
 
@@ -61,7 +61,7 @@ public class MidiloopNot {
 	 *           numbers, or arithmetic expressions in 
 	 *           parentheses
 	 */
-	protected Parser factor() {
+    private Parser factor() {
 		Alternation factor = new Alternation();
 
 		Seq parenExpression = new Seq();
@@ -90,7 +90,7 @@ public class MidiloopNot {
 	 * @return   a parser that will recognize arithmetic
 	 *           expressions containing just multiplication
 	 */
-	protected Parser term() {
+    private Parser term() {
 		Seq term = new Seq();
 
 		Seq timesFactor = new Seq();

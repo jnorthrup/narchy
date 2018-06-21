@@ -28,11 +28,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  */
-public class RTreeTest {
+class RTreeTest {
     private RTree R;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         BitmapFactory rbf = new RoaringBitmapFactory();
         R = new RTree(2, new LinearGutmanSplitStrategy(0, 50, rbf), rbf);
 
@@ -70,7 +70,7 @@ public class RTreeTest {
 
 
     @Test
-    public void testInsertDuplicatesNoSplitRoaring() {
+    void testInsertDuplicatesNoSplitRoaring() {
         R.insert(new float[]{1, 1}, 1);
         R.insert(new float[]{1, 1}, 1);
         R.insert(new float[]{1, 1}, 1);
@@ -78,7 +78,7 @@ public class RTreeTest {
         assertEquals(R.root().children.size(), 3);
     }
     @Test
-    public void testRemoval() {
+    void testRemoval() {
         R.insert(new float[]{1, 2}, 1);
         R.insert(new float[]{3, 2}, 2);
         R.insert(new float[]{1, 3}, 3);
@@ -109,7 +109,7 @@ public class RTreeTest {
 
 
     @Test
-    public void testSplitOccursRoaring() {
+    void testSplitOccursRoaring() {
         Random rand = new Random();
         for (int i = 0; i < 100; i++) {
             R.insert(new float[]{rand.nextFloat(), rand.nextFloat()}, i);

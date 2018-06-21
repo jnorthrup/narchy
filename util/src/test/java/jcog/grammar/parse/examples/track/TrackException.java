@@ -13,7 +13,9 @@ package jcog.grammar.parse.examples.track;
  * a specific point.
  */
 public class TrackException extends RuntimeException {
-	protected String after, expected, found;
+	private String after;
+    private String expected;
+    private String found;
 
 	/**
 	 * Constructs a <code>TrackException</code> with the 

@@ -10,6 +10,7 @@ import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
+import nars.util.term.transform.CompoundNormalization;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -152,4 +153,19 @@ public abstract class TermBuilder {
     }
 
 
+    public Term normalize(Compound x, byte varOffset) {
+        Term y = new CompoundNormalization(x, varOffset).transformCompound(x);
+
+//        LazyCompound yy = new LazyCompound();
+//        new nars.util.term.transform.CompoundNormalization(this, varOffset)
+//                .transform(this, yy);
+//        Term y = yy.get();
+
+        if (varOffset == 0 && y instanceof Compound) {
+            y.subterms().setNormalized();
+        }
+
+        return y;
+
+    }
 }

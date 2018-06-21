@@ -22,7 +22,7 @@ class TARTestUtils {
 		}
 	}
 
-	public static String readFromStream(final char[] buffer, final StringBuilder out, final Reader in) throws IOException {
+	private static String readFromStream(final char[] buffer, final StringBuilder out, final Reader in) throws IOException {
 		while (true) {
 			final int read = in.read(buffer, 0, BUFFER);
 			if (read <= 0) {

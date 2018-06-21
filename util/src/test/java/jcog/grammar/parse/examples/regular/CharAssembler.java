@@ -12,7 +12,7 @@ import jcog.grammar.parse.chars.SpecificChar;
  *
  * @version 1.0
  */
-public class CharAssembler implements IAssembler {
+class CharAssembler implements IAssembler {
 	/**
 	 * Pop a <code>Character</code> from the stack and push a 
 	 * <code>SpecificChar</code> interpeter in its place.

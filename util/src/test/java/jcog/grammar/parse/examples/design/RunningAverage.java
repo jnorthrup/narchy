@@ -22,8 +22,8 @@ import jcog.grammar.parse.PubliclyCloneable;
  */
 public class RunningAverage implements PubliclyCloneable<RunningAverage> {
 
-	protected double count = 0;
-	protected double total = 0;
+	private double count = 0;
+	private double total = 0;
 
 	/**
 	 * Add a value to the running average, increasing the count

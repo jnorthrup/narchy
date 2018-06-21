@@ -1,6 +1,6 @@
 package org.intelligentjava.machinelearning.decisiontree.feature;
 
-public class PredicateFeatureTest {
+class PredicateFeatureTest {
 
     public void testSplitEqualsPredicate() {
         

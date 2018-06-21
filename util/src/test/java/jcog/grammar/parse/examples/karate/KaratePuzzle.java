@@ -25,19 +25,19 @@ import jcog.grammar.parse.examples.combinatorics.Permutations;
  * 
  */
 public class KaratePuzzle {
-	protected Student amy = new Student("Amy");
-	protected Student betti = new Student("Betti");
-	protected Student carla = new Student("Carla");
-	protected Student dianne = new Student("Dianne");
-	protected Student[] students = { amy, betti, carla, dianne };
-	protected String[] lastNames = { "Ellis", "Fowler", "Goodrich", "Hightower" };
-	protected String[] specialties = { "Sparring", "Shoot Fighting", "Pressure Points", "Childrens" };
+	private Student amy = new Student("Amy");
+	private Student betti = new Student("Betti");
+	private Student carla = new Student("Carla");
+	private Student dianne = new Student("Dianne");
+	private Student[] students = { amy, betti, carla, dianne };
+	private String[] lastNames = { "Ellis", "Fowler", "Goodrich", "Hightower" };
+	private String[] specialties = { "Sparring", "Shoot Fighting", "Pressure Points", "Childrens" };
 
 	/*
 	 * Set the student objects' last names and specialties
 	 * from the provided arrays.
 	 */
-	protected void assembleStudents(Object[] lasts, Object[] specs) {
+    private void assembleStudents(Object[] lasts, Object[] specs) {
 		for (int i = 0; i < students.length; i++) {
 			students[i].lastName = (String) lasts[i];
 			students[i].specialty = (String) specs[i];
@@ -48,7 +48,7 @@ public class KaratePuzzle {
 	 * @return true, if the student objects meet all the clues
 	 *         in the puzzle
 	 */
-	protected boolean cluesVerify() {
+    private boolean cluesVerify() {
 		return
 		
 		amy.lastName != "Ellis" && amy.lastName != "Fowler" &&
@@ -81,7 +81,7 @@ public class KaratePuzzle {
 	/*
 	 * Display the student objects.
 	 */
-	protected void showStudents() {
+    private void showStudents() {
 		for (int i = 0; i < students.length; i++)
 			System.out.println("\t" + students[i] + " ");
 	}
@@ -93,7 +93,7 @@ public class KaratePuzzle {
 	 *
 	 * @exception CombinatoricException Shouldn't happen
 	 */
-	protected void solve() throws CombinatoricException {
+    private void solve() throws CombinatoricException {
 		Object[] lasts, specs;
 		Permutations lastNamePerm, specPerm;
 		lastNamePerm = new Permutations(lastNames);
@@ -120,7 +120,7 @@ public class KaratePuzzle {
 	 *
 	 * @param lastName String
 	 */
-	protected Student studentNamed(String lastName) {
+    private Student studentNamed(String lastName) {
 		for (int i = 0; i < students.length; i++) {
 			if (students[i].lastName.equals(lastName)) {
 				return students[i];

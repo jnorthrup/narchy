@@ -28,7 +28,7 @@ package jcog.grammar.parse.examples.sling;
  * @version 1.0  
  */
 public class Arithmetic extends SlingFunction {
-	protected char operator;
+	private char operator;
 
 	/**
 	 * Constructs <code>operator(t, t)</code>, where operator is
@@ -62,7 +62,7 @@ public class Arithmetic extends SlingFunction {
 	/*
 	 * Do the math.
 	 */
-	protected double arithmetic(double a, double b) {
+    private double arithmetic(double a, double b) {
 		switch (operator) {
 		case '+':
 			return a + b;

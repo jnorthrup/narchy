@@ -11,9 +11,9 @@ import jcog.grammar.parse.examples.imperative.Command;
  * @version 1.0 
  */
 public class AddFunctionCommand extends Command {
-	protected RenderableCollection renderables;
-	protected SlingFunction f;
-	protected Variable nLine;
+	private RenderableCollection renderables;
+	private SlingFunction f;
+	private Variable nLine;
 
 	/**
 	 * Construct a command to add the supplied function to the

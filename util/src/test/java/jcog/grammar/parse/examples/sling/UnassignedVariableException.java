@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.sling;
  * 
  * @version 1.0
  */
-public class UnassignedVariableException extends RuntimeException {
+class UnassignedVariableException extends RuntimeException {
 	/**
 	 * Constructs a <code>UnrecognizedVariableException</code> 
 	 * with no detail message.

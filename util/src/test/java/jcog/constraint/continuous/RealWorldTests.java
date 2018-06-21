@@ -14,18 +14,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by alex on 20/11/2014.
  */
-public class RealWorldTests {
+class RealWorldTests {
 
     private static double EPSILON = 1.0e-2;
 
-    public static final String LEFT = "left";
-    public static final String RIGHT = "right";
-    public static final String TOP = "top";
-    public static final String BOTTOM = "bottom";
-    public static final String HEIGHT = "height";
-    public static final String WIDTH = "width";
-    public static final String CENTERX = "centerX";
-    public static final String CENTERY = "centerY";
+    private static final String LEFT = "left";
+    private static final String RIGHT = "right";
+    private static final String TOP = "top";
+    private static final String BOTTOM = "bottom";
+    private static final String HEIGHT = "height";
+    private static final String WIDTH = "width";
+    private static final String CENTERX = "centerX";
+    private static final String CENTERY = "centerY";
 
     private static final String[] CONSTRAINTS = {
 
@@ -119,7 +119,7 @@ public class RealWorldTests {
     };
 
 
-    public ConstraintParser.CassowaryVariableResolver createVariableResolver(final ContinuousConstraintSolver solver, final HashMap<String, HashMap<String, DoubleVar>> nodeHashMap) {
+    private ConstraintParser.CassowaryVariableResolver createVariableResolver(final ContinuousConstraintSolver solver, final HashMap<String, HashMap<String, DoubleVar>> nodeHashMap) {
         ConstraintParser.CassowaryVariableResolver variableResolver = new ConstraintParser.CassowaryVariableResolver() {
 
             private DoubleVar getVariableFromNode(HashMap<String, DoubleVar> node, String variableName) {
@@ -192,13 +192,13 @@ public class RealWorldTests {
     }
 
     @Test
-    public void testSimple() {
+    void testSimple() {
         int a = 20;
         assertEquals(20, a);
     }
 
     @Test
-    public void testGridLayout() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
+    void testGridLayout() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
 
         final ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         final HashMap<String, HashMap<String, DoubleVar>> nodeHashMap = new HashMap<>();
@@ -317,7 +317,7 @@ public class RealWorldTests {
 */
   
     @Test
-    public void testGridX1000() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
+    void testGridX1000() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
 
         long nanoTime = System.nanoTime();
         for (int i = 0; i < 1000; i++) {
@@ -339,7 +339,7 @@ public class RealWorldTests {
 
     }*/
 
-    private static void printNodes(HashMap<String, HashMap<String, DoubleVar>> variableHashMap) {
+    static void printNodes(HashMap<String, HashMap<String, DoubleVar>> variableHashMap) {
         Iterator<Map.Entry<String, HashMap<String, DoubleVar>>> it = variableHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, HashMap<String, DoubleVar>> pairs = it.next();

@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 
 
-public class TestValue implements Function<Object,Object> {
+class TestValue implements Function<Object,Object> {
     
     private final Object label;
     

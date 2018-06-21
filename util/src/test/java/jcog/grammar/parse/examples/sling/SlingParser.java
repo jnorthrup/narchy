@@ -72,18 +72,18 @@ import jcog.grammar.parse.tokens.Word;
  * @version 1.0 
  */
 public class SlingParser {
-	protected Seq expression;
-	protected Alternation statement;
-	protected Alternation baseElement;
-	protected WordOrReservedState wors;
-	protected Tokenizer tokenizer;
+	private Seq expression;
+	private Alternation statement;
+	private Alternation baseElement;
+	WordOrReservedState wors;
+	private Tokenizer tokenizer;
 
 	/*
 	 * Returns a parser that will recognize the grammar:
 	 * 
 	 *     assignment = variable '=' expression ';' ; 
 	 */
-	protected Parser assignment() {
+    private Parser assignment() {
 		SeqEx t = new SeqEx("assignment");
 		t.get(variable());
 		t.get(new Symbol('=').ok());
@@ -101,7 +101,7 @@ public class SlingParser {
 	 *       ("abs" |"ceil" |"cos" | "floor" |"sin" |"tan") oneArg |
 	 *       ("polar" | "cartesian" | "scale" | "sling") twoArgs;
 	 */
-	protected Parser baseElement() {
+    private Parser baseElement() {
 		if (baseElement == null) {
 			baseElement = new Alternation("base elements");
 			baseElement.get(oneArg("abs", new Abs()));
@@ -128,7 +128,7 @@ public class SlingParser {
 	/*
 	 * Recognize a comma.
 	 */
-	protected static Parser comma() {
+	private static Parser comma() {
 		return new Symbol(',').ok();
 	}
 
@@ -137,7 +137,7 @@ public class SlingParser {
 	 * 
 	 *     divideElement  = '/' element;
 	 */
-	protected SeqEx divideElement() {
+    private SeqEx divideElement() {
 		SeqEx t = new SeqEx();
 		t.get(new Symbol('/').ok());
 		t.get(element());
@@ -150,7 +150,7 @@ public class SlingParser {
 	 * 
 	 *     element = '(' expression ')' | baseElement | negative;
 	 */
-	protected Parser element() {
+    private Parser element() {
 
 		Alternation a = new Alternation("element");
 		Seq s = new Seq();
@@ -168,7 +168,7 @@ public class SlingParser {
 	 * 
 	 *     expression = term (plusTerm | minusTerm)*;
 	 */
-	protected Parser expression() {
+    private Parser expression() {
 
 		if (expression == null) {
 			expression = new Seq("expression");
@@ -188,7 +188,7 @@ public class SlingParser {
 	 *       "for" '(' variable ',' expression ',' expression  ')' 
 	 *       '{' statements '}';
 	 */
-	protected Parser forStatement() {
+    private Parser forStatement() {
 		SeqEx t = new SeqEx();
 		t.get(reserve("for"));
 		t.get(lParen());
@@ -217,14 +217,14 @@ public class SlingParser {
 	 * Recognize a left brace, and leave it on the stack as
 	 * a fence.
 	 */
-	protected static Parser lBrace() {
+	private static Parser lBrace() {
 		return new Symbol('{');
 	}
 
 	/*
 	 * Recognize a left parenthesis.
 	 */
-	protected static Parser lParen() {
+	private static Parser lParen() {
 		return new Symbol('(').ok();
 	}
 
@@ -233,7 +233,7 @@ public class SlingParser {
 	 * 
 	 *     minusTerm  = '-' term;
 	 */
-	protected SeqEx minusTerm() {
+    private SeqEx minusTerm() {
 		SeqEx t = new SeqEx();
 		t.get(new Symbol('-').ok());
 		t.get(term());
@@ -246,7 +246,7 @@ public class SlingParser {
 	 * 
 	 *      negative = '-' baseElement; 
 	 */
-	protected Parser negative() {
+    private Parser negative() {
 		Seq s = new Seq("negative baseElement");
 		s.get(new Symbol('-').ok());
 		s.get(baseElement());
@@ -260,7 +260,7 @@ public class SlingParser {
 	 * the parser to be a <code>FunctionAssembler</code> for
 	 * the given function.
 	 */
-	protected Parser noArgs(String name, SlingFunction f) {
+    private Parser noArgs(String name, SlingFunction f) {
 		Parser p = reserve(name);
 		p.put(new FunctionAssembler(f));
 		return p;
@@ -270,7 +270,7 @@ public class SlingParser {
 	 * Constructs and returns a parser that recognizes a
 	 * number and that uses a <code>NumAssembler</code>.
 	 */
-	protected Parser num() {
+    private Parser num() {
 		return new Num().put(new NumAssembler());
 	}
 
@@ -278,7 +278,7 @@ public class SlingParser {
 	 * Return a parser that recognizes and stacks a one-
 	 * argument function.
 	 */
-	protected Parser oneArg(String name, SlingFunction f) {
+    private Parser oneArg(String name, SlingFunction f) {
 		SeqEx t = new SeqEx(name);
 		t.get(reserve(name));
 		t.get(lParen());
@@ -292,7 +292,7 @@ public class SlingParser {
 	 * Returns a parser that recognizes the literal "pi". Sets
 	 * the parser's assembler to be a <code>PiAssembler</code>.
 	 */
-	protected Parser pi() {
+    private Parser pi() {
 		ReservedLiteral pi = reserve("pi");
 		pi.put(new PiAssembler());
 		return pi;
@@ -303,7 +303,7 @@ public class SlingParser {
 	 *
 	 *     plotStatement = "plot" expression ';';
 	 */
-	protected Parser plotStatement() {
+    private Parser plotStatement() {
 		SeqEx t = new SeqEx();
 		t.get(reserve("plot"));
 		t.get(expression());
@@ -317,7 +317,7 @@ public class SlingParser {
 	 * 
 	 *     plusTerm  = '+' term;
 	 */
-	protected SeqEx plusTerm() {
+    private SeqEx plusTerm() {
 		SeqEx t = new SeqEx();
 		t.get(new Symbol('+').ok());
 		t.get(term());
@@ -328,7 +328,7 @@ public class SlingParser {
 	/*
 	 * Recognize a right brace.
 	 */
-	protected static Parser rBrace() {
+	private static Parser rBrace() {
 		return new Symbol('}').ok();
 	}
 
@@ -337,7 +337,7 @@ public class SlingParser {
 	 * 
 	 *     remainderElement  = '%' element;
 	 */
-	protected SeqEx remainderElement() {
+    private SeqEx remainderElement() {
 		SeqEx t = new SeqEx();
 		t.get(new Symbol('%').ok());
 		t.get(element());
@@ -350,7 +350,7 @@ public class SlingParser {
 	 * the word as a variable. Create a special literal parser
 	 * to recognize the word, and return this parser. 
 	 */
-	protected ReservedLiteral reserve(String s) {
+    private ReservedLiteral reserve(String s) {
 		wors().addReservedWord(s);
 		ReservedLiteral lit = new ReservedLiteral(s);
 		lit.ok();
@@ -360,14 +360,14 @@ public class SlingParser {
 	/*
 	 * Recognize a right parenthesis.
 	 */
-	protected static Parser rParen() {
+	private static Parser rParen() {
 		return new Symbol(')').ok();
 	}
 
 	/*
 	 * Recognize the first slider variable.
 	 */
-	protected Parser s1() {
+    private Parser s1() {
 		Parser p = reserve("s1");
 		
 		p.put(new SliderAssembler(1));
@@ -378,7 +378,7 @@ public class SlingParser {
 	/*
 	 * Recognize the second slider variable.
 	 */
-	protected Parser s2() {
+    private Parser s2() {
 		Parser p = reserve("s2");
 		p.put(new SliderAssembler(2));
 		return p;
@@ -389,7 +389,7 @@ public class SlingParser {
 	 * sets the parser's assembler to be a <code>ScaleAssembler
 	 * </code>.
 	 */
-	protected Parser scale() {
+    private Parser scale() {
 		SeqEx t = new SeqEx("scale");
 		t.get(reserve("scale"));
 		t.get(lParen());
@@ -408,7 +408,7 @@ public class SlingParser {
 	/*
 	 * Recognize a semicolon.
 	 */
-	protected static Parser semicolon() {
+	private static Parser semicolon() {
 		return new Symbol(';').ok();
 	}
 
@@ -424,7 +424,7 @@ public class SlingParser {
 	 * 
 	 *     statement = assignment | forStatement | plotStatement;
 	 */
-	protected Parser statement() {
+    Parser statement() {
 		if (statement == null) {
 			statement = new Alternation("Statement");
 			statement.get(assignment());
@@ -439,7 +439,7 @@ public class SlingParser {
 	 * 
 	 *     statements = statement statement*;
 	 */
-	protected Parser statements() {
+    private Parser statements() {
 		Seq s = new Seq();
 		s.get(statement());
 		s.get(new Repetition(statement()));
@@ -452,7 +452,7 @@ public class SlingParser {
 	 *     term = element (timesElement | divideElement | 
 	 *                     remainderElement)*;
 	 */
-	protected Parser term() {
+    private Parser term() {
 		Seq s = new Seq("term");
 		s.get(element());
 		Alternation a = new Alternation();
@@ -468,7 +468,7 @@ public class SlingParser {
 	 * 
 	 *     timesElement  = '*' element;
 	 */
-	protected SeqEx timesElement() {
+    private SeqEx timesElement() {
 		SeqEx t = new SeqEx();
 		t.get(new Symbol('*').ok());
 		t.get(element());
@@ -495,7 +495,7 @@ public class SlingParser {
 	 * Return a parser that recognizes and stacks a one-
 	 * argument function.
 	 */
-	protected Parser twoArg(String name, SlingFunction f) {
+    private Parser twoArg(String name, SlingFunction f) {
 		SeqEx t = new SeqEx(name);
 		t.get(reserve(name));
 		t.get(lParen());
@@ -510,7 +510,7 @@ public class SlingParser {
 	/*
 	 * Recognize a word as a variable.
 	 */
-	protected Parser variable() {
+    private Parser variable() {
 		return new Word().put(new VariableAssembler());
 	}
 
@@ -519,7 +519,7 @@ public class SlingParser {
 	 * state that differentiates reserved words from nonreserved 
 	 * words.
 	 */
-	protected WordOrReservedState wors() {
+    private WordOrReservedState wors() {
 		if (wors == null) {
 			wors = new WordOrReservedState();
 		}

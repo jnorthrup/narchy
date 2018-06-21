@@ -13,7 +13,7 @@ import jcog.grammar.parse.Seq;
  *
  * @version 1.0
  */
-public class AndAssembler implements IAssembler {
+class AndAssembler implements IAssembler {
 	/**
 	 * Pop two parsers from the stack and push a new 
 	 * <code>Sequence</code> of them.

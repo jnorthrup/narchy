@@ -82,9 +82,9 @@ import jcog.grammar.parse.tokens.Token;
  * @version 1.0
  */
 public class LogikusParser {
-    protected Seq structure;
-    protected CollectionParser expression;
-    protected SeqEx list;
+    private Seq structure;
+    private CollectionParser expression;
+    private SeqEx list;
 
     /*
      * Using the given parser, this method composes a new
@@ -95,7 +95,7 @@ public class LogikusParser {
      * The Logikus language uses this construction several
      * times.
      */
-    protected static Seq commaList(Parser p) {
+    private static Seq commaList(Parser p) {
         return new Seq(p, new Repetition(
                 new SeqEx().see(',').get(p))
         );
@@ -132,7 +132,7 @@ public class LogikusParser {
      *
      *    arg = expression | functor;
      */
-    protected Parser arg() {
+    private Parser arg() {
         Alternation a = new Alternation();
         a.get(expression());
         a.get(functor().put(new AtomAssembler()));
@@ -170,7 +170,7 @@ public class LogikusParser {
      *
      * @return a parser that recognizes a comparison
      */
-    public Parser comparison() {
+    private Parser comparison() {
         return new SeqEx("comparison")
                 .get(operator())
                 .see('(').get(arg()).see(',').get(arg()).see(')')
@@ -198,7 +198,7 @@ public class LogikusParser {
      *
      * @return a parser that recognizes a condition
      */
-    public Alternation condition() {
+    private Alternation condition() {
         return new Alternation("condition",
                 structure(), not(), evaluation(), comparison(), list());
     }
@@ -208,7 +208,7 @@ public class LogikusParser {
      *
      *    divideFactor = '/' factor;
      */
-    protected Parser divideFactor() {
+    private Parser divideFactor() {
         return new Seq("divideFactor").see('/').get(factor()).put(new ArithmeticAssembler('/'));
     }
 
@@ -223,7 +223,7 @@ public class LogikusParser {
      * object will unify its first term with the value of
      * its second term.
      */
-    protected Parser evaluation() {
+    private Parser evaluation() {
         return new SeqEx("evaluation")
                 .see('#').see('(')
                 .get(arg())
@@ -247,7 +247,7 @@ public class LogikusParser {
      *
      *    expression = phrase ('+' phrase | '-' phrase)*;
      */
-    protected Parser expression() {
+    private Parser expression() {
         /*
          * This use of a static variable avoids the infinite
          * recursion inherent in the language definition.
@@ -265,7 +265,7 @@ public class LogikusParser {
      *
      *    factor = '(' expression ')' | Num | variable;
      */
-    protected Parser factor() {
+    private Parser factor() {
         return new Alternation("factor",
                 new Seq().see('(').get(expression()).see(')'),
                 num(),
@@ -277,7 +277,7 @@ public class LogikusParser {
      *
      *    functor = '.' | LowercaseWord | QuotedString;
      */
-    protected Parser functor() {
+    private Parser functor() {
         return new Alternation("functor",
                 new Symbol('.'), new LowercaseWord(), new QuotedString());
     }
@@ -294,7 +294,7 @@ public class LogikusParser {
      *
      * @return a parser that recognizes a list
      */
-    public Parser list() {
+    private Parser list() {
 
         if (list == null) {
             list = new SeqEx("list");
@@ -313,7 +313,7 @@ public class LogikusParser {
      *
      *    listContents = commaList(term) listTail;
      */
-    protected Parser listContents() {
+    private Parser listContents() {
         return commaList(term()).get(listTail());
     }
 
@@ -322,7 +322,7 @@ public class LogikusParser {
      *
      *    listTail = ('|' (variable | list)) | Empty;
      */
-    protected Parser listTail() {
+    private Parser listTail() {
         return new Alternation(
                 new SeqEx("bar tail").see('|').or(
                         variable(), list()
@@ -347,7 +347,7 @@ public class LogikusParser {
      *
      *    minusPhrase = '-' phrase;
      */
-    protected Parser minusPhrase() {
+    private Parser minusPhrase() {
         return new Seq("minusPhrase").see('-').get(phrase()).put(new ArithmeticAssembler('-'));
     }
 
@@ -356,7 +356,7 @@ public class LogikusParser {
      *
      *     not = "not" structure;
      */
-    protected Parser not() {
+    private Parser not() {
         return new SeqEx("not").see("not").get(structure()).put(a -> {
             /**
              * Pops a structure from the top of the stack and pushes a Not
@@ -372,7 +372,7 @@ public class LogikusParser {
      * Return a parser that recognizes a number and
      * stacks a corresponding atom.
      */
-    public Parser num() {
+    private Parser num() {
         return new Num().put(new AtomAssembler());
     }
 
@@ -381,7 +381,7 @@ public class LogikusParser {
      *
      *     operator = '<' | '>' | '=' | "<=" | ">=" | "!=" ;
      */
-    protected Parser operator() {
+    private Parser operator() {
         return new Alternation("operator",
                 new Symbol('<'),
                 new Symbol('>'),
@@ -396,7 +396,7 @@ public class LogikusParser {
      *
      *    phrase = factor ('*' factor | '/' factor)*;
      */
-    protected Parser phrase() {
+    private Parser phrase() {
         return new Seq("phrase").get(factor())
                 .get(new Repetition(
                         new Alternation(timesFactor(), divideFactor())));
@@ -407,7 +407,7 @@ public class LogikusParser {
      *
      *    plusPhrase = '+' phrase;
      */
-    protected Parser plusPhrase() {
+    private Parser plusPhrase() {
         return new Seq("plusPhrase").see('+').get(phrase()).put(new ArithmeticAssembler('+'));
     }
 
@@ -416,7 +416,7 @@ public class LogikusParser {
      *
      *    ruleDef = ":-" commaList(condition);
      */
-    protected Parser ruleDef() {
+    private Parser ruleDef() {
         return new SeqEx("rule definition")
                 .see(":-").get(commaList(condition()));
     }
@@ -431,7 +431,7 @@ public class LogikusParser {
      * speaking, numbers and lists are also structures. The
      * definition for <code>term</code> includes these.
      */
-    protected Parser structure() {
+    private Parser structure() {
         if (structure == null) {
             structure = new Seq("structure");
             structure.get(functor()).get(new Alternation(
@@ -451,7 +451,7 @@ public class LogikusParser {
      *
      *    term = structure | Num | list | variable;
      */
-    protected Parser term() {
+    private Parser term() {
         return new Alternation("term",
                 structure(), num(), list(), variable());
     }
@@ -461,7 +461,7 @@ public class LogikusParser {
      *
      *    timesFactor = '*' factor;
      */
-    protected Parser timesFactor() {
+    private Parser timesFactor() {
         return new Seq("timesFactor").see('*').get(factor()).put(
                 new ArithmeticAssembler('*'));
     }
@@ -474,7 +474,7 @@ public class LogikusParser {
      * The underscore represents and will translate to an
      * anonymous variable.
      */
-    protected Parser variable() {
+    private Parser variable() {
         return new Alternation(
                 new UppercaseWord().push(a -> {
                     /**

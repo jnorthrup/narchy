@@ -50,12 +50,12 @@ package jcog.grammar.parse.examples.engine;
  * @version 1.0
  */
 public class Structure implements Term {
-	protected Object functor;
-	protected Term[] terms;
+	Object functor;
+	Term[] terms;
 	/*
 	 * the empty list singleton
 	 */
-	public final static EmptyList emptyList = new EmptyList();
+	private final static EmptyList emptyList = new EmptyList();
 
 	/**
 	 * Contructs a structure from the specified object.
@@ -177,7 +177,7 @@ public class Structure implements Term {
 	 * @return <code>true</code> if this structure's functor and number of terms
 	 *         match the supplied structure
 	 */
-	public boolean functorAndArityEquals(Structure s) {
+    boolean functorAndArityEquals(Structure s) {
 		return arity() == s.arity() && functor.equals(s.functor);
 	}
 
@@ -194,7 +194,7 @@ public class Structure implements Term {
 	 * be a list. This list will be a concatenation of the remainder of the
 	 * given array with the supplied tail.
 	 */
-	protected static Term[] headAndTail(Term[] terms, Term tail) {
+	private static Term[] headAndTail(Term[] terms, Term tail) {
 
 		if (terms.length == 0) {
 			throw new InternalError("Cannot create a list with no head");
@@ -289,7 +289,7 @@ public class Structure implements Term {
 	 * representation of the first term, and with the second term as the tail of
 	 * a list.
 	 */
-	protected String listTermsToString() {
+    private String listTermsToString() {
 		String s = terms[0].toString();
 		if (terms.length > 1) {
 			s += terms[1].listTailString();

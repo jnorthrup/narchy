@@ -16,14 +16,14 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	private Assembly result;
 
 	@Test
-	public void empty() {
+    void empty() {
 		parser = new Empty();
 		result = bestMatch("");
 		assertTrue(result.popAllMatches().isEmpty());
 		assertEquals(1, result.getStackSizesBeforeMatch().size());
 	}
 
-	public void terminal() {
+	void terminal() {
 		parser = new Word();
 		result = bestMatch("allo");
 		assertEquals(1, result.popAllMatches().size());
@@ -45,7 +45,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 		assertEquals(1, result.getStackSizesBeforeMatch().size());
 	}
 
-	public void sequence() {
+	void sequence() {
 		parser = new Seq().get(new Literal("abc"));
 		result = bestMatch("abc");
 		List<Object> allMatches = result.popAllMatches();
@@ -61,7 +61,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 		assertEquals(1, result.getStackSizesBeforeMatch().size());
 	}
 
-	public void alternation() {
+	void alternation() {
 		parser = new Alternation().get(new Literal("abc")).get(new Literal("def"));
 		result = bestMatch("abc");
 		List<Object> allMatches = result.popAllMatches();
@@ -70,7 +70,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 		assertEquals(1, result.getStackSizesBeforeMatch().size());
 	}
 
-	public void repetition() {
+	void repetition() {
 		parser = new Repetition(new Word());
 		result = bestMatch("");
 		assertEquals(0, result.popAllMatches().size());
@@ -85,7 +85,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void repetitionOfSequence() {
+    void repetitionOfSequence() {
 		Parser seq = new Seq().get(new Word());
 		parser = new Repetition(seq);
 
@@ -103,7 +103,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void sequenceOfRepetition() {
+    void sequenceOfRepetition() {
 		Parser rep = new Repetition(new Word()).put(new IAssembler() {
 			public void accept(Assembly a) {
 				List<Object> list = a.popAllMatches();
@@ -119,7 +119,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void stackManipulatedByAssemblers() {
+    void stackManipulatedByAssemblers() {
 		Consumer<Assembly> deleteAssembler = new IAssembler() {
 			public void accept(Assembly a) {
 				a.pop();
@@ -139,7 +139,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void commaSeparatedListInBrackets() {
+    void commaSeparatedListInBrackets() {
 		Consumer<Assembly> changeToStringAssembler = new IAssembler() {
 			public void accept(Assembly a) {
 				a.push(((Token) a.pop()).sval());
@@ -168,7 +168,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	}
 
 	@Override
-	protected Parser getParser() {
+    protected Parser getParser() {
 		return parser;
 	}
 

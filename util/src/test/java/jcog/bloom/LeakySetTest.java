@@ -8,17 +8,17 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by jeff on 14/05/16.
  */
-public class LeakySetTest {
+class LeakySetTest {
 
     private LeakySet<String> filter;
 
     @BeforeEach
-    public void before() {
+    void before() {
         this.filter = BloomFilterBuilder.get().buildFilter();
     }
 
     @Test
-    public void whenAskedIfContainsAddedObject_returnsTrue() {
+    void whenAskedIfContainsAddedObject_returnsTrue() {
         String string = "somestr";
 
         filter.add(string);
@@ -30,7 +30,7 @@ public class LeakySetTest {
     
     
     @Test
-    public void whenAskedIfContainsNotAddedObject_returnsFalse() {
+    void whenAskedIfContainsNotAddedObject_returnsFalse() {
         String string1 = "somestr";
         String string2 = "someotherstr";
         assertNotEquals(string1, string2);

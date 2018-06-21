@@ -53,7 +53,7 @@ public class Query extends DynamicRule {
 	 * of themselves, given an axiom source. Evalutations and comparisons are
 	 * provable in themselves, and will ignore the axiom source.
 	 */
-	protected Query(AxiomSource as, Scope scope, Structure[] structures) {
+    private Query(AxiomSource as, Scope scope, Structure[] structures) {
 
 		super(as, scope, provableStructures(as, scope, structures));
 	}

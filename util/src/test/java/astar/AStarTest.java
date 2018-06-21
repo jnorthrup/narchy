@@ -7,10 +7,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AStarTest {
+class AStarTest {
 
     @Test
-    public void SearchNodeTest2D() {
+    void SearchNodeTest2D() {
         List<Solution> path = new AStarGoalFind(
                 SpaceProblem.SpaceFind.PROBLEM,
                 SpaceProblem.at(1, 1),

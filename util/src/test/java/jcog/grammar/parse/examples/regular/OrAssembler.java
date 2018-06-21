@@ -14,7 +14,7 @@ import jcog.grammar.parse.Parser;
  * @version 1.0
  */
 
-public class OrAssembler implements IAssembler {
+class OrAssembler implements IAssembler {
 
 	/**
 	 * Pop two parsers from the stack and push a new

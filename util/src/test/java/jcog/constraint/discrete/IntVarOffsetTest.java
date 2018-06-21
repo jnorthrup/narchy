@@ -18,13 +18,13 @@ package jcog.constraint.discrete;
 public class IntVarOffsetTest extends IntVarTest {
 
   @Override
-  public IntVar intVar(DiscreteConstraintSolver solver, int min, int max) {
+  protected IntVar intVar(DiscreteConstraintSolver solver, int min, int max) {
     IntVar x = solver.intVar(min, max);
     return new IntVarOffset(new IntVarOffset(new IntVarOffset(x, -10), 12), -2);
   }
   
   @Override
-  public IntVar intVar(DiscreteConstraintSolver solver, int[] values) {
+  protected IntVar intVar(DiscreteConstraintSolver solver, int[] values) {
     IntVar x = solver.intVar(values);
     return new IntVarOffset(new IntVarOffset(new IntVarOffset(x, -10), 12), -2);
   }

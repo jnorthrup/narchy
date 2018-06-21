@@ -30,9 +30,9 @@ import java.util.Vector;
  * 
  * @version 1.0
  */
-public class PrettyParser {
-	protected Parser parser;
-	boolean showLabels = false;
+class PrettyParser {
+	private Parser parser;
+	private boolean showLabels = false;
 
 	/**
 	 * Construct a pretty parser whose assemblers create a "pretty print" of
@@ -46,7 +46,7 @@ public class PrettyParser {
 	/*
 	 * Return a collection of complete parses of the given assembly.
 	 */
-	protected Set<Assembly> completeMatches(Assembly inAssembly) {
+    private Set<Assembly> completeMatches(Assembly inAssembly) {
 		Set<Assembly> inState = new HashSet<Assembly>();
 		inState.add(inAssembly);
 		Set<Assembly> outState = parser.matchAndAssemble(inState);
@@ -110,7 +110,7 @@ public class PrettyParser {
 	 * node that typically contains a hierarchy of other nodes. Show labels for
 	 * composite nodes if we have been instructed to do so.
 	 */
-	protected String treeString(ComponentNode node) {
+    private String treeString(ComponentNode node) {
 		if (showLabels) {
 			return node.toString();
 		} else {

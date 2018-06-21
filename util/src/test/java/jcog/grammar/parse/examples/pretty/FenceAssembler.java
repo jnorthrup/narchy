@@ -11,8 +11,8 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0 
  */
-public class FenceAssembler implements IAssembler {
-	protected Object fence;
+class FenceAssembler implements IAssembler {
+	private Object fence;
 
 	/**
 	 * Construct an assembler that will place the given object

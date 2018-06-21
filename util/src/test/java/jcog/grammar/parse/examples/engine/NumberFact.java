@@ -31,7 +31,7 @@ public class NumberFact extends Atom implements ArithmeticTerm {
 	 * @param Number
 	 *            a number to wrap as an atom
 	 */
-	public NumberFact(Number functor) {
+    private NumberFact(Number functor) {
 		super(functor);
 	}
 }

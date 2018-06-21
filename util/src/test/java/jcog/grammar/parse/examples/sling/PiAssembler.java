@@ -10,7 +10,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class PiAssembler implements IAssembler {
+class PiAssembler implements IAssembler {
 	/**
 	 * Push the function (t, pi).
 	 *

@@ -20,7 +20,7 @@ import java.util.Vector;
  */
 
 public class CompositeNode extends ComponentNode {
-	protected Vector children = new Vector();
+	private Vector children = new Vector();
 
 	/**
 	 * Create a node that can contain other nodes, and that holds the given

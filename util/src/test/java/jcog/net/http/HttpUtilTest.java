@@ -11,14 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Joris
  */
-public class HttpUtilTest
+class HttpUtilTest
 {
-        public HttpUtilTest()
+        HttpUtilTest()
         {
         }
 
         @Test
-        public void testBinarySizeUTF8()
+        void testBinarySizeUTF8()
         {
                 testBinarySizeUTF8_string("$");
                 testBinarySizeUTF8_string("¢");
@@ -33,7 +33,7 @@ public class HttpUtilTest
         }
         
         @Test
-        public void testFindCRLF()
+        void testFindCRLF()
         {
                 ByteBuffer buf = ByteBuffer.allocate(100);
                 buf.put((byte) 't');
@@ -63,7 +63,7 @@ public class HttpUtilTest
         }
         
         @Test
-        public void testFindCRLFIgnoreLWS()
+        void testFindCRLFIgnoreLWS()
         {
                 ByteBuffer buf = ByteBuffer.allocate(100);
                 buf.put((byte) 't'); 
@@ -103,7 +103,7 @@ public class HttpUtilTest
         
         
         @Test
-        public void testReadLine()
+        void testReadLine()
         {
                 StringBuilder dest = new StringBuilder();
                 

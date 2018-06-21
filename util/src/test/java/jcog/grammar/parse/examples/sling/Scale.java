@@ -60,7 +60,7 @@ public class Scale extends SlingFunction {
 	 *                  that establishes the "to" bound for the
 	 *                  variable.
 	 */
-	public Scale(SlingFunction bFrom, SlingFunction bTo) {
+    private Scale(SlingFunction bFrom, SlingFunction bTo) {
 		this(new Point(0, 0), new T(), new Point(1, 1), bFrom, bTo);
 	}
 
@@ -115,7 +115,7 @@ public class Scale extends SlingFunction {
 	 * all. In that case, this method returns (somewhat 
 	 * arbitrarily) the average value for b.
 	 */
-	protected double linear(double aFrom, double a, double aTo, double bFrom, double bTo) {
+    private double linear(double aFrom, double a, double aTo, double bFrom, double bTo) {
 
 		double denom = aTo - aFrom;
 		if (denom == 0) {

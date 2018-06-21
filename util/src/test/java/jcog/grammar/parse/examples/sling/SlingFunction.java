@@ -25,33 +25,33 @@ package jcog.grammar.parse.examples.sling;
  * @version 1.0  
  */
 public abstract class SlingFunction implements Cloneable {
-	protected SlingFunction[] source;
+	SlingFunction[] source;
 
 	/**
 	 * Construct a function that wraps nothing.
 	 */
-	public SlingFunction() {
+    SlingFunction() {
 		this(new SlingFunction[0]);
 	}
 
 	/**
 	 * Construct a function that wraps the provided functions.
 	 */
-	public SlingFunction(SlingFunction[] source) {
+    private SlingFunction(SlingFunction[] source) {
 		this.source = source;
 	}
 
 	/**
 	 * Construct a function that wraps the provided function.
 	 */
-	public SlingFunction(SlingFunction source) {
+    SlingFunction(SlingFunction source) {
 		this(new SlingFunction[] { source });
 	}
 
 	/**
 	 * Construct a function that wraps the provided functions.
 	 */
-	public SlingFunction(SlingFunction source0, SlingFunction source1) {
+    SlingFunction(SlingFunction source0, SlingFunction source1) {
 
 		this(new SlingFunction[] { source0, source1 });
 	}

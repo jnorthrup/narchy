@@ -32,14 +32,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  *
  */
-public class WrappedBitSetBitmapBitSetTest {
+class WrappedBitSetBitmapBitSetTest {
 
     private static final WrappedBitSetBitmap defaultBitSet() {
         return new WrappedBitSetBitmap(IntSetTestUtility.createSimpleBitSet(IntSetTestUtility.getSetBits()));
     }
 
     @Test
-    public void testIterator() {
+    void testIterator() {
         WrappedBitSetBitmap bitSet = new WrappedBitSetBitmap();
         for (int i : IntSetTestUtility.getSetBits()) {
             bitSet.add(i);
@@ -52,14 +52,14 @@ public class WrappedBitSetBitmapBitSetTest {
     }
 
     @Test
-    public void testSize() {
+    void testSize() {
         BitSet bitSet = IntSetTestUtility.createSimpleBitSet(IntSetTestUtility.getSetBits());
         WrappedBitSetBitmap wrappedBitSetBitmapBitSet = new WrappedBitSetBitmap(bitSet);
         assertEquals(bitSet.cardinality(), wrappedBitSetBitmapBitSet.size());
     }
 
     @Test
-    public void testOffHeap() {
+    void testOffHeap() {
         ByteBuffer buffer = ByteBuffer.allocateDirect(Long.SIZE * 100 / 8).order(ByteOrder.LITTLE_ENDIAN);
         BitSet testSet = BitSet.valueOf(buffer);
         testSet.set(1);
@@ -70,13 +70,13 @@ public class WrappedBitSetBitmapBitSetTest {
     }
 
     @Test
-    public void testSimpleBitSet() {
+    void testSimpleBitSet() {
         WrappedBitSetBitmap bitSet = new WrappedBitSetBitmap(IntSetTestUtility.createSimpleBitSet(IntSetTestUtility.getSetBits()));
         assertTrue(IntSetTestUtility.equalSets(IntSetTestUtility.getSetBits(), bitSet));
     }
 
     @Test
-    public void testUnion() {
+    void testUnion() {
         WrappedBitSetBitmap bitSet = new WrappedBitSetBitmap(IntSetTestUtility.createSimpleBitSet(IntSetTestUtility.getSetBits()));
 
         Set<Integer> extraBits = Sets.newHashSet(6, 9);
@@ -88,7 +88,7 @@ public class WrappedBitSetBitmapBitSetTest {
     }
 
     @Test
-    public void testIntersection() {
+    void testIntersection() {
         WrappedBitSetBitmap bitSet = new WrappedBitSetBitmap(IntSetTestUtility.createSimpleBitSet(IntSetTestUtility.getSetBits()));
 
         Set<Integer> extraBits = Sets.newHashSet(1, 2, 3, 4, 5, 6, 7, 8);
@@ -100,7 +100,7 @@ public class WrappedBitSetBitmapBitSetTest {
     }
 
     @Test
-    public void testAnd() {
+    void testAnd() {
         WrappedBitSetBitmap bitSet = defaultBitSet();
         WrappedBitSetBitmap bitSet2 = defaultBitSet();
         Set<Integer> defaultBitSet = IntSetTestUtility.getSetBits();
@@ -117,7 +117,7 @@ public class WrappedBitSetBitmapBitSetTest {
 
 
     @Test
-    public void testOr() {
+    void testOr() {
         WrappedBitSetBitmap bitSet = defaultBitSet();
         WrappedBitSetBitmap bitSet2 = defaultBitSet();
         Set<Integer> defaultBitSet = IntSetTestUtility.getSetBits();
@@ -130,7 +130,7 @@ public class WrappedBitSetBitmapBitSetTest {
     }
 
     @Test
-    public void testAndNot() {
+    void testAndNot() {
         WrappedBitSetBitmap bitSet = defaultBitSet();
         WrappedBitSetBitmap bitSet2 = defaultBitSet();
         Set<Integer> defaultBitSet = Sets.newHashSet();
@@ -146,7 +146,7 @@ public class WrappedBitSetBitmapBitSetTest {
 
 
     @Test
-    public void testSerialize() {
+    void testSerialize() {
         WrappedBitSetBitmap bitSet = defaultBitSet();
         Set<Integer> defaultBitSet = IntSetTestUtility.getSetBits();
         byte[] buffer = new byte[bitSet.getSizeInBytes()];

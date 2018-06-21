@@ -5,7 +5,7 @@ package jcog;
  * @author me
  */
 
-public class MeterTest {
+class MeterTest {
 
 	
 	

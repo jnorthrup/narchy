@@ -34,9 +34,9 @@ package jcog.grammar.parse.examples.engine;
  * @version 1.0  
  */
 public class Comparison extends Gateway implements BooleanTerm {
-	String operator;
-	ComparisonTerm term0;
-	ComparisonTerm term1;
+	private String operator;
+	private ComparisonTerm term0;
+	private ComparisonTerm term1;
 
 	/**
 	 * Create a comparison with the specified operator and comparison terms.
@@ -83,7 +83,7 @@ public class Comparison extends Gateway implements BooleanTerm {
 	 * 
 	 * @return the result of comparing two objects
 	 */
-	protected boolean compare(Object obj0, Object obj1) {
+    private boolean compare(Object obj0, Object obj1) {
 		if (obj0 instanceof Number && obj1 instanceof Number) {
 			return compareNumber((Number) obj0, (Number) obj1);
 		}
@@ -106,7 +106,7 @@ public class Comparison extends Gateway implements BooleanTerm {
 	 * 
 	 * @return the result of comparing the two numbers
 	 */
-	protected boolean compareNumber(Number n0, Number n1) {
+    private boolean compareNumber(Number n0, Number n1) {
 
 		double d0 = n0.doubleValue();
 		double d1 = n1.doubleValue();
@@ -144,7 +144,7 @@ public class Comparison extends Gateway implements BooleanTerm {
 	 * 
 	 * @return the result of comparing the two strings
 	 */
-	protected boolean compareString(String s0, String s1) {
+    private boolean compareString(String s0, String s1) {
 
 		int comparison = s0.compareTo(s1);
 

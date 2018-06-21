@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
-public class LinearGutmanSplitStrategyTest {
+class LinearGutmanSplitStrategyTest {
     @Test
-    public void testPickSeeds() throws Exception {
+    void testPickSeeds() throws Exception {
         BitmapFactory bf = new RoaringBitmapFactory();
 
         for (SplitStrategy strategy : new SplitStrategy[]{
@@ -58,7 +58,7 @@ public class LinearGutmanSplitStrategyTest {
     }
 
     @Test
-    public void testPickSeedsRoaring() throws Exception {
+    void testPickSeedsRoaring() throws Exception {
         BitmapFactory bf = new RoaringBitmapFactory();
         LinearGutmanSplitStrategy strategy = new LinearGutmanSplitStrategy(0, 50, bf);
         Node node = new Node(new float[2], new float[2], true, bf);
@@ -79,7 +79,7 @@ public class LinearGutmanSplitStrategyTest {
 
 
     @Test
-    public void testNumChildrenSize() {
+    void testNumChildrenSize() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         Random rand = new Random();
@@ -91,7 +91,7 @@ public class LinearGutmanSplitStrategyTest {
     }
 
     @Test
-    public void testNumChildrenSizeRoaring() {
+    void testNumChildrenSizeRoaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         Random rand = new Random();

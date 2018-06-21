@@ -27,11 +27,11 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class TestTrie
+class TestTrie
 {
 
    @Test
-   public void testEmptyConstructor()
+   void testEmptyConstructor()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -48,7 +48,7 @@ public class TestTrie
    }
 
    @Test
-   public void testDefaultValueConstructor()
+   void testDefaultValueConstructor()
    {
       Trie<String, Boolean> t = Tries.forStrings( Boolean.FALSE );
 
@@ -61,7 +61,7 @@ public class TestTrie
    }
 
    @Test
-   public void testSimplePut()
+   void testSimplePut()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -85,7 +85,7 @@ public class TestTrie
    }
    
    @Test
-   public void testSamePut()
+   void testSamePut()
    {
       Trie<String, Integer> t = Tries.forInsensitiveStrings();
 
@@ -100,7 +100,7 @@ public class TestTrie
    }
 
    @Test
-   public void testHasPartialMatch()
+   void testHasPartialMatch()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -117,7 +117,7 @@ public class TestTrie
    }
 
    @Test
-   public void testHasStartsWithMatch()
+   void testHasStartsWithMatch()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -134,7 +134,7 @@ public class TestTrie
    }
 
    @Test
-   public void testHasExactMatch()
+   void testHasExactMatch()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -151,7 +151,7 @@ public class TestTrie
    }
 
    @Test
-   public void testGetPartialMatch()
+   void testGetPartialMatch()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -168,7 +168,7 @@ public class TestTrie
    }
 
    @Test
-   public void testGetStartsWithMatch()
+   void testGetStartsWithMatch()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -185,7 +185,7 @@ public class TestTrie
    }
 
    @Test
-   public void testGetExactMatch()
+   void testGetExactMatch()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -202,7 +202,7 @@ public class TestTrie
    }
 
    @Test
-   public void testTakeValues()
+   void testTakeValues()
    {
       Trie<String, String> t = Tries.forStrings();
 
@@ -226,7 +226,7 @@ public class TestTrie
    }
 
    @Test
-   public void testTakeValuesSubset()
+   void testTakeValuesSubset()
    {
       Trie<String, String> t = Tries.forStrings();
 
@@ -249,7 +249,7 @@ public class TestTrie
    }
 
    @Test
-   public void testTakeSequences()
+   void testTakeSequences()
    {
       Trie<String, String> t = Tries.forStrings();
 
@@ -273,7 +273,7 @@ public class TestTrie
    }
 
    @Test
-   public void testTakeSequencesSubset()
+   void testTakeSequencesSubset()
    {
       Trie<String, String> t = Tries.forStrings();
 
@@ -293,7 +293,7 @@ public class TestTrie
    }
 
    @Test
-   public void testTakeEntries()
+   void testTakeEntries()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -317,7 +317,7 @@ public class TestTrie
    }
 
    @Test
-   public void testTakeEntriesSubset()
+   void testTakeEntriesSubset()
    {
       Trie<String, Boolean> t = Tries.forStrings();
 
@@ -346,7 +346,7 @@ public class TestTrie
    }
 
    @Test
-   public void testRemoveBack()
+   void testRemoveBack()
    {
       Trie<String, Integer> t = Tries.forStrings();
 
@@ -372,7 +372,7 @@ public class TestTrie
    }
 
    @Test
-   public void testRemoveFront()
+   void testRemoveFront()
    {
       Trie<String, Integer> t = Tries.forStrings();
 
@@ -399,7 +399,7 @@ public class TestTrie
    }
 
    @Test
-   public void testRemoveFrontManyChildren()
+   void testRemoveFrontManyChildren()
    {
       Trie<String, Integer> t = Tries.forStrings();
 
@@ -429,7 +429,7 @@ public class TestTrie
    }
 
    @Test
-   public void testIterate()
+   void testIterate()
    {
       String LS = System.lineSeparator();
       
@@ -454,7 +454,7 @@ public class TestTrie
       assertEquals( expected, printed.toString() );
    }
 
-   public static <T> StringBuilder print( Trie<String, T> trie )
+   private static <T> StringBuilder print(Trie<String, T> trie)
    {
       String LS = System.lineSeparator();
       

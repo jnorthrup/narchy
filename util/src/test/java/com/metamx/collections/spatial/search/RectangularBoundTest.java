@@ -22,9 +22,9 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class RectangularBoundTest {
+class RectangularBoundTest {
     @Test
-    public void testCacheKey() {
+    void testCacheKey() {
         assertArrayEquals(
                 new RectangularBound(new float[]{1F, 1F}, new float[]{2F, 2F}, 1).getCacheKey(),
                 new RectangularBound(new float[]{1F, 1F}, new float[]{2F, 2F}, 1).getCacheKey()

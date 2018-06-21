@@ -29,6 +29,11 @@ public class AnonVector extends TermVector implements FullyInternable {
         testIfInitiallyNormalized();
     }
 
+    protected void testIfInitiallyNormalized() {
+        if (vars() == 0 || testIfInitiallyNormalized(subterms))
+            setNormalized();
+    }
+
     /**
      * assumes the array contains only AnonID instances
      */
@@ -56,33 +61,7 @@ public class AnonVector extends TermVector implements FullyInternable {
         testIfInitiallyNormalized();
     }
 
-    protected void testIfInitiallyNormalized() {
-        /* checks for monotonically increasing variable numbers starting from 1,
-         which will indicate that the subterms is normalized
-         */
-        if (vars() > 0) {
-            boolean normalized = true;
-            int minID = 0;
-            for (short x: subterms) {
-                if (x < 0) x = (short) -x;
-                int varID = AnonID.isVariable(x, -1);
-                if (varID == -1) continue; //anom
-                else if (varID == minID) {
-                    //same order, ok
-                } else if (varID == minID + 1) {
-                    //increase the order, ok
-                    minID++;
-                } else if (varID > minID + 1) {
-                    normalized = false; //cant be sure
-                    break;
-                }
-            }
-            if (normalized)
-                setNormalized();
-        }
-    }
-
-//    @Override
+    //    @Override
 //    public @Nullable Subterms transformSubs(TermTransform f) {
 //        @Nullable Subterms s = super.transformSubs(f);
 ////        if (s!=this && s instanceof AnonVector && equals(s))
@@ -190,7 +169,7 @@ public class AnonVector extends TermVector implements FullyInternable {
         }
         int count = 0;
         for (short s: subterms) {
-            if (s > 0 && idtoMask(s) == match)
+            if (s > 0 && idToMask(s) == match)
                 count++;
         }
         return count;

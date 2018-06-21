@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 12/21/16.
  */
-public class RTreeNDTest {
+class RTreeNDTest {
 
     @Test
-    public void pointSearchTest() {
+    void pointSearchTest() {
 
         final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 2, 8, Spatialization.DefaultSplits.AXIAL.get());
 
@@ -50,7 +50,7 @@ public class RTreeNDTest {
      * 2D but using N-d impl
      */
     @Test
-    public void rectNDSearchTest2() {
+    void rectNDSearchTest2() {
 
         final int entryCount = 20;
 
@@ -89,7 +89,7 @@ public class RTreeNDTest {
     }
 
     @Test
-    public void testSearchAllWithOneDimensionRandomlyInfinite() {
+    void testSearchAllWithOneDimensionRandomlyInfinite() {
         System.out.println("\n\nINfinites");
         final int entryCount = 400;
         searchAll(2, 4,
@@ -101,13 +101,13 @@ public class RTreeNDTest {
      * Verifies the count returned from search AND the number of rectangles results.
      */
     @Test
-    public void RectNDSearchAllTest() {
+    void RectNDSearchAllTest() {
         System.out.println("\n\nfinites");
         final int entryCount = 400;
         searchAll(1, 6, (dim) -> RTree2DTest.generateRandomRects(dim, entryCount));
     }
 
-    static void searchAll(int minDim, int maxDim, IntFunction<RectFloatND[]> generator) {
+    private static void searchAll(int minDim, int maxDim, IntFunction<RectFloatND[]> generator) {
         for (int dim = minDim; dim <= maxDim; dim++) {
 
             final RectFloatND[] rects = generator.apply(dim);
@@ -166,7 +166,7 @@ public class RTreeNDTest {
      * Verifies the count returned from search AND the number of rectangles results.
      */
     @Test
-    public void RectDouble2DSearchTest() {
+    void RectDouble2DSearchTest() {
 
         final int entryCount = 20;
 
@@ -208,7 +208,7 @@ public class RTreeNDTest {
      * Verifies the count returned from search AND the number of rectangles results.
      */
     @Test
-    public void RectDouble2DIntersectTest() {
+    void RectDouble2DIntersectTest() {
 
         final int entryCount = 20;
 
@@ -245,7 +245,7 @@ public class RTreeNDTest {
     }
 
 
-    static RectDouble2D[] generateRandomRects(int count) {
+    private static RectDouble2D[] generateRandomRects(int count) {
         final Random rand = new Random(13);
 
         
@@ -273,7 +273,7 @@ public class RTreeNDTest {
      * Verifies the count returned from search AND the number of rectangles results.
      */
     @Test
-    public void RectDouble2DSearchAllTest() {
+    void RectDouble2DSearchAllTest() {
 
         final int entryCount = 1000;
         final RectDouble2D[] rects = generateRandomRects(entryCount);
@@ -313,8 +313,7 @@ public class RTreeNDTest {
      * more visible.
      */
     @Disabled
-    
-    public void treeStructureStatsTest() {
+    void treeStructureStatsTest() {
 
         final int entryCount = 50_000;
 
@@ -339,8 +338,7 @@ public class RTreeNDTest {
      * - QUADRATIC seems to be ideal for small search bounding boxes.
      */
     @Disabled
-    
-    public void treeSearchStatsTest() {
+    void treeSearchStatsTest() {
 
         final int entryCount = 5000;
 
@@ -371,7 +369,7 @@ public class RTreeNDTest {
     }
 
     @Test
-    public void treeContainsTest() {
+    void treeContainsTest() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         final RectDouble2D[] rects = new RectDouble2D[5];
@@ -389,7 +387,7 @@ public class RTreeNDTest {
 
 
     @Test
-    public void treeRemovalTest5Entries() {
+    void treeRemovalTest5Entries() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         final RectDouble2D[] rects = new RectDouble2D[5];
@@ -418,7 +416,7 @@ public class RTreeNDTest {
     }
 
     @Test
-    public void treesize() {
+    void treesize() {
 
         final int NENTRY = 500;
 
@@ -434,7 +432,7 @@ public class RTreeNDTest {
 
 
     @Test
-    public void treeRemovalTestDuplicates() {
+    void treeRemovalTestDuplicates() {
 
         final int NENTRY = 50;
 
@@ -464,7 +462,7 @@ public class RTreeNDTest {
     }
 
     @Test
-    public void treeRemovalTest1000Entries() {
+    void treeRemovalTest1000Entries() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         int N = 1000;
@@ -491,7 +489,7 @@ public class RTreeNDTest {
     }
 
     @Test
-    public void treeSingleRemovalTest() {
+    void treeSingleRemovalTest() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble2D rect = new RectDouble2D(0, 0, 2, 2);
@@ -504,8 +502,7 @@ public class RTreeNDTest {
     }
 
     @Disabled
-    
-    public void treeRemoveAndRebalanceTest() {
+    void treeRemoveAndRebalanceTest() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble2D[] rect = new RectDouble2D[65];
@@ -557,7 +554,7 @@ public class RTreeNDTest {
     }
 
     @Test
-    public void treeUpdateTest() {
+    void treeUpdateTest() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
         RectDouble2D rect = new RectDouble2D(0, 1, 2, 3);
@@ -571,16 +568,16 @@ public class RTreeNDTest {
         System.out.print(results[0]);
     }
 
-    static RTree<RectDouble2D> createRectDouble2DTree(Spatialization.DefaultSplits splitType) {
+    private static RTree<RectDouble2D> createRectDouble2DTree(Spatialization.DefaultSplits splitType) {
         return createRectDouble2DTree(2, 8, splitType);
     }
 
-    static RTree<RectDouble2D> createRectDouble2DTree(int minM, int maxM, Spatialization.DefaultSplits splitType) {
+    private static RTree<RectDouble2D> createRectDouble2DTree(int minM, int maxM, Spatialization.DefaultSplits splitType) {
         return new RTree<>((x -> x), minM, maxM, splitType.get());
     }
 
     @Test
-    public void testAddsubtreeWithSideTree() {
+    void testAddsubtreeWithSideTree() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(3, 6, Spatialization.DefaultSplits.QUADRATIC);
 
         final RectDouble2D search;

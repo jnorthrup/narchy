@@ -12,14 +12,14 @@ import java.util.function.BiConsumer;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ParserMatchedAssemblerTest {
+class ParserMatchedAssemblerTest {
 
 	private BiConsumer<List, Stack> matchedRule;
 	private ParserMatchedAssembler assembler;
 	private Assembly assembly;
 
 	@BeforeEach
-	public void Init() {
+    void Init() {
 		
 		assembler = new ParserMatchedAssembler(matchedRule);
 		assembly = new TokenAssembly("");
@@ -58,7 +58,7 @@ public class ParserMatchedAssemblerTest {
 
 
 	@Test
-	public void matchedRuleCanManipulateStack() {
+    void matchedRuleCanManipulateStack() {
 		assembly.push("a");
 		assembly.announceMatchingStart();
 		assembly.push(new Token("b"));

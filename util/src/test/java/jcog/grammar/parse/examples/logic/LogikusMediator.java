@@ -39,24 +39,24 @@ import java.awt.event.ActionListener;
 
 public class LogikusMediator implements ActionListener, Runnable {
 
-	protected JButton proveNextButton;
-	protected JButton proveRestButton;
-	protected JButton haltButton;
-	protected JButton clearProgramButton;
-	protected JButton clearResultsButton;
+	private JButton proveNextButton;
+	private JButton proveRestButton;
+	private JButton haltButton;
+	private JButton clearProgramButton;
+	private JButton clearResultsButton;
 
-	protected JTextArea programArea;
-	protected JTextArea resultsArea;
-	protected JTextArea queryArea;
+	private JTextArea programArea;
+	private JTextArea resultsArea;
+	private JTextArea queryArea;
 
-	protected boolean proveRemaining;
+	private boolean proveRemaining;
 
-	protected Thread computeThread;
+	private Thread computeThread;
 
-	protected String lastProgramText = null;
-	protected String lastQueryText = null;
-	protected Program program;
-	protected Query query;
+	private String lastProgramText = null;
+	private String lastQueryText = null;
+	private Program program;
+	private Query query;
 
 	/**
 	 * This method reacts, when the user presses one of the
@@ -97,7 +97,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 	 * Parse the program and query (if they have changed)
 	 * and proved the query in a separate thread.
 	 */
-	protected void conductProof() {
+    private void conductProof() {
 		setComputing(true);
 		try {
 			parseProgramAndQuery();
@@ -122,7 +122,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 	 * @param   String   the string to append to the results
 	 *                   area
 	 */
-	protected void display(final String s) {
+    private void display(final String s) {
 		
 		
 
@@ -156,7 +156,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 	/*
 	 * Parses the program and query texts.
 	 */
-	protected void parseProgramAndQuery() {
+    private void parseProgramAndQuery() {
 
 		boolean programChanged = false;
 		String programText = programArea.getText();
@@ -180,7 +180,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 	/*
 	 * Proves the query against the program.
 	 */
-	protected void proveNext() {
+    private void proveNext() {
 		if (query.canFindNextProof()) {
 			Unification vars = query.variables();
 			if (vars.size() == 0) {
@@ -197,7 +197,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 	 * Proves the query against the program until no proofs
 	 * remain.
 	 */
-	protected void proveRemaining() {
+    private void proveRemaining() {
 		Unification vars = query.variables();
 		while (query.canFindNextProof()) {
 			if (vars.size() == 0) {
@@ -235,7 +235,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 	 * @param   boolean  if true, indicates that a proof thread 
 	 *                   is finding one or more proofs
 	 */
-	protected void setComputing(boolean computing) {
+    private void setComputing(boolean computing) {
 
 		
 

@@ -10,9 +10,9 @@ import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MarkovChainTest {
+class MarkovChainTest {
     @Test
-    public void test1() {
+    void test1() {
 
         MarkovChain<String> chain = new MarkovChain<String>(2);
 
@@ -43,7 +43,7 @@ public class MarkovChainTest {
     }
 
     @Test
-    public void testString() {
+    void testString() {
         MarkovChain<String> chain = new MarkovChain<String>(3);
         chain.learnAll(
                 "she sells sea shells by the sea shore fool".split(" "),

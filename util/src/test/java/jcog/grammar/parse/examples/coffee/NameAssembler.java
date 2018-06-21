@@ -13,7 +13,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class NameAssembler implements IAssembler {
+class NameAssembler implements IAssembler {
 	/**
 	 * Pop a coffee's name from an assembly's stack, and set the
 	 * assembly's target to be a new Coffee object with this name.

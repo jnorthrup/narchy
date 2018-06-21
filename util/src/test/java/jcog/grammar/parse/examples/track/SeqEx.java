@@ -81,7 +81,7 @@ public class SeqEx extends Seq {
 	 * Throw an exception showing how far the match had progressed, what it
 	 * found next, and what it was expecting.
 	 */
-	protected static void throwTrackException(Set<Assembly> previousState, Parser p) {
+	private static void throwTrackException(Set<Assembly> previousState, Parser p) {
 
 		Assembly best = best(new HashSet<Assembly>(previousState)); 
 		String after = best.consumed(" ");

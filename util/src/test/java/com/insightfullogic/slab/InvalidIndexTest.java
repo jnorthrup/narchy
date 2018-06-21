@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class InvalidIndexTest {
+class InvalidIndexTest {
 
     @Test
-    public void countIsNaturalNumber() {
+    void countIsNaturalNumber() {
 
         assertThrows(InvalidSizeException.class, () ->
                 Allocator.of(GameEvent.class).allocate(0)
@@ -15,7 +15,7 @@ public class InvalidIndexTest {
     }
 
     @Test
-    public void cantResizeBelowIndex() {
+    void cantResizeBelowIndex() {
         assertThrows(InvalidSizeException.class, () -> {
             GameEvent event = Allocator.of(GameEvent.class).allocate(5);
             event.move(4);

@@ -62,7 +62,7 @@ package jcog.grammar.parse.examples.engine;
 public class Variable implements ArithmeticTerm, ComparisonTerm {
 
 	public final String name;
-	protected Term instantiation;
+	private Term instantiation;
 
 	/**
 	 * Create a variable with the given name.

@@ -24,17 +24,17 @@ package jcog.grammar.parse.examples.engine;
  * @version 1.0
  */
 public class ConsultingStructure extends Structure {
-	protected AxiomSource source;
-	protected AxiomEnumeration axioms;
-	protected Unification currentUnification;
-	protected DynamicRule resolvent;
+	private AxiomSource source;
+	AxiomEnumeration axioms;
+	private Unification currentUnification;
+	DynamicRule resolvent;
 
 	/*
 	 * Constructs a consulting structure with the specified functor and terms,
 	 * to consult against the supplied axiom source. This constructor is for use
 	 * by Structure.
 	 */
-	protected ConsultingStructure(AxiomSource source, Object functor, Term[] terms) {
+    ConsultingStructure(AxiomSource source, Object functor, Term[] terms) {
 
 		super(functor, terms);
 		this.source = source;
@@ -45,7 +45,7 @@ public class ConsultingStructure extends Structure {
 	 * after canUnify fails, this object will set its axioms to null, which
 	 * forces its proving attempts to start over at the beginning of the source.
 	 */
-	protected AxiomEnumeration axioms() {
+    private AxiomEnumeration axioms() {
 		if (axioms == null) {
 			axioms = source.axioms(this);
 		}
@@ -127,7 +127,7 @@ public class ConsultingStructure extends Structure {
 	 * @return <code>true</code>, if this structure can unify with an axiom in
 	 *         the axiom source
 	 */
-	protected boolean canUnify() {
+    boolean canUnify() {
 		while (axioms().hasMoreAxioms()) {
 			Axiom a = axioms().nextAxiom();
 			Structure h = a.head();
@@ -149,7 +149,7 @@ public class ConsultingStructure extends Structure {
 	/**
 	 * Release the variable bindings that the last unification produced.
 	 */
-	protected void unbind() {
+    void unbind() {
 		if (currentUnification != null) {
 			currentUnification.unbind();
 		}

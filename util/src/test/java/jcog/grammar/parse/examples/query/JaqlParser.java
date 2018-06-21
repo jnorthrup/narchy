@@ -33,9 +33,9 @@ import jcog.grammar.parse.tokens.Word;
  * @version 1.0 
  */
 
-public class JaqlParser {
-	protected Speller speller;
-	protected static ComparisonParser comparisonParser;
+class JaqlParser {
+	private Speller speller;
+	private static ComparisonParser comparisonParser;
 
 	/**
 	 * Construct a query language parser that will use
@@ -49,14 +49,14 @@ public class JaqlParser {
 	/*
 	 * Recognize a class name.
 	 */
-	protected Parser className() {
+    private Parser className() {
 		return new Word().put(new ClassNameAssembler());
 	}
 
 	/*
 	 * Recognize a sequence of class names separated by commas.
 	 */
-	protected Parser classNames() {
+    private Parser classNames() {
 		return commaList(className());
 	}
 
@@ -69,7 +69,7 @@ public class JaqlParser {
 	 * The Jaql language uses this construction several 
 	 * times.
 	 */
-	protected static Seq commaList(Parser p) {
+	private static Seq commaList(Parser p) {
 		Seq commaP = new SeqEx();
 		commaP.get(new Symbol(',').ok());
 		commaP.get(p);
@@ -84,7 +84,7 @@ public class JaqlParser {
 	 * Recognize a comparison -- just use <code>comparison
 	 * </code> from <code>ComparisonParser</code>.
 	 */
-	protected Parser comparison() {
+    private Parser comparison() {
 		return comparisonParser().comparison();
 	}
 
@@ -92,7 +92,7 @@ public class JaqlParser {
 	 * Return the parser to use for expression and 
 	 * comparison subparsers.
 	 */
-	public ComparisonParser comparisonParser() {
+    private ComparisonParser comparisonParser() {
 		if (comparisonParser == null) {
 			comparisonParser = new ComparisonParser(speller);
 		}
@@ -102,14 +102,14 @@ public class JaqlParser {
 	/*
 	 * Recognize a comma-separated sequence of comparisons.
 	 */
-	protected Parser comparisons() {
+    private Parser comparisons() {
 		return commaList(comparison());
 	}
 
 	/*
 	 * Recognize either nothing or a where clause.
 	 */
-	protected Parser optionalWhere() {
+    private Parser optionalWhere() {
 		Alternation a = new Alternation();
 		a.get(new Empty());
 		a.get(where());
@@ -123,7 +123,7 @@ public class JaqlParser {
 	 * @return a parser that will recognize a select
 	 *         statement.
 	 */
-	public Parser select() {
+    private Parser select() {
 		Seq s = new SeqEx();
 		s.get(new CaselessLiteral("select").ok());
 		s.get(selectTerms());
@@ -137,7 +137,7 @@ public class JaqlParser {
 	 * Recognize a select term, which can be any valid
 	 * expression.
 	 */
-	protected Parser selectTerm() {
+    private Parser selectTerm() {
 		
 		Seq s = new Seq("selectTerm");
 		s.get(comparisonParser().expression());
@@ -148,7 +148,7 @@ public class JaqlParser {
 	/*
 	 * Recognize a comma-separated sequence of select terms.
 	 */
-	protected Parser selectTerms() {
+    private Parser selectTerms() {
 		return commaList(selectTerm());
 	}
 
@@ -167,7 +167,7 @@ public class JaqlParser {
 	 * Recognize a where clause, which is "where" followed by
 	 * a comma-separated list of comparisons.
 	 */
-	protected Parser where() {
+    private Parser where() {
 		Seq s = new Seq();
 		s.get(new CaselessLiteral("where").ok());
 		s.get(comparisons());

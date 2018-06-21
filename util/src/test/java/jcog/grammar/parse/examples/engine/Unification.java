@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Unification {
 	public static final Unification empty = new Unification();
-	List<Variable> variables;
+	private List<Variable> variables;
 
 	/**
 	 * Creates an empty unification.
@@ -52,7 +52,7 @@ public class Unification {
 	 * 
 	 * @return this unification
 	 */
-	public Unification addVariable(Variable v) {
+    private Unification addVariable(Variable v) {
 		if (!variables().contains(v)) {
 			variables.add(v);
 		}
@@ -145,14 +145,14 @@ public class Unification {
 	 * 
 	 * @return variable the variable at the indicated index
 	 */
-	protected Variable variableAt(int i) {
+    private Variable variableAt(int i) {
 		return variables().get(i);
 	}
 
 	/*
 	 * lazy-initialize this unification's vector
 	 */
-	protected List<Variable> variables() {
+    private List<Variable> variables() {
 		if (variables == null) {
 			variables = new ArrayList<Variable>();
 		}

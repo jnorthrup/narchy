@@ -6,10 +6,10 @@ import static com.google.common.math.DoubleMath.log2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class MathUtilsTests {
+class MathUtilsTests {
 
     @Test
-    public void testLog2() {
+    void testLog2() {
         assertEquals(1.0, log2(2.0), 0.01);
         assertEquals(3.32192809, log2(10.0), 0.00000001);
     }

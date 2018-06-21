@@ -21,7 +21,7 @@ import java.io.StringWriter;
  * @version 1.0
  */
 
-public class FileString {
+class FileString {
 
 	/**
 	 * Returns a string that represents the contents of a file.

@@ -22,9 +22,9 @@ import jcog.grammar.parse.tokens.Token;
  * 
  * @version 1.0
  */
-public class ListAssembler implements IAssembler {
+class ListAssembler implements IAssembler {
 
-	static final Token fence = new Token('[');
+	private static final Token fence = new Token('[');
 
 	/**
 	 * Pops the terms of a list from an assembly's stack, builds the list, and

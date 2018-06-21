@@ -63,11 +63,12 @@ import java.util.Iterator;
  * @version 1.0
  */
 
-public class Combinations implements Iterator<Object> {
-	protected Object[] inArray;
-	protected int n, m;
-	protected int[] index;
-	protected boolean hasMore = true;
+class Combinations implements Iterator<Object> {
+	private Object[] inArray;
+	private int n;
+    private int m;
+	private int[] index;
+	private boolean hasMore = true;
 
 	/**
 	 * Create a Combination to enumerate through all subsets of the supplied
@@ -125,7 +126,7 @@ public class Combinations implements Iterator<Object> {
 	 * The algorithm is from "Applied Combinatorics", by Alan Tucker.
 	 * 
 	 */
-	protected void moveIndex() {
+    private void moveIndex() {
 		int i = rightmostIndexBelowMax();
 		if (i >= 0) {
 			index[i] = index[i] + 1;
@@ -163,7 +164,7 @@ public class Combinations implements Iterator<Object> {
 	/**
 	 * @return int, the index which can be bumped up.
 	 */
-	protected int rightmostIndexBelowMax() {
+    private int rightmostIndexBelowMax() {
 
 		for (int i = m - 1; i >= 0; i--) {
 			if (index[i] < n - m + i) {

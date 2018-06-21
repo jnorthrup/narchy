@@ -14,9 +14,9 @@ import java.util.List;
  * 
  * @version 1.0
  */
-public class PrettyRepetitionAssembler implements IAssembler {
-	protected String name;
-	protected Object fence;
+class PrettyRepetitionAssembler implements IAssembler {
+	private String name;
+	private Object fence;
 
 	/**
 	 * Construct an assembler that will replace the nodes above the supplied

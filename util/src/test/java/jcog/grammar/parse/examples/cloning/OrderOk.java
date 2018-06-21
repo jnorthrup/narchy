@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.cloning;
  *
  * @version 1.0 
  */
-public class OrderOk implements Cloneable {
+class OrderOk implements Cloneable {
 	
 	
 	
@@ -24,7 +24,7 @@ public class OrderOk implements Cloneable {
 	
 	
 
-	protected Customer customer;
+	private Customer customer;
 
 	/**
 	 * Construct a customer.
@@ -63,7 +63,7 @@ public class OrderOk implements Cloneable {
 	 *
 	 * @param customer Customer
 	 */
-	public void setCustomer(Customer customer) {
+    private void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
 }

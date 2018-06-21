@@ -10,27 +10,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AgentTest {
+class AgentTest {
 
 
-    @Test public void testHaiQ() {
+    @Test
+    void testHaiQ() {
         testAgent( new HaiQ(1, 2) );
     }
-    @Test public void testHaiQAgent() {
+    @Test
+    void testHaiQAgent() {
         testAgent( new HaiQae(1, 2) );
     }
 
     @Disabled
-    @Test public void testDPGAgent() {
+    @Test
+    void testDPGAgent() {
         testAgent( new DPG(1, 2) ); 
     }
 
 
-    @Test public void testDQNAgent() {
+    @Test
+    void testDQNAgent() {
         testAgent( new DQN(1, 2) ); 
     }
 
-    static void testAgent(Agent agent) {
+    private static void testAgent(Agent agent) {
 
         
         assert(agent.inputs >= 1);

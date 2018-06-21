@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.robot;
 /**
  * Just for demonstration.
  */
-public class PickCommand extends RobotCommand {
+class PickCommand extends RobotCommand {
 	/**
 	 * Return a textual description of this object.
 	 * 

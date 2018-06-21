@@ -21,12 +21,15 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
 
     protected TermVector(SubtermMetadataCollector s) {
         super(s);
-        this.normalized = Subterms.super.isNormalized(); //TODO other tests
     }
 
     protected TermVector(Term... terms) {
         super(terms);
-        this.normalized = Subterms.super.isNormalized(); //TODO other tests
+    }
+
+    protected void testIfInitiallyNormalized() {
+        if (vars() == 0 || testIfInitiallyNormalized(this))
+            setNormalized();
     }
 
     @Override

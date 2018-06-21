@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MiniPIDTest {
+class MiniPIDTest {
 
     @Test
-    public void test1() {
+    void test1() {
 
         MiniPID miniPID = new MiniPID(0.25, 0.01, 0.4);
         miniPID.outLimit(10);

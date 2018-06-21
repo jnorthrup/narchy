@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by jeff on 16/05/16.
  */
-public class Murmur3Test {
+class Murmur3Test {
 
     @Test
-    public void whenInvoked_returnsCorrectHash() {
+    void whenInvoked_returnsCorrectHash() {
         byte[] data = "hello world".getBytes();
 
         int hash = Murmur3Hash.hash(data);

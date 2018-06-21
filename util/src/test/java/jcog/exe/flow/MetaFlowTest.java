@@ -26,10 +26,10 @@ import static org.objectweb.asm.Opcodes.ASM7_EXPERIMENTAL;
 
 class MetaFlowTest {
 
-    static void a() {
+    private static void a() {
         exe().good((float) (Math.random()*1f));
     }
-    static int b() {
+    private static int b() {
         if (Math.random() < 0.5f)
             exe().bad( 0.2f, "x" );
         else {
@@ -42,12 +42,13 @@ class MetaFlowTest {
         return 0;
     }
 
-    static Object c(int x) {
+    private static Object c(int x) {
         a(); b();
         return null;
     }
 
-    @Test public void testMetaFlowExample() {
+    @Test
+    void testMetaFlowExample() {
 
         MetaFlow m = exe().forkUntil(System.nanoTime() + 500L * 1_000_000L,
                 MetaFlowTest::a,
@@ -58,7 +59,7 @@ class MetaFlowTest {
 
     @Disabled
     @Test
-    public void testbyteBuddy() throws IllegalAccessException, InstantiationException {
+    void testbyteBuddy() throws IllegalAccessException, InstantiationException {
 
         Class<?> m = new ByteBuddy(ClassFileVersion.JAVA_V11)
                 .subclass(MyClass.class)
@@ -91,7 +92,7 @@ class MetaFlowTest {
         mm.test(2);
     }
     @Test
-    public void testMetaFlow1() {
+    void testMetaFlow1() {
 
 
         MetaFlow f = exe();
@@ -101,7 +102,7 @@ class MetaFlowTest {
 
     }
 
-    public static class GeneralInterceptor {
+    static class GeneralInterceptor {
         @RuntimeType
         public Object intercept(@AllArguments Object[] args,
                                 //@Origin Method method
@@ -118,22 +119,23 @@ class MetaFlowTest {
         }
     }
 
-    public static class MyClass {
+    static class MyClass {
 
-        public MyClass() {
+        MyClass() {
         }
 
         @MetaFlow.Value
-        public float test() {
+        float test() {
             return 1f;
         }
         @MetaFlow.Value
-        public float test(float param) {
+        float test(float param) {
             return param;
         }
     }
 
-    @Test public void testASMClassReader() throws IOException {
+    @Test
+    void testASMClassReader() throws IOException {
         ClassReader cr = new ClassReader(MyClass.class.getName());
         cr.accept(new ClassVisitor(ASM7_EXPERIMENTAL) {
             @Override

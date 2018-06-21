@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EstimatedHistogramTest {
 
     @Test
-    public void testSimple() {
+    void testSimple() {
         {
             
             EstimatedHistogram histogram = new EstimatedHistogram(90);
@@ -28,7 +28,7 @@ class EstimatedHistogramTest {
     }
 
     @Test
-    public void testOverflow() {
+    void testOverflow() {
         EstimatedHistogram histogram = new EstimatedHistogram(1);
         histogram.add(100);
         assert histogram.isOverflowed();
@@ -36,7 +36,7 @@ class EstimatedHistogramTest {
     }
 
     @Test
-    public void testMinMax() {
+    void testMinMax() {
         EstimatedHistogram histogram = new EstimatedHistogram(90);
         histogram.add(16);
         assertEquals(15, histogram.min());
@@ -44,7 +44,7 @@ class EstimatedHistogramTest {
     }
 
     @Test
-    public void testMean() {
+    void testMean() {
         {
             EstimatedHistogram histogram = new EstimatedHistogram(90);
             for (int i = 0; i < 40; i++)
@@ -70,7 +70,7 @@ class EstimatedHistogramTest {
     }
 
     @Test
-    public void testFindingCorrectBuckets() {
+    void testFindingCorrectBuckets() {
         EstimatedHistogram histogram = new EstimatedHistogram(90);
         histogram.add(23282687);
         assert !histogram.isOverflowed();
@@ -87,7 +87,7 @@ class EstimatedHistogramTest {
     }
 
     @Test
-    public void testPercentile() {
+    void testPercentile() {
         {
             EstimatedHistogram histogram = new EstimatedHistogram(90);
             

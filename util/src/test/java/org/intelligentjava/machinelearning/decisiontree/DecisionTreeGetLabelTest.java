@@ -10,19 +10,19 @@ import static org.intelligentjava.machinelearning.decisiontree.label.BooleanLabe
 import static org.intelligentjava.machinelearning.decisiontree.label.BooleanLabel.TRUE_LABEL;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DecisionTreeGetLabelTest {
+class DecisionTreeGetLabelTest {
 
-    final static Object it = Boolean.TRUE;
+    private final static Object it = Boolean.TRUE;
 
     @Test
-    public void testGetLabelOnEmptyList() {
+    void testGetLabelOnEmptyList() {
         DecisionTree tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         assertNull(DecisionTree.label(it, data.stream(), 0.9f));
     }
 
     @Test
-    public void testGetLabelOnSingleElement() {
+    void testGetLabelOnSingleElement() {
         DecisionTree tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));
@@ -30,7 +30,7 @@ public class DecisionTreeGetLabelTest {
     }
 
     @Test
-    public void testGetLabelOnTwoDifferent() {
+    void testGetLabelOnTwoDifferent() {
         DecisionTree tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));
@@ -39,7 +39,7 @@ public class DecisionTreeGetLabelTest {
     }
 
     @Test
-    public void testGetLabelOn95vs5() {
+    void testGetLabelOn95vs5() {
         DecisionTree tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         for (int i = 0; i < 95; i++) {
@@ -52,7 +52,7 @@ public class DecisionTreeGetLabelTest {
     }
 
     @Test
-    public void testGetLabelOn94vs6() {
+    void testGetLabelOn94vs6() {
         DecisionTree tree = new DecisionTree();
 
         List<Function<Object,Object>> homogenous = buildSample(96, 4);
@@ -63,7 +63,7 @@ public class DecisionTreeGetLabelTest {
         assertNull(DecisionTree.label(it, nonhomogenous.stream(), 0.9f));
     }
 
-    static List<Function<Object,Object>> buildSample(int a, int b) {
+    private static List<Function<Object,Object>> buildSample(int a, int b) {
         List<Function<Object,Object>> homogenous = Lists.newArrayList();
         for (int i = 0; i < a; i++)
             homogenous.add(new TestValue(TRUE_LABEL));

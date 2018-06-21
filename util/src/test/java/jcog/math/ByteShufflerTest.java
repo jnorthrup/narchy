@@ -9,17 +9,17 @@ import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ByteShufflerTest {
+class ByteShufflerTest {
 
     @Test
-    public void testByteShuffler() {
+    void testByteShuffler() {
         ByteShuffler b = new ByteShuffler(16);
         Random rng = new XoRoShiRo128PlusRandom(1);
         for (int i = 2; i < 5; i ++)
             testPermutes(b, rng, i);
     }
 
-    void testPermutes(ByteShuffler b, Random rng, int len) {
+    private void testPermutes(ByteShuffler b, Random rng, int len) {
         int permutations = (int) org.apache.commons.math3.util.CombinatoricsUtils.factorial(len);
         int iterates = permutations * 12 /* to be sure */;
         TreeSet<String> combos = new TreeSet<>();

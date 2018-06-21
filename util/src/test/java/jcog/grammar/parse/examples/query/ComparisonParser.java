@@ -33,8 +33,8 @@ import jcog.grammar.parse.tokens.Word;
  * @version 1.0 
  */
 public class ComparisonParser {
-	protected Seq expression;
-	protected Speller speller;
+	private Seq expression;
+	private Speller speller;
 
 	/**
 	 * Construct a ComparisonParser that will consult the
@@ -49,7 +49,7 @@ public class ComparisonParser {
 	 * Returns a parser that will recognize a comparison
 	 * argument.
 	 */
-	public Parser arg() {
+    private Parser arg() {
 
 		
 
@@ -74,7 +74,7 @@ public class ComparisonParser {
 	/*
 	 * Recognize '/' followed by a factor.
 	 */
-	protected Parser divideFactor() {
+    private Parser divideFactor() {
 		Seq s = new Seq("divideFactor");
 		s.get(new Symbol('/').ok());
 		s.get(factor());
@@ -110,7 +110,7 @@ public class ComparisonParser {
 	 * Recognize an expression in parens, or a number, or a
 	 * variable.
 	 */
-	protected Parser factor() {
+    private Parser factor() {
 		
 		Alternation factor = new Alternation("factor");
 
@@ -131,7 +131,7 @@ public class ComparisonParser {
 	/*
 	 * Recognize '-' followed by a term.
 	 */
-	protected Parser minusTerm() {
+    private Parser minusTerm() {
 		Seq s = new Seq("minusTerm");
 		s.get(new Symbol('-').ok());
 		s.get(term());
@@ -142,7 +142,7 @@ public class ComparisonParser {
 	/*
 	 * Recognize an operator.
 	 */
-	protected Parser operator() {
+    private Parser operator() {
 		Alternation a = new Alternation("operator");
 		a.get(new Symbol('<'));
 		a.get(new Symbol('>'));
@@ -156,7 +156,7 @@ public class ComparisonParser {
 	/*
 	 * Recognize '+' followed by a term.
 	 */
-	protected Parser plusTerm() {
+    private Parser plusTerm() {
 		Seq s = new Seq("plusTerm");
 		s.get(new Symbol('+').ok());
 		s.get(term());
@@ -167,7 +167,7 @@ public class ComparisonParser {
 	/*
 	 * Recognize a "term", per the language definition.
 	 */
-	protected Parser term() {
+    private Parser term() {
 		
 		Seq term = new Seq("term");
 
@@ -186,7 +186,7 @@ public class ComparisonParser {
 	/*
 	 * Recognize '*' followed by a factor.
 	 */
-	protected Parser timesFactor() {
+    private Parser timesFactor() {
 		Seq s = new Seq("timesFactor");
 		s.get(new Symbol('*').ok());
 		s.get(factor());
@@ -197,7 +197,7 @@ public class ComparisonParser {
 	/*
 	 * Recognizes any word.
 	 */
-	protected Parser variable() {
+    private Parser variable() {
 		return new Word().put(new VariableAssembler(speller));
 	}
 }

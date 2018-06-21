@@ -33,23 +33,23 @@ import java.util.Vector;
 
 public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 
-	protected JButton goSource;
-	protected JButton haltSource;
-	protected JButton clearSource;
-	protected JSlider s1;
-	protected JSlider s2;
-	protected JTextArea programArea;
-	protected JTextArea messageArea;
-	protected SlingPanel plotPanel;
+	private JButton goSource;
+	private JButton haltSource;
+	private JButton clearSource;
+	private JSlider s1;
+	private JSlider s2;
+	private JTextArea programArea;
+	private JTextArea messageArea;
+	private SlingPanel plotPanel;
 
-	protected Command command;
-	protected Thread computeThread;
+	private Command command;
+	private Thread computeThread;
 
-	protected String lastProgram;
+	private String lastProgram;
 
-	protected SlingTarget target;
+	private SlingTarget target;
 
-	protected SlingParser parser = new SlingParser();
+	private SlingParser parser = new SlingParser();
 
 	/**
 	 * This method reacts, when the user presses one of the IDE's buttons.
@@ -79,7 +79,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 * Throws a runtime exception if the input stream cannot be completely
 	 * recognized, and if the next element is a reserved word.
 	 */
-	protected void checkReserved(Assembly in, Assembly out) {
+    private void checkReserved(Assembly in, Assembly out) {
 		Assembly which = out == null ? in : out;
 		if (which.hasNext()) {
 			String s = which.peek().toString();
@@ -93,7 +93,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 * Throws a runtime exception if the input stream cannot be completely
 	 * recognized.
 	 */
-	protected void checkResult(String program, Assembly in, Assembly out) {
+    private void checkResult(String program, Assembly in, Assembly out) {
 
 		if (out == null || out.hasNext()) {
 			checkReserved(in, out);
@@ -110,7 +110,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 * This method returns a composite command that it composes by popping
 	 * individual commands from an assembly.
 	 */
-	protected CommandSequence command(Assembly out) {
+    private CommandSequence command(Assembly out) {
 		Vector statements = new Vector();
 		while (!out.getStack().isEmpty()) {
 			statements.addElement(out.pop());
@@ -133,7 +133,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 * command in a separate thread to allow halting. Plot whatever functions
 	 * the program specifies.
 	 */
-	protected void go() {
+    private void go() {
 		try {
 			String thisProgram = programArea.getText();
 			if (!thisProgram.equals(lastProgram)) {
@@ -173,7 +173,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	/*
 	 * Parse a program and return a command.
 	 */
-	protected Command parse(String program) {
+    private Command parse(String program) {
 		Tokenizer t = parser.tokenizer();
 		t.setString(program);
 		TokenAssembly ta = new TokenAssembly(t);
@@ -207,7 +207,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 * Sets the state of the IDE to computing or not. Most of the IDE's controls
 	 * are grayed out during computation of a program.
 	 */
-	protected void setComputing(boolean computing) {
+    private void setComputing(boolean computing) {
 
 		
 
@@ -230,7 +230,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 * Try to recognize a user's program. Handle some track exceptions but pass
 	 * along any other exceptions.
 	 */
-	protected Assembly tryMatch(TokenAssembly ta) {
+    private Assembly tryMatch(TokenAssembly ta) {
 		try {
 			return parser.start().bestMatch(ta);
 		} catch (TrackException e) {

@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.query;
  * 
  * @version 1.0
  */
-public class UnrecognizedVariableException extends RuntimeException {
+class UnrecognizedVariableException extends RuntimeException {
 	/**
 	 * Constructs a <code>UnrecognizedVariableException</code> 
 	 * with no detail message.

@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author me
  */
-public class UtilMiscTest {
+class UtilMiscTest {
 
     @Test
-    public void test() {
+    void test() {
         assertEquals(0, Util.bin(0, 10));
         assertEquals(1, Util.bin(0.1f, 10));
         assertEquals(9, Util.bin(0.9f, 10));
@@ -29,7 +29,8 @@ public class UtilMiscTest {
         assertEquals(8, Util.bin(1.0f, 9));
     }
 
-    @Test public void testCurveSawtooth() {
+    @Test
+    void testCurveSawtooth() {
         int N = 32;
         Integer[] x = new Integer[N];
         for (int i = 0; i < N; i++) {
@@ -37,11 +38,12 @@ public class UtilMiscTest {
         }
         System.out.println(SparkLine.render(x));
     }
-    @Test public void testMsgPackDecode(){
+    @Test
+    void testMsgPackDecode(){
         testMsgPackTranscode("skjfldksf", Object.class);
     }
 
-    static void testMsgPackTranscode(Object x, Class cl) {
+    private static void testMsgPackTranscode(Object x, Class cl) {
         try {
             Object result = Util.fromBytes(Util.toBytes(x, cl), cl);
             assertEquals(x, result);

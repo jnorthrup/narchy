@@ -40,9 +40,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  */
-public class ImmutableRTreeTest {
+class ImmutableRTreeTest {
     @Test
-    public void testToAndFromByteBuffer() {
+    void testToAndFromByteBuffer() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
 
@@ -66,7 +66,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testToAndFromByteBufferRoaring() {
+    void testToAndFromByteBufferRoaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
 
@@ -92,7 +92,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchNoSplit() {
+    void testSearchNoSplit() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0, 0}, 1);
@@ -121,7 +121,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchNoSplitRoaring() {
+    void testSearchNoSplitRoaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0, 0}, 1);
@@ -150,7 +150,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplit() {
+    void testSearchWithSplit() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0, 0}, 1);
@@ -180,7 +180,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplitRoaring() {
+    void testSearchWithSplitRoaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0, 0}, 1);
@@ -211,7 +211,7 @@ public class ImmutableRTreeTest {
 
 
     @Test
-    public void testSearchWithSplit2() {
+    void testSearchWithSplit2() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0.0f, 0.0f}, 0);
@@ -246,7 +246,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplit2Roaring() {
+    void testSearchWithSplit2Roaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0.0f, 0.0f}, 0);
@@ -281,7 +281,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplit3() {
+    void testSearchWithSplit3() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0.0f, 0.0f}, 0);
@@ -313,7 +313,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplit3Roaring() {
+    void testSearchWithSplit3Roaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0.0f, 0.0f}, 0);
@@ -345,7 +345,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplit4() {
+    void testSearchWithSplit4() {
         BitmapFactory bf = new RoaringBitmapFactory();
         
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
@@ -391,7 +391,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplit4Roaring() {
+    void testSearchWithSplit4Roaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         Random rand = new Random();
@@ -436,7 +436,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testEmptyConciseSet() {
+    void testEmptyConciseSet() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0.0f, 0.0f}, bf.makeEmptyMutableBitmap());
@@ -450,7 +450,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testEmptyRoaringBitmap() {
+    void testEmptyRoaringBitmap() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0.0f, 0.0f}, bf.makeEmptyMutableBitmap());
@@ -465,7 +465,7 @@ public class ImmutableRTreeTest {
     }
 
     @Test
-    public void testSearchWithSplitLimitedBound() {
+    void testSearchWithSplitLimitedBound() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0, 0}, 1);
@@ -496,7 +496,7 @@ public class ImmutableRTreeTest {
 
 
     @Test
-    public void testSearchWithSplitLimitedBoundRoaring() {
+    void testSearchWithSplitLimitedBoundRoaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         tree.insert(new float[]{0, 0}, 1);
@@ -526,7 +526,7 @@ public class ImmutableRTreeTest {
     }
 
     
-    public void showBenchmarks() {
+    void showBenchmarks() {
         final int start = 1;
         final int factor = 10;
         final int end = 10000000;
@@ -573,7 +573,7 @@ public class ImmutableRTreeTest {
     }
 
     
-    public void showBenchmarksBoundWithLimits() {
+    void showBenchmarksBoundWithLimits() {
         
         final int start = 10000000;
         final int factor = 10;

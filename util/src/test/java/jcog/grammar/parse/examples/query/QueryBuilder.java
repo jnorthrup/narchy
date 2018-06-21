@@ -53,10 +53,10 @@ import java.util.Vector;
  * @version 1.0 
  */
 public class QueryBuilder implements PubliclyCloneable<QueryBuilder> {
-	protected Speller speller;
-	protected Vector terms = new Vector();
-	protected Vector classNames = new Vector();
-	protected Vector comparisons = new Vector();
+	private Speller speller;
+	private Vector terms = new Vector();
+	private Vector classNames = new Vector();
+	private Vector comparisons = new Vector();
 
 	/**
 	 * Construct a query builder that will use the given speller.

@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class TestTrieSequencerCharSequenceCaseInsensitive
+class TestTrieSequencerCharSequenceCaseInsensitive
 {
 
-   public static final String SEQ1 = "HeLlO";
-   public static final String SEQ2 = "he";
-   public static final String SEQ3 = "WORLd";
-   public static final String SEQ4 = "helloWORLD";
-   public static final String SEQ5 = "woW";
+   private static final String SEQ1 = "HeLlO";
+   private static final String SEQ2 = "he";
+   private static final String SEQ3 = "WORLd";
+   private static final String SEQ4 = "helloWORLD";
+   private static final String SEQ5 = "woW";
    
    @Test
-   public void testMatches()
+   void testMatches()
    {
       TrieSequencer<String> seq = new TrieSequencerCharSequenceCaseInsensitive<>();
       
@@ -45,7 +45,7 @@ public class TestTrieSequencerCharSequenceCaseInsensitive
    }
    
    @Test
-   public void testLengthOf()
+   void testLengthOf()
    {
       TrieSequencer<String> seq = new TrieSequencerCharSequenceCaseInsensitive<>();
       
@@ -57,7 +57,7 @@ public class TestTrieSequencerCharSequenceCaseInsensitive
    }
    
    @Test
-   public void testHashOf()
+   void testHashOf()
    {
       TrieSequencer<String> seq = new TrieSequencerCharSequenceCaseInsensitive<>();
       

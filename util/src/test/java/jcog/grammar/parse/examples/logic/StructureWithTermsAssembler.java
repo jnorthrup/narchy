@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @version 1.0
  */
-public class StructureWithTermsAssembler implements IAssembler {
+class StructureWithTermsAssembler implements IAssembler {
 	/**
 	 * Reverse a vector into an array of terms.
 	 * 

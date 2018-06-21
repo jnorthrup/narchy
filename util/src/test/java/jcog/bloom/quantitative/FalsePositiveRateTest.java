@@ -11,10 +11,10 @@ import java.util.UUID;
 /**
  * Created by jeff on 16/05/16.
  */
-public class FalsePositiveRateTest {
+class FalsePositiveRateTest {
 
     @Test
-    public void whenContinuouslyAddingElements_falsePositivesIncrease() {
+    void whenContinuouslyAddingElements_falsePositivesIncrease() {
         LeakySet<String> filter = BloomFilterBuilder.get()
                 .withSize(10000)
                 .buildFilter();

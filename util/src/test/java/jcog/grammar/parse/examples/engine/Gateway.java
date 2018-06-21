@@ -54,7 +54,7 @@ public abstract class Gateway extends Structure {
 	 * If this structure is involved in a proof, the gate is open and will shut
 	 * when the rule fails back to this structure.
 	 */
-	protected boolean open = false;
+    private boolean open = false;
 
 	/**
 	 * Allows subclasses to use this form of constructor. This typically happens
@@ -137,7 +137,7 @@ public abstract class Gateway extends Structure {
 	 * @param depth
 	 *            the depth at which to print trace information
 	 */
-	public boolean canProveOnce() {
+    protected boolean canProveOnce() {
 		return true;
 	}
 
@@ -145,6 +145,6 @@ public abstract class Gateway extends Structure {
 	 * Insert the method's description here. Creation date: (12/7/99 11:09:44
 	 * AM)
 	 */
-	protected void cleanup() {
+    void cleanup() {
 	}
 }

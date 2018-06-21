@@ -37,17 +37,17 @@ package jcog.grammar.parse.examples.engine;
 
 public class DynamicRule extends Rule implements DynamicAxiom {
 
-	protected AxiomSource as;
-	protected Scope scope;
-	protected boolean headInvolved = false;
-	protected DynamicRule tail;
+	private AxiomSource as;
+	private Scope scope;
+	private boolean headInvolved = false;
+	private DynamicRule tail;
 
 	/*
 	 * Construct a provable rule for the given axiom source, scope, and
 	 * structures -- these structures must all be capable of proving themselves.
 	 * That is, they must be consulting structures or gateways.
 	 */
-	protected DynamicRule(AxiomSource as, Scope scope, Structure[] structures) {
+    DynamicRule(AxiomSource as, Scope scope, Structure[] structures) {
 
 		super(structures);
 		this.as = as;
@@ -67,7 +67,7 @@ public class DynamicRule extends Rule implements DynamicAxiom {
 	 * @param Rule
 	 *            the non-dynamic source of this rule.
 	 */
-	protected DynamicRule(AxiomSource as, Scope scope, Rule rule) {
+    DynamicRule(AxiomSource as, Scope scope, Rule rule) {
 
 		this(as, scope, provableStructures(as, scope, rule.structures));
 	}
@@ -143,7 +143,7 @@ public class DynamicRule extends Rule implements DynamicAxiom {
 	 * 
 	 * @return <code>true</code> if this rule contains no structures.
 	 */
-	public boolean isEmpty() {
+    private boolean isEmpty() {
 		return structures.length == 0;
 	}
 
@@ -162,7 +162,7 @@ public class DynamicRule extends Rule implements DynamicAxiom {
 	/**
 	 * Create provable versions of an input array of structures.
 	 */
-	protected static Structure[] provableStructures(AxiomSource as, Scope scope, Structure[] structures) {
+	static Structure[] provableStructures(AxiomSource as, Scope scope, Structure[] structures) {
 
 		Structure[] provables = new Structure[structures.length];
 		for (int i = 0; i < structures.length; i++) {
@@ -193,7 +193,7 @@ public class DynamicRule extends Rule implements DynamicAxiom {
 	 * 
 	 * @return the tail of this rule
 	 */
-	public DynamicRule tail() {
+    private DynamicRule tail() {
 		if (tail == null) {
 			int len = structures.length;
 			Structure[] rest = new Structure[len - 1];

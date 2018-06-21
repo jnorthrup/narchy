@@ -14,7 +14,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class PlotAssembler implements IAssembler {
+class PlotAssembler implements IAssembler {
 	/**
 	 * Pop a function, and push a command that will, at 
 	 * execution time, create a renderable function. The

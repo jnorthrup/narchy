@@ -18,7 +18,7 @@ import java.math.BigInteger;
  * 
  * @version 1.0
  */
-public class Combinatoric {
+class Combinatoric {
 	/**
 	 * @return BigInteger, the number of unordered subsets of m objects chosen
 	 *         from a group of n objects.
@@ -72,7 +72,7 @@ public class Combinatoric {
 	 * @exception CombinatoricException
 	 *                unless n >= 0
 	 */
-	public static BigInteger factorial(int n) throws CombinatoricException {
+	private static BigInteger factorial(int n) throws CombinatoricException {
 		if (n < 0) {
 			throw new CombinatoricException("n must be >= 0");
 		}
@@ -110,7 +110,7 @@ public class Combinatoric {
 	 * @exception CombinatoricException
 	 *                unless n >= m >= 0
 	 */
-	public static BigInteger p(int n, int m) throws CombinatoricException {
+	private static BigInteger p(int n, int m) throws CombinatoricException {
 
 		check(n, m);
 

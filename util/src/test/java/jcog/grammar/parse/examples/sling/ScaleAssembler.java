@@ -24,7 +24,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class ScaleAssembler implements IAssembler {
+class ScaleAssembler implements IAssembler {
 	/**
 	 * Slip the arguments (0, t, 1) into the stack, and use a normal
 	 * <code>Scale</code> object to work on the assembly.

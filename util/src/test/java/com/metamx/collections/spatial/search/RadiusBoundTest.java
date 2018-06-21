@@ -22,9 +22,9 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class RadiusBoundTest {
+class RadiusBoundTest {
     @Test
-    public void testCacheKey() {
+    void testCacheKey() {
         final float[] coords0 = {1.0F, 2.0F};
         final float[] coords1 = {1.1F, 2.1F};
         assertArrayEquals(

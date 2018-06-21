@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author me
  */
-public class BagTest {
+class BagTest {
 
 
 
@@ -106,7 +106,7 @@ public class BagTest {
     }
 
 
-    static Tensor samplingPriDist(@NotNull Bag<PLink<String>, PLink<String>> b, int batches, int batchSize, int bins) {
+    private static Tensor samplingPriDist(@NotNull Bag<PLink<String>, PLink<String>> b, int batches, int batchSize, int bins) {
 
         assert(bins > 1);
 
@@ -298,7 +298,7 @@ public class BagTest {
         populate(b, rng, count, dimensionality, minPri, maxPri, qua, qua);
     }
 
-    public static void populate(Bag<String, PriReference<String>> a, Random rng, int count, int dimensionality, float minPri, float maxPri, float minQua, float maxQua) {
+    private static void populate(Bag<String, PriReference<String>> a, Random rng, int count, int dimensionality, float minPri, float maxPri, float minQua, float maxQua) {
         float dPri = maxPri - minPri;
         for (int i = 0; i < count; i++) {
             a.put(new PLink(
@@ -329,7 +329,7 @@ public class BagTest {
         assertEquals(1 - 1f/(c*2f), bag.priMax(), 0.03f); 
         if (bag instanceof ArrayBag) assertSorted((ArrayBag)bag);
     }
-    public static void fillRandom(CurveBag<PLink<String>> bag) {
+    private static void fillRandom(CurveBag<PLink<String>> bag) {
         assertTrue(bag.isEmpty());
 
         int c = bag.capacity();

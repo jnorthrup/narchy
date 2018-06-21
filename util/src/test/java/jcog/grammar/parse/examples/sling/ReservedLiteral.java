@@ -28,7 +28,7 @@ public class ReservedLiteral extends Terminal {
 	/**
 	 * the literal to match
 	 */
-	protected Token literal;
+    private Token literal;
 
 	/**
 	 * Constructs a reserved literal that will match the specified 

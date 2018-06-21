@@ -70,15 +70,6 @@ public class VariableNormalization extends VariableTransform {
 
         return x.normalize((byte)vid);
 
-
-
-
-
-
-
-
-        
-
     }
 
 

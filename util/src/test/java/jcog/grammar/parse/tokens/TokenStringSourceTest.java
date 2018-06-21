@@ -2,7 +2,7 @@ package jcog.grammar.parse.tokens;
 
 import org.junit.jupiter.api.Test;
 
-public class TokenStringSourceTest {
+class TokenStringSourceTest {
     /**
      * Shows the example in the class comment.
      *
@@ -10,7 +10,7 @@ public class TokenStringSourceTest {
      *            ignored
      */
     @Test
-    public void testTokenize() {
+    void testTokenize() {
 
         String s = "I came; I saw; I left in peace;";
 

@@ -5,19 +5,21 @@ import org.junit.jupiter.api.Test;
 import static jcog.math.LongInterval.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LongIntervalTest {
+class LongIntervalTest {
 
 
     @Test
-    public void testTaskNearestTimePoint_point() {
+    void testTaskNearestTimePoint_point() {
         assertNearTests(15, 15);
     }
-    @Test public void testTaskNearestTimePoint_range() {
+    @Test
+    void testTaskNearestTimePoint_range() {
         Longerval t = assertNearTests(10, 20);
         assertEquals(18, t.nearestPointExternal(18,18)); 
         assertEquals(12, t.nearestPointExternal(12,12)); 
     }
-    @Test public void testTaskNearestTimePoint_eternal() {
+    @Test
+    void testTaskNearestTimePoint_eternal() {
         Longerval t = assertNearTests(ETERNAL, ETERNAL);
     }
 
@@ -58,12 +60,14 @@ public class LongIntervalTest {
         return t;
     }
 
-    @Test public void testTaskTimeSanity1() {
+    @Test
+    void testTaskTimeSanity1() {
         Longerval x10 = new Longerval(0, 9);
         assertEquals(100, x10.nearestPointExternal(100, 200));
     }
 
-    @Test public void testTaskTimeSanity2() {
+    @Test
+    void testTaskTimeSanity2() {
         Longerval t = new Longerval(1530, 1545);
         assertEquals(2966, t.nearestPointExternal(2966, 2980));
         assertEquals(0, t.nearestPointExternal(0, 0));

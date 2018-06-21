@@ -22,7 +22,7 @@ import jcog.grammar.parse.examples.engine.Variable;
  * @version 1.0
  */
 public class AssignmentCommand extends Command {
-	protected Evaluation evaluation;
+	private Evaluation evaluation;
 
 	/**
 	 * Construct an <code>Assignment</code> command from the given

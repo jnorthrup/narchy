@@ -44,7 +44,7 @@ public class ShowPrettyRepetitions {
 	 * </pre></blockquote>
 	 * 
 	 */
-	public static Seq seq() {
+	private static Seq seq() {
 		Seq seq = new Seq("<seq>");
 		seq.get(new Repetition(new Word(), "<rep1>"));
 		seq.get(new Repetition(new Word(), "<rep2>"));

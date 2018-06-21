@@ -3,7 +3,7 @@ package com.insightfullogic.slab.issue13;
 import com.insightfullogic.slab.Cursor;
 
 
-public interface SlabOperation extends Cursor {
+interface SlabOperation extends Cursor {
 
     byte getMagic();
 

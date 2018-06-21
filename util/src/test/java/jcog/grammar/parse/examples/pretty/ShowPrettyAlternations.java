@@ -29,7 +29,7 @@ public class ShowPrettyAlternations {
 	/**
 	 * Returns a parser that recognizes some alligators. 
 	 */
-	public static Parser alligator() {
+	private static Parser alligator() {
 		Alternation a = new Alternation("<alligator>");
 		a.get(new Literal("chineseGator"));
 		a.get(new Literal("americanGator"));
@@ -39,7 +39,7 @@ public class ShowPrettyAlternations {
 	/**
 	 * Returns a parser that recognizes some crocs. 
 	 */
-	public static Parser crocodile() {
+	private static Parser crocodile() {
 		Alternation a = new Alternation("<crocodile>");
 		a.get(new Literal("nileCroc"));
 		a.get(new Literal("cubanCroc"));
@@ -50,7 +50,7 @@ public class ShowPrettyAlternations {
 	 * Returns a parser that recognizes members of the crocodilian
 	 * order. 
 	 */
-	public static Parser crocodilian() {
+	private static Parser crocodilian() {
 		Alternation a = new Alternation("<crocodilian>");
 		a.get(crocodile());
 		a.get(alligator());
@@ -60,7 +60,7 @@ public class ShowPrettyAlternations {
 	/**
 	 * Returns a parser that recognizes some lizards. 
 	 */
-	public static Parser lizard() {
+	private static Parser lizard() {
 		Alternation a = new Alternation("<lizard>");
 		a.get(new Literal("gecko"));
 		a.get(new Literal("iguana"));
@@ -86,7 +86,7 @@ public class ShowPrettyAlternations {
 	/**
 	 * Returns a parser that recognizes some reptiles.
 	 */
-	public static Parser reptile() {
+	private static Parser reptile() {
 		Alternation a = new Alternation("<reptile>");
 		a.get(crocodilian());
 		a.get(squamata());
@@ -96,7 +96,7 @@ public class ShowPrettyAlternations {
 	/**
 	 * Returns a parser that recognizes some snakes. 
 	 */
-	public static Parser snake() {
+	private static Parser snake() {
 		Alternation a = new Alternation("<snake>");
 		a.get(new Literal("cobra"));
 		a.get(new Literal("python"));
@@ -107,7 +107,7 @@ public class ShowPrettyAlternations {
 	 * Returns a parser that recognizes some members of the 
 	 * squamata order. 
 	 */
-	public static Parser squamata() {
+	private static Parser squamata() {
 		Alternation a = new Alternation("<squamata>");
 		a.get(snake());
 		a.get(lizard());

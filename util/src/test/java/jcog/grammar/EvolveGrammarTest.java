@@ -12,7 +12,7 @@ import static jcog.grammar.DataSetTest.noise;
 /**
  * Created by me on 11/29/15.
  */
-public class EvolveGrammarTest {
+class EvolveGrammarTest {
 
     /** JSON example from wiki: https://github.com/MaLeLabTs/RegexGenerator/wiki/Annotated-Dataset */
     String j = "{\n" +
@@ -34,11 +34,11 @@ public class EvolveGrammarTest {
             "    } ] }";
 
     @Test
-    public void test1() throws Exception {
+    void test1() throws Exception {
         run( DataSetTest.getExampleDataSet());
     }
     @Test
-    public void test2() throws Exception {
+    void test2() throws Exception {
         run(DataSetTest.getExampleDataSet2(
 
                 () -> "/*" + noise(2 + (int)(Math.random()*3)) + "*/",

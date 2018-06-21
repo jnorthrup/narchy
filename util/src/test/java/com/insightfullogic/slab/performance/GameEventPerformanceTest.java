@@ -56,12 +56,12 @@ public class GameEventPerformanceTest {
 		}
 		;
 		
-		public abstract void allocate();
-		public abstract GameEvent get(int i);
+		protected abstract void allocate();
+		protected abstract GameEvent get(int i);
 	}
  
 	@Test
-	public void runPerformanceTest() {
+    void runPerformanceTest() {
 		try {
 			
 			for (int i = 0; i < 2; i ++) {

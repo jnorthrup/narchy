@@ -14,10 +14,10 @@ import static org.intelligentjava.machinelearning.decisiontree.label.BooleanLabe
 import static org.intelligentjava.machinelearning.decisiontree.label.BooleanLabel.TRUE_LABEL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DecisionTreeFindBestSplitTest {
+class DecisionTreeFindBestSplitTest {
     
     @Test
-    public void testBooleanSplit() {
+    void testBooleanSplit() {
         DecisionTree<String, Object> tree = new DecisionTree();
         String labelColumnName = "answer";
         

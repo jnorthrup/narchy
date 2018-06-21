@@ -29,18 +29,18 @@ import java.awt.event.KeyEvent;
  */
 
 public class JaqlUe {
-	protected JaqlMediator mediator;
-	protected JButton goButton;
-	protected JButton clearButton;
-	protected JTextArea metadataArea;
-	protected JTextArea queryArea;
-	protected JTextArea resultArea;
-	protected static int PREFERREDWIDTH = 600;
+	private JaqlMediator mediator;
+	private JButton goButton;
+	private JButton clearButton;
+	private JTextArea metadataArea;
+	private JTextArea queryArea;
+	private JTextArea resultArea;
+	private static int PREFERREDWIDTH = 600;
 
 	/*
 	 * The panel for the "Go!" and "Clear" buttons.
 	 */
-	protected JPanel buttonPanel() {
+    private JPanel buttonPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.add(goButton(), "North");
@@ -52,7 +52,7 @@ public class JaqlUe {
 	/*
 	 * The "Clear" button.
 	 */
-	protected JButton clearButton() {
+    private JButton clearButton() {
 		if (clearButton == null) {
 			clearButton = new JButton("Clear");
 			clearButton.addActionListener(mediator());
@@ -65,7 +65,7 @@ public class JaqlUe {
 	 * The "Go!" button. This method also establishes "Ctrl-G"
 	 * as a shortcut for pressing the button.
 	 */
-	protected JButton goButton() {
+    private JButton goButton() {
 		if (goButton == null) {
 			goButton = new JButton("Go!");
 			goButton.addActionListener(mediator());
@@ -83,7 +83,7 @@ public class JaqlUe {
 	 * The split pane that contains the query area and the 
 	 * result area.
 	 */
-	protected JSplitPane ioPane() {
+    private JSplitPane ioPane() {
 		Dimension min = new Dimension(PREFERREDWIDTH, 80);
 		Dimension pref = new Dimension(PREFERREDWIDTH, 180);
 
@@ -105,7 +105,7 @@ public class JaqlUe {
 	/*
 	 * The main panel, which contains all components.
 	 */
-	protected JPanel mainPanel() {
+    private JPanel mainPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.add(upperPanel(), "Center");
@@ -116,7 +116,7 @@ public class JaqlUe {
 	/*
 	 * The object that controls the component interactions.
 	 */
-	protected JaqlMediator mediator() {
+    private JaqlMediator mediator() {
 		if (mediator == null) {
 			mediator = new JaqlMediator();
 			mediator.initialize(goButton(), clearButton(), queryArea(), resultArea(), metadataArea());
@@ -127,7 +127,7 @@ public class JaqlUe {
 	/*
 	 * The metadata text area.
 	 */
-	protected JTextArea metadataArea() {
+    private JTextArea metadataArea() {
 		if (metadataArea == null) {
 			metadataArea = SwingUtensil.ideTextArea();
 			ChipSource cs = new ChipSource();
@@ -141,14 +141,14 @@ public class JaqlUe {
 	/*
 	 * The panel that contains the metadata text area.
 	 */
-	protected JPanel metadataPanel() {
+    private JPanel metadataPanel() {
 		return SwingUtensil.textPanel("Metadata", metadataArea(), new Dimension(PREFERREDWIDTH, 120), new Dimension(PREFERREDWIDTH, 80));
 	}
 
 	/*
 	 * The input text area.
 	 */
-	protected JTextArea queryArea() {
+    private JTextArea queryArea() {
 		if (queryArea == null) {
 			queryArea = SwingUtensil.ideTextArea();
 			queryArea.setText("select ChipName, PricePerBag from Chip \n" + "where Oil != \"Sunflower\"");
@@ -159,7 +159,7 @@ public class JaqlUe {
 	/*
 	 * The output text area.
 	 */
-	protected JTextArea resultArea() {
+    private JTextArea resultArea() {
 		if (resultArea == null) {
 			resultArea = SwingUtensil.ideTextArea();
 		}
@@ -170,7 +170,7 @@ public class JaqlUe {
 	 * The panel that contains the query area, the result area 
 	 * and the buttons.
 	 */
-	protected JPanel upperPanel() {
+    private JPanel upperPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.add(ioPane(), "Center");

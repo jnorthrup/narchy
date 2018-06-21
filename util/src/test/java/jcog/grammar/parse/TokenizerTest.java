@@ -10,12 +10,12 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TokenizerTest {
+class TokenizerTest {
 
-	Tokenizer tokenizer;
+	private Tokenizer tokenizer;
 
 	@Test
-	public void eof() throws IOException {
+    void eof() throws IOException {
 		tokenizer = new Tokenizer("");
 		assertNextToken(Token.EOF);
 		tokenizer = new Tokenizer("a");
@@ -24,13 +24,13 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void num() throws IOException {
+    void num() throws IOException {
 		tokenizer = new Tokenizer("1.0");
 		assertNextToken(new BigDecimal("1.0"));
 	}
 
 	@Test
-	public void moreNums() throws IOException {
+    void moreNums() throws IOException {
 		tokenizer = new Tokenizer(
 				"1 1.00 3.141592653589793238462643383279 1000000000000");
 		assertNextToken(new BigDecimal("1"));
@@ -40,7 +40,7 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void symbol() throws IOException {
+    void symbol() throws IOException {
 		tokenizer = new Tokenizer("! <= : .");
 		assertNextSymbol("!");
 		assertNextSymbol("<=");
@@ -49,7 +49,7 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void word() throws IOException {
+    void word() throws IOException {
 		tokenizer = new Tokenizer("those  are my      words    ");
 		assertNextWord("those");
 		assertNextWord("are");
@@ -59,7 +59,7 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void mixedWords() throws IOException {
+    void mixedWords() throws IOException {
 		tokenizer = new Tokenizer("those123 a456b 12abc");
 		assertNextWord("those123");
 		assertNextWord("a456b");
@@ -69,7 +69,7 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void quoted() throws IOException {
+    void quoted() throws IOException {
 		tokenizer = new Tokenizer("\"a quote from !hell!\"");
 		Token nextToken = tokenizer.nextToken();
 		assertTrue(nextToken.isQuotedString());
@@ -77,7 +77,7 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void unicodeChars() throws IOException {
+    void unicodeChars() throws IOException {
 		tokenizer = new Tokenizer("\uD840llo h\uD841llo");
 		tokenizer.setCharacterState(0xd840, 0xd841, tokenizer.wordState());
 		tokenizer.wordState().setWordChars(0xd840, 0xd841, true);
@@ -86,7 +86,7 @@ public class TokenizerTest {
 	}
 	
 	@Test
-	public void javaStyleComments() throws Exception {
+    void javaStyleComments() throws Exception {
 		tokenizer = new Tokenizer("hallo // this is a comment");
 		assertNextWord("hallo");
 		assertEOF();
@@ -96,7 +96,7 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void disableJavaStyleComments() throws Exception {
+    void disableJavaStyleComments() throws Exception {
 		tokenizer = new Tokenizer("hallo // comment /*comment*/");
 		tokenizer.disableComments();
 		assertNextWord("hallo");
@@ -112,7 +112,7 @@ public class TokenizerTest {
 	}
 
 	@Test
-	public void whitespaceTokenizing() throws IOException {
+    void whitespaceTokenizing() throws IOException {
 		tokenizer = new Tokenizer("a b  c\t\nd ");
 		tokenizer.enableWhitespaceTokenizing();
 		assertNextWord("a");

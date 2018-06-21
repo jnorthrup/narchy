@@ -44,7 +44,7 @@ import jcog.grammar.parse.chars.SpecificChar;
  */
 
 public class RegularParser {
-	protected Seq expression;
+	private Seq expression;
 
 	/**
 	 * Returns a parser that will recognize a regular
@@ -53,7 +53,7 @@ public class RegularParser {
 	 * @return a parser that will recognize a regular
 	 *         expression
 	 */
-	public Parser expression() {
+    private Parser expression() {
 		if (expression == null) {
 
 			
@@ -69,7 +69,7 @@ public class RegularParser {
 	 *
 	 *    factor = phrase | phraseStar; 
 	 */
-	protected Parser factor() {
+    private Parser factor() {
 		Alternation a = new Alternation();
 		a.get(phrase());
 		a.get(phraseStar());
@@ -85,7 +85,7 @@ public class RegularParser {
 	 * character and push a SpecificChar parser in its 
 	 * place.
 	 */
-	protected Parser letterOrDigit() {
+    private Parser letterOrDigit() {
 		Alternation a = new Alternation();
 		a.get(new Letter());
 		a.get(new Digit());
@@ -101,7 +101,7 @@ public class RegularParser {
 	 * This parser has an assembler that will pop two
 	 * parsers and push a Sequence of them. 
 	 */
-	protected Parser nextFactor() {
+    private Parser nextFactor() {
 		Parser p = factor();
 		p.put(new AndAssembler());
 		return p;
@@ -115,7 +115,7 @@ public class RegularParser {
 	 * This parser has an assembler that will pop two
 	 * parsers and push an Alternation of them. 
 	 */
-	protected Parser orTerm() {
+    private Parser orTerm() {
 		Seq s = new Seq();
 		s.get(new SpecificChar('|').ok());
 		s.get(term());
@@ -128,7 +128,7 @@ public class RegularParser {
 	 *
 	 *     phrase = letterOrDigit | '(' expression ')';
 	 */
-	protected Parser phrase() {
+    private Parser phrase() {
 		Alternation a = new Alternation();
 		a.get(letterOrDigit());
 
@@ -149,7 +149,7 @@ public class RegularParser {
 	 * This parser has an assembler that will pop a
 	 * parser and push a Repetition of it.
 	 */
-	protected Parser phraseStar() {
+    private Parser phraseStar() {
 		Seq s = new Seq();
 		s.get(phrase());
 		s.get(new SpecificChar('*').ok());
@@ -173,7 +173,7 @@ public class RegularParser {
 	 *
 	 *    term = factor nextFactor*; 
 	 */
-	protected Parser term() {
+    private Parser term() {
 		Seq term = new Seq();
 		term.get(factor());
 		term.get(new Repetition(nextFactor()));

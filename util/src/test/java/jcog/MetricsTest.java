@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author me
  */
-public class MetricsTest {
+class MetricsTest {
 
-    static final FunctionMeter<Integer> timeDoubler = new FunctionMeter<Integer>("x") {
+    private static final FunctionMeter<Integer> timeDoubler = new FunctionMeter<Integer>("x") {
 
         @Override
         public Integer getValue(Object when, int index) {
@@ -32,7 +32,8 @@ public class MetricsTest {
         }            
     };
         
-    @Test public void testTemporalMetrics() {
+    @Test
+    void testTemporalMetrics() {
 
         
         TemporalMetrics tm = new TemporalMetrics(3);
@@ -83,7 +84,8 @@ public class MetricsTest {
 
     
     @Disabled
-    @Test public void testSummaryStatistics() {
+    @Test
+    void testSummaryStatistics() {
 
         TemporalMetrics tm = new TemporalMetrics(10);
         tm.add(new BasicStatistics(tm, tm.getSignalIDs()[0]));

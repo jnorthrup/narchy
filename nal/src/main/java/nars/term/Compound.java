@@ -29,7 +29,6 @@ import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.anon.Anon;
 import nars.unify.Unify;
-import nars.util.term.transform.CompoundNormalization;
 import nars.util.term.transform.Retemporalize;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -612,23 +611,10 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     @Nullable
     default Term normalize(byte varOffset) {
-
         if (varOffset == 0 && this.isNormalized())
             return this;
 
-        Term y = new CompoundNormalization(
-                this, varOffset).transformCompound(this);
-
-//        LazyCompound yy = new LazyCompound();
-//        new nars.util.term.transform.CompoundNormalization(this, varOffset)
-//                .transform(this, yy);
-//        Term y = yy.get();
-
-        if (varOffset == 0 && y instanceof Compound) {
-            y.subterms().setNormalized();
-        }
-
-        return y;
+        return Op.terms.normalize(this, varOffset);
     }
 
 

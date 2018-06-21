@@ -19,7 +19,7 @@ import java.util.List;
  * @version 1.0
  */
 public class CommandSequence extends Command {
-	protected List<Command> commands;
+	private List<Command> commands;
 
 	/**
 	 * Add a command to the sequence of commands to which this object will
@@ -35,7 +35,7 @@ public class CommandSequence extends Command {
 	/**
 	 * Lazy-initialize the <code>commands</code> vector.
 	 */
-	protected List<Command> commands() {
+    private List<Command> commands() {
 		if (commands == null) {
 			commands = new ArrayList<Command>();
 		}

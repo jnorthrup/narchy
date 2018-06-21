@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameEventScenarioTest {
+class GameEventScenarioTest {
 
 	@Test
-	public void eventScenario() {
+    void eventScenario() {
 		Allocator<GameEvent> eventAllocator = Allocator.of(GameEvent.class);
 
 		GameEvent event = eventAllocator.allocate(100);
@@ -42,7 +42,7 @@ public class GameEventScenarioTest {
 	}
 
 	@Test
-	public void resizing() {
+    void resizing() {
 		Allocator<GameEvent> eventAllocator = Allocator.of(GameEvent.class);
 		GameEvent event = eventAllocator.allocate(1);
 		assertEquals(1, event.size());
@@ -65,7 +65,7 @@ public class GameEventScenarioTest {
 	}
 	
 	@Test
-	public void twoCloses() {
+    void twoCloses() {
 		Allocator<GameEvent> eventAllocator = Allocator.of(GameEvent.class);
 		GameEvent event = eventAllocator.allocate(1);
 		try {
@@ -76,7 +76,7 @@ public class GameEventScenarioTest {
 	}
 
 	@Test
-	public void boundsCheckingCatches() {
+    void boundsCheckingCatches() {
 		assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
 			ConcreteCursor.boundsChecking = true;
 			Allocator<GameEvent> eventAllocator = Allocator.of(GameEvent.class);

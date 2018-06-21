@@ -30,10 +30,10 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class ParensTest {
+class ParensTest {
 
 	@Test
-	public void test1() {
+    void test1() {
 
 		
 

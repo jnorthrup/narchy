@@ -10,8 +10,8 @@ import jcog.grammar.parse.PubliclyCloneable;
  * @version 1.0 
  */
 public class Course implements PubliclyCloneable<Course> {
-	protected Professor professor;
-	protected Textbook textbook;
+	private Professor professor;
+	private Textbook textbook;
 
 	/**
 	 * Return a copy of this object.
@@ -53,7 +53,7 @@ public class Course implements PubliclyCloneable<Course> {
 	 *
 	 * @param   Professor   professor
 	 */
-	public void setProfessor(Professor professor) {
+    private void setProfessor(Professor professor) {
 		this.professor = professor;
 	}
 
@@ -62,7 +62,7 @@ public class Course implements PubliclyCloneable<Course> {
 	 *
 	 * @param   Textbook   textbook
 	 */
-	public void setTextbook(Textbook textbook) {
+    private void setTextbook(Textbook textbook) {
 		this.textbook = textbook;
 	}
 }

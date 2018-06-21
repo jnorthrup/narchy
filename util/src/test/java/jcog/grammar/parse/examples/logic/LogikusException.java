@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.logic;
  * 
  * @version 1.0
  */
-public class LogikusException extends RuntimeException {
+class LogikusException extends RuntimeException {
 	/**
 	 * Constructs a <code>LogikusException</code> with no detail 
 	 * message.

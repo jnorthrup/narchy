@@ -17,7 +17,7 @@ package jcog.grammar.parse.examples.engine;
  * 
  * @version 1.0
  */
-public class BooleanFact extends Atom {
+class BooleanFact extends Atom {
 
 	/**
 	 * Contructs a boolean fact from the provide Boolean.
@@ -25,7 +25,7 @@ public class BooleanFact extends Atom {
 	 * @param Boolean
 	 *            <code>Boolan.TRUE</code> or <code>Boolean.FALSE</code>
 	 */
-	public BooleanFact(Boolean b) {
+    private BooleanFact(Boolean b) {
 		super(b);
 	}
 

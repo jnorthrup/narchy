@@ -25,17 +25,17 @@ import java.awt.event.KeyEvent;
  * @version 1.0 
  */
 public class SlingIde {
-	protected SlingMediator mediator;
-	protected JButton clearButton;
-	protected JButton goButton;
-	protected JButton haltButton;
-	protected JTextArea messageArea;
-	protected JTextArea programArea;
-	protected JSlider s1;
-	protected JSlider s2;
-	protected SlingPanel plotPanel;
-	protected int preferredWidth = 500;
-	protected Dimension min = new Dimension(preferredWidth, 30);
+	private SlingMediator mediator;
+	private JButton clearButton;
+	private JButton goButton;
+	private JButton haltButton;
+	private JTextArea messageArea;
+	private JTextArea programArea;
+	private JSlider s1;
+	private JSlider s2;
+	private SlingPanel plotPanel;
+	private int preferredWidth = 500;
+	private Dimension min = new Dimension(preferredWidth, 30);
 
 	/*
 	 * Creates and returns the box that contains the IDE's
@@ -54,7 +54,7 @@ public class SlingIde {
 	 * Creates and returns the box that contains the IDE's
 	 * buttons.
 	 */
-	protected JPanel buttonPanel() {
+    private JPanel buttonPanel() {
 		JPanel upperButtons = new JPanel();
 		upperButtons.setLayout(new BorderLayout());
 		upperButtons.add(goButton(), "Center");
@@ -71,7 +71,7 @@ public class SlingIde {
 	/*
 	 * The button that clears the message area.
 	 */
-	protected JButton clearButton() {
+    private JButton clearButton() {
 		if (clearButton == null) {
 			clearButton = new JButton("Clear");
 			clearButton.addActionListener(mediator());
@@ -83,7 +83,7 @@ public class SlingIde {
 	/*
 	 * The button that starts the proof thread.
 	 */
-	protected JButton goButton() {
+    private JButton goButton() {
 		if (goButton == null) {
 			goButton = new JButton("Go!");
 			goButton.addActionListener(mediator());
@@ -100,7 +100,7 @@ public class SlingIde {
 	/*
 	 * The button that halts the proof thread.
 	 */
-	protected JButton haltButton() {
+    private JButton haltButton() {
 		if (haltButton == null) {
 			haltButton = new JButton("Halt");
 			haltButton.setEnabled(false);
@@ -114,7 +114,7 @@ public class SlingIde {
 	 * The panel with the program/message split pane and the
 	 * button panel.
 	 */
-	protected JPanel lowerPanel() {
+    private JPanel lowerPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.add(programMessagePane(), "Center");
@@ -133,7 +133,7 @@ public class SlingIde {
 	 * A split pane that contains, ultimately, all the components
 	 * in the IDE.
 	 */
-	protected JSplitPane mainPane() {
+    private JSplitPane mainPane() {
 
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, upperPanel(), lowerPanel());
 
@@ -145,7 +145,7 @@ public class SlingIde {
 	 * The object that controls or "mediates" the interaction
 	 * of this development environment's Swing components.
 	 */
-	protected SlingMediator mediator() {
+    private SlingMediator mediator() {
 		if (mediator == null) {
 			mediator = new SlingMediator();
 			mediator.initialize(goButton(), haltButton(), clearButton(), s1(), s2(), programArea(), messageArea(), plotPanel());
@@ -156,7 +156,7 @@ public class SlingIde {
 	/*
 	 * The message text area.
 	 */
-	protected JTextArea messageArea() {
+    private JTextArea messageArea() {
 		if (messageArea == null) {
 			messageArea = SwingUtensil.ideTextArea();
 		}
@@ -166,7 +166,7 @@ public class SlingIde {
 	/*
 	 * The <code>SlingPanel</code> where plotting occurs.
 	 */
-	protected SlingPanel plotPanel() {
+    private SlingPanel plotPanel() {
 		if (plotPanel == null) {
 			plotPanel = new SlingPanel();
 			plotPanel.setPreferredSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
@@ -177,7 +177,7 @@ public class SlingIde {
 	/*
 	 * The program text area.
 	 */
-	protected JTextArea programArea() {
+    private JTextArea programArea() {
 		if (programArea == null) {
 			programArea = SwingUtensil.ideTextArea();
 		}
@@ -188,7 +188,7 @@ public class SlingIde {
 	 * The split pane that contains the program panel and the
 	 * message panel.
 	 */
-	protected JSplitPane programMessagePane() {
+    private JSplitPane programMessagePane() {
 
 		JSplitPane inner = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, titledProgramPanel(), titledMessagePanel());
 		inner.setDividerSize(6);
@@ -199,7 +199,7 @@ public class SlingIde {
 	/*
 	 * The first slider.
 	 */
-	protected JSlider s1() {
+    private JSlider s1() {
 		if (s1 == null) {
 			s1 = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 100);
 			s1.addChangeListener(mediator());
@@ -210,7 +210,7 @@ public class SlingIde {
 	/*
 	 * The second slider.
 	 */
-	protected JSlider s2() {
+    private JSlider s2() {
 		if (s2 == null) {
 			s2 = new JSlider(SwingConstants.HORIZONTAL, 0, 100, 100);
 			s2.addChangeListener(mediator());
@@ -230,7 +230,7 @@ public class SlingIde {
 	/*
 	 * Creates and returns the box that contains a slider.
 	 */
-	protected Box sliderBox(String name, JSlider s) {
+    private Box sliderBox(String name, JSlider s) {
 		Box b = Box.createHorizontalBox();
 		JLabel label = new JLabel(name);
 		label.setFont(SwingUtensil.ideFont());
@@ -244,7 +244,7 @@ public class SlingIde {
 	/*
 	 * The panel that contains the slider boxes.
 	 */
-	protected JPanel sliderPanel() {
+    private JPanel sliderPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 
@@ -263,7 +263,7 @@ public class SlingIde {
 	 * Forms and returns a standard text panel, which is
 	 * a scroll pane around a text area, with a title border.
 	 */
-	protected static JPanel textPanel(String title, JTextArea ta, Dimension pref, Dimension min) {
+	private static JPanel textPanel(String title, JTextArea ta, Dimension pref, Dimension min) {
 
 		
 		JScrollPane s1 = new JScrollPane(ta);
@@ -281,7 +281,7 @@ public class SlingIde {
 	/*
 	 * The panel that wraps a title around the message area.
 	 */
-	protected JPanel titledMessagePanel() {
+    private JPanel titledMessagePanel() {
 
 		return textPanel("Messages", messageArea(), new Dimension(preferredWidth, 60), min);
 	}
@@ -289,7 +289,7 @@ public class SlingIde {
 	/*
 	 * The panel that wraps a title around the plot panel.
 	 */
-	protected JPanel titledPlotPanel() {
+    private JPanel titledPlotPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.setBorder(BorderFactory.createCompoundBorder(SwingUtensil.ideTitledBorder("Plot"), BorderFactory.createEmptyBorder(0, 5, 10, 5)));
@@ -302,7 +302,7 @@ public class SlingIde {
 	/*
 	 * The panel that wraps a title around the program area.
 	 */
-	protected JPanel titledProgramPanel() {
+    private JPanel titledProgramPanel() {
 
 		return textPanel("Program", programArea(), new Dimension(preferredWidth, 120), min);
 	}
@@ -311,7 +311,7 @@ public class SlingIde {
 	 * The panel that contains the (titled) plot panel and the
 	 * slider panel.
 	 */
-	protected JPanel upperPanel() {
+    private JPanel upperPanel() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.add(titledPlotPanel(), "Center");

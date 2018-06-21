@@ -33,14 +33,14 @@ import jcog.grammar.parse.tokens.Word;
  * @version 1.0 
  */
 public class Dangle {
-	protected static Alternation statement;
+	private static Alternation statement;
 
 	/*
 	 * Return a parser that recognizes the grammar:
 	 * 
 	 *     callCustomer = "callCustomer" '(' ')' ';';
 	 */
-	public static Parser callCustomer() {
+	private static Parser callCustomer() {
 		Seq s = new Seq("<callCustomer>");
 		s.get(new Literal("callCustomer"));
 		s.get(new Symbol('('));
@@ -54,7 +54,7 @@ public class Dangle {
 	 * 
 	 *     comparison   = '(' expression operator expression ')';
 	 */
-	public static Parser comparison() {
+	private static Parser comparison() {
 		Seq s = new Seq("<comparison>");
 		s.get(new Symbol('('));
 		s.get(expression());
@@ -69,7 +69,7 @@ public class Dangle {
 	 * 
 	 *     expression   = Word | Num;
 	 */
-	public static Parser expression() {
+	private static Parser expression() {
 		Alternation a = new Alternation("<expression>");
 		a.get(new Word());
 		a.get(new Num());
@@ -81,7 +81,7 @@ public class Dangle {
 	 *
 	 *     ifelse = "if" comparison statement "else" statement;
 	 */
-	public static Parser ifelse() {
+	private static Parser ifelse() {
 		Seq s = new Seq("<ifelse>");
 		s.get(new Literal("if"));
 		s.get(comparison());
@@ -96,7 +96,7 @@ public class Dangle {
 	 *
 	 *     iff = "if" comparison statement;
 	 */
-	public static Parser iff() {
+	private static Parser iff() {
 		Seq s = new Seq("<iff>");
 		s.get(new Literal("if"));
 		s.get(comparison());
@@ -109,7 +109,7 @@ public class Dangle {
 	 * 
 	 *     operator     = '<' | '>' | '=' | "<=" | ">=" | "!=";
 	 */
-	public static Parser operator() {
+	private static Parser operator() {
 		Alternation a = new Alternation("<operator>");
 		a.get(new Symbol('<'));
 		a.get(new Symbol('>'));
@@ -125,7 +125,7 @@ public class Dangle {
 	 * 
 	 *     sendBill     = "sendBill" '('')' ';';
 	 */
-	public static Parser sendBill() {
+	private static Parser sendBill() {
 		Seq s = new Seq("<sendBill>");
 		s.get(new Literal("sendBill"));
 		s.get(new Symbol('('));

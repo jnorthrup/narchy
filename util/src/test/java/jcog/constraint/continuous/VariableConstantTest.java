@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by alex on 31/01/16.
  */
-public class VariableConstantTest {
+class VariableConstantTest {
     private static double EPSILON = 1.0e-8;
 
     @Test
-    public void lessThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void lessThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         DoubleVar x = new DoubleVar("x");
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         solver.add(C.lessThanOrEqualTo(x, 100));
@@ -25,7 +25,7 @@ public class VariableConstantTest {
     }
 
     @Test
-    public void lessThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void lessThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         assertThrows(UnsatisfiableConstraintException.class, () -> {
             DoubleVar x = new DoubleVar("x");
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
@@ -39,7 +39,7 @@ public class VariableConstantTest {
     }
 
     @Test
-    public void greaterThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void greaterThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         DoubleVar x = new DoubleVar("x");
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         solver.add(C.greaterThanOrEqualTo(x, 100));
@@ -51,7 +51,7 @@ public class VariableConstantTest {
     }
 
     @Test
-    public void greaterThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void greaterThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         assertThrows(UnsatisfiableConstraintException.class, () -> {
             DoubleVar x = new DoubleVar("x");
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();

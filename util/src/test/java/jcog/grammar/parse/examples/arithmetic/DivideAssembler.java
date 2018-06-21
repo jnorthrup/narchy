@@ -11,7 +11,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class DivideAssembler implements IAssembler {
+class DivideAssembler implements IAssembler {
 	/**
 	 * Pop two numbers from the stack and push the result of
 	 * dividing the top number into the one below it.

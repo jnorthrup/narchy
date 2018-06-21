@@ -9,11 +9,11 @@ package jcog.grammar.parse.examples.chips;
  * @version 1.0 
  */
 public class Chip {
-	protected Integer chipID;
-	protected String chipName;
-	protected Double price;
-	protected Double ounces;
-	protected String oil;
+	private Integer chipID;
+	private String chipName;
+	private Double price;
+	private Double ounces;
+	private String oil;
 
 	/**
 	 * Create a chip given its ID, name, price per bag, ounces
@@ -28,7 +28,7 @@ public class Chip {
 	 * Create a chip given its ID, name, price per bag, ounces
 	 * per bag, and type of oil.
 	 */
-	public Chip(Integer chipID, String chipName, Double price, Double ounces, String oil) {
+    private Chip(Integer chipID, String chipName, Double price, Double ounces, String oil) {
 
 		this.chipID = chipID;
 		this.chipName = chipName;

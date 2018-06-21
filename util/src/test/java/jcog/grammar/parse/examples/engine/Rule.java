@@ -32,7 +32,7 @@ package jcog.grammar.parse.examples.engine;
  */
 
 public class Rule implements Axiom {
-	protected Structure[] structures;
+	Structure[] structures;
 
 	/**
 	 * Construct rule from the given structures.

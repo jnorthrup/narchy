@@ -11,8 +11,8 @@ import jcog.grammar.parse.examples.imperative.Command;
  * @version 1.0 
  */
 public class AssignFunctionCommand extends Command {
-	protected Variable v;
-	protected SlingFunction f;
+	private Variable v;
+	private SlingFunction f;
 
 	/**
 	 * Construct a command to assign the supplied function to 

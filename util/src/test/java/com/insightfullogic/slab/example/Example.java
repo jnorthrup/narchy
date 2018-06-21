@@ -1,6 +1,6 @@
 package com.insightfullogic.slab.example;
 
-public class Example {
+class Example {
 
 	public char foo() {
 		return 'c';

@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.cloning;
  *
  * @version 1.0 
  */
-public class OrderFlawed implements Cloneable {
+class OrderFlawed implements Cloneable {
 	
 	
 	
@@ -24,7 +24,7 @@ public class OrderFlawed implements Cloneable {
 	
 	
 
-	protected Customer customer;
+	private Customer customer;
 
 	/**
 	 * Construct a customer.

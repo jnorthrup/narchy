@@ -18,8 +18,8 @@ import java.util.Iterator;
  * @version 1.0
  */
 public class ChipSpeller implements Speller {
-	protected Dictionary classNames;
-	protected Dictionary variableNames;
+	private Dictionary classNames;
+	private Dictionary variableNames;
 
 	/**
 	 * Initialize the ChipSpeller.
@@ -32,14 +32,14 @@ public class ChipSpeller implements Speller {
 	/*
 	 * Add one class name.
 	 */
-	protected void addClassName(String s) {
+    private void addClassName(String s) {
 		classNames.put(s.toLowerCase(), s);
 	}
 
 	/*
 	 * Add one variable name.
 	 */
-	protected void addVariableName(String s) {
+    private void addVariableName(String s) {
 		variableNames.put(s.toLowerCase(), s);
 	}
 
@@ -68,7 +68,7 @@ public class ChipSpeller implements Speller {
 	/*
 	 * Load all the class names from ChipData into the class name dictionary.
 	 */
-	protected void loadClassNames() {
+    private void loadClassNames() {
 		classNames = new Hashtable();
 		addClassName("chip");
 		addClassName("customer");
@@ -78,7 +78,7 @@ public class ChipSpeller implements Speller {
 	/*
 	 * Load all the variable names from ChipData into the class name dictionary.
 	 */
-	protected void loadVariableNames() {
+    private void loadVariableNames() {
 		variableNames = new Hashtable();
 		/*
 		 * Use the query templates to detect the variable names.

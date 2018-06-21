@@ -26,7 +26,6 @@ import nars.Op;
 import nars.Param;
 import nars.term.Variable;
 import nars.term.anon.AnonID;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;
@@ -38,22 +37,29 @@ import static nars.Op.VAR_DEP;
 public abstract class NormalizedVariable implements Variable, AnonID {
 
 
+    /**
+     * numerically-indexed variable instance cache; prevents duplicates and speeds comparisons
+     */
+    private static final NormalizedVariable[][] varCache = new NormalizedVariable[4][Param.MAX_INTERNED_VARS];
+
+    static {
+
+        for (Op o: new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, Op.VAR_INDEP}) {
+            int t = opToVarIndex(o);
+            for (byte i = 1; i < Param.MAX_INTERNED_VARS; i++) {
+                varCache[t][i] = vNew(o, i);
+            }
+        }
+    }
+
     public final short id;
-
-
-
-
-
-
-
-
     /*@Stable*/
     private final byte[] bytes;
 
     protected NormalizedVariable(/*@NotNull*/ Op type, byte num) {
         assert num > 0;
 
-        id = AnonID.termToId(type, num );
+        id = AnonID.termToId(type, num);
 
         byte[] b = new byte[2];
         b[0] = type.id;
@@ -62,55 +68,6 @@ public abstract class NormalizedVariable implements Variable, AnonID {
     }
 
 
-    @Override
-    public final byte[] bytes() {
-        return bytes;
-    }
-
-    @Override
-    public final short anonID() {
-        return id;
-    }
-
-    @Override
-    public byte anonNum() {
-        return bytes[1];
-    }
-
-    @Override
-    public final boolean equals(Object obj) {
-        return obj == this ||
-                (obj instanceof NormalizedVariable
-                        && ((NormalizedVariable) obj).id == id);
-    }
-
-    @Override
-    public @Nullable NormalizedVariable normalize(byte vid) {
-        if (anonNum() == vid)
-            return this;
-        else
-            return $.v(op(), vid);
-    }
-
-
-    @Override
-    public final int hashCode() {
-        return id;
-    }
-
-
-    @NotNull
-    @Override
-    public String toString() {
-        return op().ch + Integer.toString(anonNum());
-    }
-
-    /**
-     * numerically-indexed variable instance cache; prevents duplicates and speeds comparisons
-     */
-    private static final NormalizedVariable[][] varCache = new NormalizedVariable[4][Param.MAX_INTERNED_VARS];
-
-    @NotNull
     public static Op typeIndex(char c) {
         switch (c) {
             case '%':
@@ -125,23 +82,10 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         throw new RuntimeException("invalid variable character");
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private static int opToVarIndex(/*@NotNull*/ Op o) {
         return opToVarIndex(o.id);
     }
+
     private static int opToVarIndex(/*@NotNull*/ byte oid) {
         return oid - VAR_DEP.id;
 //        //TODO verify this is consistent with the variable's natural ordering
@@ -159,24 +103,10 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 //        }
     }
 
-
-
-
-
-    static {
-        
-        for (Op o : new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, Op.VAR_INDEP}) {
-            int t = opToVarIndex(o);
-            for (byte i = 1; i < Param.MAX_INTERNED_VARS; i++) {
-                varCache[t][i] = vNew(o, i);
-            }
-        }
-    }
-
     /**
      * TODO move this to TermBuilder
      */
-    @NotNull
+
     private static NormalizedVariable vNew(/*@NotNull*/ Op type, byte id) {
         switch (type) {
             case VAR_PATTERN:
@@ -190,7 +120,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
                     case 127:
                         return Op.imExt;
                     default:
-                        assert(id > 0);
+                        assert (id > 0);
                         return new VarDep(id);
                 }
             case VAR_INDEP:
@@ -212,19 +142,49 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         }
     }
 
+    @Override
+    public final byte[] bytes() {
+        return bytes;
+    }
+
+    @Override
+    public final short anonID() {
+        return id;
+    }
+
+    @Override
+    public byte anonNum() {
+        return bytes[1];
+    }
+    public byte anonType() {
+        return bytes[0];
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return obj == this ||
+                (obj instanceof NormalizedVariable
+                        && ((NormalizedVariable) obj).id == id);
+    }
+
+    @Override
+    public @Nullable NormalizedVariable normalize(byte vid) {
+        if (anonNum() == vid)
+            return this;
+        else
+            return $.v(op(), vid);
+    }
+
+    @Override
+    public final int hashCode() {
+        return id;
+    }
 
 
-
-    
-
-
-
-
-
-
-
-
-
+    @Override
+    public String toString() {
+        return op().ch + Integer.toString(anonNum());
+    }
 
 
 }

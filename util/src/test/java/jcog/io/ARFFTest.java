@@ -15,7 +15,7 @@ class ARFFTest {
      * and dumps their contents to the System.out.
      */
     @Test
-    public void testParse() throws IOException, ARFF.ARFFParseError {
+    void testParse() throws IOException, ARFF.ARFFParseError {
 
         String file = "% oh yes, this is great!\n" +
                 "% and even better than I thought!\n" +
@@ -42,7 +42,7 @@ class ARFFTest {
     }
 
     @Test
-    public void testGenerate() throws IOException {
+    void testGenerate() throws IOException {
         ARFF a = new ARFF();
         a.defineText("test").defineNumeric("score");
 
@@ -67,7 +67,7 @@ class ARFFTest {
     }
 
     @Test
-    public void testARFFObjectAdd() throws IOException {
+    void testARFFObjectAdd() throws IOException {
         ARFF.ARFFObject<Schema1> a = new ARFF.ARFFObject<>(Schema1.class);
         a.put(new Schema1("abc", 0.5f, true));
         a.put(new Schema1("def", 0.75f, false));

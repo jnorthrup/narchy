@@ -21,7 +21,7 @@ public class ShowTrack {
 	 *     contents   = empty | actualList;
 	 *     actualList = Word (',' Word)*;
 	 */
-	public static Parser list() {
+	private static Parser list() {
 
 		Parser empty, commaWord, actualList, contents, list;
 

@@ -2,10 +2,10 @@ package jcog;
 
 import org.junit.jupiter.api.Test;
 
-public class ServicesTest {
+class ServicesTest {
 
     @Test
-    public void testServices1() {
+    void testServices1() {
 
         Services<?, String> s = new Services("");
         StringBuilder sb = new StringBuilder();
@@ -27,7 +27,7 @@ public class ServicesTest {
     private static class DummyService extends Service {
         private final StringBuilder sb;
 
-        public DummyService(StringBuilder sb) {
+        DummyService(StringBuilder sb) {
             this.sb = sb;
         }
 

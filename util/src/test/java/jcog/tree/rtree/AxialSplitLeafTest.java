@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by jcovert on 6/12/15.
  */
-public class AxialSplitLeafTest {
+class AxialSplitLeafTest {
 
     private static final Spatialization.DefaultSplits TYPE = Spatialization.DefaultSplits.AXIAL;
 
@@ -43,7 +43,7 @@ public class AxialSplitLeafTest {
      * no entries are lost.
      */
     @Test
-    public void basicSplitTest() {
+    void basicSplitTest() {
 
         RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
         rTree.add(new RectDouble2D(0, 0, 1, 1));
@@ -66,7 +66,8 @@ public class AxialSplitLeafTest {
     }
 
 
-    @Test public void splitCorrectnessTest() {
+    @Test
+    void splitCorrectnessTest() {
 
         RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, 4, TYPE);
         rTree.add(new RectDouble2D(0, 0, 3, 3));
@@ -104,7 +105,7 @@ public class AxialSplitLeafTest {
      * are lost during insert/split.
      */
     @Test
-    public void overlappingEntryTest() {
+    void overlappingEntryTest() {
 
         final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
         rTree.add(new RectDouble2D(0, 0, 1, 1));
@@ -141,7 +142,7 @@ public class AxialSplitLeafTest {
      */
     @ParameterizedTest
     @ValueSource(ints = {2,3,4,5,8})
-    public void randomEntryTest(int maxLeaf) {
+    void randomEntryTest(int maxLeaf) {
 
         final int entryCount = 50000;
         final RectDouble2D[] rects = RTree2DTest.generateRandomRects(entryCount);
@@ -163,7 +164,7 @@ public class AxialSplitLeafTest {
      * never falls victim to the same issue.
      */
     @Test
-    public void causeLinearSplitOverflow() {
+    void causeLinearSplitOverflow() {
         final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
         final Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {

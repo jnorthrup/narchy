@@ -14,12 +14,12 @@ import jcog.grammar.parse.tokens.TokenTester;
  * @see JaqlUe
  */
 public class JaqlTester extends TokenTester {
-	protected static Speller speller;
+	private static Speller speller;
 
 	/**
 	 * 
 	 */
-	public JaqlTester() {
+    private JaqlTester() {
 		super(new JaqlParser(speller()).start());
 	}
 
@@ -40,7 +40,7 @@ public class JaqlTester extends TokenTester {
 	/*
 	 * Provide a spell that allows any class or variable name.
 	 */
-	protected static Speller speller() {
+	private static Speller speller() {
 		if (speller == null) {
 			speller = new MellowSpeller();
 		}

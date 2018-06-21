@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ArrayHashRingTest {
 
     @Test
-    public void test1() {
+    void test1() {
         ArrayHashRing a = new ArrayHashRing(3);
         a.add("x");
         a.add("y");

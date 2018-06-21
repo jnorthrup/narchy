@@ -9,10 +9,10 @@ import java.util.Random;
 /**
  * Created by me on 2/18/16.
  */
-public class AutoencoderTest {
+class AutoencoderTest {
 
     @Test
-    public void test_dA() {
+    void test_dA() {
         Random rng = new Random(123);
         float corruption_level = 0.3f;
         int training_epochs = 100;

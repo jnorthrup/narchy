@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class RoastAssembler implements IAssembler {
+class RoastAssembler implements IAssembler {
 	/**
 	 * Pop a string, and set the target coffee's roast to this
 	 * string.

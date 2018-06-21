@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NodeGraphTest {
 
     @Test
-    public void testDFS() {
+    void testDFS() {
         NodeGraph n = g1();
         List<String> trace = new FasterList();
         n.dfs("a", new Search() {
@@ -32,7 +32,7 @@ class NodeGraphTest {
     }
 
     @Test
-    public void testBFS() {
+    void testBFS() {
         NodeGraph n = g1();
         List<String> trace = new FasterList();
         n.bfs("a", new Search() {
@@ -46,7 +46,7 @@ class NodeGraphTest {
     }
 
 
-    static NodeGraph g1() {
+    private static NodeGraph g1() {
         MapNodeGraph n = new MapNodeGraph();
         n.addNode("a");
         n.addNode("b");
@@ -60,11 +60,12 @@ class NodeGraphTest {
         return n;
     }
 
-    static void edge(MapNodeGraph n, String a, String b) {
+    private static void edge(MapNodeGraph n, String a, String b) {
         n.addEdge(a, a+b, b);
     }
 
-    @Test public void testObjectGraph() {
+    @Test
+    void testObjectGraph() {
         MapNodeGraph<Object, Object> h = new MapNodeGraph<>();
         h.addEdge(h.addNode("y"), "yx", h.addNode("x"));
 

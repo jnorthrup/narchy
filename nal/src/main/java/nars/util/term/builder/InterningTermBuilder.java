@@ -1,16 +1,21 @@
 package nars.util.term.builder;
 
 import jcog.Util;
+import jcog.WTF;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Int;
+import nars.term.compound.LighterCompound;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import static nars.Op.NEG;
 import static nars.Op.PROD;
@@ -24,8 +29,8 @@ import static nars.time.Tense.XTERNAL;
 public class InterningTermBuilder extends HeapTermBuilder {
 
 
-    protected final HijackTermCache[] termCache;
-
+    final HijackTermCache[] termCache;
+    final HijackTermCache transformCache;
 
     private final int cacheSizePerOp;
 
@@ -40,14 +45,17 @@ public class InterningTermBuilder extends HeapTermBuilder {
         for (int i = 0; i < Op.ops.length; i++) {
             if (Op.ops[i].atomic || Op.ops[i]==NEG) continue;
 
-            termCache[i] = newOpCache(cacheSizePerOp);
+            termCache[i] = newOpCache(this::compoundInterned, cacheSizePerOp);
         }
+
+        transformCache = newOpCache(this::normalize, cacheSizePerOp);
     }
 
 
-    private HijackTermCache newOpCache(int capacity) {
-        return new HijackTermCache(this::compoundInterned, capacity, 4);
+    private HijackTermCache newOpCache(Function<InternedCompound, Term> f, int capacity) {
+        return new HijackTermCache(f, capacity, 4);
     }
+
     private Term apply(InternedCompound x) {
         return termCache[x.op].apply(x);
     }
@@ -169,5 +177,31 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return Arrays.toString(Util.map(0, termCache.length, x -> termCache[x]!=null ?
                 (Op.ops[x] + ": " + termCache[x].summary() + "\n")
                 : "", String[]::new));
+    }
+
+    @Override
+    public Term normalize(Compound x, byte varOffset) {
+
+        if (!x.hasVars())
+            throw new WTF();
+
+        if (varOffset == 0) {
+            return transformCache.apply(InternedCompound.get(new LighterCompound(PROD, x, NORMALIZE)));
+        } else {
+            return super.normalize(x, varOffset);
+        }
+    }
+
+    final static Atomic NORMALIZE = Int.the(1);
+    protected Term normalize(InternedCompound i) {
+        Term[] termAndTransform = i.rawSubs.get();
+        Term term = termAndTransform[0];
+        int transform = ((Int)termAndTransform[1]).id;
+        switch (transform) {
+            case 1: /* normalize */
+                return super.normalize((Compound)term, (byte)0);
+            default:
+                throw new  UnsupportedOperationException();
+        }
     }
 }

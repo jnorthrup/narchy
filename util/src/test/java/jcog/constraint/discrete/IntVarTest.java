@@ -22,11 +22,11 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class IntVarTest {
+abstract class IntVarTest {
 
-  public abstract IntVar intVar(DiscreteConstraintSolver solver, int min, int max);
+  protected abstract IntVar intVar(DiscreteConstraintSolver solver, int min, int max);
 
-  public abstract IntVar intVar(DiscreteConstraintSolver solver, int[] values);
+  protected abstract IntVar intVar(DiscreteConstraintSolver solver, int[] values);
 
   
   private boolean containsAll(IntVar x, int... values) {
@@ -40,7 +40,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test1() {
+  void test1() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 10);
     assertEquals(x.size(), 6);
@@ -49,7 +49,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test1a() {
+  void test1a() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     int[] values = new int[]{-10, 0, 10, 100};
     IntVar x = intVar(solver, values);
@@ -59,7 +59,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test2() {
+  void test2() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertTrue(x.contains(5));
@@ -69,7 +69,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test3() {
+  void test3() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertFalse(x.contains(-1000));
@@ -82,7 +82,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test4() {
+  void test4() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertEquals(x.size(), 11);
@@ -95,7 +95,7 @@ public abstract class IntVarTest {
   
   
   @Test
-  public void test5() {
+  void test5() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertTrue(x.updateMin(4));
@@ -110,7 +110,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test6() {
+  void test6() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertTrue(x.updateMin(15));
@@ -121,7 +121,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test7() {
+  void test7() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertFalse(x.updateMin(20));
@@ -129,7 +129,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test8() {
+  void test8() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertEquals(x.size(), 11);
@@ -142,7 +142,7 @@ public abstract class IntVarTest {
   
   
   @Test
-  public void test9() {
+  void test9() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertTrue(x.updateMax(20));
@@ -157,7 +157,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test10() {
+  void test10() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertTrue(x.updateMax(5));
@@ -168,7 +168,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test11() {
+  void test11() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertFalse(x.updateMax(0));
@@ -176,7 +176,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test13() {
+  void test13() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     Trail trail = solver.trail();
     IntVar x = intVar(solver, 5, 15);
@@ -213,7 +213,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test14() {
+  void test14() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertTrue(x.assign(10));
@@ -224,7 +224,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test15() {
+  void test15() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertTrue(x.assign(10));
@@ -233,7 +233,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test16() {
+  void test16() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 15);
     assertFalse(x.assign(20));
@@ -241,7 +241,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test17() {
+  void test17() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 10);
     assertTrue(x.remove(5));
@@ -254,7 +254,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test18() {
+  void test18() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 10);
     int size = x.size();
@@ -268,7 +268,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test19() {
+  void test19() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 10);
     int size = x.size();
@@ -280,7 +280,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test20() {
+  void test20() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 10);
     assertTrue(x.remove(5));
@@ -294,7 +294,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test21() {
+  void test21() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 5, 10);
     assertTrue(x.remove(5));
@@ -312,7 +312,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test22() {
+  void test22() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     Trail trail = solver.trail();
     IntVar x = intVar(solver, 5, 10);
@@ -354,7 +354,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test23() {
+  void test23() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = intVar(solver, 10, 10);
     assertFalse(x.remove(10));
@@ -362,7 +362,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test24() {
+  void test24() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
@@ -373,7 +373,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test25() {
+  void test25() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
@@ -385,7 +385,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test26() {
+  void test26() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
@@ -396,7 +396,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test27() {
+  void test27() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     int[] values = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
     IntVar x = intVar(solver, values);
@@ -408,7 +408,7 @@ public abstract class IntVarTest {
 
   
   @Test
-  public void test28() {
+  void test28() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     int[] values1 = new int[]{10, 11, 15, 16, 17, 20, 21, 25};
     int[] domain1 = new int[values1.length];

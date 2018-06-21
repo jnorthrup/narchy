@@ -8,9 +8,9 @@ package jcog.grammar.parse.examples.chips;
  * @version 1.0 
  */
 public class Customer {
-	protected Integer customerID;
-	protected String lastName;
-	protected String firstName;
+	private Integer customerID;
+	private String lastName;
+	private String firstName;
 
 	/**
 	 * Create a customer given his or her ID, last name, and
@@ -25,7 +25,7 @@ public class Customer {
 	 * Create a customer given his or her ID, last name, and
 	 * first name.
 	 */
-	public Customer(Integer customerID, String lastName, String firstName) {
+    private Customer(Integer customerID, String lastName, String firstName) {
 
 		this.customerID = customerID;
 		this.lastName = lastName;

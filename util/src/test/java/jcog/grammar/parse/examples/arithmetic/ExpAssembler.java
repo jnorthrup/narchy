@@ -11,7 +11,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class ExpAssembler implements IAssembler {
+class ExpAssembler implements IAssembler {
 	/**
 	 * Pop two numbers from the stack and push the result of
 	 * exponentiation the lower number to the upper one.

@@ -12,27 +12,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RepetitionTest extends AbstractParsingTest {
 
-	Repetition repetition;
+	private Repetition repetition;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		repetition = new Repetition(new Literal("abc"));
 	}
 
 	@Test
-	public void noMatch() {
+    void noMatch() {
 		assertNoCompleteMatch("def");
 	}
 
 	@Test
-	public void fullMatch() {
+    void fullMatch() {
 		
 		assertCompleteMatch("");
 		
 	}
 
 	@Test
-	public void numberOfRequiredMatches() {
+    void numberOfRequiredMatches() {
 		repetition.requireMatches(2);
 		assertEquals(2, repetition.requiredMatches());
 		assertNoCompleteMatch("");
@@ -42,7 +42,7 @@ public class RepetitionTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void children() {
+    void children() {
 		repetition = new Repetition(new Num());
 		assertEquals(1, size(getParser().children()));
 	}
@@ -52,7 +52,7 @@ public class RepetitionTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void leftChildren() {
+    void leftChildren() {
 		Num numChild = new Num();
 		repetition = new Repetition(numChild);
 		assertEquals(1, size(getParser().leftChildren()));

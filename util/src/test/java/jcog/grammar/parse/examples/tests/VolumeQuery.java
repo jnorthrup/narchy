@@ -24,7 +24,7 @@ import jcog.grammar.parse.tokens.Word;
  * 
  * @version 1.0 
  */
-public class VolumeQuery {
+class VolumeQuery {
 	/*
 	 * Return a parser that recognizes the grammar:
 	 * 
@@ -41,7 +41,7 @@ public class VolumeQuery {
 	 * 
 	 *     volume = "cups" | "gallon" | "liter";
 	 */
-	public static Parser volume() {
+	private static Parser volume() {
 		Parser a = new Alternation().get(new Literal("cups")).get(new Literal("gallon")).get(new Literal("liter"));
 		return a;
 	}

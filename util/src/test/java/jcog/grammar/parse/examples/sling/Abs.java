@@ -31,7 +31,7 @@ public class Abs extends SlingFunction {
 	 * Constructs a function object that wraps an abs function
 	 * around the given source function.
 	 */
-	public Abs(SlingFunction source) {
+    private Abs(SlingFunction source) {
 		super(source);
 	}
 

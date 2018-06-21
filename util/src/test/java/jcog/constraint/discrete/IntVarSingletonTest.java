@@ -19,11 +19,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class IntVarSingletonTest {
+class IntVarSingletonTest {
 
   
   @Test
-  public void test1() {
+  void test1() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertEquals(x.size(), 1);
@@ -33,7 +33,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test3() {
+  void test3() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertFalse(x.contains(-5));
@@ -45,7 +45,7 @@ public class IntVarSingletonTest {
   
   
   @Test
-  public void test5() {
+  void test5() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertTrue(x.updateMin(4));
@@ -60,7 +60,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test7() {
+  void test7() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertFalse(x.updateMin(6));
@@ -69,7 +69,7 @@ public class IntVarSingletonTest {
   
   
   @Test
-  public void test9() {
+  void test9() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertTrue(x.updateMax(6));
@@ -84,7 +84,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test11() {
+  void test11() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertFalse(x.updateMax(0));
@@ -92,7 +92,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test14() {
+  void test14() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertTrue(x.assign(5));
@@ -104,7 +104,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test16() {
+  void test16() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertFalse(x.assign(20));
@@ -112,7 +112,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test19() {
+  void test19() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertTrue(x.remove(4));
@@ -123,7 +123,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test23() {
+  void test23() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     IntVar x = solver.intVar(5);
     assertFalse(x.remove(5));
@@ -131,7 +131,7 @@ public class IntVarSingletonTest {
 
   
   @Test
-  public void test28() {
+  void test28() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
     int[] domain = new int[1];
     IntVar x = solver.intVar(5);

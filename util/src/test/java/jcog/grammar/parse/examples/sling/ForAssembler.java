@@ -27,12 +27,12 @@ import java.util.List;
  *
  * @version 1.0
  */
-public class ForAssembler implements IAssembler {
+class ForAssembler implements IAssembler {
 	/*
 	 * Pop the elements on the stack above a '{' token, and
 	 * build a composite command from them.
 	 */
-	protected static CommandSequence popCommandSequence(Assembly a) {
+	private static CommandSequence popCommandSequence(Assembly a) {
 
 		Token fence = new Token('{');
 		List<Object> statementVector = AssemblerHelper.elementsAbove(a, fence);

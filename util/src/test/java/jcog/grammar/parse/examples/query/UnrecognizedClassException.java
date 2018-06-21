@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.query;
  * 
  * @version 1.0
  */
-public class UnrecognizedClassException extends RuntimeException {
+class UnrecognizedClassException extends RuntimeException {
 	/**
 	 * Constructs a <code>UnrecognizedClassException</code> 
 	 * with no detail message.

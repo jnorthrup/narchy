@@ -9,17 +9,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Created by jeff on 14/05/16.
  */
-public class CountingLeakySetTest {
+class CountingLeakySetTest {
 
     private StableBloomFilter<String> filter;
 
     @BeforeEach
-    public void before() {
+    void before() {
         this.filter = BloomFilterBuilder.get().buildFilter();
     }
 
     @Test
-    public void whenAskedIfContainsDeletedObject_returnsFalse() {
+    void whenAskedIfContainsDeletedObject_returnsFalse() {
         String string = "somestr";
 
         filter.add(string);

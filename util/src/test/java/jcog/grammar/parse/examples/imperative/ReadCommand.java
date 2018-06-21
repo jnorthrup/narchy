@@ -26,8 +26,8 @@ import java.io.InputStreamReader;
  * @version 1.0
  */
 public class ReadCommand extends Command {
-	protected Variable variable;
-	protected BufferedReader reader;
+	private Variable variable;
+	private BufferedReader reader;
 
 	/**
 	 * Construct a "read" command to read a value, assigning it to the supplied
@@ -53,7 +53,7 @@ public class ReadCommand extends Command {
 	 * @param BufferedReader
 	 *            where to read from
 	 */
-	public ReadCommand(Variable variable, BufferedReader reader) {
+    private ReadCommand(Variable variable, BufferedReader reader) {
 		this.variable = variable;
 		this.reader = reader;
 	}
@@ -68,7 +68,7 @@ public class ReadCommand extends Command {
 	 * @param InputStream
 	 *            where to read from
 	 */
-	public ReadCommand(Variable variable, InputStream in) {
+    private ReadCommand(Variable variable, InputStream in) {
 		this(variable, new BufferedReader(new InputStreamReader(in)));
 	}
 

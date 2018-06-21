@@ -15,10 +15,10 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class XMLTest {
+class XMLTest {
 
     @Test
-    public void test1() {
+    void test1() {
         List<String> examples = List.of(
                 "<a xy=\"xy\">xy<a xy=\"xy\">xy<a>xy</a>xy</a>xy</a>",
                 "<a>xy<![CDATA[xy]]>xy</a>",

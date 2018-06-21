@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StatisticsTest {
+class StatisticsTest {
 
 	private static long allocated;
 	private static long resized;
@@ -29,7 +29,7 @@ public class StatisticsTest {
 	};
 
 	@Test
-	public void stats() {
+    void stats() {
 		Allocator<GameEvent> eventAllocator = Allocator.of(GameEvent.class, COUNTER);
 		GameEvent event = eventAllocator.allocate(1);
 		try {

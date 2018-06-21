@@ -9,15 +9,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PriMergeTest {
-    final static float tol = 0.01f;
+class PriMergeTest {
+    private final static float tol = 0.01f;
 
-    static final PriRO a = new PriRO(1);
-    static final PriRO b = new PriRO(0.5f);
-    static final PriRO c = new PriRO(0.25f);
+    private static final PriRO a = new PriRO(1);
+    private static final PriRO b = new PriRO(0.5f);
+    private static final PriRO c = new PriRO(0.25f);
 
     @Test
-    public void testPlusDQBlend() {
+    void testPlusDQBlend() {
         PriMerge m = PriMerge.plus;
 
         testMerge(z(), a, m,  1f, 0 /*overflow*/);  
@@ -35,7 +35,7 @@ public class PriMergeTest {
     }
 
     @Test
-    public void testAvg() {
+    void testAvg() {
         PriMerge AVG = PriMerge.avg;
 
         
@@ -55,7 +55,7 @@ public class PriMergeTest {
 
     }
 
-    static UnitPri z() {
+    private static UnitPri z() {
         return new UnitPri(0);
     }
 

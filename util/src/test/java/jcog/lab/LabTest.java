@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LabTest {
 
     @Test
-    public void testSimplest() {
+    void testSimplest() {
 
         Lab<Model> a = new Lab<>(Model::new).varAuto();
 
@@ -40,7 +40,7 @@ class LabTest {
 
     }
     @Test
-    public void testExperimentRun() {
+    void testExperimentRun() {
 
         LabelSensor<Dummy> ctx;
 
@@ -70,23 +70,23 @@ class LabTest {
     }
 
     static class Dummy {
-        public float a = 0;
+        float a = 0;
     }
 
     static class Model {
-        public final SubModel sub = new SubModel();
+        final SubModel sub = new SubModel();
 
-        public final FloatRange floatRange = new FloatRange(0.5f, 0, 10);
+        final FloatRange floatRange = new FloatRange(0.5f, 0, 10);
 
         @Range(min=0, max=5/*, step=1f*/)
-        public float tweakFloat = 0;
+        float tweakFloat = 0;
 
         @Range(min=-4, max=+4, step=2f)
-        public int tweakInt = 0;
+        int tweakInt = 0;
 
         public final int untweakInt = 0;
 
-        public float score() {
+        float score() {
             return (float) (
                     tweakInt +
                             Math.sin(-1 + tweakFloat) * tweakFloat +
@@ -102,7 +102,7 @@ class LabTest {
 
     static class SubModel {
         @Range(min=0, max=3, step=0.05f)
-        public float tweakFloatSub;
+        float tweakFloatSub;
     }
 
 

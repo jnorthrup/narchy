@@ -14,7 +14,7 @@ import jcog.grammar.parse.Repetition;
  * @version 1.0
  */
 
-public class StarAssembler implements IAssembler {
+class StarAssembler implements IAssembler {
 
 	/**
 	 * Pop a parser from the stack and push a new <code>

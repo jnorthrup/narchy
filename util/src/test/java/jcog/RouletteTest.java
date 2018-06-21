@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RouletteTest {
+class RouletteTest {
 
     @Test
-    public void testDecideRouletteFlat() {
+    void testDecideRouletteFlat() {
         XorShift128PlusRandom rng = new XorShift128PlusRandom(1);
         int uniques = 4;
         int samples = 100;
@@ -26,7 +26,7 @@ public class RouletteTest {
             assertEquals(f.getCount(i)/total, 1f/uniques, 1f/(4*uniques));
     }
     @Test
-    public void testDecideRouletteTriangular() {
+    void testDecideRouletteTriangular() {
         XorShift128PlusRandom rng = new XorShift128PlusRandom(1);
         int uniques = 10;
         int samples = 5000;

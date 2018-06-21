@@ -24,8 +24,8 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0 
  */
-public class VariableAssembler implements IAssembler {
-	Speller speller;
+class VariableAssembler implements IAssembler {
+	private Speller speller;
 
 	/**
 	 * Construct a VariableAssembler that will consult the

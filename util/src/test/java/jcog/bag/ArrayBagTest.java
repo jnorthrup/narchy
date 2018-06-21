@@ -20,10 +20,10 @@ import static jcog.bag.BagTest.testBasicInsertionRemoval;
 import static jcog.pri.op.PriMerge.plus;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ArrayBagTest {
+class ArrayBagTest {
 
 
-    CurveBag<PLink<String>> curveBag(int n, PriMerge mergeFunction) {
+    private CurveBag<PLink<String>> curveBag(int n, PriMerge mergeFunction) {
         return new CurveBag<>(mergeFunction, new HashMap<>(n),
                 
                 
@@ -31,13 +31,13 @@ public class ArrayBagTest {
     }
 
     @Test
-    public void testBasicInsertionRemovalArray() {
+    void testBasicInsertionRemovalArray() {
         testBasicInsertionRemoval(new PLinkArrayBag<>(1, plus, new HashMap<>(1)));
     }
 
 
     @Test
-    public void testBudgetMerge() {
+    void testBudgetMerge() {
         PLinkArrayBag<String> a = new PLinkArrayBag<String>(4, plus, new HashMap<>(4));
         assertEquals(0, a.size());
 
@@ -53,8 +53,7 @@ public class ArrayBagTest {
 
     }
 
-    @NotNull
-    private CurveBag<PLink<String>> populated(int n, @NotNull DoubleSupplier random) {
+    @NotNull CurveBag<PLink<String>> populated(int n, @NotNull DoubleSupplier random) {
 
 
         CurveBag<PLink<String>> a = curveBag(n, plus);
@@ -73,7 +72,7 @@ public class ArrayBagTest {
     }
 
     @Test
-    public void testSort() {
+    void testSort() {
         PLinkArrayBag a = new PLinkArrayBag(4, plus, new HashMap<>(4));
 
         a.put(new PLink("x", 0.1f));
@@ -106,7 +105,7 @@ public class ArrayBagTest {
     }
 
     @Test
-    public void testCapacity() {
+    void testCapacity() {
         PLinkArrayBag a = new PLinkArrayBag(2, plus, new HashMap<>(2));
 
         a.put(new PLink("x", 0.1f));
@@ -129,13 +128,13 @@ public class ArrayBagTest {
     }
 
     @Test
-    public void testRemoveByKey() {
+    void testRemoveByKey() {
         BagTest.testRemoveByKey(new PLinkArrayBag(2, plus, new HashMap<>(2)));
     }
 
     @Disabled
     @Test
-    public void testInsertOrBoostDoesntCauseSort() {
+    void testInsertOrBoostDoesntCauseSort() {
         final int[] sorts = {0};
         @NotNull CurveBag<PLink<String>> x = new CurveBag(PriMerge.plus, new HashMap<>(), 4) {
             @Override
@@ -164,7 +163,7 @@ public class ArrayBagTest {
     }
 
     @Test
-    public void testCurveBagDistributionSmall() {
+    void testCurveBagDistributionSmall() {
         for (int cap : new int[] { 2, 3, 4, 5, 6, 7, 8 }) {
             for (float batchSizeProp : new float[]{0.001f, 0.1f, 0.3f}) {
                 BagTest.testBagSamplingDistributionLinear(curveBag(cap, PriMerge.plus), batchSizeProp);
@@ -173,28 +172,29 @@ public class ArrayBagTest {
     }
 
     @Test
-    public void testCurveBagDistribution8_BiggerBatch() {
+    void testCurveBagDistribution8_BiggerBatch() {
         for (float batchSizeProp : new float[]{0.5f}) {
             BagTest.testBagSamplingDistributionLinear(curveBag(8, PriMerge.plus), batchSizeProp);
         }
     }
 
     @Test
-    public void testCurveBagDistribution32() {
+    void testCurveBagDistribution32() {
         for (float batchSizeProp : new float[]{ 0.05f, 0.1f, 0.2f}) {
             BagTest.testBagSamplingDistributionLinear(curveBag(32, PriMerge.plus), batchSizeProp);
         }
     }
 
     @Test
-    public void testCurveBagDistribution64() {
+    void testCurveBagDistribution64() {
         for (float batchSizeProp : new float[]{ 0.05f, 0.1f, 0.2f}) {
             BagTest.testBagSamplingDistributionLinear(curveBag(64, PriMerge.plus), batchSizeProp);
             BagTest.testBagSamplingDistributionRandom(curveBag(64, PriMerge.plus), batchSizeProp);
         }
     }
 
-    @Test public void testCurveBagDistribution32_64__small_batch() {
+    @Test
+    void testCurveBagDistribution32_64__small_batch() {
         for (int cap : new int[] { 32, 64 }) {
             for (float batchSizeProp : new float[]{ 0.001f }) {
                 BagTest.testBagSamplingDistributionLinear(curveBag(cap, PriMerge.plus), batchSizeProp);

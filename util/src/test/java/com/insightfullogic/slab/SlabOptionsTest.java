@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SlabOptionsTest {
+class SlabOptionsTest {
 
     @Test
-    public void builderBuildsFromFields() {
+    void builderBuildsFromFields() {
         SlabOptions options = SlabOptions.builder()
                                      .setDebugEnabled(true)
                                      .setObjectAlignment(64)

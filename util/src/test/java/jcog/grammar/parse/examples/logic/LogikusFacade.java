@@ -13,7 +13,7 @@ import jcog.grammar.parse.tokens.*;
  * 
  * @version 1.0
  */
-public class LogikusFacade {
+class LogikusFacade {
 	/*
 	 * Translate one axiom string into an Axiom object.
 	 */
@@ -25,7 +25,7 @@ public class LogikusFacade {
 	 * Translate the tokens for one axiom into an Axiom object (either a Fact or
 	 * a Rule);
 	 */
-	protected static Axiom axiom(TokenString ts) {
+	private static Axiom axiom(TokenString ts) {
 		Parser p = new LogikusParser().axiom();
 		Object o = parse(ts, p, "axiom");
 		return (Axiom) o;
@@ -35,7 +35,7 @@ public class LogikusFacade {
 	 * Throws an informative runtime exception if the provided string begins
 	 * with an uppercase letter.
 	 */
-	protected static void checkForUppercase(TokenString ts, String type) {
+	private static void checkForUppercase(TokenString ts, String type) {
 
 		if (ts.length() > 0) {
 			Token t = ts.tokenAt(0);
@@ -51,7 +51,7 @@ public class LogikusFacade {
 	 * Parse the given token string with the given parser, throwing runtime
 	 * exceptions if parsing fails or is incomplete.
 	 */
-	protected static Object parse(TokenString ts, Parser p, String type) {
+	private static Object parse(TokenString ts, Parser p, String type) {
 
 		TokenAssembly ta = new TokenAssembly(ts);
 		Assembly out = p.bestMatch(ta);
@@ -115,7 +115,7 @@ public class LogikusFacade {
 	/*
 	 * Throws a runtime exception reporting an incomplete parse.
 	 */
-	protected static Object reportLeftovers(Assembly out, String type) {
+	private static Object reportLeftovers(Assembly out, String type) {
 
 		throw new LogikusException("> Input for " + type + " appears complete after : \n> " + out.consumed(" ") + "\n");
 	}
@@ -123,7 +123,7 @@ public class LogikusFacade {
 	/*
 	 * Throws a runtime exception reporting failed parse.
 	 */
-	protected static void reportNoMatch(TokenString ts, String type) {
+	private static void reportNoMatch(TokenString ts, String type) {
 
 		checkForUppercase(ts, type);
 		throw new LogikusException("> Cannot parse " + type + " : " + ts + "\n");

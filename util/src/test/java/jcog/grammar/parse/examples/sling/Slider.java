@@ -21,7 +21,7 @@ import javax.swing.*;
  * @version 1.0  
  */
 public class Slider extends SlingFunction {
-	protected JSlider slider;
+	private JSlider slider;
 
 	/**
 	 * Constructs a function that wraps the given slider.

@@ -28,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by jcovert on 6/16/15.
  */
-public class Rect2DTest {
+class Rect2DTest {
 
     @Test
-    public void centroidTest() {
+    void centroidTest() {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
@@ -43,7 +43,7 @@ public class Rect2DTest {
     }
 
     @Test
-    public void mbrTest() {
+    void mbrTest() {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
@@ -81,7 +81,7 @@ public class Rect2DTest {
     }
 
     @Test
-    public void rangeTest() {
+    void rangeTest() {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
@@ -93,7 +93,7 @@ public class Rect2DTest {
 
 
     @Test
-    public void containsTest() {
+    void containsTest() {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
@@ -123,7 +123,7 @@ public class Rect2DTest {
     }
 
     @Test
-    public void intersectsTest() {
+    void intersectsTest() {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
@@ -153,7 +153,7 @@ public class Rect2DTest {
     }
 
     @Test
-    public void costTest() {
+    void costTest() {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
         double cost = rect.cost();

@@ -10,17 +10,20 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * TODO test capacity restriction
  */
-public class VersioningTest {
+class VersioningTest {
 
     @NotNull
+    private
     Versioning v = new Versioning(10, 10);
     @NotNull
+    private
     Versioned a = new Versioned(v, 8);
     @NotNull
+    private
     Versioned b = new Versioned(v, 8);
 
     @Test
-    public void test1() {
+    void test1() {
         Versioning w = new Versioning(10, 10);
         VersionMap<Object,Object> m = new VersionMap(w);
         m.tryPut("x", "a");
@@ -60,7 +63,7 @@ public class VersioningTest {
 
     }
 
-    public void initTestSequence1(boolean print) {
+    private void initTestSequence1(boolean print) {
 
         if (print) System.out.println(v);
         Versioned z = a.set("a0");
@@ -74,7 +77,7 @@ public class VersioningTest {
     }
 
     @Test
-    public void test2() {
+    void test2() {
         initTestSequence1();
 
         Supplier<String> s = () -> a + " " + b;
@@ -102,13 +105,13 @@ public class VersioningTest {
 
     }
 
-    public void initTestSequence1() {
+    private void initTestSequence1() {
         initTestSequence1(false);
     }
 
 
     @Test
-    public void testRevert() {
+    void testRevert() {
 
         initTestSequence1();
 

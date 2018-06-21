@@ -46,7 +46,7 @@ public class Fact extends Structure implements Axiom, DynamicAxiom {
 	 * With facts, there is nothing beyond the fact itself to prove; there is
 	 * nothing to resolve.
 	 */
-	protected static final DynamicRule resolvent = new DynamicRule(null, null, new Structure[0]);
+	private static final DynamicRule resolvent = new DynamicRule(null, null, new Structure[0]);
 
 	/**
 	 * Contructs a fact from the specified object.
@@ -174,7 +174,7 @@ public class Fact extends Structure implements Axiom, DynamicAxiom {
 	/*
 	 * Create an array of (atomic) facts from an array of objects.
 	 */
-	protected static Fact[] facts(Object[] objects) {
+	static Fact[] facts(Object[] objects) {
 		Fact[] facts = new Fact[objects.length];
 		for (int i = 0; i < objects.length; i++) {
 			facts[i] = new Atom(objects[i]);
@@ -206,7 +206,7 @@ public class Fact extends Structure implements Axiom, DynamicAxiom {
 	 * @return either an empty Unification, indicating success, or null,
 	 *         indicating failure
 	 */
-	public Unification unify(Fact f) {
+    private Unification unify(Fact f) {
 		if (!functorAndArityEquals(f)) {
 			return null;
 		}

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by jcovert on 6/12/15.
  */
-public class LinearSplitLeafTest {
+class LinearSplitLeafTest {
 
     private static final Spatialization.DefaultSplits TYPE = Spatialization.DefaultSplits.LINEAR;
 
@@ -41,7 +41,7 @@ public class LinearSplitLeafTest {
      * no entries are lost.
      */
     @Test
-    public void basicSplitTest() {
+    void basicSplitTest() {
 
         RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
         rTree.add(new RectDouble2D(0, 0, 1, 1));
@@ -63,7 +63,7 @@ public class LinearSplitLeafTest {
     }
 
     @Test
-    public void splitCorrectnessTest() {
+    void splitCorrectnessTest() {
 
         RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, 4, TYPE);
         rTree.add(new RectDouble2D(0, 0, 3, 3));
@@ -101,7 +101,7 @@ public class LinearSplitLeafTest {
      * are lost during insert/split.
      */
     @Test
-    public void overlappingEntryTest() {
+    void overlappingEntryTest() {
 
         final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
         rTree.add(new RectDouble2D(0, 0, 1, 1));
@@ -139,7 +139,7 @@ public class LinearSplitLeafTest {
      * it doesn't happen again.
      */
     @Test
-    public void causeLinearSplitOverflow() {
+    void causeLinearSplitOverflow() {
         final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, 8, TYPE);
         final Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {
@@ -156,7 +156,7 @@ public class LinearSplitLeafTest {
 
 
     @Test
-    public void causeLinearSplitNiceDist() {
+    void causeLinearSplitNiceDist() {
 
         final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, 8, TYPE);
         final Random rand = new Random(13);

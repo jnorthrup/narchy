@@ -13,16 +13,16 @@ import java.util.Vector;
  * @version 1.0 
  */
 public class ChipBase {
-	protected static Dictionary<Integer, Chip> chip;
-	protected static Dictionary<Integer, Customer> customer;
-	protected static Vector<Order> order;
+	private static Dictionary<Integer, Chip> chip;
+	private static Dictionary<Integer, Customer> customer;
+	private static Vector<Order> order;
 
 	/**
 	 * Adds a chip to the database.
 	 *
 	 * @param Chip the chip to add
 	 */
-	public static void add(Chip c) {
+	private static void add(Chip c) {
 		chip.put(c.getChipID(), c);
 	}
 
@@ -31,7 +31,7 @@ public class ChipBase {
 	 *
 	 * @param Customer the customer to add
 	 */
-	public static void add(Customer c) {
+	private static void add(Customer c) {
 		customer.put(c.getCustomerID(), c);
 	}
 
@@ -40,7 +40,7 @@ public class ChipBase {
 	 *
 	 * @param Order the order to add
 	 */
-	public static void add(Order o) {
+	private static void add(Order o) {
 		order.add(o);
 	}
 
@@ -73,7 +73,7 @@ public class ChipBase {
 	 *
 	 * @param ID a chip ID
 	 */
-	public static Chip chip(int ID) {
+	private static Chip chip(int ID) {
 		return chip().get(new Integer(ID));
 	}
 
@@ -101,7 +101,7 @@ public class ChipBase {
 	 *
 	 * @param ID a customer ID
 	 */
-	public static Customer customer(int ID) {
+	private static Customer customer(int ID) {
 		return customer().get(new Integer(ID));
 	}
 

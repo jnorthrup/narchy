@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Created by me on 8/6/15.
  */
-public class LongBitsetBloomFilterTest {
+class LongBitsetBloomFilterTest {
     private static final int COUNT = 100;
-    Random rand = new Random(123);
+    private Random rand = new Random(123);
 
     @Test
-    public void testBloomIllegalArg1() {
+    void testBloomIllegalArg1() {
         assertThrows(AssertionError.class, ()-> {
 
             LongBitsetBloomFilter bf = new LongBitsetBloomFilter(0, 0);
@@ -23,28 +23,28 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomIllegalArg2() {
+    void testBloomIllegalArg2() {
         assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(0, 0.1);});
     }
 
     @Test
-    public void testBloomIllegalArg3() {
+    void testBloomIllegalArg3() {
         assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(1, 0.0);});
     }
 
     @Test
-    public void testBloomIllegalArg4() {
+    void testBloomIllegalArg4() {
         assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(1, 1.0);});
     }
 
     @Test
-    public void testBloomIllegalArg5() {
+    void testBloomIllegalArg5() {
         assertThrows(AssertionError.class, ()->{LongBitsetBloomFilter bf = new LongBitsetBloomFilter(-1, -1);});
     }
 
 
     @Test
-    public void testBloomNumBits() {
+    void testBloomNumBits() {
         assertEquals(0, LongBitsetBloomFilter.optimalNumOfBits(0, 0));
         assertEquals(1549, LongBitsetBloomFilter.optimalNumOfBits(1, 0));
         assertEquals(0, LongBitsetBloomFilter.optimalNumOfBits(0, 1));
@@ -60,7 +60,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomNumHashFunctions() {
+    void testBloomNumHashFunctions() {
         assertEquals(1, LongBitsetBloomFilter.optimalNumOfHashFunctions(-1, -1));
         assertEquals(1, LongBitsetBloomFilter.optimalNumOfHashFunctions(0, 0));
         assertEquals(1, LongBitsetBloomFilter.optimalNumOfHashFunctions(10, 0));
@@ -74,7 +74,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomFilterBytes() {
+    void testBloomFilterBytes() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         byte[] val = {1, 2, 3};
         byte[] val1 = {1, 2, 3, 4};
@@ -125,7 +125,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomFilterByte() {
+    void testBloomFilterByte() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         byte val = Byte.MIN_VALUE;
         byte val1 = 1;
@@ -171,7 +171,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomFilterInt() {
+    void testBloomFilterInt() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         int val = Integer.MIN_VALUE;
         int val1 = 1;
@@ -217,7 +217,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomFilterLong() {
+    void testBloomFilterLong() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         long val = Long.MIN_VALUE;
         long val1 = 1;
@@ -263,7 +263,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomFilterFloat() {
+    void testBloomFilterFloat() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         float val = Float.MIN_VALUE;
         float val1 = 1.1f;
@@ -309,7 +309,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomFilterDouble() {
+    void testBloomFilterDouble() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         double val = Double.MIN_VALUE;
         double val1 = 1.1d;
@@ -355,7 +355,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testBloomFilterString() {
+    void testBloomFilterString() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         String val = "bloo";
         String val1 = "bloom fil";
@@ -401,7 +401,7 @@ public class LongBitsetBloomFilterTest {
     }
 
     @Test
-    public void testMerge() {
+    void testMerge() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
         String val = "bloo";
         String val1 = "bloom fil";

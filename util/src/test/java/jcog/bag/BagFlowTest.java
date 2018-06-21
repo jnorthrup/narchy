@@ -16,9 +16,9 @@ public class BagFlowTest {
 
     static class InstrumentedPLink<X> extends PLink<X> {
 
-        public final long created;
+        final long created;
 
-        public InstrumentedPLink(X x, float p, long creation) {
+        InstrumentedPLink(X x, float p, long creation) {
             super(x, p);
             this.created = creation;
         }
@@ -26,21 +26,21 @@ public class BagFlowTest {
 
         /** when a new insert matches with this as an existing, give an opportunity to record the boost
          * @param pri*/
-        public void recordBoost(float pri) {
+        void recordBoost(float pri) {
             //System.out.println("boost: " + pri);
 
         }
     }
 
-    abstract public static class BagFlow<X,Y> extends ProxyBag<X, InstrumentedPLink<Y>> {
+    abstract static class BagFlow<X,Y> extends ProxyBag<X, InstrumentedPLink<Y>> {
 
         final Histogram activeDuration = new ConcurrentHistogram(5);
 
-        public BagFlow(Bag<X,InstrumentedPLink<Y>> delegate) {
+        BagFlow(Bag<X, InstrumentedPLink<Y>> delegate) {
             super(delegate);
         }
 
-        public InstrumentedPLink<Y> put(Y y, float pri) {
+        InstrumentedPLink<Y> put(Y y, float pri) {
             MyInstrumentedPLink x = new MyInstrumentedPLink(y, pri);
             InstrumentedPLink<Y> z = put(x);
             if (z!=null && z!=x && !z.isDeleted()) {
@@ -54,14 +54,14 @@ public class BagFlowTest {
 
 
 
-        protected void record(long created, long deleted) {
+        void record(long created, long deleted) {
             long span = deleted - created;
             activeDuration.recordValue(span);
         }
 
         class MyInstrumentedPLink extends InstrumentedPLink<Y> {
 
-            public MyInstrumentedPLink(Y y, float p) {
+            MyInstrumentedPLink(Y y, float p) {
                 super(y, p, now());
             }
 
@@ -78,7 +78,7 @@ public class BagFlowTest {
         }
     }
     @Test
-    public void test1() {
+    void test1() {
         int cap = 16;
         int variety = cap * 2;
         int batchSize = cap;

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CachedTopNTest {
 
     @Test
-    public void testTopN() {
+    void testTopN() {
         TopN<String> c = new TopN<String>(new String[3], s -> s.length());
         assertAdd(c, "a", "[a]");
         assertAdd(c, "a", "[a, a]"); //duplicate kept
@@ -22,7 +22,7 @@ class CachedTopNTest {
     }
 
     @Test
-    public void testCachedTopN() {
+    void testCachedTopN() {
         CachedTopN<String> c = new CachedTopN<String>(3, s -> s.length());
         assertAdd(c, "a", "[1.0000 a]");
         assertAdd(c, "a", "[1.0000 a]"); //duplicate absorbed
@@ -33,10 +33,10 @@ class CachedTopNTest {
         assertAdd(c, "ff", "[3.0000 bbb, 3.0000 eee, 2.0000 dd]");  //disallow replacement of equal to weakest
     }
 
-    static void assertAdd(TopN<String> c, String x, String expect) {
+    private static void assertAdd(TopN<String> c, String x, String expect) {
         c.add(x); assertEquals(expect, new FasterList(c).toString());
     }
-    static void assertAdd(CachedTopN<String> c, String x, String expect) {
+    private static void assertAdd(CachedTopN<String> c, String x, String expect) {
         c.accept(x); assertEquals(expect, new FasterList(c.list).toString());
     }
 }

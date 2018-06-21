@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 2/17/17.
  */
-public class NTMSequenceLearningTest {
+class NTMSequenceLearningTest {
 
     @Test
-    public void testSimpleSequence() throws Exception {
+    void testSimpleSequence() throws Exception {
         SequenceLearner s = new RunSequenceLearner(8);
         double startError = s.run();
         assertTrue(startError > 0.1f);
@@ -32,7 +32,7 @@ public class NTMSequenceLearningTest {
         boolean printSequences;
 
 
-        public RunSequenceLearner(int vectorSize) {
+        RunSequenceLearner(int vectorSize) {
             super(vectorSize, 8, 32, 2, 16);
         }
 

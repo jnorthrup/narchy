@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0 
  */
-public class PrettyTerminalAssembler implements IAssembler {
+class PrettyTerminalAssembler implements IAssembler {
 	/**
 	 * Replace a <code>Token</code> object on the stack with a 
 	 * <code>TerminalNode</code> that holds the token's value.

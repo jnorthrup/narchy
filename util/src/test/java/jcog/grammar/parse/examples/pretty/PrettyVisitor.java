@@ -16,7 +16,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class PrettyVisitor extends ParserVisitor {
+class PrettyVisitor extends ParserVisitor {
 	/**
 	 * Set an <code>Alternation</code> parser's assembler to be a
 	 * <code>PrettyAlternationAssembler</code> object and visit this parser's

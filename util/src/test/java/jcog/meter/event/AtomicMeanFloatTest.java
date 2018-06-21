@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AtomicMeanFloatTest {
 
     @Test
-    public void test1() {
+    void test1() {
         AtomicMeanFloat x = new AtomicMeanFloat("x");
         x.accept(1);
         x.accept(5);

@@ -26,11 +26,11 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RoaringBitmapFactoryTest {
+class RoaringBitmapFactoryTest {
 
     
     @Test
-    public void testIssue26() throws Exception {
+    void testIssue26() throws Exception {
         
         checkEmptyComplement(new RoaringBitmapFactory());
     }
@@ -47,7 +47,7 @@ public class RoaringBitmapFactoryTest {
     }
 
     @Test
-    public void testUnwrapWithNull() throws Exception {
+    void testUnwrapWithNull() throws Exception {
         RoaringBitmapFactory factory = new RoaringBitmapFactory();
 
         ImmutableBitmap bitmap = factory.union(
@@ -66,7 +66,7 @@ public class RoaringBitmapFactoryTest {
     }
 
     @Test
-    public void testUnwrapMerge() throws Exception {
+    void testUnwrapMerge() throws Exception {
         RoaringBitmapFactory factory = new RoaringBitmapFactory();
 
         WrappedRoaringBitmap set = new WrappedRoaringBitmap();

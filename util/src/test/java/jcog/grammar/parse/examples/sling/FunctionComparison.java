@@ -18,9 +18,9 @@ import jcog.grammar.parse.examples.engine.Term;
  */
 public class FunctionComparison extends Gateway implements BooleanTerm {
 
-	protected String operator;
-	protected SlingFunction f0;
-	protected SlingFunction f1;
+	private String operator;
+	private SlingFunction f0;
+	private SlingFunction f1;
 
 	/**
 	 * Create a comparison with the specified operator and

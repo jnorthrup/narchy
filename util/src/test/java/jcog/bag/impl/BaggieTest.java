@@ -9,10 +9,10 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BaggieTest {
+class BaggieTest {
 
     @Test
-    public void testAddAccumulate() {
+    void testAddAccumulate() {
         InstrumentedBaggie<String> s = new InstrumentedBaggie();
 
         s.put("a", 0.1f);
@@ -56,12 +56,12 @@ public class BaggieTest {
     }
 
     static class InstrumentedBaggie<X> extends Baggie<X> {
-        public int evictions = 0;
-        public int insertions = 0;
-        public int rejections = 0;
+        int evictions = 0;
+        int insertions = 0;
+        int rejections = 0;
         
 
-        public InstrumentedBaggie() {
+        InstrumentedBaggie() {
             super(4);
         }
 
@@ -90,7 +90,7 @@ public class BaggieTest {
     }
 
     @Test
-    public void testSampling() {
+    void testSampling() {
         int cap = 8;
         Baggie<String> s = new Baggie(cap);
         for (int i = 0; i < cap; i++) {
@@ -144,7 +144,7 @@ public class BaggieTest {
     }
 
     @Test
-    public void testSustainedAdd() {
+    void testSustainedAdd() {
         int cap = 256;
         int uniq = cap * 2;
         Baggie<String> s = new Baggie<>(cap);

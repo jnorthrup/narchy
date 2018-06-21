@@ -16,7 +16,7 @@ import jcog.grammar.parse.tokens.Word;
  *
  * @version 1.0 
  */
-public class RobotRefactored {
+class RobotRefactored {
 	public Parser command() {
 		Alternation a = new Alternation();
 		a.get(pickCommand());
@@ -25,11 +25,11 @@ public class RobotRefactored {
 		return a;
 	}
 
-	protected Parser location() {
+	private Parser location() {
 		return new Word();
 	}
 
-	protected Parser pickCommand() {
+	private Parser pickCommand() {
 		Seq s = new Seq();
 		s.get(new CaselessLiteral("pick"));
 		s.get(new CaselessLiteral("carrier"));
@@ -38,7 +38,7 @@ public class RobotRefactored {
 		return s;
 	}
 
-	protected Parser placeCommand() {
+	private Parser placeCommand() {
 		Seq s = new Seq();
 		s.get(new CaselessLiteral("place"));
 		s.get(new CaselessLiteral("carrier"));
@@ -47,7 +47,7 @@ public class RobotRefactored {
 		return s;
 	}
 
-	protected Parser scanCommand() {
+	private Parser scanCommand() {
 		Seq s = new Seq();
 		s.get(new CaselessLiteral("scan"));
 		s.get(location());

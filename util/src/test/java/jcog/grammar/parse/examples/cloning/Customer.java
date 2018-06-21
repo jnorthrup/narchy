@@ -18,8 +18,8 @@ package jcog.grammar.parse.examples.cloning;
  * @version 1.0 
  */
 public class Customer implements Cloneable {
-	protected String name;
-	protected int IQ;
+	private String name;
+	private int IQ;
 
 	/**
 	 * Construct a customer.

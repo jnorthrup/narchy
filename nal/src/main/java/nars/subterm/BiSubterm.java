@@ -178,6 +178,7 @@ public class BiSubterm extends TermVector {
         super(x, y);
         this.x = x;
         this.y = y;
+        testIfInitiallyNormalized();
     }
 
 

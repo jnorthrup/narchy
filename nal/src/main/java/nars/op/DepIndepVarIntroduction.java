@@ -40,8 +40,11 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         ) ? 0 : 1;
     };
 
-    private static final Variable MyIntroducedVarIndep = $.varIndep("X");
-    private static final Variable MyIntroducedVarDep = $.varDep("Y");
+    /** if no variables are present in the target term, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
+    private static final Variable UnnormalizedVarIndep = $.varIndep("X");
+    private static final Variable FirstNormalizedVarIndep = $.varIndep(1);
+    private static final Variable UnnormalizedVarDep = $.varDep("Y");
+    private static final Variable FirstNormalizedVarDep = $.varDep(1);
 
     private static boolean validDepVarSuperterm(Op o) {
         return /*o.statement ||*/ o == CONJ;
@@ -121,10 +124,10 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
         return (!depOrIndep) ?
             ((m.anySatisfy(b -> b == 0b11)) ?
-                MyIntroducedVarIndep /*varIndep(order)*/ : null)
+                    (input.hasVars()  ? UnnormalizedVarIndep : FirstNormalizedVarIndep) /*varIndep(order)*/ : null)
                         :
             (m.anySatisfy(b -> b >= 2) ?
-                MyIntroducedVarDep  /* $.varDep(order) */ : null)
+                    (input.hasVars()  ? UnnormalizedVarDep : FirstNormalizedVarDep)  /* $.varDep(order) */ : null)
         ;
 
     }

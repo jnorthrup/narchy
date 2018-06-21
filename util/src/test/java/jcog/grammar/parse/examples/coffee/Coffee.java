@@ -17,12 +17,12 @@ import jcog.grammar.parse.PubliclyCloneable;
  */
 
 public class Coffee implements PubliclyCloneable<Coffee> {
-	protected String name;
-	protected String formerName;
-	protected String roast;
-	protected boolean alsoOfferFrench;
-	protected String country;
-	protected double price;
+	private String name;
+	private String formerName;
+	private String roast;
+	private boolean alsoOfferFrench;
+	private String country;
+	private double price;
 
 	/**
 	 * Return a copy of this object.
@@ -50,7 +50,7 @@ public class Coffee implements PubliclyCloneable<Coffee> {
 	 * @return  <code>true</code> if the objects are equal and
 	 *          <code>false</code> otherwise.
 	 */
-	public static boolean equal(Object o1, Object o2) {
+	private static boolean equal(Object o1, Object o2) {
 		if (o1 == null || o2 == null) {
 			return o1 == null && o2 == null;
 		}

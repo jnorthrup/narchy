@@ -16,9 +16,9 @@ package jcog.grammar.parse.examples.engine.samples;
  *
  * @version 1.0 
  */
-public class City {
-	public String name;
-	public int altitude;
+class City {
+	private String name;
+	private int altitude;
 
 	/**
 	 * Constructs a city.

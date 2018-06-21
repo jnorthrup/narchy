@@ -21,15 +21,15 @@ import java.util.Vector;
  * 
  * @version 1.0 
  */
-public abstract class ComponentNode {
-	protected Object value;
+abstract class ComponentNode {
+	Object value;
 
 	/**
 	 * Returns a string of blanks.
 	 *
 	 * @return  a string of blanks
 	 */
-	public static String indent(int n) {
+	static String indent(int n) {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < n; i++) {
 			buf.append("    ");

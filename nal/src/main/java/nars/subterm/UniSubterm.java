@@ -10,6 +10,7 @@ public final class UniSubterm extends AbstractUnitSubterm implements The {
 
     public UniSubterm(Term the) {
         this.the = the;
+        //testIfInitiallyNormalized();
     }
 
 

@@ -53,7 +53,7 @@ import java.util.Map;
  * @version 1.0
  */
 public class Scope implements PubliclyCloneable<Scope> {
-	Map<String, Variable> dictionary = new Hashtable<String, Variable>();
+	private Map<String, Variable> dictionary = new Hashtable<String, Variable>();
 
 	/**
 	 * Create an empty scope.

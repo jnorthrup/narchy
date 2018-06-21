@@ -19,8 +19,8 @@ import jcog.grammar.parse.examples.engine.BooleanTerm;
  * @version 1.0
  */
 public class WhileCommand extends Command {
-	protected BooleanTerm condition;
-	protected Command command;
+	private BooleanTerm condition;
+	private Command command;
 
 	/**
 	 * Construct a "while" command from the given condition and command.

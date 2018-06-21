@@ -23,7 +23,7 @@ public class EmptyList extends Fact {
 	/**
 	 * Constructs the empty list singleton.
 	 */
-	protected EmptyList() {
+    EmptyList() {
 		super(".");
 	}
 

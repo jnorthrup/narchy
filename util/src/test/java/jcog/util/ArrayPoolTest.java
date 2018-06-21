@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class ArrayPoolTest {
+class ArrayPoolTest {
 
     @Test
-    public void testBytePool() {
+    void testBytePool() {
         ArrayPool<byte[]> p = ArrayPool.bytes();
         byte[] b1 = p.getMin(1);
         assertEquals(1, b1.length);

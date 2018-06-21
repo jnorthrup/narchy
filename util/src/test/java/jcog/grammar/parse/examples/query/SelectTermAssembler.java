@@ -12,7 +12,7 @@ import jcog.grammar.parse.examples.engine.Term;
  *
  * @version 1.0 
  */
-public class SelectTermAssembler implements IAssembler {
+class SelectTermAssembler implements IAssembler {
 	/**
 	 * Pop a term and pass it to a query builder.
 	 */

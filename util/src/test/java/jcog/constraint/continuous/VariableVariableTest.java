@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by alex on 31/01/16.
  */
-public class VariableVariableTest {
+class VariableVariableTest {
 
     private static double EPSILON = 1.0e-8;
 
     @Test
-    public void lessThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void lessThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
         DoubleVar x = new DoubleVar("x");
@@ -32,7 +32,7 @@ public class VariableVariableTest {
     }
 
     @Test
-    public void lessThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void lessThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         assertThrows(UnsatisfiableConstraintException.class, () -> {
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
@@ -51,7 +51,7 @@ public class VariableVariableTest {
     }
 
     @Test
-    public void greaterThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void greaterThanEqualTo() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
         DoubleVar x = new DoubleVar("x");
@@ -68,7 +68,7 @@ public class VariableVariableTest {
     }
 
     @Test
-    public void greaterThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
+    void greaterThanEqualToUnsatisfiable() throws DuplicateConstraintException, UnsatisfiableConstraintException {
         assertThrows(UnsatisfiableConstraintException.class, () -> {
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 

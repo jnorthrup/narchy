@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.regular;
  * 
  * @version 1.0
  */
-public class RegularExpressionException extends Exception {
+class RegularExpressionException extends Exception {
 	/**
 	 * Constructs a <code>RegularExpressionException</code> 
 	 * with no detail message.

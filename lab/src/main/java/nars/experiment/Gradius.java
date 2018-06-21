@@ -1,6 +1,7 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
+import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -69,9 +70,20 @@ public class Gradius extends NAgentX {
         actionToggle($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
-//        actionToggle($.inh("pause", id),
-//                (b) -> g.paused = b);
+        actionToggle($.inh("pause", id),
+                (b) -> g.paused = b);
 
+        actionUnipolar($.prop(nar.self(), $.the("deep")), (d)->{
+            //deep incrases both duration and max term volume
+            nar.time.dur(Util.lerp(d*d, 20, 200));
+            nar.termVolumeMax.set(Util.lerp(d*d, 18, 50));
+            return d;
+        });
+
+        actionUnipolar($.prop(nar.self(), $.the("awake")), (a)->{
+            nar.activateConceptRate.set(Util.lerp(a, 0.1f, 1f));
+            return a;
+        });
 
         initToggle();
 

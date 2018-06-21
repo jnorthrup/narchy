@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 5/25/16.
  */
-public class MyShortIntHashMapTest {
+class MyShortIntHashMapTest {
 
     @Test
-    public void testAddToValuesAndFilter() {
+    void testAddToValuesAndFilter() {
         MyShortIntHashMap m = new MyShortIntHashMap();
         for (int c = 0; c < 4; c++) {
             for (int i = 0; i < 100; i++) {

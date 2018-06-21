@@ -21,7 +21,7 @@ import java.util.Vector;
  * @version 1.0 
  */
 public class ChipSource implements AxiomSource {
-	protected static Dictionary queries;
+	private static Dictionary queries;
 	public static ChipSpeller speller = new ChipSpeller();
 
 	/**
@@ -51,7 +51,7 @@ public class ChipSource implements AxiomSource {
 	 *
 	 * @return a chip fact, given a chip object.
 	 */
-	public static Fact fact(Chip c) {
+	private static Fact fact(Chip c) {
 
 		return new Fact("chip", new Object[] { c.getChipID(), c.getChipName(), c.getPrice(), c.getOunces(), c.getOil() });
 
@@ -62,7 +62,7 @@ public class ChipSource implements AxiomSource {
 	 *
 	 * @return a customer fact, given a customer object
 	 */
-	public static Fact fact(Customer c) {
+	private static Fact fact(Customer c) {
 
 		return new Fact("customer", new Object[] { c.getCustomerID(), c.getLastName(), c.getFirstName() });
 	}
@@ -72,7 +72,7 @@ public class ChipSource implements AxiomSource {
 	 *
 	 * @return an order fact, given an order object
 	 */
-	public static Fact fact(Order o) {
+	private static Fact fact(Order o) {
 
 		return new Fact("order", new Object[] { o.getCustomer().getCustomerID(), o.getChip().getChipID(), o.getBagsPerMonth() });
 	}

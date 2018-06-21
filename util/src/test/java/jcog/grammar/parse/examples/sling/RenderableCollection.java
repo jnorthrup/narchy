@@ -12,7 +12,7 @@ import java.util.Vector;
  * @version 1.0 
  */
 public class RenderableCollection {
-	protected Vector renderables = new Vector();
+	private Vector renderables = new Vector();
 
 	/**
 	 * Adds a renderable function to the collection.

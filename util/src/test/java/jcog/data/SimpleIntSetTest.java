@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SimpleIntSetTest {
 
     @Test
-    public void test1() {
+    void test1() {
         SimpleIntSet s = new SimpleIntSet();
 
         XoRoShiRo128PlusRandom x = new XoRoShiRo128PlusRandom(1);

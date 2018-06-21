@@ -11,7 +11,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0 
  */
-public class PrettyEmptyAssembler implements IAssembler {
+class PrettyEmptyAssembler implements IAssembler {
 	/**
 	 * Push a <code>TerminalNode</code> that contains the word
 	 * "empty" on the assembly's stack.

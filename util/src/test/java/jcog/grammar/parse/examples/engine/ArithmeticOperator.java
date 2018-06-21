@@ -36,9 +36,9 @@ package jcog.grammar.parse.examples.engine;
 
 public class ArithmeticOperator extends Structure implements ArithmeticTerm {
 
-	protected char operator;
-	protected ArithmeticTerm term0;
-	protected ArithmeticTerm term1;
+	private char operator;
+	private ArithmeticTerm term0;
+	private ArithmeticTerm term1;
 
 	/**
 	 * Constructs an arithmetic operator with the indicated operator and terms.
@@ -67,7 +67,7 @@ public class ArithmeticOperator extends Structure implements ArithmeticTerm {
 	/*
 	 * Do the math.
 	 */
-	protected Object arithmeticValue(double d0, double d1) {
+    private Object arithmeticValue(double d0, double d1) {
 		double result = 0;
 		switch (operator) {
 		case '+':
@@ -150,7 +150,7 @@ public class ArithmeticOperator extends Structure implements ArithmeticTerm {
 	/*
 	 * get the "double" value of this term
 	 */
-	protected double eval(ArithmeticTerm t) {
+    private double eval(ArithmeticTerm t) {
 		Object o = t.eval();
 		if (o == null) {
 			throw new EvaluationException(t + " is undefined in " + this);

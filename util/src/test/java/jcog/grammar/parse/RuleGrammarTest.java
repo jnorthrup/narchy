@@ -9,67 +9,67 @@ import java.io.StringWriter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RuleGrammarTest {
+class RuleGrammarTest {
 
 	private Grammar targetGrammar;
 	private RuleGrammar grammar;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		targetGrammar = new Grammar("test");
 		grammar = new RuleGrammar(targetGrammar);
 	}
 
 	@Test
-	public void emptyRuleFails() {
+    void emptyRuleFails() {
 		IParsingResult result = grammar.parse("r = ");
 		assertFalse(result.isCompleteMatch());
 	}
 
 	@Test
-	public void caselessLiteralDefinition() {
+    void caselessLiteralDefinition() {
 		Parser rule = resultRule("\"cl\"");
 		assertEquals(new CaselessLiteral("cl"), rule);
 	}
 
 	@Test
-	public void resultStackShouldHaveRuleName() {
+    void resultStackShouldHaveRuleName() {
 		IParsingResult result = grammar.parse("myRule = " + "\"cl\"");
 		assertEquals(result.getStack().peek(), "myRule");
 	}
 
 	@Test
-	public void symbolDefinition() {
+    void symbolDefinition() {
 		Parser rule = resultRule("'<'");
 		assertEquals(new Symbol("<"), rule);
 	}
 
 	@Test
-	public void ruleCanEndWithSemicolon() {
+    void ruleCanEndWithSemicolon() {
 		assertTrue(grammar.parse("r = '<';").isCompleteMatch());
 	}
 
 	@Test
-	public void additionalWhitespaceWillBeIgnored() {
+    void additionalWhitespaceWillBeIgnored() {
 		assertTrue(grammar.parse("  aRule  =  '<' ;   ").isCompleteMatch());
 		assertEquals(new Symbol("<"), targetGrammar.getRule("aRule"));
 	}
 
 	@Test
-	public void reference() {
+    void reference() {
 		Parser rule = resultRule("other");
 		assertEquals(new RuleReference("other", targetGrammar), rule);
 	}
 
 	@Test
-	public void unknownTerminalType() {
+    void unknownTerminalType() {
 		assertThrows(GrammarException.class, ()->{
 		grammar.parse("r = UnknownXYZ");
 		});
 	}
 
 	@Test
-	public void builtInTerminalTypes() {
+    void builtInTerminalTypes() {
 		Seq seq = (Seq) resultRule("Num Int Word QuotedString");
         assertTrue(seq.subparsers.get(0) instanceof Num);
         assertTrue(seq.subparsers.get(1) instanceof Int);
@@ -78,7 +78,7 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void selfMadeTerminalTypes() {
+    void selfMadeTerminalTypes() {
 		targetGrammar.registerTerminal(UpperCaseWord.class);
 		targetGrammar.registerTerminal("UCW", UpperCaseWord.class);
 		Seq seq = (Seq) resultRule("UpperCaseWord UCW");
@@ -87,7 +87,7 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void sequence() {
+    void sequence() {
 		Seq seq = (Seq) resultRule("\"a\" '<' \"b\"");
         assertEquals(new CaselessLiteral("a"), seq.subparsers.get(0));
         assertEquals(new Symbol("<"), seq.subparsers.get(1));
@@ -95,7 +95,7 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void repetition() {
+    void repetition() {
 		Repetition rep = (Repetition) resultRule("a*");
 		assertEquals(new RuleReference("a", targetGrammar), rep.getSubparser());
 		assertEquals(0, rep.requiredMatches());
@@ -104,7 +104,7 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void alternation() {
+    void alternation() {
 		Alternation alt = (Alternation) resultRule("'<' | '>'");
         assertEquals(new Symbol("<"), alt.subparsers.get(0));
         assertEquals(new Symbol(">"), alt.subparsers.get(1));
@@ -117,7 +117,7 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void parenthesesForUnnestedElements() {
+    void parenthesesForUnnestedElements() {
 		RuleReference ref = (RuleReference) resultRule("(a)");
 		assertEquals(new RuleReference("a", targetGrammar), ref);
 
@@ -127,7 +127,7 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void nestedParentheses() {
+    void nestedParentheses() {
 		assertParserType("(a|b) c", Seq.class);
 		assertParserType("a (b c)*", Seq.class);
 		assertParserType("(a b) | (c d)*", Alternation.class);
@@ -137,14 +137,14 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void byDefaultConstantsAreNotDiscarded() {
+    void byDefaultConstantsAreNotDiscarded() {
 		Seq ref = (Seq) resultRule("'<' \"a\"");
 		assertFalse(((Terminal) ref.getChild(0)).isDiscarded());
 		assertFalse(((Terminal) ref.getChild(1)).isDiscarded());
 	}
 
 	@Test
-	public void switchOnDefaultDiscardOfConstants() {
+    void switchOnDefaultDiscardOfConstants() {
 		targetGrammar.discardAllConstants();
 		Seq ref = (Seq) resultRule("'<' \"a\"");
 		assertTrue(((Terminal) ref.getChild(0)).isDiscarded());
@@ -152,14 +152,14 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void explicitConstantsDiscard() {
+    void explicitConstantsDiscard() {
 		Seq ref = (Seq) resultRule("#'<' #\"a\"");
 		assertTrue(((Terminal) ref.getChild(0)).isDiscarded());
 		assertTrue(((Terminal) ref.getChild(1)).isDiscarded());
 	}
 
 	@Test
-	public void atLeastOne() {
+    void atLeastOne() {
 		Repetition rep = (Repetition) resultRule("a+");
 		assertEquals(new RuleReference("a", targetGrammar), rep.getSubparser());
 		assertEquals(1, rep.requiredMatches());
@@ -168,7 +168,7 @@ public class RuleGrammarTest {
 	}
 
 	@Test
-	public void printing() {
+    void printing() {
 		printGrammar(grammar);
 	}
 

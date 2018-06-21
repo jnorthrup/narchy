@@ -12,27 +12,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IntTest extends AbstractParsingTest {
 
-	Int intTerminal;
+	private Int intTerminal;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		intTerminal = new Int();
 	}
 
 	@Test
-	public void noMatch() {
+    void noMatch() {
 		assertNoMatch("abc");
 		assertNoMatch("1.23");
 	}
 
 	@Test
-	public void match() {
+    void match() {
 		Assembly result = completeMatch("1000");
 		assertEquals(new BigInteger("1000"), popValueFromAssembly(result));
 	}
 
 	@Test
-	public void noChildren() {
+    void noChildren() {
 		assertTrue(size(getParser().children())==0);
 	}
 

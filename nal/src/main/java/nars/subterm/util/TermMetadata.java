@@ -1,9 +1,15 @@
 package nars.subterm.util;
 
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
+import nars.term.Variable;
+import nars.term.anon.AnonID;
+import nars.term.var.NormalizedVariable;
 
-/** cached values for term/subterm metadata */
+/**
+ * cached values for term/subterm metadata
+ */
 abstract public class TermMetadata implements Termlike {
 
     /**
@@ -11,7 +17,10 @@ abstract public class TermMetadata implements Termlike {
      * low-entropy, use 'hash' for normal hash operations.
      */
     public final int structure;
-
+    /**
+     * normal high-entropy "content" hash of the terms
+     */
+    public final int hash;
     /**
      * stored as volume+1 as if this termvector were already wrapped in its compound
      */
@@ -25,11 +34,6 @@ abstract public class TermMetadata implements Termlike {
     private final byte varQuery;
     private final byte varIndep;
 
-    /**
-     * normal high-entropy "content" hash of the terms
-     */
-    public final int hash;
-
     protected TermMetadata(Term... terms) {
         this(new SubtermMetadataCollector(terms));
     }
@@ -40,11 +44,82 @@ abstract public class TermMetadata implements Termlike {
         this.structure = s.structure;
         int varTot =
                 (this.varPattern = s.varPattern) +
-                (this.varQuery = s.varQuery) +
-                (this.varDep = s.varDep) +
-                (this.varIndep = s.varIndep);
+                        (this.varQuery = s.varQuery) +
+                        (this.varDep = s.varDep) +
+                        (this.varIndep = s.varIndep);
         this.complexity = (short) ((this.volume = s.vol) - varTot);
+
     }
+
+
+    protected static boolean testIfInitiallyNormalized(Subterms x) {
+        //depth first traversal, determine if variables encountered are monotonically increasing
+
+        final int[] minID = {0};
+        final byte[] typeToMatch = {-1};
+        return x.recurseTerms(Termlike::hasVars, (v) -> {
+            if (v instanceof Variable) {
+                if (v instanceof NormalizedVariable) {
+                    NormalizedVariable nv = (NormalizedVariable) v;
+                    byte varID = nv.anonNum();
+                    if (varID == minID[0]) {
+                        //same order, ok
+                        byte type = nv.anonType();
+                        if (typeToMatch[0] == -1)
+                            typeToMatch[0] = type;
+                        else {
+                            if (typeToMatch[0] != type)
+                                return false; //same # differnt type, needs normalized
+                        }
+                    } else if (varID == minID[0] + 1) {
+                        //increase the order, ok, set new type
+                        typeToMatch[0] = nv.anonType();
+                        minID[0]++;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+
+            return true;
+
+        }, null);
+    }
+
+    /**
+     * for AnonVector
+     */
+    protected static boolean testIfInitiallyNormalized(short[] subterms) {
+        /* checks for monotonically increasing variable numbers starting from 1,
+         which will indicate that the subterms is normalized
+         */
+
+        int minID = 0;
+        int typeToMatch = -1;
+        for (short x: subterms) {
+            if (x < 0) x = (short) -x;
+            int varID = AnonID.isVariable(x, -1);
+            if (varID == -1) continue; //anom
+            else if (varID == minID) {
+                //same order, ok
+                int type = AnonID.idToMask(x);
+                if (typeToMatch == -1)
+                    typeToMatch = type;
+                else if (typeToMatch!=type)
+                    return false; //same id different type, needs normalized
+            } else if (varID == minID + 1) {
+                //increase the order, ok, set new type
+                typeToMatch = AnonID.idToMask(x);
+                minID++;
+            } else if (varID > minID + 1) {
+                return false; //cant be sure
+            }
+        }
+        return true;
+    }
+
     public final int vars() {
         return varDep + varIndep + varQuery + varPattern;
     }

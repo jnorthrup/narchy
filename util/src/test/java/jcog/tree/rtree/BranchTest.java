@@ -29,13 +29,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by jcovert on 6/12/15.
  */
-public class BranchTest {
+class BranchTest {
 
     /**
      * Code was added to Branch remove an extra that's created during splitting.
      */
     @Test
-    public void branchOptimizationTest() {
+    void branchOptimizationTest() {
 
         for(Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
             RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(type);

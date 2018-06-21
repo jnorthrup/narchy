@@ -20,9 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * TODO test packing efficiency (lack of sparsity)
  */
-public class HijackBagTest {
+class HijackBagTest {
 
-    @Test public void testPutMinMaxAndUniquenesses() {
+    @Test
+    void testPutMinMaxAndUniquenesses() {
         for (int reprobes : new int[] { 2, 4, 8 }) {
             for (int capacity : new int[] { 2, 4, 8, 16, 32, 64, 128 }) {
                 testPutMinMaxAndUniqueness(
@@ -31,11 +32,12 @@ public class HijackBagTest {
         }
     }
 
-    static PLink<String> p(String s, float pri) {
+    private static PLink<String> p(String s, float pri) {
         return new PLink<>(s, pri);
     }
 
-    @Test public void testGrowToCapacity() {
+    @Test
+    void testGrowToCapacity() {
         int cap = 16;
         int reprobes = 3;
         DefaultHijackBag<String> b = new DefaultHijackBag<String>(max, cap, reprobes);
@@ -68,16 +70,18 @@ public class HijackBagTest {
 
     }
 
-    @Test public void testRemoveByKey() {
+    @Test
+    void testRemoveByKey() {
         BagTest.testRemoveByKey(new DefaultHijackBag(plus, 2, 3));
     }
 
     @Test
-    public void testBasicInsertionRemovalHijack() {
+    void testBasicInsertionRemovalHijack() {
         testBasicInsertionRemoval(new DefaultHijackBag(max, 1, 1));
     }
 
-    @Test public void testHijackFlatBagRemainsRandomInNormalizedSampler() {
+    @Test
+    void testHijackFlatBagRemainsRandomInNormalizedSampler() {
 
         int n = 256;
 
@@ -116,7 +120,8 @@ public class HijackBagTest {
         
     }
 
-    @Test public void testHijackSampling() {
+    @Test
+    void testHijackSampling() {
         for (int cap : new int[] { 63, 37 }) {
             int rep = 3;
             int batch = 4;
@@ -146,7 +151,7 @@ public class HijackBagTest {
     }
 
     @Test
-    public void testHijackResize() {
+    void testHijackResize() {
         Random rng = rng();
         DefaultHijackBag b = new DefaultHijackBag(PriMerge.max, 0, 7);
         BagTest.populate(b, rng, 10, 20, 0f, 1f, 0.5f);
@@ -187,7 +192,7 @@ public class HijackBagTest {
 
     }
 
-    public void assertApproximatelySized(Table<String,?> b, int expected, float closeness) {
+    private void assertApproximatelySized(Table<String, ?> b, int expected, float closeness) {
         int bSize = b.size();
         float error = Math.abs(expected - bSize) / (Math.max(bSize, (float) expected));
         System.out.println(bSize + "  === " + expected + ", diff=" + error);

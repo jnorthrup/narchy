@@ -10,7 +10,7 @@ import java.util.Hashtable;
  * @version 1.0  
  */
 public class Scope {
-	protected Hashtable dictionary = new Hashtable();
+	private Hashtable dictionary = new Hashtable();
 
 	/**
 	 * Returns true if a variable of the given name appears

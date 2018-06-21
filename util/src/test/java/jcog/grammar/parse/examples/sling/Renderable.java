@@ -30,9 +30,9 @@ package jcog.grammar.parse.examples.sling;
  *
  * @version 1.0  
  */
-public class Renderable {
-	protected SlingFunction function;
-	protected SlingFunction nLine;
+class Renderable {
+	SlingFunction function;
+	private SlingFunction nLine;
 
 	/**
 	 * Create a function that will be rendered with the given

@@ -4,7 +4,7 @@ package jcog.grammar.parse.examples.karate;
  * KaratePuzzle uses this class as a data structure. 
  */
 public class Student {
-	public String firstName;
+	private String firstName;
 	public String lastName;
 	public String specialty;
 

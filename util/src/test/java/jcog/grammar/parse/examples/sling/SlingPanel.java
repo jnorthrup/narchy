@@ -15,11 +15,11 @@ import java.util.Enumeration;
  * @version 1.0 
  */
 public class SlingPanel extends JPanel {
-	protected RenderableCollection renderables;
-	protected Point lowerLeft;
-	protected Point upperRight;
-	protected int[] pointsX = new int[0];
-	protected int[] pointsY = new int[0];
+	private RenderableCollection renderables;
+	private Point lowerLeft;
+	private Point upperRight;
+	private int[] pointsX = new int[0];
+	private int[] pointsY = new int[0];
 
 	/*
 	 * We will plot in the largest possible rectangle that has
@@ -27,7 +27,7 @@ public class SlingPanel extends JPanel {
 	 * requires. This method determins the pixel numbers of
 	 * the lower left and upper right corners we will plot to.
 	 */
-	protected void calculateCorners(double aspectRatio) {
+    private void calculateCorners(double aspectRatio) {
 		double w = this.getWidth();
 		double h = this.getHeight();
 
@@ -57,7 +57,7 @@ public class SlingPanel extends JPanel {
 	/*
 	 * Ensure there is enough space to print all these points.
 	 */
-	protected void checkBuf(int nLine) {
+    private void checkBuf(int nLine) {
 		int nPoint = nLine + 1;
 		if (nPoint > pointsX.length) {
 			pointsX = new int[nPoint];
@@ -69,7 +69,7 @@ public class SlingPanel extends JPanel {
 	 * Display one scaled function. The scale translates the
 	 * function's points to pixel values.
 	 */
-	protected void drawFunction(Graphics g, Scale s, int nLine) {
+    private void drawFunction(Graphics g, Scale s, int nLine) {
 		checkBuf(nLine);
 		int nPoint = nLine + 1;
 		for (int i = 0; i < nPoint; i++) {

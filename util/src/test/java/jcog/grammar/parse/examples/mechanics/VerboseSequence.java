@@ -22,7 +22,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class VerboseSequence extends Seq {
+class VerboseSequence extends Seq {
 	/**
 	 * Constructs a nameless VerboseSequence.
 	 */

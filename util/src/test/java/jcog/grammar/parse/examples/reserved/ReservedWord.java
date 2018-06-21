@@ -14,7 +14,7 @@ import java.util.Vector;
  * 
  * @version 1.0 
  */
-public class ReservedWord extends Terminal {
+class ReservedWord extends Terminal {
 
 	/**
 	 * Returns true if an assembly's next element is a reserved 

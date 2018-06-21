@@ -21,20 +21,20 @@ package jcog.grammar.parse.examples.string;
  * @version 1.0  
  */
 public abstract class StringFunction {
-	protected StringFunction source;
+	StringFunction source;
 
 	/**
 	 * Construct a function whose source function is identity,
 	 * which does not change a string.
 	 */
-	public StringFunction() {
+    StringFunction() {
 		this(new Identity());
 	}
 
 	/**
 	 * Construct a function whose source is the given function.
 	 */
-	public StringFunction(StringFunction source) {
+    StringFunction(StringFunction source) {
 		this.source = source;
 	}
 

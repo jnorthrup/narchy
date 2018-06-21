@@ -16,7 +16,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0 
  */
-public class ComparisonAssembler implements IAssembler {
+class ComparisonAssembler implements IAssembler {
 	/**
 	 * Pops a comparison term, an operator, and another 
 	 * comparison term. Builds the comparison and passes the 

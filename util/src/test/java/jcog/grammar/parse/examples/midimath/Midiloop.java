@@ -36,7 +36,7 @@ public class Midiloop {
 	 * @return   a parser that will recognize a Midimath 
 	 *           expression
 	 */
-	public Parser expression() {
+    private Parser expression() {
 		Seq expression = new Seq();
 
 		Seq plusTerm = new Seq();
@@ -57,7 +57,7 @@ public class Midiloop {
 	 *           numbers, or arithmetic expressions in 
 	 *           parentheses
 	 */
-	protected Parser factor() {
+    private Parser factor() {
 		Alternation factor = new Alternation();
 
 		Seq parenExpression = new Seq();
@@ -88,7 +88,7 @@ public class Midiloop {
 	 * @return   a parser that will recognize arithmetic
 	 *           expressions containing just multiplication
 	 */
-	protected Parser term() {
+    private Parser term() {
 		Seq term = new Seq();
 
 		Seq timesFactor = new Seq();

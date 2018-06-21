@@ -63,7 +63,7 @@ public class IntSetTestUtility {
     private static class IntIt implements Iterable<Integer> {
         private final Iterator<Integer> intIter;
 
-        public IntIt(IntIterator intIt) {
+        IntIt(IntIterator intIt) {
             this.intIter = new IntIter(intIt);
         }
 
@@ -75,7 +75,7 @@ public class IntSetTestUtility {
         private static class IntIter implements Iterator<Integer> {
             private final IntIterator intIt;
 
-            public IntIter(IntIterator intIt) {
+            IntIter(IntIterator intIt) {
                 this.intIt = intIt;
             }
 

@@ -24,11 +24,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class TestTrieSet
+class TestTrieSet
 {
 
    @Test
-   public void testConstructor()
+   void testConstructor()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);
 
@@ -37,7 +37,7 @@ public class TestTrieSet
    }
 
    @Test
-   public void testAdd()
+   void testAdd()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
 
@@ -54,7 +54,7 @@ public class TestTrieSet
    }
 
    @Test
-   public void testAddAll()
+   void testAddAll()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
 
@@ -69,7 +69,7 @@ public class TestTrieSet
    }
 
    @Test
-   public void testClear()
+   void testClear()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
 
@@ -92,7 +92,7 @@ public class TestTrieSet
    }
 
    @Test
-   public void testContainsAll()
+   void testContainsAll()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
 
@@ -114,7 +114,7 @@ public class TestTrieSet
    }
    
    @Test
-   public void testIterator()
+   void testIterator()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
 
@@ -134,7 +134,7 @@ public class TestTrieSet
    }
    
    @Test
-   public void testRemove()
+   void testRemove()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
 
@@ -149,7 +149,7 @@ public class TestTrieSet
    }
    
    @Test
-   public void testRemoveAll()
+   void testRemoveAll()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
 
@@ -166,7 +166,7 @@ public class TestTrieSet
    }
    
    @Test
-   public void testRetainAll()
+   void testRetainAll()
    {
       TrieSet<String> set = new TrieSet<>(Tries.STRING_TRIE_SEQUENCER_CHAR_SEQUENCE);;
       

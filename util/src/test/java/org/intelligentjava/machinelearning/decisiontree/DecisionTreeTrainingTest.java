@@ -16,7 +16,7 @@ import static org.intelligentjava.machinelearning.decisiontree.data.SimpleValue.
 import static org.intelligentjava.machinelearning.decisiontree.feature.PredicateFeature.feature;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DecisionTreeTrainingTest {
+class DecisionTreeTrainingTest {
 
 
     static final com.google.common.base.Function<JsonNode, Function<String, Object>> jsonValue = (j) -> j::get;
@@ -36,7 +36,7 @@ public class DecisionTreeTrainingTest {
      * LABEL_TRUE    LABEL_FALSE
      */
     @Test
-    public void testTrainingAndFunction() {
+    void testTrainingAndFunction() {
         DecisionTree<String, Object> tree = new DecisionTree();
         String[] header = {"x1", "x2", "answer"};
 
@@ -84,7 +84,7 @@ public class DecisionTreeTrainingTest {
      * LABEL_TRUE    LABEL_FALSE
      */
     @Test
-    public void testTrainingORFunction() {
+    void testTrainingORFunction() {
         DecisionTree<String, Object> tree = new DecisionTree();
         String[] header = {"x1", "x2", "answer"};
 
@@ -131,7 +131,7 @@ public class DecisionTreeTrainingTest {
      * LABEL_FALSE LABEL_TRUE  LABEL_TRUE LABEL_FALSE
      */
     @Test
-    public void testTrainingXORFunction() {
+    void testTrainingXORFunction() {
         DecisionTree<String, Object> tree = new DecisionTree();
         String[] header = {"x1", "x2", "answer"};
 
@@ -159,7 +159,7 @@ public class DecisionTreeTrainingTest {
     }
 
     @Test
-    public void testLearnSimpleMoreLessFeature() {
+    void testLearnSimpleMoreLessFeature() {
         DecisionTree<String, Integer> tree = new DecisionTree();
         String[] header = {"x1", "answer"};
 
@@ -196,7 +196,7 @@ public class DecisionTreeTrainingTest {
      * @author Ignas
      */
     @Test
-    public void testClassify() {
+    void testClassify() {
 
         
         DecisionTree tree = new DecisionTree();
@@ -251,7 +251,7 @@ public class DecisionTreeTrainingTest {
 
 
     @Test
-    public void testRealDecisionTable() {
+    void testRealDecisionTable() {
 
 
         RealDecisionTree tr = new RealDecisionTree(

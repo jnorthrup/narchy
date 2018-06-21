@@ -16,7 +16,7 @@ package jcog.grammar.parse.examples.arithmetic;
  * 
  * @version 1.0
  */
-public class ArithmeticExpressionException extends Exception {
+class ArithmeticExpressionException extends Exception {
 	/**
 	 * Constructs a <code>ArithmeticExpressionException</code> 
 	 * with no detail message.

@@ -3,11 +3,11 @@ package com.insightfullogic.slab.issue13;
 import com.insightfullogic.slab.Allocator;
 import org.junit.jupiter.api.Test;
 
-public class Issue13Test {
+class Issue13Test {
 
     @SuppressWarnings("rawtypes")
     @Test
-    public void reproduceIssue() {
+    void reproduceIssue() {
         int reps = 100;
         Allocator eventAllocator = Allocator.of(SlabOperation.class);
         final SlabOperation op = (SlabOperation) eventAllocator.allocate(reps);

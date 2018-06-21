@@ -15,30 +15,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class AbstractTimerTest {
+abstract class AbstractTimerTest {
 
-    final HashedWheelTimer timer = new HashedWheelTimer(
+    private final HashedWheelTimer timer = new HashedWheelTimer(
                     new AdmissionQueueWheelModel(128,
                     TimeUnit.MILLISECONDS.toNanos(1)),
                     waitStrategy());
 
-    public abstract HashedWheelTimer.WaitStrategy waitStrategy();
+    protected abstract HashedWheelTimer.WaitStrategy waitStrategy();
 
     @BeforeEach
-    public void before() {
+    void before() {
         
         timer.assertRunning();
     }
 
 
     @AfterEach
-    public void after() throws InterruptedException {
+    void after() throws InterruptedException {
         timer.shutdownNow();
         assertTrue(timer.awaitTermination(3, TimeUnit.SECONDS));
     }
 
     @Test
-    public void scheduleOneShotRunnableTest() throws InterruptedException {
+    void scheduleOneShotRunnableTest() throws InterruptedException {
         AtomicInteger i = new AtomicInteger(1);
         timer.schedule((Runnable) i::decrementAndGet,
                 100,
@@ -49,7 +49,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void testOneShotRunnableFuture() throws InterruptedException, TimeoutException, ExecutionException {
+    void testOneShotRunnableFuture() throws InterruptedException, TimeoutException, ExecutionException {
         AtomicInteger i = new AtomicInteger(1);
         long start = System.currentTimeMillis();
         assertNull(timer.schedule((Runnable) i::decrementAndGet,
@@ -61,7 +61,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void scheduleOneShotCallableTest() throws InterruptedException {
+    void scheduleOneShotCallableTest() throws InterruptedException {
         AtomicInteger i = new AtomicInteger(1);
         timer.schedule(() -> {
                     i.decrementAndGet();
@@ -75,7 +75,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void testOneShotCallableFuture() throws InterruptedException, TimeoutException, ExecutionException {
+    void testOneShotCallableFuture() throws InterruptedException, TimeoutException, ExecutionException {
         AtomicInteger i = new AtomicInteger(1);
         long start = System.currentTimeMillis();
         assertEquals("Hello", timer.schedule(() -> {
@@ -90,7 +90,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void fixedRateFirstFireTest() throws InterruptedException {
+    void fixedRateFirstFireTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
         long start = System.currentTimeMillis();
         timer.scheduleAtFixedRate(latch::countDown,
@@ -103,7 +103,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void delayBetweenFixedRateEvents() throws InterruptedException {
+    void delayBetweenFixedRateEvents() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
         timer.scheduleAtFixedRate(() -> {
@@ -132,7 +132,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void delayBetweenFixedDelayEvents() throws InterruptedException {
+    void delayBetweenFixedDelayEvents() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
         timer.scheduleWithFixedDelay(() -> {
@@ -160,24 +160,24 @@ public abstract class AbstractTimerTest {
         assertTrue(r.get(2) - r.get(1) >= 100);
     }
     @Test
-    public void fixedRateSubsequentFireTest_40ms() throws InterruptedException {
+    void fixedRateSubsequentFireTest_40ms() throws InterruptedException {
         fixedDelaySubsequentFireTest(40, 40, false);
     }
     @Test
-    public void fixedRateSubsequentFireTest_20ms() throws InterruptedException {
+    void fixedRateSubsequentFireTest_20ms() throws InterruptedException {
         fixedDelaySubsequentFireTest(20, 40, false);
     }
 
     @Test
-    public void fixedDelaySubsequentFireTest_40ms() throws InterruptedException {
+    void fixedDelaySubsequentFireTest_40ms() throws InterruptedException {
         fixedDelaySubsequentFireTest(40, 40, true);
     }
     @Test
-    public void fixedDelaySubsequentFireTest_20ms() throws InterruptedException {
+    void fixedDelaySubsequentFireTest_20ms() throws InterruptedException {
         fixedDelaySubsequentFireTest(20, 40, true);
     }
 
-    void fixedDelaySubsequentFireTest(int delayMS, int count, boolean fixedDelayOrRate) throws InterruptedException {
+    private void fixedDelaySubsequentFireTest(int delayMS, int count, boolean fixedDelayOrRate) throws InterruptedException {
 
         int warmup = 1;
 
@@ -225,7 +225,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void fixedRateSubsequentFireTest() throws InterruptedException {
+    void fixedRateSubsequentFireTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(10);
         long start = System.currentTimeMillis();
         
@@ -245,7 +245,7 @@ public abstract class AbstractTimerTest {
     
 
     @Test
-    public void testScheduleTimeoutShouldNotRunBeforeDelay() throws InterruptedException {
+    void testScheduleTimeoutShouldNotRunBeforeDelay() throws InterruptedException {
         final CountDownLatch barrier = new CountDownLatch(1);
         final Future timeout = timer.schedule(() -> {
             fail("This should not have run");
@@ -258,7 +258,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void testScheduleTimeoutShouldRunAfterDelay() throws InterruptedException {
+    void testScheduleTimeoutShouldRunAfterDelay() throws InterruptedException {
         final CountDownLatch barrier = new CountDownLatch(1);
         final Future timeout = timer.schedule(barrier::countDown, 1, TimeUnit.SECONDS);
         assertTrue(barrier.await(2, TimeUnit.SECONDS));
@@ -284,7 +284,7 @@ public abstract class AbstractTimerTest {
 
 
     @Test
-    public void testTimerOverflowWheelLength() throws InterruptedException {
+    void testTimerOverflowWheelLength() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
 
         timer.schedule(new Runnable() {
@@ -299,7 +299,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void testExecutionOnTime() throws InterruptedException {
+    void testExecutionOnTime() throws InterruptedException {
 
         int delayTime = 250;
         int tolerance = 25;

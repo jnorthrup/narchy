@@ -10,9 +10,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LivePredictorTest {
+class LivePredictorTest {
 
-    @Test public void test1() {
+    @Test
+    void test1() {
         IntToFloatFunction ii = x -> (float)Math.sin(x/4f);
         IntToFloatFunction oo = x -> (float)Math.cos(x/4f);
         LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.1f, 1);
@@ -24,7 +25,8 @@ public class LivePredictorTest {
         assertCorrect(ii, oo, model, iHistory, totalTime, maxMeanError);
     }
 
-    @Test public void test21_LSTM() {
+    @Test
+    void test21_LSTM() {
         IntToFloatFunction ii = x -> (float)Math.sin(x/4f);
         IntToFloatFunction oo = x -> (float)Math.cos(x/8f);
         LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.2f, 1);
@@ -36,7 +38,8 @@ public class LivePredictorTest {
         assertCorrect(ii, oo, model, iHistory, totalTime, maxMeanError);
     }
 
-    @Test public void test12_MLP() {
+    @Test
+    void test12_MLP() {
 
         IntToFloatFunction ii = x -> (float)Math.sin(x/8f);
         IntToFloatFunction oo = x -> (float)Math.cos(x/8f);
@@ -49,7 +52,7 @@ public class LivePredictorTest {
         assertCorrect(ii, oo, model, iHistory, totalTime, maxMeanError);
     }
 
-    static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, LivePredictor.Predictor model, int iHistory, int totalTime, float maxMeanError) {
+    private static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, LivePredictor.Predictor model, int iHistory, int totalTime, float maxMeanError) {
         MutableInteger m = new MutableInteger();
 
 

@@ -11,7 +11,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class NegativeAssembler implements IAssembler {
+class NegativeAssembler implements IAssembler {
 	/**
 	 * Push the point (-1, -1), and ask an <code>Arithmetic</code> 
 	 * "times" object to work on the assembly. The arithmetic 

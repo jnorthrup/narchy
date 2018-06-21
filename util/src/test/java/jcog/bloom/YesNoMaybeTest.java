@@ -7,10 +7,10 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class YesNoMaybeTest {
+class YesNoMaybeTest {
 
     @Test
-    public void test1() {
+    void test1() {
 
         int uniques = 32;
 

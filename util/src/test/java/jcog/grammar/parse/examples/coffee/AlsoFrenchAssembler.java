@@ -12,7 +12,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class AlsoFrenchAssembler implements IAssembler {
+class AlsoFrenchAssembler implements IAssembler {
 	/** 
 	 * Set a target coffee object's boolean to indicate that this 
 	 * type of coffee also comes in a french roast.

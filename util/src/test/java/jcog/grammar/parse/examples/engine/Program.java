@@ -22,7 +22,7 @@ import java.util.List;
  */
 
 public class Program implements AxiomSource {
-	protected List<Axiom> axioms = new ArrayList<Axiom>();
+	List<Axiom> axioms = new ArrayList<Axiom>();
 
 	/**
 	 * Create a new program with no axioms.

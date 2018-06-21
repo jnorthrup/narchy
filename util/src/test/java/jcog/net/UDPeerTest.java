@@ -10,11 +10,11 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UDPeerTest {
+class UDPeerTest {
     
     @ParameterizedTest
     @ValueSource(ints={0,1})
-    public void testDiscoverDoesntSelfConnect(int pingSelf) throws IOException {
+    void testDiscoverDoesntSelfConnect(int pingSelf) throws IOException {
         UDPeer x = new UDPeer();
         x.runFPS(8f);
          if (pingSelf==1) {
@@ -29,7 +29,7 @@ public class UDPeerTest {
     }
 
     @Test
-    public void testDiscoverableByLANMulticast() throws IOException {
+    void testDiscoverableByLANMulticast() throws IOException {
 
         UDPeer x = new UDPeer();
         UDPeer y = new UDPeer();

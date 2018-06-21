@@ -9,26 +9,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CaselessLiteralTest extends AbstractParsingTest {
 
-	CaselessLiteral caselessLiteral;
+	private CaselessLiteral caselessLiteral;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		caselessLiteral = new CaselessLiteral("hello");
 	}
 
 	@Test
-	public void noMatch() {
+    void noMatch() {
 		assertNoMatch("abc");
 	}
 
 	@Test
-	public void match() {
+    void match() {
 		assertCompleteMatch("hello");
 		assertCompleteMatch("HELLO");
 	}
 
 	@Test
-	public void noChildren() {
+    void noChildren() {
 		assertTrue(size(getParser().children())==0);
 	}
 

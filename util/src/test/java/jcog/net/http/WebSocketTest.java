@@ -23,14 +23,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class WebSocketTest {
+class WebSocketTest {
 
     /**
      * A simple WebSocketServer implementation. Keeps track of a "chatroom".
      */
-    public class Server extends WebSocketServer {
+    class Server extends WebSocketServer {
 
-        public Server(int port ) throws UnknownHostException {
+        Server(int port) throws UnknownHostException {
             super( new InetSocketAddress( port ), List.of(new Draft_6455()) );
             WebSocketImpl.DEBUG = true;
 
@@ -115,7 +115,7 @@ public class WebSocketTest {
     }
 
     @Test
-    public void test1() throws IOException, URISyntaxException, InterruptedException {
+    void test1() throws IOException, URISyntaxException, InterruptedException {
         Server s = new Server(8080);
         s.start();
 

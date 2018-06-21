@@ -15,9 +15,9 @@ import static jcog.User.BOUNDS;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UserTest {
+class UserTest {
 
-    static User testPutGet(Object obj) {
+    private static User testPutGet(Object obj) {
         User u = new User();
         u.put("key", obj);
         List l = new FasterList();
@@ -32,22 +32,22 @@ public class UserTest {
     }
 
     @Test
-    public void testPutGetString() {
+    void testPutGetString() {
         testPutGet("value");
     }
 
     @Test
-    public void testPutGetByteArray() {
+    void testPutGetByteArray() {
         testPutGet(new byte[]{1, 2, 3, 4, 5});
     }
 
     @Test
-    public void testPutGetSerialized() {
+    void testPutGetSerialized() {
         testPutGet(Maps.mutable.of("x", 6, "y", Lists.mutable.of("z", "z")));
     }
 
     @Test
-    public void testTimeIndex() {
+    void testTimeIndex() {
         User u = new User();
         u.put("x", new MyEvent("x", 0, 4));
         u.put("y", new MyEvent("y", 4, 8));
@@ -65,7 +65,7 @@ public class UserTest {
 
         private final String name;
 
-        public MyEvent(String name, long a, long b) {
+        MyEvent(String name, long a, long b) {
             super(a, b);
             this.name = name;
         }

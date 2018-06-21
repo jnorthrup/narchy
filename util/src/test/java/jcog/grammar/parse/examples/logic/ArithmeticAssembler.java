@@ -17,7 +17,7 @@ public class ArithmeticAssembler implements IAssembler {
 	/**
 	 * the character which represents an arithmetic operator
 	 */
-	protected char operator;
+    private char operator;
 
 	/**
 	 * Constructs an assembler that will stack an 

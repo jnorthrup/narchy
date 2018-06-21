@@ -18,7 +18,7 @@ package jcog.grammar.parse.examples.engine;
  * 
  * @version 1.0
  */
-public class EvaluationException extends RuntimeException {
+class EvaluationException extends RuntimeException {
 	/**
 	 * Constructs an EvaluationException with no detail message.
 	 * 

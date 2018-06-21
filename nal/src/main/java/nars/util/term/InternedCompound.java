@@ -5,8 +5,9 @@ import jcog.data.byt.DynBytes;
 import jcog.memoize.byt.ByteKey;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
+import nars.term.compound.LighterCompound;
+import nars.term.compound.UnitCompound;
 
 import java.util.function.Supplier;
 
@@ -24,7 +25,7 @@ public final class InternedCompound extends ByteKey  {
     }
 
     /** for look-up */
-    public static InternedCompound get(Compound x) {
+    public static InternedCompound get(Term x) {
 
         DynBytes key = new DynBytes(4 * x.volume() /* ESTIMATE */);
         Op o = x.op();
@@ -37,9 +38,17 @@ public final class InternedCompound extends ByteKey  {
             assert(dt == DTERNAL);
         }
 
-        Subterms xx = x.subterms();
-        key.writeByte(xx.subs());
-        xx.forEach(s -> s.appendTo((ByteArrayDataOutput) key));
+        if (x instanceof LighterCompound || x instanceof UnitCompound) {
+            //HACK
+            int s = x.subs();
+            key.writeByte(s);
+            for (int i = 0; i < s; i++)
+                x.sub(i).appendTo((ByteArrayDataOutput) key);
+        } else {
+            Subterms xx = x.subterms();
+            key.writeByte(xx.subs());
+            xx.forEach(s -> s.appendTo((ByteArrayDataOutput) key));
+        }
 
         return new InternedCompound(key, o, dt, x::arrayShared);
     }

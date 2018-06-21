@@ -27,7 +27,7 @@ import java.util.Vector;
  * @version 1.0 
  */
 public class WordOrReservedState extends WordState {
-	Vector reserved = new Vector();
+	private Vector reserved = new Vector();
 
 	/**
 	 * A constant indicating that a token is a reserved word.

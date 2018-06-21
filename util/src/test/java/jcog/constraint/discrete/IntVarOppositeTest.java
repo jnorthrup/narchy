@@ -18,13 +18,13 @@ package jcog.constraint.discrete;
 public class IntVarOppositeTest extends IntVarTest {
 
   @Override
-  public IntVar intVar(DiscreteConstraintSolver solver, int min, int max) {
+  protected IntVar intVar(DiscreteConstraintSolver solver, int min, int max) {
     IntVar x = solver.intVar(min, max);
     return new IntVarOpposite(new IntVarOpposite(x));
   }
   
   @Override
-  public IntVar intVar(DiscreteConstraintSolver solver, int[] values) {
+  protected IntVar intVar(DiscreteConstraintSolver solver, int[] values) {
     IntVar x = solver.intVar(values);
     return new IntVarOpposite(new IntVarOpposite(x));
   }

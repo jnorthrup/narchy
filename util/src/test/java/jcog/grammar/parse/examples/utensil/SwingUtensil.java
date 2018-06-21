@@ -24,7 +24,7 @@ public class SwingUtensil {
 	/*
 	 * Set the location of a frame to be the center of the screen.
 	 */
-	public static void center(Frame f) {
+	private static void center(Frame f) {
 		Dimension sDim = Toolkit.getDefaultToolkit().getScreenSize();
 
 		Dimension fDim = f.getSize();
@@ -94,7 +94,7 @@ public class SwingUtensil {
 	/*
 	 * Set up an exit listener for a frame.
 	 */
-	public static void listen(Frame f) {
+	private static void listen(Frame f) {
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);

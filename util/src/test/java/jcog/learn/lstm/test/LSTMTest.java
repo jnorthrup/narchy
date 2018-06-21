@@ -9,10 +9,10 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LSTMTest {
+class LSTMTest {
 
 	@Test
-	public void testLSTM1() {
+    void testLSTM1() {
 		
 		
 		

@@ -8,21 +8,21 @@ import org.junit.jupiter.api.Test;
 
 public class AlternationTest extends AbstractParsingTest {
 
-	Alternation alternation;
+	private Alternation alternation;
 
 	@BeforeEach
-	public void init() {
+    void init() {
 		alternation = new Alternation();
 	}
 
 	@Test
-	public void noMatch() {
+    void noMatch() {
 		alternation.get(new CaselessLiteral("abc"));
 		assertNoMatch("def");
 	}
 
 	@Test
-	public void fullMatch() {
+    void fullMatch() {
 		alternation.get(new CaselessLiteral("abc"));
 		alternation.get(new Num());
 		alternation.get(new Empty());
@@ -33,14 +33,14 @@ public class AlternationTest extends AbstractParsingTest {
 	}
 
 	@Test
-	public void children() {
+    void children() {
 		alternation.get(new CaselessLiteral("abc"));
 		alternation.get(new Num());
 		Assertions.assertEquals(2, RepetitionTest.size(getParser().children()));
 	}
 
 	@Test
-	public void leftChildren() {
+    void leftChildren() {
 		alternation.get(new CaselessLiteral("abc"));
 		alternation.get(new Num());
 		Assertions.assertEquals(2, RepetitionTest.size(getParser().leftChildren()));

@@ -10,7 +10,7 @@ import static org.intelligentjava.machinelearning.decisiontree.label.BooleanLabe
 import static org.intelligentjava.machinelearning.decisiontree.label.BooleanLabel.TRUE_LABEL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DecisionTreeGetMajorityLabelTest {
+class DecisionTreeGetMajorityLabelTest {
     
     
 
@@ -21,7 +21,7 @@ public class DecisionTreeGetMajorityLabelTest {
 
     
     @Test
-    public void testGetMajorityLabel() {
+    void testGetMajorityLabel() {
 //        DecisionTree<Object, Object> tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));
@@ -33,7 +33,7 @@ public class DecisionTreeGetMajorityLabelTest {
     }
 
     @Test
-    public void testGetMajorityLabelWhenEqualCounts() {
+    void testGetMajorityLabelWhenEqualCounts() {
 //        DecisionTree<Object, Object> tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));

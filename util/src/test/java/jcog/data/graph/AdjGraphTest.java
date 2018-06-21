@@ -9,10 +9,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AdjGraphTest {
+class AdjGraphTest {
 
     @Test
-    public void testGraph1() {
+    void testGraph1() {
 
         AdjGraph<String,String> g = new AdjGraph<>(true);
         assertEquals(1, g.eid(0, 1));

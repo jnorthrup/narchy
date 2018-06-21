@@ -20,7 +20,7 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class AssignmentAssembler implements IAssembler {
+class AssignmentAssembler implements IAssembler {
 	/**
 	 * Pops a function and a variable, constructs an <code>
 	 * AssignFunctionCommand</code> from these terms, and

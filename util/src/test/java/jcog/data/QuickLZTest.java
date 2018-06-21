@@ -7,14 +7,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class QuickLZTest {
+class QuickLZTest {
 
-    static float testCompressDecompress(String s, int level) {
+    private static float testCompressDecompress(String s, int level) {
         System.out.print(s + "\n\t");
         return testCompressDecompress(s.getBytes(), level);
     }
 
-    static float testCompressDecompress(byte[] input, int level) {
+    private static float testCompressDecompress(byte[] input, int level) {
         byte[] compressed = QuickLZ.compress(input,level);
         byte[] decompress = QuickLZ.decompress(compressed);
 
@@ -33,7 +33,7 @@ public class QuickLZTest {
 
     @ParameterizedTest
     @ValueSource(ints={1,3})
-    public void testSome(int level) {
+    void testSome(int level) {
 
 
 

@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class PriceAssembler implements IAssembler {
+class PriceAssembler implements IAssembler {
 	/**
 	 * Pop a number, and set the target coffee's price to this
 	 * string.

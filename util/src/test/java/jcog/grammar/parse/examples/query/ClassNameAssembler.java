@@ -12,7 +12,7 @@ import jcog.grammar.parse.tokens.Token;
  *
  * @version 1.0
  */
-public class ClassNameAssembler implements IAssembler {
+class ClassNameAssembler implements IAssembler {
 
 	/**
 	 * Pop a class name, and inform a QueryBuilder that this

@@ -35,7 +35,7 @@ public class Midimath {
 	 * @return   a parser that will recognize a Midimath 
 	 *           expression
 	 */
-	public Parser expression() {
+    private Parser expression() {
 		Seq expression = new Seq();
 
 		Seq plusTerm = new Seq();
@@ -63,7 +63,7 @@ public class Midimath {
 	 * @return   a parser that will recognize arithmetic
 	 *           expressions containing just multiplication
 	 */
-	protected Parser term() {
+    private Parser term() {
 		Seq term = new Seq();
 
 		Num n = new Num();

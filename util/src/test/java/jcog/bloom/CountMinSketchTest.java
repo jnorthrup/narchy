@@ -21,22 +21,22 @@ import static org.junit.jupiter.api.Assertions.*;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class CountMinSketchTest {
+class CountMinSketchTest {
 
     @Test
-    public void testWidth() {
+    void testWidth() {
         CountMinSketch cms = new CountMinSketch();
         assertEquals(272, cms.w);
     }
 
     @Test
-    public void testDepth() {
+    void testDepth() {
         CountMinSketch cms = new CountMinSketch();
         assertEquals(5, cms.depth());
     }
 
     @Test
-    public void testSizeInBytes() {
+    void testSizeInBytes() {
         CountMinSketch cms = new CountMinSketch();
         assertEquals(5448, cms.byteSize());
         cms = new CountMinSketch(1024, 10);
@@ -44,7 +44,7 @@ public class CountMinSketchTest {
     }
 
     @Test
-    public void testCMSketch() {
+    void testCMSketch() {
         CountMinSketch cms = new CountMinSketch(1024, 10);
         cms.add("Hello".getBytes());
         cms.add("Hello".getBytes());
@@ -72,7 +72,7 @@ public class CountMinSketchTest {
     }
 
     @Test
-    public void testMerge() {
+    void testMerge() {
         CountMinSketch cms = new CountMinSketch(1024, 10);
         cms.add("Hello".getBytes());
         cms.add("Hello".getBytes());
@@ -121,7 +121,7 @@ public class CountMinSketchTest {
     }
 
     @Test
-    public void testIncompatibleMerge() {
+    void testIncompatibleMerge() {
         assertThrows(RuntimeException.class, () -> {
             CountMinSketch cms = new CountMinSketch(1024, 10);
             cms.add("Hello".getBytes());
@@ -141,7 +141,7 @@ public class CountMinSketchTest {
     }
 
     @Test
-    public void testSerialization() {
+    void testSerialization() {
         CountMinSketch cms = new CountMinSketch(1024, 10);
         cms.add("Hello".getBytes());
         cms.add("Hello".getBytes());
@@ -193,7 +193,7 @@ public class CountMinSketchTest {
     }
 
     @Test
-    public void testCountMinRoar1() {
+    void testCountMinRoar1() {
         CountMinRoar c = new CountMinRoar();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < i; j++)

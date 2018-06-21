@@ -31,8 +31,8 @@ import jcog.grammar.parse.IAssembler;
  *
  * @version 1.0
  */
-public class FunctionAssembler implements IAssembler {
-	protected SlingFunction function;
+class FunctionAssembler implements IAssembler {
+	private SlingFunction function;
 
 	/**
 	 * Construct a new function assembler, using the provided

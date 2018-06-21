@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-public class RBMTest {
+class RBMTest {
 
     @Test
-    public void test1() {
+    void test1() {
                 Random rng = new Random(123);
 
         double learning_rate = 0.1;

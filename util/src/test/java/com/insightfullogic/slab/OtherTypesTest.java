@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class OtherTypesTest {
+class OtherTypesTest {
 	
-	public interface OtherTypes extends Cursor {
+	interface OtherTypes extends Cursor {
 		byte getByte();
 		void setByte(byte value);
 		
@@ -29,7 +29,7 @@ public class OtherTypesTest {
 	private final OtherTypes value = allocator.allocate(1);
 
 	@Test
-	public void fieldsGettableSettable() {
+    void fieldsGettableSettable() {
 		value.setByte((byte) 23);
 		assertEquals(23, value.getByte());
 		
@@ -47,7 +47,7 @@ public class OtherTypesTest {
 	}
 	
 	@AfterEach
-	public void free() {
+    void free() {
 		value.close();
 	}
 

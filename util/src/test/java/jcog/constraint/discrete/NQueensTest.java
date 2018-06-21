@@ -21,25 +21,25 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class NQueensTest {
+class NQueensTest {
   
   @Test
-  public void test3Queens() {
+  void test3Queens() {
     assertEquals(0, solveNQueens(3));
   }
   
   @Test
-  public void test4Queens() {
+  void test4Queens() {
     assertEquals(2, solveNQueens(4) );
   }
   
   @Test
-  public void test8Queens() {
+  void test8Queens() {
     assertEquals(92, solveNQueens(8));
   }
   
   @Test
-  public void test10Queens() {
+  void test10Queens() {
     assertEquals(724, solveNQueens(10));
   }
 
