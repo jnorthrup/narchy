@@ -34,7 +34,7 @@ class NAL8EternalMixTest extends NALTest {
 
         test
 
-                .input("(open(t1) && [opened]:t1)!")
+                .input("(open(t1) && opened:t1)!")
                 .mustGoal(cycles, "open(t1)", 1.0f, 0.81f, ETERNAL)
                 .mustNotOutput(cycles, "open(t1)", GOAL, 0)
         ;
@@ -49,8 +49,8 @@ class NAL8EternalMixTest extends NALTest {
 
         
 
-        tester.input("[opened]:{t001}. :|:");
-        tester.input("(((hold({t002}) &&+5 at({t001})) &&+5 open({t001})) &&+5 [opened]:{t001}).");
+        tester.input("opened:{t001}. :|:");
+        tester.input("(((hold({t002}) &&+5 at({t001})) &&+5 open({t001})) &&+5 opened:{t001}).");
 
         
         tester.mustBelieve(cycles, "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))",
@@ -190,10 +190,10 @@ class NAL8EternalMixTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("(open({t001}) ==>+5 [opened]:{t001}).");
+        tester.input("(open({t001}) ==>+5 opened:{t001}).");
         tester.inputAt(10, "open({t001}). :|:");
 
-        tester.mustBelieve(cycles, "[opened]:{t001}", 1.0f, 0.81f, 15);
+        tester.mustBelieve(cycles, "opened:{t001}", 1.0f, 0.81f, 15);
 
     }
 
@@ -425,9 +425,9 @@ class NAL8EternalMixTest extends NALTest {
     void detaching_condition() {
 
         test
-                .input("( ( hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 [opened]:{t001}).")
+                .input("( ( hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).")
                 .inputAt(10, "hold(SELF,{t002}). :|:")
-                .mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 [opened]:{t001})", 1.0f, 0.81f, 15);
+                .mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})", 1.0f, 0.81f, 15);
 
     }
 
@@ -450,10 +450,10 @@ class NAL8EternalMixTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("((hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 [opened]:{t001}).");
+        tester.input("((hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
         tester.inputAt(2, "hold(SELF,{t002}). :|: ");
 
-        tester.mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 [opened]:{t001})", 1.0f, 0.81f, 2 + 5);
+        tester.mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})", 1.0f, 0.81f, 2 + 5);
 
     }
 

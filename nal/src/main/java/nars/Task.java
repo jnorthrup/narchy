@@ -8,7 +8,7 @@ import jcog.math.Longerval;
 import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.control.proto.TaskAddTask;
+import nars.control.proto.Remember;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.TaskWithNegatedTruth;
@@ -911,7 +911,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
 
         if (!cmd) {
-            queue.add(inputStrategy(this));
+            queue.add(inputStrategy(this, n));
         }
 
 
@@ -950,8 +950,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     }
 
-    default ITask inputStrategy(Task result) {
-        return new TaskAddTask(result);
+    default ITask inputStrategy(Task result, NAR n) {
+        return Remember.the(result, n);
     }
 
 

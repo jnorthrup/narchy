@@ -9,8 +9,8 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.TaskConcept;
 import nars.control.Cause;
+import nars.control.proto.Remember;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.term.Term;
@@ -51,8 +51,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
 
         @Override
-        public boolean add(Task input, TaskConcept c, NAR nar) {
-            return false;
+        public void add(Remember input, NAR nar) {
         }
 
 
@@ -209,113 +208,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
 
-    @Deprecated
-    void removeTask(Task t, @Nullable String reason) {
-        t.delete();
-    }
 
-    /**
-     * @return null: no revision could be applied
-     * ==newBelief: existing duplicate found
-     * non-null: revised task
-     */
-    @Nullable
-    private /*Revision*/Task tryRevision(Task y /* input */,
-                                         NAR nar) {
-
-        Object[] list = this.list;
-        int bsize = list.length;
-
-        Task oldBelief = null;
-        Truth conclusion = null;
-
-        Truth newBeliefTruth = y.truth();
-
-        for (int i = 0; i < bsize; i++) {
-            Task x = (Task) list[i];
-
-            if (x == null)
-                break;
-
-            if (x.equals(y)) {
-                /*if (x!=y && x.isInput())
-                    throw new RuntimeException("different input task instances with same stamp");*/
-                return x;
-            }
-
-            float xconf = x.conf();
-            if (Stamp.overlapsAny(y, x)) {
-
-                //HACK interpolate truth if only freq differs
-                if ((!x.isCyclic() && !y.isCyclic()) &&
-                        Arrays.equals(x.stamp(), y.stamp()) &&
-                        Util.equals(xconf, y.conf(), nar.confResolution.floatValue())) {
-
-                    conclusion = $.t((x.freq() + y.freq()) / 2, xconf).dither(nar);
-
-                } else {
-
-                    continue;
-                }
-
-            } else {
-
-
-                Truth xt = x.truth();
-
-
-                Truth yt = Revision.revise(newBeliefTruth, xt, 1f, conclusion == null ? 0 : conclusion.evi());
-                if (yt == null)
-                    continue;
-
-                yt = yt.dither(nar);
-                if (yt == null || yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar))
-                    continue;
-
-                conclusion = yt;
-            }
-
-            oldBelief = x;
-
-        }
-
-        if (oldBelief == null || conclusion == null)
-            return null;
-
-        final float newBeliefWeight = y.evi();
-
-
-        float aProp = newBeliefWeight / (newBeliefWeight + oldBelief.evi());
-        Term t =
-                Revision.intermpolate(
-                        y.term(), oldBelief.term(),
-                        aProp,
-                        nar
-                );
-
-
-        Task prevBelief = oldBelief;
-        Task x = Task.tryTask(t, y.punc(), conclusion, (term, revisionTruth) ->
-                new NALTask(term,
-                        y.punc(),
-                        revisionTruth,
-                        nar.time() /* creation time */,
-                        ETERNAL, ETERNAL,
-                        Stamp.zip(y.stamp(), prevBelief.stamp(), aProp)
-                )
-        );
-        if (x != null) {
-            x.priSet(Priority.fund(Math.max(prevBelief.priElseZero(), y.priElseZero()), false, prevBelief, y));
-            ((NALTask) x).cause = Cause.sample(Param.causeCapacity.intValue(), y, prevBelief);
-
-            if (Param.DEBUG)
-                x.log("Insertion Revision");
-
-
-        }
-
-        return x;
-    }
 
     @Nullable
     private Task put(final Task incoming) {
@@ -369,50 +262,132 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
-    public boolean add(Task input, TaskConcept c, NAR nar) {
+    public void add(Remember r, NAR nar) {
+
+        Task input = r.input;
 
         int cap = capacity();
         if (cap == 0) {
-            
+            r.forget(input);
             /*if (input.isInput())
                 throw new RuntimeException("input task rejected (0 capacity): " + input + " "+ this + " " + this.capacity());*/
-            return false;
+            return;
         }
 
 
-        Task revised = tryRevision(input, nar);
-        if (revised == null) {
 
+        /**
+         * @return null: no revision could be applied
+         * ==newBelief: existing duplicate found
+         * non-null: revised task
+         */
 
-            return insert(input);
-        } else {
+        Object[] list = this.list;
+        int bsize = list.length;
 
-            if (revised.equals(input)) {
+        Task oldBelief = null;
+        Truth conclusion = null;
 
+        Truth newBeliefTruth = input.truth();
 
-                return true;
-            } else {
+        for (int i = 0; i < bsize; i++) {
+            Task x = (Task) list[i];
 
-                if (insert(revised)) {
+            if (x == null)
+                break;
 
-
-                    if (insert(input)) {
-
-                    } /*else {
-                            input.delete(); 
-                        }*/
-
-                }
-
-                nar.eventTask.emit(revised);
-
-                return true;
+            if (x.equals(input)) {
+                /*if (x!=y && x.isInput())
+                    throw new RuntimeException("different input task instances with same stamp");*/
+                r.merge(x);
+                return;
             }
 
+            float xconf = x.conf();
+            if (Stamp.overlapsAny(input, x)) {
+
+                //HACK interpolate truth if only freq differs
+                if ((!x.isCyclic() && !input.isCyclic()) &&
+                        Arrays.equals(x.stamp(), input.stamp()) &&
+                        Util.equals(xconf, input.conf(), nar.confResolution.floatValue())) {
+
+                    conclusion = $.t((x.freq() + input.freq()) / 2, xconf).dither(nar);
+
+                } else {
+
+                    continue;
+                }
+
+            } else {
+
+
+                Truth xt = x.truth();
+
+
+                Truth yt = Revision.revise(newBeliefTruth, xt, 1f, conclusion == null ? 0 : conclusion.evi());
+                if (yt == null)
+                    continue;
+
+                yt = yt.dither(nar);
+                if (yt == null || yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar))
+                    continue;
+
+                conclusion = yt;
+            }
+
+            oldBelief = x;
 
         }
 
+        Task revised;
+        if (oldBelief != null && conclusion != null) {
 
+            final float newBeliefWeight = input.evi();
+
+
+            float aProp = newBeliefWeight / (newBeliefWeight + oldBelief.evi());
+            Term t =
+                    Revision.intermpolate(
+                            input.term(), oldBelief.term(),
+                            aProp,
+                            nar
+                    );
+
+
+            Task prevBelief = oldBelief;
+            revised = Task.tryTask(t, input.punc(), conclusion, (term, revisionTruth) ->
+                    new NALTask(term,
+                            input.punc(),
+                            revisionTruth,
+                            nar.time() /* creation time */,
+                            ETERNAL, ETERNAL,
+                            Stamp.zip(input.stamp(), prevBelief.stamp(), aProp)
+                    )
+            );
+            if (revised != null) {
+                revised.priSet(Priority.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
+                ((NALTask) revised).cause = Cause.sample(Param.causeCapacity.intValue(), input, prevBelief);
+
+                if (Param.DEBUG)
+                    revised.log("Insertion Revision");
+
+
+            }
+        } else {
+            revised = null;
+        }
+
+        if (revised == null) {
+            tryPut(input, r);
+        } else {
+            if (tryPut(revised, r)) {
+                if (tryPut(input, r)) {
+                    //inserted both
+                }
+                //inserted only the revision
+            }
+            //could not insertion revision
+        }
     }
 
 
@@ -420,19 +395,17 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
      * try to insert but dont delete the input task if it wasn't inserted (but delete a displaced if it was)
      * returns true if it was inserted, false if not
      */
-    private boolean insert(Task input) {
+    private boolean tryPut(Task x, Remember r) {
 
-        Task displaced = put(input);
+        Task displaced = put(x);
 
-        if (displaced == input) {
-
+        if (displaced == x) {
             return false;
         } else if (displaced != null) {
-            removeTask(displaced,
-                    "Displaced"
-
-            );
+            r.forget(displaced);
         }
+
+        r.remember(x);
         return true;
     }
 

@@ -46,6 +46,7 @@ public abstract class Param {
     /** full causal feedback: applied as mult to every task on input */
     public static boolean CAUSE_MULTIPLY_EVERY_TASK = false;
 
+
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
 
@@ -89,19 +90,19 @@ public abstract class Param {
             PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
+            PriMerge.avgGeoFast;
+            //PriMerge.max;
             //PriMerge.plus;
-            
+
+    /** for equivalent tasks */
+    public static final PriMerge taskEquivalentMerge =
+            PriMerge.avgGeoSlow;
 
     /**
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            
-            
-            (t,b)->(t+b); 
-            
-            
+            (t,b)->(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget

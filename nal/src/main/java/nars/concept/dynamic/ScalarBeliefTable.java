@@ -6,9 +6,10 @@ import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.TaskConcept;
+import nars.concept.Concept;
 import nars.concept.util.ConceptBuilder;
-import nars.control.proto.TaskAddTask;
+import nars.control.proto.Remember;
+import nars.control.proto.TaskLinkTask;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -49,7 +50,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public interface TimeSeries {
 
         /** the provided truth value should already be dithered */
-        SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, int dur, NAR nar);
+        ScalarSignalTask add(Term term, byte punc, long start, long end, Truth nextValue, int dur, NAR nar);
 
         @Nullable DynTruth truth(long start, long end, long dur, TimeAware timeAware);
 
@@ -190,9 +191,9 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         @Override
-        public SignalTask add(Term term, byte punc, long nextStart, long nextEnd, Truth next, int dur, NAR nar) {
+        public ScalarSignalTask add(Term term, byte punc, long nextStart, long nextEnd, Truth next, int dur, NAR nar) {
 
-            SignalTask nextTask = null;
+            ScalarSignalTask nextTask = null;
 
             synchronized (this) { 
 
@@ -405,14 +406,16 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         this.res = res;
     }
 
-    public SignalTask add(Truth value, long start, long end, int dur, NAR nar) {
+    public SignalTask add(Truth value, long start, long end, int dur, Concept c, NAR nar) {
 
         value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
-        SignalTask x = series.add(term, punc(), start, end,
+        ScalarSignalTask x = series.add(term, punc(), start, end,
                 value, dur, nar);
 
-        if (x!=null)
+        if (x!=null) {
             x.pri(pri.asFloat());
+            x.concept = c;
+        }
 
         clean(nar);
 
@@ -443,52 +446,39 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     }
 
     @Override
-    public boolean add(Task x, TaskConcept concept, NAR nar) {
+    public void add(Remember r, NAR nar) {
 
+        Task x = r.input;
         if (Param.FILTER_DYNAMIC_MATCHES) {
             if (!(x instanceof SignalTask) &&
                 !x.isEternal() &&
                 !x.isInput()) {
 
                 if (!series.isEmpty()) {
-                    if (PredictionFeedback.absorbNonSignal(x, series.start(), series.end(), nar))
-                        return false;
+                    if (PredictionFeedback.absorbNonSignal(x, series.start(), series.end(), nar)) {
+                        r.reject();
+                        return;
+                    }
                 }
 
             }
         }
 
-        return super.add(x, concept, nar);
+        super.add(r, nar);
     }
 
     static final class ScalarSignalTask extends SignalTask {
 
-
-
+        public Concept concept;
 
         ScalarSignalTask(Term term, byte punc, Truth value, long start, long end, long stamp) {
             super(term, punc, value, start, end, stamp);
         }
 
         @Override
-        public ITask inputStrategy(Task result) {
-            return new TaskAddTask.OnlyLink(result);
+        public ITask inputStrategy(Task result, NAR n) {
+            return new TaskLinkTask(this, pri, concept); //just link
         }
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 

@@ -2,7 +2,7 @@ package nars.table;
 
 import nars.NAR;
 import nars.Task;
-import nars.concept.TaskConcept;
+import nars.control.proto.Remember;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
@@ -31,8 +31,8 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
     @Override
-    public boolean add(Task x, TaskConcept concept, NAR nar) {
-        return table(x).add(x, concept, nar);
+    public void add(Remember x, NAR nar) {
+        table(x.isEternal()).add(x, nar);
     }
 
 
@@ -130,12 +130,6 @@ public class DefaultBeliefTable implements BeliefTable {
     @Override
     public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
         return temporal.match(start, end, template, eternal, nar, filter);
-    }
-
-
-
-    public final TaskTable table(Task x) {
-        return table(x.isEternal());
     }
 
     public final TaskTable table(boolean eternalOrTemporal) {

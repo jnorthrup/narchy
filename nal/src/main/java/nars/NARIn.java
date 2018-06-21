@@ -65,7 +65,7 @@ public interface NARIn {
         return taskWhile(term, GOAL, t, cond);
     }
 
-    default DurService taskWhile(Term term, byte punc, Truth tru, Predicate<Task> cond) {
+    @Deprecated default DurService taskWhile(Term term, byte punc, Truth tru, Predicate<Task> cond) {
         NAR n = (NAR)this; 
 
         long start = n.time();

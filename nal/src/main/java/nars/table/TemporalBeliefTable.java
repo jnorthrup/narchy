@@ -3,7 +3,7 @@ package nars.table;
 import jcog.Skill;
 import nars.NAR;
 import nars.Task;
-import nars.concept.TaskConcept;
+import nars.control.proto.Remember;
 import nars.task.Revision;
 import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
@@ -160,8 +160,7 @@ public interface TemporalBeliefTable extends TaskTable {
     TemporalBeliefTable Empty = new TemporalBeliefTable() {
 
         @Override
-        public boolean add(Task t, TaskConcept c, NAR n) {
-            return false;
+        public void add(Remember t, NAR n) {
         }
 
         @Override

@@ -3,7 +3,7 @@ package nars.table;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
-import nars.concept.TaskConcept;
+import nars.control.proto.Remember;
 import nars.task.TaskProxy;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -41,7 +41,7 @@ public interface BeliefTable extends TaskTable {
      * attempt to insert a task; returns what was input or null if nothing changed (rejected)
      */
     @Override
-    boolean add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar);
+    void add(/*@NotNull*/ Remember input,  /*@NotNull*/ NAR nar);
 
     @Override
     default Task match(long start, long end, Term template, NAR nar) {
@@ -133,8 +133,8 @@ public interface BeliefTable extends TaskTable {
 
 
         @Override
-        public boolean add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar) {
-            return false;
+        public void add(/*@NotNull*/ Remember input,  /*@NotNull*/ NAR nar) {
+
         }
 
         @Override

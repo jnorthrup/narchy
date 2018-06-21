@@ -4,6 +4,7 @@ import jcog.math.MultiStatistics;
 import jcog.meter.event.CSVOutput;
 import nars.*;
 import nars.concept.TaskConcept;
+import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.RTreeBeliefTable;
 import nars.term.Term;
@@ -27,7 +28,7 @@ class RTreeBeliefTableTest {
     private static Task add(RTreeBeliefTable r, Termed x, float freq, float conf, int start, int end, NAR n) {
         Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).apply(n);
         a.pri(0.5f);
-        r.add(a, (TaskConcept) n.concept(x), n);
+        r.add(Remember.the(a, n), n);
         return a;
     }
 
@@ -122,14 +123,14 @@ class RTreeBeliefTableTest {
         Term x = X.term();
         float freq = 1f;
         float conf = 0.9f;
-        int creationTime = 1;
+//        int creationTime = 1;
         int start = 1, end = 1;
 
         Task a = add(r, x, freq, conf, start, end, n);
         assertEquals(1, r.size());
 
 
-        r.add(a, X, n);
+        r.add(Remember.the(a, n), n);
         r.print(System.out);
         assertEquals(1, r.size()); 
 

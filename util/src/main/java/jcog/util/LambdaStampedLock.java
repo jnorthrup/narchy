@@ -30,6 +30,7 @@ public class LambdaStampedLock extends StampedLock {
         return result;
     }
 
+
     public boolean write(BooleanSupplier writeProcedure) {
         long stamp = writeLock();
         boolean result;

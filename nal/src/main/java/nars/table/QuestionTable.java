@@ -1,13 +1,10 @@
 package nars.table;
 
-import jcog.Util;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.map.MRUCache;
-import jcog.pri.Priority;
 import nars.NAR;
 import nars.Task;
-import nars.concept.TaskConcept;
-import nars.task.NALTask;
+import nars.control.proto.Remember;
 import nars.term.Term;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
@@ -22,14 +19,11 @@ import java.util.stream.Stream;
 public interface QuestionTable extends TaskTable {
 
 
-    void capacity(int newCapacity);
-
-
     /**
      * allows question to pass through it to the link activation phase, but
      * otherwise does not store it
      */
-    
+
 
     /*@NotNull*/ QuestionTable Empty = new QuestionTable() {
 
@@ -39,8 +33,8 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
-            return false;
+        public void add(/*@NotNull*/ Remember t, NAR n) {
+
         }
 
         @Override
@@ -86,6 +80,8 @@ public interface QuestionTable extends TaskTable {
 
     };
 
+    void capacity(int newCapacity);
+
     /**
      * unsorted, MRU policy.
      * this impl sucks actually
@@ -95,7 +91,7 @@ public interface QuestionTable extends TaskTable {
 
         final Object lock =
                 this;
-        
+
 
         public DefaultQuestionTable() {
             super(0);
@@ -105,53 +101,29 @@ public interface QuestionTable extends TaskTable {
         public void capacity(int newCapacity) {
             synchronized (lock) {
                 setCapacity(newCapacity);
-                
-                
-                
-                
+
+
             }
         }
 
 
-
-
-
-
-
-
-
-
         @Override
-        public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
+        public void add(/*@NotNull*/ Remember r, NAR n) {
             Task u;
-            final float tPri = t.pri();
-            if (tPri != tPri)
-                return false;
-
+            Task t = r.input;
             synchronized (lock) {
                 u = merge(t, t, (prev, next) -> {
-                    ((NALTask) prev).causeMerge(next);
-                    return prev;
+                    r.merge(prev);
+                    return next;
                 });
             }
 
-            if (u != t) {
-                
-                
-            }
-
-            return true;
         }
 
         @Override
         public int capacity() {
             return capacity;
         }
-
-
-
-
-
 
 
         @Override
@@ -176,7 +148,7 @@ public interface QuestionTable extends TaskTable {
         @Override
         public void forEachTask(Consumer<? super Task> x) {
             Task[] t = toArray();
-            for (Task y : t) {
+            for (Task y: t) {
                 if (y == null)
                     continue;
                 if (y.isDeleted()) {
@@ -203,7 +175,7 @@ public interface QuestionTable extends TaskTable {
 
     }
 
-    class HijackQuestionTable extends PriorityHijackBag<Task,Task> implements QuestionTable {
+    class HijackQuestionTable extends PriorityHijackBag<Task, Task> implements QuestionTable {
 
         public HijackQuestionTable(int cap, int reprobes) {
             super(cap, reprobes);
@@ -211,13 +183,6 @@ public interface QuestionTable extends TaskTable {
 
         @Override
         protected Task merge(Task existing, Task incoming, @Nullable MutableFloat overflowing) {
-            float i = incoming.priElseZero();
-            float e = existing.priElseZero();
-            if (!Util.equals(i, e, Priority.EPSILON)) {
-                float ie = (i + e) / 2f;
-                existing.priSet(ie);
-                if (overflowing!=null) overflowing.add(i - ie);
-            }
             return existing;
         }
 
@@ -242,8 +207,17 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public boolean add(Task t, TaskConcept c, NAR n) {
-            return put(t, null)==t;
+        public void add(Remember r, NAR n) {
+            Task x = put(r.input, null);
+            if (x != r) {
+                if (x!=null)
+                    r.merge(x); //existing
+                else
+                    r.reject();
+            } else {
+                r.remember(x);
+            }
+            //TODO track displaced questions
         }
 
         @Override
@@ -253,7 +227,7 @@ public interface QuestionTable extends TaskTable {
 
         @Override
         public boolean removeTask(Task x) {
-            return remove(x)!=null;
+            return remove(x) != null;
         }
 
         @Override
@@ -268,40 +242,12 @@ public interface QuestionTable extends TaskTable {
                 case 0:
                     return null;
                 case 1:
-                    return next(0, (xx)->false); //first one
+                    return next(0, (xx) -> false); //first one
                 default:
                     return QuestionTable.super.sample(start, end, template, nar);
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

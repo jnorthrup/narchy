@@ -329,16 +329,16 @@ public class Revision {
      * forces projection
      */
     @Nullable
-    public static Task mergeTasks(NAR nar, TaskRegion... tt) {
+    public static Task merge(NAR nar, TaskRegion... tt) {
         assert(tt.length>1);
         long[] u = Tense.union(tt);
-        return mergeTasks(nar, nar.dur(), u[0], u[1], true, tt);
+        return merge(nar, nar.dur(), u[0], u[1], true, tt);
     }
 
 
 
     @Nullable
-    public static Task mergeTasks(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
+    public static Task merge(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
 
         tasks = ArrayUtils.removeNulls(tasks, Task[]::new); 
 
@@ -534,7 +534,7 @@ public class Revision {
 
         if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
             
-            Task xy = mergeTasks(nar, nar.dur(), start, end, true, x, y);
+            Task xy = merge(nar, nar.dur(), start, end, true, x, y);
             if (xy != null && (filter == null || filter.test(xy)))
                 top.accept(xy);
         }

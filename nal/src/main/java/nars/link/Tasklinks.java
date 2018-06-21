@@ -32,19 +32,8 @@ public class Tasklinks {
     }
 
 
-
-
-
-
-    public static TaskLink.GeneralTaskLink linkTask(Task t, /*Task*/Concept src, NAR nar) {
-        return linkTask(t, t.priElseZero(), src, nar);
-    }
-
     /** create source tasklink */
-    public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, NAR nar) {
-
-        /** non-zero for safety */
-        final float pri = Math.max(_pri, Prioritized.EPSILON);
+    public static TaskLink.GeneralTaskLink linkTask(Task t, final float pri, /*Task*/Concept src, NAR nar) {
 
 
         float taskLinkPri = pri;

@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.control.proto.Remember;
 import nars.link.TermlinkTemplates;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
@@ -23,64 +24,11 @@ import nars.unify.Unify;
  */
 public final class AliasConcept extends TaskConcept {
 
-    public static class AliasAtom extends Atom {
-
-        
-        public final Term target;
-
-        protected AliasAtom(String id, Term target) {
-            super(id);
-            this.target = target;
-        }
-
-        @Override
-        public boolean unifyReverse(Term x, Unify u) {
-            
-            return x.unify(target, u);
-        }
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        @Override
-        public boolean unify(Term y, Unify subst) {
-
-            if (super.unify(y, subst))
-                return true;
-
-            Term target = this.target;
-            if (y instanceof AliasAtom) {
-                
-
-
-
-                
-                return target.unify(((AliasAtom) y).target, subst);
-            }
-
-            
-            return target.unify(y, subst);
-        }
-
-    }
-
-
     public final Concept abbr;
 
-    AliasConcept( Term id, Concept decompressed, NAR nar) {
-        super( 
+
+    AliasConcept(Term id, Concept decompressed, NAR nar) {
+        super(
                 id,
                 null, null, null, null,
                 new Bag[]{decompressed.termlinks(), decompressed.tasklinks()});
@@ -88,30 +36,16 @@ public final class AliasConcept extends TaskConcept {
         this.abbr = decompressed;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     }
 
     @Override
-    public boolean add(Task t, NAR n) {
+    public void add(Remember t, NAR n) {
         if (abbr.isDeleted()) {
-            delete(n);
-            return false;
+            t.reject();
+        } else {
+            ((TaskConcept) abbr).add(Remember.the(Task.clone(t.input, abbr.term()), n), n);
         }
-        return ((TaskConcept)abbr).add(Task.clone(t, abbr.term()), n);
-        
+
     }
 
     @Override
@@ -124,95 +58,61 @@ public final class AliasConcept extends TaskConcept {
         return abbr.beliefs();
     }
 
-
     @Override
     public BeliefTable goals() {
         return abbr.goals();
     }
-
 
     @Override
     public QuestionTable questions() {
         return abbr.questions();
     }
 
-
     @Override
     public QuestionTable quests() {
         return abbr.quests();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     protected void beliefCapacity(int be, int bt, int ge, int gt) {
-        
+
     }
 
-    
+    public static class AliasAtom extends Atom {
 
 
+        public final Term target;
+
+        protected AliasAtom(String id, Term target) {
+            super(id);
+            this.target = target;
+        }
+
+        @Override
+        public boolean unifyReverse(Term x, Unify u) {
+
+            return x.unify(target, u);
+        }
 
 
+        @Override
+        public boolean unify(Term y, Unify subst) {
+
+            if (super.unify(y, subst))
+                return true;
+
+            Term target = this.target;
+            if (y instanceof AliasAtom) {
 
 
+                return target.unify(((AliasAtom) y).target, subst);
+            }
 
 
+            return target.unify(y, subst);
+        }
 
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
 
 }

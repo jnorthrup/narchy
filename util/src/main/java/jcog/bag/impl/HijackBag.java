@@ -532,19 +532,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public final V put(/*@NotNull*/ V v,  /* TODO */ @Nullable MutableFloat overflowing) {
 
-
-
-
-
-
         K k = key(v);
         if (k == null)
             return null;
-
-        
-        
-        
-
 
         V x = update(k, v, PUT, overflowing);
         if (x == null) {

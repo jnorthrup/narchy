@@ -148,6 +148,10 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
         write(() -> x.accept(tree));
     }
 
+    public boolean write(Predicate<Space<T>> x) {
+        return write(() -> x.test(tree));
+    }
+
     public void readOptimistic(Consumer<Space<T>> x) {
         readOptimistic(() -> {
             x.accept(tree);

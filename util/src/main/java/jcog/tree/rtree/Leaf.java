@@ -98,26 +98,26 @@ public class Leaf<T> extends AbstractNode<T, T> {
     public Node<T, ?> add(/*@NotNull*/ final T t, Nodelike<T> parent, /*@NotNull*/ Spatialization<T> model, boolean[] added) {
 
         final HyperRegion tb = model.bounds(t);
-        boolean ctm = contains(t, tb, model);
 
-        if (parent != null && !ctm) {
+        if (parent != null) {
+            boolean mightContain = size > 0 && bounds.contains(tb);
+
             Node<T, ?> next;
 
-            
             for (int i = 0, s = size; i < s; i++) {
                 T x = data[i];
 
-                if (x == null) continue; 
+                if (x == null) continue;
 
-                if (x == t)
-                    return null; 
-
-                if (x.equals(t)) {
-                    model.merge(x, t);
-                    return null;
+                if (mightContain) {
+                    if (x.equals(t)) {
+                        if (x != t)
+                            model.merge(x, t);
+                        return null;
+                    }
                 }
             }
-            
+
 
             if (size < model.max) {
 
@@ -133,8 +133,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
             return next;
         } else {
-
-            return (parent == null && ctm) ? null : this;
+            return contains(t, tb, model) ? null : this;
         }
     }
 
@@ -164,7 +163,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
     }
 
     @Override
-    public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
+    public boolean contains(T x, HyperRegion b, Spatialization<T> model) {
 
         final int s = size;
         if (s > 0) {
@@ -173,9 +172,13 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
             T[] data = this.data;
             for (int i = 0; i < s; i++) {
-                T d = data[i];
-                if (d!=null && (t == d || t.equals(d)))
-                    return true; 
+                T t = data[i];
+                if (t == null) continue;
+                if (t.equals(x)) {
+                    if (t != x)
+                        model.merge(t, x);
+                    return true;
+                }
             }
         }
         return false;

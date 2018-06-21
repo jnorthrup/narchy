@@ -1,5 +1,7 @@
 package nars.control.proto;
 
+import jcog.Util;
+import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -14,26 +16,39 @@ public class TaskLinkTask extends NativeTask {
     private final Concept concept;
     private final float pri;
 
-//    public TaskLinkTask(Task task, float pri) {
-//        this(task, pri, null);
-//    }
+    public TaskLinkTask(Task task) {
+        this(task, task.priElseZero());
+    }
+
+    public TaskLinkTask(Task task, float pri) {
+        this(task, pri, null);
+    }
+
+    public TaskLinkTask(Task task, @Nullable Concept c) {
+        this(task, task.priElseZero(), c);
+    }
 
     public TaskLinkTask(Task task, float pri, @Nullable Concept c) {
         this.task = task;
         this.concept = c;
-        this.pri = pri;
+
+        /** non-zero for safety */
+        this.pri = Math.max(Util.notNaN(pri), Prioritized.EPSILON);
     }
 
     @Override
     public ITask next(NAR n) {
         Concept c = this.concept;
-//        if (c == null) {
-//            c = task.concept(n, true);
-//            if (c == null)
-//                return null;
-//        }
+        if (c == null) {
+            c = task.concept(n, true);
+            if (c == null)
+                return null;
+        }
+
+        n.activate(c, pri);
 
         Tasklinks.linkTask(task, pri, c, n);
+
         return null;
     }
 

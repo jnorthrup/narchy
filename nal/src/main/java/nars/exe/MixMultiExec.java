@@ -1,5 +1,6 @@
 package nars.exe;
 
+import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.Service;
 import jcog.TODO;
 import jcog.exe.valve.AbstractWork;
@@ -7,12 +8,20 @@ import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
 import jcog.math.random.SplitMix64Random;
+import nars.$;
 import nars.NAR;
+import nars.task.ITask;
 import nars.time.clock.RealTime;
+import org.eclipse.collections.api.set.primitive.LongSet;
+import org.eclipse.collections.impl.factory.primitive.LongSets;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.function.LongPredicate;
+import java.util.stream.Stream;
 
 import static java.lang.Double.POSITIVE_INFINITY;
 
@@ -85,7 +94,7 @@ abstract public class MixMultiExec extends AbstractExec {
         sharing.commit();
     }
 
-    public final void execute(Runnable async) {
+    public void execute(Runnable async) {
         cpu.queue(async);
     }
 
@@ -96,11 +105,94 @@ abstract public class MixMultiExec extends AbstractExec {
         }
 
     }
+
     public static class WorkerMultiExec extends MixMultiExec {
 
+        static LongPredicate isActiveThreadId = (x) -> false;
+
+        static final ThreadFactory activeThreads = new ThreadFactory() {
+            final List<Thread> activeThreads = $.newArrayList();
+            LongSet activeThreadIds = new LongHashSet();
+
+            @Override
+            public Thread newThread(@NotNull Runnable runnable) {
+                Thread t = new Thread(()->{
+                    try {
+                        runnable.run();
+                    } finally {
+                        synchronized (activeThreads) {
+                            activeThreads.forEach(Thread::interrupt);
+                            Thread tt = Thread.currentThread();
+                            activeThreads.remove(tt);
+                            activeThreadIds = activeThreadIds.reject(x ->x==tt.getId()).toImmutable();
+                            rebuild();
+                        }
+
+                    }
+                });
+                synchronized (activeThreads) {
+                    activeThreads.add(t);
+                    activeThreadIds = LongSets.mutable.ofAll(activeThreadIds).with(t.getId()).toImmutable();
+                    rebuild();
+                }
+                return t;
+            }
+
+            void rebuild() {
+                long max = activeThreadIds.max();
+                long min = activeThreadIds.min();
+                if (max - min == activeThreadIds.size() - 1) {
+                    isActiveThreadId = (x) -> x >= min && x <= max;
+                } else {
+                    isActiveThreadId = activeThreadIds::contains;
+                }
+            }
+        };
+
+
+
         public WorkerMultiExec(int conceptsCapacity, int threads) {
-            super(conceptsCapacity, threads, Executors.newFixedThreadPool(threads));
+            super(conceptsCapacity, threads,
+
+                new ThreadPoolExecutor(threads, threads, 0L,
+                        TimeUnit.MILLISECONDS, new DisruptorBlockingQueue(threads),
+                        activeThreads)
+                //Executors.newFixedThreadPool(threads)
+            );
         }
+
+
+        @Override
+        public void execute(Object t) {
+
+            if (t instanceof Runnable)
+                if (!isWorker()) {
+                    super.execute((Runnable) t);
+                    return;
+                }
+
+            executeNow(t);
+        }
+
+        public void execute(/*@NotNull*/ Iterator<? extends ITask> input) {
+            input.forEachRemaining(this::executeNow);
+        }
+
+        public void execute(/*@NotNull*/ Stream<? extends ITask> input) {
+            input.forEach(this::executeNow);
+        }
+
+
+
+        private boolean isWorker() {
+            return isWorker(Thread.currentThread());
+        }
+
+        private boolean isWorker(Thread t) {
+            return isActiveThreadId.test(t.getId());
+        }
+
+
     }
 
 

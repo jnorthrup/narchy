@@ -2,7 +2,7 @@ package nars.table;
 
 import nars.NAR;
 import nars.Task;
-import nars.concept.TaskConcept;
+import nars.control.proto.Remember;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -46,8 +46,8 @@ public class ProxyTemporalBeliefTable implements TemporalBeliefTable {
     }
 
     @Override
-    public boolean add(Task t, TaskConcept c, NAR n) {
-        return ref.add(t, c, n);
+    public void add(Remember t, NAR n) {
+        ref.add(t, n);
     }
 
     @Override

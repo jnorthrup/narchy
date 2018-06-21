@@ -121,7 +121,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
                 SignalTask x = ((ScalarBeliefTable) beliefs()).add(nextTruth,
-                        start, end, dur, n);
+                        start, end, dur, this, n);
 
 
                 return x;

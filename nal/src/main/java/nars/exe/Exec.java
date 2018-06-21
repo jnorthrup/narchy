@@ -33,14 +33,14 @@ abstract public class Exec implements Executor {
     public void execute(/*@NotNull*/ Iterator<? extends ITask> input) {
         input.forEachRemaining(this::execute);
     }
+    public void execute(/*@NotNull*/ Stream<? extends ITask> input) {
+        input.forEach(this::execute);
+    }
 
     public final void execute(/*@NotNull*/ Iterable<? extends ITask> input) {
         execute(input.iterator());
     }
 
-    public void execute(/*@NotNull*/ Stream<? extends ITask> input) {
-        input.forEach(this::execute);
-    }
 
     public void execute(Object t) {
         executeNow(t);

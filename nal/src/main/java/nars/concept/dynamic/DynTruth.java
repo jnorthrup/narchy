@@ -10,7 +10,7 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
-import nars.control.proto.TaskAddTask;
+import nars.control.proto.TaskLinkTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
@@ -39,7 +39,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
     private LongHashSet evi = null;
 
-    public DynTruth(int initialCap) {
+    DynTruth(int initialCap) {
         super(initialCap);
     }
 
@@ -253,7 +253,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return true;
     }
 
-    public boolean doesntOverlap(Task task) {
+    boolean doesntOverlap(Task task) {
         if (evi != null) {
 
             long[] s = task.stamp();
@@ -286,8 +286,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         }
 
         @Override
-        public ITask inputStrategy(Task result) {
-            return new TaskAddTask.OnlyLink(this);
+        public ITask inputStrategy(Task result, NAR n) {
+            return new TaskLinkTask(this);
         }
 
         @Override

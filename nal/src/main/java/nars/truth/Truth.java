@@ -115,7 +115,7 @@ public interface Truth extends Truthed {
     }
 
     @Nullable
-    static Truth stronger(@Nullable Truth a, @Nullable Truth b) {
+    static <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {
         if (b == null)
             return a;
         if (a == null)

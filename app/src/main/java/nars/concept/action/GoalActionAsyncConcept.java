@@ -94,7 +94,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
         int dur = nar.dur();
         ScalarBeliefTable beliefs = (ScalarBeliefTable) beliefs();
-        SignalTask fb = beliefs.add(f, start, end, dur, nar);
+        SignalTask fb = beliefs.add(f, start, end, dur, this, nar);
 
         in.input(
             fg,

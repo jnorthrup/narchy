@@ -32,55 +32,8 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList(int initialCapacity) {
-         this.items = initialCapacity == 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[])newArray(initialCapacity);
+        this.items = initialCapacity == 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[]) newArray(initialCapacity);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public FasterList(Iterable<X> copy) {
@@ -117,6 +70,22 @@ public class FasterList<X> extends FastList<X> {
         this.size = size;
     }
 
+
+    /**
+     * uses array directly
+     */
+    public FasterList(int size, X[] x) {
+        super(size, x);
+    }
+
+    public FasterList(X[] x) {
+        super(x);
+    }
+
+    static private int sizePlusFiftyPercent(int oldSize) {
+        int result = oldSize + (oldSize / 2) + 1;
+        return result < oldSize ? (Integer.MAX_VALUE - 8) : result;
+    }
 
     @Override
     public FastList<X> toSortedList() {
@@ -157,22 +126,9 @@ public class FasterList<X> extends FastList<X> {
         return this;
     }
 
-    /**
-     * uses array directly
-     */
-    public FasterList(int size, X[] x) {
-        super(size, x);
-    }
-
-
-    public FasterList(X[] x) {
-        super(x);
-    }
-
-
     @Override
     public int size() {
-        
+
         return size;
     }
 
@@ -182,27 +138,22 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public X removeLast() {
-        
+
         if (size == 0)
             throw new ArrayIndexOutOfBoundsException();
         X[] ii = this.items;
         X x = ii[--size];
-        ii[size] = null; 
+        ii[size] = null;
         return x;
     }
-
-
-
-
-
-
 
     @Override
     public X get(int index) {
         return items[index];
     }
 
-    @Nullable public X get(Random random) {
+    @Nullable
+    public X get(Random random) {
         int s = this.size;
         X[] ii = this.items;
         switch (s) {
@@ -227,20 +178,9 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public int indexOf(/*@NotNull*/ Object object) {
-        
+
 
         int s = size;
         if (s > 0) {
@@ -294,7 +234,6 @@ public class FasterList<X> extends FastList<X> {
         }
         return (Y[]) i;
     }
-
 
     public float meanValue(FloatFunction<? super X> function) {
         return (float) (sumOfFloat(function) / size());
@@ -359,37 +298,6 @@ public class FasterList<X> extends FastList<X> {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public final boolean removeIf(Predicate<? super X> filter) {
         int s = size();
@@ -441,16 +349,6 @@ public class FasterList<X> extends FastList<X> {
         return fillArray(arrayBuilder.apply(size));
     }
 
-
-
-
-
-
-
-
-
-
-
     public final X[] fillArrayNullPadded(X[] array) {
         int s = size;
         int l = array.length;
@@ -459,7 +357,7 @@ public class FasterList<X> extends FastList<X> {
         }
         System.arraycopy(items, 0, array, 0, s);
         if (s < l)
-            Arrays.fill(array, s, l, null); 
+            Arrays.fill(array, s, l, null);
         return array;
     }
 
@@ -468,20 +366,9 @@ public class FasterList<X> extends FastList<X> {
         int l = array.length;
         System.arraycopy(items, 0, array, 0, s);
         if (s < l)
-            Arrays.fill(array, s, l, null); 
+            Arrays.fill(array, s, l, null);
         return array;
     }
-
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public void forEach(Consumer c) {
@@ -494,16 +381,9 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-
     public final void clearFast() {
         size = 0;
     }
-
-
-
-
-
-
 
     /**
      * remove, but with Map.remove semantics
@@ -536,7 +416,6 @@ public class FasterList<X> extends FastList<X> {
         return s + 1;
     }
 
-
     private void ensureCapacityForAdd() {
         this.items = (X[]) (
                 (this.items.length == 0) ?
@@ -544,11 +423,6 @@ public class FasterList<X> extends FastList<X> {
                         :
                         this.copyItemsWithNewCapacity(sizePlusFiftyPercent(this.size))
         );
-    }
-
-    static private int sizePlusFiftyPercent(int oldSize) {
-        int result = oldSize + (oldSize / 2) + 1;
-        return result < oldSize ? (Integer.MAX_VALUE - 8) : result;
     }
 
     private Object[] copyItemsWithNewCapacity(int newCapacity) {
@@ -584,16 +458,16 @@ public class FasterList<X> extends FastList<X> {
 
     public int forEach(int offset, IntObjectPredicate each) {
         int n = offset;
-        for (Object j : items) {
+        for (Object j: items) {
             if (j == null)
-                break; 
+                break;
             each.accept(n++, j);
         }
         return size();
     }
 
     public FasterList addingAll(X... x) {
-        for (X y : x)
+        for (X y: x)
             add(y);
         return this;
     }
@@ -611,11 +485,6 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-
-
-
-
-
     @Override
     public boolean remove(Object object) {
         int index = this.indexOf(object);
@@ -631,58 +500,24 @@ public class FasterList<X> extends FastList<X> {
         switch (size) {
             case 0:
                 return Collections.emptyIterator();
-            
+
             default:
                 return new FasterListIterator<>(this);
         }
     }
 
-    /**
-     * modified from MutableIterator
-     */
-    static class FasterListIterator<T> implements Iterator<T> {
-        protected int currentIndex;
-
-        protected int lastIndex = -1;
-        protected final FasterList<T> list;
-
-        public FasterListIterator(FasterList<T> list) {
-            this.list = list;
+    public boolean containsIdentity(X x) {
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            X y = this.items[i];
+            if (y == x)
+                return true;
         }
-
-        @Override
-        public boolean hasNext() {
-            return this.currentIndex != this.list.size;
-        }
-
-        @Override
-        public T next() {
-            
-            T next = this.list.get(this.currentIndex);
-            this.lastIndex = this.currentIndex++;
-            return next;
-
-
-
-        }
-
-        @Override
-        public void remove() {
-            if (this.lastIndex == -1) {
-                throw new IllegalStateException();
-            }
-            this.list.removeFast(this.lastIndex);
-            if (this.lastIndex < this.currentIndex) {
-                this.currentIndex--;
-            }
-            this.lastIndex = -1;
-        }
+        return false;
     }
-
 
     public void removeBelow(int index) {
         if (size <= index)
-            return; 
+            return;
         this.items = Arrays.copyOfRange(items, 0, this.size = index);
     }
 
@@ -699,11 +534,6 @@ public class FasterList<X> extends FastList<X> {
         return items.length;
     }
 
-
-
-
-
-
     @Override
     public FasterList<X> clone() {
         return new FasterList<>(size, items.clone());
@@ -716,12 +546,6 @@ public class FasterList<X> extends FastList<X> {
         this.items[this.size++] = x;
     }
 
-
-
-
-
-
-
     public X[] toArrayRecycled(IntFunction<X[]> ii) {
         X[] a = items;
         int s = size;
@@ -730,7 +554,6 @@ public class FasterList<X> extends FastList<X> {
         else
             return toArray(ii);
     }
-
 
     /**
      * after procedure executes on a cell, it nullifies the cell. equivalent to:
@@ -770,7 +593,6 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-
     public void removeNulls() {
         switch (size) {
             case 0:
@@ -782,7 +604,6 @@ public class FasterList<X> extends FastList<X> {
                 }
                 break;
 
-            
 
             default:
                 removeIf(Objects::isNull);
@@ -799,7 +620,7 @@ public class FasterList<X> extends FastList<X> {
         for (int i = 0; i < s0; i++) {
             X x = xx[i];
             if (!predicate.accept(x)) {
-                
+
                 if (nowFilled != i) {
                     xx[nowFilled] = x;
                 }
@@ -812,6 +633,46 @@ public class FasterList<X> extends FastList<X> {
             return true;
         } else
             return false;
+    }
+
+    /**
+     * modified from MutableIterator
+     */
+    static class FasterListIterator<T> implements Iterator<T> {
+        protected final FasterList<T> list;
+        protected int currentIndex;
+        protected int lastIndex = -1;
+
+        public FasterListIterator(FasterList<T> list) {
+            this.list = list;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return this.currentIndex != this.list.size;
+        }
+
+        @Override
+        public T next() {
+
+            T next = this.list.get(this.currentIndex);
+            this.lastIndex = this.currentIndex++;
+            return next;
+
+
+        }
+
+        @Override
+        public void remove() {
+            if (this.lastIndex == -1) {
+                throw new IllegalStateException();
+            }
+            this.list.removeFast(this.lastIndex);
+            if (this.lastIndex < this.currentIndex) {
+                this.currentIndex--;
+            }
+            this.lastIndex = -1;
+        }
     }
 
 }

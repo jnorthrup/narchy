@@ -7,6 +7,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
+import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TaskTable;
@@ -121,8 +122,8 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Directly process a new task, if belief tables agree to store it.
      * Called exactly once on each task.
      */
-    public boolean add(Task t, NAR n) {
-        return table(t.punc()).add(t, this, n);
+    public void add(Remember t, NAR n) {
+        table(t.punc()).add(t, n);
     }
 
     public void value(Task t, float activation, NAR n) {

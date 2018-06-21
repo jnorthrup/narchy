@@ -6,6 +6,7 @@ import nars.Task;
 import nars.concept.Sensor;
 import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.MetaGoal;
+import nars.control.proto.Remember;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -29,14 +30,17 @@ public abstract class ActionConcept extends Sensor {
     }
 
     @Override
-    public boolean add(Task t, NAR n) {
+    public void add(Remember r, NAR n) {
+        Task t = r.input;
         if (t.isBeliefOrGoal() && t.isEternal()) {
             /** reject eternal beliefs and goals of any type
              * TODO avoid creation of Eternal tables
              *  */
-            return false;
+            r.reject();
+
+        } else {
+            super.add(r, n);
         }
-        return super.add(t, n);
     }
 
     abstract public Stream<ITask> update(long start, long end, int dur, NAR nar);

@@ -36,12 +36,10 @@ import spacegraph.SpaceGraph;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
-import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 
@@ -68,16 +66,17 @@ abstract public class NAgentX extends NAgent {
 
     public static TimeAware runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
+        /*
         try {
             Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
 
         float clockFPS =
-
                 narFPS;
 
         RealTime clock =
@@ -88,7 +87,6 @@ abstract public class NAgentX extends NAgent {
 
 
         NAR n = new NARS()
-
 
                 .exe(new MixMultiExec.WorkerMultiExec(
                             1024,
@@ -105,13 +103,11 @@ abstract public class NAgentX extends NAgent {
 //
 //                             new Focus.AERevaluator(new SplitMix64Random(1)),
 //                             Util.concurrencyDefault(2),
-//                             1024, 2048) {
+//                             1024, 1024) {
 //
 //                         {
-//                             Exe.setExecutor(this);
+//                             //Exe.setExecutor(this);
 //                         }
-//
-//
 //                     }
 //                )
 
@@ -228,7 +224,7 @@ abstract public class NAgentX extends NAgent {
     /**
      * pixelTruth defaults to linear monochrome brightness -> frequency
      */
-    protected Bitmap2DSensor senseCamera(String id, Container w, int pw, int ph) {
+    protected Bitmap2DSensor senseCamera(String id, java.awt.Container w, int pw, int ph) {
         return senseCamera(id, new SwingBitmap2D(w), pw, ph);
     }
 
@@ -237,7 +233,7 @@ abstract public class NAgentX extends NAgent {
         return senseCamera(id, new Scale(w, pw, ph));
     }
 
-    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph) throws
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Component w, int pw, int ph) throws
             Narsese.NarseseException {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
@@ -245,7 +241,7 @@ abstract public class NAgentX extends NAgent {
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
             Narsese.NarseseException {
-        return senseCameraRetina($(id), w, pw, ph);
+        return senseCameraRetina($$(id), w, pw, ph);
     }
 
 

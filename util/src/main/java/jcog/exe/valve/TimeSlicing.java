@@ -25,10 +25,11 @@ import static java.lang.System.nanoTime;
  */
 public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who, What>> {
 
+    public static final int workQueueCapacity = 64;
     public final AtomicLong cycleTimeNS = new AtomicLong(/* 10hz default: = 100ms = */ 100 * 1000 * 1000);
 
-    final MultithreadConcurrentQueue<InstrumentedWork> pending = new MultithreadConcurrentQueue<>(512);
-    public final MultithreadConcurrentQueue<Runnable> work = new MultithreadConcurrentQueue<>(512);
+    final MultithreadConcurrentQueue<InstrumentedWork> work;
+    public final MultithreadConcurrentQueue<Runnable> async;
 
 
     private final Semaphore concurrency;
@@ -38,6 +39,8 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
         super(what);
         this.concurrency = new Semaphore(concurrency, false);
         this.exe = exe;
+        this.work = new MultithreadConcurrentQueue<>(workQueueCapacity);
+        this.async = new MultithreadConcurrentQueue<>(workQueueCapacity);
     }
 
 
@@ -48,29 +51,28 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
         trySpawn();
     }
 
-    void trySpawn() {
-        if (concurrency.tryAcquire())
-            spawn();
-    }
-
-    public void queue(Runnable r) {
-        if (!work.offer(r)) {
-            throw new TODO("overflow; use blocking queue or otherwise handle this queue overflow");
-        }
-        trySpawn();
-    }
-
-    protected void queue(InstrumentedWork iw) {
-        if (!pending.offer(iw)) {
-            throw new TODO("overflow; use blocking queue or otherwise handle this queue overflow");
+    final private void trySpawn() {
+        if (concurrency.tryAcquire()) {
+            if (exe instanceof ForkJoinPool) {
+                ((ForkJoinPool) exe).execute((ForkJoinTask) new ForkJoinWorker());
+            } else {
+                exe.execute(new RunnableWorker());
+            }
         }
     }
 
-    protected void spawn() {
-        if (exe instanceof ForkJoinPool) {
-            ((ForkJoinPool)exe).execute((ForkJoinTask) new ForkJoinWorker());
+    final public void queue(Runnable r) {
+        if (!async.offer(r)) {
+            //throw new TODO("overflow; use blocking queue or otherwise handle this queue overflow");
+            r.run();
         } else {
-            exe.execute(new RunnableWorker());
+            trySpawn();
+        }
+    }
+
+    final private void queue(InstrumentedWork iw) {
+        if (!work.offer(iw)) {
+            throw new TODO("overflow; use blocking queue or otherwise handle this queue overflow");
         }
     }
 
@@ -87,7 +89,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
     protected boolean work() {
 
         Runnable w;
-        while ((w = work.poll())!=null) {
+        while ((w = async.poll())!=null) {
             try {
                 w.run();
             } catch (Exception e) {
@@ -100,7 +102,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
             return false;
         } else {
 
-            InstrumentedWork x = pending.poll();
+            InstrumentedWork x = work.poll();
 
             if (x == null) {
                 concurrency.release();

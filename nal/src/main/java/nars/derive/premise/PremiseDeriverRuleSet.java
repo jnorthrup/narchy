@@ -40,9 +40,8 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
     private final static Memoize<String, Collection<PremiseDeriverSource>> ruleCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
-        try (InputStream nn =
-                     NAR.class.getClassLoader().getResourceAsStream(n)) {
 
+        try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
 
             bb = nn.readAllBytes();
 

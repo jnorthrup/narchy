@@ -5,7 +5,7 @@ import jcog.sort.Top;
 import jcog.sort.Top2;
 import nars.NAR;
 import nars.Task;
-import nars.concept.TaskConcept;
+import nars.control.proto.Remember;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,11 +21,8 @@ public interface TaskTable {
 
     /**
      * attempt to insert a task.
-     *
-     * @return: whether the table was possibly modified.  if async or unsure, return
-     * true to be safe
      */
-    boolean add(Task t, TaskConcept c, NAR n);
+    void add(Remember t, NAR n);
 
 
     int capacity();

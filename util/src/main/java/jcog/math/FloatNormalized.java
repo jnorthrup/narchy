@@ -3,7 +3,7 @@ package jcog.math;
 import java.util.function.DoubleSupplier;
 
 
-@Deprecated public class FloatNormalized implements FloatSupplier {
+public class FloatNormalized implements FloatSupplier {
 
     private final FloatSupplier in;
 

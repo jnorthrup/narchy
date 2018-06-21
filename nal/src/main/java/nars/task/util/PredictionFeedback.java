@@ -63,7 +63,7 @@ public class PredictionFeedback {
 
         if (Longerval.intersectLength(y.start(), end, seriesStart, seriesEnd)!=-1) {
             
-            y.delete();
+
             return true;
         }
 

@@ -39,7 +39,12 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
         PLUS,
         AVG,
         OR,
-        
+        AVG_GEO,
+
+        /** adds momentum by includnig the existing priority as a factor twice against the new value once */
+        AVG_GEO_SLOW,
+        AVG_GEO_FAST,
+
         MAX
     }
 
@@ -52,25 +57,33 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
      * */
     static float blend(Priority exi, Prioritized inc, PriMerge.PriMergeOp priMerge) {
 
-        float ePriBefore = exi.priElseZero();
-        float iPri = inc.priElseZero();
+        float e = exi.priElseZero();
+        float i = inc.priElseZero();
 
         float nextPri;
         switch (priMerge) {
             case PLUS:
-                nextPri = ePriBefore + iPri;
+                nextPri = e + i;
                 break;
             case OR:
-                nextPri = Util.or(ePriBefore,iPri);
+                nextPri = Util.or(e,i);
                 break;
             case MAX:
-                nextPri = Math.max(ePriBefore, iPri);
+                nextPri = Math.max(e, i);
                 break;
             case AVG:
-                nextPri = (iPri+ePriBefore)/2f;
+                nextPri = (i+e)/2f;
                 break;
-            
-            
+            case AVG_GEO:
+                nextPri = Util.aveGeo(e, i);
+                break;
+            case AVG_GEO_SLOW:
+                nextPri = Util.aveGeo(e, e, i);
+                break;
+            case AVG_GEO_FAST:
+                nextPri = Util.aveGeo(e, i, i);
+                break;
+
             
             default:
                 throw new UnsupportedOperationException();
@@ -78,7 +91,7 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
 
         float ePriAfter = exi.priSet( nextPri );
 
-        return iPri - (ePriAfter - ePriBefore);
+        return i - (ePriAfter - e);
     }
 
 
@@ -119,11 +132,17 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
 
 
 
-    /** sum priority, LERP other components in proportion to the priorities */
+    /** sum priority */
     PriMerge plus = (tgt, src) -> blend(tgt, src, PLUS);
 
-    /** avg priority, LERP other components in proportion to the priorities */
+    /** avg priority */
     PriMerge avg = (tgt, src) -> blend(tgt, src, AVG);
+
+    /** geometric mean */
+    PriMerge avgGeo = (tgt, src) -> blend(tgt, src, AVG_GEO);
+
+    PriMerge avgGeoSlow = (tgt, src) -> blend(tgt, src, AVG_GEO_SLOW);
+    PriMerge avgGeoFast = (tgt, src) -> blend(tgt, src, AVG_GEO_FAST);
 
 
     PriMerge or = (tgt, src) -> blend(tgt, src, OR);
@@ -131,7 +150,7 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
 
     PriMerge max = (tgt, src) -> blend(tgt, src, MAX);
 
-    /** avg priority, LERP other components in proportion to the priorities */
+    /** avg priority */
     PriMerge replace = (tgt, src) -> src.priElse(tgt.priElseZero());
 
 

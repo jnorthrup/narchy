@@ -70,8 +70,8 @@ public class Gradius extends NAgentX {
         actionToggle($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
-        actionToggle($.inh("pause", id),
-                (b) -> g.paused = b);
+//        actionToggle($.inh("pause", id),
+//                (b) -> g.paused = b);
 
         actionUnipolar($.prop(nar.self(), $.the("deep")), (d)->{
             //deep incrases both duration and max term volume

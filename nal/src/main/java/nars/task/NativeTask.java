@@ -1,8 +1,10 @@
 package nars.task;
 
 import com.google.common.primitives.Longs;
+import jcog.list.FasterList;
 import jcog.pri.Priority;
 import nars.NAR;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -12,6 +14,17 @@ import java.util.function.Consumer;
  * but it holds a constant 1.0 priority.
  */
 public abstract class NativeTask implements ITask, Priority {
+
+    @Nullable
+    public static ITask of(@Nullable FasterList<ITask> next) {
+        if (next == null) return null;
+        switch (next.size()) {
+            case 0: return null;
+            case 1: return next.get(0);
+            default:
+                return new NativeTaskSequence(next.toArrayRecycled(ITask[]::new));
+        }
+    }
 
     public byte punc() {
         return 0;
@@ -180,4 +193,39 @@ public abstract class NativeTask implements ITask, Priority {
 
     }
 
+    private final static class NativeTaskSequence implements ITask {
+        private final ITask[] tasks;
+
+        public NativeTaskSequence(ITask[] x) {
+            this.tasks = x;
+        }
+
+        @Override
+        public ITask next(NAR n) {
+            FasterList<ITask> next = null;
+            for (ITask t : tasks) {
+                ITask p = t.next(n);
+                if (p!=null) {
+                    if (next == null) next = new FasterList(1);
+                    next.add(p);
+                }
+            }
+            return NativeTask.of(next);
+        }
+
+        @Override
+        public byte punc() {
+            return 0;
+        }
+
+        @Override
+        public float priSet(float p) {
+            return 0;
+        }
+
+        @Override
+        public float pri() {
+            return 0;
+        }
+    }
 }

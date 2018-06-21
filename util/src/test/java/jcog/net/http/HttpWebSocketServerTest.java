@@ -3,9 +3,9 @@ package jcog.net.http;
 import jcog.Util;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
-import sun.net.www.content.text.PlainTextInputStream;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -37,7 +37,7 @@ class HttpWebSocketServerTest {
         //test http client connect
         URL u = new URL("http://localhost:8080/");
         URLConnection urlConnection = u.openConnection();
-        PlainTextInputStream content = (PlainTextInputStream) urlConnection.getContent();
+        InputStream content = (InputStream) urlConnection.getContent();
 
         String x = new String(content.readAllBytes());
         assertEquals("", x);
@@ -91,7 +91,7 @@ class HttpWebSocketServerTest {
             //test http client connect
             URL u = new URL("http://localhost:8080/");
             URLConnection urlConnection = u.openConnection();
-            PlainTextInputStream content = (PlainTextInputStream) urlConnection.getContent();
+            InputStream content = (InputStream) urlConnection.getContent();
 
             String x = new String(content.readAllBytes());
             System.out.println(x);
