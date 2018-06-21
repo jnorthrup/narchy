@@ -170,13 +170,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //    }
 
     public String summary() {
-        return summary(termCache);
+        return summary(termCache, transformCache);
     }
 
-    public static String summary(HijackTermCache[] termCache) {
+    static String summary(HijackTermCache[] termCache, HijackTermCache transforms) {
         return Arrays.toString(Util.map(0, termCache.length, x -> termCache[x]!=null ?
                 (Op.ops[x] + ": " + termCache[x].summary() + "\n")
-                : "", String[]::new));
+                : "", String[]::new)) + "\ntransforms=" + transforms.summary();
     }
 
     @Override

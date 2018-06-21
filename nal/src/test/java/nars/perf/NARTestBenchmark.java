@@ -9,6 +9,7 @@ import nars.nal.nal3.NAL3Test;
 import nars.nal.nal6.NAL6Test;
 import nars.nal.nal8.NAL8Test;
 import nars.test.TestNARSuite;
+import nars.util.term.TermBuilder;
 import nars.util.term.builder.HeapTermBuilder;
 import nars.util.term.builder.InterningTermBuilder;
 import org.junit.jupiter.api.Disabled;
@@ -72,6 +73,10 @@ public class NARTestBenchmark {
         }
 
         runTests(() -> NARS.tmp());
+
+        TermBuilder c = Op.terms;
+        if (c instanceof InterningTermBuilder)
+            System.out.println(((InterningTermBuilder)c).summary());
     }
 
 
