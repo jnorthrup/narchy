@@ -24,6 +24,7 @@ import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
 /**
@@ -149,6 +150,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 //        }
 
 
+
         Term sect;
         int outerDT;
         if (superterm.isTemporal()) {
@@ -157,7 +159,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             for (TaskRegion x : components) {
                 Term t = ((Task)x).term();
                 if (subjOrPred) {
-                    if (!c.add(-t.dt(), t.sub(0)))
+                    int tdt = t.dt();
+                    if (!c.add(tdt==DTERNAL ? ETERNAL : -tdt, t.sub(0)))
                         return null; //fail
                 } else {
                     throw new TODO();
@@ -165,7 +168,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             }
 
             sect = c.term();
-            long shift = -c.shift() - sect.dtRange();
+            long cs = c.shift();
+            long shift = cs != DTERNAL ? (-cs - sect.dtRange()) : DTERNAL;
             outerDT = (int) shift;
         } else {
 
@@ -346,14 +350,31 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
             if (op.temporal && decomposed.op()==CONJ /* NEG , union ?  */) {
                 int outerDT = superterm.dt();
-                if ((outerDT !=DTERNAL && outerDT !=XTERNAL)) {
+                if ((outerDT !=XTERNAL)) {
                     int totalDT = outerDT; //check direction, may need neg
                     int innerDT = decomposed.dt();
-                    int decRange = decomposed.dtRange();
-                    return decomposed.eventsWhile((when, y)->
-                        each.accept(stmtDecompose(op, subjOrPred, y, common, (int) ((decRange - when)+outerDT)), start+when, end)
-                    , 0, innerDT == 0,
-                            innerDT == DTERNAL, false, 0);
+                    if (innerDT != XTERNAL) {
+                        int decRange = outerDT != DTERNAL ? decomposed.dtRange() : 0;
+                        return decomposed.eventsWhile((offset, y) ->
+                                {
+                                    boolean ixTernal = offset == ETERNAL || offset == XTERNAL;
+
+                                    long subStart = ixTernal ? start : start + offset;
+                                    long subEnd = end;
+                                    if (subEnd < subStart) {
+                                        //swap
+                                        long x = subStart;
+                                        subStart = subEnd;
+                                        subEnd = x;
+                                    }
+                                    return each.accept(stmtDecompose(op, subjOrPred, y, common,
+                                            ixTernal ? DTERNAL : (int) ((decRange - offset) + outerDT)),
+                                            subStart,
+                                            subEnd);
+                                }
+                                , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
+                                innerDT == DTERNAL, false, 0);
+                    }
                 }
             }
 

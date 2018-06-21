@@ -257,11 +257,14 @@ public class Conj extends AnonMap {
                 throw new NullPointerException("should not be called with empty events list");
             case 1:
                 return first.getTwo();
-            case 2:
+            case 2: {
                 LongObjectPair<Term> second = events.get(end - 1);
+                long a = first.getOne();
+                long b = second.getOne();
                 return conjSeqFinal(
-                        (int) (second.getOne() - first.getOne()),
+                        (int) (b - a),
                         /* left */ first.getTwo(), /* right */ second.getTwo());
+            }
         }
 
         int center = start + (end - 1 - start) / 2;
