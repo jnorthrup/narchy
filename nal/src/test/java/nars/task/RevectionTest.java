@@ -312,22 +312,6 @@ class RevectionTest {
     @Test
     void testSequenceIntermpolation1() throws Narsese.NarseseException {
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
-        n.dtMergeOrChoose.set(false);
-
         Term a = $.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
         Term b = $.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
         Term ar = a.root();

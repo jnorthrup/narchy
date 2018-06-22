@@ -15,8 +15,6 @@ import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -57,16 +55,6 @@ public abstract class Param {
 
 
     public ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
-
-    /**
-     * controls interpolation policy:
-     * true: dt values will be interpolated
-     * false: dt values will be chosen by weighted random decision
-     */
-    public final AtomicBoolean dtMergeOrChoose = new AtomicBoolean(false);
-    public final boolean dtMergeOrChoose() {
-        return dtMergeOrChoose.get();
-    }
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
     public static final boolean DEBUG_SIMILAR_DERIVATIONS = false;

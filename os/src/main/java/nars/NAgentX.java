@@ -89,17 +89,9 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .exe(new MixMultiExec.WorkerMultiExec(
+                .exe(MixMultiExec.get(
                             1024,
-                             Util.concurrencyDefault(2)) {
-
-                         {
-                             Exe.setExecutor(this);
-                         }
-
-
-                     }
-                )
+                             Util.concurrencyDefault(2)))
 //                .exe(new WorkerMultiExec(
 //
 //                             new Focus.AERevaluator(new SplitMix64Random(1)),
@@ -124,15 +116,13 @@ abstract public class NAgentX extends NAgent {
                 )
                 .get();
 
+
+        Exe.setExecutor(n.exe);
+
         new MatrixDeriver(Derivers.nal(n, 1, 8));
-
-
-
-        n.dtMergeOrChoose.set(true);
 
         n.dtDither.set(10); //100fps base
         n.timeFocus.set(8);
-
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
@@ -147,7 +137,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f);
         n.questPriDefault.set(0.15f);
 
-        n.forgetRate.set(0.85f);
+        n.forgetRate.set(0.9f);
 
 //        try {
 //            InterNAR i = new InterNAR(n, 8, 0);
@@ -158,16 +148,11 @@ abstract public class NAgentX extends NAgent {
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 16);
-
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
-
-
-
-
-        Inperience inp = new Inperience(n, 16);
+        Inperience inp = new Inperience(n, 32);
 
 
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
@@ -188,7 +173,7 @@ abstract public class NAgentX extends NAgent {
         n.synch();
 
         SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
-                Derivers.nal(n, 1, 8, "curiosity.nal", "motivation.nal"));
+                Derivers.nal(n, 2, 8, "curiosity.nal", "motivation.nal"));
         a.curiosity.set(0);
 
         Loop loop = n.startFPS(narFPS);

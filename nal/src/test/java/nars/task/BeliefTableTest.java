@@ -232,7 +232,7 @@ class BeliefTableTest {
     void testConceptualizationIntermpolation() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present, Eternal}) {
             NAR n = NARS.tmp();
-            n.dtMergeOrChoose.set(true);
+
             n.believe("((a ==>+2 b)-->[pill])", t, 1f, 0.9f);
             n.believe("((a ==>+6 b)-->[pill])", t, 1f, 0.9f);
 
@@ -273,7 +273,7 @@ class BeliefTableTest {
     void testBestMatchImplSimple() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present/*, Eternal*/}) {
             NAR n = NARS.tmp();
-            n.dtMergeOrChoose.set(false);
+
             n.believe("(a ==>+0 b)", t, 1f, 0.9f);
             n.believe("(a ==>+5 b)", t, 1f, 0.9f);
             n.believe("(a ==>-5 b)", t, 1f, 0.9f);

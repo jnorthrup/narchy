@@ -211,14 +211,14 @@ public class Revision {
                 dt = DTERNAL;
             } else {
 
-                boolean mergeOrChoose = nar.dtMergeOrChoose();
-                if (mergeOrChoose) {
+//                boolean mergeOrChoose = nar.dtMergeOrChoose();
+//                if (mergeOrChoose) {
 
                     dt = lerp(aProp, bdt, adt);
 
-                } else {
-                    dt = (choose(a, b, aProp, nar.random()) == a) ? adt : bdt;
-                }
+//                } else {
+//                    dt = (choose(a, b, aProp, nar.random()) == a) ? adt : bdt;
+//                }
             }
         }
 

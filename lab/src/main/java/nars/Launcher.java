@@ -8,7 +8,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
-public class Lab {
+public class Launcher {
 
     static class Experiment implements Runnable {
         final Class<? extends NAgentX> env;

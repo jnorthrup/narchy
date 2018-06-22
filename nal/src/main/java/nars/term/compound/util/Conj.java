@@ -73,7 +73,7 @@ public class Conj extends AnonMap {
             int step = Math.round(when * factor);
             sb.append((char) step);
 
-            if (what.op()==NEG)
+            if (what.op() == NEG)
                 sb.append('-'); //since x.add(what) will store the unneg id
             sb.append(((char) x.add(what)));
             return true;
@@ -333,16 +333,22 @@ public class Conj extends AnonMap {
 
         if (bOffset == 0 && a.subterms().equals(b.subterms())) {
             //special case: equal subs
-            int adt, bdt;
 
-            if (nar.dtMergeOrChoose() && (adt = a.dt()) != DTERNAL && (bdt = b.dt()) != DTERNAL && adt != XTERNAL && bdt != XTERNAL && ((adt > 0 == bdt > 0) || (Math.abs(adt - bdt) <= nar.dur()))) {
+            int adt = a.dt();
+            int bdt = b.dt();
+            if (adt == XTERNAL || bdt == XTERNAL) {
+                return a.dt(XTERNAL);
+            } else if (adt == DTERNAL || bdt == DTERNAL) {
+                return a.dt(DTERNAL);
+            } else if (((adt > 0 == bdt > 0) || (Math.abs(adt - bdt) <= nar.dur()))) {
                 //merge if they are the same sign or within a duration
                 long abdt = (((long) adt) + (bdt)) / 2L;
                 assert (Math.abs(abdt) < Integer.MAX_VALUE);
                 return a.dt(Tense.dither((int) abdt, nar));
             } else {
                 //choose
-                return nar.random().nextBoolean() ? a : b;
+                //return nar.random().nextBoolean() ? a : b;
+                return a.dt(DTERNAL);
             }
 
         }
@@ -427,7 +433,7 @@ public class Conj extends AnonMap {
         }
 
         byte id = add(what);
-        if (!addIfValid(at, polarity ? id : (byte)-id)) {
+        if (!addIfValid(at, polarity ? id : (byte) -id)) {
             term = False;
             return false;
         } else {
@@ -493,7 +499,9 @@ public class Conj extends AnonMap {
         return false;
     }
 
-    /** @return non-zero byte value */
+    /**
+     * @return non-zero byte value
+     */
     public byte add(Term t) {
         assert (t != null && !(t instanceof Bool));
         return termToId.getIfAbsentPutWithKey(t.unneg(), tt -> {
@@ -923,13 +931,11 @@ public class Conj extends AnonMap {
         private final Term b;
         private final NAR nar;
         private final Random rng;
-        private final boolean mergeOrChoose;
 
         Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
 
             this.b = b;
             this.nar = nar;
-            this.mergeOrChoose = nar.dtMergeOrChoose();
             this.rng = nar.random();
             Conj aa = new Conj();
             aa.add(0, a);
@@ -1002,14 +1008,15 @@ public class Conj extends AnonMap {
                 throw new RuntimeException("xternal in conjtermpolate");
 
 
-            if (mergeOrChoose || Math.abs(x - y) < 2 /* 1 apart, then choose */) {
+            if (Math.abs(x - y) < 2 /* 1 apart, then choose */) {
                 if (Math.abs(x - y) > 1) {
                     return (x + y) / 2L;
                 }
             }
 
 
-            return rng.nextBoolean() ? x : y;
+            //return rng.nextBoolean() ? x : y;
+            return ETERNAL;
         }
 
     }

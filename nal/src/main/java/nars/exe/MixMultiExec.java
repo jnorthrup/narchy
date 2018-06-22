@@ -86,6 +86,14 @@ abstract public class MixMultiExec extends AbstractExec {
         sharing.can(cpu);
     }
 
+    public static Exec get(int capacity, int concurrency) {
+        if (concurrency > 1)
+            return new WorkerMultiExec(capacity, concurrency);
+        else
+            return new PoolMultiExec(capacity, concurrency);
+    }
+
+
     @Override
     protected void update(NAR nar) {
         cpu.cycleTimeNS.set( Math.round(((RealTime)nar.time).durSeconds() * 1.0E9) );

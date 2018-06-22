@@ -10,7 +10,9 @@ import static java.lang.Float.intBitsToFloat;
 /** @see AtomicFloat */
 public class AtomicFloatFieldUpdater<X>  {
 
+    private final static int ZERO = floatToIntBits(0f);
     private final AtomicIntegerFieldUpdater<X> updater;
+
 
     /** for whatever reason, the field updater needs constructed from within the target class
      * so it must be passed as a parameter here.
@@ -18,7 +20,6 @@ public class AtomicFloatFieldUpdater<X>  {
     public AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater<X> u) {
         this.updater = u;
     }
-
 
     public void set(X x, float value) {
         updater.set(x, floatToIntBits(value));
@@ -34,11 +35,13 @@ public class AtomicFloatFieldUpdater<X>  {
         ));
     }
 
-    public void addUpdate(X x, float add, Runnable r) {
-        updater.updateAndGet(x, v -> {
-            r.run();
-            return floatToIntBits(intBitsToFloat(v) + add);
-        });
+    void addUpdate(X x, float add, Runnable r) {
+        if (Math.abs(add) > Float.MIN_NORMAL) {
+            updater.updateAndGet(x, v -> {
+                r.run();
+                return floatToIntBits(intBitsToFloat(v) + add);
+            });
+        }
     }
 
     public float getAndSet(X x, float value) {
@@ -57,8 +60,6 @@ public class AtomicFloatFieldUpdater<X>  {
         return intBitsToFloat(updater.get(x));
     }
 
-    private final static int ZERO = floatToIntBits(0f);
-
     public void zero(X v, FloatConsumer with) {
         this.updater.getAndUpdate(v, x->{
             with.accept(intBitsToFloat(x));
@@ -69,7 +70,7 @@ public class AtomicFloatFieldUpdater<X>  {
     /** if the current value is actually zero, the consumer is not called and nothing needs updated.
      * should be faster than zero(v,with) when a zero value is expected
      */
-    public void zeroIfNonZero(X v, FloatConsumer with) {
+    void zeroIfNonZero(X v, FloatConsumer with) {
         this.updater.getAndUpdate(v, x->{
             if (x != AtomicFloatFieldUpdater.ZERO) {
                 with.accept(intBitsToFloat(x));
@@ -78,7 +79,7 @@ public class AtomicFloatFieldUpdater<X>  {
         });
     }
 
-    public float getAndZero(X v, FloatConsumer with) {
+    float getAndZero(X v, FloatConsumer with) {
         return intBitsToFloat(this.updater.getAndUpdate(v, (x)->{ with.accept(intBitsToFloat(x)); return AtomicFloatFieldUpdater.ZERO; } ));
     }
 

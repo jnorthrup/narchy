@@ -28,7 +28,7 @@ public class Gradius extends NAgentX {
 
         this.g = new Gradius4K();
 
-        g.updateMS = 20;
+        g.updateMS = 50; //TODO coordinate with fps
 
 
         int dx = 3, dy = 2;
@@ -96,7 +96,7 @@ public class Gradius extends NAgentX {
 
     public static void main(String[] args) {
 
-        NAgentX.runRT(Gradius::new, 20f);
+        NAgentX.runRT(Gradius::new, 20f, 40f);
 
     }
 

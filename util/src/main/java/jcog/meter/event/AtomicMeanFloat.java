@@ -3,6 +3,8 @@ package jcog.meter.event;
 import jcog.util.AtomicFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 /**
  * thread-safe, atomic accumulator for calculating sums and means
  *
@@ -13,6 +15,9 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
  * either of those current values in one atomic commit
  */
 public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
+
+    final static AtomicIntegerFieldUpdater<AtomicMeanFloat> countUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(AtomicMeanFloat.class, "count");
 
     public final String id;
 
@@ -54,8 +59,6 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
         })) / (c[0] > 0 ? c[0] : Float.NaN);
 
         if (mean==mean) {
-            
-            
             return new float[] { mean, mean * c[0] };
         } else {
             return new float[] { Float.NaN, 0 };
@@ -63,7 +66,9 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
     }
 
     public void accept(float v) {
-        addUpdate(v, ()->count++);
+        //addUpdate(v, ()->count++);
+        countUpdater.incrementAndGet(this);
+        add(v);
     }
 
     @Override

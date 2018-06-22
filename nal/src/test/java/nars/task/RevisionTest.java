@@ -364,12 +364,12 @@ public class RevisionTest {
         permuteChoose(a, b, expected);
     }
 
-    private static void permuteChoose(Compound a, Compound b, int dur, boolean mergeOrChoose, String expected) {
-        assertEquals(expected, permuteIntermpolations(a, b, dur, mergeOrChoose).toString());
+    private static void permuteChoose(Compound a, Compound b, int dur, String expected) {
+        assertEquals(expected, permuteIntermpolations(a, b, dur).toString());
     }
 
     private static void permuteChoose(Compound a, Compound b, String expected) {
-        permuteChoose(a, b, 1, false, expected);
+        permuteChoose(a, b, 1, expected);
     }
 
     @Test
@@ -424,10 +424,10 @@ public class RevisionTest {
         Compound a = $.$("(a &&+1 b)");
         Compound b = $.$("(b &&+1 a))");
         Compound c = $.$("(b &&+2 a))");
-        permuteChoose(a, b, 1, false, "[(b &&+1 a), (a &&+1 b)]");
-        permuteChoose(a, b, 2, true, "[(a&|b)]");
-        permuteChoose(a, c, 1, true, "[(b &&+2 a), (a &&+1 b)]"); //not within dur
-        permuteChoose(a, c, 4, true, "[(a&|b)]");
+        permuteChoose(a, b, 1, "[(b &&+1 a), (a &&+1 b)]");
+        permuteChoose(a, b, 2, "[(a&|b)]");
+        permuteChoose(a, c, 1, "[(b &&+2 a), (a &&+1 b)]"); //not within dur
+        permuteChoose(a, c, 4, "[(a&|b)]");
 
     }
     @Test
@@ -474,14 +474,13 @@ public class RevisionTest {
     }
 
     private static Set<Term> permuteIntermpolations(Term a, Term b) {
-        return permuteIntermpolations(a, b, 1, false);
+        return permuteIntermpolations(a, b, 1);
     }
 
-    private static Set<Term> permuteIntermpolations(Term a, Term b, int dur, boolean mergeOrChoose) {
+    private static Set<Term> permuteIntermpolations(Term a, Term b, int dur) {
 
         NAR s = NARS.shell();
         s.time.dur(dur);
-        s.dtMergeOrChoose.set(mergeOrChoose);
 
         assertEquals(a.concept(), b.concept());
 
@@ -512,13 +511,10 @@ public class RevisionTest {
         Term b = $.$$("(a, (b ==>+10 c))");
         NAR nar = NARS.shell();
         {
-            nar.dtMergeOrChoose.set(true);
             Term c = Revision.intermpolate(a, b, 0.5f, nar);
             assertEquals("(a,(b ==>+6 c))", c.toString());
         }
         {
-            nar.dtMergeOrChoose.set(false);
-
 
             assertEquals("(a,(b ==>+10 c))",
                     Revision.intermpolate(a, b, 0f, nar).toString());

@@ -12,6 +12,4 @@ public interface TimeAware {
 
     long time();
 
-    boolean dtMergeOrChoose();
-
 }

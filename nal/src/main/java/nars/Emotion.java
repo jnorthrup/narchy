@@ -16,7 +16,6 @@ import jcog.meter.event.AtomicMeanFloat;
 import jcog.pri.Prioritized;
 import nars.control.MetaGoal;
 import nars.task.NALTask;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -69,12 +68,10 @@ public class Emotion implements Meter {
      * TODO convert to AtomicFloatArray or something where each value is volatile
      */
     public final float[] want = new float[MetaGoal.values().length];
-    @NotNull
     public final AtomicMeanFloat busyVol;
     /**
      * happiness rate
      */
-    @NotNull
     public final AtomicMeanFloat happy;
     private final NAR nar;
     float _happy;
