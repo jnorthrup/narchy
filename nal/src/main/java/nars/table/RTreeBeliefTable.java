@@ -23,7 +23,6 @@ import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
@@ -31,7 +30,6 @@ import org.eclipse.collections.api.set.primitive.LongSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -359,40 +357,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             assert(!input.isDeleted());
             RTreeBeliefModel.merged.remove();
             r.merge(existing);
-            assert(r.forgotten.containsIdentity(input));
+            assert(r.forgotten.containsInstance(input));
         } else {
-            if (!r.forgotten.containsIdentity(input))
+            if (!r.forgotten.containsInstance(input))
                 r.remember(input);
-
-            FasterList<Task> removed = r.forgotten;
-            int nRemoved = removed.size();
-            if (nRemoved > 0) {
-                //eternalize
-                if (nRemoved >= 2) {
-                    Task a, b;
-                    //merge, eternalize
-                    if (nRemoved > 2) {
-                        Top2<Task> toEternalize = new Top2<>(Truthed::evi);
-                        toEternalize.addAll(removed);
-                        a = toEternalize.a;
-                        b = toEternalize.b;
-                    } else {
-                        Iterator<Task> ii = removed.iterator();
-                        a = ii.next();
-                        b = ii.next();
-                    }
-                    Task ab = Revision.merge(n, a, b);
-                    r.remember((ab != null) ?
-                            eternalize(ab, n)
-                            :
-                            eternalize(Truth.stronger(a, b), n));
-                } else {
-                    Task z = removed.iterator().next();
-                    Task ete = eternalize(z, n);
-                    r.remember(ete);
-                }
-            }
-
         }
 
 
@@ -618,53 +586,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
 
-    /**
-     * TODO batch eternalize multiple removed tasks together as one attempted task
-     */
-    protected Task eternalize(Task x, NAR nar) {
-//        if ((x instanceof SignalTask)) {
-//            return;
-//        }
 
-
-//        float xc = x.conf();
-//        float e = x.evi();
-//
-//        float c = w2cSafe(e);
-//
-//        if (c >= nar.confMin.floatValue()) {
-
-
-        //float factor = 1f;
-        assert(!x.isDeleted());
-
-        float factor = 1f / size();
-        //float factor = Math.min(1, Util.unitize((float) (x.range()/tableDur())));
-
-        Task eternalized = Task.eternalized(x, factor, nar);
-
-        if (eternalized != null) {
-            float xPri = x.priElseZero();
-
-            //eternalized.pri(xPri * c / xc);
-            eternalized.pri(xPri);
-            if (Param.DEBUG)
-                eternalized.log("Eternalized Temporal");
-
-            return eternalized;
-
-        }
-
-        return null;
-
-    }
-
-    private double tableDur() {
-        HyperRegion root = root().bounds();
+    @Override public long tableDur() {
+        TaskRegion root = (TaskRegion) root().bounds();
         if (root == null)
-            return 1;
+            return 0;
         else
-            return 1 + root.rangeIfFinite(0, 1);
+            return root.range();
     }
 
     @Override
@@ -794,10 +722,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         @Override
         protected void merge(TaskRegion existing, TaskRegion incoming) {
-            //Task i = incoming.task();
-            Task e = (Task)existing; //.task();
-
-            merged.set(e);
+            merged.set((Task)existing);
         }
 
     }

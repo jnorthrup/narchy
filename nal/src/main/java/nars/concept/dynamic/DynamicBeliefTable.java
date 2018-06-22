@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.table.DefaultBeliefTable;
+import nars.table.EternalTable;
 import nars.table.TaskMatch;
 import nars.table.TemporalBeliefTable;
 import nars.task.Revision;
@@ -23,8 +24,8 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
     protected final Term term;
 
-    protected DynamicBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
-        super(t);
+    protected DynamicBeliefTable(Term c, boolean beliefOrGoal, EternalTable e, TemporalBeliefTable t) {
+        super(e, t);
         this.beliefOrGoal = beliefOrGoal;
         this.term = c;
     }

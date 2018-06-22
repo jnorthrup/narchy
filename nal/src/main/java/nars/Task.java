@@ -446,8 +446,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //        return eternalized(tx, 1);
 //    }
 
-    static Task eternalized(Task x, float eviFactor, NAR n) {
-        Truth tt = x.truth().eternalized(eviFactor, n);
+    static Task eternalized(Task x, float eviFactor, float eviMin, NAR n) {
+        Truth tt = x.truth().eternalized(eviFactor, eviMin, n);
         if (tt == null)
             return null;
         return Task.clone(x, x.term(),

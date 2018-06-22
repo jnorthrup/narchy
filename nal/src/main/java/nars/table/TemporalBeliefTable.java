@@ -169,6 +169,11 @@ public interface TemporalBeliefTable extends TaskTable {
         }
 
         @Override
+        public long tableDur() {
+            return 0;
+        }
+
+        @Override
         public void setCapacity(int c) {
 
         }
@@ -240,6 +245,9 @@ public interface TemporalBeliefTable extends TaskTable {
                 return true; 
         });
     }
+
+
+    long tableDur();
 
 
 }

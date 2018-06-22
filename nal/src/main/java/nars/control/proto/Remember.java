@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * depending on the status of the insertion, activate links
  * in some proportion of the input task's priority.
  */
-public class Remember extends NativeTask {
+public final class Remember extends NativeTask {
 
 
     public final Task input;
@@ -29,15 +29,6 @@ public class Remember extends NativeTask {
     public final Concept concept;
 
     @Nullable public static Remember the(Task input, NAR n) {
-
-        //verify dithering
-        if (Param.DEBUG) {
-            if (!input.isInput()) {
-                Truth t = input.truth();
-                if (t != null)
-                    t.ensureDithered(n);
-            }
-        }
 
 
         Concept concept = input.concept(n, true);
@@ -54,7 +45,7 @@ public class Remember extends NativeTask {
         return new Remember(input, concept);
     }
 
-    private Remember(Task task, Concept c) {
+    public Remember(Task task, Concept c) {
         this.input = task;
         this.concept = c;
     }
@@ -67,62 +58,87 @@ public class Remember extends NativeTask {
     @Override
     public final ITask next(NAR n) {
 
+        validate(n);
+
         try {
-
-
-
-            /* the tasks pri may change after starting insertion, so cache here */
-            float pri = input.pri();
-            if (pri != pri)
-                return null; //got deleted somehow
-
 
             ((TaskConcept) concept).add(this, n);
 
-            if (!forgotten.containsIdentity(input)) {
-                n.emotion.onInput(input, n);
-                next.add(new TaskLinkTask(input, concept));
-            }
-
         } finally {
-            forgotten.forEach(Task::delete);
-            remembered.forEach(n.eventTask::emit);
+            if (!forgotten.isEmpty() || !remembered.isEmpty()) {
+                next.add(new Commit(forgotten, remembered));
+            }
+            return NativeTask.of(next);
         }
 
-        return NativeTask.of(next);
     }
 
+    private void validate(NAR n) {
+        //verify dithering
+        if (Param.DEBUG) {
+            if (!input.isInput()) {
+                Truth t = input.truth();
+                if (t != null)
+                    t.ensureDithered(n);
+            }
+        }
+    }
+
+    //TODO: private static final class ListTask extends FasterList<ITask> extends NativeTask {
+
+    private static final class Commit extends NativeTask {
+
+        FasterList<Task> forgotten, remembered;
+
+        public Commit(FasterList<Task> forgotten, FasterList<Task> remembered) {
+            super();
+            this.forgotten = forgotten; this.remembered = remembered;
+        }
+
+        @Override
+        public ITask next(NAR n) {
+            forgotten.forEach(Task::delete);
+            remembered.forEach(n.eventTask::emit);
+            return null;
+        }
+    }
 
 
     public void forget(Task x) {
-        if (!forgotten.isEmpty() && forgotten.containsIdentity(x))
-            return;
-
-        forgotten.add(x);
+        if (remembered.removeInstance(x)) {
+            throw new TODO();
+            //TODO filter next tasks with any involving that task
+        }
+        add(x, this.forgotten);
     }
 
     public void remember(Task x) {
-        if (x!=null)
-            remembered.add(x);
+        if (forgotten.removeInstance(x)) {
+            throw new TODO();
+            //TODO filter next tasks with any involving that task
+        }
+        if (add(x, this.remembered))
+            next.add(new TaskLinkTask(x, concept));
     }
 
+
     public void merge(Task existing) {
-        if (existing == input)
-            return; //same instance, do nothing
+        if (existing != input) {
 
-        assert(!input.isDeleted()); //dont delete just yet
+            assert (!input.isDeleted()); //dont delete just yet
 
-        //TODO decide how much to re-activate
-        //TODO consider forgetting rate
+            //TODO decide how much to re-activate
+            //TODO consider forgetting rate
 
-        if (existing instanceof NALTask)
-            ((NALTask) existing).causeMerge(input);
-
-        float pri = existing.priElseZero();
-        next(new TaskLinkTask(existing, pri, concept));
+            if (existing instanceof NALTask)
+                ((NALTask) existing).causeMerge(input);
+            forget(input);
+        }
 
 
-        forget(input);
+        next(new TaskLinkTask(existing, concept));
+
+
     }
 
     public void next(ITask n) {
@@ -140,4 +156,17 @@ public class Remember extends NativeTask {
     public final byte punc() {
         return input.punc();
     }
+
+    private static boolean add(Task x, FasterList<Task> f) {
+        if (x!=null) {
+            if (!f.isEmpty() && f.containsInstance(x))
+                return false;
+
+            f.add(x);
+            return true;
+        }
+        return false;
+    }
+
+
 }

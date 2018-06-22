@@ -506,7 +506,7 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    public boolean containsIdentity(X x) {
+    public boolean containsInstance(X x) {
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
             X y = this.items[i];
             if (y == x)
@@ -633,6 +633,10 @@ public class FasterList<X> extends FastList<X> {
             return true;
         } else
             return false;
+    }
+
+    public boolean removeInstance(X x) {
+        return removeIf(y -> x == y);
     }
 
     /**

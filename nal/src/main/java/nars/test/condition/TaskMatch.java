@@ -20,14 +20,13 @@ import java.util.function.Predicate;
 
 import static nars.Op.NEG;
 
-public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Tasked> {
+public class TaskMatch implements NARCondition, Predicate<Task>, Consumer<Tasked> {
 
 
-    @NotNull
     protected final NAR nar;
     private final byte punc;
 
-    @NotNull
+
     private final Term term;
     private final LongPredicate start;
     private final LongPredicate end;
@@ -50,15 +49,17 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     float temporalityCost = 0.75f;*/
 
 
-    public final List<Task> matched = $.newArrayList(1);
-
 
     final static int maxSimilars = 2;
+
+
+
+    public final List<Task> matched = $.newArrayList(1);
 
     protected final TreeMap<Float, Task> similar = new TreeMap();
 
 
-    public TaskCondition(@NotNull NAR n, long creationStart, long creationEnd, @NotNull String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) throws RuntimeException, nars.Narsese.NarseseException {
+    public TaskMatch(@NotNull NAR n, long creationStart, long creationEnd, @NotNull String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) throws RuntimeException, nars.Narsese.NarseseException {
 
 
         if (freqMax < freqMin) throw new RuntimeException("freqMax < freqMin");

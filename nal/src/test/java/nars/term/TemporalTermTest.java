@@ -14,9 +14,8 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import static nars.$.*;
-import static nars.Op.CONJ;
-import static nars.Op.False;
-import static nars.Op.Null;
+import static nars.$.the;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;

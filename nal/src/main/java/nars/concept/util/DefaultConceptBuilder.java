@@ -54,9 +54,9 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
         if (dmt != null) {
             return new TaskConcept(t,
-                    new DynamicTruthBeliefTable(t, newTemporalTable(t), dmt, true),
+                    new DynamicTruthBeliefTable(t, newEternalTable(), newTemporalTable(t), dmt, true),
                     goalable(t) ?
-                            new DynamicTruthBeliefTable(t, newTemporalTable(t), dmt, false) :
+                            new DynamicTruthBeliefTable(t, newEternalTable(), newTemporalTable(t), dmt, false) :
                             BeliefTable.Empty,
                     this);
 
@@ -99,10 +99,14 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
 
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || goalable(c))) {
-            return new DefaultBeliefTable(newTemporalTable(c));
+            return new DefaultBeliefTable(newEternalTable(), newTemporalTable(c));
         } else {
             return BeliefTable.Empty;
         }
+    }
+
+    public EternalTable newEternalTable() {
+        return new EternalTable(0);
     }
 
     @Override

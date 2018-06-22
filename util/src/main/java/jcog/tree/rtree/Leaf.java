@@ -111,8 +111,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
                 if (mightContain) {
                     if (x.equals(t)) {
-                        if (x != t)
-                            model.merge(x, t);
+                        model.merge(x, t);
                         return null;
                     }
                 }

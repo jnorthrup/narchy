@@ -55,15 +55,16 @@ public interface Compound extends Term, IPair, Subterms {
         return equals(a, (Compound)b);
     }
 
-    static boolean equals(/*@NotNull*/ Compound a, @Nullable Term bb) {
+    static boolean equals(/*@NotNull*/ Compound a, @Nullable Compound bb) {
         assert (a != bb) : "instance check should have already been performed before calling this";
 
         return
-                (a.opX() == bb.opX())
+                (a.op() == bb.op())
                         &&
                         (a.dt() == bb.dt())
                         &&
                         (a.subterms().equals(bb.subterms()))
+
                 ;
     }
 
@@ -117,11 +118,18 @@ public interface Compound extends Term, IPair, Subterms {
         //upper 11 bits: volume
         //next 5: op
         //lower 16: ? subs ? structure hash
-        return ((volume() & 0b11111111111) << (16 + 5))
+        short volume = (short) volume();
+        byte op = op().id;
+        byte subs = (byte) subs();
+        return opX(volume, op, subs);
+    }
+
+    static int opX(short volume, byte op, byte subs) {
+        return ((volume & 0b11111111111) << (16 + 5))
                 |
-               (op().id << 16)
+               (op << 16)
                 |
-               (short) subs();
+               subs;
     }
 
     @Override
@@ -328,22 +336,10 @@ public interface Compound extends Term, IPair, Subterms {
         Op op = op();
         if (op == CONJ) {
             int dt = dt();
-            switch (dt) {
-                case 0:
-                case DTERNAL:
-                case XTERNAL:
-                    return true;
-                
-                default:
-                    return false;
-            }
+            return dtSpecial(dt);
         } else
             return op.commutative && subs() > 1;
     }
-
-
-
-
 
 
     @Override

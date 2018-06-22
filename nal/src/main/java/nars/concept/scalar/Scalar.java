@@ -66,7 +66,6 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
 
     }
 
-
     /**
      * returns a new stamp for a sensor task
      */

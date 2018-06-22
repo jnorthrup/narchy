@@ -23,7 +23,7 @@ public class AnonMap {
     }
 
     /** put: returns in range 1..Byte.MAX_VALUE (does not issue 0) */
-    private final byte intern_(Term x) {
+    private byte intern_(Term x) {
         int s = idToTerm.addAndGetSize(x);
         assert (s < Byte.MAX_VALUE);
         return (byte) s;

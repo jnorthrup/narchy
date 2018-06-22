@@ -10,6 +10,7 @@ import nars.concept.Concept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.proto.Remember;
 import nars.control.proto.TaskLinkTask;
+import nars.table.EternalTable;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -336,7 +337,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     }
 
     ScalarBeliefTable(Term c, boolean beliefOrGoal, TimeSeries series, TemporalBeliefTable t) {
-        super(c, beliefOrGoal, t);
+        super(c, beliefOrGoal, EternalTable.EMPTY, t);
         this.series = series;
     }
 
@@ -446,7 +447,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     }
 
     @Override
-    public void add(Remember r, NAR nar) {
+    public void add(Remember r, NAR n) {
 
         Task x = r.input;
         if (Param.FILTER_DYNAMIC_MATCHES) {
@@ -455,7 +456,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 !x.isInput()) {
 
                 if (!series.isEmpty()) {
-                    if (PredictionFeedback.absorbNonSignal(x, series.start(), series.end(), nar)) {
+                    if (PredictionFeedback.absorbNonSignal(x, series.start(), series.end(), n)) {
                         r.reject();
                         return;
                     }
@@ -464,7 +465,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             }
         }
 
-        super.add(r, nar);
+        super.add(r, n);
     }
 
     static final class ScalarSignalTask extends SignalTask {

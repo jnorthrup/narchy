@@ -149,6 +149,18 @@ public enum Tense {
         return new long[] { start, end };
     }
 
+    public static boolean dtSpecial(int dt) {
+        switch (dt) {
+            case 0:
+            case DTERNAL:
+            case XTERNAL:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
 
     @Override
     public String toString() {

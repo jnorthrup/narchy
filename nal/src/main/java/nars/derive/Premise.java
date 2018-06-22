@@ -13,7 +13,6 @@ import nars.concept.Concept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;

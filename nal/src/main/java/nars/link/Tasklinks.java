@@ -18,11 +18,7 @@ public class Tasklinks {
 
         if (overflow != null) {
             TaskLink yy = b.put(xx, overflow);
-            if (yy!=xx && yy!=null) {
-
-
-
-
+            if (yy != xx && yy != null) {
 
 
             }
@@ -32,7 +28,9 @@ public class Tasklinks {
     }
 
 
-    /** create source tasklink */
+    /**
+     * create source tasklink
+     */
     public static TaskLink.GeneralTaskLink linkTask(Task t, final float pri, /*Task*/Concept src, NAR nar) {
 
 
@@ -43,40 +41,27 @@ public class Tasklinks {
         linkTask(link, src.tasklinks(), null);
 
 
-
-        {
-            
-            ((TaskConcept) src).value(t, taskLinkPri, nar);
-
-            
-            nar.emotion.onActivate(t, pri);
-        }
-
-
-        
-        
+        ((TaskConcept) src).value(t, taskLinkPri, nar);
 
 
 
+        //nar.eventTask.emit(t);
 
-            nar.eventTask.emit(t);
-
-            return link;
+        return link;
     }
 
 
-
-
-
-    /** propagate tasklink to templates */
+    /**
+     * propagate tasklink to templates
+     */
     public static void linkTask(TaskLink tasklink, float priTransferred, Concept[] targets, Random rng) {
         int nTargets = targets.length;
         if (nTargets <= 0)
             return;
 
         float pEach = Math.max(Prioritized.EPSILON,
-                priTransferred / nTargets  
-                
+                priTransferred / nTargets
+
         );
         {
 
@@ -86,8 +71,7 @@ public class Tasklinks {
             final float headRoom = 1f - pEach;
             MutableFloat overflow = new MutableFloat();
 
-            
-            
+
             int j = rng.nextInt(nTargets);
             for (Concept target: targets) {
 
@@ -104,67 +88,6 @@ public class Tasklinks {
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -145,7 +145,7 @@ public class NAL3Test extends NALTest {
     void compound_composition_one_premise3() {
 
         TestNAR tester = test;
-        tester.believe("<swan --> bird>", 0.9f, 0.9f); 
+        tester.believe("<swan --> bird>", 0.9f, 0.9f);
         tester.askAt(cycles / 2, "<swan --> (swimmer - bird)>"); 
         tester.mustBelieve(cycles, "<swan --> (swimmer - bird)>", 0.10f, 0.73f); 
 

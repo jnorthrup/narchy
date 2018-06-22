@@ -14,7 +14,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
-import nars.term.compound.util.Conj;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
@@ -37,7 +36,8 @@ import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**

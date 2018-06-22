@@ -14,7 +14,7 @@ import java.util.SortedSet;
 /**
  * Holds results of an ellipsis match and
  */
-public class EllipsisMatch extends LightCompound {
+public final class EllipsisMatch extends LightCompound {
 
 
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);

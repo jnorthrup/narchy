@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 
 /**
  * Created by me on 12/4/16.

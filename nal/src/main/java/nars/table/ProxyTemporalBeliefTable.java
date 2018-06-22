@@ -46,6 +46,11 @@ public class ProxyTemporalBeliefTable implements TemporalBeliefTable {
     }
 
     @Override
+    public long tableDur() {
+        return ref.tableDur();
+    }
+
+    @Override
     public void add(Remember t, NAR n) {
         ref.add(t, n);
     }

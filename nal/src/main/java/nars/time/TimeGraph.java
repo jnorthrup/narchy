@@ -996,7 +996,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
 
 
-    static class TimeSpan {
+    static final class TimeSpan {
         public final static TimeSpan TS_ZERO = new TimeSpan(0);
         
         

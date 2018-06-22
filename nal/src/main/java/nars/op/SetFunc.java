@@ -13,7 +13,10 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static nars.Op.INT;
 import static nars.Op.Null;

@@ -208,8 +208,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
 
-
-
     @Nullable
     private Task put(final Task incoming) {
 
@@ -266,6 +264,10 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
         Task input = r.input;
 
+        add(r, nar, input);
+    }
+
+    public void add(Remember r, NAR nar, Task input) {
         int cap = capacity();
         if (cap == 0) {
             r.forget(input);
@@ -275,7 +277,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
 
 
-
         /**
          * @return null: no revision could be applied
          * ==newBelief: existing duplicate found
@@ -283,26 +284,31 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
          */
 
         Object[] list = this.list;
-        int bsize = list.length;
 
         Task oldBelief = null;
         Truth conclusion = null;
 
         Truth newBeliefTruth = input.truth();
 
-        for (Object aList: list) {
-            Task x = (Task) aList;
+        synchronized (this) {
+            for (Object aList: list) {
+                if (aList == null)
+                    break;
 
-            if (x == null)
-                break;
-
-            if (x.equals(input)) {
+                Task x = (Task) aList;
+                if (x.equals(input)) {
                 /*if (x!=y && x.isInput())
                     throw new RuntimeException("different input task instances with same stamp");*/
-                r.merge(x);
-                return;
+                    r.merge(x);
+                    return;
+                }
             }
+        }
 
+        for (Object aList: list) {
+            if (aList == null)
+                break;
+            Task x = (Task) aList;
             float xconf = x.conf();
             if (Stamp.overlapsAny(input, x)) {
 
@@ -400,12 +406,15 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         Task displaced = put(x);
 
         if (displaced == x) {
-            return false;
-        } else if (displaced != null) {
-            r.forget(displaced);
+            r.forget(x);
+        } else {
+            if (displaced != null) {
+                r.forget(displaced);
+            }
+
+            r.remember(x);
         }
 
-        r.remember(x);
         return true;
     }
 
@@ -414,6 +423,40 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     public Truth strongestTruth() {
         Task e = strongest();
         return (e != null) ? e.truth() : null;
+    }
+
+
+    /**
+     * TODO batch eternalize multiple removed tasks together as one attempted task
+     */
+    protected Task eternalize(Task x, int tableCap, long tableDur, NAR nar) {
+
+        assert (!x.isDeleted());
+        float factor = Math.max((1f/tableCap), (float)Util.unitize((((double)x.range())/(1+tableDur))));
+
+        float eviMin;
+        //synchronized (this) {
+            if (size() == capacity()) {
+                Task w = weakest();
+                eviMin = w!=null ? w.evi() : 0;
+            } else {
+                eviMin = 0;
+            }
+        //}
+        Task eternalized = Task.eternalized(x, factor, eviMin, nar);
+
+        if (eternalized == null)
+            return null;
+
+        float xPri = x.priElseZero();
+
+        eternalized.pri(xPri * factor);
+
+        if (Param.DEBUG)
+            eternalized.log("Eternalized Temporal");
+
+        return eternalized;
+
     }
 
 }

@@ -26,6 +26,7 @@ public class TaskLinkTask extends NativeTask {
 
     public TaskLinkTask(Task task, @Nullable Concept c) {
         this(task, task.priElseZero(), c);
+
     }
 
     public TaskLinkTask(Task task, float pri, @Nullable Concept c) {
@@ -38,6 +39,7 @@ public class TaskLinkTask extends NativeTask {
 
     @Override
     public ITask next(NAR n) {
+
         Concept c = this.concept;
         if (c == null) {
             c = task.concept(n, true);
@@ -48,6 +50,9 @@ public class TaskLinkTask extends NativeTask {
         n.activate(c, pri);
 
         Tasklinks.linkTask(task, pri, c, n);
+
+        n.emotion.onInput(task, n);
+        n.emotion.onActivate(task, pri);
 
         return null;
     }

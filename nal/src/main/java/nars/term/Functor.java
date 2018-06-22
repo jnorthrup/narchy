@@ -15,7 +15,6 @@ import nars.link.TermlinkTemplates;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
@@ -24,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
@@ -247,42 +245,42 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         int apply(int x, int y);
     }
 
-    public static Functor f2Int(String termAtom, boolean commutive, @Nullable IntPredicate identityComponent, IntPredicate zeroIfArgIs, IntIntToIntFunction ff) {
-        Atom f = fName(termAtom);
-        return f2(f, (xt, yt) -> {
-            boolean xi = xt.op() == INT;
-            boolean yi = yt.op() == INT;
-            if (xi && yi) {
-                int xid = ((Int)xt).id;
-                int yid = ((Int)yt).id;
-                return Int.the( ff.apply(xid, yid ) );
-            } else {
-                if (identityComponent!=null) {
-                    if (xi) {
-                        int xid = ((Int) xt).id;
-                        if (zeroIfArgIs.test(xid))
-                            return Int.the(0);
-
-                        if (identityComponent.test(xid))
-                            return yt;
-                    }
-                    if (yi) {
-                        int yid = ((Int) yt).id;
-                        if (zeroIfArgIs.test(yid))
-                            return Int.the(0);
-
-                        if (identityComponent.test(yid))
-                            return xt;
-                    }
-                }
-
-                if (commutive && xt.compareTo(yt) > 0) {
-                    return $.func(f, yt, xt);
-                }
-                return null;
-            }
-        });
-    }
+//    public static Functor f2Int(String termAtom, boolean commutive, @Nullable IntPredicate identityComponent, IntPredicate zeroIfArgIs, IntIntToIntFunction ff) {
+//        Atom f = fName(termAtom);
+//        return f2(f, (xt, yt) -> {
+//            boolean xi = xt.op() == INT;
+//            boolean yi = yt.op() == INT;
+//            if (xi && yi) {
+//                int xid = ((Int)xt).id;
+//                int yid = ((Int)yt).id;
+//                return Int.the( ff.apply(xid, yid ) );
+//            } else {
+//                if (identityComponent!=null) {
+//                    if (xi) {
+//                        int xid = ((Int) xt).id;
+//                        if (zeroIfArgIs.test(xid))
+//                            return Int.the(0);
+//
+//                        if (identityComponent.test(xid))
+//                            return yt;
+//                    }
+//                    if (yi) {
+//                        int yid = ((Int) yt).id;
+//                        if (zeroIfArgIs.test(yid))
+//                            return Int.the(0);
+//
+//                        if (identityComponent.test(yid))
+//                            return xt;
+//                    }
+//                }
+//
+//                if (commutive && xt.compareTo(yt) > 0) {
+//                    return $.func(f, yt, xt);
+//                }
+//                return null;
+//            }
+//        });
+//    }
 
     /** marker interface for functors which are allowed to be applied during
      * transformation or term construction processes.

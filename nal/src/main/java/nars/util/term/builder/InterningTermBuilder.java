@@ -12,14 +12,11 @@ import nars.term.atom.Int;
 import nars.term.compound.LighterCompound;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * can intern subterms and compounds.
@@ -130,21 +127,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private boolean internable(Op op, int dt, boolean root) {
         return !op.atomic && (!root || op!=NEG);
-                //&& (!op.temporal || internable(dt)); //allow temporals
+                //&& (!op.temporal || !Tense.dtSpecial(dt)); //allow temporals
     }
 
-    @Nullable
-    private boolean internable(int dt) {
-        switch (dt) {
-            case 0:
-            case DTERNAL:
-            case XTERNAL:
-                return true;
-            default:
-                return false; //some other DT value
-        }
 
-    }
 
     private boolean internable(Term[] subterms) {
         if (subterms.length == 0)

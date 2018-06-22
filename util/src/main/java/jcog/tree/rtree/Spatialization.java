@@ -53,7 +53,7 @@ public class Spatialization<T> {
 
 
 
-    /** called when add encounters an equivalent (but different) instance */
+    /** existing may be the same instance, or .equals() to the incoming */
     protected void merge(T existing, T incoming) {
 
     }

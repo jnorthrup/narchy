@@ -209,7 +209,7 @@ public interface QuestionTable extends TaskTable {
         @Override
         public void add(Remember r, NAR n) {
             Task x = put(r.input, null);
-            if (x != r) {
+            if (x != r.input) {
                 if (x!=null)
                     r.merge(x); //existing
                 else

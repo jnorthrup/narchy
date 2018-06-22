@@ -19,8 +19,10 @@ public abstract class NativeTask implements ITask, Priority {
     public static ITask of(@Nullable FasterList<ITask> next) {
         if (next == null) return null;
         switch (next.size()) {
-            case 0: return null;
-            case 1: return next.get(0);
+            case 0:
+                return null;
+            case 1:
+                return next.get(0);
             default:
                 return new NativeTaskSequence(next.toArrayRecycled(ITask[]::new));
         }
@@ -35,8 +37,10 @@ public abstract class NativeTask implements ITask, Priority {
         return 1;
     }
 
-    @Override
-    abstract public String toString();
+//    @Override
+//    public String toString() {
+//        return getClass().toStri
+//    }
 
     @Override
     public boolean delete() {
@@ -50,10 +54,8 @@ public abstract class NativeTask implements ITask, Priority {
 
     @Override
     public float priSet(float p) {
-        return 1f; 
+        return 1f;
     }
-
-    public abstract ITask next(NAR n);
 
 
     /**
@@ -129,54 +131,16 @@ public abstract class NativeTask implements ITask, Priority {
             }
 
 
-
-
-
-            
-            
-
-            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that)); 
+            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that));
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static class NARTask extends NativeTask {
 
         final Consumer run;
 
-        public NARTask( Consumer<NAR> runnable) {
+        public NARTask(Consumer<NAR> runnable) {
             run = runnable;
         }
 
@@ -193,39 +157,26 @@ public abstract class NativeTask implements ITask, Priority {
 
     }
 
-    private final static class NativeTaskSequence implements ITask {
+    private final static class NativeTaskSequence extends NativeTask {
         private final ITask[] tasks;
 
-        public NativeTaskSequence(ITask[] x) {
+        NativeTaskSequence(ITask[] x) {
             this.tasks = x;
         }
 
         @Override
         public ITask next(NAR n) {
-            FasterList<ITask> next = null;
-            for (ITask t : tasks) {
-                ITask p = t.next(n);
-                if (p!=null) {
-                    if (next == null) next = new FasterList(1);
-                    next.add(p);
-                }
+            //FasterList<ITask> next = null;
+            for (ITask t: tasks) {
+                t.run(n);
+//                ITask p = t.next(n);
+//                if (p!=null) {
+//                    if (next == null) next = new FasterList(1);
+//                    next.add(p);
+//                }
             }
-            return NativeTask.of(next);
+            return null;
         }
 
-        @Override
-        public byte punc() {
-            return 0;
-        }
-
-        @Override
-        public float priSet(float p) {
-            return 0;
-        }
-
-        @Override
-        public float pri() {
-            return 0;
-        }
     }
 }

@@ -2,6 +2,7 @@ package nars.concept.dynamic;
 
 import nars.NAR;
 import nars.Task;
+import nars.table.EternalTable;
 import nars.table.TemporalBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -19,8 +20,8 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
     private final DynamicTruthModel model;
 
 
-    public DynamicTruthBeliefTable(Term c, TemporalBeliefTable t, DynamicTruthModel model, boolean beliefOrGoal) {
-        super(c, beliefOrGoal, t);
+    public DynamicTruthBeliefTable(Term c, EternalTable e, TemporalBeliefTable t, DynamicTruthModel model, boolean beliefOrGoal) {
+        super(c, beliefOrGoal, e, t);
         this.model = model;
     }
 

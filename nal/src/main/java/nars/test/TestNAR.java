@@ -6,7 +6,7 @@ import nars.*;
 import nars.task.ITask;
 import nars.task.Tasked;
 import nars.test.condition.NARCondition;
-import nars.test.condition.TaskCondition;
+import nars.test.condition.TaskMatch;
 import nars.time.Tense;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +124,7 @@ public class TestNAR {
                 if (!quiet) {
                     logger.error("mustNot: {}", t);
                     t.log(logger);
-                    ((TaskCondition) t).matched.forEach(shouldntHave -> logger.error("Must not:\n{}", shouldntHave.proof()));
+                    ((TaskMatch) t).matched.forEach(shouldntHave -> logger.error("Must not:\n{}", shouldntHave.proof()));
                 }
 
 
@@ -352,8 +352,8 @@ public class TestNAR {
 
         float hf = freqTolerance / 2.0f;
         float hc = confTolerance / 2.0f;
-        TaskCondition tc =
-                new TaskCondition(nar,
+        TaskMatch tc =
+                new TaskMatch(nar,
                         cycleStart, cycleEnd,
                         sentenceTerm, punc, freqMin - hf, freqMax + hf, confMin - hc, confMax + hc, start, end);
 

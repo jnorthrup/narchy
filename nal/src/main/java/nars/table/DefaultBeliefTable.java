@@ -1,8 +1,10 @@
 package nars.table;
 
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
@@ -26,13 +28,27 @@ public class DefaultBeliefTable implements BeliefTable {
         temporal = t;
     }
 
-    public DefaultBeliefTable(TemporalBeliefTable t) {
-        this(new EternalTable(0), t);
-    }
+
 
     @Override
-    public void add(Remember x, NAR nar) {
-        table(x.isEternal()).add(x, nar);
+    public void add(Remember r, NAR n) {
+        table(r.isEternal()).add(r, n);
+
+        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
+            if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&
+                    temporal.size()>=temporal.capacity()-1 /* some tolerance for full test */) {
+
+                r.forgotten.forEach(t ->{
+                   if (!(t instanceof SignalTask) && !t.isEternal()) {
+                       //TODO maybe sort by evi decreasing
+                       Task e = eternal.eternalize(t, temporal.capacity(), temporal.tableDur(), n);
+                       if (e!=null)
+                            eternal.add(r, n, e);
+                   }
+                });
+            }
+        }
+
     }
 
 

@@ -8,7 +8,7 @@ import nars.derive.step.Truthify;
 import nars.term.control.AND;
 import nars.unify.op.UnifyTerm;
 
-class DeriveAction extends AND<Derivation> /*implements ThrottledAction<Derivation>*/ {
+final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<Derivation>*/ {
 
     public final Cause cause;
     private final Truthify truth;
