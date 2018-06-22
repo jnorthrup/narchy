@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static java.lang.Integer.MIN_VALUE;
-import static nars.Op.NEG;
+import static nars.Op.*;
 
 
 /**
@@ -145,10 +145,7 @@ public interface Atomic extends Term {
                     return Op.Imdex;
                 case Op.NullSym:
                     return Op.Null;
-                case Op.TrueSym:
-                    return Op.True;
-                case Op.FalseSym:
-                    return Op.False;
+
                 case Op.imIntSym:
                     return Op.imInt;
                 case Op.imExtSym:
@@ -184,11 +181,20 @@ public interface Atomic extends Term {
                 return Int.the(i); 
         }
 
-        if (isQuoteNecessary(id))
-            return $.quote(id);
+
+        switch (id) {
+            case "true":
+                return True;
+            case "false":
+                return False;
+            default:
+                if (isQuoteNecessary(id))
+                    return $.quote(id);
+                else
+                    return new Atom(id);
+        }
 
 
-        return new Atom(id);
     }
 
 

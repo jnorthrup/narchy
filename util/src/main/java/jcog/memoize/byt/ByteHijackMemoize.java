@@ -14,7 +14,7 @@ public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
 
     @Override
     public final PriProxy<X, Y> computation(X x, Y y) {
-        return x.intern(y, value(x, y));
+        return new ByteKey.ByteKeyInternal(x.key, x.hash, y, value(x, y));
     }
 
     @Override

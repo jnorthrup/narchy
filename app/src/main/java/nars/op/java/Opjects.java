@@ -86,45 +86,42 @@ public class Opjects extends DefaultTermizer {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
     final static ClassLoadingStrategy classLoadingStrategy =
-            
-            ClassLoadingStrategy.Default.WRAPPER
-            
-            
-            ;
+
+            ClassLoadingStrategy.Default.WRAPPER;
 
     final ByteBuddy bb = new ByteBuddy();
 
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
     private final DurService on;
 
-    /** determines evidence weighting for reporting specific feedback values */
+    /**
+     * determines evidence weighting for reporting specific feedback values
+     */
     float beliefEviFactor = 1f;
     float invokeEviFactor = beliefEviFactor;
     float beliefFreq = 1f;
     float invokeFreq = 1f;
 
 
-    /** determines evidence weighting for reporting assumed feedback assumptions */
+    /**
+     * determines evidence weighting for reporting assumed feedback assumptions
+     */
     float doubtEviFactor = 0.75f;
     float uninvokeEviFactor = 1;
-    float doubtFreq =  0.5f; 
+    float doubtFreq = 0.5f;
     float uninvokeFreq = 1f - invokeFreq;
 
-    /** cached; updated at most each duration */
+    /**
+     * cached; updated at most each duration
+     */
     private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0, invokeEvi, uninvokeEvi, invokePri;
 
-    /** set of operators in probing mode which are kept here for batched execution
-     *  should be a set.   using ConcurrentFastIteratingHashMap instead of the Set because it has newer code updates
-     * */
+    /**
+     * set of operators in probing mode which are kept here for batched execution
+     * should be a set.   using ConcurrentFastIteratingHashMap instead of the Set because it has newer code updates
+     */
     final ConcurrentFastIteratingHashSet<MethodExec> probing =
             new ConcurrentFastIteratingHashSet<>(new MethodExec[0]);
-
-
-
-
-
-
-
 
 
     public static final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
@@ -145,16 +142,13 @@ public class Opjects extends DefaultTermizer {
 
     final Map<Class, Boolean> clCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
     final Map<String, MethodExec> opCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
-    
 
-    /** TODO maybe use a stack to track invocations inside of evocations inside of invokations etc */
+
+    /**
+     * TODO maybe use a stack to track invocations inside of evocations inside of invokations etc
+     */
     final static ThreadLocal<AtomicBoolean> evoking = ThreadLocal.withInitial(AtomicBoolean::new);
 
-
-    
-
-    
-    
 
     public final NAR nar;
 
@@ -163,14 +157,6 @@ public class Opjects extends DefaultTermizer {
      */
 
 
-
-
-
-
-
-
-
-    
     protected final CauseChannel<ITask> in;
 
     private final SoftMemoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache = new SoftMemoize<>((x) -> {
@@ -197,15 +183,12 @@ public class Opjects extends DefaultTermizer {
     }, 512, true);
 
 
-    /** whether NAR can envoke the method internally */
+    /**
+     * whether NAR can envoke the method internally
+     */
     public boolean methodEvokable(Method m) {
-        return isPublic(m); 
+        return isPublic(m);
     }
-
-
-
-
-
 
 
     static boolean isPublic(Method m) {
@@ -219,7 +202,9 @@ public class Opjects extends DefaultTermizer {
         this.on = DurService.on(n, this::update);
     }
 
-    /** called every duration to update all the operators in one batch, so they dont register events individually */
+    /**
+     * called every duration to update all the operators in one batch, so they dont register events individually
+     */
     protected void update(NAR nar) {
         float cMin = c2w(nar.confMin.floatValue());
         float cMax = c2w(nar.confDefault(BELIEF));
@@ -228,7 +213,7 @@ public class Opjects extends DefaultTermizer {
         invokeEvi = Util.lerp(invokeEviFactor, cMin, cMax);
         uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
         invokePri = beliefPri = nar.priDefault(BELIEF);
-                
+
         probing.forEach(p -> p.update(nar));
     }
 
@@ -237,39 +222,18 @@ public class Opjects extends DefaultTermizer {
         Term t = $.inst(classs, packagge);
 
 
-
         return t;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    /** registers an alias/binding shortcut term rewrite macro */
+    /**
+     * registers an alias/binding shortcut term rewrite macro
+     */
     public Concept alias(String op, Term instance, String method) {
-        return nar.on(op, (s)->
-                $.func(method, instance, s.subs()==1 ? s.sub(0) : PROD.the(s))
+        return nar.on(op, (s) ->
+                $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s))
         );
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     interface InstanceMethodValueModel {
@@ -278,94 +242,14 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
     final Function<Term, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
 
     public class PointMethodValueModel implements InstanceMethodValueModel {
 
 
-
         @Override
         public void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
-
 
 
             SignalTask value;
@@ -389,12 +273,12 @@ public class Opjects extends DefaultTermizer {
                 }
 
                 value = new TruthletTask(nt, BELIEF,
-                        
+
                         Truthlet.step(
-                                doubtFreq, start, 
-                                f, beliefEvi,          
-                                end, doubtFreq, 
-                                doubtEvi  
+                                doubtFreq, start,
+                                f, beliefEvi,
+                                end, doubtFreq,
+                                doubtEvi
                         ),
                         nar);
 
@@ -410,16 +294,16 @@ public class Opjects extends DefaultTermizer {
             SignalTask feedback;
             if (isVoid || evokedOrInvoked) {
                 feedback = new TruthletTask(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), BELIEF,
-                        
-                        
+
+
                         Truthlet.step(
-                                uninvokeFreq, start, 
-                                invokeFreq, invokeEvi,          
-                                end, uninvokeFreq, 
-                                uninvokeEvi 
+                                uninvokeFreq, start,
+                                invokeFreq, invokeEvi,
+                                end, uninvokeFreq,
+                                uninvokeEvi
                         ),
-                        
-                        
+
+
                         nar);
                 if (Param.DEBUG) feedback.log("Invoked");
                 feedback.priMax(beliefPri);
@@ -429,51 +313,20 @@ public class Opjects extends DefaultTermizer {
             }
 
 
-
-
-
-
-
-
-
-
             if (feedback == null)
                 in.input(value);
             else
                 in.input(feedback, value);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
     }
 
 
-    /** this term should not be used in constructing terms that will leave this class.
-     *  this is so it wont pollute the NAR's index and possibly interfere with other
-     *  identifiers that it may be equal to (ex: NAR.self())
+    /**
+     * this term should not be used in constructing terms that will leave this class.
+     * this is so it wont pollute the NAR's index and possibly interfere with other
+     * identifiers that it may be equal to (ex: NAR.self())
      */
     private class Instance extends ProxyTerm {
 
@@ -495,11 +348,6 @@ public class Opjects extends DefaultTermizer {
         }
 
         public Object update(Object obj, Method method, Object[] args, Object nextValue) {
-            
-
-
-
-
 
 
             belief.update(ref, obj, method, args, nextValue, nar);
@@ -508,24 +356,10 @@ public class Opjects extends DefaultTermizer {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     Term opTerm(Term instance, Method method, Object[] args, Object result) {
 
-        
 
         Class<?> returnType = method.getReturnType();
         boolean isVoid = result == null && returnType == void.class;
@@ -542,8 +376,8 @@ public class Opjects extends DefaultTermizer {
 
         x[0] = instance;
 
-        if (method.isVarArgs() && args.length==1) {
-            args = (Object[])args[0]; 
+        if (method.isVarArgs() && args.length == 1) {
+            args = (Object[]) args[0];
         }
         if (args.length > 0) {
             switch (args.length) {
@@ -585,14 +419,14 @@ public class Opjects extends DefaultTermizer {
             }
         }
 
-            return $.func(methodName(method), x).negIf(negate).normalize();
+        return $.func(methodName(method), x).negIf(negate).normalize();
 
     }
 
     static String methodName(Method method) {
         String n = method.getName();
         int i = n.indexOf("$accessor$");
-        if (i!=-1) {
+        if (i != -1) {
             return n.substring(0, i);
         } else {
             return n;
@@ -603,11 +437,12 @@ public class Opjects extends DefaultTermizer {
         private final Term methodName;
         public Operator operator;
 
-        /** TODO invalidate any entries from here if an instance is registered after it has
+        /**
+         * TODO invalidate any entries from here if an instance is registered after it has
          * been running which may cause it to be ignored once it becomes available.
          * maybe use a central runCache to make this easier
          */
-        final SoftMemoize<Term,Runnable> runCache;
+        final SoftMemoize<Term, Runnable> runCache;
 
 
         public MethodExec(String _methodName) {
@@ -648,7 +483,7 @@ public class Opjects extends DefaultTermizer {
                 Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(c, methodName), types);
                 MethodHandle mh = methodCache.apply(key);
                 if (mh == null) {
-                    
+
                     return null;
                 }
 
@@ -678,7 +513,7 @@ public class Opjects extends DefaultTermizer {
 
         @Override
         public boolean equals(Object obj) {
-            return this==obj;
+            return this == obj;
         }
 
         @Override
@@ -695,37 +530,12 @@ public class Opjects extends DefaultTermizer {
         protected Task exePrefilter(Task x) {
 
             if (!x.isCommand() && x.freq() <= 0.5f + Param.TRUTH_EPSILON)
-                return null; 
+                return null;
 
             if (runCache.apply(x.term()) == null)
                 return null;
 
             return x;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         }
@@ -738,13 +548,6 @@ public class Opjects extends DefaultTermizer {
 
         }
     }
-
-
-
-
-
-
-
 
 
     public <T> T the(String id, T instance, Object... args) {
@@ -768,7 +571,7 @@ public class Opjects extends DefaultTermizer {
                     .make()
                     .load(
                             Thread.currentThread().getContextClassLoader(),
-                            
+
                             classLoadingStrategy
                     )
                     .getLoaded();
@@ -779,26 +582,9 @@ public class Opjects extends DefaultTermizer {
             return instWrapped;
 
 
-
-
-
-
-
-
-
-
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -807,7 +593,7 @@ public class Opjects extends DefaultTermizer {
 
         clCache.computeIfAbsent(cl, (clazz) -> {
 
-            for (Method m : clazz.getMethods()) {
+            for (Method m: clazz.getMethods()) {
                 reflect(m);
             }
 
@@ -844,28 +630,24 @@ public class Opjects extends DefaultTermizer {
             Class cc = bb
                     .with(TypeValidation.DISABLED)
                     .subclass(baseClass)
-                    
-                    
+
+
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
                     .intercept(MethodDelegation.to(this))
                     .make()
                     .load(
                             Thread.currentThread().getContextClassLoader(),
-                            
+
                             classLoadingStrategy
                     )
                     .getLoaded();
 
-            reflect(cc); 
+            reflect(cc);
 
             return cc;
 
 
-
-
-
         });
-
 
 
         try {
@@ -876,38 +658,19 @@ public class Opjects extends DefaultTermizer {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 
-    
-
-        @RuntimeType
-        public Object intercept(@AllArguments Object[] args, @SuperMethod  Method method, @This Object obj) {
-            try {
-                return tryInvoked(obj, method, args, method.invoke(obj, args));
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                logger.error("{} args={}", obj, args);
-                return null;
-            }
+    @RuntimeType
+    public Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @This Object obj) {
+        try {
+            return tryInvoked(obj, method, args, method.invoke(obj, args));
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            logger.error("{} args={}", obj, args);
+            return null;
         }
-    
+    }
+
 
     private <T> T register(Term id, T wrappedInstance) {
 
@@ -917,45 +680,31 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     protected boolean evoked(Term method, Object instance, Object[] params) {
         return true;
     }
 
     protected Subterms validArgs(Subterms args) {
-        if (args.sub(0).op() != ATOM) 
-            return null; 
+        if (args.sub(0).op() != ATOM)
+            return null;
 
-        
+
         int a = args.subs();
         switch (a) {
             case 1:
-                return args; 
+                return args;
             case 2: {
                 Op o1 = args.sub(1).op();
                 if (validParamTerm(o1)) {
-                    
-                    
-                    
-                    
-                    
+
+
                     return args;
                 }
                 break;
             }
 
             case 3: {
-                
+
                 Op o1 = args.sub(1).op();
                 Op o2 = args.sub(2).op();
                 if (validParamTerm(o1) && o2 == VAR_DEP)
@@ -972,16 +721,6 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     protected boolean validMethod(Method m) {
         if (methodExclusions.contains(m.getName()))
             return false;
@@ -996,19 +735,18 @@ public class Opjects extends DefaultTermizer {
     private static Method findMethod(Class<?> clazz, Predicate<Method> predicate) {
 
 
-
         for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
 
-            
+
             Method[] methods = current.isInterface() ? current.getMethods() : current.getDeclaredMethods();
-            for (Method method : methods) {
+            for (Method method: methods) {
                 if (predicate.test(method)) {
                     return method;
                 }
             }
 
-            
-            for (Class<?> ifc : current.getInterfaces()) {
+
+            for (Class<?> ifc: current.getInterfaces()) {
                 Method m = findMethod(ifc, predicate);
                 if (m != null)
                     return m;
@@ -1030,7 +768,7 @@ public class Opjects extends DefaultTermizer {
             return false;
         }
 
-        
+
         if (parameterTypes.length > 0 && candidate.isVarArgs()) {
             return true;
         }
@@ -1038,13 +776,13 @@ public class Opjects extends DefaultTermizer {
             return false;
         }
 
-        
+
         Class<?>[] ctp = candidate.getParameterTypes();
         if (Arrays.equals(parameterTypes, ctp)) {
             return true;
         }
-        
-        
+
+
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> lowerType = parameterTypes[i];
             Class<?> upperType = ctp[i];
@@ -1054,39 +792,13 @@ public class Opjects extends DefaultTermizer {
         }
 
 
-
-
         return true;
 
-        
-        
+
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public final Object invoke(Object wrapper, Object obj, Method method, Object[] args)  {
+    public final Object invoke(Object wrapper, Object obj, Method method, Object[] args) {
 
         Object result;
         try {
@@ -1100,30 +812,16 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Nullable
     protected final Object tryInvoked(Object obj, Method m, Object[] args, Object result) {
         if (methodExclusions.contains(m.getName()))
             return result;
 
 
-            return invoked(obj, m, args, result);
+        return invoked(obj, m, args, result);
 
 
     }
-
 
 
     protected Object invoked(Object obj, Method m, Object[] args, Object result) {

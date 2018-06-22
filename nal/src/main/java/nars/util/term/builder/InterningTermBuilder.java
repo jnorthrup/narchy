@@ -19,6 +19,7 @@ import java.util.function.Function;
 
 import static nars.Op.NEG;
 import static nars.Op.PROD;
+import static nars.Op.SIM;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -29,10 +30,11 @@ import static nars.time.Tense.XTERNAL;
 public class InterningTermBuilder extends HeapTermBuilder {
 
 
-    final HijackTermCache[] termCache;
-    final HijackTermCache transformCache;
+    final HijackTermCache[] terms;
+    final HijackTermCache normalizes;
 
     private final int cacheSizePerOp;
+    private final HijackTermCache statements;
 
 
     public InterningTermBuilder() {
@@ -41,23 +43,24 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     public InterningTermBuilder(int sizePerOp) {
         this.cacheSizePerOp = sizePerOp;
-        termCache = new HijackTermCache[Op.ops.length];
+        terms = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
             if (Op.ops[i].atomic || Op.ops[i]==NEG) continue;
 
-            termCache[i] = newOpCache(this::compoundInterned, cacheSizePerOp);
+            terms[i] = newOpCache(this::compoundInterned, cacheSizePerOp);
         }
 
-        transformCache = newOpCache(this::normalize, cacheSizePerOp);
+        normalizes = newOpCache(this::normalize, cacheSizePerOp);
+        statements = newOpCache(this::_statement, cacheSizePerOp*3);
     }
 
 
     private HijackTermCache newOpCache(Function<InternedCompound, Term> f, int capacity) {
-        return new HijackTermCache(f, capacity, 4);
+        return new HijackTermCache(f, capacity, 3);
     }
 
     private Term apply(InternedCompound x) {
-        return termCache[x.op].apply(x);
+        return terms[x.op].apply(x);
     }
 
 
@@ -123,8 +126,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return internable(op, dt, true) && internable(u);
     }
 
+
     private boolean internable(Op op, int dt, boolean root) {
-        return !op.atomic && (!root || op!=NEG) && (!op.temporal || internable(dt));
+        return !op.atomic && (!root || op!=NEG);
+                //&& (!op.temporal || internable(dt)); //allow temporals
     }
 
     @Nullable
@@ -170,7 +175,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //    }
 
     public String summary() {
-        return summary(termCache, transformCache);
+        return summary(terms, normalizes);
     }
 
     static String summary(HijackTermCache[] termCache, HijackTermCache transforms) {
@@ -186,7 +191,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             throw new WTF();
 
         if (varOffset == 0) {
-            return transformCache.apply(InternedCompound.get(new LighterCompound(PROD, x, NORMALIZE)));
+            return normalizes.apply(InternedCompound.get(new LighterCompound(PROD, x, NORMALIZE)));
         } else {
             return super.normalize(x, varOffset);
         }
@@ -203,5 +208,25 @@ public class InterningTermBuilder extends HeapTermBuilder {
             default:
                 throw new  UnsupportedOperationException();
         }
+    }
+
+    @Override
+    public Term statement(Op op, int dt, Term subject, Term predicate) {
+        if (op==SIM) {
+            //pre-sort by swapping to avoid saving redundant mappings
+            if (subject.compareTo(predicate)>0) {
+                Term x = predicate;
+                predicate = subject;
+                subject = x;
+            }
+        }
+
+        //terms[op.id]
+        return statements.apply(InternedCompound.get(op, dt, subject, predicate));
+    }
+
+    private Term _statement(InternedCompound c) {
+        Term[] s = c.rawSubs.get();
+        return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
     }
 }

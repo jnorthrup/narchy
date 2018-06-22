@@ -5,6 +5,7 @@ import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.math.IntRange;
 import jcog.math.Range;
+import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Param;
@@ -143,9 +144,10 @@ public class MatrixDeriver extends Deriver {
 
             perConceptRemain[0] = premisesPerConcept;
 
+            int termlinks = (int) Math.ceil(Pri.EPSILON + a.pri() * termLinksPerTaskLink);
             premiseMatrix(a,
                     nar, continueHypothesizing,
-                    tasklinks, termLinksPerTaskLink, rng);
+                    tasklinks, termlinks, rng);
 
             return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
         });

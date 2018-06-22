@@ -1,23 +1,36 @@
 package nars.util.term;
 
+import jcog.data.ArrayHashSet;
+import jcog.list.FasterList;
 import nars.Op;
+import nars.op.mental.AliasConcept;
 import nars.subterm.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
+import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
+import nars.term.compound.util.Conj;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.transform.CompoundNormalization;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.ListIterator;
+import java.util.function.Predicate;
 
-import static nars.Op.Null;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * interface for term and subterm builders
@@ -167,5 +180,198 @@ public abstract class TermBuilder {
 
         return y;
 
+    }
+
+    public Term statement(Op op, int dt, Term subject, Term predicate) {
+        if (subject == Null || predicate == Null)
+            return Null;
+
+        boolean dtConcurrent = concurrent(dt);
+        if (dtConcurrent) {
+            if (subject.equals(predicate))
+                return True;
+        }
+
+        if (op == IMPL) {
+
+
+            if (subject == True)
+                return predicate;
+            if (subject == False)
+                return Null;
+
+            if (predicate instanceof Bool)
+                return Null;
+
+
+            if (predicate.op() == NEG) {
+
+                return IMPL.the(dt, subject, predicate.unneg()).neg();
+            }
+
+
+            if (subject.hasAny(InvalidImplicationSubj))
+                return Null;
+
+
+            switch (predicate.op()) {
+                case IMPL: {
+                    return IMPL.the(predicate.dt(), CONJ.the(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1));
+                }
+
+
+            }
+
+
+            if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
+
+                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
+                subject.eventsWhile((w, t) -> {
+                    se.add(PrimitiveTuples.pair(w, t));
+                    return true;
+                }, 0, true, true, false, 0);
+
+                FasterList<LongObjectPair<Term>> pe = new FasterList(4);
+                int pre = subject.dtRange();
+                boolean dtNotDternal = dt != DTERNAL;
+                int edt = pre + (dtNotDternal ? dt : 0);
+
+                final boolean[] peChange = {false};
+
+
+                boolean contradiction = !predicate.eventsWhile((w, t) -> {
+                    LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
+                    if (se.contains(x)) {
+
+                        peChange[0] = true;
+                    } else if (se.contains(pair(w, t.neg()))) {
+                        return false;
+                    } else {
+                        pe.add(x);
+                    }
+                    return true;
+                }, edt, true, true, false, 0);
+
+                if (contradiction)
+                    return False;
+
+
+                if ((dt == DTERNAL || dt == 0)) {
+                    for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
+                        LongObjectPair<Term> pex = pi.next();
+                        Term pext = pex.getTwo();
+                        if (pext.op() == CONJ) {
+                            int pdt = pext.dt();
+                            if (pdt == DTERNAL || pdt == 0) {
+                                long at = pex.getOne();
+
+                                RoaringBitmap pextRemovals = null;
+                                Subterms subPexts = pext.subterms();
+                                int subPextsN = subPexts.subs();
+
+                                for (ListIterator<LongObjectPair<Term>> si = se.listIterator(); si.hasNext(); ) {
+                                    LongObjectPair<Term> sse = si.next();
+                                    if (sse.getOne() == at) {
+
+
+                                        Term sset = sse.getTwo();
+
+                                        for (int i = 0; i < subPextsN; i++) {
+                                            Term subPext = subPexts.sub(i);
+                                            Term merge = CONJ.the(dt, new Term[]{sset, subPext});
+                                            if (merge == Null) return Null;
+                                            else if (merge == False) {
+
+                                                return False;
+                                            } else if (merge.equals(sset)) {
+
+                                                if (pextRemovals == null)
+                                                    pextRemovals = new RoaringBitmap();
+                                                pextRemovals.add(i);
+                                            } else {
+
+                                            }
+                                        }
+                                    }
+                                }
+                                if (pextRemovals != null) {
+                                    if (pextRemovals.getCardinality() == subPextsN) {
+
+                                        pi.remove();
+                                    } else {
+                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
+                                    }
+                                    peChange[0] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                if (pe.isEmpty())
+                    return True;
+
+
+                if (peChange[0]) {
+
+                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
+                    Term newPredicate;
+                    if (pe.size() == 1) {
+                        newPredicate = pe.getOnly().getTwo();
+                    } else if (predicate.dt() == DTERNAL) {
+
+                        Conj c = new Conj();
+                        for (int i = 0, peSize = pe.size(); i < peSize; i++) {
+                            if (!c.add(ETERNAL, pe.get(i).getTwo()))
+                                break;
+                        }
+                        newPredicate = c.term();
+                    } else {
+                        newPredicate = Conj.conj(pe);
+                    }
+
+                    return IMPL.the(ndt, subject, newPredicate);
+                }
+
+
+            }
+
+
+        }
+
+
+        if ((dtConcurrent || op != IMPL) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
+
+            Predicate<Term> delim = (op == IMPL) ?
+                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
+
+
+            if ((containEachOther(subject, predicate, delim))) {
+
+                return Null;
+            }
+            boolean sa = subject instanceof AliasConcept.AliasAtom;
+            if (sa) {
+                Term sd = ((AliasConcept.AliasAtom) subject).target;
+                if (sd.equals(predicate) || containEachOther(sd, predicate, delim))
+                    return Null;
+            }
+            boolean pa = predicate instanceof AliasConcept.AliasAtom;
+            if (pa) {
+                Term pd = ((AliasConcept.AliasAtom) predicate).target;
+                if (pd.equals(subject) || containEachOther(pd, subject, delim))
+                    return Null;
+            }
+            if (sa && pa) {
+                if (containEachOther(((AliasConcept.AliasAtom) subject).target, ((AliasConcept.AliasAtom) predicate).target, delim))
+                    return Null;
+            }
+
+        }
+
+        return op == SIM && subject.compareTo(predicate) > 0 ?
+                compound(op, dt, predicate, subject) :
+                compound(op, dt, subject, predicate);
     }
 }

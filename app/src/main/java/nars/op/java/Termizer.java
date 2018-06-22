@@ -10,8 +10,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Termizer {
 
-	Term TRUE = Atomic.the("true");
-	Term FALSE = Atomic.the("false");
 	Term VOID = Atomic.the("void");
 	Term EMPTY = Atomic.the("empty");
 	Term NULL = Atomic.the("null");

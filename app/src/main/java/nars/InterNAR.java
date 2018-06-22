@@ -122,7 +122,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
 
     protected void receive(UDPeer.MsgReceived m) {
         try {
-            Task x = IO.taskFromBytes(m.data());
+            Task x = IO.bytesToTask(m.data());
             if (x.isQuestionOrQuest()) {
 
                 x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));

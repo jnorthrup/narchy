@@ -63,9 +63,9 @@ class TermIOTest {
 
         Object copy;
         if (orig instanceof Task)
-            copy = IO.taskFromBytes(barray);
+            copy = IO.bytesToTask(barray);
         else if (orig instanceof Term)
-            copy = IO.termFromBytes(barray);
+            copy = IO.bytesToTerm(barray);
         else
             throw new RuntimeException("");
 

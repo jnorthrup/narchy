@@ -91,7 +91,7 @@ public class TermlinkTemplates extends FasterList<Term> {
      */
     static void templates(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
-        if (x == Op.imExt || x == Op.imInt)
+        if (x instanceof Bool || x == Op.imExt || x == Op.imInt)
             return;
 
         Op xo = x.op();
@@ -282,9 +282,6 @@ public class TermlinkTemplates extends FasterList<Term> {
             } else {
                 refund.add(budgetedForward);
             }
-
-            if (tgtTerm instanceof Bool)
-                throw new RuntimeException("should not exist a Bool termlink");
 
             ((Bag) srcTermLinks).put(new PLink<>(tgtTerm, budgetedReverse), refund);
 

@@ -1,10 +1,8 @@
 package nars;
 
 
-import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import nars.op.SetFunc;
-import nars.op.mental.AliasConcept;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -30,11 +28,8 @@ import org.apache.lucene.util.MathUtil;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
 import java.util.*;
@@ -67,7 +62,7 @@ public enum Op {
         @Override
         public Term the(int dt, Term[] u) {
             assert (u.length == 2): " requires 2 arguments, but got: " + Arrays.toString(u);
-            return statement(this, dt, u[0], u[1]);
+            return terms.statement(this, dt, u[0], u[1]);
         }
     },
     SIM("<->", true, 2, OpType.Statement, Args.Two) {
@@ -78,7 +73,7 @@ public enum Op {
                 return u[0] == Null ? Null : True;
             } else {
                 assert (u.length == 2): " requires 2 arguments, but got: " + Arrays.toString(u);
-                return statement(this, dt, u[0], u[1]);
+                return terms.statement(this, dt, u[0], u[1]);
             }
         }
     },
@@ -155,7 +150,7 @@ public enum Op {
                     Term only = u[0];
                     if (only instanceof EllipsisMatch) {
 
-                        return the(dt, ((EllipsisMatch) only).arrayShared());
+                        return the(dt, only.arrayShared());
                     } else {
 
 
@@ -368,7 +363,7 @@ public enum Op {
         @Override
         public Term the(int dt, Term... u) {
             assert (u.length == 2);
-            return statement(this, dt, u[0], u[1]);
+            return terms.statement(this, dt, u[0], u[1]);
         }
     },
 
@@ -450,8 +445,8 @@ public enum Op {
                     return RANK;
                 }
             };
-    public static final char TrueSym = '†';
-    public static final char FalseSym = 'Ⅎ';
+
+
     public static final char NullSym = '☢';
 
     public static final char imIntSym = '\\';
@@ -460,7 +455,7 @@ public enum Op {
     /**
      * absolutely nonsense
      */
-    public static final Bool Null = new Bool(String.valueOf(Op.NullSym)) {
+    public static final Bool Null = new Bool(String.valueOf(Op.NullSym), ((byte)-1) ) {
 
         final int rankBoolNull = Term.opX(BOOL, (short) 0);
 
@@ -492,7 +487,7 @@ public enum Op {
     /**
      * tautological absolute false
      */
-    public static final Bool False = new Bool(String.valueOf(Op.FalseSym)) {
+    public static final Bool False = new Bool("false", (byte)0) {
 
         final int rankBoolFalse = Term.opX(BOOL, (short) 1);
 
@@ -524,7 +519,7 @@ public enum Op {
     /**
      * tautological absolute true
      */
-    public static final Bool True = new Bool(String.valueOf(Op.TrueSym)) {
+    public static final Bool True = new Bool("true", (byte)1) {
 
         final int rankBoolTrue = Term.opX(BOOL, (short) 2);
 
@@ -564,7 +559,7 @@ public enum Op {
     public static final Atom GOAL_TERM = (Atom) Atomic.the(String.valueOf((char) GOAL));
     public static final Atom QUESTION_TERM = (Atom) Atomic.the(String.valueOf((char) QUESTION));
     public static final Atom QUEST_TERM = (Atom) Atomic.the(String.valueOf((char) QUEST));
-    public static final Atom QUE_TERM = (Atom) Atomic.the(String.valueOf((char) QUESTION) + String.valueOf((char) QUEST));
+    public static final Atom QUE_TERM = (Atom) Atomic.the(String.valueOf((char) QUESTION) + (char) QUEST);
 
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
@@ -588,7 +583,7 @@ public enum Op {
      * specifier for any NAL level
      */
     private static final int ANY_LEVEL = 0;
-    private static final int InvalidImplicationSubj = or(IMPL);
+    public static final int InvalidImplicationSubj = or(IMPL);
     public static TermBuilder terms =
             //HeapTermBuilder.the;
             new InterningTermBuilder();
@@ -782,7 +777,7 @@ public enum Op {
             case 1:
                 Term single = t[0];
                 if (single instanceof EllipsisMatch) {
-                    return differ(op, ((Subterms) single).arrayShared());
+                    return differ(op, single.arrayShared());
                 }
                 return single instanceof Ellipsislike ?
                         compoundExact(op, DTERNAL, single) :
@@ -937,217 +932,6 @@ public enum Op {
         return bits;
     }
 
-
-    /*@NotNull*/
-    static Term statement(/*@NotNull*/ Op op, int dt, final Term subject, final Term predicate) {
-
-        if (subject == Null || predicate == Null)
-            return Null;
-
-        boolean dtConcurrent = concurrent(dt);
-        if (dtConcurrent) {
-            if (subject.equals(predicate))
-                return True;
-
-
-        }
-
-        if (op == INH || op == SIM) {
-            if (isTrueOrFalse(subject)) {
-
-                return Null;
-            }
-            if (op == SIM && isTrueOrFalse(predicate)) {
-
-
-                return Null;
-            }
-        }
-
-        if (op == IMPL) {
-
-
-            if (subject == True)
-                return predicate;
-            if (subject == False)
-                return Null;
-
-            if (predicate instanceof Bool)
-                return Null;
-
-
-            if (predicate.op() == NEG) {
-
-                return IMPL.the(dt, subject, predicate.unneg()).neg();
-            }
-
-
-            if (subject.hasAny(InvalidImplicationSubj))
-                return Null;
-
-
-            switch (predicate.op()) {
-                case IMPL: {
-                    return IMPL.the(predicate.dt(), CONJ.the(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1));
-                }
-
-
-            }
-
-
-            if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
-
-                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
-                subject.eventsWhile((w, t) -> {
-                    se.add(PrimitiveTuples.pair(w, t));
-                    return true;
-                }, 0, true, true, false, 0);
-
-                FasterList<LongObjectPair<Term>> pe = new FasterList(4);
-                int pre = subject.dtRange();
-                boolean dtNotDternal = dt != DTERNAL;
-                int edt = pre + (dtNotDternal ? dt : 0);
-
-                final boolean[] peChange = {false};
-
-
-                boolean contradiction = !predicate.eventsWhile((w, t) -> {
-                    LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
-                    if (se.contains(x)) {
-
-                        peChange[0] = true;
-                    } else if (se.contains(pair(w, t.neg()))) {
-                        return false;
-                    } else {
-                        pe.add(x);
-                    }
-                    return true;
-                }, edt, true, true, false, 0);
-
-                if (contradiction)
-                    return False;
-
-
-                if ((dt == DTERNAL || dt == 0)) {
-                    for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
-                        LongObjectPair<Term> pex = pi.next();
-                        Term pext = pex.getTwo();
-                        if (pext.op() == CONJ) {
-                            int pdt = pext.dt();
-                            if (pdt == DTERNAL || pdt == 0) {
-                                long at = pex.getOne();
-
-                                RoaringBitmap pextRemovals = null;
-                                Subterms subPexts = pext.subterms();
-                                int subPextsN = subPexts.subs();
-
-                                for (ListIterator<LongObjectPair<Term>> si = se.listIterator(); si.hasNext(); ) {
-                                    LongObjectPair<Term> sse = si.next();
-                                    if (sse.getOne() == at) {
-
-
-                                        Term sset = sse.getTwo();
-
-                                        for (int i = 0; i < subPextsN; i++) {
-                                            Term subPext = subPexts.sub(i);
-                                            Term merge = CONJ.the(dt, new Term[]{sset, subPext});
-                                            if (merge == Null) return Null;
-                                            else if (merge == False) {
-
-                                                return False;
-                                            } else if (merge.equals(sset)) {
-
-                                                if (pextRemovals == null)
-                                                    pextRemovals = new RoaringBitmap();
-                                                pextRemovals.add(i);
-                                            } else {
-
-                                            }
-                                        }
-                                    }
-                                }
-                                if (pextRemovals != null) {
-                                    if (pextRemovals.getCardinality() == subPextsN) {
-
-                                        pi.remove();
-                                    } else {
-                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
-                                    }
-                                    peChange[0] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                if (pe.isEmpty())
-                    return True;
-
-
-                if (peChange[0]) {
-
-                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
-                    Term newPredicate;
-                    if (pe.size() == 1) {
-                        newPredicate = pe.getOnly().getTwo();
-                    } else if (predicate.dt() == DTERNAL) {
-
-                        Conj c = new Conj();
-                        for (int i = 0, peSize = pe.size(); i < peSize; i++) {
-                            if (!c.add(ETERNAL, pe.get(i).getTwo()))
-                                break;
-                        }
-                        newPredicate = c.term();
-                    } else {
-                        newPredicate = Conj.conj(pe);
-                    }
-
-                    return IMPL.the(ndt, new Term[]{subject, newPredicate});
-                }
-
-
-            }
-
-
-        }
-
-
-        if ((dtConcurrent || op != IMPL) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
-
-            Predicate<Term> delim = (op == IMPL) ?
-                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
-
-
-            if ((containEachOther(subject, predicate, delim))) {
-
-                return Null;
-            }
-            boolean sa = subject instanceof AliasConcept.AliasAtom;
-            if (sa) {
-                Term sd = ((AliasConcept.AliasAtom) subject).target;
-                if (sd.equals(predicate) || containEachOther(sd, predicate, delim))
-                    return Null;
-            }
-            boolean pa = predicate instanceof AliasConcept.AliasAtom;
-            if (pa) {
-                Term pd = ((AliasConcept.AliasAtom) predicate).target;
-                if (pd.equals(subject) || containEachOther(pd, subject, delim))
-                    return Null;
-            }
-            if (sa && pa) {
-                if (containEachOther(((AliasConcept.AliasAtom) subject).target, ((AliasConcept.AliasAtom) predicate).target, delim))
-                    return Null;
-            }
-
-        }
-
-
-        return op == SIM && subject.compareTo(predicate) > 0 ?
-                compoundExact(op, dt, predicate, subject) :
-                compoundExact(op, dt, subject, predicate);
-    }
-
     public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
         int xv = x.volume();
         int yv = y.volume();
@@ -1216,7 +1000,7 @@ public enum Op {
 
                 Term single = t[0];
                 if (single instanceof EllipsisMatch) {
-                    return intersect(((Subterms) single).arrayShared(), intersection, setUnion, setIntersection);
+                    return intersect(single.arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
                         compoundExact(intersection, DTERNAL, single) :

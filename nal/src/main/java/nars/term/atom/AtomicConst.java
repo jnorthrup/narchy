@@ -27,7 +27,7 @@ public abstract class AtomicConst implements Atomic {
         this(bytes(op, s));
     }
 
-    private static byte[] bytes(Op op, String str) {
+    protected static byte[] bytes(Op op, String str) {
         return bytes(op.id, str);
     }
 

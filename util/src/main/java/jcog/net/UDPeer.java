@@ -7,6 +7,7 @@ import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
 import jcog.bag.Bag;
+import jcog.bag.Sampler;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.byt.DynBytes;
@@ -39,6 +40,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static jcog.net.UDPeer.Command.*;
 import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
@@ -263,11 +265,11 @@ public class UDPeer extends UDP {
             byte[] bytes = o.array();
 
             final int[] remain = {Math.round(them.size() * pri)};
-            them.sample(rng, (Bag.BagCursor<UDProfile>)((to) -> {
+            them.sample(rng, (Function<UDProfile, Sampler.SampleReaction>)((to) -> {
                 if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/ ) {
                     outBytes(bytes, to.addr);
                 }
-                return ((remain[0]--) > 0) ? Bag.BagSample.Next : Bag.BagSample.Stop;
+                return ((remain[0]--) > 0) ? Sampler.SampleReaction.Next : Sampler.SampleReaction.Stop;
             }));
             return remain[0];
 

@@ -32,10 +32,6 @@ public class ByteKey {
         return hash == that.hash && Arrays.equals(key, that.key);
     }
 
-    protected final ByteKeyInternal intern(Object result, float pri) {
-        return new ByteKeyInternal<>(key, hash, result, pri);
-    }
-
     @Override
     public final int hashCode() {
         return hash;

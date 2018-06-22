@@ -162,31 +162,13 @@ public class IO {
     public static void writeEvidence(DataOutput out, long[] evi) throws IOException {
         int evil = evi.length;
         out.writeByte(evil);
-        for (long anEvi : evi)
+        for (long anEvi: evi)
             out.writeLong(anEvi);
     }
 
 
     public static Atomic readVariable(DataInput in, /*@NotNull*/ Op o) throws IOException {
         return $.v(o, in.readByte());
-    }
-
-
-    static Atomic readAtomic(DataInput in, /*@NotNull*/ Op o, byte subType) throws IOException {
-
-        switch (o) {
-
-            case INT:
-
-            case ATOM: {
-
-            }
-            default:
-                throw new UnsupportedEncodingException();
-
-
-        }
-
     }
 
 
@@ -204,6 +186,18 @@ public class IO {
                 case VAR_PATTERN:
                 case VAR_QUERY:
                     return readVariable(in, o);
+                case BOOL:
+                    byte code = in.readByte();
+                    switch (code) {
+                        case -1:
+                            return Null;
+                        case 0:
+                            return False;
+                        case 1:
+                            return True;
+                        default:
+                            throw new UnsupportedEncodingException();
+                    }
                 case ATOM:
                     switch (subType(opByte)) {
                         case 0:
@@ -346,7 +340,7 @@ public class IO {
     /**
      * WARNING
      */
-    public static Task taskFromBytes(byte[] b) throws IOException {
+    public static Task bytesToTask(byte[] b) throws IOException {
         return IO.readTask(input(b));
     }
 
@@ -354,7 +348,7 @@ public class IO {
      * WARNING
      */
     @Nullable
-    public static Term termFromBytes(byte[] b) {
+    public static Term bytesToTerm(byte[] b) {
         try {
             return IO.readTerm(input(b));
         } catch (IOException e) {
@@ -625,7 +619,7 @@ public class IO {
             p.append(Op.COMPOUND_TERM_OPENER);
 
             int n = 0;
-            for (Term t : xt) {
+            for (Term t: xt) {
                 if (n != 0) {
                     p.append(Op.ARGUMENT_SEPARATOR);
                     /*if (pretty)

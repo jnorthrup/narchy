@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * proxies to a delegate bag
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
  */
 public class ProxyBag<X,Y> implements Bag<X,Y> {
 
-    Bag<X,Y> bag;
+    protected Bag<X,Y> bag;
 
     public ProxyBag(Bag<X, Y> delegate) {
         set(delegate);
@@ -76,11 +77,11 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
 
-    @NotNull
+
     @Override
-    public Iterable<Y> sample(Random rng, Bag.BagCursor<? super Y> each) {
+    public void sample(Random rng, Function<? super Y, SampleReaction> each) {
         bag.sample(rng, each);
-        return this;
+
     }
 
     @Override

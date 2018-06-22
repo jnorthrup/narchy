@@ -31,8 +31,8 @@ public class Gradius extends NAgentX {
         g.updateMS = 20;
 
 
-        int dx = 2, dy = 2;
-        int px = 12, py = 8;
+        int dx = 3, dy = 2;
+        int px = 12, py = 12;
 
         assert(px%dx==0 && py%dy ==0);
         for (int i = 0; i < dx; i++)
@@ -82,6 +82,10 @@ public class Gradius extends NAgentX {
 
         actionUnipolar($.prop(nar.self(), $.the("awake")), (a)->{
             nar.activateConceptRate.set(Util.lerp(a, 0.1f, 1f));
+            return a;
+        });
+        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
+            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.1f)); //inverse forget rate
             return a;
         });
 

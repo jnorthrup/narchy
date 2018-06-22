@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -613,17 +614,17 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
     }
 
     @Override
-    public HijackBag2<K, V> sample(/*@NotNull*/ Random random, BagCursor<? super V> each) {
+    public void sample(/*@NotNull*/ Random random, Function<? super V, SampleReaction> each) {
         final int s = size();
         if (s <= 0)
-            return this;
+            return ;
 
         restart:
         while (true) {
             final AtomicReferenceArray<V> map = this.map;
             int c = map.length();
             if (c == 0)
-                return this;
+                return ;
 
             int i = random.nextInt(c);
 
@@ -688,7 +689,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
                     if (v == null)
                         continue; 
 
-                    BagSample next = each.next(v);
+                    SampleReaction next = each.apply(v);
                     if (next.remove) {
                         if (map.compareAndSet(i, v, null)) {
                             
@@ -726,7 +727,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
                 }
             }
 
-            return this;
+            return ;
         }
     }
 

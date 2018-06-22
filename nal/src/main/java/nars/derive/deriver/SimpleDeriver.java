@@ -1,6 +1,7 @@
 package nars.derive.deriver;
 
 import jcog.bag.Bag;
+import jcog.bag.Sampler;
 import jcog.list.FasterList;
 import jcog.math.IntRange;
 import jcog.pri.PLink;
@@ -178,7 +179,7 @@ public class SimpleDeriver extends Deriver {
 
         @Override
         public Supplier<PriReference<Term>> termlinks() {
-            Bag<Term, PriReference<Term>> ct = c.termlinks();
+            Sampler<PriReference<Term>> ct = c.termlinks();
             return () -> ct.sample(rng);
         }
     };

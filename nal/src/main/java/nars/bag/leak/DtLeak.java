@@ -1,6 +1,7 @@
 package nars.bag.leak;
 
 import jcog.bag.Bag;
+import jcog.bag.Sampler;
 import nars.NAR;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +73,7 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
         Random rng = random();
 
-        bag.sample(rng, (Bag.BagCursor<Y>) ((v) -> {
+        bag.sample(rng, ((Y v) -> {
 
             float cost = receive(v);
             budget[0] -= cost;
@@ -81,10 +82,10 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
             if (remain < 1) {
                 if (remain <= 0 || rng.nextFloat() > remain)
-                    return Bag.BagSample.RemoveAndStop;
+                    return Sampler.SampleReaction.RemoveAndStop;
             }
 
-            return !full() ? Bag.BagSample.Remove : Bag.BagSample.RemoveAndStop;
+            return !full() ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
         }));
 
         this.lastBudget = Math.min(0, budget[0]); 

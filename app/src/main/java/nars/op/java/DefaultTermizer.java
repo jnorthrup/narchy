@@ -5,6 +5,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
+import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
@@ -17,9 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
-import static nars.Op.INT;
-import static nars.Op.PROD;
-import static nars.Op.SETe;
+import static nars.Op.*;
 
 
 /**
@@ -28,70 +27,70 @@ import static nars.Op.SETe;
 public class DefaultTermizer implements Termizer {
 
 
-
-
     public static final Variable INSTANCE_VAR = $.varDep("instance");
 
 
-
-
-
-    final Map<Term, Object> termToObj = new CustomConcurrentHashMap<>(STRONG, EQUALS, STRONG /*SOFT*/, IDENTITY, 64); 
+    final Map<Term, Object> termToObj = new CustomConcurrentHashMap<>(STRONG, EQUALS, STRONG /*SOFT*/, IDENTITY, 64);
     final Map<Object, Term> objToTerm = new CustomConcurrentHashMap<>(STRONG /*SOFT*/, IDENTITY, STRONG, EQUALS, 64); 
 
     /*final HashMap<Term, Object> instances = new HashMap();
     final HashMap<Object, Term> objects = new HashMap();*/
 
     static final Set<Class> classInPackageExclusions = ImmutableSet.of(
-        Class.class,
-        Object.class,
+            Class.class,
+            Object.class,
 
-        
-        Float.class,
-        Double.class,
-        Boolean.class,
-        Character.class,
-        Long.class,
-        Integer.class,
-        Short.class,
-        Byte.class,
-        Class.class
+
+            Float.class,
+            Double.class,
+            Boolean.class,
+            Character.class,
+            Long.class,
+            Integer.class,
+            Short.class,
+            Byte.class,
+            Class.class
     );
 
     public DefaultTermizer() {
-        termToObj.put($.the("true") /* Op.True */, true);
-        termToObj.put($.the("false") /* Op.False */, false);
-        objToTerm.put(true, TRUE);
-        objToTerm.put(false, FALSE);
+        termToObj.put(Op.True, true);
+        termToObj.put(Op.False, false);
+        objToTerm.put(true, Op.True);
+        objToTerm.put(false, Op.False);
     }
 
     public void put(Term x, Object y) {
-        assert(x!=y);
-        
-            termToObj.put(x, y);
-            objToTerm.put(y, x);
-        
-    }
-    public void remove(Term x) {
-        
-            Object y = termToObj.remove(x);
-            objToTerm.remove(y);
-        
-    }
-    public void remove(Object x) {
-        
-            Term y = objToTerm.remove(x);
-            termToObj.remove(y);
-        
+        assert (x != y);
+
+        termToObj.put(x, y);
+        objToTerm.put(y, x);
+
     }
 
-    /** dereference a term to an object (but do not un-termize) */
+    public void remove(Term x) {
+
+        Object y = termToObj.remove(x);
+        objToTerm.remove(y);
+
+    }
+
+    public void remove(Object x) {
+
+        Term y = objToTerm.remove(x);
+        termToObj.remove(y);
+
+    }
+
+    /**
+     * dereference a term to an object (but do not un-termize)
+     */
     @Nullable
-    @Override public Object object(Term t) {
+    @Override
+    public Object object(Term t) {
 
         if (t == NULL) return null;
-        if (t instanceof Int && t.op()==INT)
-            return ((Int)t).id;
+        if (t instanceof Int && t.op() == INT)
+            return ((Int) t).id;
 
         Object x = termToObj.get(t);
         if (x == null)
@@ -108,70 +107,45 @@ public class DefaultTermizer implements Termizer {
             return NULL;
 
 
-        if (o instanceof Term) return (Term)o;
+        if (o instanceof Term) return (Term) o;
 
         if (o instanceof String)
             return $.quote(o);
 
         if (o instanceof Boolean)
-            return ((Boolean) o) ? Termizer.TRUE : Termizer.FALSE ;
+            return ((Boolean) o) ? Op.True : Op.False;
 
         if (o instanceof Character)
             return $.quote(String.valueOf(o));
 
         if (o instanceof Number)
-            return number((Number)o);
+            return number((Number) o);
 
         if (o instanceof Class) {
             Class oc = (Class) o;
             return classTerm(oc);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
         }
 
         if (o instanceof int[]) {
-            return $.p( (int[])o );
+            return $.p((int[]) o);
         }
 
-        
+
         if (o instanceof Object[]) {
             List<Term> arg = Arrays.stream((Object[]) o).map(this::term).collect(Collectors.toList());
             if (arg.isEmpty()) return EMPTY;
-            return $.p( arg );
+            return $.p(arg);
         }
 
         if (o instanceof List) {
             if (((Collection) o).isEmpty()) return EMPTY;
 
-            
-
 
             Collection c = (Collection) o;
             List<Term> arg = $.newArrayList(c.size());
-            for (Object x : c) {
+            for (Object x: c) {
                 Term y = term(x);
                 arg.add(y);
             }
@@ -198,9 +172,9 @@ public class DefaultTermizer implements Termizer {
                 Term tv = obj2term(v);
                 Term tk = obj2term(k);
 
-                if ((tv != null) && (tk!=null)) {
+                if ((tv != null) && (tk != null)) {
                     components.add(
-                        $.inh(tv, tk)
+                            $.inh(tv, tk)
                     );
                 }
             });
@@ -209,33 +183,7 @@ public class DefaultTermizer implements Termizer {
         }
 
 
-
-
-
-
-
         return instanceTerm(o);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -243,10 +191,6 @@ public class DefaultTermizer implements Termizer {
     protected static Term number(Number o) {
         return $.the(o);
     }
-
-
-
-
 
 
     private boolean reportClassInPackage(@NotNull Class oc) {
@@ -259,11 +203,12 @@ public class DefaultTermizer implements Termizer {
     }
 
 
-    /** (#arg1, #arg2, ...), #returnVar */
+    /**
+     * (#arg1, #arg2, ...), #returnVar
+     */
     @NotNull
     private Term[] getMethodArgVariables(@NotNull Method m) {
 
-        
 
         String varPrefix = m.getName() + '_';
         int n = m.getParameterCount();
@@ -275,7 +220,7 @@ public class DefaultTermizer implements Termizer {
         } : new Term[]{
                 INSTANCE_VAR,
                 args,
-                $.varDep(varPrefix + "_return") 
+                $.varDep(varPrefix + "_return")
         };
     }
 
@@ -289,25 +234,11 @@ public class DefaultTermizer implements Termizer {
     }
 
     public static Term classTerm(Class c) {
-        
+
 
         return Atomic.the(c.getSimpleName());
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     }
 
     public static Term termClassInPackage(@NotNull Class c) {
@@ -316,31 +247,20 @@ public class DefaultTermizer implements Termizer {
 
     @NotNull
     public static Term termPackage(@NotNull Package p) {
-        
-        
+
+
         String n = p.getName();
-        
+
         String[] path = n.split("\\.");
         return $.p(path);
 
-        
+
     }
 
-    /** generic instance term representation */
+    /**
+     * generic instance term representation
+     */
     public static Term instanceTerm(Object o) {
-        
-        
-
-        
-
-
-
-
-        
-
-
-
-
 
 
         return $.the(System.identityHashCode(o), 36);
@@ -348,7 +268,7 @@ public class DefaultTermizer implements Termizer {
 
     @Nullable
     protected Term classInPackage(Term classs, @Deprecated Term packagge) {
-        
+
         return null;
     }
 
@@ -360,62 +280,35 @@ public class DefaultTermizer implements Termizer {
     @Nullable
     public Term term(@Nullable Object o) {
         if (o == null) return NULL;
-        if (o instanceof Boolean) {
-            if (((Boolean) o)) return TRUE;
-            else return FALSE;
+        else if (o instanceof Boolean) {
+            return (Boolean) o ? Op.True : Op.False;
         } else if (o instanceof Number) {
-            if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long)o) < Integer.MAX_VALUE-1) )  {
+            if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long) o) < Integer.MAX_VALUE - 1)) {
                 return Int.the(((Number) o).intValue());
             } else if (o instanceof Float || o instanceof Double) {
                 return $.the(((Number) o).doubleValue());
             } else if (o instanceof Long /* beyond an Int's capacity */) {
-                return $.the(Long.toString((Long)o)); 
+                return $.the(Long.toString((Long) o));
             } else {
                 throw new TODO("support: " + o + " (" + o.getClass() + ")");
             }
         } else if (o instanceof String) {
-            return Atomic.the((String)o);
+            return Atomic.the((String) o);
         }
-
-        
-
-
 
         Term y = obj2termCached(o);
-        if (y != null) {
+        if (y != null)
             return y;
-        }
 
-        if (o instanceof Term) {
-            return (Term)o;
-        }
-        if (o instanceof Object[]) {
-            return PROD.the(terms((Object[])o));
-        }
+        if (o instanceof Term)
+            return (Term) o;
+
+        if (o instanceof Object[])
+            return PROD.the(terms((Object[]) o));
 
         return null;
 
 
-        
-        
-
-
-
-        
-
-
-        
-
-
-        
-
-
-
-
-
-
-
-        
     }
 
     @Nullable
@@ -423,9 +316,9 @@ public class DefaultTermizer implements Termizer {
 
         if (o == null) return NULL;
         if (o instanceof Term)
-            return ((Term)o);
+            return ((Term) o);
         if (o instanceof Integer) {
-            return Int.the((Integer)o);
+            return Int.the((Integer) o);
         }
 
 
@@ -434,7 +327,7 @@ public class DefaultTermizer implements Termizer {
             oe = objToTerm.get(o);
             if (oe == null) {
                 Term ob = obj2term(o);
-                if (ob!=null)
+                if (ob != null)
                     oe = objToTerm.put(o, ob);
                 else
                     return $.varDep("unknown_" + System.identityHashCode(o));

@@ -3,12 +3,15 @@ package nars.util.term.builder;
 import com.google.common.collect.Iterators;
 import jcog.io.Huffman;
 import jcog.pri.PriProxy;
+import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -23,7 +26,7 @@ class InterningTermBuilderTest {
         Term pab = t.compound(PROD, a, b);
         assertEquals( "(a,b)", pab.toString());
 
-        HijackTermCache prodCache = t.termCache[PROD.id];
+        HijackTermCache prodCache = t.terms[PROD.id];
 
         PriProxy<InternedCompound, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
         assertEquals(pab, pabEntry.get());
@@ -37,5 +40,19 @@ class InterningTermBuilderTest {
 
         Huffman h = prodCache.buildCodec();
 
+    }
+
+    @Test public void testImplicationComplexEndToEnd() {
+        //InterningTermBuilder t = new InterningTermBuilder();
+        assert(Op.terms instanceof InterningTermBuilder);
+
+        InterningTermBuilder i = (InterningTermBuilder) Op.terms;
+        System.out.println("impl/conj:");
+        i.terms[Op.IMPL.id].print();
+        i.terms[CONJ.id].print();
+        IMPL.the(a, CONJ.the(b.neg(), CONJ.the(a, 1, CONJ.the(b.neg(), b)).neg()));
+        System.out.println("impl/conj:");
+        i.terms[Op.IMPL.id].print();
+        i.terms[CONJ.id].print();
     }
 }

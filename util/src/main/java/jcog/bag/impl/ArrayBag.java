@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -361,7 +362,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
 
     @Override
-    public Iterable<Y> sample(Random rng, BagCursor<? super Y> each) {
+    public void sample(Random rng, Function<? super Y, SampleReaction> each) {
 
         newItemsArray:
         while (true) {
@@ -385,19 +386,19 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                         remove(key(y));
                     } else {
 
-                        BagSample next = each.next(y);
+                        SampleReaction next = each.apply(y);
 
                         if (next.remove)
                             remove(key(y));
 
                         if (next.stop)
-                            return this;
+                            return;
                     }
                 }
 
             }
 
-            return this;
+            return;
         }
 
     }

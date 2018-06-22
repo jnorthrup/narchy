@@ -1,6 +1,7 @@
 package nars.op;
 
 import jcog.bag.Bag;
+import jcog.bag.Sampler;
 import jcog.bag.impl.CurveBag;
 import jcog.data.ArrayHashRing;
 import jcog.data.ArrayHashSet;
@@ -230,7 +231,7 @@ public class Spider extends Causable {
             return ((PriReference<Term>) x).get();
         }
 
-        protected Bag bag(Concept c) {
+        protected Sampler bag(Concept c) {
             return c.termlinks();
         }
     }
@@ -245,7 +246,7 @@ public class Spider extends Causable {
             return ((TaskLink) x).term();
         }
 
-        protected Bag bag(Concept c) {
+        protected Sampler bag(Concept c) {
             return c.tasklinks();
         }
 

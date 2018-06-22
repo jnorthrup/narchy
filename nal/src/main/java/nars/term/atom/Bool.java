@@ -18,11 +18,11 @@ import static nars.Op.BOOL;
  */
 abstract public class Bool extends AtomicConst implements The {
 
-    private final String id;
+    private final String label;
 
-    protected Bool(String id) {
-        super(BOOL, id);
-        this.id = id;
+    protected Bool(String label, byte code) {
+        super(new byte[] { BOOL.id, code } );
+        this.label = label;
     }
 
     @Override
@@ -41,7 +41,7 @@ abstract public class Bool extends AtomicConst implements The {
 
     @Override
     public String toString() {
-        return id;
+        return label;
     }
 
     @Override
@@ -72,10 +72,5 @@ abstract public class Bool extends AtomicConst implements The {
         //return this;
         throw new UnsupportedOperationException();
     }
-
-
-
-
-
 
 }
