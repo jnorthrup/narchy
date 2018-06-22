@@ -104,8 +104,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
 
         ObjectByteHashMap<Term> m = new ObjectByteHashMap<>(4);
-        for (int path = 0; path < pSize; path++) {
-            ByteList p = paths.get(path);
+        for (ByteList p: paths) {
             Term t = null;
             int pathLength = p.size();
             for (int i = -1; i < pathLength - 1 /* dont include the selected term itself */; i++) {

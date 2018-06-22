@@ -8,6 +8,7 @@ import nars.concept.Operator;
 import nars.derive.Derivation;
 import nars.derive.step.IntroVars;
 import nars.derive.step.Occurrify;
+import nars.derive.step.Termify;
 import nars.derive.step.Truthify;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
@@ -18,7 +19,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.term.match.TermMatchPred;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
@@ -64,8 +65,8 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
     private final MutableSet<MatchConstraint> constraints;
     protected final ImmutableSet<MatchConstraint> CONSTRAINTS;
-    private final MutableSet<PrediTerm> pre;
-    protected final PrediTerm[] PRE;
+    private final MutableSet<PREDICATE> pre;
+    protected final PREDICATE[] PRE;
     protected final Occurrify.TaskTimeMerge time;
     protected final boolean varIntro;
     protected final byte taskPunc;
@@ -81,6 +82,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
     private static final PremisePatternIndex INDEX = new PremisePatternIndex();
+    protected final Termify termify;
 
     private PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
         super(
@@ -512,7 +514,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
         constraints.forEach(c -> {
-            PrediTerm<Derivation> p = c.preFilter(taskPattern, beliefPattern);
+            PREDICATE<Derivation> p = c.preFilter(taskPattern, beliefPattern);
             if (p != null) {
                 pre.add(p);
             }
@@ -563,7 +565,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
         int rules = pre.size();
-        PrediTerm[] PRE = pre.toArray(new PrediTerm[rules + 1 /* extra to be filled in later stage */]);
+        PREDICATE[] PRE = pre.toArray(new PREDICATE[rules + 1 /* extra to be filled in later stage */]);
         ArrayUtils.sort(PRE, 0, rules-1, (x)-> -x.cost());
         assert(PRE[PRE.length-1] == null);
         //Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
@@ -573,6 +575,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
 //            PRE[i] = INDEX.intern(PRE[i]);
 //        }
+        this.termify = new Termify(concPattern, truthify, time);
 
         this.PRE = PRE;
 
@@ -591,6 +594,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     protected PremiseDeriverSource(PremiseDeriverSource raw, PremisePatternIndex index) {
         super((index.rule(raw.ref)));
 
+        this.termify = raw.termify;
         this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
         this.CONSTRAINTS = null;
         this.source = raw.source;

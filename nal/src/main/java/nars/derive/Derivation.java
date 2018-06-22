@@ -19,7 +19,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
@@ -149,7 +149,7 @@ public class Derivation extends PreDerivation {
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
-    public PrediTerm<Derivation> forEachMatch;
+    public PREDICATE<Derivation> forEachMatch;
     /**
      * current NAR time, set at beginning of derivation
      */

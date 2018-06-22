@@ -1,7 +1,6 @@
 package nars;
 
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.primitives.Longs;
 import jcog.Service;
@@ -1468,15 +1467,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
 
         @Override
-        public void input(ITask[] x) {
+        public void input(Object[] x) {
             switch (x.length) {
                 case 0:
                     return;
                 case 1:
-                    input(x[0]);
+                    input((ITask)x[0]);
                     break;
                 default:
-                    NAR.this.input(Iterables.filter(ArrayIterator.iterable(x), this::process));
+                    for (Object xx : x) {
+                        if (process(xx))
+                            input((ITask)xx);
+                    }
+                    //NAR.this.input(Iterables.filter(ArrayIterator.iterable(x), this::process));
                     break;
             }
         }
@@ -1487,7 +1490,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             NAR.this.input((Iterable) (() -> Iterators.filter(xx, this::process)));
         }
 
-        protected boolean process(ITask x) {
+        protected boolean process(Object x) {
             if (x instanceof NALTask) {
                 NALTask t = (NALTask) x;
                 int tcl = t.cause.length;

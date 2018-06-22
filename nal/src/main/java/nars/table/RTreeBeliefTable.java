@@ -23,6 +23,7 @@ import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
@@ -203,11 +204,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
     static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur, long tableDur) {
-        return (Task x) -> {
-
-            return (!x.isAfter(now) ? presentAndFutureBoost : 1f) *
-                    value(x, when, when, tableDur);
-        };
+        return (Task x) -> (!x.isAfter(now) ? presentAndFutureBoost : 1f) *
+                value(x, when, when, tableDur);
     }
 
     abstract protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur);
@@ -374,9 +372,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     Task a, b;
                     //merge, eternalize
                     if (nRemoved > 2) {
-                        Top2<Task> toEternalize = new Top2<>(x -> x.evi());
-                        for (Task x: removed)
-                            toEternalize.add(x);
+                        Top2<Task> toEternalize = new Top2<>(Truthed::evi);
+                        toEternalize.addAll(removed);
                         a = toEternalize.a;
                         b = toEternalize.b;
                     } else {

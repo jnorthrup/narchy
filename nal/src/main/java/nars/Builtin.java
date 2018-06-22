@@ -634,12 +634,8 @@ public class Builtin {
     static void registerOperators(NAR nar) {
 
 
-        nar.onOp(Op.BELIEF_TERM, (x, nn) -> {
-                    return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> {
-                        return new NALTask(term, BELIEF, truth,
-                                nn.time(), ETERNAL, ETERNAL, nn.evidence()).pri(nn.priDefault(BELIEF));
-                    });
-                }
+        nar.onOp(Op.BELIEF_TERM, (x, nn) -> Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> new NALTask(term, BELIEF, truth,
+                    nn.time(), ETERNAL, ETERNAL, nn.evidence()).pri(nn.priDefault(BELIEF)))
         );
 
 
@@ -692,27 +688,23 @@ public class Builtin {
 //            });
 //        });
 
-        nar.onOp2("memory2txtfile", (id, filePath, nn) -> {
-            nn.runLater(() -> {
-                try {
-                    PrintStream p = new PrintStream(new FileOutputStream($.unquote(filePath)));
-                    User.the().get(id.toString(), (byte[] x) -> {
-                        try {
-                            IO.readTasks(x, (Task t) -> {
-                                p.println(t.toString(true));
-                            });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    p.close();
+        nar.onOp2("memory2txtfile", (id, filePath, nn) -> nn.runLater(() -> {
+            try {
+                PrintStream p = new PrintStream(new FileOutputStream($.unquote(filePath)));
+                User.the().get(id.toString(), (byte[] x) -> {
+                    try {
+                        IO.readTasks(x, (Task t) -> p.println(t.toString(true)));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                p.close();
 
-                    nn.logger.info("saved {} to {}", id, filePath);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            });
-        });
+                nn.logger.info("saved {} to {}", id, filePath);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
 

@@ -21,7 +21,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.compound.LightCompound;
 import nars.term.control.LambdaPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.term.obj.JsonTerm;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
@@ -637,15 +637,15 @@ public enum $ {
         return (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
     }
 
-    public static <X> PrediTerm<X> IF(Term t, Predicate<X> test) {
+    public static <X> PREDICATE<X> IF(Term t, Predicate<X> test) {
         return new LambdaPred<>(t, test);
     }
 
-    public static <X> PrediTerm<X> AND(PrediTerm<X> a, PrediTerm<X> b) {
+    public static <X> PREDICATE<X> AND(PREDICATE<X> a, PREDICATE<X> b) {
         return new LambdaPred<>(CONJ.the(a, b), (X x) -> a.test(x) && b.test(x));
     }
 
-    public static <X> PrediTerm<X> OR(PrediTerm<X> a, PrediTerm<X> b) {
+    public static <X> PREDICATE<X> OR(PREDICATE<X> a, PREDICATE<X> b) {
         return new LambdaPred<>($.disj(a, b), (X x) -> a.test(x) || b.test(x));
     }
 
@@ -682,12 +682,15 @@ public enum $ {
         if (x.subs() == 0) throw new UnsupportedOperationException();
         return new LightCompound(Op.SETe, x);
     }
+    public static Term sFast(Term[] x) {
+        return sFast(true, x);
+    }
 
     public static Term sFast(SortedSet<Term> x) {
         return sFast(false, x.toArray(EmptyTermArray));
     }
 
-    public static Term sFast(boolean sort, Term... x) {
+    public static Term sFast(boolean sort, Term[] x) {
         if (x.length == 0) throw new UnsupportedOperationException();
         if (x.length > 1 && sort)
             x = Terms.sorted(x);

@@ -89,21 +89,20 @@ public abstract class ChainClustering extends DurService {
         int current = -1;
         int nTasks = sortedbyCentroid.size();
         VLink<Task> x = null;
-        for (int i = 0; i < nTasks; i++) {
-            VLink<Task> y = sortedbyCentroid.get(i);
-            if (y == null)
-                continue;
-            if (y.centroid!=current) {
-                current = y.centroid;
-            } else {
+          for (VLink<Task> y: sortedbyCentroid) {
+              if (y == null)
+                  continue;
+              if (y.centroid != current) {
+                  current = y.centroid;
+              } else {
 
-                Task tx = x.id;
-                Task ty = y.id;
-                link(tx, ty);
+                  Task tx = x.id;
+                  Task ty = y.id;
+                  link(tx, ty);
 
-            }
-            x = y;
-        }
+              }
+              x = y;
+          }
     }
 
     abstract protected void link(Task tx, Task ty);

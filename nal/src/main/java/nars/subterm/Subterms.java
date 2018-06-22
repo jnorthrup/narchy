@@ -40,8 +40,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     static int hash(List<Term> term) {
         int n = term.size();
         int h = 1;
-        for (int i = 0; i < n; i++)
-            h = Util.hashCombine(h, term.get(i));
+        for (Term aTerm: term) h = Util.hashCombine(h, aTerm);
         return h;
     }
 

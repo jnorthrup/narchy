@@ -3,7 +3,7 @@ package nars.unify.constraint;
 import nars.$;
 import nars.derive.Derivation;
 import nars.term.Term;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ abstract public class RelationConstraint extends MatchConstraint {
     }
 
     @Override
-    public @Nullable PrediTerm<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
+    public @Nullable PREDICATE<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
         
         if (x.equals(taskPattern) && y.equals(beliefPattern)) {
             return new ConstraintAsPredicate(this, true);

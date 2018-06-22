@@ -81,7 +81,7 @@ subprojects {
                 JavaVersion.VERSION_11
 
         options.encoding = 'UTF-8'
-        options.incremental = true // one flag, and things will get MUCH faster
+        options.incremental = false // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
         options.fork = true
     }
 

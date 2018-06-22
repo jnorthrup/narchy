@@ -5,7 +5,7 @@ import nars.derive.Derivation;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 
 import static nars.Op.*;
 
@@ -39,11 +39,11 @@ final public class TaskPunctuation extends AbstractPred<PreDerivation> {
         return COST;
     }
 
-    public static final PrediTerm<PreDerivation> Belief = new TaskPunctuation(BELIEF);
-    public static final PrediTerm<PreDerivation> Goal = new TaskPunctuation(GOAL);
+    public static final PREDICATE<PreDerivation> Belief = new TaskPunctuation(BELIEF);
+    public static final PREDICATE<PreDerivation> Goal = new TaskPunctuation(GOAL);
 
 
-    public static final PrediTerm<PreDerivation> BeliefOrGoal = new AbstractPred<PreDerivation>(INH.the($.quote(".!"), Derivation.Task)) {
+    public static final PREDICATE<PreDerivation> BeliefOrGoal = new AbstractPred<PreDerivation>(INH.the($.quote(".!"), Derivation.Task)) {
         @Override
         public boolean test(PreDerivation o) {
             byte c = o.taskPunc;
@@ -57,9 +57,9 @@ final public class TaskPunctuation extends AbstractPred<PreDerivation> {
     };
 
 
-    public static final PrediTerm<PreDerivation> Question = new TaskPunctuation(QUESTION);
+    public static final PREDICATE<PreDerivation> Question = new TaskPunctuation(QUESTION);
 
-    public static final PrediTerm<PreDerivation> Quest = new TaskPunctuation(QUEST);
+    public static final PREDICATE<PreDerivation> Quest = new TaskPunctuation(QUEST);
 
 
 }

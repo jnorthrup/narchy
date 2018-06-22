@@ -89,21 +89,13 @@ public class Tasklinks {
             
             
             int j = rng.nextInt(nTargets);
-            for (int i = 0; i < nTargets; i++) {
-
-
-
-
-
-
-
-
+            for (Concept target: targets) {
 
 
                 float change = overflow.subAtMost(headRoom);
 
                 TaskLink xx =
-                        
+
                         new TaskLink.GeneralTaskLink(tlSeed, pEach + change);
 
                 linkTask(xx, targets[j++].tasklinks(), overflow);

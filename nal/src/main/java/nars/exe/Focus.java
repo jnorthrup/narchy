@@ -480,9 +480,9 @@ public class Focus extends AtomicRoulette<Causable> {
                 val = new float[cc];
             }
 
-            for (int i = 0; i < cc; i++) {
-                causes.get(i)
-                        
+            for (Cause cause: causes) {
+                cause
+
                         .commitFast();
             }
 

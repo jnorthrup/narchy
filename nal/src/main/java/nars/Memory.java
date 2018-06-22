@@ -149,11 +149,8 @@ public class Memory {
         @Override
         public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
             if (x.equals(stdout)) {
-                return Stream.of((t) -> {
-                    t.forEach(tt ->
-                            System.out.println(tt) 
-                    );
-                });
+                return Stream.of((t) -> t.forEach(System.out::println
+                ));
             }
             return null;
         }

@@ -5,28 +5,28 @@ import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.step.Taskify;
 import nars.derive.step.Truthify;
-import nars.term.control.AndCondition;
+import nars.term.control.AND;
 import nars.unify.op.UnifyTerm;
 
-class DeriveAction extends AndCondition<Derivation> /*implements ThrottledAction<Derivation>*/ {
+class DeriveAction extends AND<Derivation> /*implements ThrottledAction<Derivation>*/ {
 
     public final Cause cause;
     private final Truthify truth;
 
-    private DeriveAction(AndCondition<Derivation> procedure, PremiseDeriverProto.RuleCause cause, Truthify t) {
+    private DeriveAction(AND<Derivation> procedure, PremiseDeriverProto.RuleCause cause, Truthify t) {
         super(procedure.cond);
         this.cause = cause;
         this.truth = t;
     }
 
-    static DeriveAction action(AndCondition<Derivation> POST) {
+    static DeriveAction action(AND<Derivation> POST) {
 
-        PremiseDeriverProto.RuleCause cause = ((Taskify) AndCondition.last(
+        PremiseDeriverProto.RuleCause cause = ((Taskify) AND.last(
                 ((UnifyTerm.UnifySubtermThenConclude)
-                AndCondition.last(POST)
+                AND.last(POST)
         ).eachMatch)).channel;
 
-        Truthify t = (Truthify) AndCondition.first(POST, x -> x instanceof Truthify);
+        Truthify t = (Truthify) AND.first(POST, x -> x instanceof Truthify);
         if (t == null)
             throw new NullPointerException();
 

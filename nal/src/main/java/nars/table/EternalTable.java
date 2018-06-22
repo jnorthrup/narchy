@@ -290,8 +290,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
         Truth newBeliefTruth = input.truth();
 
-        for (int i = 0; i < bsize; i++) {
-            Task x = (Task) list[i];
+        for (Object aList: list) {
+            Task x = (Task) aList;
 
             if (x == null)
                 break;

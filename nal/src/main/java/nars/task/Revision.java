@@ -455,12 +455,6 @@ public class Revision {
 
         float d = 0;
 
-        
-
-
-
-        
-
         boolean aSubsEqualsBSubs = aa.equals(bb);
         if (a.op() == CONJ && !aSubsEqualsBSubs) {
             
@@ -497,9 +491,9 @@ public class Revision {
                         if (!ad && !bd)
                             d += Math.abs(adt - bdt);
                         else if (adt == DTERNAL)
-                            d += 1 + Math.abs(bdt) / 2; //one is dternal the other is not, record at least some difference
+                            d += 1f + Math.abs(bdt) / 2f; //one is dternal the other is not, record at least some difference
                         else if (bdt == DTERNAL)
-                            d += 1 + Math.abs(adt) / 2; //one is dternal the other is not, record at least some difference
+                            d += 1f + Math.abs(adt) / 2f; //one is dternal the other is not, record at least some difference
                     }
                 }
 

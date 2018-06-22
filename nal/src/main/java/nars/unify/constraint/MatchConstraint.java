@@ -10,7 +10,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +38,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
 
     @Nullable
-    public PrediTerm<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
+    public PREDICATE<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
         return null;
     }
 
@@ -193,7 +193,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
                     return (cc.iterator().next());
                 } else {
                     MatchConstraint[] d = cc.toArray(new MatchConstraint[ccn]);
-                    Arrays.sort(d, PrediTerm.sortByCostIncreasing);
+                    Arrays.sort(d, PREDICATE.sortByCostIncreasing);
                     return new CompoundConstraint(d);
                 }
             });

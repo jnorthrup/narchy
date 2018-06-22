@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,9 +21,9 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
 
     protected final NAR nar;
     private final On on;
-    private PrediTerm<Term> term;
+    private PREDICATE<Term> term;
     
-    private PrediTerm<Byte> punctuation;
+    private PREDICATE<Byte> punctuation;
     
     
 
@@ -56,11 +56,11 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
         this.on = n.onTask(this);
     }
 
-    public void setTerm(PrediTerm<Term> term) {
+    public void setTerm(PREDICATE<Term> term) {
         this.term = term;
     }
 
-    public void setPunctuation(PrediTerm<Byte> punctuation) {
+    public void setPunctuation(PREDICATE<Byte> punctuation) {
         this.punctuation = punctuation;
     }
 

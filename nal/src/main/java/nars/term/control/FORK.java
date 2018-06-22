@@ -14,15 +14,14 @@ import java.util.function.Function;
  * <p>
  * TODO generify beyond only Derivation
  */
-public class Fork<X> extends AbstractPred<X> {
+public class FORK<X> extends AbstractPred<X> {
 
     /*@Stable*/
-    public final PrediTerm<X>[] branch;
+    public final PREDICATE<X>[] branch;
 
-    public Fork(PrediTerm<X>[] actions) {
+    public FORK(PREDICATE<X>[] actions) {
         super(
-            //HeapTermBuilder.the.compound(PROD, (Term[]) actions) /* doesnt force sorting. in some impl, the index order must remain intact */);
-            $.pFast(actions)
+                $.sFast(actions)
         );
         assert (actions.length > 0);
         this.branch = actions;
@@ -34,7 +33,7 @@ public class Fork<X> extends AbstractPred<X> {
     @Override
     public boolean test(X x) {
 
-        for (PrediTerm c : branch)
+        for (PREDICATE c: branch)
             c.test(x);
 
         return true;
@@ -46,51 +45,21 @@ public class Fork<X> extends AbstractPred<X> {
     }
 
     @Override
-    public PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
+    public PREDICATE<X> transform(Function<PREDICATE<X>, PREDICATE<X>> f) {
         throw new TODO();
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Nullable
-    public static <X> PrediTerm<X> fork(Collection<PrediTerm<X>> x, Function<PrediTerm[], PrediTerm<X>> builder) {
-        PrediTerm[] xx = x.toArray(PrediTerm.EmptyPrediTermArray);
+    public static <X> PREDICATE<X> fork(Collection<PREDICATE<X>> x, Function<PREDICATE<X>[], PREDICATE<X>> builder) {
+        PREDICATE<X>[] xx = x.toArray(PREDICATE.EMPTY_PREDICATE_ARRAY);
         Arrays.sort(xx);
         return fork(xx, builder);
     }
 
     @Nullable
-    public static <X> PrediTerm<X>  fork(PrediTerm[] n, Function<PrediTerm[], PrediTerm<X>> builder) {
+    public static <X> PREDICATE<X> fork(PREDICATE<X>[] n, Function<PREDICATE<X>[], PREDICATE<X>> builder) {
         switch (n.length) {
             case 0:
                 return null;
@@ -100,121 +69,6 @@ public class Fork<X> extends AbstractPred<X> {
                 return builder.apply(n);
         }
     }
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

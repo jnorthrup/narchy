@@ -14,15 +14,15 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * a term representing a predicate (boolean-returning) function of a state
+ * The PrediTerm - a term-identified predicate (boolean-returning) function of a state
  *
  * @param X the type of state that is relevant to implementations
  */
-public interface PrediTerm<X> extends Term, Predicate<X> {
+public interface PREDICATE<X> extends Term, Predicate<X> {
 
 
     /** suspect */
-    Comparator<PrediTerm> sortByCostIncreasing = (a, b) -> {
+    Comparator<PREDICATE> sortByCostIncreasing = (a, b) -> {
         if (a.equals(b)) return 0;
         float ac = a.cost();
         float bc = b.cost();
@@ -30,34 +30,34 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
         else if (ac < bc) return -1;
         else return a.compareTo(b);
     };
-    PrediTerm[] EmptyPrediTermArray = new PrediTerm[0];
+    PREDICATE[] EMPTY_PREDICATE_ARRAY = new PREDICATE[0];
 
 
-    static <X> PrediTerm<X>[] transform(Function<PrediTerm<X>, PrediTerm<X>> f, PrediTerm[] cache) {
-        return Util.map(x -> x.transform(f), new PrediTerm[cache.length], cache);
+    static <X> PREDICATE<X>[] transform(Function<PREDICATE<X>, PREDICATE<X>> f, PREDICATE[] cache) {
+        return Util.map(x -> x.transform(f), new PREDICATE[cache.length], cache);
     }
 
-    static <X> PrediTerm<X> compileAnd(PrediTerm<X>[] p) {
+    static <X> PREDICATE<X> compileAnd(PREDICATE<X>[] p) {
         switch (p.length) {
             case 0: return null;
             case 1: return p[0];
             default:
-                FasterList<PrediTerm<X>> pp = new FasterList<>(p);
+                FasterList<PREDICATE<X>> pp = new FasterList<>(p);
                 pp.removeIf(x -> !x.remainInAND(p));
-                return AndCondition.the(pp);
+                return AND.the(pp);
         }
     }
 
     @Nullable
-    static <X> PrediTerm<X> compileAnd(Collection<PrediTerm<X>> cond, @Nullable PrediTerm<X> conseq) {
+    static <X> PREDICATE<X> compileAnd(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {
         return compileAnd(
                     Iterables.toArray(
                             (conseq != null ? Iterables.concat(cond, List.of(conseq)) : cond),
-                            PrediTerm.class)
+                            PREDICATE.class)
             );
     }
 
-    default PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
+    default PREDICATE<X> transform(Function<PREDICATE<X>, PREDICATE<X>> f) {
         return f != null ? f.apply(this) : this;
     }
 
@@ -74,7 +74,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
      * should remain when appearing in an AND condition of the
      * specified predicates.  one of the 'p' in the array will be this instance
      */
-    default boolean remainInAND(PrediTerm[] p) {
+    default boolean remainInAND(PREDICATE[] p) {
         return true;
     }
 

@@ -61,10 +61,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
 
 
 
-    final static Weigher<Subterms, TermContainerToOpMap> w = (k, v) -> {
-        
-        return (k.complexity() + k.volume())/2;
-    };
+    final static Weigher<Subterms, TermContainerToOpMap> w = (k, v) -> (k.complexity() + k.volume())/2;
 
 
     /**

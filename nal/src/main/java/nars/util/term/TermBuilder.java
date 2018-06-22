@@ -70,8 +70,7 @@ public abstract class TermBuilder {
             return Op.EmptySubterms;
 
         boolean purelyAnon = true;
-        for (int i = 0; i < tLength; i++) {
-            Term x = t[i];
+        for (Term x: t) {
             if (x instanceof EllipsisMatch)
                 throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
 
@@ -79,8 +78,8 @@ public abstract class TermBuilder {
                 if (!(x instanceof AnonID)) {
                     Term ux = x.unneg();
                     if (x != ux && ux instanceof AnonID) {
-                        
-                        
+
+
                     } else {
                         purelyAnon = false;
                     }
@@ -271,8 +270,7 @@ public abstract class TermBuilder {
                                 Subterms subPexts = pext.subterms();
                                 int subPextsN = subPexts.subs();
 
-                                for (ListIterator<LongObjectPair<Term>> si = se.listIterator(); si.hasNext(); ) {
-                                    LongObjectPair<Term> sse = si.next();
+                                for (LongObjectPair<Term> sse: se) {
                                     if (sse.getOne() == at) {
 
 
@@ -324,8 +322,8 @@ public abstract class TermBuilder {
                     } else if (predicate.dt() == DTERNAL) {
 
                         Conj c = new Conj();
-                        for (int i = 0, peSize = pe.size(); i < peSize; i++) {
-                            if (!c.add(ETERNAL, pe.get(i).getTwo()))
+                        for (LongObjectPair<Term> aPe: pe) {
+                            if (!c.add(ETERNAL, aPe.getTwo()))
                                 break;
                         }
                         newPredicate = c.term();

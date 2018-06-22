@@ -290,8 +290,8 @@ public abstract class Unify extends Versioning implements Subst {
             Versioned<MatchConstraint> c = this.constraints;
             if (c != null) {
                 int s = c.size();
-                for (int i = 0; i < s; i++)
-                    if (c.get(i).invalid(x, Unify.this))
+                for (MatchConstraint aC: c)
+                    if (aC.invalid(x, Unify.this))
                         return false;
             }
             return true;

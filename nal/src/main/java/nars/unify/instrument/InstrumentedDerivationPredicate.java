@@ -3,25 +3,25 @@ package nars.unify.instrument;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import org.jetbrains.annotations.NotNull;
 
 abstract public class InstrumentedDerivationPredicate extends AbstractPred<Derivation> {
 
-    protected InstrumentedDerivationPredicate(@NotNull PrediTerm<Derivation> inner) {
+    protected InstrumentedDerivationPredicate(@NotNull PREDICATE<Derivation> inner) {
         super(inner);
     }
 
     @Override public boolean test(Derivation derivation) {
 
-        PrediTerm p;
-        if (ref instanceof PrediTerm) {
-            p = (PrediTerm) ref;
+        PREDICATE p;
+        if (ref instanceof PREDICATE) {
+            p = (PREDICATE) ref;
         } else {
 
             Term s0 = sub(0);
-            if (s0 instanceof PrediTerm)
-                p = (PrediTerm) s0;
+            if (s0 instanceof PREDICATE)
+                p = (PREDICATE) s0;
             else {
                 throw new UnsupportedOperationException();
                 
@@ -43,8 +43,8 @@ abstract public class InstrumentedDerivationPredicate extends AbstractPred<Deriv
     }
 
 
-    abstract protected void onEnter(PrediTerm<Derivation> p, Derivation d);
+    abstract protected void onEnter(PREDICATE<Derivation> p, Derivation d);
 
-    abstract protected void onExit(PrediTerm<Derivation> p, Derivation d, boolean returnValue, Throwable thrown, long nanos);
+    abstract protected void onExit(PREDICATE<Derivation> p, Derivation d, boolean returnValue, Throwable thrown, long nanos);
 
 }

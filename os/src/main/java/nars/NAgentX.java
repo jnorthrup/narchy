@@ -6,6 +6,7 @@ import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.NAgent;
+import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.derive.deriver.SimpleDeriver;
@@ -173,6 +174,11 @@ abstract public class NAgentX extends NAgent {
 
 
 
+        n.emotion.want(MetaGoal.Perceive, -0.01f);
+        n.emotion.want(MetaGoal.Believe, +0.02f);
+        n.emotion.want(MetaGoal.Answer, +0.01f);
+        n.emotion.want(MetaGoal.Desire, +0.04f);
+        n.emotion.want(MetaGoal.Action, +0.10f);
 
         NAgent a = init.apply(n);
         //a.motivation.set(0.75f);

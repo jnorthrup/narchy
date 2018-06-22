@@ -276,10 +276,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
 
             int numVarPaths = varPaths.size();
-            for (byte varPath = 0; varPath < numVarPaths; varPath++) {
+            for (ByteList p: varPaths) {
 
 
-                ByteList p = varPaths.get(varPath);
                 if (rootIsStatement) {
                     byte branch = p.get(0);
                     if (Util.branchOr((byte) -1, count, branch) == 3)
@@ -291,8 +290,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
 
                 nextStatement:
-                for (int i1 = 0, statementsSize = statements.size(); i1 < statementsSize; i1++) {
-                    ByteList statement = statements.get(i1);
+                for (ByteList statement: statements) {
                     statementNum++;
                     int statementPathLength = statement.size();
                     if (statementPathLength > pSize)

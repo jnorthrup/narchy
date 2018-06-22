@@ -2,26 +2,26 @@ package nars.unify.instrument;
 
 import jcog.Texts;
 import nars.derive.Derivation;
-import nars.term.control.AndCondition;
-import nars.term.control.Fork;
-import nars.term.control.PrediTerm;
+import nars.term.control.AND;
+import nars.term.control.FORK;
+import nars.term.control.PREDICATE;
 import nars.unify.op.UnifyTerm;
 import org.fusesource.jansi.Ansi;
 
 public class DebugDerivationPredicate extends InstrumentedDerivationPredicate {
 
-    public DebugDerivationPredicate(PrediTerm<Derivation> inner) {
+    public DebugDerivationPredicate(PREDICATE<Derivation> inner) {
         super(inner);
     }
 
     @Override
-    protected void onEnter(PrediTerm<Derivation> p, Derivation d) {
+    protected void onEnter(PREDICATE<Derivation> p, Derivation d) {
 
     }
 
     @Override
-    protected void onExit(PrediTerm<Derivation> p, Derivation d, boolean returnValue, Throwable thrown, long nanos) {
-        if (p instanceof Fork || p instanceof AndCondition) {
+    protected void onExit(PREDICATE<Derivation> p, Derivation d, boolean returnValue, Throwable thrown, long nanos) {
+        if (p instanceof FORK || p instanceof AND) {
 
         } else {
 

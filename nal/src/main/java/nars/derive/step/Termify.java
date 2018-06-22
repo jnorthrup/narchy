@@ -3,7 +3,6 @@ package nars.derive.step;
 import nars.$;
 import nars.NAR;
 import nars.derive.Derivation;
-import nars.derive.premise.PremiseDeriverProto;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.util.term.transform.Retemporalize;
@@ -27,12 +26,10 @@ public final class Termify extends AbstractPred<Derivation> {
     public final Term pattern;
 
     
-    public final PremiseDeriverProto rule;
     private final Occurrify.TaskTimeMerge time;
 
-    public Termify(Term pattern, PremiseDeriverProto rule, Truthify solve, Occurrify.TaskTimeMerge time) {
-        super($.func("derive", pattern, solve, time.term()));
-        this.rule = rule;
+    public Termify(Term pattern, Truthify solve, Occurrify.TaskTimeMerge time) {
+        super($.funcFast("derive", pattern, solve, time.term()));
         this.pattern = pattern;
 
         this.time = time;

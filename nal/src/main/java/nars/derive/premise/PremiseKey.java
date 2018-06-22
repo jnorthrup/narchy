@@ -6,7 +6,7 @@ import jcog.data.byt.DynBytes;
 import jcog.memoize.byt.ByteKey;
 import nars.derive.Derivation;
 import nars.term.Term;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 
 import static nars.Op.*;
 
@@ -75,7 +75,7 @@ public class PremiseKey extends ByteKey {
 
     /** TODO this can safely return short[] results
      * @param what*/
-    public short[] solve(PrediTerm<Derivation> what) {
+    public short[] solve(PREDICATE<Derivation> what) {
 
         Derivation derivation  = this.derivation;
 

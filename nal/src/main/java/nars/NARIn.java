@@ -74,9 +74,7 @@ public interface NARIn {
 
         float inactiveFreq = 0f;
         float evi = tru.evi();
-        LongFunction<Truthlet> stepUntil = (toWhen) -> {
-            return Truthlet.step(inactiveFreq, start, activeFreq, toWhen, activeFreq, evi);
-        };
+        LongFunction<Truthlet> stepUntil = (toWhen) -> Truthlet.step(inactiveFreq, start, activeFreq, toWhen, activeFreq, evi);
 
         TruthletTask t = new TruthletTask(term, punc, stepUntil.apply(start), n);
         float pri = n.priDefault(punc);

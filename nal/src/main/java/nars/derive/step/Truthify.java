@@ -8,7 +8,7 @@ import nars.derive.step.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 
@@ -31,10 +31,10 @@ public class Truthify extends AbstractPred<Derivation> {
     private final TruthFunc goal;
     private final BeliefProjection beliefProjection;
     private final byte puncOverride;
-    private final PrediTerm<Derivation> timeFilter;
+    private final PREDICATE<Derivation> timeFilter;
 
 
-    public Truthify(Term id, byte puncOverride, TruthFunc belief, TruthFunc goal, BeliefProjection beliefProjection, PrediTerm<Derivation> timeFilter) {
+    public Truthify(Term id, byte puncOverride, TruthFunc belief, TruthFunc goal, BeliefProjection beliefProjection, PREDICATE<Derivation> timeFilter) {
         super(id);
         this.puncOverride = puncOverride;
         this.timeFilter = timeFilter;

@@ -213,7 +213,7 @@ public class Evaluation {
 
                     if (xi!=yi) {
                         if (xy == null) {
-                            xy = ((Compound) c).arrayClone();
+                            xy = c.arrayClone();
                         }
                         xy[i] = yi;
                     }
@@ -360,7 +360,7 @@ public class Evaluation {
         proc.add(r);
     }
 
-    private Predicate<VersionMap<Term, Term>> subst(Term x, Term xx) {
+    private static Predicate<VersionMap<Term, Term>> subst(Term x, Term xx) {
         return (m) -> {
             Term px = m.get(x);
             if (px != null) {
@@ -372,7 +372,7 @@ public class Evaluation {
         };
     }
 
-    public Predicate<VersionMap<Term, Term>> subst(Term x, Term xx, Term y, Term yy) {
+    public static Predicate<VersionMap<Term, Term>> subst(Term x, Term xx, Term y, Term yy) {
         return (m) -> subst(x, xx).test(m) && subst(y, yy).test(m);
     }
 

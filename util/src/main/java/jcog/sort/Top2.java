@@ -26,6 +26,12 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
         from.forEach(this::add);
     }
 
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        c.forEach(this::add);
+        return true; //HACK
+    }
+
     public void clear() {
         aa = bb = Float.NEGATIVE_INFINITY;
         a = b = null;
@@ -34,7 +40,7 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
     /**
      * resets the best values, effectively setting a the minimum entry requirement
      */
-    public Top2 min(float min) {
+    public Top2<T> min(float min) {
         this.aa = this.bb = min;
         return this;
     }

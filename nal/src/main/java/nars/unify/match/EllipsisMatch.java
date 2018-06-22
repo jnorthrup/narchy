@@ -34,7 +34,7 @@ public class EllipsisMatch extends LightCompound {
         int k = 0;
         for (Term x : xy) {
             if (x instanceof EllipsisMatch) {
-                Term[] xx = ((EllipsisMatch) x).arrayShared();
+                Term[] xx = x.arrayShared();
                 for (Term xxx : xx)
                     z[k++] = xxx;
             } else {

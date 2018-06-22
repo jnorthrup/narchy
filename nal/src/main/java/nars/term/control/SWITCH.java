@@ -14,18 +14,20 @@ import static nars.derive.Derivation.Task;
 
 /**
  * TODO generify key/value
+ * default impl:
+ *    require keys map to integer states. then switch on the integer (not some equality / map-like comparison)
  */
-public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
+public final class SWITCH<D extends PreDerivation> extends AbstractPred<D> {
 
-    public final EnumMap<Op, PrediTerm<D>> cases;
+    public final EnumMap<Op, PREDICATE<D>> cases;
     /*@Stable*/
-    public final PrediTerm[] swtch;
+    public final PREDICATE[] swtch;
     public final boolean taskOrBelief;
 
     @Override
     public boolean test(PreDerivation m) {
 
-        PrediTerm p = branch(m);
+        PREDICATE p = branch(m);
         if (p != null)
             return p.test(m);
 
@@ -37,22 +39,22 @@ public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
         return 0.2f;
     }
 
-    public OpSwitch(boolean taskOrBelief, EnumMap<Op, PrediTerm<D>> cases) {
+    public SWITCH(boolean taskOrBelief, EnumMap<Op, PREDICATE<D>> cases) {
         super(/*$.impl*/ $.func("op", taskOrBelief ? Task  : Belief,
                 $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
 
-        swtch = new PrediTerm[24]; 
+        swtch = new PREDICATE[24];
         cases.forEach((k, v) -> swtch[k.id] = v);
         this.taskOrBelief = taskOrBelief;
         this.cases = cases;
     }
 
     @Override
-    public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
-        EnumMap<Op, PrediTerm<D>> e2 = cases.clone();
+    public PREDICATE<D> transform(Function<PREDICATE<D>, PREDICATE<D>> f) {
+        EnumMap<Op, PREDICATE<D>> e2 = cases.clone();
         final boolean[] changed = {false};
         e2.replaceAll(((k, x) -> {
-            PrediTerm<D> y = x.transform(f);
+            PREDICATE<D> y = x.transform(f);
             if (y != x)
                 changed[0] = true;
             return y;
@@ -60,12 +62,12 @@ public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
         if (!changed[0])
             return this;
         else
-            return new OpSwitch(taskOrBelief, e2);
+            return new SWITCH(taskOrBelief, e2);
     }
 
 
     @Nullable
-    public PrediTerm<D> branch(PreDerivation m) {
+    public PREDICATE<D> branch(PreDerivation m) {
         return swtch[(taskOrBelief ? m.taskTerm : m.beliefTerm).op().id];
     }
 

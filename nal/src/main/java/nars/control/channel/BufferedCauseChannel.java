@@ -74,17 +74,15 @@ public class BufferedCauseChannel implements Consumer {
     }
 
     final AtomicBoolean inputPending = new AtomicBoolean(false);
-    private final Iterable inputDrainer = ()->{
-        return new AbstractIterator() {
-            @Override
-            protected Object computeNext() {
-                inputPending.set(false);
-                Object t = buffer.poll();
-                if (t == null)
-                    endOfData();
-                return t;
-            }
-        };
+    private final Iterable inputDrainer = ()-> new AbstractIterator() {
+        @Override
+        protected Object computeNext() {
+            inputPending.set(false);
+            Object t = buffer.poll();
+            if (t == null)
+                endOfData();
+            return t;
+        }
     };
 
     public final boolean full() {

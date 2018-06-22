@@ -286,11 +286,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
             logger.info(msg);
 
             if (matched != null && logger.isTraceEnabled()) {
-                matched.forEach(s -> {
-                    logger.trace("\t{}", s);
-
-
-                });
+                matched.forEach(s -> logger.trace("\t{}", s));
             }
         } else {
             assert (matched.isEmpty());

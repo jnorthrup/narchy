@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
@@ -71,7 +72,7 @@ public abstract class NALTest {
         return Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getDeclaredMethods())
                         .filter(x -> x.getAnnotation(Test.class) != null))
-                        .peek(m -> m.trySetAccessible())
+                        .peek(AccessibleObject::trySetAccessible)
                         .collect(toList()).stream();
     }
 

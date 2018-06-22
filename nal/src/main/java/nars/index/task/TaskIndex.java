@@ -31,8 +31,8 @@ public interface TaskIndex {
 
     default void remove(@NotNull List<Task> tt) {
         int s = tt.size();
-        for (int i = 0; i < s; i++) {
-            this.remove(tt.get(i));
+        for (Task aTt: tt) {
+            this.remove(aTt);
         }
     }
 
@@ -46,8 +46,8 @@ public interface TaskIndex {
 
 
     default void addIfAbsent(@NotNull List<Task> toAdd) {
-        for (int i = 0, toAddSize = toAdd.size(); i < toAddSize; i++) {
-            addIfAbsent(toAdd.get(i));
+        for (Task aToAdd: toAdd) {
+            addIfAbsent(aToAdd);
         }
     }
 

@@ -151,8 +151,7 @@ public class Conj extends AnonMap {
 
         Conj ce = new Conj(eventsSize);
 
-        for (int i = 0; i < eventsSize; i++) {
-            LongObjectPair<Term> o = events.get(i);
+        for (LongObjectPair<Term> o: events) {
             if (!ce.add(o.getOne(), o.getTwo())) {
                 break;
             }
@@ -760,9 +759,9 @@ public class Conj extends AnonMap {
                         PeekableIntIterator ncc = nc.getIntIterator();
                         while (ncc.hasNext()) {
                             int nccc = ncc.next();
-                            for (int j = 0; j < bb.length; j++) {
+                            for (int aBb: bb) {
                                 Term NC = cci.sub(nccc).unneg();
-                                Term NX = cci.sub(bb[j]).unneg();
+                                Term NX = cci.sub(aBb).unneg();
                                 if (NC.contains(NX)) {
                                     toRemove.set(nccc);
                                 }

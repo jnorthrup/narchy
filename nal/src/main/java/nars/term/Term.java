@@ -242,8 +242,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         assert (subpathsSize > 1);
 
         int shortest = Integer.MAX_VALUE;
-        for (int i = 0; i < subpathsSize; i++) {
-            ByteList subpath = subpaths.get(i);
+        for (ByteList subpath: subpaths) {
             shortest = Math.min(shortest, subpath.size());
         }
 

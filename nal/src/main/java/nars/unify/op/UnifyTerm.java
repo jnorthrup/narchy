@@ -6,7 +6,7 @@ import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 
 /**
  * Created by me on 5/26/16.
@@ -60,11 +60,11 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
          * which premise component, 0 (task) or 1 (belief)
          */
         public final int subterm;
-        public final PrediTerm<Derivation> eachMatch;
+        public final PREDICATE<Derivation> eachMatch;
 
         private static final Atomic UNIFY = Atomic.the("unify");
 
-        public UnifySubtermThenConclude(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PrediTerm<Derivation> eachMatch) {
+        public UnifySubtermThenConclude(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PREDICATE<Derivation> eachMatch) {
             super($.funcFast(UNIFY, label(subterm), pattern, eachMatch), pattern);
             this.subterm = subterm;
             this.eachMatch = eachMatch;

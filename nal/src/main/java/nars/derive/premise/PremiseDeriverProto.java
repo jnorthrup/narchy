@@ -5,9 +5,8 @@ import nars.$;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.step.Taskify;
-import nars.derive.step.Termify;
-import nars.term.control.AndCondition;
-import nars.term.control.PrediTerm;
+import nars.term.control.AND;
+import nars.term.control.PREDICATE;
 import nars.unify.constraint.MatchConstraint;
 import nars.unify.op.UnifyTerm;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
@@ -31,7 +30,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
-    public final Pair<PrediTerm<Derivation>[], DeriveAction> rule;
+    public final Pair<PREDICATE<Derivation>[], DeriveAction> rule;
 
     public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
         super(raw, index);
@@ -39,15 +38,15 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         Taskify taskify = new Taskify(index.nar.newCause(s -> new RuleCause(this, s)));
 
-        PrediTerm<Derivation> conc = AndCondition.the(
-                new Termify(concPattern, this, truthify, time),
+        PREDICATE<Derivation> conc = AND.the(
+                this.termify,
                 varIntro ?
-                        AndCondition.the(taskify, introVars, taskify)
+                        AND.the(taskify, introVars, taskify)
                         :
                         taskify
         );
 
-        final List<PrediTerm<Derivation>> post = new FasterList<>(8);
+        final List<PREDICATE<Derivation>> post = new FasterList<>(8);
 
         if (taskPattern.equals(beliefPattern)) {
             post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
@@ -58,7 +57,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         MutableSet<MatchConstraint> constraints = raw.CONSTRAINTS.toSet();
 
-        PrediTerm<Derivation>[] postpost = new PrediTerm[
+        PREDICATE<Derivation>[] postpost = new PREDICATE[
                 1 + constraints.size() + post.size()
         ];
 
@@ -66,14 +65,14 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         postpost[k++] = this.truthify;
 
-        for (PrediTerm p : constraints)
+        for (PREDICATE p : constraints)
             postpost[k++] = p;
 
-        for (PrediTerm p : post)
+        for (PREDICATE p : post)
             postpost[k++] = p;
 
         this.rule = pair(PRE,
-                DeriveAction.action((AndCondition)AndCondition.the(postpost)));
+                DeriveAction.action((AND) AND.the(postpost)));
     }
 
 

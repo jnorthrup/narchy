@@ -26,10 +26,7 @@ public class QuerySpider extends NARService {
                 Term tt = t.term();
                 AdjGraph<Term, Float> g = spider(nar, t, 3);
                 g.nodes.keysView().takeWhile(r -> {
-                    new UnifySubst(null, nar, (z) -> {
-                        
-                        return true;
-                    }, Param.TTL_MIN).unify(tt, r.v, true);
+                    new UnifySubst(null, nar, (z) -> true, Param.TTL_MIN).unify(tt, r.v, true);
                     return true;
                 });
             }
@@ -61,10 +58,7 @@ public class QuerySpider extends NARService {
             }
 
 
-            g.nodes.forEachKey(k -> {
-
-                spider(nar, k.v, g, recurse-1);
-            });
+            g.nodes.forEachKey(k -> spider(nar, k.v, g, recurse-1));
         } else {
             g.addNode(tt);
         }

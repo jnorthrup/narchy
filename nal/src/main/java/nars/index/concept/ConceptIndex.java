@@ -1,5 +1,6 @@
 package nars.index.concept;
 
+import jcog.pri.Priority;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -145,9 +146,7 @@ public abstract class ConceptIndex {
         if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
 
-                nar.runLater(() -> {
-                    set(value);
-                });
+                nar.runLater(() -> set(value));
 
             } else {
 
@@ -161,11 +160,7 @@ public abstract class ConceptIndex {
     }
 
     protected void forget(TaskConcept tc) {
-        tc.tasks().forEach(t -> {
-
-
-            t.delete();
-        });
+        tc.tasks().forEach(Priority::delete);
     }
 
 

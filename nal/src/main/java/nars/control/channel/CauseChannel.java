@@ -47,9 +47,9 @@ abstract public class CauseChannel<X extends Priority> implements Consumer<X> {
         }
     }
 
-    public void input(X... xx) {
-        for (X x : xx)
-            input(x);
+    public void input(Object... xx) {
+        for (Object x : xx)
+            input((X)x);
     }
 
     abstract public void input(X x);

@@ -130,9 +130,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             
         });
 
-        dispatch.forEach(tt -> {
-            exe.accept(tt, n);
-        });
+        dispatch.forEach(tt -> exe.accept(tt, n));
 
         active.commit();
         if (active.isEmpty()) {

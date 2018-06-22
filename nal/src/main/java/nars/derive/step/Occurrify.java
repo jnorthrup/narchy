@@ -14,7 +14,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -327,7 +327,7 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    private Pair<Term, long[]> solveThe(Event event) {
+    private static Pair<Term, long[]> solveThe(Event event) {
         long es = event.start();
         return pair(event.id,
                 es == TIMELESS ? new long[]{TIMELESS, TIMELESS} : new long[]{es, event.end()});
@@ -385,7 +385,7 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-    private int filterOnlyNonXternal(ArrayHashSet<Event> solutions) {
+    private static int filterOnlyNonXternal(ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss > 1) {
             int occurrenceSolved = ((FasterList)solutions.list).count(t -> t instanceof Absolute);
@@ -405,7 +405,7 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    private static final PrediTerm<Derivation> intersectFilter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
+    private static final PREDICATE<Derivation> intersectFilter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
         @Override
         public boolean test(Derivation d) {
             return d.concSingle || d.taskBeliefTimeIntersects;
@@ -593,7 +593,7 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            public PrediTerm<Derivation> filter() {
+            public PREDICATE<Derivation> filter() {
                 return intersectFilter;
             }
 
@@ -747,7 +747,7 @@ public class Occurrify extends TimeGraph {
          * gets the optional premise pre-filter for this consequence.
          */
         @Nullable
-        public PrediTerm<Derivation> filter() {
+        public PREDICATE<Derivation> filter() {
             return null;
         }
 

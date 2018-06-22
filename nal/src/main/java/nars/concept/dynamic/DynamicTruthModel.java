@@ -129,9 +129,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }) || (common[0] == null))
             return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts
 
-        Term[] subs = Util.map(0, components.size(), c -> {
-            return components.get(c).task().term().sub(extOrInh ? 0 : 1);
-        }, Term[]::new);
+        Term[] subs = Util.map(0, components.size(), c -> components.get(c).task().term().sub(extOrInh ? 0 : 1), Term[]::new);
         return subs;
     }
 
@@ -214,8 +212,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
 
 
-            Task bt = table.match(subStart, subEnd, concept, x ->
-                    /* x.intersects(subStart, subEnd) && */ d.doesntOverlap(x), n
+            /* x.intersects(subStart, subEnd) && */
+            Task bt = table.match(subStart, subEnd, concept, d::doesntOverlap, n
             );
             if (bt == null)
                 return false;
@@ -225,7 +223,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             if (bt == null)
                 return false;
 
-            return add(bt, d);
+            return d.add(bt);
 
         }) ? d : null;
     }
@@ -233,10 +231,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     ;
 
     abstract public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
-
-    protected boolean add(@Nullable Task bt, DynTruth d) {
-        return d.add(bt);
-    }
 
     /**
      * used to reconstruct a dynamic term from some or all components
@@ -426,12 +420,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                     sub = (when, event) -> each.accept(event, when, when + range);
                 }
 
-                return superterm.eventsWhile((when, event) -> {
-                            //if (event!=superterm)
-                            return sub.accept(when, event);
-                            //else
-                            //return false;
-                        }, start, superDT == 0, superDT == DTERNAL,
+                //if (event!=superterm)
+//else
+//return false;
+                return superterm.eventsWhile(sub::accept, start, superDT == 0, superDT == DTERNAL,
                         true /* always decompose xternal */, 0);
             }
         }

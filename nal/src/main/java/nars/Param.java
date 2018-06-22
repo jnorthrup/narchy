@@ -336,7 +336,7 @@ public abstract class Param {
     /**
      * hard limit for cause capacity in case the runtime parameter otherwise disobeyed
      */
-    public static final int CAUSE_LIMIT = (int) (causeCapacity.max * 2);
+    public static final int CAUSE_LIMIT = (causeCapacity.max * 2);
 
 
     public final static int UnificationStackMax = 96; 

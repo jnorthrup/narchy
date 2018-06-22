@@ -6,7 +6,7 @@ import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.term.control.PrediTerm;
+import nars.term.control.PREDICATE;
 
 import java.io.PrintStream;
 import java.util.function.Predicate;
@@ -20,7 +20,7 @@ import static jcog.pri.Prioritized.EPSILON;
  */
 public class PremiseDeriver implements Predicate<Derivation> {
 
-    public final PrediTerm<Derivation> what;
+    public final PREDICATE<Derivation> what;
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
@@ -38,7 +38,7 @@ public class PremiseDeriver implements Predicate<Derivation> {
     private final DeriveAction[] could;
 
 
-    public PremiseDeriver(DeriveAction[] actions, PrediTerm<Derivation> what) {
+    public PremiseDeriver(DeriveAction[] actions, PREDICATE<Derivation> what) {
 
         this.what = what;
         this.could = actions;
@@ -109,7 +109,7 @@ public class PremiseDeriver implements Predicate<Derivation> {
                     assert (d.now() == 0);
 
 
-                    d.ttl = Math.max(Param.TTL_MIN, (int)Math.round(branchTTL
+                    d.ttl = Math.max(Param.TTL_MIN, Math.round(branchTTL
                             //* Math.log(2+fanOut)
                             * (fanOut*0.5f)
                     ));

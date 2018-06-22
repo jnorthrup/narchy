@@ -89,9 +89,7 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
 
     /** summary */
     public void print() {
-        forEach(x -> {
-            System.out.println(x.name + " " + x.score);
-        });
+        forEach(x -> System.out.println(x.name + " " + x.score));
     }
 
     public double score(/* scoring mode */) {

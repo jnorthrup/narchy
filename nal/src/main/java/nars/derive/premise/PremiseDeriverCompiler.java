@@ -6,10 +6,10 @@ import jcog.tree.perfect.TrieNode;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.step.Branchify;
-import nars.term.control.AndCondition;
-import nars.term.control.Fork;
-import nars.term.control.OpSwitch;
-import nars.term.control.PrediTerm;
+import nars.term.control.AND;
+import nars.term.control.FORK;
+import nars.term.control.SWITCH;
+import nars.term.control.PREDICATE;
 import nars.term.match.TermMatchPred;
 import nars.unify.op.TermMatch;
 import nars.unify.op.UnifyTerm;
@@ -43,7 +43,7 @@ public enum PremiseDeriverCompiler {
         return the(r, null);
     }
 
-    public static PremiseDeriver the(Set<PremiseDeriverProto> r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+    public static PremiseDeriver the(Set<PremiseDeriverProto> r, @Nullable Function<PREDICATE<Derivation>, PREDICATE<Derivation>> each) {
         assert (!r.isEmpty());
 
         /** indexed by local (deriver-specific) id */
@@ -52,17 +52,17 @@ public enum PremiseDeriverCompiler {
         /** map preconditions to conclusions by local conclusion id.
          * the key is an array with a null placeholder at the end to be completed later in this stage
          * */
-        final List<Pair<PrediTerm<Derivation>[], DeriveAction>> pairs = new FasterList<>(rules);
+        final List<Pair<PREDICATE<Derivation>[], DeriveAction>> pairs = new FasterList<>(rules);
 
         r.forEach(rule -> pairs.add(rule.rule));
 
-        final TermTrie<PrediTerm<Derivation>, DeriveAction> path = new TermTrie<>();
+        final TermTrie<PREDICATE<Derivation>, DeriveAction> path = new TermTrie<>();
 
 
         DeriveAction[] rootBranches = new DeriveAction[rules];
 
         for (int i = 0; i < rules; i++) {
-            Pair<PrediTerm<Derivation>[], DeriveAction> pair = pairs.get(i);
+            Pair<PREDICATE<Derivation>[], DeriveAction> pair = pairs.get(i);
 
             DeriveAction POST = pair.getTwo();
 
@@ -72,7 +72,7 @@ public enum PremiseDeriverCompiler {
 //            ).eachMatch), Taskify[]::new, branches));
 
 
-            PrediTerm<Derivation>[] pre = pair.getOne();
+            PREDICATE<Derivation>[] pre = pair.getOne();
 
             RoaringBitmap idR = new RoaringBitmap();
             idR.add(i);
@@ -89,7 +89,7 @@ public enum PremiseDeriverCompiler {
         assert (!path.isEmpty());
 
 
-        PrediTerm<Derivation> compiledPaths = PremiseDeriverCompiler.compile(path, each);
+        PREDICATE<Derivation> compiledPaths = PremiseDeriverCompiler.compile(path, each);
 
 
         return new PremiseDeriver(rootBranches, compiledPaths);
@@ -111,10 +111,10 @@ public enum PremiseDeriverCompiler {
             print(u.eachMatch, out, indent + 2);
             TermTrie.indent(indent);
             out.println("}");
-        } else if (p instanceof AndCondition) {
+        } else if (p instanceof AND) {
             out.println("and {");
-            AndCondition ac = (AndCondition) p;
-            for (PrediTerm b : ac.cond) {
+            AND ac = (AND) p;
+            for (PREDICATE b : ac.cond) {
                 print(b, out, indent + 2);
             }
             TermTrie.indent(indent);
@@ -131,22 +131,22 @@ public enum PremiseDeriverCompiler {
             }
             TermTrie.indent(indent);
             out.println("}");
-        } */ else if (p instanceof Fork) {
+        } */ else if (p instanceof FORK) {
 
             //TODO
             out.println(Util.className(p) + " {");
-            Fork ac = (Fork) p;
-            for (PrediTerm b : ac.branch) {
+            FORK ac = (FORK) p;
+            for (PREDICATE b : ac.branch) {
                 print(b, out, indent + 2);
             }
             TermTrie.indent(indent);
             out.println("}");
 
-        } else if (p instanceof OpSwitch) {
-            OpSwitch sw = (OpSwitch) p;
+        } else if (p instanceof SWITCH) {
+            SWITCH sw = (SWITCH) p;
             out.println("switch(op(" + (sw.taskOrBelief ? "task" : "belief") + ")) {");
             int i = -1;
-            for (PrediTerm b : sw.swtch) {
+            for (PREDICATE b : sw.swtch) {
                 i++;
                 if (b == null) continue;
 
@@ -168,7 +168,7 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    public static void print(PrediTerm<Derivation> d) {
+    public static void print(PREDICATE<Derivation> d) {
         print(d, System.out);
     }
 
@@ -179,10 +179,10 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, DeriveAction> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
-        Collection<PrediTerm<Derivation>> bb = compile(trie.root);
+    static PREDICATE<Derivation> compile(TermTrie<PREDICATE<Derivation>, DeriveAction> trie, Function<PREDICATE<Derivation>, @Nullable PREDICATE<Derivation>> each) {
+        Collection<PREDICATE<Derivation>> bb = compile(trie.root);
 
-        PrediTerm<Derivation> tf = Fork.fork(bb, (f) -> new Fork(f));
+        PREDICATE<Derivation> tf = FORK.fork(bb, (Function<PREDICATE<Derivation>[], PREDICATE<Derivation>>) FORK::new);
         if (each != null)
             tf = tf.transform(each);
 
@@ -191,23 +191,23 @@ public enum PremiseDeriverCompiler {
 
 
     @Nullable
-    static Set<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, DeriveAction> node) {
+    static Set<PREDICATE<Derivation>> compile(TrieNode<List<PREDICATE<Derivation>>, DeriveAction> node) {
 
 
-        Set<PrediTerm<Derivation>> bb = new HashSet();
+        Set<PREDICATE<Derivation>> bb = new HashSet();
 
 
         node.forEach(n -> {
 
-            Set<PrediTerm<Derivation>> branches = compile(n);
+            Set<PREDICATE<Derivation>> branches = compile(n);
 
             int nStart = n.start();
             int nEnd = n.end();
-            PrediTerm<Derivation> branch = PrediTerm.compileAnd(
+            PREDICATE<Derivation> branch = PREDICATE.compileAnd(
                     n.seq().subList(nStart, nEnd),
                     //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
                     branches != null /* && !branches.isEmpty() */ ?
-                            factorFork(branches, (f) -> new Fork(f))
+                            factorFork(branches, FORK::new)
                             : null
             );
 
@@ -223,7 +223,7 @@ public enum PremiseDeriverCompiler {
         }
     }
 
-    private static PrediTerm<Derivation> factorFork(Set<PrediTerm<Derivation>> _x, Function<PrediTerm[], PrediTerm<Derivation>> builder) {
+    private static PREDICATE<Derivation> factorFork(Set<PREDICATE<Derivation>> _x, Function<PREDICATE<Derivation>[], PREDICATE<Derivation>> builder) {
 
         int n = _x.size();
         if (n == 0)
@@ -232,15 +232,15 @@ public enum PremiseDeriverCompiler {
         if (n == 1)
             return _x.iterator().next();
 
-        FasterList<PrediTerm<Derivation>> x = new FasterList<>(_x);
+        FasterList<PREDICATE<Derivation>> x = new FasterList<>(_x);
 
-        Map<PrediTerm, SubCond> conds = new HashMap(x.size());
+        Map<PREDICATE, SubCond> conds = new HashMap(x.size());
         for (int b = 0, xSize = n; b < xSize; b++) {
-            PrediTerm p = x.get(b);
-            if (p instanceof AndCondition) {
-                for (PrediTerm xx : ((AndCondition<PrediTerm>) p).cond)
+            PREDICATE p = x.get(b);
+            if (p instanceof AND) {
+                for (PREDICATE xx : ((AND<PREDICATE>) p).cond)
                     SubCond.bumpCond(conds, xx, b);
-            } else if (p instanceof Fork) {
+            } else if (p instanceof FORK) {
 
             } else {
                 SubCond.bumpCond(conds, p, b);
@@ -248,20 +248,20 @@ public enum PremiseDeriverCompiler {
         }
 
         if (!conds.isEmpty()) {
-            SubCond fx = conds.values().stream().max(Comparator.comparingDouble(zz -> zz.costIfBranch())).get();
+            SubCond fx = conds.values().stream().max(Comparator.comparingDouble(SubCond::costIfBranch)).get();
             if (fx.size() < 2) {
 
             } else {
-                Collection<PrediTerm<Derivation>> bundle = new HashSet();
+                Collection<PREDICATE<Derivation>> bundle = new HashSet();
                 int i = 0;
-                Iterator<PrediTerm<Derivation>> xx = x.iterator();
+                Iterator<PREDICATE<Derivation>> xx = x.iterator();
                 while (xx.hasNext()) {
-                    PrediTerm px = xx.next();
+                    PREDICATE px = xx.next();
                     if (fx.branches.contains(i)) {
                         xx.remove();
 
-                        if (px instanceof AndCondition) {
-                            px = AndCondition.the(ArrayUtils.removeAllOccurences(((AndCondition) px).cond, fx.p));
+                        if (px instanceof AND) {
+                            px = AND.the(ArrayUtils.removeAllOccurences(((AND) px).cond, fx.p));
                             bundle.add(px);
                         } else {
 
@@ -271,7 +271,7 @@ public enum PremiseDeriverCompiler {
                 }
                 if (!bundle.isEmpty()) {
                     assert (bundle.size() > 1);
-                    x.add(AndCondition.the(fx.p, Fork.fork(bundle, builder)));
+                    x.add(AND.the(fx.p, FORK.fork(bundle, (Function)builder)));
 
                     if (x.size() == 1)
                         return x.get(0);
@@ -302,10 +302,10 @@ public enum PremiseDeriverCompiler {
             }
         }
 
-        return Fork.fork(x, builder);
+        return FORK.fork(x, builder);
     }
 
-    private static Set<PrediTerm<Derivation>> compileSwitch(Set<PrediTerm<Derivation>> branches, int minCases) {
+    private static Set<PREDICATE<Derivation>> compileSwitch(Set<PREDICATE<Derivation>> branches, int minCases) {
 
         if (branches.size() < minCases)
             return branches; //dont bother
@@ -317,21 +317,21 @@ public enum PremiseDeriverCompiler {
     }
 
     //broken temporarily
-    private static Set<PrediTerm<Derivation>> factorSubOpToSwitch(Set<PrediTerm<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
+    private static Set<PREDICATE<Derivation>> factorSubOpToSwitch(Set<PREDICATE<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
             /** TermMatch as field of TaskBeliefMatch */
-            Map<TermMatch.Is, PrediTerm<Derivation>> cases = new UnifiedMap(8);
-            Set<PrediTerm<Derivation>> removed = new UnifiedSet(8);
+            Map<TermMatch.Is, PREDICATE<Derivation>> cases = new UnifiedMap(8);
+            Set<PREDICATE<Derivation>> removed = new UnifiedSet(8);
             bb.forEach(p -> {
-                if (p instanceof AndCondition) {
-                    AndCondition ac = (AndCondition) p;
+                if (p instanceof AND) {
+                    AND ac = (AND) p;
                     ac.forEach(x -> {
                         if (x instanceof TermMatchPred) {
                             TermMatchPred tb = (TermMatchPred) x;
                             TermMatch m = tb.match;
                             if (m instanceof TermMatch.Is) {
                                 if ((taskOrBelief && tb.resolve==TaskTerm) || (!taskOrBelief && tb.resolve==BeliefTerm)) {
-                                    PrediTerm acw = ac.without(tb);
+                                    PREDICATE acw = ac.without(tb);
                                     if (null == cases.putIfAbsent((TermMatch.Is)m, acw)) {
                                         removed.add(p);
                                     }
@@ -350,7 +350,7 @@ public enum PremiseDeriverCompiler {
                     throw new RuntimeException("switch fault");
                 }
 
-                EnumMap<Op, PrediTerm<Derivation>> caseMap = new EnumMap(Op.class);
+                EnumMap<Op, PREDICATE<Derivation>> caseMap = new EnumMap(Op.class);
                 cases.forEach((c, p) -> {
                     int cs = c.struct;
                     Op[] opVals = Op.values();
@@ -361,7 +361,7 @@ public enum PremiseDeriverCompiler {
 
                 });
                 bb.removeAll(removed);
-                bb.add(new OpSwitch<>(taskOrBelief, caseMap));
+                bb.add(new SWITCH<>(taskOrBelief, caseMap));
             }
         }
 
@@ -369,15 +369,15 @@ public enum PremiseDeriverCompiler {
     }
 
     private static class SubCond {
-        final PrediTerm p;
+        final PREDICATE p;
         final RoaringBitmap branches = new RoaringBitmap();
 
-        private SubCond(PrediTerm p, int branch) {
+        private SubCond(PREDICATE p, int branch) {
             this.p = p;
             branches.add(branch);
         }
 
-        static void bumpCond(Map<PrediTerm, SubCond> conds, PrediTerm p, int branch) {
+        static void bumpCond(Map<PREDICATE, SubCond> conds, PREDICATE p, int branch) {
             float pc = p.cost();
             if (!Float.isFinite(pc))
                 return;

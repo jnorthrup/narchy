@@ -12,15 +12,15 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-
-public class AndCondition<D> extends AbstractPred<D> {
+/** AND/while predicate chain */
+public class AND<D> extends AbstractPred<D> {
 
     /*@Stable*/
-    public final PrediTerm[] cond;
+    public final PREDICATE[] cond;
 
     @Override
     public final boolean test(Object m) {
-        for (PrediTerm x : cond) {
+        for (PREDICATE x : cond) {
             boolean b = x.test(m);
             if (!b)
                 return false;
@@ -28,7 +28,7 @@ public class AndCondition<D> extends AbstractPred<D> {
         return true;
     }
 
-    protected AndCondition(PrediTerm<D>[] p) {
+    protected AND(PREDICATE<D>[] p) {
         super(
                 //HeapTermBuilder.the.compound(PROD, p)
                 $.pFast(p)
@@ -37,16 +37,16 @@ public class AndCondition<D> extends AbstractPred<D> {
         this.cond = p;
     }
 
-    public static @Nullable <D> PrediTerm<D> the(List<PrediTerm<D>> cond) {
+    public static @Nullable <D> PREDICATE<D> the(List<PREDICATE<D>> cond) {
         int s = cond.size();
         switch (s) {
             case 0: return null;
             case 1: return cond.get(0);
-            default: return the(cond.toArray(new PrediTerm[s]));
+            default: return the(cond.toArray(new PREDICATE[s]));
         }
     }
 
-    public static @Nullable <D> PrediTerm<D> the(PrediTerm<D>... cond) {
+    public static @Nullable <D> PREDICATE<D> the(PREDICATE<D>... cond) {
         int s = cond.length;
         switch (s) {
             case 0: return null;
@@ -55,7 +55,7 @@ public class AndCondition<D> extends AbstractPred<D> {
                 final boolean[] needsFlat = {false};
                 do {
                     for (Term c : cond) {
-                        if (c instanceof AndCondition) {
+                        if (c instanceof AND) {
                             needsFlat[0] = true;
                             break;
                         }
@@ -63,45 +63,45 @@ public class AndCondition<D> extends AbstractPred<D> {
                     if (needsFlat[0]) {
                         needsFlat[0] = false;
                         cond = Stream.of(cond).flatMap(x -> {
-                            if (x instanceof AndCondition)
-                                return Stream.of(((AndCondition) x).cond);
+                            if (x instanceof AND)
+                                return Stream.of(((AND) x).cond);
                             else
                                 return Stream.of(x);
                         }).peek(x -> {
-                            if ((x instanceof AndCondition))
+                            if ((x instanceof AND))
                                 needsFlat[0] = true;
-                        }).toArray(PrediTerm[]::new);
+                        }).toArray(PREDICATE[]::new);
                     }
                 } while (needsFlat[0]);
 
-                return new AndCondition(cond);
+                return new AND(cond);
         }
     }
 
-    public PrediTerm<D> first() {
+    public PREDICATE<D> first() {
         return Util.first(cond);
     }
-    public PrediTerm<D> last() {
+    public PREDICATE<D> last() {
         return Util.last(cond);
     }
 
     /** chase the last of the last of the last(...etc.) condition in any number of recursive AND's */
-    public static PrediTerm last(PrediTerm b) {
-        while (b instanceof AndCondition)
-            b = ((AndCondition)b).last();
+    public static PREDICATE last(PREDICATE b) {
+        while (b instanceof AND)
+            b = ((AND)b).last();
         return b;
     }
 
      /** chase the last of the first of the first (...etc.) condition in any number of recursive AND's */
-    public static PrediTerm first(PrediTerm b) {
-        while (b instanceof AndCondition)
-            b = ((AndCondition)b).first();
+    public static PREDICATE first(PREDICATE b) {
+        while (b instanceof AND)
+            b = ((AND)b).first();
         return b;
     }
-    @Nullable public static PrediTerm first(AndCondition b, Predicate<PrediTerm> test) {
+    @Nullable public static PREDICATE first(AND b, Predicate<PREDICATE> test) {
         int s = b.subs();
         for (int i = 0; i < s; i++) {
-            PrediTerm x = (PrediTerm) b.sub(i);
+            PREDICATE x = (PREDICATE) b.sub(i);
             if (test.test(x))
                 return x;
         }
@@ -109,30 +109,30 @@ public class AndCondition<D> extends AbstractPred<D> {
     }
 
     /** recursive */
-    @Override public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
-        return transform((Function)f, (Function)f);
+    @Override public PREDICATE<D> transform(Function<PREDICATE<D>, PREDICATE<D>> f) {
+        return transform((Function)f, f);
     }
 
-    public PrediTerm<D> transform(Function<AndCondition<D>,PrediTerm<D>> outer, @Nullable Function<PrediTerm<D>, PrediTerm<D>> f) {
-        PrediTerm[] yy = transformedConditions(f);
-        PrediTerm<D> z = yy != cond ? AndCondition.the(yy) : this;
-        if (z instanceof AndCondition)
-            return outer.apply((AndCondition)z);
+    public PREDICATE<D> transform(Function<AND<D>, PREDICATE<D>> outer, @Nullable Function<PREDICATE<D>, PREDICATE<D>> f) {
+        PREDICATE[] yy = transformedConditions(f);
+        PREDICATE<D> z = yy != cond ? AND.the(yy) : this;
+        if (z instanceof AND)
+            return outer.apply((AND)z);
         else
             return z;
     }
 
-    public PrediTerm[] transformedConditions(@Nullable Function<PrediTerm<D>, PrediTerm<D>> f) {
+    public PREDICATE[] transformedConditions(@Nullable Function<PREDICATE<D>, PREDICATE<D>> f) {
         if (f == null)
             return cond;
 
         final boolean[] changed = {false};
-        PrediTerm[] yy = Util.map(x -> {
-            PrediTerm<D> y = x.transform(f);
+        PREDICATE[] yy = Util.map(x -> {
+            PREDICATE<D> y = x.transform(f);
             if (y != x)
                 changed[0] = true;
             return y;
-        }, new PrediTerm[cond.length], cond);
+        }, new PREDICATE[cond.length], cond);
         if (!changed[0])
             return cond;
         else
@@ -141,13 +141,13 @@ public class AndCondition<D> extends AbstractPred<D> {
 
     @Override
     public float cost() {
-        return Util.sum((FloatFunction<PrediTerm>) PrediTerm::cost, cond);
+        return Util.sum((FloatFunction<PREDICATE>) PREDICATE::cost, cond);
     }
 
-    public @Nullable PrediTerm<D> without(PrediTerm<D> condition) {
-        PrediTerm[] x = ArrayUtils.remove(cond, PrediTerm[]::new, ArrayUtils.indexOf(cond, condition));
+    public @Nullable PREDICATE<D> without(PREDICATE<D> condition) {
+        PREDICATE[] x = ArrayUtils.remove(cond, PREDICATE[]::new, ArrayUtils.indexOf(cond, condition));
         assert(x.length != cond.length);
-        return AndCondition.the(x);
+        return AND.the(x);
     }
 
 

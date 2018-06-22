@@ -42,8 +42,7 @@ public class AgentBuilder {
         Consumer<float[]> inputter = (f) -> {
             int s = sensors.size();
             int j = 0;
-            for (int i = 0; i < s; i++) {
-                Tensor x = sensors.get(i);
+            for (Tensor x: sensors) {
                 x.writeTo(f, j);
                 j += x.volume();
             }
@@ -52,8 +51,7 @@ public class AgentBuilder {
         IntConsumer act = (c) -> {
 
             int s = actions.size();
-            for (int i = 0; i < s; i++) {
-                IntObjectPair<? extends IntConsumer> aa = actions.get(i);
+            for (IntObjectPair<? extends IntConsumer> aa: actions) {
                 int bb = aa.getOne();
                 if (c >= bb) {
                     c -= bb;
