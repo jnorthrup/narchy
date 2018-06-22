@@ -1,7 +1,6 @@
 package nars.util.term.builder;
 
 import com.google.common.collect.Iterators;
-import jcog.io.Huffman;
 import jcog.pri.PriProxy;
 import nars.Op;
 import nars.term.Term;
@@ -10,9 +9,7 @@ import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 import org.junit.jupiter.api.Test;
 
-import static nars.Op.CONJ;
-import static nars.Op.IMPL;
-import static nars.Op.PROD;
+import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -38,7 +35,7 @@ class InterningTermBuilderTest {
 
         assertSame(pab, paab.sub(1));
 
-        Huffman h = prodCache.buildCodec();
+        //Huffman h = prodCache.buildCodec();
 
     }
 
@@ -47,12 +44,12 @@ class InterningTermBuilderTest {
         assert(Op.terms instanceof InterningTermBuilder);
 
         InterningTermBuilder i = (InterningTermBuilder) Op.terms;
-        System.out.println("impl/conj:");
-        i.terms[Op.IMPL.id].print();
-        i.terms[CONJ.id].print();
+//        System.out.println("impl/conj:");
+//        i.terms[Op.IMPL.id].print();
+//        i.terms[CONJ.id].print();
         IMPL.the(a, CONJ.the(b.neg(), CONJ.the(a, 1, CONJ.the(b.neg(), b)).neg()));
-        System.out.println("impl/conj:");
-        i.terms[Op.IMPL.id].print();
-        i.terms[CONJ.id].print();
+//        System.out.println("impl/conj:");
+//        i.terms[Op.IMPL.id].print();
+//        i.terms[CONJ.id].print();
     }
 }

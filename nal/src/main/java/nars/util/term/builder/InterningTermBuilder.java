@@ -17,9 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.function.Function;
 
-import static nars.Op.NEG;
-import static nars.Op.PROD;
-import static nars.Op.SIM;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -34,7 +32,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     final HijackTermCache normalizes;
 
     private final int cacheSizePerOp;
+
     private final HijackTermCache statements;
+    private final HijackTermCache conj;
 
 
     public InterningTermBuilder() {
@@ -51,6 +51,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
 
         normalizes = newOpCache(this::normalize, cacheSizePerOp);
+        conj = newOpCache(this::_conj, cacheSizePerOp);
         statements = newOpCache(this::_statement, cacheSizePerOp*3);
     }
 
@@ -228,5 +229,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private Term _statement(InternedCompound c) {
         Term[] s = c.rawSubs.get();
         return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
+    }
+
+    private Term _conj (InternedCompound c) {
+        Term[] s = c.rawSubs.get();
+        return super.conj(c.dt, s);
+    }
+
+    @Override
+    public Term conj(int dt, Term[] u) {
+        //TODO presort if commutive?
+        return conj.apply(InternedCompound.get(CONJ, dt, u));
     }
 }
