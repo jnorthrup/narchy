@@ -3,6 +3,7 @@ package nars.task;
 import jcog.data.map.CompactArrayMap;
 import jcog.list.FasterList;
 import jcog.pri.UnitPri;
+import jcog.pri.op.PriMerge;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
@@ -101,8 +102,7 @@ public class NALTask extends UnitPri implements Task {
     public Task causeMerge(Task incoming) {
         if (incoming == this) return this;
 
-        Param.taskEquivalentMerge.merge(this, incoming);
-
+        (incoming.isInput() ? PriMerge.replace : Param.taskEquivalentMerge).merge(this, incoming);
 
         if (!Arrays.equals(cause(), incoming.cause())) {
             int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length);

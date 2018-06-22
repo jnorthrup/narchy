@@ -132,11 +132,15 @@ public final class Remember extends NativeTask {
 
             if (existing instanceof NALTask)
                 ((NALTask) existing).causeMerge(input);
+
             forget(input);
         }
 
 
-        next(new TaskLinkTask(existing, concept));
+        if (input.isInput())
+            remember(existing); //link and emit
+        else
+            next(new TaskLinkTask(existing, concept)); //just link
 
 
     }

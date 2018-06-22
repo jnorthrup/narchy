@@ -175,9 +175,9 @@ abstract public class NAgentX extends NAgent {
 
 
         n.emotion.want(MetaGoal.Perceive, -0.001f);
-        n.emotion.want(MetaGoal.Believe, +0.02f);
+        n.emotion.want(MetaGoal.Believe, +0.04f);
         n.emotion.want(MetaGoal.Answer, +0.01f);
-        n.emotion.want(MetaGoal.Desire, +0.04f);
+        n.emotion.want(MetaGoal.Desire, +0.06f);
         n.emotion.want(MetaGoal.Action, +0.10f);
 
         NAgent a = init.apply(n);
