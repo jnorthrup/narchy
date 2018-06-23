@@ -142,8 +142,8 @@ class ArithmeticTest {
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
-        //n.freqResolution.set(0.1f);
-        n.termVolumeMax.set(14);
+        n.freqResolution.set(0.1f);
+        n.termVolumeMax.set(16);
         //t.log();
 
 

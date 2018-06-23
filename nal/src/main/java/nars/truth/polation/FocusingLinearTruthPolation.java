@@ -20,7 +20,8 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     static final boolean durShrink = true;
 
     private final static int minDur =
-            0; 
+            //0;
+            1;
             
 
     public FocusingLinearTruthPolation(long start, long end, int dur) {

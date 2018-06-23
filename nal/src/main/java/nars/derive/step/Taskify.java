@@ -1,10 +1,7 @@
 package nars.derive.step;
 
 import jcog.Util;
-import nars.$;
-import nars.NAR;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.derive.Derivation;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.task.DebugDerivedTask;
@@ -25,7 +22,6 @@ import static nars.time.Tense.ETERNAL;
 public class Taskify extends AbstractPred<Derivation> {
 
 
-    static final int PatternsOrBool = VAR_PATTERN.bit | BOOL.bit;
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
     /**
      * destination of any derived tasks; also may be used to communicate backpressure
@@ -43,7 +39,7 @@ public class Taskify extends AbstractPred<Derivation> {
     public static boolean valid(Term x, byte punc) {
         return x != null &&
                 x.unneg().op().conceptualizable &&
-                !x.hasAny(PatternsOrBool) &&
+                !x.hasAny(Op.VAR_PATTERN) &&
                 ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && x.varQuery() <= 0));
     }
 
@@ -99,6 +95,8 @@ public class Taskify extends AbstractPred<Derivation> {
             //dither truth
             if (tr!=null) {
                 tr = tr.dither(d.nar);
+                if (tr == null)
+                    return null;
             }
 
             return Param.DEBUG ?

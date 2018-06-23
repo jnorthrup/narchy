@@ -3,6 +3,8 @@ package jcog.exe.valve;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.TODO;
 import jcog.exe.util.RunnableForkJoin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
@@ -37,7 +39,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
 
     public TimeSlicing(What what, int concurrency, Executor exe) {
         super(what);
-        this.concurrency = new Semaphore(concurrency, false);
+        this.concurrency = new Semaphore(concurrency, true);
         this.exe = exe;
         this.work = new MultithreadConcurrentQueue<>(workQueueCapacity);
         this.async = new MultithreadConcurrentQueue<>(workQueueCapacity);
@@ -86,16 +88,25 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
         cycleTimeNS.set(-1);
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(TimeSlicing.class);
+
     protected boolean work() {
 
-        Runnable w;
-        while ((w = async.poll())!=null) {
-            try {
-                w.run();
-            } catch (Exception e) {
-                e.printStackTrace();
+
+
+        Runnable w = null;
+        try {
+            while ((w = async.poll()) != null) {
+                try {
+                    w.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+        } catch (Throwable t) {
+            logger.error("{} {}", w,t);
         }
+
 
         long cycleNS = cycleTimeNS.longValue();
         if (cycleNS < 0) {
@@ -129,6 +140,8 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
                     }
 
 
+                } catch (Throwable t) {
+                    logger.error("{} {}", x,t);
                 } finally {
                     x.stop();
                     queue(x);
@@ -170,9 +183,11 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
 
         @Override
         public void run() {
-            if (work()) {
-                exe.execute(this); //re-invoke
-            }
+//            if (work()) {
+//                exe.execute(this); //re-invoke
+//            }
+
+            while (work());
         }
     }
 }

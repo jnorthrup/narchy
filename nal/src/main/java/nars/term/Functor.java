@@ -51,6 +51,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return Operator.args(x).arrayShared();
     }
 
+
+
     /**
      * decode a term which may be a functor, return null if it isnt
      */

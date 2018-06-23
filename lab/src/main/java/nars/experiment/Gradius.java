@@ -28,11 +28,11 @@ public class Gradius extends NAgentX {
 
         this.g = new Gradius4K();
 
-        g.updateMS = 50; //TODO coordinate with fps
+        g.updateMS = 25; //TODO coordinate with fps
 
 
-        int dx = 3, dy = 2;
-        int px = 12, py = 12;
+        int dx = 2, dy = 2;
+        int px = 16, py = 16;
 
         assert(px%dx==0 && py%dy ==0);
         for (int i = 0; i < dx; i++)
@@ -41,7 +41,7 @@ public class Gradius extends NAgentX {
                 int jj = j;
                 //Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
-                        $.func((Atomic)id, $.p($.the(ii), $.the(jj)), $.p($.the(x), $.the(y)) ),
+                        $.func((Atomic)id, $.the(ii), $.the(jj), $.p($.the(x), $.the(y)) ),
                                 //$.p(
                                 //$.inh(
 //                                        $.p(x, y),
@@ -51,7 +51,7 @@ public class Gradius extends NAgentX {
                                 .window(
                                         (((float)i) / dx), (((float)j) / dy),
                                         ((float)(i + 1)) / dx, ((float)(j + 1)) / dy))
-                        .resolution(0.02f);
+                        .resolution(0.04f);
             }
 
 
@@ -96,7 +96,7 @@ public class Gradius extends NAgentX {
 
     public static void main(String[] args) {
 
-        NAgentX.runRT(Gradius::new, 20f, 40f);
+        NAgentX.runRT(Gradius::new, 40f, 80f);
 
     }
 

@@ -279,11 +279,6 @@ public enum Op {
                 final int RANK = Term.opX(VAR_PATTERN, (short) 20 /* different from normalized variables with a subOp of 0 */);
 
                 @Override
-                public Term the() {
-                    return this;
-                }
-
-                @Override
                 public int opX() {
                     return RANK;
                 }

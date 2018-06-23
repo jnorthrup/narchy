@@ -487,6 +487,10 @@ public class Occurrify extends TimeGraph {
 //                return new long[]{d.belief.start(), d.belief.end()};
 //            }
 //
+//            @Override
+//            public BeliefProjection projection() {
+//                return BeliefProjection.Raw;
+//            }
 //        },
 
         TaskPlusBeliefDT() {

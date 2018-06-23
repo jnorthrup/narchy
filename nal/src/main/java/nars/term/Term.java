@@ -424,7 +424,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         if (vc != 0)
             return vc;
 
-        int oc = Integer.compareUnsigned(this.opX(), y.opX());
+        Op op = this.op();
+        int oc = Integer.compareUnsigned(op.id, y.op().id);
         if (oc != 0)
             return oc;
 
@@ -453,7 +454,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         } else {
 
             int c = Subterms.compare(subterms(), y.subterms());
-            return c != 0 ? c : Integer.compare(dt(), y.dt());
+            return c != 0 ? c : (op.temporal ? Integer.compare(dt(), y.dt()) : 0);
         }
     }
 
@@ -650,11 +651,13 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         s.hash = Util.hashCombine(s.hash, hashCode());
     }
 
-    default Term the() {
+    @Nullable default Term the() {
         if (this instanceof The)
             return this;
-        else
-            throw new RuntimeException(getClass() + " does not support the()");
+        else {
+            return null;
+            //throw new RuntimeException(getClass() + " does not support the()");
+        }
     }
 
     default boolean equalsNeg(Term t) {

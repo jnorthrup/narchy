@@ -149,7 +149,7 @@ public class Evaluation {
 //                z = False; //TODO maybe record what part causes the falsity
 
                 //determined absolutely true or false: implies that this is the answer to a question
-                return $.funcFast(TRUE, y == False ? x.neg() : x);
+                return $.func(TRUE, y == False ? x.neg() : x);
 
                 //return hasFalse ? False : True;
             }

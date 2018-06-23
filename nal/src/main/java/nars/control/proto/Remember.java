@@ -106,7 +106,7 @@ public final class Remember extends NativeTask {
 
     public void forget(Task x) {
         if (remembered.removeInstance(x)) {
-            throw new TODO();
+            //throw new TODO();
             //TODO filter next tasks with any involving that task
         }
         add(x, this.forgotten);
@@ -114,7 +114,7 @@ public final class Remember extends NativeTask {
 
     public void remember(Task x) {
         if (forgotten.removeInstance(x)) {
-            throw new TODO();
+            //throw new TODO();
             //TODO filter next tasks with any involving that task
         }
         if (add(x, this.remembered))

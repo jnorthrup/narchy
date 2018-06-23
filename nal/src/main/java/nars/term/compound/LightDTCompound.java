@@ -73,6 +73,11 @@ public class LightDTCompound implements SeparateSubtermsCompound {
         this.hashDT = dt != DTERNAL ? Util.hashCombine(baseHash, dt) : baseHash;
     }
 
+//    @Override
+//    public Term the() {
+//        throw new TODO();
+//    }
+
     @Override
     public int varQuery() {
         return ref.varQuery();

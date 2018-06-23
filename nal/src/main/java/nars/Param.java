@@ -76,15 +76,18 @@ public abstract class Param {
 
     public static final PriMerge termlinkMerge =
             PriMerge.plus;
+            //PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.avgGeoFast;
-            //PriMerge.max;
+            //PriMerge.avgGeoFast;
+            PriMerge.max;
             //PriMerge.plus;
+            //PriMerge.or;
 
     /** for equivalent tasks */
     public static final PriMerge taskEquivalentMerge =
-            PriMerge.avgGeoSlow;
+            PriMerge.avg;
+            //PriMerge.avgGeoSlow;
 
     /**
      * budget factor for double-premise derivations: depends on the task and belief budget
@@ -159,7 +162,7 @@ public abstract class Param {
      * TTL = 'time to live'
      */
 
-    public final IntRange deriveBranchTTL = new IntRange(TTL_MIN*2, 0, TTL_MIN*16);
+    public final IntRange deriveBranchTTL = new IntRange(TTL_MIN*2-1, 0, TTL_MIN*16);
 
 
     /** extends the time all unit tests are allowed to run for.
@@ -405,9 +408,9 @@ public abstract class Param {
     public static double evi(double evi, double dt, long dur) {
 
 
-        //return evi / (1.0 + (dt / dur));
+        return evi / (1.0 + (dt / dur));
+        //return evi * 1/(Math.log(1+((dt/dur)*0.5))*(dt/dur)+1); //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLyhsb2coMSsoeCowLjUpKSooeCkrMSleMC41IiwiY29sb3IiOiIjMjExNUFCIn0seyJ0eXBlIjowLCJlcSI6IjEvKDEreCkiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIyLjYzMDEyOTMyODgxMzU2ODUiLCIxOC44ODAxMjkzMjg4MTM1MzUiLCItMy45NTk4NDE5MDg3NzE5MTgiLCI2LjA0MDE1ODA5MTIyODA1NyJdLCJzaXplIjpbNjQ4LDM5OF19XQ--
         //return evi * (Util.tanhFast((float) (-(dt/dur)+1))+1)/2; //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIodGFuaCgteCsyKSsxKS8yIiwiY29sb3IiOiIjMjExNUFCIn0seyJ0eXBlIjowLCJlcSI6IjEvKDEreCkiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsInNpemUiOls2NDgsMzk4XX1d
-        return evi * 1/(Math.log(1+((dt/dur)*0.5))*(dt/dur)+1); //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLyhsb2coMSsoeCowLjUpKSooeCkrMSleMC41IiwiY29sb3IiOiIjMjExNUFCIn0seyJ0eXBlIjowLCJlcSI6IjEvKDEreCkiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIyLjYzMDEyOTMyODgxMzU2ODUiLCIxOC44ODAxMjkzMjg4MTM1MzUiLCItMy45NTk4NDE5MDg3NzE5MTgiLCI2LjA0MDE1ODA5MTIyODA1NyJdLCJzaXplIjpbNjQ4LDM5OF19XQ--
         //return evi / (1.0 + Math.log(1 + dt / dur));
 
         

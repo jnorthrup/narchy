@@ -220,10 +220,6 @@ public class PremisePatternIndex extends MapConceptIndex {
             super((Compound) HeapTermBuilder.the.compound(op, subterms.arrayShared()), dt);
         }
 
-        @Override
-        public Term the() {
-            return this;
-        }
 
         abstract protected static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 

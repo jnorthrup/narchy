@@ -51,6 +51,11 @@ public class TermlinkTemplates extends FasterList<Term> {
         concepts = (byte) (lastConcept + 1);
     }
 
+    @Override
+    protected Object[] newArray(int newCapacity) {
+        return new Term[newCapacity];
+    }
+
     /**
      * see:
      * https:

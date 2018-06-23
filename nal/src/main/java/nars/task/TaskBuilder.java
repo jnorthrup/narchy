@@ -135,7 +135,7 @@ import static nars.time.Tense.ETERNAL;
         if (punc == 0)
             throw new InvalidTaskException(this, "Unspecified punctuation");
 
-        Term cntt = t.normalize().the();
+        Term cntt = t.normalize();//.the();
         if (cntt == null)
             throw new InvalidTaskException(t, "Failed normalization");
 

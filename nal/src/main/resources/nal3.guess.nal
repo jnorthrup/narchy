@@ -8,6 +8,15 @@
     ((-,S,A) --> (-,S,B)), (B --> A), task("?") |- ((S-A) --> (S-B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     ((~,S,A) --> (~,S,B)), (B --> A), task("?") |- ((S~A) --> (S~B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
+
+//intesection question formation
+    (W --> S), (W --> B), task("?"), is(S,"|"), --subOf(S,B) |- (W --> (|,S,B)), (Punctuation:Question)
+    (W --> S), (W --> B), task("?"), is(S,"&"), --subOf(S,B) |- (W --> (&,S,B)), (Punctuation:Question)
+    (S --> W), (B --> W), task("?"), is(S,"&"), --subOf(S,B) |- ((&,S,B) --> W), (Punctuation:Question)
+    (S --> W), (B --> W), task("?"), is(S,"|"), --subOf(S,B) |- ((|,S,B) --> W), (Punctuation:Question)
+
+    //TODO difference questions
+
 ////composition on one side of a statement:
 
     (W --> S), (W --> B), task("?"), is(S,"|"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief)

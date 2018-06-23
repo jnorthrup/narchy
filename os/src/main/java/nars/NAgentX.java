@@ -81,7 +81,7 @@ abstract public class NAgentX extends NAgent {
                 narFPS;
 
         RealTime clock =
-                new RealTime.MS(false);
+                new RealTime.MS();
 
 
         clock.durFPS(clockFPS);
@@ -91,7 +91,7 @@ abstract public class NAgentX extends NAgent {
 
                 .exe(MixMultiExec.get(
                             1024,
-                             Util.concurrencyDefault(2)))
+                             Util.concurrency()))
 //                .exe(new WorkerMultiExec(
 //
 //                             new Focus.AERevaluator(new SplitMix64Random(1)),
@@ -137,7 +137,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f);
         n.questPriDefault.set(0.15f);
 
-        n.forgetRate.set(0.9f);
+        n.forgetRate.set(0.95f);
 
 //        try {
 //            InterNAR i = new InterNAR(n, 8, 0);

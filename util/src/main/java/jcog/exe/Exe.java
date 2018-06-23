@@ -26,7 +26,6 @@ public enum Exe { ;
             new AdmissionQueueWheelModel(32,
                     TimeUnit.MILLISECONDS.toNanos(1)
             ),
-            
             HashedWheelTimer.WaitStrategy.SleepWait,
             Exe::invoke);
 

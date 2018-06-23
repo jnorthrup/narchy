@@ -25,6 +25,7 @@ import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.IO;
 import nars.Op;
+import nars.The;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.anon.Anon;
@@ -109,6 +110,10 @@ public interface Compound extends Term, IPair, Subterms {
         return subterms().hashCode();
     }
 
+    @Override
+    default Term the() {
+        return this instanceof The && subterms().these() ? this : null;
+    }
 
     @Override
     default int opX() {
@@ -702,7 +707,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         
         if (
-                opX() == x.opX()
+                op() == x.op()
                         &&
                         structure() == x.structure()
         ) {

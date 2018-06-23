@@ -373,10 +373,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             throw new InvalidTaskException(t, "insufficient evidence");
 
         ObjectBooleanPair<Term> x = tryContent(t, punc, safe);
-        if (x != null)
-            return withResult.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null);
-        else
-            return null;
+        return x != null ? withResult.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null) : null;
     }
 
     /**
@@ -391,24 +388,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         Op o = t.op();
 
-        boolean negated = false;
+        t = t.normalize();
 
-
+        boolean negated;
         if (o == NEG) {
             t = t.unneg();
-            o = t.op();
-            negated = !negated;
+            negated = true;
+        } else {
+            negated = false;
         }
 
-        if (o.statement && t.hasAny(BOOL)) {
-            fail(t, "statement term containing boolean", safe);
-            return null;
-        }
-
-
-        t = t.normalize().the();
-
-        return Task.validTaskTerm(t, punc, safe) ? pair(t, negated) : null;
+        return Task.validTaskTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
     }
 
     /**

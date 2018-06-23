@@ -58,6 +58,7 @@ public class Focus extends AtomicRoulette<Causable> {
     private final MutableInteger concurrency;
 
     double timesliceNS = 1;
+    public double idleTimePerCycle = 0;
 
 
     public Focus(NAR n, Exec.Revaluator r, MutableInteger concurrency) {
@@ -160,6 +161,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
             
             double timePerSlice = this.timesliceNS = nar.loop.periodNS() * (jiffy * concurrency.intValue()) * throttle;
+            idleTimePerCycle = nar.loop.periodNS() * (1-throttle);
 
             for (int i = 0; i < n; i++) {
                 Causable c = choice.get(i);

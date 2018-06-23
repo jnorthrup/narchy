@@ -8,6 +8,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
+import nars.The;
 import nars.subterm.util.DisposableTermList;
 import nars.subterm.util.TermList;
 import nars.term.*;
@@ -845,5 +846,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return this;
     }
 
+
+    default boolean these() {
+        return AND(x -> x instanceof The);
+    }
 
 }

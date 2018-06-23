@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import nars.$;
 import nars.Op;
+import nars.The;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
@@ -43,6 +44,11 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
+    public Term the() {
+        return this instanceof The && sub().the()!=null ? this : null;
+    }
+
+    @Override
     public boolean subIs(int i, Op o) {
         return i == 0 && sub().op()==o;
     }
@@ -75,12 +81,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean equals(@Nullable Object that) {
-        if (this == that) return true;
-        if (that instanceof Term) {
-            Term x = (Term) that;
-            return hashCode() == that.hashCode() && opX() == x.opX() && x.subs() == 1 && sub().equals(x.sub(0));
-        }
-        return false;
+        return Compound.equals(this, that);
     }
 
     @Override

@@ -3,7 +3,6 @@ package nars.util.term.builder;
 import jcog.Util;
 import jcog.WTF;
 import nars.Op;
-import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -35,7 +34,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public InterningTermBuilder() {
-        this(32 * 1024);
+        this(64 * 1024);
     }
 
     public InterningTermBuilder(int sizePerOp) {
@@ -54,7 +53,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     private HijackTermCache newOpCache(Function<InternedCompound, Term> f, int capacity) {
-        return new HijackTermCache(f, capacity, 3);
+        return new HijackTermCache(f, capacity, 4);
     }
 
     private Term apply(InternedCompound x) {
@@ -84,7 +83,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Subterms subterms(Op inOp, Term... s) {
 
-        if (inOp != PROD && internable(s)) {
+        if (inOp != PROD && internable(s, false)) {
 
             return compound(PROD, s).subterms();
         } else {
@@ -99,29 +98,17 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-//    private boolean internable(Term x) {
-//        return (x instanceof The) && (
-//            (x instanceof Atomic) || (internable(x.op(), x.dt(),true) && internable(x.subterms()))
-//        );
-//    }
 
-//    private boolean internable(Subterms x) {
-//        return x instanceof The.FullyInternable || x.AND(this::internableSubterm);
+//    private Term internableSubterm(Term x) {
+//        return (x instanceof The) &&
+//                ((x instanceof Atomic)
+//                ||
+//                internable(x.op(), x.dt(), false)) ? x.the() : null;
 //    }
-
-    private boolean internableSubterm(Term x) {
-        return (x instanceof The) &&
-                (x instanceof Atomic)
-                ||
-                (
-                        internable(x.op(), x.dt(), false) &&
-                                x.AND(this::internableSubterm)
-                );
-    }
 
     /** root */
     private boolean internable(Op op, int dt, Term[] u) {
-        return internable(op, dt, true) && internable(u);
+        return internable(op, dt, true) && internable(u, true);
     }
 
 
@@ -132,19 +119,30 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
 
-    private boolean internable(Term[] subterms) {
+    private boolean internable(Term[] subterms, boolean resolve) {
         if (subterms.length == 0)
             return false;
 
-        for (Term x : subterms) {
-
-            if (!internableSubterm(x))
-                return false;
-
+        //resolve as many subterms as possible
+        boolean internable = true;
+        for (int i = 0, subtermsLength = subterms.length; i < subtermsLength; i++) {
+            Term x = subterms[i];
+            Term y = x.the();
+            if (y == null) {
+                internable = false;
+                continue;
+            } if (resolve) {
+                HijackTermCache tt = terms[y.op().id];
+                if (tt!=null) {
+                    Term z = tt.getIfPresent(InternedCompound.get(y));
+                    if (z != y && z!=null)
+                        y = z;
+                }
+            }
+            subterms[i] = y;
         }
 
-
-        return true;
+        return internable;
     }
 
 //    @Override protected Term resolve(Term x){

@@ -31,6 +31,7 @@ public class LightCompound implements SeparateSubtermsCompound, AbstractLightCom
         this.hash = s.hashWith(o);
     }
 
+
     @Override
     public boolean equals(Object obj) {
         return Compound.equals(this, obj);

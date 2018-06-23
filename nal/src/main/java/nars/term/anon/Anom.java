@@ -57,24 +57,24 @@ public final class Anom extends Int implements AnonID {
     }
 
     
-    @Override
-    public int compareTo(Term yy) {
-        if (this == yy) return 0;
-
-        Term y = yy.term();
-        if (y instanceof Anom) {
-            return Integer.compare(id, ((Int) y).id);
-        } else {
-            int vc = Integer.compare(y.volume(), this.volume());
-            if (vc != 0)
-                return vc;
-
-            int oc = Integer.compare(this.opX(), y.opX());
-            assert (oc != 0);
-            return oc;
-        }
-        
-    }
+//    @Override
+//    public int compareTo(Term yy) {
+//        if (this == yy) return 0;
+//
+//        Term y = yy.term();
+//        if (y instanceof Anom) {
+//            return Integer.compare(id, ((Int) y).id);
+//        } else {
+//            return +1;
+////            int vc = Integer.compare(y.volume(), this.volume());
+////            if (vc != 0)
+////                return vc;
+////
+////            int oc = Integer.compare(this.opX(), y.opX());
+////            assert (oc != 0);
+////            return oc;
+//        }
+//    }
 
     static final Anom[] the = Util.map(0, Byte.MAX_VALUE, (i) -> new Anom((byte) i), Anom[]::new);
     static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, (i) -> new Neg(the[i]), Term[]::new);

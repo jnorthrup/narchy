@@ -2045,12 +2045,19 @@ public enum Util {
         };
     }
 
-    public static int concurrencyDefault() {
-        return concurrencyDefault(1);
-    }
+    public static int concurrency() {
+        int minThreads = 2;
+        int maxThreads = Integer.MAX_VALUE;
 
-    public static int concurrencyDefault(int reserveForOtherThreads) {
-        return Math.max(1, Runtime.getRuntime().availableProcessors() - reserveForOtherThreads);
+        String specifiedThreads = System.getenv("threads");
+        int threads;
+        if (specifiedThreads != null)
+            threads = Texts.i(specifiedThreads);
+        else
+            threads = Runtime.getRuntime().availableProcessors() - 1;
+
+        return Util.clamp(
+                threads, minThreads, maxThreads);
     }
 
     /**
