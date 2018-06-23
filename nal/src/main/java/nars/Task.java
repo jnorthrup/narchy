@@ -416,10 +416,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
             subStart = Tense.dither(subStart, n);
             subEnd = Tense.dither(subEnd, n);
-            Truth ttt = t.truth(subStart, subEnd, n.dur()).dither(n);
+            Truth tt = t.truth(subStart, subEnd, n.dur());
 
-            return (ttt != null) ?
-                    new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, ttt.negIf(negated)) : null;
+            return (tt != null) ?
+                    new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, tt.negIf(negated)) : null;
         }
 
         return negated ? Task.negated(t) : t;

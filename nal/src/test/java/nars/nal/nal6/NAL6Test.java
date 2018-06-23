@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1500;
+    private static final int cycles = 400;
 
     @BeforeEach
     void setup() {
@@ -25,8 +25,8 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(18);
-        n.confMin.set(0.1f);
+        n.termVolumeMax.set(20);
+        n.confMin.set(0.2f);
         //n.termlinkBalance.set(0.25f);
 
         return n;
@@ -230,6 +230,7 @@ public class NAL6Test extends NALTest {
                 0.81f);
 
     }
+
     @Test
     void variable_elimination_analogy_substIfUnifyOther() {
         //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
@@ -240,6 +241,7 @@ public class NAL6Test extends NALTest {
                 0.81f);
 
     }
+
     @Test
     void variable_elimination_analogy_substIfUnify_Neg() {
 

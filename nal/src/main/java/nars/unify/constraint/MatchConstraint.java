@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static nars.Op.SETe;
-
 
 /** must be stateless */
 public abstract class MatchConstraint extends AbstractPred<Derivation> {
@@ -36,6 +34,10 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
     @Override
     abstract public float cost();
 
+    @Override
+    public Term the() {
+        return null;
+    }
 
 
     @Nullable
@@ -169,7 +171,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         private final MatchConstraint[] cache;
 
         private CompoundConstraint(MatchConstraint[] c) {
-            super(c[0].x, $.func(UnifyIf, c[0].x, SETe.the(c)));
+            super(c[0].x, $.funcFast(UnifyIf, c[0].x, $.sFast(c)));
             this.cache = c;
 
             if (Param.DEBUG) {

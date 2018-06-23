@@ -260,13 +260,20 @@ public enum Terms {
      * non-symmetric use only
      */
     public static boolean hasAllExcept(Termlike requirer, Termlike required, int maskedBits) {
-        int xStruct = requirer.structure() & ~(maskedBits);
+        return hasAllExcept(requirer.structure(), required.structure(), maskedBits);
+    }
+
+    public static boolean hasAllExcept(int requirer, int required, int maskedBits) {
+        int xStruct = requirer & ~(maskedBits);
         return xStruct == 0 ||
-               Op.hasAll(required.structure() & ~(maskedBits), xStruct);
+               Op.hasAll(required & ~(maskedBits), xStruct);
     }
 
     public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
         return u.symmetric || hasAllExcept(x, y, u.typeBits());
+    }
+    public static boolean commonStructureTest(int structure, Termlike y, Unify u) {
+        return u.symmetric || hasAllExcept(structure, y.structure(), u.typeBits());
     }
 
     /** finds the shortest deterministic subterm path for extracting a subterm in a compound.

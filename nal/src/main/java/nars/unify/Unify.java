@@ -116,7 +116,7 @@ public abstract class Unify extends Versioning implements Subst {
      */
     @Nullable
     @Override
-    public final Term xy(Term x0) {
+    public final Term xy(/*Variable*/Term x0) {
         if (!(x0 instanceof Variable))
             return null;
         return xy.get(x0);
@@ -280,7 +280,7 @@ public abstract class Unify extends Versioning implements Subst {
         private boolean valid(Term x) {
             Versioned<MatchConstraint> c = this.constraints;
             if (c != null) {
-                int s = c.size();
+//                int s = c.size();
                 for (MatchConstraint aC: c)
                     if (aC.invalid(x, Unify.this))
                         return false;

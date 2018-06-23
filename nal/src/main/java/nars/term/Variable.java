@@ -68,7 +68,7 @@ public interface Variable extends Atomic {
             if (y instanceof Variable) {
                 return unifyVar((Variable) y, u, true);
             } else {
-                return u.putXY(this, y);
+                return u.matchType(this.op()) && u.putXY(this, y);
             }
         }
     }

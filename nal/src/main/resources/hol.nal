@@ -1,0 +1,5 @@
+//Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
+
+  (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric)
+
+  (Z ==> X), (Z ==> Y), neqRCom(X,Y) |- (polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized)

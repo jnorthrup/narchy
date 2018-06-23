@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.VAR_QUERY;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * Defines the conditions used in an instance of a derivation
@@ -36,12 +37,13 @@ public class Premise {
 
     final PriReference<Term> termLink;
 
-    /** specially constructed hash that is useful for sorting premises by:
-     *  a) task equivalency (hash)
-     *  a) task term equivalency (hash)
-     *  b) belief term equivalency (hash)
-     *
-     *  designed to maximize sequential repeat of derived task term
+    /**
+     * specially constructed hash that is useful for sorting premises by:
+     * a) task equivalency (hash)
+     * a) task term equivalency (hash)
+     * b) belief term equivalency (hash)
+     * <p>
+     * designed to maximize sequential repeat of derived task term
      */
     public final long hash;
 
@@ -54,23 +56,24 @@ public class Premise {
 
         this.hash =
                 //task's lower 23 bits in bits 40..64
-                (((long)task.hashCode()) << (64-24))
-                | //task term's lower 20 bits in bits 20..40
-                (((long)(task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
-                | //termlink's lower 20 bits in bits 0..20
-                ((termLink.hashCode() & 0b00000000000011111111111111111111));
+                (((long) task.hashCode()) << (64 - 24))
+                        | //task term's lower 20 bits in bits 20..40
+                        (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
+                        | //termlink's lower 20 bits in bits 0..20
+                        ((termLink.hashCode() & 0b00000000000011111111111111111111));
     }
 
     public Term term() {
         return termLink.get();
     }
 
-    /** variable types unifiable in premise formation */
+    /**
+     * variable types unifiable in premise formation
+     */
     final static int var =
             //Op.VAR_QUERY.bit;
-            Op.VariableBits; //all
+              Op.VariableBits; //all
 
-            
 
     /**
      * resolve the most relevant belief of a given term/concept
@@ -105,48 +108,47 @@ public class Premise {
 //            if (taskTerm.op() == bo) {
 //            } else {
 
-                if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
+            if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
 
-                    Term _beliefTerm = beliefTerm;
-                    final Term[] unifiedBeliefTerm = new Term[]{null};
-                    UnifySubst u = new UnifySubst(var==VAR_QUERY.bit ? VAR_QUERY : null /* all */, d.nar, (y) -> {
-                        if (y.op().conceptualizable) {
-                            y = //y.normalize().unneg();
-                                 y.unneg();
+                Term _beliefTerm = beliefTerm;
+                final Term[] unifiedBeliefTerm = new Term[]{null};
+                UnifySubst u = new UnifySubst(var == VAR_QUERY.bit ? VAR_QUERY : null /* all */, d.nar, (y) -> {
+                    if (y.op().conceptualizable) {
+                        y = //y.normalize().unneg();
+                                y.unneg();
 
 
-                            if (!y.equals(_beliefTerm)) {
-                                unifiedBeliefTerm[0] = y;
-                                return false;  //done
-                            }
+                        if (!y.equals(_beliefTerm)) {
+                            unifiedBeliefTerm[0] = y;
                         }
-                        return true; 
-                    }, matchTTL);
-
-                    u.symmetric = false;
-
-                    beliefConceptCanAnswerTaskConcept = u.unify(taskTerm, beliefTerm, true).matches() > 0;
-
-                    if (unifiedBeliefTerm[0] != null) {
-                        beliefTerm = unifiedBeliefTerm[0];
-                        unifiedBelief = true;
+                         return false;  //done
                     }
+                    return true;
+                }, matchTTL);
 
+                u.symmetric = false;
 
+                beliefConceptCanAnswerTaskConcept = u.unify(taskTerm, beliefTerm, true).matches() > 0;
+
+                if (unifiedBeliefTerm[0] != null) {
+                    beliefTerm = unifiedBeliefTerm[0];
+                    unifiedBelief = true;
                 }
+
+
+            }
 //            }
         }
 
-        
+
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 
         //if (unifiedBelief && belief!=null) linkVariable(unifiedBelief, n, beliefConcept);
 
-        return d.reset(task, belief, belief!=null ? belief.term() : beliefTerm.unneg());
+        return d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
     }
 
     @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
-        
 
 
         NAR n = d.nar;
@@ -154,13 +156,13 @@ public class Premise {
         Task belief = null;
 
         Concept beliefConcept = beliefTerm.op().conceptualizable ?
-                n.conceptualize(beliefTerm) 
+                n.conceptualize(beliefTerm)
                 :
                 null;
 
         if (beliefConcept != null) {
             if (beliefConcept instanceof AliasConcept) {
-                beliefConcept = ((AliasConcept)beliefConcept).abbr;
+                beliefConcept = ((AliasConcept) beliefConcept).abbr;
                 beliefTerm = beliefConcept.term();
             }
 
@@ -171,7 +173,7 @@ public class Premise {
                     //Tense.dither(task.end(), n);
                     task.end();
 
-            if (!beliefTerm.hasVarQuery()) { 
+            if (!beliefTerm.hasVarQuery()) {
 
                 final BeliefTable bb = beliefConcept.beliefs();
                 Predicate<Task> beliefFilter = null;
@@ -183,24 +185,25 @@ public class Premise {
                                         beliefConcept.goals() :
                                         bb;
 
-                        beliefFilter = stampFilter(d); 
+                        beliefFilter = stampFilter(d);
 
                         if (!answerTable.isEmpty()) {
-                            
+
                             Task match = answerTable.answer(taskStart, taskEnd, beliefTerm, beliefFilter, n);
                             if (!validMatch(match)) match = null;
                             if (match == null) {
 
-                                
+
                                 long[] focus = n.timeFocus();
-                                if (focus[0] != taskStart && focus[1] != taskEnd) {
-                                    
+                                if (taskStart != ETERNAL && focus[0] != taskStart && focus[1] != taskEnd) {
+
                                     match = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
-                                    if (!validMatch(match)) match = null; 
+                                    if (!validMatch(match)) match = null;
                                 }
 
                                 if (match == null) {
-                                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n); 
+                                    //try, allowing overlap
+                                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n);
                                     if (!validMatch(match)) match = null;
                                 }
                             }
@@ -208,7 +211,6 @@ public class Premise {
                             if (match != null) {
                                 assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-                                
 
                                 @Nullable Task answered = task.onAnswered(match, n);
                                 if (answered != null) {
@@ -229,8 +231,7 @@ public class Premise {
 
                 if ((belief == null) && !bb.isEmpty()) {
 
-                    if (beliefFilter==null) beliefFilter = stampFilter(d);
-
+                    if (beliefFilter == null) beliefFilter = stampFilter(d);
 
 
                     belief = bb.match(taskStart, taskEnd, beliefTerm, beliefFilter, n);
@@ -253,8 +254,7 @@ public class Premise {
                     }
 
                 }
-             }
-
+            }
 
 
         }
@@ -275,12 +275,12 @@ public class Premise {
                 Term lessConstantTerm = originalBeliefConcept.term();
 
 
-                beliefConcept.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2f));
+                beliefConcept.termlinks().putAsync(new PLink<>(lessConstantTerm, pri / 2f));
 
-                originalBeliefConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2f));
+                originalBeliefConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri / 2f));
 
 
-                if (taskConcept !=null)
+                if (taskConcept != null)
                     taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
 
 
@@ -290,16 +290,10 @@ public class Premise {
 
     private boolean validMatch(@Nullable Task x) {
         return x != null && !x.isDeleted() && !x.equals(task);
-
-
-
-
-
-
     }
 
     private Predicate<Task> stampFilter(Derivation d) {
-        ImmutableLongSet taskStamp = 
+        ImmutableLongSet taskStamp =
                 Stamp.toSet(task);
         return t -> !Stamp.overlapsAny(taskStamp, t.stamp());
     }
@@ -308,12 +302,12 @@ public class Premise {
     @Override
     public boolean equals(Object obj) {
         return this == obj ||
-                (hashCode() == obj.hashCode() && ((Premise)obj).task.equals(task) && ((Premise)obj).term().equals(term()));
+                (hashCode() == obj.hashCode() && ((Premise) obj).task.equals(task) && ((Premise) obj).term().equals(term()));
     }
 
     @Override
     public final int hashCode() {
-        return (int) (hash>>10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */  ;
+        return (int) (hash >> 10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */;
     }
 
     @Override
@@ -323,32 +317,6 @@ public class Premise {
                 " * " + term() +
                 ')';
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

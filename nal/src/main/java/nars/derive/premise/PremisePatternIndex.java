@@ -60,7 +60,6 @@ public class PremisePatternIndex extends MapConceptIndex {
             return new PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive(seed.op(), seed.dt(), e, v);
         } else {
             return new PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear(seed.op(), seed.dt(), e, v);
-
         }
 
     }
@@ -101,21 +100,7 @@ public class PremisePatternIndex extends MapConceptIndex {
     /*@NotNull*/
     private Term patternify(/*@NotNull*/ Compound x) {
 
-        return new TermTransform.NegObliviousTermTransform() {
-
-            @Override
-            public @Nullable Term transformCompound(Compound x) {
-                x = (Compound) TermTransform.NegObliviousTermTransform.super.transformCompound(
-                        (Compound) Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x)
-                );
-
-                @Nullable Ellipsislike e = firstEllipsis(x.subterms());
-                if (e!=null) {
-                    return ellipsis(x, x.subterms(), (Ellipsis) e);
-                }
-                return x;
-            }
-        }.transformCompound(x);
+        return Ellipsify.transformCompound(x);
 
 //        if (x.op() == NEG)
 //            return patternify(x.unneg()).neg();
@@ -168,7 +153,7 @@ public class PremisePatternIndex extends MapConceptIndex {
     }
 
     public final Term intern(Term x) {
-        return get(x, true).term();
+        return (Term) get(x, true); //.term();
     }
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
@@ -245,12 +230,13 @@ public class PremisePatternIndex extends MapConceptIndex {
         abstract protected static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 
             final Ellipsis ellipsis;
-
+            private final int subtermStructure;
 
 
             PremisePatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
                 super(seed, dt, subterms);
 
+                this.subtermStructure = subterms.structure();
                 this.ellipsis = ellipsis;
 
             }
@@ -259,6 +245,10 @@ public class PremisePatternIndex extends MapConceptIndex {
 
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
+
+                if (!Terms.commonStructureTest(subtermStructure, y.subterms(), u))
+                    return false;
+
                 return matchEllipsis(y, u);
             }
         }
@@ -509,4 +499,20 @@ public class PremisePatternIndex extends MapConceptIndex {
 
 
     }
+
+    private static final TermTransform.NegObliviousTermTransform Ellipsify = new TermTransform.NegObliviousTermTransform() {
+
+        @Override
+        public @Nullable Term transformCompound(Compound x) {
+            x = (Compound) NegObliviousTermTransform.super.transformCompound(
+                    (Compound) Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x)
+            );
+
+            @Nullable Ellipsislike e = firstEllipsis(x.subterms());
+            if (e!=null) {
+                return ellipsis(x, x.subterms(), (Ellipsis) e);
+            }
+            return x;
+        }
+    };
 }

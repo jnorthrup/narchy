@@ -185,7 +185,7 @@ public class Lab<X> {
      */
     public Opti<X> optimize(Consumer<X> procedure, FloatFunction<X> goal) {
         return new Opti<>(optimize(procedure,
-                new Goal<X>(goal)));
+                new Goal<>(goal)));
     }
 
 
@@ -194,10 +194,10 @@ public class Lab<X> {
      * provies procedure and goal; no additional experiment sensors
      */
     public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, FloatFunction<E> goal) {
-        return optimize(procedure, new Goal<E>(goal), List.of());
+        return optimize(procedure, new Goal<>(goal), List.of());
     }
     public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, ToDoubleFunction<E> goal) {
-        return optimize(procedure, new Goal<E>(goal), List.of());
+        return optimize(procedure, new Goal<>(goal), List.of());
     }
 
     /**
@@ -214,7 +214,7 @@ public class Lab<X> {
 
     private Optimization.OptimizationStrategy newDefaultOptimizer()
     {
-        return newDefaultOptimizer(512);
+        return newDefaultOptimizer(64);
     }
 
     private Optimization.OptimizationStrategy newDefaultOptimizer(int maxIter) {

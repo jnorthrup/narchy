@@ -222,37 +222,43 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
         return equals(y)
                 ||
-                (preUnify(this, y) && unifySubterms(y, u))
+                (preUnify(this, y, u) && unifySubterms(y, u))
                 ||
                 (u.symmetric && y.unifyReverse(this, u));
     }
 
-    static boolean preUnify(Term x, Term y) {
+    static boolean preUnify(Term x, Term y, Unify u) {
         Op op;
         if ((op = x.op()) == y.op()) {
             if (op.temporal) {
                 int xdt = x.dt();
+                if (xdt == XTERNAL || xdt == DTERNAL) return true;
                 int ydt = y.dt();
                 if (xdt==ydt) return true;
-                if (xdt == XTERNAL || ydt == XTERNAL) return true;
-                if (xdt == DTERNAL || ydt == DTERNAL) return true;
+                if (ydt == XTERNAL || ydt == DTERNAL) return true;
                 return false;//strict equality
-            } else
+            } else {
+
                 return true;
+            }
         }
         return false;
     }
 
-    default boolean unifySubterms(Term ty, Unify u) {
-        if (!Terms.commonStructureTest(this, ty, u))
-            return false;
+    default boolean unifySubterms(Term y, Unify u) {
 
-        Subterms xsubs = subterms();
-        Subterms ysubs = ty.subterms();
+        Subterms xx = subterms();
+        Subterms yy = y.subterms();
+        if (xx == yy)
+            return true;
+
+        if (!Terms.commonStructureTest(xx, yy, u))
+            return false;
 
         int xs, ys;
-        if ((xs = xsubs.subs()) != (ys = ysubs.subs()))
+        if ((xs = xx.subs()) != (ys = yy.subs()))
             return false;
+
 
 //        if (op().temporal) {
 //
@@ -280,15 +286,15 @@ public interface Compound extends Term, IPair, Subterms {
 
 //        }
 
-        if (isCommutative()) {
 
-            return xsubs.unifyCommute(ysubs, ty.isCommutative(), u);
+        if (xs == 1) {
+            return xx.sub(0).unify(yy.sub(0), u);
+        }
+
+        if (isCommutative()) {
+            return xx.unifyCommute(yy, y.isCommutative(), u);
         } else {
-            if (xs == 1) {
-                return sub(0).unify(ysubs.sub(0), u);
-            } else {
-                return xsubs.unifyLinear(ysubs, u);
-            }
+            return xx.unifyLinear(yy, u);
         }
     }
 

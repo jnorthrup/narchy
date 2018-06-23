@@ -40,7 +40,7 @@ abstract public class RelationConstraint extends MatchConstraint {
         Term yy = f.transform(yUnneg);
         return yy != yUnneg
                 &&
-               invalid(xx, yy.term().negIf(yNeg));
+               invalid(xx, yy.negIf(yNeg));
     }
 
     abstract public boolean invalid(Term xx, Term yy);

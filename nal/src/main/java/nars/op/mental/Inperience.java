@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.bag.leak.LeakBack;
-import nars.concept.TaskConcept;
+import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
@@ -74,15 +74,16 @@ public class Inperience extends LeakBack {
      */
     static Term reify(Task t, NAR nar) {
         byte punc = t.punc();
+        Term tt = t.term().eval(nar, true);
         if (punc == QUEST || punc == QUESTION) {
-            return reifyQuestion(t.term(), punc, nar);
+            return reifyQuestion(tt, punc, nar);
         } else {
-            return reifyBelief(t, nar);
+            return reifyBelief(t, tt, nar);
         }
     }
 
-    private static Term reifyBelief(Task t, NAR nar) {
-        TaskConcept c = (TaskConcept) t.concept(nar, true);
+    private static Term reifyBelief(Task t, Term tt, NAR nar) {
+        Concept c = nar.conceptualizeDynamic(tt);
         if (c == null)
             return Null;
 
@@ -165,13 +166,13 @@ public class Inperience extends LeakBack {
 
         float xPri = x.priElseZero();
 
+
         Term c = reify(x, nar).normalize();
         if (!c.op().conceptualizable)
             return 0;
-        Term d = c.eval(nar, true);
-        if (c!=d && !d.op().conceptualizable)
+
+        if (c.op().conceptualizable)
             return 0;
-        c = d;
 
         long start = x.start();
         long end;

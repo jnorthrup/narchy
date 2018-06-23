@@ -6,8 +6,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atomic;
-import nars.term.atom.Int;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 
@@ -48,6 +46,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
         normalizes = newOpCache(this::normalize, cacheSizePerOp);
         conj = newOpCache(this::_conj, cacheSizePerOp);
         statements = newOpCache(this::_statement, cacheSizePerOp*3);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            System.out.println(InterningTermBuilder.this + "\n" + summary());
+        }));
     }
 
 
@@ -138,9 +140,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         for (int i = 0, subtermsLength = subterms.length; i < subtermsLength; i++) {
             Term x = subterms[i];
             Term y = x.the();
-            if (y == null) {
+            if (y == null)
                 return false;
-            }
         }
 
         return true;

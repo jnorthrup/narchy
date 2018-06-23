@@ -100,16 +100,16 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
         Term[] precon = ref.sub(0).arrayShared();
-        Term[] postcons = ref.sub(1).arrayShared();
+        Term[] postcon = ref.sub(1).arrayShared();
 
 
-        this.taskPattern = INDEX.intern(INDEX.patternify(ref.sub(0).sub(0)));
-        this.beliefPattern = INDEX.intern(INDEX.patternify(ref.sub(0).sub(1)));
+        this.taskPattern = INDEX.intern(INDEX.patternify(precon[0]));
+        this.beliefPattern = INDEX.intern(INDEX.patternify(precon[1]));
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        this.concPattern = INDEX.intern(INDEX.patternify(ref.sub(1).sub(0)));
+        this.concPattern = INDEX.intern(INDEX.patternify(postcon[0]));
 
 
 
@@ -357,7 +357,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         byte puncOverride = 0;
         Occurrify.TaskTimeMerge time = Occurrify.mergeDefault;
 
-        Term[] modifiers = Terms.sorted(postcons[1].arrayShared());
+        Term[] modifiers = Terms.sorted(postcon[1].arrayShared());
         boolean varIntro = false;
         for (Term m: modifiers) {
             if (m.op() != Op.INH)
@@ -557,7 +557,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         this.varIntro = varIntro;
         this.taskPunc = taskPunc;
 
-        this.postcons = postcons[0];
+        this.postcons = postcon[0];
         this.puncOverride = puncOverride;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;

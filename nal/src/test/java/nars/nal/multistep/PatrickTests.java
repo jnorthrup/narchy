@@ -50,9 +50,9 @@ class PatrickTests extends NALTest {
 
         tt
 
-                .believe("(((REPRESENT,_,$3):$1 && (REPRESENT,_,$4):$2) ==> REPRESENT(($1,$2),($3,$4)))")
-                .believe("(REPRESENT,_,ANIMAL):cat")
-                .believe("(REPRESENT,_,EATING):eats")
+                .believe("(( ($1-->(REPRESENT,_,$3)) && ($2-->(REPRESENT,_,$4))) ==> REPRESENT(($1,$2),($3,$4)))")
+                .believe("(cat-->(REPRESENT,_,ANIMAL))")
+                .believe("(eats-->(REPRESENT,_,EATING))")
 
 
 

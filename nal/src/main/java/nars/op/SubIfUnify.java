@@ -145,7 +145,6 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
                 output = null; 
             } else {
                 SubUnify su = new MySubUnify(op, strict);
-                su.symmetric = false;
                 output = su.tryMatch(c, x, y);
                 parent.use(TTL_UNIFY + (parent.ttl - su.ttl));
             }

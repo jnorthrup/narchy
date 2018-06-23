@@ -37,14 +37,16 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
 
-    @Override
-    public boolean these() {
-        return true;
+
+    /** creates an immutable instance of this */
+    public Subterms theSubterms() {
+        return Op.terms.subterms(this);
     }
 
+
     @Override
-    public FasterList<Term> toList() {
-        return clone();
+    public TermList toList() {
+        return new TermList(this);
     }
 
     @Override
@@ -57,10 +59,6 @@ public class TermList extends FasterList<Term> implements Subterms {
         return toArray(Op.EmptyTermArray);
     }
 
-    /** creates an immutable instance of this */
-    public Subterms theSubterms() {
-        return Op.terms.subterms(this);
-    }
 
     @Override
     public int subs() {

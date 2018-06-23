@@ -19,6 +19,7 @@ import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
+import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
@@ -117,7 +118,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return '(' + Joiner.on(',').join(subterms) + ')';
     }
 
-    public static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+    static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
 
         //if (a.equals(b)) return 0;
 
@@ -220,8 +221,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return toSetSorted(x -> !t.test(x));
     }
 
-    default /*@NotNull*/ FasterList<Term> toList() {
-        FasterList<Term> u = new FasterList(subs());
+    default /*@NotNull*/ TermList toList() {
+        TermList u = new TermList(subs());
         forEach(u::add);
         return u;
     }
@@ -553,115 +554,139 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default boolean unifyCommute(Subterms y, boolean yCommutative, /*@NotNull*/ Unify u) {
 
-        int xv = u.vars(this);
-        int yv = u.vars(y);
+
         if (yCommutative) {
-            if (xv == 0 && yv == 0) {
+            //if (xv == 0 && yv == 0) {
                 if (u.constant(this) && u.constant(y))
                     return y.equals(this);
-            }
+            //}
         }
+        final TermList xx = toList();  /** assume x is a sorted commutive compound */
+        final TermList yy = y.toList(); /* assume y is a sorted commutive compound */
 
-        int s = subs();
-        final int originalS = s;
-        if ((xv == 0 && yv == s) || (xv == s && yv == 0)) {
+        ImmutableSet<Term> xy = Sets.immutable.ofAll(yy).intersect(Sets.immutable.ofAll(xx));
+        Set<Term> xys= xy.castToSet();
+        xx.removeAll(xys);
+        yy.removeAll(xys);
 
+//        //TODO choose whether better to iterate xx or yy, and then inside whether to unify one direction or the other */
+//        yy.removeIf(ys -> {
+//            int nextIndexOf = xx.detectIndex((xs) -> xs.equals(ys));
+//            if (nextIndexOf!=-1) {
+//                xx.remove(nextIndexOf);
+//                return true;
+//            }
+//            return false; //keep
+//        });
 
-            u.termutes.add(new CommutivePermutations(this, y));
+        int xn = xx.size();
+        int yn = yy.size();
+        if (xn == yn) {
+
+            if (yn == 0) {
+                return true;
+            } else if (yn == 1) {
+                return xx.get(0).unify(yy.get(0), u);
+            }
+
+            /** all consts to all variables, m:n
+             *  TODO add optional heuristic interface here to provide bias for certain ones
+             * */
+            u.termutes.add(new CommutivePermutations(xx, yy));
             return true;
         }
 
+        return false;
 
-        final SortedSet<Term> xx = toSetSorted();
-
-        if (!yCommutative) {
-
-            assert (s == 2);
-            Term y0 = y.sub(0);
-            boolean y0inX = xx.contains(y0);
-            Term y1 = y.sub(1);
-            boolean y1inX = xx.contains(y1);
-
-            boolean y0c = u.constant(y0);
-            boolean y1c = u.constant(y1);
-
-            if (y0inX && y1inX && (y0c && y1c)) {
-                return true;
-            }
-
-            if ((!y0inX && !y1inX) || (!y0c && !y1c)) {
-
-                if (u.constant(this) && (y0c && y1c))
-                    return false;
-
-
-                u.termutes.add(new CommutivePermutations(this, y));
-                return true;
-            } else {
-                if (y0c && y0inX) {
-                    if (xx.remove(y0))
-                        if (xx.isEmpty())
-                            throw new TODO();
-                    //re: java.util.NoSuchElementException
-                    //if xx.isempty then return y0.equals(y1) //removed both so must match unified both
-                    return xx.first().unify(y1, u);
-                }
-                if (y1c && y1inX) {
-                    if (xx.remove(y1))
-                        if (xx.isEmpty())
-                            throw new TODO();
-                    return xx.first().unify(y0, u);
-                }
-
-                if (u.constant(sub(0)) && u.constant(sub(1)))
-                    return false;
-                else {
-
-                    u.termutes.add(new CommutivePermutations(this, y));
-                    return true;
-                }
-            }
-
-        } else {
-
-            SortedSet<Term> yy = y.toSetSorted();
-            MutableSet<Term> xy = Sets.intersect(xx, (Set) yy);
-            if (!xy.isEmpty()) {
-
-
-                xy.removeIf(z -> !u.constant(z));
-                if (!xy.isEmpty()) {
-
-                    xx.removeAll(xy);
-                    yy.removeAll(xy);
-                    s = xx.size();
-                    if (s != yy.size()) {
-                        throw new RuntimeException("set size should have remained equal");
-                    }
-                }
-            }
-
-
-            if (s == 1) {
-
-
-                return xx.first().unify(yy.first(), u);
-
-            } else if (originalS == s) {
-
-                u.termutes.add(new CommutivePermutations(this, y));
-                return true;
-            } else {
-
-                u.termutes.add(new CommutivePermutations(
-                        $.vFast(Terms.sorted(xx.toArray(Op.EmptyTermArray))),
-                        $.vFast(Terms.sorted(yy.toArray(Op.EmptyTermArray)))
-                ));
-                return true;
-
-            }
-        }
-
+//
+//        if (!yCommutative) {
+//
+//            assert (s == 2);
+//            Term y0 = y.sub(0);
+//            boolean y0inX = xx.contains(y0);
+//            Term y1 = y.sub(1);
+//            boolean y1inX = xx.contains(y1);
+//
+//            boolean y0c = u.constant(y0);
+//            boolean y1c = u.constant(y1);
+//
+//            if (y0inX && y1inX && (y0c && y1c)) {
+//                return true;
+//            }
+//
+//            if ((!y0inX && !y1inX) || (!y0c && !y1c)) {
+//
+//                if (u.constant(this) && (y0c && y1c))
+//                    return false;
+//
+//
+//                u.termutes.add(new CommutivePermutations(this, y));
+//                return true;
+//            } else {
+//                if (y0c && y0inX) {
+//                    if (xx.remove(y0))
+//                        if (xx.isEmpty())
+//                            throw new TODO();
+//                    //re: java.util.NoSuchElementException
+//                    //if xx.isempty then return y0.equals(y1) //removed both so must match unified both
+//                    return xx.first().unify(y1, u);
+//                }
+//                if (y1c && y1inX) {
+//                    if (xx.remove(y1))
+//                        if (xx.isEmpty())
+//                            throw new TODO();
+//                    return xx.first().unify(y0, u);
+//                }
+//
+//                if (u.constant(sub(0)) && u.constant(sub(1)))
+//                    return false;
+//                else {
+//
+//                    u.termutes.add(new CommutivePermutations(this, y));
+//                    return true;
+//                }
+//            }
+//
+//        } else {
+//
+//
+//            MutableSet<Term> xy = Sets.intersect(xx, (Set) yy);
+//            if (!xy.isEmpty()) {
+//
+//
+//                xy.removeIf(z -> !u.constant(z));
+//                if (!xy.isEmpty()) {
+//
+//                    xx.removeAll(xy);
+//                    yy.removeAll(xy);
+//                    s = xx.size();
+//                    if (s != yy.size()) {
+//                        throw new RuntimeException("set size should have remained equal");
+//                    }
+//                }
+//            }
+//
+//
+//            if (s == 1) {
+//
+//
+//                return xx.first().unify(yy.first(), u);
+//
+//            } else if (originalS == s) {
+//
+//                u.termutes.add(new CommutivePermutations(this, y));
+//                return true;
+//            } else {
+//
+//                u.termutes.add(new CommutivePermutations(
+//                        $.vFast(Terms.sorted(xx)),
+//                        $.vFast(Terms.sorted(yy))
+//                ));
+//                return true;
+//
+//            }
+//        }
+//
 
     }
 

@@ -19,7 +19,6 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     transient SimpleHashSetEntry<T>[] mTable;
     transient int mSize;
     private transient int threshold;
-    private SimpleHashSetEntry<T> mEntryForNull;
 
     public SimpleHashSet() {
         mTable = EMPTY_TABLE;
@@ -88,13 +87,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     @Override
     public boolean remove(Object key) {
         if (key == null) {
-            if (mEntryForNull == null) {
-                return false;
-            } else {
-                mEntryForNull = null;
-                mSize--;
-                return true;
-            }
+            throw new NullPointerException();
         }
         int hash = secondaryHash(key);
         SimpleHashSetEntry<T>[] tab = mTable;
@@ -116,12 +109,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     @Override
     public boolean add(T key) {
         if (key == null) {
-            if (mEntryForNull == null) {
-                mSize++;
-                mEntryForNull = new SimpleHashSetEntry(0, null);
-                return true;
-            }
-            return false;
+            throw new NullPointerException();
         }
 
         int hash = secondaryHash(key);
@@ -135,7 +123,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
 
         
         if (mSize++ > threshold) {
-            tab = doubleCapacity();
+            tab = grow(2);
             index = hash & (tab.length - 1);
         }
         tab[index] = new SimpleHashSetEntry<>(hash, key);
@@ -161,13 +149,13 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
      * MAXIMUM_CAPACITY, this method is a no-op. Returns the table, which
      * will be new unless we were already at MAXIMUM_CAPACITY.
      */
-    private SimpleHashSetEntry<T>[] doubleCapacity() {
+    private SimpleHashSetEntry<T>[] grow(float factor) {
         SimpleHashSetEntry<T>[] oldTable = mTable;
         int oldCapacity = oldTable.length;
         if (oldCapacity == MAXIMUM_CAPACITY) {
             return oldTable;
         }
-        int newCapacity = oldCapacity * 2;
+        int newCapacity = (int)Math.floor(oldCapacity * factor);
         SimpleHashSetEntry<T>[] newTable = makeTable(newCapacity);
         if (mSize == 0) {
             return newTable;
@@ -206,7 +194,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     @Override
     public boolean contains(Object key) {
         if (key == null) {
-            return mEntryForNull != null;
+            throw new NullPointerException();
         }
         int hash = secondaryHash(key);
         SimpleHashSetEntry<T>[] tab = mTable;
@@ -222,7 +210,6 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     public void clear() {
         if (mSize != 0) {
             Arrays.fill(mTable, null);
-            mEntryForNull = null;
             mSize = 0;
         }
     }
@@ -241,8 +228,6 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
             throw new AssertionError(e);
         }
 
-        
-        result.mEntryForNull = null;
         result.makeTable(mTable.length);
         result.mSize = 0;
 
@@ -265,18 +250,18 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     private class HashSetIterator implements Iterator<T> {
 
         int nextIndex;
-        SimpleHashSetEntry<T> nextEntry = mEntryForNull;
+        SimpleHashSetEntry<T> nextEntry = null;
         SimpleHashSetEntry<T> lastEntryReturned;
 
         private HashSetIterator() {
-            if (mEntryForNull == null) {
+
                 SimpleHashSetEntry<T>[] tab = mTable;
                 SimpleHashSetEntry<T> next = null;
                 while (next == null && nextIndex < tab.length) {
                     next = tab[nextIndex++];
                 }
                 nextEntry = next;
-            }
+
         }
 
         @Override
@@ -287,9 +272,6 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         @Override
         public T next() {
 
-            if (nextEntry == null) {
-                throw new NoSuchElementException();
-            }
 
             SimpleHashSetEntry<T> entryToReturn = nextEntry;
             SimpleHashSetEntry<T>[] tab = mTable;

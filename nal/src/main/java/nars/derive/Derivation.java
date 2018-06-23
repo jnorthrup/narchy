@@ -497,8 +497,12 @@ public class Derivation extends PreDerivation {
     @Override
     public final Term transformAtomic(Atomic atomic) {
 
-        if (atomic instanceof Bool)
-            return atomic;
+
+        if (atomic instanceof Variable) {
+            Term y = xy(atomic);
+            if (y != null)
+                return y;
+        }
 
         if (atomic instanceof Functor)
             return atomic;
@@ -509,12 +513,6 @@ public class Derivation extends PreDerivation {
                 return (Term) f;
         }
 
-
-        if (atomic instanceof Variable) {
-            Term y = xy(atomic);
-            if (y != null)
-                return y;
-        }
 
         return atomic;
     }

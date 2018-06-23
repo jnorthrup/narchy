@@ -6,6 +6,7 @@ import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.TaskProxy;
 import nars.term.Term;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -167,8 +168,13 @@ public interface BeliefTable extends TaskTable {
         if (m.containedBy(start,end))
             return m;
         Task t = Task.project(false, m, start, end, nar, false);
-        if (t instanceof TaskProxy)
-            t = ((TaskProxy)t).clone();
+        if (t instanceof TaskProxy) {
+            //dither truth
+            @Nullable PreciseTruth tt = t.truth().dither(nar);
+            if (tt!=null) {
+                t = Task.clone(t, t.term(), tt, t.punc());
+            }
+        }
         return t;
     }
 
