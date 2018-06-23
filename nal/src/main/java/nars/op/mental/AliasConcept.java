@@ -88,11 +88,6 @@ public final class AliasConcept extends TaskConcept {
             this.target = target;
         }
 
-        @Override
-        public boolean unifyReverse(Term x, Unify u) {
-
-            return x.unify(target, u);
-        }
 
 
         @Override

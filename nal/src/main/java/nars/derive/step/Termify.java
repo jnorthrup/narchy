@@ -63,14 +63,20 @@ public final class Termify extends AbstractPred<Derivation> {
             return false;
         }
 
+
+        boolean negated;
+        if (c1.op() == NEG) {
+            c1 = c1.unneg();
+            negated = true;
+        } else
+            negated = false;
+
         if (c1.volume() > d.termVolMax) {
             d.nar.emotion.deriveFailVolLimit.increment();
             return false;
         }
 
-
-        if (c1.op() == NEG) {
-            c1 = c1.unneg();
+        if (negated) {
             if (d.concTruth != null) 
                 d.concTruth = d.concTruth.neg();
         }

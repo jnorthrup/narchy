@@ -14,6 +14,7 @@
   //chain:
   (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralStrong, Time:Task)
 
+  //((X --> $1) <-> (Y --> $1)), (Y --> A)     |-  subIfUnifiesAny((X-->B),A,B), (Belief:Analogy)
 
   //Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
 //  (X ==> Z), (Y ==> Z), neq(X,Y) |- (X<->Y), (Belief:ComparisonSymmetric)

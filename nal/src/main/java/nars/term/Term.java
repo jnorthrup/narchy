@@ -329,7 +329,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default boolean unify(Term y, Unify u) {
         return equals(y)
                 ||
-                y.unifyReverse(this, u);
+               (u.symmetric && y.unifyReverse(this, u));
     }
 
     /**

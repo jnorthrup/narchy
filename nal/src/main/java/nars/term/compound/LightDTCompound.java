@@ -79,6 +79,12 @@ public class LightDTCompound implements SeparateSubtermsCompound {
 //    }
 
     @Override
+    public Term the() {
+        //throw new TODO();
+        return op().the(dt(), arrayShared());
+    }
+
+    @Override
     public int varQuery() {
         return ref.varQuery();
     }

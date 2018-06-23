@@ -5,6 +5,7 @@ import jcog.Util;
 import nars.$;
 import nars.Op;
 import nars.The;
+import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
@@ -19,7 +20,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public abstract class UnitCompound implements Compound {
 
@@ -118,6 +121,12 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public Term dt(int nextDT) {
+        if (nextDT == XTERNAL) {
+            if (op()==CONJ) {
+                //only case it's allowed
+                return Op.terms.theCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
+            }
+        }
         assert(nextDT == DTERNAL);
         return this;
     }

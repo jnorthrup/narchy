@@ -55,7 +55,7 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)
      */
-    public boolean varSymmetric = true;
+    public boolean symmetric = true;
 
 
     /**
@@ -198,16 +198,7 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean putXY(final Variable x, Term y) {
 
-        if (y.containsRecursively(x)) {
-
-
-            return false;
-
-
-        }
-
-
-        return replaceXY(x, y);
+        return !y.containsRecursively(x) && replaceXY(x, y);
 
     }
 

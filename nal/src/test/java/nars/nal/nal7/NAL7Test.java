@@ -1287,7 +1287,7 @@ public class NAL7Test extends NALTest {
         test.mustBelieve(cycles * 4, "(y1 ==>-1 x1)", 1.00f, 0.45f);
     }
 
-    @Test public void testGetShiftWorkingRight() {
+    @Test public void occtestGetShiftWorkingRight() {
         /*
         WRONG:
             $.16 (b &&+5 (--,b)). 1 %1.0;.40% {13: 1;2} ((%1,(%2==>%3),(--,is(%1,"==>"))),(subIfUnifiesAny(%3,%2,%1),((DeductionRecursive-->Belief),(Induction-->Goal),(TaskPlusBeliefDT-->Time))))

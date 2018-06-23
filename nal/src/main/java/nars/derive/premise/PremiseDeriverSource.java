@@ -103,13 +103,13 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         Term[] postcons = ref.sub(1).arrayShared();
 
 
-        this.taskPattern = INDEX.intern(ref.sub(0).sub(0));
-        this.beliefPattern = INDEX.intern(ref.sub(0).sub(1));
+        this.taskPattern = INDEX.intern(INDEX.patternify(ref.sub(0).sub(0)));
+        this.beliefPattern = INDEX.intern(INDEX.patternify(ref.sub(0).sub(1)));
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        this.concPattern = INDEX.intern(ref.sub(1).sub(0));
+        this.concPattern = INDEX.intern(INDEX.patternify(ref.sub(1).sub(0)));
 
 
 

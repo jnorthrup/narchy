@@ -32,7 +32,7 @@ public abstract class PreDerivation extends Unify {
 
     public PreDerivation(@Nullable Op type, Random random, int stackMax, int initialTTL, Map<Term, Versioned<Term>> termMap) {
         super(type, random, stackMax, initialTTL, termMap);
-        varSymmetric = false;
+        //varSymmetric = false;
     }
 
     public boolean hasBeliefTruth() {

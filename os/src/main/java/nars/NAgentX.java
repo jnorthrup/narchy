@@ -121,8 +121,8 @@ abstract public class NAgentX extends NAgent {
 
         new MatrixDeriver(Derivers.nal(n, 1, 8));
 
-        n.dtDither.set(10); //100fps base
-        n.timeFocus.set(8);
+        n.dtDither.set(4);
+        n.timeFocus.set(4);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
@@ -137,7 +137,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f);
         n.questPriDefault.set(0.15f);
 
-        n.forgetRate.set(0.95f);
+        n.forgetRate.set(0.9f);
 
 //        try {
 //            InterNAR i = new InterNAR(n, 8, 0);

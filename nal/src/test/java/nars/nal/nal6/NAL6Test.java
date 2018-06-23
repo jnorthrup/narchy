@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 500;
+    private static final int cycles = 1500;
 
     @BeforeEach
     void setup() {
@@ -25,7 +25,8 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(18);
+        n.confMin.set(0.1f);
         //n.termlinkBalance.set(0.25f);
 
         return n;
@@ -229,7 +230,16 @@ public class NAL6Test extends NALTest {
                 0.81f);
 
     }
+    @Test
+    void variable_elimination_analogy_substIfUnifyOther() {
+        //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
+        TestNAR tester = test;
+        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
+        tester.believe("(swimmer --> swan)", 0.90f, 0.9f);
+        tester.mustBelieve(cycles, "(bird --> swan)", 0.90f,
+                0.81f);
 
+    }
     @Test
     void variable_elimination_analogy_substIfUnify_Neg() {
 
@@ -260,7 +270,7 @@ public class NAL6Test extends NALTest {
 
         tester.believe("((&&, flyer:$x, chirping:$x, eatsWorms:$x) ==> bird:$x)");
         tester.believe("flyer:Tweety");
-        tester.mustBelieve(cycles * 2,
+        tester.mustBelieve(cycles * 3,
                 "((chirping:Tweety && eatsWorms:Tweety) ==> bird:Tweety)",
                 1.0f, 0.73f);
 

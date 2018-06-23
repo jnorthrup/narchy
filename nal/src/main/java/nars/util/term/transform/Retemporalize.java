@@ -20,6 +20,8 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
     Retemporalize retemporalizeAllToZero = new RetemporalizeAll(0);
     Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
     Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
+
+
     /**
      * un-temporalize
      */
@@ -129,8 +131,10 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
     default Term transformTemporal(Compound x, int dtNext) {
         if (x.dt() == dtNext && !requiresTransform(x.subterms()))
             return x; 
-        else
-            return TermTransform.NegObliviousTermTransform.super.transformCompound(x, x.op(), dtNext);
+        else {
+            Op op = x.op();
+            return NegObliviousTermTransform.super.transformCompound(x, op, op.temporal ? dtNext : DTERNAL);
+        }
     }
 
     /**

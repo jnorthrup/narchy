@@ -32,13 +32,13 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 512);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 3;
+    public int premisesPerConcept = 4;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */

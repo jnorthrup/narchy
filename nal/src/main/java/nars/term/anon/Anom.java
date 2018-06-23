@@ -56,8 +56,9 @@ public final class Anom extends Int implements AnonID {
         return this == obj;
     }
 
-    
-//    @Override
+
+
+    //    @Override
 //    public int compareTo(Term yy) {
 //        if (this == yy) return 0;
 //

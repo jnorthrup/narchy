@@ -6,8 +6,6 @@ import nars.term.var.CommonVariable;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.VAR_PATTERN;
-
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
  * varible type, as well as serving as something like the "marker interfaces" of Atomic, Compound, ..
@@ -24,7 +22,7 @@ public interface Variable extends Atomic {
     @Override
     @Nullable
     default Term normalize() {
-        return this; 
+        return this;
     }
 
     @Override
@@ -55,101 +53,80 @@ public interface Variable extends Atomic {
     @Override
     default boolean unify(Term _y, Unify u) {
 
-        if (equals(_y)) return true;
+        if (equals(_y))
+            return true;
 
         Term y = u.resolve(_y);
+        if (y!=_y && equals(y))
+            return true;
+
         Term x = u.resolve(this);
 
-        if (x instanceof Variable) {
-            return x.equals(y) || ((Variable) x).unifyVar(y, u, true);
-        } else if (y instanceof Variable) {
-            return ((Variable) y).unifyVar(x, u, false);
-        } else {
+        if (x != this) {
             return x.unify(y, u);
+        } else {
+            if (y instanceof Variable) {
+                return unifyVar((Variable) y, u, true);
+            } else {
+                return u.putXY(this, y);
+            }
         }
     }
 
-    /** the direction parameter is to maintain correct provenance of variables when creating common vars.
-     *  since
-     *    #1 from x  is a different instance than  #1 from y
+    /**
+     * the direction parameter is to maintain correct provenance of variables when creating common vars.
+     * since
+     * #1 from x  is a different instance than  #1 from y
      */
-    default boolean unifyVar(Term y, Unify u, boolean forward) {
+    default boolean unifyVar(Variable y, Unify u, boolean forward) {
         final Variable x = this;
-        if (y instanceof Variable) {
-            return unifyVar(x, ((Variable)y), forward, u);
-        } else {
-            return u.putXY(x, y);
-        }
+        return unifyVar(x, y, forward, u);
     }
 
     static boolean unifyVar(Variable x, Variable y, boolean forward, Unify u) {
 
-        
-        if (x == Op.imInt || x == Op.imExt || y == Op.imInt || y == Op.imExt)
-            return x==y;
 
-        
-        
+        if (x == Op.imInt || x == Op.imExt || y == Op.imInt || y == Op.imExt)
+            return x == y;
+
 
         Op xOp = x.op();
         Op yOp = y.op();
-        if (xOp!=VAR_PATTERN && xOp == yOp) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        if (xOp == yOp) {
 
 
             Term common = forward ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
 
 
-
-
-
-
             if (u.replaceXY(x, common) && u.replaceXY(y, common)) {
 
 
-
-                    return true;
+                return true;
             }
 
         } else {
 
-            
+
             if (xOp.id < yOp.id) {
-                if (u.varSymmetric)
-                    return u.putXY(y, x);
-                else
-                    return false;
+                if (u.symmetric)
+                    return u.matchType(yOp) && y.unifyVar(x, u ,false);
             }
         }
 
-        return u.putXY(x, y);
+        return u.matchType(xOp) && u.putXY(x, y);
     }
 
     @Override
     default boolean unifyReverse(Term x, Unify u) {
-        if (!u.varSymmetric)
-            return false;
 
-        Term y = u.resolve(this);
-        if (y!=this)
-            return y.unify(x, u); 
+        return unify(x, u);
 
-        return
-            u.matchType(op()) &&
-            unifyVar(x, u, false);
+//        Term y = u.resolve(this);
+//        if (y != this)
+//            return y.unify(x, u);
+//
+//        return
+//                u.matchType(op()) &&
+//                        unifyVar(x, u, false);
     }
 }

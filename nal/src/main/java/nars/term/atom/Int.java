@@ -30,9 +30,15 @@ import static nars.term.Terms.sorted;
  */
 public class Int implements Intlike, The {
 
-
     protected static final Int[] pos = new Int[Param.MAX_INTERNED_INTS];
     protected static final Int[] neg = new Int[Param.MAX_INTERNED_INTS];
+    static {
+        for (int i = 0; i < Param.MAX_INTERNED_INTS; i++) {
+            pos[i] = new Int(i);
+            neg[i] = new Int(-i);
+        }
+    }
+
     public static final Term ZERO = Int.the(0);
     public static final Term ONE = Int.the(1);
     public static final Term TWO = Int.the(2);
@@ -40,12 +46,6 @@ public class Int implements Intlike, The {
     final static int INT_ATOM = Term.opX(INT, 0);
     final static int INT_RANGE = Term.opX(INT, 1);
 
-    static {
-        for (int i = 0; i < Param.MAX_INTERNED_INTS; i++) {
-            pos[i] = new Int(i);
-            neg[i] = new Int(-i);
-        }
-    }
 
     public final int id;
     /*@Stable*/

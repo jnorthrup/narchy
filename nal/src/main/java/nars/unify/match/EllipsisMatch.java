@@ -45,6 +45,11 @@ public final class EllipsisMatch extends LightCompound {
         return z;
     }
 
+    @Override
+    public Term the() {
+        return null;
+    }
+
     /** the ellipsis itself contributes no op */
     @Override public int structure() {
         return subterms().structure();

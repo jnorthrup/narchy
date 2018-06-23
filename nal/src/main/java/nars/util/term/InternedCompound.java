@@ -61,7 +61,7 @@ public final class InternedCompound extends ByteKey  {
         if (o.temporal)
             key.writeInt(dt);
         else
-            assert(dt==DTERNAL);
+            assert(dt==DTERNAL): "can not store temporal dt on " + o;
 
         int n = subs.length;
         assert(n < Byte.MAX_VALUE);

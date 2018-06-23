@@ -426,7 +426,7 @@ public enum Op {
             //HeapTermBuilder.the;
             new InterningTermBuilder();
 
-    public static int AtomicConstants = Op.ATOM.bit | Op.INT.bit;
+    public static int AtomicConstants = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 
     static {
         for (Op o : Op.values()) {
@@ -1168,7 +1168,7 @@ public enum Op {
 
         @Override
         public boolean unifyReverse(Term x, Unify u) {
-            return x == this;
+            return false;
         }
 
         @Override

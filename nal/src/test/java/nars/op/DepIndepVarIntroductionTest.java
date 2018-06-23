@@ -37,17 +37,20 @@ class DepIndepVarIntroductionTest {
     @Test
     void testIntroduceDepVar() throws Narsese.NarseseException {
 
-        assertEquals("[((a-->#Y)&&(b-->#Y))]",
+        assertEquals("[((a-->#1)&&(b-->#1))]",
                 introduce("(&&,(a-->c),(b-->c))", 16).toString());
 
-        assertEquals("[((#Y-->a)&&(#Y-->b))]",
+        assertEquals("[(((a,#1)-->#Y)&&((b,#1)-->#Y))]",
+                introduce("(&&,((a,#1)-->c),((b,#1)-->c))", 16).toString());
+
+        assertEquals("[((#1-->a)&&(#1-->b))]",
                 introduce("(&&,(c-->a),(c-->b))", 16).toString());
 
-        assertEquals("[(&&,(c-->#Y),(#Y-->a),(#Y-->b))]",
+        assertEquals("[(&&,(c-->#1),(#1-->a),(#1-->b))]",
                 introduce("(&&,(x-->a),(x-->b),(c-->x))", 16).toString());
 
         
-        assertEquals("[(&&,(c-->(a,b,#Y)),(#Y-->a),(#Y-->b)), (&&,(c-->(a,#Y,x)),(x-->a),(x-->#Y)), (&&,(c-->(#Y,b,x)),(x-->b),(x-->#Y))]",
+        assertEquals("[(&&,(c-->(a,b,#1)),(#1-->a),(#1-->b)), (&&,(c-->(a,#1,x)),(x-->a),(x-->#1)), (&&,(c-->(#1,b,x)),(x-->b),(x-->#1))]",
                 introduce("(&&,(x-->a),(x-->b),(c-->(a,b,x)))", 32).toString());
 
     }

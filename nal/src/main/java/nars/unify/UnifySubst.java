@@ -3,7 +3,6 @@ package nars.unify;
 import nars.Op;
 import nars.Param;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.util.TimeAware;
 
 import java.util.function.Predicate;
@@ -13,7 +12,6 @@ import java.util.function.Predicate;
  */
 public class UnifySubst extends Unify {
 
-    
 
     /*@NotNull*/
     public final TimeAware timeAware;
@@ -39,43 +37,15 @@ public class UnifySubst extends Unify {
 
     @Override
     public void tryMatch() {
-
-
-        Termed aa = transform(a);
+        Term aa = transform(a);
         if (aa != null) {
-            Term aaa = aa.term();
-            if (aaa.op().conceptualizable) {
+            if (aa.op().conceptualizable) {
                 matches++;
-                if (!target.test(aaa)) {
+                if (!target.test(aa)) {
                     stop();
                 }
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     }
 
     public int matches() {

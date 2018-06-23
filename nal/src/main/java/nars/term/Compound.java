@@ -222,9 +222,25 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
         return equals(y)
                 ||
-                (op() == y.op() && unifySubterms(y, u))
+                (preUnify(this, y) && unifySubterms(y, u))
                 ||
-                y.unifyReverse(this, u);
+                (u.symmetric && y.unifyReverse(this, u));
+    }
+
+    static boolean preUnify(Term x, Term y) {
+        Op op;
+        if ((op = x.op()) == y.op()) {
+            if (op.temporal) {
+                int xdt = x.dt();
+                int ydt = y.dt();
+                if (xdt==ydt) return true;
+                if (xdt == XTERNAL || ydt == XTERNAL) return true;
+                if (xdt == DTERNAL || ydt == DTERNAL) return true;
+                return false;//strict equality
+            } else
+                return true;
+        }
+        return false;
     }
 
     default boolean unifySubterms(Term ty, Unify u) {
@@ -238,36 +254,35 @@ public interface Compound extends Term, IPair, Subterms {
         if ((xs = xsubs.subs()) != (ys = ysubs.subs()))
             return false;
 
-        if (op().temporal) {
-            
-            int xdt = this.dt();
-            int ydt = ty.dt();
-            if (xdt!=ydt) {
-                boolean xOrY;
-                if (xdt == XTERNAL && ydt != XTERNAL) {
-                    xOrY = false; 
-                } else if (xdt != XTERNAL && ydt == XTERNAL) {
-                    xOrY = true;
-                } else {
-                    if (xdt == DTERNAL && ydt != DTERNAL) {
-                        xOrY = false;
-                    } else if (xdt != DTERNAL && ydt == DTERNAL) {
-                        xOrY = true;
-                    } else {
-                        return false; 
-                    }
-                }
-            }
+//        if (op().temporal) {
+//
+//            int xdt = this.dt();
+//            int ydt = ty.dt();
+//            if (xdt!=ydt) {
+//                boolean xOrY;
+//                if (xdt == XTERNAL && ydt != XTERNAL) {
+//                    xOrY = false;
+//                } else if (xdt != XTERNAL && ydt == XTERNAL) {
+//                    xOrY = true;
+//                } else {
+//                    if (xdt == DTERNAL && ydt != DTERNAL) {
+//                        xOrY = false;
+//                    } else if (xdt != DTERNAL && ydt == DTERNAL) {
+//                        xOrY = true;
+//                    } else {
+//                        return false; //TODO allow dt tolerance?
+//                    }
+//                }
+//            }
 
-            if (xsubs.equals(ysubs))
-                return true;
-            
-        }
+//            if (xsubs.equals(ysubs))
+//                return true;
 
-        if (xs > 1 && isCommutative()) {
-            
-            boolean yCommutive = ty.isCommutative() && (ty.dt() != XTERNAL || ys != 2);
-            return xsubs.unifyCommute(ysubs, yCommutive, u);
+//        }
+
+        if (isCommutative()) {
+
+            return xsubs.unifyCommute(ysubs, ty.isCommutative(), u);
         } else {
             if (xs == 1) {
                 return sub(0).unify(ysubs.sub(0), u);
@@ -382,7 +397,7 @@ public interface Compound extends Term, IPair, Subterms {
             Subterms newSubs = oldSubs.replaceSubs(from, to);
             if (newSubs == null)
                 return Null;
-            if (!newSubs.equals(oldSubs)) {
+            if (newSubs!=oldSubs) {
                 int dt = dt();
                 Op o = op();
                 if (newSubs instanceof TermList) {

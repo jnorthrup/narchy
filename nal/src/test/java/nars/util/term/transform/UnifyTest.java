@@ -29,22 +29,6 @@ public class UnifyTest {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static /**/ Term pattern(/**/ String s) throws Narsese.NarseseException {
         Term ss = Narsese.the().term(s, false);
         return pattern(ss);
@@ -63,9 +47,7 @@ public class UnifyTest {
 
     private Unify test(/**/ Op type, String s1, String s2, boolean shouldSub, boolean anon1, boolean anon2) {
 
-        
 
-        
         Anon a = new Anon();
 
         try {
@@ -75,7 +57,7 @@ public class UnifyTest {
 
             Term t1;
             if (type == Op.VAR_PATTERN) {
-                t1 = Narsese.the().term(s1, false); 
+                t1 = Narsese.the().term(s1, false);
                 if (anon1) t1 = pattern(a.put(t1)).normalize();
                 else t1 = pattern(t1).normalize();
             } else {
@@ -88,22 +70,11 @@ public class UnifyTest {
             assertNotNull(t2);
 
 
+            Set<Term> t1u = ((Compound) t1).recurseTermsToSet(type);
 
 
+            int n1 = t1u.size();
 
-
-
-            Set<Term> t1u = ((Compound)t1).recurseTermsToSet(type);
-            
-            
-            
-
-            int n1 = t1u.size(); 
-
-
-            
-            
-            
 
             AtomicBoolean subbed = new AtomicBoolean(false);
 
@@ -133,12 +104,10 @@ public class UnifyTest {
                         }*/
 
 
-
-
                     } else {
-                        
-                        assertTrue((n1) > (xy.size()), "why matched?: " + xy); 
-                        
+
+                        assertTrue((n1) > (xy.size()), "why matched?: " + xy);
+
                     }
 
                 }
@@ -146,7 +115,7 @@ public class UnifyTest {
 
             sub.unify(t1, t2, true);
 
-            sub.revert(0); 
+            sub.revert(0);
 
             assertEquals(shouldSub, subbed.get());
 
@@ -220,15 +189,6 @@ public class UnifyTest {
     }
 
 
-
-
-
-
-
-
-
-
-
     @Test
     void pattern_trySubs_Dep_Var() {
         test(Op.VAR_PATTERN,
@@ -251,9 +211,6 @@ public class UnifyTest {
                 "(<(#1,x) --> on>,<(SELF,x) --> at>)",
                 "(<(SELF,x) --> on>,<(#1,x) --> at>)",
                 true);
-
-        
-        
 
 
     }
@@ -400,7 +357,7 @@ public class UnifyTest {
 
     @Test
     void pattern_trySubs_Pattern_Var_2_setComplex0_5_s() {
-        
+
         test(Op.VAR_PATTERN,
                 "{<{%1,x} --> on>, c:{a,b}}",
                 "{<{z,x} --> on>, c:{a,b}}",
@@ -536,18 +493,6 @@ public class UnifyTest {
                 true);
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     void impossibleMatch1() {
@@ -559,8 +504,8 @@ public class UnifyTest {
 
     @Test
     void posNegQuestion() {
-        
-        
+
+
         RuleTest.get(new TestNAR(NARS.shell()),
                 "a:b?", "(--,a:b).",
                 "a:b.",
@@ -606,13 +551,6 @@ public class UnifyTest {
                 "(a,b,c,d,e,f,g,h,x)",
                 false);
     }
-
-
-
-
-
-
-
 
 
     @Test
@@ -718,7 +656,7 @@ public class UnifyTest {
 
     @Test
     void ellipsisCommutiveRepeat2_a() {
-        
+
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {z, %X..+}}",
                 "{{a, b, c, d}, {z, b, c, d}}", true);
@@ -726,7 +664,7 @@ public class UnifyTest {
 
     @Test
     void ellipsisCommutiveRepeat2_aa() {
-        
+
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {z, b, %X..+}}",
                 "{{a, b, c, d}, {z, b, c, d}}", false);
@@ -748,7 +686,7 @@ public class UnifyTest {
 
     @Test
     void ellipsisCommutiveRepeat2_c() {
-        
+
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {b, %Y..+}}",
                 "{{a, b, c}, {d, b, c}}", true);
@@ -756,7 +694,7 @@ public class UnifyTest {
 
     @Test
     void ellipsisCommutiveRepeat2_cc() {
-        
+
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {b, %Y..+}}",
                 "{{a, b, c, d}, {z, b, c, d}}", true);
@@ -765,119 +703,16 @@ public class UnifyTest {
     @Test
     void ellipsisLinearInner() {
 
-        
+
         test(Op.VAR_PATTERN,
                 "(a, %X..+, d)",
                 "(a, b, c, d)", true);
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Test
     void ellipsisSequence() {
-        
+
     }
 
 
@@ -897,27 +732,9 @@ public class UnifyTest {
                 .believe('(' + subj + ' ' + relation + ' ' + pred + ')')
                 .believe(belief)
                 .mustBelieve(4, concl, 0.81f);
-        
-        
+
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -963,7 +780,6 @@ public class UnifyTest {
      */
 
 
-    
     private Subst testUnify(Compound a, Compound b, boolean matches) {
 
         AtomicBoolean matched = new AtomicBoolean(false);
@@ -977,10 +793,10 @@ public class UnifyTest {
 
                 matched.set(true);
 
-                
+
                 assertEquals("{?1=a}", xy.toString());
 
-                
+
                 assertEquals(
                         "(a-->b) (?1-->b) -?>",
                         a + " " + b + " -?>"  /*+ " remaining power"*/);

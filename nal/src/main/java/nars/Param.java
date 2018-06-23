@@ -67,9 +67,6 @@ public abstract class Param {
     public static boolean DEBUG;
     public static final boolean DEBUG_EXTRA = false;
 
-
-    
-
     public static final PriMerge activateMerge =
             PriMerge.plus;
             
@@ -86,7 +83,8 @@ public abstract class Param {
 
     /** for equivalent tasks */
     public static final PriMerge taskEquivalentMerge =
-            PriMerge.avg;
+            PriMerge.max;
+            //PriMerge.avg;
             //PriMerge.avgGeoSlow;
 
     /**
@@ -162,12 +160,12 @@ public abstract class Param {
      * TTL = 'time to live'
      */
 
-    public final IntRange deriveBranchTTL = new IntRange(TTL_MIN*2-1, 0, TTL_MIN*16);
+    public final IntRange deriveBranchTTL = new IntRange(TTL_MIN*2, 0, TTL_MIN*16);
 
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 1.5f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min=1, max=32)

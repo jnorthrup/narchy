@@ -13,14 +13,14 @@
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
 
-    B, (A ==> C), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
-    B, (A ==> C), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
+    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
+    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
 
-    B, (--A ==> C), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
-    B, (--A ==> C), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
 
-    B, (C ==> A), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
-    B, (C ==> A), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
 
 
         Y, ((&&,X,A..+) ==> Z), --is(Y,"==>") |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y), (Belief:Deduction)
@@ -136,31 +136,30 @@
     //Same as for inheritance
     //union/intersection assymmetry: union if subj, intersect if pred
 
-     (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym, Also:VarIntro)
-     (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym, Also:VarIntro)
+     (P ==> M), (S ==> M), neq(P,S) |- ((P && S) ==>+- M), (Belief:IntersectionSym)
+     (P ==> M), (S ==> M), neq(P,S) |- ((P || S) ==>+- M), (Belief:UnionSym)
                 //(Belief:Implsition, Also:VarIntro)
 
-        ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,--(--P &&+- --S),A..+) ==>+- X), (Belief:UnionSym, Also:VarIntro)
+
+     (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized)
+     (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) || polarize(S,belief)))), (Belief:UnionDepolarized, Time:Union)
+
+
+
+        ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==>+- X), (Belief:IntersectionSym)
+        ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P || S),A..+) ==>+- X), (Belief:UnionSym)
             //(Belief:Implsition, Also:VarIntro)
-        (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,--(--P &&+- --S),A..+) ==>+- X), (Belief:UnionSym, Also:VarIntro)
+
+        (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P && S),A..+) ==>+- X), (Belief:IntersectionSym)
+        (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==>+- X), (Belief:UnionSym, Time:Union)
             //, (Belief:Implsition, Also:VarIntro)
 
         //contradiction anonymizer
         //TODO make inv(A,B) predicate which is true if A == --B
-        (Y ==> X), (--Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==>+- X), (Belief:IntersectionSym, Also:VarIntro)
+        //(Y ==> X), (--Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==>+- X), (Belief:IntersectionSym)
             //, (Belief:Implsition)
-        (--Y ==> X), (Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==>+- X), (Belief:IntersectionSym)
+        //(--Y ==> X), (Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==>+- X), (Belief:IntersectionSym)
             //, (Belief:Implsition)
-
-     //Intersection but Depolarized
-     (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized, Also:VarIntro)
-
-
-
-    //(P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
-    //(M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
-
-
 
 
     (X ==> Y), ((&&,Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:Deduction)
@@ -305,9 +304,11 @@
         //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:InductionPB)
             //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
             //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:InductionPB)
+
     ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)) && ((--,conjWithoutAll(B,A)) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- (--,conjWithoutAll(A,B))), (Belief:InductionPB)
+
     (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:AbductionPB)
         (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- ((--conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- --conjWithoutAll(A,B))), (Belief:AbductionPBN)
         //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:AbductionPB)
@@ -374,13 +375,9 @@
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
     //X, C, eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
 
-    //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
-    //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
-
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction)
-            //, Goal:StructuralStrong)
+    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
     //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)

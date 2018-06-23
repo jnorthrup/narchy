@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import static nars.Op.SETe;
 
 
+/** must be stateless */
 public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
     @Override
@@ -168,7 +169,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         private final MatchConstraint[] cache;
 
         private CompoundConstraint(MatchConstraint[] c) {
-            super(c[0].x, $.func(UnifyIf, c[0].x, SETe.the((Term[]) c)));
+            super(c[0].x, $.func(UnifyIf, c[0].x, SETe.the(c)));
             this.cache = c;
 
             if (Param.DEBUG) {

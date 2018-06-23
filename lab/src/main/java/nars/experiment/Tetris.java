@@ -91,8 +91,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
             Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
             n.freqResolution.set(0.02f);
-            n.confResolution.set(0.02f);
-            n.dtDither.set(20);
+            n.confResolution.set(0.01f);
+            n.dtDither.set(5); //for fine-grain Opjects timing
 
 
             return a;

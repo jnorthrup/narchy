@@ -3,7 +3,6 @@ package nars.term.atom;
 import nars.Op;
 import nars.The;
 import nars.term.Term;
-import nars.unify.Unify;
 
 import static nars.Op.BOOL;
 
@@ -62,10 +61,6 @@ abstract public class Bool extends AtomicConst implements The {
     }
 
 
-    @Override
-    public final boolean unify(Term y, Unify subst) {
-        return this == y;
-    }
 
     @Override
     public final Term dt(int dt) {

@@ -9,23 +9,28 @@ import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.compound.LightDTCompound;
+import nars.term.compound.CachedCompound;
 import nars.unify.Unify;
 import nars.unify.constraint.MatchConstraint;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
+import nars.unify.match.Ellipsislike;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
-import nars.util.term.builder.HeapTermBuilder;
+import nars.util.term.transform.Retemporalize;
+import nars.util.term.transform.TermTransform;
 import nars.util.term.transform.VariableNormalization;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static nars.Op.*;
+import static nars.Op.ATOM;
+import static nars.Op.CONJ;
 import static nars.time.Tense.XTERNAL;
+import static nars.unify.match.Ellipsis.firstEllipsis;
 
 /**
  * Index which specifically holds the term components of a deriver ruleset.
@@ -47,23 +52,13 @@ public class PremisePatternIndex extends MapConceptIndex {
 
     /*@NotNull*/
     private static PremisePatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
-
-
         Op op = seed.op();
-
 
         boolean commutative = (/*!ellipsisTransform && */op.commutative);
 
         if (commutative) {
-
-
-            return new PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive(seed.op(),
-
-                    seed.op() != CONJ ? seed.dt() : XTERNAL,
-                    e, v);
+            return new PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive(seed.op(), seed.dt(), e, v);
         } else {
-
-
             return new PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear(seed.op(), seed.dt(), e, v);
 
         }
@@ -73,6 +68,7 @@ public class PremisePatternIndex extends MapConceptIndex {
     @SuppressWarnings("Java8MapApi")
     @Override
     public Termed get(/*@NotNull*/ Term x, boolean createIfMissing) {
+        //return x.term();
         if (!x.op().conceptualizable)
             return x;
 
@@ -103,37 +99,54 @@ public class PremisePatternIndex extends MapConceptIndex {
     }
 
     /*@NotNull*/
-    public Term patternify(/*@NotNull*/ Compound x) {
+    private Term patternify(/*@NotNull*/ Compound x) {
 
-        if (x.op() == NEG)
-            return patternify(x.unneg()).neg();
+        return new TermTransform.NegObliviousTermTransform() {
 
-        Subterms s = x.subterms();
-        int ss = s.subs();
-        Term[] bb = new Term[ss];
-        boolean changed = false;
-        for (int i = 0; i < ss; i++) {
-            Term a = s.sub(i);
-            Term b = get(a, true).term();
-            if (a != b) {
-                changed = true;
+            @Override
+            public @Nullable Term transformCompound(Compound x) {
+                x = (Compound) TermTransform.NegObliviousTermTransform.super.transformCompound(
+                        (Compound) Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x)
+                );
+
+                @Nullable Ellipsislike e = firstEllipsis(x.subterms());
+                if (e!=null) {
+                    return ellipsis(x, x.subterms(), (Ellipsis) e);
+                }
+                return x;
             }
-            bb[i] = b;
-        }
+        }.transformCompound(x);
 
-        if (!changed && Ellipsis.firstEllipsis(s) == null)
-            return x;
-
-
-        //Pattern V
-        //Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
-        Subterms v = HeapTermBuilder.the.subtermsInstance(bb); //dont intern
-
-
-        Ellipsis e = Ellipsis.firstEllipsis(bb);
-        return e != null ?
-                ellipsis(x, v, e) :
-                HeapTermBuilder.the.theCompound(x.op(), x.dt(), v);
+//        if (x.op() == NEG)
+//            return patternify(x.unneg()).neg();
+//
+//        Subterms s = x.subterms();
+//        int ss = s.subs();
+//        Term[] bb = new Term[ss];
+//        boolean changed = false;
+//        for (int i = 0; i < ss; i++) {
+//            Term a = s.sub(i);
+//            Term b = patternify(a);
+//            if (a != b) {
+//                changed = true;
+//            }
+//            bb[i] = b;
+//        }
+//
+//        if (!changed)
+//            return x;
+//
+//
+//        //Pattern V
+//        //Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
+//        Subterms v = HeapTermBuilder.the.subtermsInstance(bb); //dont intern
+//
+//        Term y = Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x);
+//
+//        Ellipsis e = Ellipsis.firstEllipsis(bb);
+//        return e != null ?
+//                ellipsis(x, v, e) :
+//                HeapTermBuilder.the.theCompound(x.op(), x.dt(), v);
 
     }
 
@@ -161,17 +174,17 @@ public class PremisePatternIndex extends MapConceptIndex {
     public static final class PremiseRuleNormalization extends VariableNormalization {
 
 
-
         @Override
         public Term transform(Term x) {
             /** process completely to resolve built-in functors,
              * to override VariableNormalization's override */
             //return TermTransform.NegObliviousTermTransform.super.transform(x);
             return (x instanceof Compound) ?
-                    transformCompound((Compound)x)
+                    transformCompound((Compound) x)
                     :
-                    transformAtomic((Atomic)x);
+                    transformAtomic((Atomic) x);
         }
+
         @Override
         public Term transformCompound(Compound x) {
             /** process completely to resolve built-in functors,
@@ -212,18 +225,27 @@ public class PremisePatternIndex extends MapConceptIndex {
 
     }
 
-    /** seems used only if op==CONJ */
-    @Deprecated abstract public static class PremisePatternCompound extends LightDTCompound {
+    /**
+     * seems used only if op==CONJ
+     */
+    @Deprecated
+    abstract public static class PremisePatternCompound extends CachedCompound.TemporalCachedCompound {
 
 
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
-            super((Compound) HeapTermBuilder.the.compound(op, subterms.arrayShared()), dt);
+            super(op, dt, subterms);
+            //super((Compound) HeapTermBuilder.the.compound(op, subterms.arrayShared()), dt);
         }
 
+        @Override
+        public Term the() {
+            return null; //super.the();
+        }
 
         abstract protected static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 
             final Ellipsis ellipsis;
+
 
 
             PremisePatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
@@ -320,9 +342,8 @@ public class PremisePatternIndex extends MapConceptIndex {
 
 
             public PremisePatternCompoundWithEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
-                super(op,
-                        op == CONJ ? XTERNAL : dt,
-                        ellipsis, subterms);
+                super(op, dt, ellipsis, subterms);
+                assert (op != CONJ || dt == XTERNAL); //CONJ always XTERNAL
             }
 
             /**

@@ -8,7 +8,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.compound.LighterCompound;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 
@@ -16,13 +15,13 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 import static nars.Op.*;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * can intern subterms and compounds.
  * the requirements for intern cache admission are configurable.
  **/
 public class InterningTermBuilder extends HeapTermBuilder {
-
 
     final HijackTermCache[] terms;
     final HijackTermCache normalizes;
@@ -82,14 +81,29 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Subterms subterms(Op inOp, Term... s) {
+        if (s.length == 0)
+            return Op.EmptySubterms;
 
-        if (inOp != PROD && internable(s, false)) {
-
+        if (inOp != PROD && internable(s)) {
             return compound(PROD, s).subterms();
         } else {
 //            if (s.length == 2 && s[0].compareTo(s[1]) > 0) {
 //                //TODO filter purely anon
 //                return ((BiSubterm.ReversibleBiSubterm)newSubterms(inOp, s[1], s[0])).reverse();
+//            }
+
+
+            //resolve already-interned subterms
+            /// s.clone() ?
+//            for (int i = 0, sLength = s.length; i < sLength; i++) {
+//                Term x = s[i];
+//
+//                HijackTermCache tt = terms[x.op().id];
+//                if (tt != null) {
+//                    Term z = tt.getIfPresent(InternedCompound.get(x));
+//                    if (z != x && z != null)
+//                        s[i] = z;
+//                }
 //            }
 
             return super.subterms(inOp, s);
@@ -108,7 +122,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     /** root */
     private boolean internable(Op op, int dt, Term[] u) {
-        return internable(op, dt, true) && internable(u, true);
+        return internable(op, dt, true) && internable(u);
     }
 
 
@@ -119,30 +133,17 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
 
-    private boolean internable(Term[] subterms, boolean resolve) {
-        if (subterms.length == 0)
-            return false;
+    private boolean internable(Term[] subterms) {
 
-        //resolve as many subterms as possible
-        boolean internable = true;
         for (int i = 0, subtermsLength = subterms.length; i < subtermsLength; i++) {
             Term x = subterms[i];
             Term y = x.the();
             if (y == null) {
-                internable = false;
-                continue;
-            } if (resolve) {
-                HijackTermCache tt = terms[y.op().id];
-                if (tt!=null) {
-                    Term z = tt.getIfPresent(InternedCompound.get(y));
-                    if (z != y && z!=null)
-                        y = z;
-                }
+                return false;
             }
-            subterms[i] = y;
         }
 
-        return internable;
+        return true;
     }
 
 //    @Override protected Term resolve(Term x){
@@ -176,23 +177,22 @@ public class InterningTermBuilder extends HeapTermBuilder {
             throw new WTF();
 
         if (varOffset == 0) {
-            return normalizes.apply(InternedCompound.get(new LighterCompound(PROD, x, NORMALIZE)));
+            return normalizes.apply(InternedCompound.get(PROD, DTERNAL,x )); //new LighterCompound(PROD, x, NORMALIZE)));
         } else {
             return super.normalize(x, varOffset);
         }
     }
 
-    final static Atomic NORMALIZE = Int.the(1);
     protected Term normalize(InternedCompound i) {
         Term[] termAndTransform = i.rawSubs.get();
         Term term = termAndTransform[0];
-        int transform = ((Int)termAndTransform[1]).id;
-        switch (transform) {
-            case 1: /* normalize */
+//        int transform = ((Int)termAndTransform[1]).id;
+//        switch (transform) {
+//            case 1: /* normalize */
                 return super.normalize((Compound)term, (byte)0);
-            default:
-                throw new  UnsupportedOperationException();
-        }
+//            default:
+//                throw new  UnsupportedOperationException();
+//        }
     }
 
     @Override

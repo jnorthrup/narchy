@@ -37,6 +37,10 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
 
+    @Override
+    public boolean these() {
+        return true;
+    }
 
     @Override
     public FasterList<Term> toList() {

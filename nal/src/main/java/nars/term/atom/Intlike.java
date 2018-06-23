@@ -12,13 +12,4 @@ public interface Intlike extends Atomic {
     void forEachInt(IntConsumer c);
 
 
-
-
-
-
-
-
-
-
-
 }

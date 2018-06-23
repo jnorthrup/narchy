@@ -501,7 +501,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return taskOccurrenceIfNotEternalElseNow(d);
+                return new long[]{d.task.start(), d.task.end()};
             }
 
         },
@@ -514,7 +514,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return taskOccurrenceIfNotEternalElseNow(d);
+                return new long[]{d.task.start(), d.task.end()};
             }
         },
 
@@ -644,14 +644,14 @@ public class Occurrify extends TimeGraph {
             this.term = Atomic.the(name());
         }
 
-        private static long[] taskOccurrenceIfNotEternalElseNow(Derivation d) {
-            long start = d.task.start();
-            if (start != ETERNAL || d.belief == null || d.belief.isEternal())
-                return new long[]{start, d.task.end()};
-            else {
-                return d.nar.timeFocus();
-            }
-        }
+//        private long[] taskOccurrenceIfNotEternalElseSolve(Derivation d) {
+//            long start = d.task.start();
+//            if (start != ETERNAL || d.belief == null || d.belief.isEternal())
+//                return new long[]{start, d.task.end()};
+//            else {
+//                solveOccDT()
+//            }
+//        }
 
         static Pair<Term, long[]> solveShiftBeliefDT(Derivation d, Pair<Term, long[]> p, int sign) {
             if (p == null)

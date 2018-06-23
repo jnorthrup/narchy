@@ -93,10 +93,10 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     }
 
     /** caches a reference to the root for use in terms that are inequal to their root */
-    public static final  class TemporalCachedCompound extends CachedCompound  {
+    public static class TemporalCachedCompound extends CachedCompound  {
 //        private transient Term rooted = null;
 //        private transient Term concepted = null;
-        final int dt;
+        protected final int dt;
 
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);

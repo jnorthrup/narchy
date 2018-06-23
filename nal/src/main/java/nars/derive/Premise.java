@@ -67,7 +67,8 @@ public class Premise {
 
     /** variable types unifiable in premise formation */
     final static int var =
-            Op.VAR_QUERY.bit;
+            //Op.VAR_QUERY.bit;
+            Op.VariableBits; //all
 
             
 
@@ -98,10 +99,11 @@ public class Premise {
 
         Term beliefTerm = term();
         Op bo = beliefTerm.op();
-        if (taskTerm.op() == bo) {
-            if (taskTerm.concept().equals(beliefTerm.concept())) {
-                beliefConceptCanAnswerTaskConcept = true;
-            } else {
+        if (taskTerm.concept().equals(beliefTerm.concept())) {
+            beliefConceptCanAnswerTaskConcept = true;
+        } else {
+//            if (taskTerm.op() == bo) {
+//            } else {
 
                 if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
 
@@ -109,18 +111,19 @@ public class Premise {
                     final Term[] unifiedBeliefTerm = new Term[]{null};
                     UnifySubst u = new UnifySubst(var==VAR_QUERY.bit ? VAR_QUERY : null /* all */, d.nar, (y) -> {
                         if (y.op().conceptualizable) {
-                            y = y.normalize().unneg();
+                            y = //y.normalize().unneg();
+                                 y.unneg();
 
 
                             if (!y.equals(_beliefTerm)) {
                                 unifiedBeliefTerm[0] = y;
-                                return false; 
+                                return false;  //done
                             }
                         }
                         return true; 
                     }, matchTTL);
 
-                    u.varSymmetric = false;
+                    u.symmetric = false;
 
                     beliefConceptCanAnswerTaskConcept = u.unify(taskTerm, beliefTerm, true).matches() > 0;
 
@@ -129,23 +132,20 @@ public class Premise {
                         unifiedBelief = true;
                     }
 
+
                 }
-            }
+//            }
         }
 
         
-        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, unifiedBelief);
+        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 
-        if (belief != null) {
-            beliefTerm = belief.term(); 
-        } else {
-            beliefTerm = beliefTerm.unneg();
-        }
+        //if (unifiedBelief && belief!=null) linkVariable(unifiedBelief, n, beliefConcept);
 
-        return d.reset(task, belief, beliefTerm);
+        return d.reset(task, belief, belief!=null ? belief.term() : beliefTerm.unneg());
     }
 
-    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
+    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
         
 
 
@@ -256,7 +256,6 @@ public class Premise {
              }
 
 
-            //linkVariable(unifiedBelief, n, beliefConcept);
 
         }
         return belief;
