@@ -1,38 +1,54 @@
 package jcog.exe.valve;
 
 import com.google.common.base.Joiner;
+import jcog.Util;
 import jcog.bag.impl.ArrayBag;
+import jcog.pri.Pri;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.Nullable;
 
-/** base class; does nothing (token indicator) */
-public class Mix<Who, What, X extends Share<Who,What>> extends ArrayBag<Who, X> {
+/**
+ * base class; does nothing (token indicator)
+ */
+public class Mix<Who, What, X extends Share<Who, What>> extends ArrayBag<Who, X> {
 
     public final What what;
+
 
     protected Mix(What what) {
         super(PriMerge.max /* unused */, Sharing.MAX_CUSTOMERS);
         this.what = what;
     }
 
-    /** prepare for next cycle */
-    @Override public Mix<Who, What, X> commit() {
-        
+    /**
+     * prepare for next cycle
+     */
+    @Override
+    public Mix<Who, What, X> commit() {
+
         if (isEmpty())
             return this;
 
-        final float[] sum = {0};
+        final float[] min = {Float.POSITIVE_INFINITY}, max = {Float.NEGATIVE_INFINITY};
         forEach(s -> {
-            sum[0] += s.need;
+            float need = s.need;
+
+            min[0] = Math.min(min[0], need);
+            max[0] = Math.max(max[0], need);
         });
-        float summ = sum[0];
-        if (summ < Float.MIN_NORMAL) {
-            
-            commit(s -> s.priSet(0.5f));
+
+
+        float range = max[0] - min[0];
+        int n = size();
+        if (range < Pri.EPSILON * n) {
+            float each = 1f / n;
+            commit(s -> s.priSet(each));
         } else {
-            commit(s -> s.priSet(s.need / summ)); 
-            
+            float minn = min[0];
+            commit(s -> s.priSet(Util.clamp(((s.need - minn) / range),0.1f/n,1f/n)));
+
         }
+
 
         return this;
     }

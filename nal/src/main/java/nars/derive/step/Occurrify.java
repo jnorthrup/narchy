@@ -456,7 +456,7 @@ public class Occurrify extends TimeGraph {
                 if (p != null) {
 
                     //immediate future, dont interfere with present
-                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur);
+                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur*2);
 
                     System.arraycopy(when, 0, p.getTwo(), 0, 2);
                 }
@@ -537,7 +537,7 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            public BeliefProjection projection() {
+            public BeliefProjection beliefProjection() {
                 return BeliefProjection.Raw;
             }
 
@@ -559,7 +559,7 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            public BeliefProjection projection() {
+            public BeliefProjection beliefProjection() {
                 return BeliefProjection.Raw;
             }
 
@@ -580,7 +580,7 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            public BeliefProjection projection() {
+            public BeliefProjection beliefProjection() {
                 return BeliefProjection.Raw;
             }
 
@@ -612,7 +612,7 @@ public class Occurrify extends TimeGraph {
                 return new long[]{i.a, i.b};
             }
             @Override
-            public BeliefProjection projection() {
+            public BeliefProjection beliefProjection() {
                 return BeliefProjection.Raw;
             }
         },
@@ -849,7 +849,7 @@ public class Occurrify extends TimeGraph {
 
         }
 
-        public BeliefProjection projection() {
+        public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
         }
     }

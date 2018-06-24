@@ -14,7 +14,6 @@ import nars.control.Activate;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
-import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.link.TaskLink;
@@ -53,11 +52,12 @@ public class MatrixDeriver extends Deriver {
         this(rules, rules.nar);
     }
 
+
     public MatrixDeriver(Set<PremiseDeriverProto> rules, NAR nar) {
         super(rules, nar);
     }
 
-    public MatrixDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriver rules, NAR nar) {
+    public MatrixDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules, NAR nar) {
         super(source, target, rules, nar);
     }
 

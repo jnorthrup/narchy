@@ -1,10 +1,12 @@
 
 X, X, task("@"), --has(X,"?") |- X,       (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
 
-//X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
-//X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
-//X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (--X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
-//X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (--X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
+X, X, task("!"), |- (X &| ?1),       (Punctuation:Quest)
+
+X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
+X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
+X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (--X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
+X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (--X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
 
 //X, Y, task("!"), --has(X,"?"), --has(Y,"?") |- (X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
 //X, Y, task("!"), --has(X,"?"), --has(Y,"?") |- (X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)

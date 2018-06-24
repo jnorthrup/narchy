@@ -3,6 +3,7 @@ package nars.agent;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.ArrayHashSet;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
@@ -71,7 +72,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     final Topic<NAR> frame = new ListTopic();
 
     /** list of concepts involved in this agent */
-    private final List<Concept> concepts = new FasterList();
+    private final ArrayHashSet<Concept> concepts = new ArrayHashSet();
 
 
 

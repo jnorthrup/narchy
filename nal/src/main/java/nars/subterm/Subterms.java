@@ -19,7 +19,6 @@ import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
-import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
@@ -63,6 +62,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return null;
     }
+
     static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
         if ((a.structure() & b.structure()) != 0) {
 
@@ -114,6 +114,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     static String toString(/*@NotNull*/ Iterable<? extends Term> subterms) {
         return '(' + Joiner.on(',').join(subterms) + ')';
     }
+
     static String toString(/*@NotNull*/ Term... subterms) {
         return '(' + Joiner.on(',').join(subterms) + ')';
     }
@@ -209,6 +210,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         forEach(u::add);
         return u;
     }
+
     default /*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t) {
         TreeSet<Term> u = new TreeSet<>();
         forEach(x -> {
@@ -548,56 +550,44 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
-     * the term that y is from may not be commutive in some temporal cases like
-     * (x &&+1 x). special care is needed to preserve the appearance of
-     * both subterms unlike how creating a Set would remove the duplicate.
+     * assume equality, structure commonality, and equal subterm count have been tested
      */
-    default boolean unifyCommute(Subterms y, boolean yCommutative, /*@NotNull*/ Unify u) {
+    default boolean unifyCommute(Subterms y, Unify u) {
 
 
-        if (yCommutative) {
-            //if (xv == 0 && yv == 0) {
-                if (u.constant(this) && u.constant(y))
-                    return y.equals(this);
-            //}
-        }
-        final TermList xx = toList();  /** assume x is a sorted commutive compound */
-        final TermList yy = y.toList(); /* assume y is a sorted commutive compound */
+        final TermList xx = toList();
+        final TermList yy = y.toList();
 
-        ImmutableSet<Term> xy = Sets.immutable.ofAll(yy).intersect(Sets.immutable.ofAll(xx));
-        Set<Term> xys= xy.castToSet();
-        xx.removeAll(xys);
-        yy.removeAll(xys);
+        ///ImmutableSet<Term> xy = Sets.immutable.ofAll(yy).intersect(Sets.immutable.ofAll(xx));
+        //if (!xy.isEmpty()) {
 
-//        //TODO choose whether better to iterate xx or yy, and then inside whether to unify one direction or the other */
-//        yy.removeIf(ys -> {
-//            int nextIndexOf = xx.detectIndex((xs) -> xs.equals(ys));
-//            if (nextIndexOf!=-1) {
-//                xx.remove(nextIndexOf);
-//                return true;
-//            }
-//            return false; //keep
-//        });
+        xx.removeIf(z -> {
 
-        int xn = xx.size();
-        int yn = yy.size();
-        if (xn == yn) {
-
-            if (yn == 0) {
+            int yNextIndexOf = yy.indexOf(z);
+            if (yNextIndexOf != -1) {
+                yy.remove(yNextIndexOf);
                 return true;
-            } else if (yn == 1) {
-                return xx.get(0).unify(yy.get(0), u);
             }
+            return false;
+        });
+        assert (xx.size() == yy.size());
 
-            /** all consts to all variables, m:n
-             *  TODO add optional heuristic interface here to provide bias for certain ones
-             * */
-            u.termutes.add(new CommutivePermutations(xx, yy));
-            return true;
+
+        switch (xx.size()) {
+            case 0:
+                return true;
+            case 1:
+                return xx.get(0).unify(yy.get(0), u);
+            default: {
+                if (!u.constant(xx) || (u.symmetric && !u.constant(yy))) {
+                    if (Terms.commonStructureTest(xx, yy, u)) {
+                        u.termutes.add(new CommutivePermutations(xx, yy));
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
-
-        return false;
-
 //
 //        if (!yCommutative) {
 //
@@ -764,7 +754,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return isSorted() ? this : Op.terms.subterms(Terms.sorted(arrayShared()));
     }
 
-    /** removes first occurrence only */
+    /**
+     * removes first occurrence only
+     */
     default Term[] termsExcept(int i) {
         return ArrayUtils.remove(arrayShared(), Term[]::new, i);
     }
@@ -795,7 +787,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return this;
         }
     }
-
 
 
     /**

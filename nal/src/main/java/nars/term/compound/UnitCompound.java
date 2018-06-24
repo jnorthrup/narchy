@@ -111,13 +111,6 @@ public abstract class UnitCompound implements Compound {
         return false;
     }
 
-    @Override
-    public final boolean unifySubterms(Term y, Unify u) {
-        if ((y.subs()!=1) || !Terms.commonStructureTest(this, y, u))
-            return false;
-        return sub().unify(y.sub(0), u);
-    }
-
 
     @Override
     public Term dt(int nextDT) {

@@ -67,8 +67,7 @@ public class Gradius extends NAgentX {
         ).resolution(0.02f);
 
 
-        actionToggle($.inh("fire", id),
-                (b) -> g.keys[VK_SHOOT] = b);
+        actionToggle($$("fire"), (b) -> g.keys[VK_SHOOT] = b);
 
 //        actionToggle($.inh("pause", id),
 //                (b) -> g.paused = b);
@@ -76,16 +75,16 @@ public class Gradius extends NAgentX {
         actionUnipolar($.prop(nar.self(), $.the("deep")), (d)->{
             //deep incrases both duration and max term volume
             nar.time.dur(Util.lerp(d*d, 20, 120));
-            nar.termVolumeMax.set(Util.lerp(d, 24, 50));
+            nar.termVolumeMax.set(Util.lerp(d, 30, 50));
             return d;
         });
 
         actionUnipolar($.prop(nar.self(), $.the("awake")), (a)->{
-            nar.activateConceptRate.set(Util.lerp(a, 0.4f, 1f));
+            nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
             return a;
         });
         actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
-            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.4f)); //inverse forget rate
+            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
             return a;
         });
 

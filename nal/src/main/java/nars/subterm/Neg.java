@@ -29,6 +29,7 @@ public final class Neg extends UnitCompound implements The {
         return new Neg(x);
     }
 
+
     /** condensed NEG compound byte serialization - elides length byte */
     @Override public final void appendTo(ByteArrayDataOutput out) {
         out.writeByte(Op.NEG.id);

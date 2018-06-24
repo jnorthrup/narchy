@@ -178,10 +178,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
             throw new WTF();
 
         if (varOffset == 0) {
-            return normalizes.apply(InternedCompound.get(PROD, DTERNAL,x )); //new LighterCompound(PROD, x, NORMALIZE)));
-        } else {
-            return super.normalize(x, varOffset);
+            Term xx = x.the();
+            if (xx != null)
+                return normalizes.apply(InternedCompound.get(PROD, DTERNAL, xx)); //new LighterCompound(PROD, x, NORMALIZE)));
         }
+
+        return super.normalize(x, varOffset);
+
     }
 
     protected Term normalize(InternedCompound i) {
@@ -207,8 +210,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
             }
         }
 
-        //terms[op.id]
-        return statements.apply(InternedCompound.get(op, dt, subject, predicate));
+        Term s = subject.the();
+        if (s!=null) {
+            Term p = predicate.the();
+            if (p!=null)
+                return statements.apply(InternedCompound.get(op, dt, subject, predicate));
+        }
+        return super.statement(op, dt, subject, predicate);
     }
 
     private Term _statement(InternedCompound c) {
@@ -224,6 +232,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
         //TODO presort if commutive?
-        return conj.apply(InternedCompound.get(CONJ, dt, u));
+        if (internable(CONJ, dt, u))
+            return conj.apply(InternedCompound.get(CONJ, dt, u));
+        else
+            return super.conj(dt, u);
     }
 }

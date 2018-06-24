@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.VAR_QUERY;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Defines the conditions used in an instance of a derivation
@@ -195,7 +194,7 @@ public class Premise {
 
 
                                 long[] focus = n.timeFocus();
-                                if (taskStart != ETERNAL && focus[0] != taskStart && focus[1] != taskEnd) {
+                                if (focus[0] != taskStart && focus[1] != taskEnd) {
 
                                     match = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
                                     if (!validMatch(match)) match = null;

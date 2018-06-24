@@ -7,6 +7,7 @@ import nars.concept.Sensor;
 import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
+import nars.link.TermlinkTemplates;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -27,6 +28,11 @@ public abstract class ActionConcept extends Sensor {
                 n.conceptBuilder);
         ((ScalarBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
         ((ScalarBeliefTable)beliefs()).res(resolution);
+    }
+
+    @Override
+    protected TermlinkTemplates buildTemplates(Term term) {
+        return super.buildTemplates(term);
     }
 
     @Override

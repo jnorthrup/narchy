@@ -34,10 +34,11 @@ public class Truthify extends AbstractPred<Derivation> {
     private final PREDICATE<Derivation> timeFilter;
 
 
-    public Truthify(Term id, byte puncOverride, TruthFunc belief, TruthFunc goal, BeliefProjection beliefProjection, PREDICATE<Derivation> timeFilter) {
+    public Truthify(Term id, byte puncOverride, TruthFunc belief, TruthFunc goal, Occurrify.TaskTimeMerge time) {
         super(id);
         this.puncOverride = puncOverride;
-        this.timeFilter = timeFilter;
+        this.timeFilter = time.filter();
+        this.beliefProjection = time.beliefProjection();
         this.belief = belief;
         if (belief != null) {
             beliefSingle = (byte) (belief.single() ? +1 : 0);
@@ -52,16 +53,13 @@ public class Truthify extends AbstractPred<Derivation> {
         } else {
             goalSingle = goalOverlap = -1;
         }
-        this.beliefProjection = beliefProjection;
     }
 
     private static final Atomic TRUTH = Atomic.the("truth");
-    private static final Atomic BELIEF_AT = Atomic.the("beliefAt");
 
-    public static Truthify the(byte puncOverride, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, BeliefProjection projection, Occurrify.TaskTimeMerge time) {
+    public static Truthify the(byte puncOverride, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, Occurrify.TaskTimeMerge time) {
         Term truthMode;
 
-        if (beliefTruthOp != null || goalTruthOp != null) {
 
 
             FasterList<Term> args = new FasterList(4);
@@ -74,22 +72,15 @@ public class Truthify extends AbstractPred<Derivation> {
             String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
             args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
 
-            args.add($.func(BELIEF_AT, Atomic.the(projection.name())));
+
+            args.add(Atomic.the(time.name()));
 
             truthMode = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
-        } else {
-            if (puncOverride != 0) {
-                truthMode = $.func(TRUTH, $.quote((char) puncOverride));
-            } else {
-                //truthMode = Op.EmptyProduct; //auto
-                throw new UnsupportedOperationException("ambiguous truth/punctuation");
-            }
-        }
+
 
         return new Truthify(truthMode,
                 puncOverride,
-                beliefTruthOp, goalTruthOp,
-                projection, time.filter());
+                beliefTruthOp, goalTruthOp, time);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package nars.task;
 
+import nars.Param;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -63,9 +64,9 @@ public class TaskProxy implements Task {
 
     @Override
     public float priSet(float p) {
-        
-        throw new UnsupportedOperationException();
-        //return p;
+        if (Param.DEBUG)
+            throw new UnsupportedOperationException();
+        return p;
     }
 
     @Override

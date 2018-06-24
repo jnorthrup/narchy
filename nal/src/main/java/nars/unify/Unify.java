@@ -56,6 +56,7 @@ public abstract class Unify extends Versioning implements Subst {
      * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)
      */
     public boolean symmetric = true;
+    public final int typeBits;
 
 
     /**
@@ -65,7 +66,6 @@ public abstract class Unify extends Versioning implements Subst {
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
         this(type, random, stackMax, initialTTL,
                 new TermHashMap()
-
         );
     }
 
@@ -75,6 +75,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         this.random = random;
         this.type = type;
+        this.typeBits = type==null ? Op.VariableBits : type.bit;
 
         xy = new ConstrainedVersionMap(this, termMap);
 
@@ -212,7 +213,7 @@ public abstract class Unify extends Versioning implements Subst {
      * whether is constant with respect to the current matched variable type
      */
     public boolean constant(Termlike x) {
-        return !x.hasAny(type == null ? Op.varBits : type.bit);
+        return !x.hasAny(typeBits);
     }
 
     /**

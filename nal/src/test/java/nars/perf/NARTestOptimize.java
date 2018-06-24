@@ -37,6 +37,8 @@ class NARTestOptimize {
             Lab<NAR> l = new Lab<>(() -> NARS.tmp(nalLevel))
 //                .var("ttlMax", 6, 50, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("termlinkBalance", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.termlinkBalance.set(f))
                 .var("forgetRate", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.forgetRate.set(f))
                 .var("activationRate", 0, 1f, 0.1f,

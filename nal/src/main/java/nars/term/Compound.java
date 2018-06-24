@@ -227,20 +227,26 @@ public interface Compound extends Term, IPair, Subterms {
                 (u.symmetric && y.unifyReverse(this, u));
     }
 
+    /** post-equals unify */
     static boolean preUnify(Term x, Term y, Unify u) {
         Op op;
         if ((op = x.op()) == y.op()) {
-            if (op.temporal) {
-                int xdt = x.dt();
-                if (xdt == XTERNAL || xdt == DTERNAL) return true;
-                int ydt = y.dt();
-                if (xdt==ydt) return true;
-                if (ydt == XTERNAL || ydt == DTERNAL) return true;
-                return false;//strict equality
-            } else {
+            if ((!u.constant(x) || (u.symmetric && !u.constant(y)))) {
 
-                return true;
+                if (op.temporal) {
+                    int xdt = x.dt();
+                    if (xdt == XTERNAL || xdt == DTERNAL)
+                        return true;
+                    int ydt = y.dt();
+                    if (xdt == ydt) return true;
+                    if (ydt == XTERNAL || ydt == DTERNAL)
+                        return true;
+                    return false;//TODO strict equality: u.dur
+                } else {
+                    return true;
+                }
             }
+
         }
         return false;
     }
@@ -292,7 +298,7 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
         if (isCommutative()) {
-            return xx.unifyCommute(yy, y.isCommutative(), u);
+            return xx.unifyCommute(yy,  u);
         } else {
             return xx.unifyLinear(yy, u);
         }

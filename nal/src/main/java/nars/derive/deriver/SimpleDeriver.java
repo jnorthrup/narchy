@@ -88,6 +88,7 @@ public class SimpleDeriver extends Deriver {
     protected void derive(NAR n, int iterations, Derivation d) {
 
 
+
         final int[] ii = {iterations * power.intValue()};
 
 

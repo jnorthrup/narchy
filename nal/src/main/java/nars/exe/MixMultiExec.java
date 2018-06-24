@@ -84,18 +84,21 @@ abstract public class MixMultiExec extends AbstractExec {
                         Causable c = (Causable) x;
                         c.can.commit((l, i) -> { /* unused */ });
 
-                        double value = c.value();
+                        double value =
+                                c.value();
+                                //(1 + Util.tanhFast(c.value()))/2;
+
                         if (!Double.isFinite(value))
                             value = 0;
                         //value = Math.max(value, 0);
 
-                        double meanTimeNS = Math.max(1, s.iterTimeNS.getMean());
+                        double meanTimeNS = s.iterTimeNS.getMean() * s.iterations.getMean();
                         if (!Double.isFinite(meanTimeNS))
                             meanTimeNS = POSITIVE_INFINITY;
                         //double valuePerNano = (value / Math.log(meanTimeNS));
                         double valuePerSecond = (value / (1.0E-9 * meanTimeNS));
 
-                        s.need((float) (valuePerSecond));
+                        s.need((float)valuePerSecond);
                     }
                 });
 
@@ -267,14 +270,7 @@ abstract public class MixMultiExec extends AbstractExec {
     }
 
     protected void add(Causable c) {
-        new InstrumentedWork<>(new AbstractWork<>(sharing.start(c), "CPU", 0.25f) {
-
-            @Override
-            public boolean next() {
-                int done = c.next(nar, 1);
-                return done >= 0;
-            }
-        });
+        new InstrumentedWork<>(new MyAbstractWork(c));
     }
 
     protected void remove(Causable c) {
@@ -286,4 +282,19 @@ abstract public class MixMultiExec extends AbstractExec {
         return true;
     }
 
+    private final class MyAbstractWork extends AbstractWork {
+
+        private final Causable c;
+
+        public MyAbstractWork(Causable c) {
+            super(MixMultiExec.this.sharing.start(c), "CPU", 0.5f);
+            this.c = c;
+        }
+
+        @Override
+        public final int next(int n) {
+            return c.next(nar, n);
+        }
+
+    }
 }

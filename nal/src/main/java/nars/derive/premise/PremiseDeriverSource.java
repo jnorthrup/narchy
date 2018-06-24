@@ -103,13 +103,13 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         Term[] postcon = ref.sub(1).arrayShared();
 
 
-        this.taskPattern = INDEX.intern(INDEX.patternify(precon[0]));
-        this.beliefPattern = INDEX.intern(INDEX.patternify(precon[1]));
+        this.taskPattern = INDEX.patternify(precon[0]);
+        this.beliefPattern = INDEX.patternify(precon[1]);
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        this.concPattern = INDEX.intern(INDEX.patternify(postcon[0]));
+        this.concPattern = INDEX.patternify(postcon[0]);
 
 
 
@@ -431,7 +431,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         if (goalTruth != null && goalTruthOp == null)
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
-        Occurrify.BeliefProjection projection = time.projection();
+
 
 
         Term finalConcPattern = this.concPattern;
@@ -552,7 +552,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
             }
         }
 
-        this.truthify = Truthify.the(puncOverride, beliefTruthOp, goalTruthOp, projection, time);
+        this.truthify = Truthify.the(puncOverride, beliefTruthOp, goalTruthOp, time);
         this.time = time;
         this.varIntro = varIntro;
         this.taskPunc = taskPunc;

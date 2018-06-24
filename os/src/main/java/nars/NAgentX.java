@@ -31,7 +31,6 @@ import net.beadsproject.beads.ugens.*;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 
@@ -119,9 +118,9 @@ abstract public class NAgentX extends NAgent {
 
         Exe.setExecutor(n.exe);
 
-        new MatrixDeriver(Derivers.nal(n, 1, 8));
+        new MatrixDeriver(Derivers.nal(n, 1, 8, "curiosity.nal", "motivation.nal"));
 
-        n.dtDither.set(4);
+        n.dtDither.set(8);
         n.timeFocus.set(4);
 
         n.confMin.set(0.01f);
@@ -135,7 +134,7 @@ abstract public class NAgentX extends NAgent {
         n.beliefPriDefault.set(0.2f);
         n.goalPriDefault.set(0.5f);
         n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.15f);
+        n.questPriDefault.set(0.2f);
 
         n.forgetRate.set(0.9f);
 
@@ -150,18 +149,16 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(16, n);
 
-        Inperience inp = new Inperience(n, 32);
+        Inperience inp = new Inperience(n, 16);
 
 
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
-
-
-        n.emotion.want(MetaGoal.Perceive, -0.001f);
-        n.emotion.want(MetaGoal.Believe, +0.04f);
-        n.emotion.want(MetaGoal.Answer, +0.01f);
+        n.emotion.want(MetaGoal.Perceive, -0.0001f);
+        n.emotion.want(MetaGoal.Believe, +0.02f);
+        n.emotion.want(MetaGoal.Answer, +0.005f);
         n.emotion.want(MetaGoal.Desire, +0.06f);
         n.emotion.want(MetaGoal.Action, +0.10f);
 
@@ -173,8 +170,12 @@ abstract public class NAgentX extends NAgent {
         n.synch();
 
         SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
-                Derivers.nal(n, 6, 8, "curiosity.nal", "motivation.nal"));
-        a.curiosity.set(0);
+                Derivers.nal(n, 6, 8, "curiosity.nal"/*, "motivation.nal"*/));
+        sd.power.set(4);
+
+        //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);
+
+        a.curiosity.set(0.0f);
 
         Loop loop = n.startFPS(narFPS);
 
@@ -194,7 +195,6 @@ abstract public class NAgentX extends NAgent {
         return n;
     }
 
-    @NotNull
     public static CaffeineIndex newCaffeineIndex() {
         return new CaffeineIndex(
 

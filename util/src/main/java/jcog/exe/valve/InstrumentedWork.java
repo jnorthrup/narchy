@@ -46,24 +46,32 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         return starting;
     }
 
-    @Override
-    public final boolean next() {
-        
 
+    @Override
+    public boolean next() {
+        return work.next();
+    }
+
+    @Override
+    public final int next(int n) {
         long a = nanoTime();
-        boolean kontinue = work.next();
-        workTimeThisCycleNS += (nanoTime() - a);
-        iterationsThisCycle++;
-        return kontinue;
+
+        int ran = work.next(n);
+        int ii = Math.abs(ran);
+        if (ii > 0) {
+            workTimeThisCycleNS += (nanoTime() - a);
+            iterationsThisCycle += ii;
+        }
+        return ran;
     }
 
     @Override
     public void stop() {
 
         if (iterationsThisCycle > 0) {
-            iterTimeNS.addValue(workTimeThisCycleNS);
             iterations.addValue(iterationsThisCycle);
-            
+            iterTimeNS.addValue(workTimeThisCycleNS);
+
 
             iterationsThisCycle = 0;
             workTimeThisCycleNS = 0;
