@@ -54,7 +54,7 @@ public class MatrixDeriver extends Deriver {
 
 
     public MatrixDeriver(Set<PremiseDeriverProto> rules, NAR nar) {
-        super(rules, nar);
+        super(nar.attn, rules, nar);
     }
 
     public MatrixDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules, NAR nar) {

@@ -2,13 +2,15 @@ package nars.exe;
 
 import jcog.exe.Can;
 import jcog.exe.Exe;
-import jcog.learn.pid.MiniPID;
+import jcog.pri.NLink;
 import nars.NAR;
 import nars.Param;
 import nars.control.NARService;
 import nars.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Consumer;
 
 /**
  * instruments the runtime resource consumption of its iteratable procedure.
@@ -62,45 +64,53 @@ abstract public class Causable extends NARService {
 
 
 
-    final ThreadLocal<MiniPID> rate = ThreadLocal.withInitial(()->
-        new MiniPID(0.5, 0.3, 0.4)
-                .outLimit(1, Double.MAX_VALUE)
-    );
+//    final ThreadLocal<MiniPID> rate = ThreadLocal.withInitial(()->
+//        new MiniPID(0.5, 0.3, 0.4)
+//                .outLimit(1, Double.MAX_VALUE)
+//    );
 
-    public final int run(NAR n, int workRequested) {
-
-        Throwable error = null;
-
-        MiniPID r = rate.get();
-
-        int iterations = Math.max(1, (int)Math.round(r.setpoint(workRequested).out()));
-
-        long start = System.nanoTime(), end;
-        int workDone = 0;
-
-        try {
-
-            workDone = next(n, iterations);
-
-        } catch (Throwable t) {
-            error = t;
-        } finally {
-            end = System.nanoTime();
-        }
-
-        record(iterations, workDone, start, end, r);
-
-        if (error != null) {
-            report(error);
-        }
-
-        return workDone;
+    @Deprecated public void run(NAR n, int workRequested, Consumer<NLink<Runnable>> buffer) {
+        assert(workRequested> 0);
+        buffer.accept(new NLink<>(()->{
+            next(n, workRequested);
+        }, workRequested));
     }
 
-    public void record(int iterations, int workDone, long start, long end, MiniPID r) {
+
+
+//
+//        Throwable error = null;
+//
+////        MiniPID r = rate.get();
+//
+////        int iterations = Math.max(1, (int)Math.round(r.setpoint(workRequested).out()));
+//
+//        long start = System.nanoTime(), end;
+//        int workDone = 0;
+//
+//        try {
+//
+//            workDone = next(n, iterations);
+//
+//        } catch (Throwable t) {
+//            error = t;
+//        } finally {
+//            end = System.nanoTime();
+//        }
+//
+//        record(iterations, workDone, start, end/*, r*/);
+//
+//        if (error != null) {
+//            report(error);
+//        }
+//
+//        return workDone;
+//    }
+
+    public void record(int iterations, int workDone, long start, long end/*, MiniPID r*/) {
         if (workDone >= 0) {
             can.add((end - start), iterations, workDone);
-            r.out(workDone);
+//            r.out(workDone);
         }
 
         Exe.profiled(can, start, end);

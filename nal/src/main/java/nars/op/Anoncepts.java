@@ -63,16 +63,14 @@ public class Anoncepts extends LeakBack {
         if (a == null)  
             return 0;
 
-        Concept c = nar.concept(a); 
+        Concept c = nar.conceptualizeDynamic(a);
         if (c == null) {
             nar.concepts.set(a, c = new AnonConcept(a, nar));
         }
 
         float pri = task.priElseZero();
         float cr = conceptActivationRate.floatValue();
-        c = nar.activate(c, pri * cr);
-        if (c == null)
-            return 0;  
+        nar.activate(c, pri * cr);
 
         short cid = in.id();
 

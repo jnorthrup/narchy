@@ -24,7 +24,7 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
     private final TextEdit inputbox;
 
     private SimpleConceptGraph3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
-        this(nar, () -> nar.exe.active().iterator(),
+        this(nar, () -> nar.attn.active().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
     }
 

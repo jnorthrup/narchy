@@ -21,19 +21,22 @@ public class Sharing<What,Who> {
     final ConcurrentFastIteratingHashMap<What,Mix<Who,What,Share<Who,What>>> alloc = new ConcurrentFastIteratingHashMap<>(new Mix[] { });
 
 
-
-
-
-
-
-
-
-
     /** CAN/provide/offer something */
     public Sharing<What, Who> can(Mix<Who,What,Share<Who,What>>... dd) {
         for (Mix<Who,What,Share<Who,What>> d : dd)
             alloc.put(d.what, d);
         return this;
+    }
+
+    public void off(What what, Who who) {
+        Mix<Who, What, Share<Who, What>> ww = this.alloc.get(what);
+        if (ww != null) {
+            @Nullable Share<Who, What> r = ww.remove(who);
+            if (ww.isEmpty()) {
+                Mix<Who, What, Share<Who, What>> m = alloc.remove(what);
+                assert(m.isEmpty());
+            }
+        }
     }
 
     @Nullable protected Share<Who,What> need(Share<Who,What> s) {
@@ -67,5 +70,6 @@ public class Sharing<What,Who> {
     public String summary() {
         return alloc.toString();
     }
+
 
 }

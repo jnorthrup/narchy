@@ -7,8 +7,6 @@ import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.concept.util.ConceptBuilder;
-import nars.concept.util.DefaultConceptBuilder;
 import nars.term.atom.Atom;
 import nars.time.Tense;
 import nars.truth.polation.FocusingLinearTruthPolation;
@@ -41,8 +39,6 @@ public abstract class Param {
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = true;
 
 
-    /** full causal feedback: applied as mult to every task on input */
-    public static boolean CAUSE_MULTIPLY_EVERY_TASK = false;
 
 
     /** default bag forget rate */
@@ -54,7 +50,7 @@ public abstract class Param {
 
 
 
-    public ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
+
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
     public static final boolean DEBUG_SIMILAR_DERIVATIONS = false;
@@ -67,7 +63,7 @@ public abstract class Param {
     public static boolean DEBUG;
     public static final boolean DEBUG_EXTRA = false;
 
-    public static final PriMerge activateMerge =
+    public static final PriMerge conceptMerge =
             PriMerge.plus;
             
 

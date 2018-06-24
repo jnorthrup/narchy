@@ -161,7 +161,7 @@ public class User {
 
     public void notice(Object x) {
         logger.info("-> {}", x);
-        notice.emitAsync(x, Exe.executor());
+        notice.emitAsync(x);
     }
 
     public On onNotice(Consumer x) {

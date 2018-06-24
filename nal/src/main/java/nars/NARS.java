@@ -11,6 +11,7 @@ import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
+import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.exe.UniExec;
 import nars.index.concept.CaffeineIndex;
@@ -41,7 +42,7 @@ import java.util.function.Supplier;
 public class NARS {
 
     public NAR get() {
-        NAR n = new NAR(index.get(), exe.get(), time, rng.get(), concepts.get());
+        NAR n = new NAR(index.get(), exe.get(), attn.get(), time, rng.get(), concepts.get());
         init(n);
         derivers.forEach(d -> d.apply(n));
         n.synch();
@@ -64,6 +65,8 @@ public class NARS {
     protected Supplier<Exec> exe;
 
     protected Supplier<Random> rng;
+
+    protected Supplier<Attention> attn;
 
     protected Supplier<ConceptBuilder> concepts;
 
@@ -95,7 +98,10 @@ public class NARS {
         return this;
     }
 
-
+    public NARS attention(Supplier<Attention> sa) {
+        this.attn = sa;
+        return this;
+    }
     /**
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
@@ -130,7 +136,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exe = () -> new UniExec(96);
+        exe = () -> new UniExec();
 
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
@@ -138,6 +144,8 @@ public class NARS {
         concepts = DefaultConceptBuilder::new;
 
         derivers = new FasterList<>();
+
+        attention(()->new Attention(512));
     }
 
     /**

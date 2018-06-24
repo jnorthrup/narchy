@@ -639,6 +639,26 @@ public class FasterList<X> extends FastList<X> {
         return removeIf(y -> x == y);
     }
 
+    public List<Iterable<X>> chunkView(int chunkSize) {
+            if (size <= 0)
+            {
+                throw new IllegalArgumentException("Size for groups must be positive but was: " + size);
+            }
+
+
+                MutableList<Iterable<X>> result = new FasterList((int) (Math.ceil((float)size()) / chunkSize));
+                int i = 0;
+
+                int size = this.size();
+                while (i < size) {
+                    result.add(subList(i, Math.min(i + chunkSize, this.size)));
+                    i += chunkSize;
+                }
+                return result;
+
+        }
+
+
     /**
      * modified from MutableIterator
      */

@@ -69,7 +69,7 @@ public class TrackXY extends NAgent {
         int dur = 2;
 
         NARS nb = new NARS()
-                .exe(new UniExec(64))
+                .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
                         

@@ -2,6 +2,8 @@
 package jcog.event;
 
 
+import jcog.exe.Exe;
+
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * notifies subscribers when a value is emitted
+ * notifies subscribers when a value is emitted (publisher)
  */
 public interface Topic<V> {
 
@@ -24,14 +26,16 @@ public interface Topic<V> {
 
     void clear();
 
-    
+    default void emitAsync(V x) {
+        emitAsync(x, Exe.executor());
+    }
 
 
     static Ons all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
         return all(obj, f, (key)->true);
     }
 
-    /** warning this could grow large */
+    /** warning this could grow large TODO use a soft cache */
     Map<Class,Field[]> fieldCache = new ConcurrentHashMap();
 
     static void each(Class c, Consumer<Field /* fieldName*/> f) {

@@ -1,6 +1,8 @@
 package jcog.exe.valve;
 
 import jcog.Texts;
+import jcog.Util;
+import jcog.pri.Pri;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import static java.lang.System.nanoTime;
@@ -21,6 +23,9 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
 
     /** total iterations, each cycle */
     public final DescriptiveStatistics iterations = new DescriptiveStatistics(WINDOW);
+
+
+    transient public double valuePerSecond,valueNormalized;
 
     long beforeStart, afterStart, beforeEnd, afterEnd;
     long workTimeThisCycleNS;
@@ -89,5 +94,43 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         + ", " + "iterTimeMeanNS=" + Texts.timeStr(iterTimeNS.getMean())
         + ", " + "itersMean=" + Texts.n2(iterations.getMean())
         + "}";
+    }
+
+    public void runFor(long cycleNS) {
+
+        if (this.start()) {
+
+            float p = this.pri();
+            if (p == p && p > Pri.EPSILON) {
+
+                long runtimeNS = Math.round(cycleNS * p);
+
+                long now = nanoTime();
+                long deadlineNS = now + runtimeNS;
+
+                do {
+                    double meanItertime = Math.min(runtimeNS, this.iterTimeNS.getMean() / this.iterations.getMean());
+                    double expectedNexts;
+                    if (meanItertime!=meanItertime)
+                        expectedNexts = 1;
+                    else {
+                        expectedNexts = ((deadlineNS - now) / ( meanItertime ));
+                    }
+
+                    //System.out.println(x + " " + timeStr(deadlineNS - now) + " " + timeStr(deadlineNS - now) + "\t" + timeStr(meanItertime) + " \t= " + expectedNexts);
+                    int ran = this.next(Util.clamp((int) Math.round(Math.max(1, expectedNexts)+1), 1, 1024));
+                    if (ran <= 0)
+                        break;
+
+                } while ((now = nanoTime()) < deadlineNS);
+
+            }
+
+        } else {
+
+        }
+
+        this.stop();
+
     }
 }

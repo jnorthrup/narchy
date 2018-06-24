@@ -3,6 +3,7 @@ package nars.exe;
 import jcog.Service;
 import jcog.TODO;
 import jcog.Util;
+import jcog.event.Ons;
 import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
@@ -10,11 +11,14 @@ import jcog.exe.valve.TimeSlicing;
 import jcog.list.FasterList;
 import jcog.math.random.SplitMix64Random;
 import nars.NAR;
+import nars.control.DurService;
 import nars.task.ITask;
 import nars.time.clock.RealTime;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -51,10 +55,11 @@ abstract public class MixMultiExec extends AbstractExec {
     private long idleTimePerCycle;
 
     @Deprecated
-    final static ThreadLocal<MutableLong> last = ThreadLocal.withInitial(()->new MutableLong(Long.MIN_VALUE));
+    final static ThreadLocal<MutableLong> last = ThreadLocal.withInitial(() -> new MutableLong(Long.MIN_VALUE));
+    private Ons on;
 
     public MixMultiExec(int conceptsCapacity, int threads, Executor exe) {
-        super(conceptsCapacity);
+        super();
 
 
         cpu = new TimeSlicing<>("CPU", threads, exe) {
@@ -86,7 +91,7 @@ abstract public class MixMultiExec extends AbstractExec {
 
                         double value =
                                 c.value();
-                                //(1 + Util.tanhFast(c.value()))/2;
+                        //(1 + Util.tanhFast(c.value()))/2;
 
                         if (!Double.isFinite(value))
                             value = 0;
@@ -98,7 +103,7 @@ abstract public class MixMultiExec extends AbstractExec {
                         //double valuePerNano = (value / Math.log(meanTimeNS));
                         double valuePerSecond = (value / (1.0E-9 * meanTimeNS));
 
-                        s.need((float)valuePerSecond);
+                        s.need((float) valuePerSecond);
                     }
                 });
 
@@ -109,6 +114,22 @@ abstract public class MixMultiExec extends AbstractExec {
             }
         };
         sharing.can(cpu);
+
+    }
+
+
+
+    private void update() {
+        TIME = nar.time();
+        double throttle = nar.loop.throttle.floatValue();
+        double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
+        cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
+
+        //TODO better idle calculation in each thread / worker
+        idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
+
+        revaluator.update(nar);
+        sharing.commit();
     }
 
     public static Exec get(int capacity, int concurrency) {
@@ -121,20 +142,7 @@ abstract public class MixMultiExec extends AbstractExec {
 
     private transient long TIME = Long.MIN_VALUE + 1;
 
-    @Override
-    protected void update(NAR nar) {
-        TIME = nar.time();
-        double throttle = nar.loop.throttle.floatValue();
-        double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
-        cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
 
-        //TODO better idle calculation in each thread / worker
-        idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
-
-        super.update(nar);
-        revaluator.update(nar);
-        sharing.commit();
-    }
 
     public void execute(Runnable async) {
         cpu.queue(async);
@@ -249,27 +257,37 @@ abstract public class MixMultiExec extends AbstractExec {
             super.start(n);
 
             revaluator =
-
                     new Focus.AERevaluator(new SplitMix64Random(1));
 
+            on = new Ons(
 
-            n.services.change.on((xa) -> {
-                Service<NAR> x = xa.getOne();
-                if (x instanceof Causable) {
-                    Causable c = (Causable) x;
-                    if (xa.getTwo())
-                        add(c);
-                    else
-                        remove(c);
-                }
-            });
+                /** first */
+                n.services.change.on((xa) -> {
+                    Service<NAR> x = xa.getOne();
+                    if (x instanceof Causable) {
+                        Causable c = (Causable) x;
+                        if (xa.getTwo())
+                            add(c);
+                        else
+                            remove(c);
+                    }
+                }),
+
+                DurService.on(nar, this::update)
+
+
+            );
 
             n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
 
         }
     }
 
+    public static final Logger logger = LoggerFactory.getLogger(MixMultiExec.class);
+
     protected void add(Causable c) {
+        //TODO check unique
+        logger.info("work {}", c);
         new InstrumentedWork<>(new MyAbstractWork(c));
     }
 

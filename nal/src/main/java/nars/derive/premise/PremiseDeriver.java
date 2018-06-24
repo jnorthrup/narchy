@@ -111,7 +111,7 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
                     d.ttl = Math.max(Param.TTL_MIN, Math.round(branchTTL
                             //* Math.log(2+fanOut)
-                            * (fanOut*0.5f)
+                            * (fanOut*0.25f)
                     ));
 
                     MutableRoulette.run(maybe, d.random, wi -> 0, b -> {

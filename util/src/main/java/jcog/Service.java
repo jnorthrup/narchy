@@ -42,7 +42,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
                     start(x.id);
                     boolean toggledOn = compareAndSet(Services.ServiceState.OffToOn, Services.ServiceState.On);
                     assert toggledOn;
-                    x.change.emit(pair(Service.this, true));
+                    x.change.emitAsync(pair(Service.this, true), exe);
                 } catch (Throwable e) {
                     set(Deleted);
                     x.logger.error("{} {}", this, e);
@@ -62,7 +62,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
                         set(Deleted);
                         afterDelete.run();
                     }
-                    x.change.emit(pair(this, false));
+                    x.change.emitAsync(pair(this, false), exe);
 
                 } catch (Throwable e) {
                     set(Deleted);

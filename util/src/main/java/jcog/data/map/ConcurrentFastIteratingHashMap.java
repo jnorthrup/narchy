@@ -5,10 +5,7 @@ import jcog.list.FasterList;
 import jcog.util.ArrayIterator;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
@@ -184,7 +181,10 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     @Override
     public T put(X key, T value) {
-        return map.put(key, value);
+        T prev = map.put(key, value);
+        if (prev!=value)
+            invalidate();
+        return prev;
     }
 
     public boolean removeIf(Predicate<? super T> filter) {

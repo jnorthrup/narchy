@@ -8,7 +8,6 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
-import nars.exe.AbstractExec;
 import nars.gui.NARui;
 import nars.term.ProxyTerm;
 import org.jetbrains.annotations.Nullable;
@@ -94,7 +93,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
     void updateNode(NodeVis<Concept> nn) {
-        float pri = ((AbstractExec) nar.exe).active.pri(nn.id, 0f);
+        float pri = nar.attn.active.pri(nn.id, 0f);
         nn.color(pri, pri / 2f, 0f);
 
         float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;

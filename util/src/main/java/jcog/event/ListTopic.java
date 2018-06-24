@@ -25,17 +25,19 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
     @Override
     public final void emit(V x) {
         final Consumer[] cc = this.copy;
-        
-        for (Consumer c : cc)
+
+        for (Consumer c: cc)
             c.accept(x);
-        
+
     }
+
+
 
     @Override
     public void emitAsync(V x, Executor executorService) {
         final Consumer[] cc = this.copy;
         if (cc != null) {
-            for (Consumer c : cc)
+            for (Consumer c: cc)
                 executorService.execute(() -> c.accept(x));
         }
     }
@@ -51,7 +53,7 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
                 default:
                     CountDownLatch l = new CountDownLatch(n);
 
-                    for (Consumer c : cc) {
+                    for (Consumer c: cc) {
                         executorService.execute(() -> {
                             try {
                                 c.accept(x);
@@ -70,23 +72,30 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
     @Override
     public void emitAsync(V x, Executor exe, Runnable onFinish) {
         final Consumer[] cc = this.copy;
-        int n;
-        if (cc != null && (n=cc.length) > 0) {
-            busy.reset(n, onFinish);
+        int n = cc != null ? cc.length : 0;
+        switch (n) {
+            case 0:
+                return;
+            case 1: {
+                Consumer cc0 = cc[0];
+                exe.execute(() -> {
+                    try {
+                        cc0.accept(x);
+                    } finally {
+                        onFinish.run();
+                    }
+                });
+                break;
+            }
+            default: {
+                busy.reset(n, onFinish);
 
-            for (Consumer c : cc)
-                exe.execute(busy.run(c, x));
+                for (Consumer c: cc)
+                    exe.execute(busy.run(c, x));
+                break;
+            }
         }
     }
-
-
-
-
-
-
-
-
-
 
     @Override
     public final void enable(Consumer<V> o) {

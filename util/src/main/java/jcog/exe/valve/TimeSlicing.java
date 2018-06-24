@@ -2,9 +2,7 @@ package jcog.exe.valve;
 
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.TODO;
-import jcog.Util;
 import jcog.exe.util.RunnableForkJoin;
-import jcog.pri.Pri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +11,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
-
-import static java.lang.System.nanoTime;
 
 /**
  * spawns any number of independently asynchronous worker threads that
@@ -55,7 +51,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
         trySpawn();
     }
 
-    final private void trySpawn() {
+    protected void trySpawn() {
         if (concurrency.tryAcquire()) {
             if (exe instanceof ForkJoinPool) {
                 ((ForkJoinPool) exe).execute((ForkJoinTask) new ForkJoinWorker());
@@ -124,43 +120,12 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
 
                 try {
 
-                    if (x.start()) {
-
-                        float p = x.pri();
-                        if (p == p && p > Pri.EPSILON) {
-
-                            long runtimeNS = Math.round(cycleNS * p);
-
-                            long now = nanoTime();
-                            long deadlineNS = now + runtimeNS;
-
-                            do {
-                                double meanItertime = Math.min(runtimeNS, x.iterTimeNS.getMean() / x.iterations.getMean());
-                                double expectedNexts;
-                                if (meanItertime!=meanItertime)
-                                    expectedNexts = 1;
-                                else {
-                                    expectedNexts = ((deadlineNS - now) / ( meanItertime ));
-                                }
-
-                                //System.out.println(x + " " + timeStr(deadlineNS - now) + " " + timeStr(deadlineNS - now) + "\t" + timeStr(meanItertime) + " \t= " + expectedNexts);
-                                int ran = x.next(Util.clamp((int) Math.round(Math.max(1, expectedNexts)+1), 1, 1024));
-                                if (ran <= 0)
-                                    break;
-
-                            } while ((now = nanoTime()) < deadlineNS);
-
-                        }
-
-                    } else {
-
-                    }
-
+                    x.runFor(cycleNS);
 
                 } catch (Throwable t) {
                     logger.error("{} {}", x,t);
                 } finally {
-                    x.stop();
+
                     queue(x);
                 }
 

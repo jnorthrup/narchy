@@ -10,14 +10,12 @@ import nars.Narsese;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.Activate;
-import nars.exe.UniExec;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -220,7 +218,7 @@ class TemporalInductionTest {
                 Concept cc = n.concept(term);
                 if (cc == null)
                     return 0;
-                Activate c = ((UniExec)(n.exe)).active.get(cc);
+                Activate c = n.attn.active.get(cc);
                 if (c == null)
                     return 0;
                 else return c.priElseZero();
@@ -241,7 +239,7 @@ class TemporalInductionTest {
      * the events themselves.
      */
     @Test
-    void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() throws FileNotFoundException {
+    void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() {
         NAR n = NARS.tmp();
 
         n.beliefPriDefault.set(0.1f);

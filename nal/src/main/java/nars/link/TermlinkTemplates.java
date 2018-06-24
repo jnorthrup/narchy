@@ -151,7 +151,7 @@ public class TermlinkTemplates extends FasterList<Term> {
                     break;
                 case IMPL:
                     Op xo = x.op();
-                    if (xo.statement || (depth == 1 && xo==CONJ))
+                    if ( xo.statement || (depth == 1 && xo==CONJ))
                         return +1;
                     break;
             }

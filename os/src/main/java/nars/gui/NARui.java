@@ -225,7 +225,7 @@ public class NARui {
                                     new WindowToggleButton("concept graph", () -> {
                                         DynamicConceptSpace sg;
                                         SpaceGraphPhys3D s = new SpaceGraphPhys3D<>(
-                                                sg = new DynamicConceptSpace(nar, () -> nar.exe.active().iterator(),
+                                                sg = new DynamicConceptSpace(nar, () -> nar.attn.active().iterator(),
                                                         128, 16)
                                         );
                                         EdgeDirected3D fd = new EdgeDirected3D();

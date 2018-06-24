@@ -1,6 +1,7 @@
 package nars.op.stm;
 
 import jcog.list.FasterList;
+import jcog.pri.NLink;
 import jcog.pri.Priority;
 import jcog.pri.VLink;
 import nars.NAR;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -98,10 +100,17 @@ public class ConjClustering extends Causable {
 
 
     @Override
+    public void run(NAR n, int workRequested, Consumer<NLink<Runnable>> buffer) {
+        if (bag.bag.isEmpty())
+            return;
+
+        super.run(n, workRequested, buffer);
+    }
+
+    @Override
     protected int next(NAR nar, int iterations /* max tasks generated per centroid, >=1 */) {
 
-        if (bag.bag.isEmpty())
-            return -1;
+        if (bag.bag.isEmpty()) return -1;
 
         this.now = nar.time();
         this.dur = nar.dur();

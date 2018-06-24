@@ -9,7 +9,7 @@ import java.lang.ref.WeakReference;
 import java.util.function.Consumer;
 
 /**
- * Represents the active state of a topic stream
+ * Represents the active state of a topic stream (Subscription)
  */
 abstract public class On<V> implements Off {
 

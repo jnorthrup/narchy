@@ -14,7 +14,6 @@ import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -253,61 +252,61 @@ public class Focus extends AtomicRoulette<Causable> {
     }
 
 
-    public boolean tryRun(int x) {
-        if (singletonBusy.get(x))
-            return false;
-
-        @Nullable Causable cx = this.choice.getSafe(x);
-        if (cx == null)
-            return false;
-
-
-
-
-        /** temporarily withold priority */
-
-        boolean singleton = cx.singleton();
-        int pri;
-        if (singleton) {
-            if (!singletonBusy.compareAndSet(x, false, true))
-                return false; 
-
-            pri = priGetAndSet(x, 0);
-        } else {
-            pri = pri(x);
-        }
-
-        
-        
-
-
-
-        
-
-        int completed = -1;
-        try {
-
-            completed = cx.run(nar, this.sliceWork[x]);
-        } finally {
-            if (singleton) {
-
-                if (completed >= 0) {
-                    priGetAndSetIfEquals(x, 0, pri);
-                    singletonBusy.clear(x); //will be uncleared next cycle
-                } else {
-                    priGetAndSet(x, -1); //sleep until next cycle
-                }
-
-
-
-            } else {
-                if (completed < 0) {
-                    priGetAndSet(x, 0); 
-                }
-            }
-        }
-        return true;
-    }
+//    public boolean tryRun(int x) {
+//        if (singletonBusy.get(x))
+//            return false;
+//
+//        @Nullable Causable cx = this.choice.getSafe(x);
+//        if (cx == null)
+//            return false;
+//
+//
+//
+//
+//        /** temporarily withold priority */
+//
+//        boolean singleton = cx.singleton();
+//        int pri;
+//        if (singleton) {
+//            if (!singletonBusy.compareAndSet(x, false, true))
+//                return false;
+//
+//            pri = priGetAndSet(x, 0);
+//        } else {
+//            pri = pri(x);
+//        }
+//
+//
+//
+//
+//
+//
+//
+//
+//        int completed = -1;
+//        try {
+//
+//            completed = cx.run(nar, this.sliceWork[x]);
+//        } finally {
+//            if (singleton) {
+//
+//                if (completed >= 0) {
+//                    priGetAndSetIfEquals(x, 0, pri);
+//                    singletonBusy.clear(x); //will be uncleared next cycle
+//                } else {
+//                    priGetAndSet(x, -1); //sleep until next cycle
+//                }
+//
+//
+//
+//            } else {
+//                if (completed < 0) {
+//                    priGetAndSet(x, 0);
+//                }
+//            }
+//        }
+//        return true;
+//    }
 
 
     /**

@@ -44,7 +44,7 @@ public class SimpleDeriver extends Deriver {
     final BiFunction<Concept, Derivation, LinkModel> linking;
 
     public SimpleDeriver(PremiseDeriverRuleSet rules) {
-        this(rules.nar.exe::fire, rules.nar::input, rules);
+        this(rules.nar.attn::fire, rules.nar::input, rules);
     }
 
     public SimpleDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules) {
@@ -209,7 +209,7 @@ public class SimpleDeriver extends Deriver {
         @Override
         public Supplier<PriReference<Term>> termlinks() {
             return () -> {
-                Activate a = n.exe.fire();
+                Activate a = n.attn.fire();
                 return a != null ? new PLink(a.term(), a.pri()) : null;
             };
         }

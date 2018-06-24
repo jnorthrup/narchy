@@ -58,6 +58,7 @@ public class NARService extends Service<NAR> implements Termed {
         
     }
 
+    /** soft-reset signal to vountarily and quickly vacuum state */
     public void clear() {
         
     }

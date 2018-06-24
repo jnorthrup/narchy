@@ -1,12 +1,7 @@
 package nars.exe;
 
-import jcog.event.On;
-import jcog.pri.Pri;
 import nars.NAR;
 import nars.Param;
-import nars.Task;
-import nars.concept.Concept;
-import nars.control.Activate;
 import nars.task.ITask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +10,6 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -23,11 +17,10 @@ import java.util.stream.Stream;
  */
 abstract public class Exec implements Executor {
 
-    private static final Logger logger = LoggerFactory.getLogger(Exec.class);
+    protected static final Logger logger = LoggerFactory.getLogger(Exec.class);
 
     protected NAR nar;
 
-    private On onClear;
 
 
     public void execute(/*@NotNull*/ Iterator<? extends ITask> input) {
@@ -48,14 +41,14 @@ abstract public class Exec implements Executor {
 
 
     /** inline, synchronous */
-    final void executeNow(Object t) {
+    protected final void executeNow(Object t) {
         try {
             if (t instanceof ITask) {
-                ITask tt = (ITask) t;
-                if (Param.CAUSE_MULTIPLY_EVERY_TASK && t instanceof Task) {
-                    tt.priMult(nar.amp((Task) tt), Pri.EPSILON);
-                }
-                tt.run(nar);
+//                ITask tt = (ITask) t;
+//                if (Param.CAUSE_MULTIPLY_EVERY_TASK && t instanceof Task) {
+//                    tt.priMult(nar.amp((Task) tt), Pri.EPSILON);
+//                }
+                ((ITask) t).run(nar);
             } else if (t instanceof Runnable)
                 ((Runnable) t).run();
             else 
@@ -73,32 +66,18 @@ abstract public class Exec implements Executor {
     abstract public void execute(Consumer<NAR> r);
 
 
-    abstract public void fire(Predicate<Activate> each);
 
-    public Activate fire() {
-        Activate[] pl = new Activate[1];
-        fire(x -> {
-            pl[0] = x;
-            return false; 
-        });
-        return pl[0];
-    }
-
-    abstract public Stream<Activate> active();
 
     public void start(NAR nar) {
         this.nar = nar;
-        onClear = nar.eventClear.on((n) -> clear());
     }
 
 
     public void stop() {
-        onClear.off();
-        this.onClear = null;
+
         this.nar = null;
     }
 
-    public abstract void clear();
 
     /**
      * true if this executioner executes procedures concurrently.
@@ -116,7 +95,7 @@ abstract public class Exec implements Executor {
 
 
 
-    abstract public void activate(Concept c, float activationApplied);
+
 
     /** TODO refactor into an independent DurService that updates causes with wants */
     public interface Revaluator {

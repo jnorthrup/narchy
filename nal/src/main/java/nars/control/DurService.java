@@ -2,6 +2,7 @@ package nars.control;
 
 import nars.NAR;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +31,10 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         this(n, new MutableFloat(durs));
     }
 
-    protected DurService(NAR n, MutableFloat durations) {
+    protected DurService(@Nullable NAR n, MutableFloat durations) {
         super(n);
         this.durations = durations;
-        this.lastStarted = n.time() - n.dur();
+        this.lastStarted = Long.MIN_VALUE;
     }
 
 
@@ -109,7 +110,11 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
 
         try {
+            if (lastStarted == Long.MIN_VALUE)
+                lastStarted = atStart;
+
             long delta = atStart - this.lastStarted;
+
             this.lastStarted = atStart;
             if (delta >= durCycles) {
                 run(nar, delta);

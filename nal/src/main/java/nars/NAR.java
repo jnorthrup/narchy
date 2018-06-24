@@ -27,6 +27,7 @@ import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
+import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.index.concept.ConceptIndex;
 import nars.subterm.Subterms;
@@ -112,8 +113,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * atomic for thread-safe schizophrenia
      */
     private final AtomicReference<Term> self = new AtomicReference<>(null);
+    public final ConceptBuilder conceptBuilder;
+
+    /** default attention; other attentions can be attached as services */
+    public final Attention attn;
+
     public volatile Logger logger;
-    public NAR(ConceptIndex concepts, Exec exe, Time time, Random rng, ConceptBuilder conceptBuilder) {
+    public final Topic<Activate> eventActivate = new ListTopic();
+
+    public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Random rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
 
@@ -129,12 +137,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.emotion = new Emotion(this);
 
+        this.conceptBuilder = conceptBuilder;
 
         concepts.init(this);
         Builtin.init(this);
 
-
         exe.start(this);
+
+        this.attn = attn;
+        this.on(attn);
     }
 
     static void outputEvent(Appendable out, String previou, String chan, Object v) throws IOException {
@@ -994,7 +1005,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public Stream<Activate> conceptsActive() {
-        return exe.active();
+        return attn.active();
     }
 
     public Stream<Concept> concepts() {
@@ -1341,13 +1352,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return MetaGoal.privaluate(causes, effect);
     }
 
-    /**
-     * changes the concept builder
-     */
-    public TimeAware conceptBuilder(ConceptBuilder cb) {
-        conceptBuilder = cb;
-        return this;
-    }
 
     /**
      * creates a new evidence stamp (1-element array)
@@ -1377,11 +1381,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
     }
 
-    public Concept activate(Termed t, float activationApplied) {
+    public final void activate(Termed t, float activationApplied) {
+
+        /** conceptualize regardless */
         Concept c = concept(t, true /*false */ /* true */);
-        if (c != null)
-            exe.activate(c, activationApplied * activateConceptRate.floatValue());
-        return c;
+
+        if (c!=null && !eventActivate.isEmpty()) {
+            eventActivate.emit(new Activate(c, activationApplied * activateConceptRate.floatValue()));
+        }
     }
 
     public Stream<Service<NAR>> services() {

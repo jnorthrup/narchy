@@ -1,7 +1,5 @@
 package nars;
 
-import jcog.Util;
-import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
@@ -10,7 +8,7 @@ import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.derive.deriver.SimpleDeriver;
-import nars.exe.MixMultiExec;
+import nars.exe.BufferedExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.index.concept.HijackConceptIndex;
@@ -88,9 +86,17 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .exe(MixMultiExec.get(
-                            1024,
-                             Util.concurrency()))
+                //.exe(new UniExec() {
+                .exe(new BufferedExec() {
+                    @Override
+                    public boolean concurrent() {
+                        return true;
+                    }
+                })
+
+//                .exe(MixMultiExec.get(
+//                            1024,
+//                             Util.concurrency()))
 //                .exe(new WorkerMultiExec(
 //
 //                             new Focus.AERevaluator(new SplitMix64Random(1)),
@@ -116,7 +122,7 @@ abstract public class NAgentX extends NAgent {
                 .get();
 
 
-        Exe.setExecutor(n.exe);
+        //Exe.setExecutor(n.exe);
 
         new MatrixDeriver(Derivers.nal(n, 1, 8, "curiosity.nal", "motivation.nal"));
 

@@ -14,6 +14,7 @@ import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.exe.Attention;
 import nars.exe.Causable;
 import nars.link.TaskLink;
 import nars.link.Tasklinks;
@@ -63,11 +64,12 @@ abstract public class Deriver extends Causable {
     }
 
     public Deriver(PremiseDeriverRuleSet rules) {
-        this(rules, rules.nar);
+        this(rules.nar.attn, rules, rules.nar);
     }
 
-    public Deriver(Set<PremiseDeriverProto> rules, NAR nar) {
-        this(nar.exe::fire, nar::input, rules, nar);
+
+    public Deriver(Attention attn, Set<PremiseDeriverProto> rules, NAR nar) {
+        this(attn::fire, nar::input, rules, nar);
     }
 
     public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules) {
@@ -108,7 +110,8 @@ abstract public class Deriver extends Causable {
         //System.out.println(derivations + " -> " + iterations + " -> " + derived);
         //io.out(derived);
 
-        return derived;
+        //return derived;
+        return iterations;
     }
 
 
