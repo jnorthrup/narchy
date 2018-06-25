@@ -268,7 +268,10 @@ class DecisionTreeTrainingTest {
         tr.print();
 
         List<DecisionTree.DecisionNode.LeafNode<Float>> leavesList = tr.leaves().collect(toList());
-        assertEquals("[1.0, 1.0, 1.0, 1.0, 0.0]", leavesList.toString());
+        assertEquals(
+                "[1.0, 0.0, 0.0, 0.0, 0.0]"
+                //"[1.0, 1.0, 1.0, 1.0, 0.0]"
+                , leavesList.toString());
 
     }
 

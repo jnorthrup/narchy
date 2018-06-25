@@ -87,7 +87,7 @@ class AIMATests {
 
         n.questionPriDefault.set(0.8f);
 
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(24);
 //        n.log();
 
 

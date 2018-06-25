@@ -163,6 +163,7 @@ abstract public class NAgentX extends NAgent {
 
         Inperience inp = new Inperience(n, 16);
 
+        n.forgetRate.set(0.2f);
 
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
@@ -180,9 +181,10 @@ abstract public class NAgentX extends NAgent {
         n.synch();
 
         SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
-                Derivers.nal(n, 2, 6, "curiosity.nal", "motivation.nal"),
+                Derivers.nal(n, 6, 6, "curiosity.nal", "motivation.nal"),
                 SimpleDeriver.GlobalTermLinker);
         sd.power.set(1);
+
 
         //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);
 

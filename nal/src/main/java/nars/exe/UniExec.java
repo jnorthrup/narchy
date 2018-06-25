@@ -2,7 +2,6 @@ package nars.exe;
 
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.Service;
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.exe.valve.AbstractWork;
@@ -12,7 +11,6 @@ import jcog.exe.valve.TimeSlicing;
 import jcog.pri.Pri;
 import nars.NAR;
 import nars.control.DurService;
-import nars.time.clock.RealTime;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -24,8 +22,9 @@ public class UniExec extends AbstractExec {
 
     int WORK_PER_CYCLE = 1;
 
-    final Focus.DefaultRevaluator revaluator = new Focus.DefaultRevaluator();
-
+    final Focus.DefaultRevaluator revaluator =
+            //new Focus.AERevaluator(new SplitMix64Random(1));
+            new Focus.DefaultRevaluator();
 
     final ConcurrentFastIteratingHashMap<Causable,MyAbstractWork> can = new ConcurrentFastIteratingHashMap<>(new MyAbstractWork[0]);
 
@@ -35,7 +34,6 @@ public class UniExec extends AbstractExec {
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
-    private long idleTimePerCycle;
 
     public final class MyAbstractWork extends InstrumentedWork {
 
@@ -67,6 +65,20 @@ public class UniExec extends AbstractExec {
     public void start(NAR n) {
         synchronized (this) {
             super.start(n);
+
+            n.services.change.on((xb) -> {
+                Service<NAR> s = xb.getOne();
+                if (s instanceof Causable) {
+                    if (xb.getTwo())
+                        UniExec.this.add((Causable) s);
+                    else
+                        UniExec.this.remove((Causable)s);
+                }
+            });
+            n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
+
+            n.onCycle(this::onCycle);
+            DurService.on(n, this::onDur);
 
             cpu = new TimeSlicing<>("CPU", 1, nar.exe) {
 
@@ -116,7 +128,7 @@ public class UniExec extends AbstractExec {
                             Object x = s.who;
                             if (x instanceof Causable) {
 
-                                    s.valueNormalized = (s.valueNormalized - valMin[0]) / valRange;
+                                s.valueNormalized = (s.valueNormalized - valMin[0]) / valRange;
 
 
 
@@ -184,21 +196,9 @@ public class UniExec extends AbstractExec {
             };
             sharing.can(cpu);
 
-            n.services.change.on((xb) -> {
-                Service<NAR> s = xb.getOne();
-                if (s instanceof Causable) {
-                    if (xb.getTwo())
-                        UniExec.this.add((Causable) s);
-                    else
-                        UniExec.this.remove((Causable)s);
-                }
-            });
-            n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
-
-            n.onCycle(this::onCycle);
-            DurService.on(n, this::onDur);
         }
     }
+
 
     @Override
     public void stop() {
@@ -208,37 +208,25 @@ public class UniExec extends AbstractExec {
         }
     }
 
-    private void onDur() {
+
+    protected void onDur() {
         revaluator.update(nar);
-        sharing.commit();
     }
 
     protected void onCycle() {
         if (nar==null)
             return; //??
 
-        updateTiming();
-
-
         queue.removeIf(e -> {
             executeNow(e);
             return true;
         });
         can.forEachValue(c->
-            c.c.run(nar, WORK_PER_CYCLE, x->x.get().run())
+            //c.c.run(nar, WORK_PER_CYCLE, x->x.get().run())
+            c.c.next(nar, WORK_PER_CYCLE)
         );
     }
 
-    protected void updateTiming() {
-        if (nar.time instanceof RealTime) {
-            double throttle = nar.loop.throttle.floatValue();
-            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
-            cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
-
-            //TODO better idle calculation in each thread / worker
-            idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
-        }
-    }
 
 
     public boolean remove(Causable s) {

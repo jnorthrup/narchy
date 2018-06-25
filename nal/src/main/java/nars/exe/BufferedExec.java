@@ -8,6 +8,7 @@ import jcog.util.Flip;
 import nars.NAR;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
+import nars.time.clock.RealTime;
 
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -19,7 +20,19 @@ import java.util.function.Consumer;
 public class BufferedExec extends UniExec {
 
     final Flip<List> buffer = new Flip<>(() -> new FasterList<>());
+    private long idleTimePerCycle;
+    final AtomicBoolean cycleBusy = new AtomicBoolean();
 
+    protected void updateTiming() {
+        if (nar.time instanceof RealTime) {
+            double throttle = nar.loop.throttle.floatValue();
+            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
+            cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
+
+            //TODO better idle calculation in each thread / worker
+            idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
+        }
+    }
     @Override
     public void execute(Object x) {
         if (x instanceof NALTask || x instanceof TaskProxy) {
@@ -54,14 +67,23 @@ public class BufferedExec extends UniExec {
         return true;
     }
 
-    final AtomicBoolean busy = new AtomicBoolean();
+
+    @Override protected void onDur() {
+        super.onDur();
+        sharing.commit();
+    }
 
     protected void onCycle() {
+        if (nar == null)
+            return;
+
+        updateTiming();
+
         onCycle(concurrent());
     }
 
     protected void onCycle(boolean concurrent) {
-        if (!busy.compareAndSet(false, true))
+        if (!cycleBusy.compareAndSet(false, true))
             return; //busy
         try {
             List b = buffer.commit();
@@ -130,7 +152,7 @@ public class BufferedExec extends UniExec {
             b.clear();
 
         } finally {
-            busy.set(false);
+            cycleBusy.set(false);
         }
 
     }
@@ -151,6 +173,7 @@ public class BufferedExec extends UniExec {
 
             synchronized (this) {
                 super.start(n);
+
 
                 exe.execute(() -> {
                     while (true) {

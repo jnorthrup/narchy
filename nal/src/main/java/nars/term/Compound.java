@@ -222,36 +222,35 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
         return equals(y)
                 ||
-                (preUnify(this, y, u) && unifySubterms(y, u))
+                (unifySubterms(y, u))
                 ||
                 (u.symmetric && y.unifyReverse(this, u));
     }
 
-    /** post-equals unify */
-    static boolean preUnify(Term x, Term y, Unify u) {
-        Op op;
-        if ((op = x.op()) == y.op()) {
-            if ((!u.constant(x) || (u.symmetric && !u.constant(y)))) {
 
-                if (op.temporal) {
-                    int xdt = x.dt();
-                    if (xdt == XTERNAL || xdt == DTERNAL)
-                        return true;
-                    int ydt = y.dt();
-                    if (xdt == ydt) return true;
-                    if (ydt == XTERNAL || ydt == DTERNAL)
-                        return true;
-                    return false;//TODO strict equality: u.dur
-                } else {
-                    return true;
-                }
-            }
-
-        }
-        return false;
-    }
 
     default boolean unifySubterms(Term y, Unify u) {
+        Term x = this;
+        Op op;
+        if ((op = x.op()) != y.op())
+            return false;
+
+        if (op.temporal) {
+            int xdt = x.dt();
+            if (xdt != XTERNAL && xdt != DTERNAL) {
+                int ydt = y.dt();
+                if (xdt == ydt) return true;
+                if (ydt != XTERNAL && ydt != DTERNAL) {
+                    return false;//TODO strict equality: u.dur
+                }
+            }
+        }
+
+        if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
+            if (!x.hasAny(Op.Temporal))
+                return false; //temporal terms need to be compared for matching 'dt'
+        }
+
 
         Subterms xx = subterms();
         Subterms yy = y.subterms();

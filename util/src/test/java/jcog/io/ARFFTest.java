@@ -20,11 +20,12 @@ class ARFFTest {
         String file = "% oh yes, this is great!\n" +
                 "% and even better than I thought!\n" +
                 "@relation foobar\n" +
-                "@attribute number real\n" +
-                "@attribute argh {yes, no}\n" +
+                "@attribute x real\n" +
+                "@attribute y string\n" +
+                //"@attribute y {yes, no}\n" +
                 "@data\n" +
-                "1.0, yes\n" +
-                "0, no\n";
+                "1.0,yes\n" +
+                "0,no\n\n";
 
 
         ARFF arff = new ARFF(file);

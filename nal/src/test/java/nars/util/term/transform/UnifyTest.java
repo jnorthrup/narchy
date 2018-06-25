@@ -325,8 +325,8 @@ public class UnifyTest {
     @Test
     void pattern_trySubs_Pattern_Var_2_setComplex0_5_1() {
         test(Op.VAR_PATTERN,
-                "{<(%1,x) --> on>, c:(a && b)}",
-                "{<(z,x) --> on>, c:(a && b)}",
+                "{ on(%1,x), c:(a && b)}",
+                "{ on(z,x), c:(a && b) }",
                 true);
     }
 

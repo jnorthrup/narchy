@@ -51,6 +51,8 @@ public class Arkancide extends NAgentX {
 
         TimeAware timeAware = runRT((NAR n) -> {
 
+            n.dtDither.set(25); //50fps resolution
+
             Arkancide a = new Arkancide(n, cam, numeric);
                 
 
@@ -67,7 +69,7 @@ public class Arkancide extends NAgentX {
 
             return a;
 
-        }, 30, 30);
+        }, 40, 20);
 
 
 

@@ -88,8 +88,8 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             (t,b)->
-                    Util.or(t, b);
-                    //(t+b);
+                    //Util.or(t, b);
+                    (t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget
@@ -104,11 +104,7 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    @Deprecated public final static int SIGNAL_LATCH_TIME_MAX =
-            
-            
-            
-            8;
+    @Deprecated public final static int SIGNAL_LATCH_TIME_MAX = 8;
             
             
 

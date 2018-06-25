@@ -8,7 +8,7 @@ buildscript {
         }
         maven {
             url "http://jcenter.bintray.com"
-        }
+        }         //    maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
         //maven { url "https://oss.sonatype.org/content/groups/public/" }
 
     }
@@ -16,16 +16,16 @@ buildscript {
 //        classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0'
 //        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0-M1'
         classpath "com.github.ben-manes:gradle-versions-plugin:0.17.0"
-        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.1"
-	//classpath "com.gradle:build-scan-plugin:1.10.2"
+        //classpath "com.gradle:build-scan-plugin:1.10.2"
 
     }
 }
 
-
-//plugins {
+plugins {
+    id "se.patrikerdes.use-latest-versions" version "0.2.3"
+    id "com.github.johnrengelman.plugin-shadow" version "2.0.3"
 //    id "org.sonarqube" version "2.5"
-//}
+}
 
 /*
 buildScan {
@@ -62,37 +62,39 @@ subprojects {
 //
 //        }
 //    }
-    repositories {
 
-        mavenCentral()
-//        mavenLocal()
-//        jcenter()
-
-        maven { url "http://repo.maven.apache.org/maven2" }
-        maven { url "http://jcenter.bintray.com" }
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
-    }
 
     tasks.withType(JavaCompile) {
 
-
-        targetCompatibility = sourceCompatibility = targetCompatibility =
-                //JavaVersion.VERSION_1_10
-                JavaVersion.VERSION_11
+        sourceCompatibility =
+            targetCompatibility =
+                    //JavaVersion.VERSION_1_10
+                    JavaVersion.VERSION_11
 
         options.encoding = 'UTF-8'
-        options.incremental = false // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
+        options.incremental = true // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
         options.fork = true
     }
 
     test {
         reports {
             junitXml.enabled = false
-            html.enabled = false
+            html.enabled = true
         }
         maxParallelForks =
                 //Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-                Math.max(1, Runtime.runtime.availableProcessors() - 1)
+                Math.max(1, Runtime.runtime.availableProcessors())
+
+        useJUnitPlatform {
+//            //includeTags 'fast', 'smoke & feature-a'
+            excludeTags 'slow'
+            includeEngines 'junit-jupiter'
+//            // excludeEngines 'junit-vintage'
+       }
+        systemProperties = [
+                'junit.jupiter.extensions.autodetection.enabled': 'true',
+                'junit.jupiter.testinstance.lifecycle.default': 'per_class'
+        ]
     }
 
 //    junitHtmlReport {

@@ -285,21 +285,26 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             define(name, Numeric);
         } else if (lowertype.equals("string")) {
             define(name, Text);
-        } else if (type.startsWith("{") && type.endsWith("}")) {
-            type = type.substring(1, type.length() - 1);
-            type = type.trim();
-            defineNominal(name, type.split("\\s*,\\s*"));
-        } else {
-            throw new ARFFParseError(lineno, "Attribute of type \"" + type + "\" not supported (yet)");
+        } else  {
+            int a = line.indexOf('{');
+            if (a != -1) {
+                int b = line.indexOf('}');
+                if (b != -1) {
+                    line = line.substring(a+1, b);
+                    defineNominal(name, line.split("\\s*,\\s*"));
+                }
+            }
         }
+        throw new ARFFParseError(lineno, "Attribute of type \"" + type + "\" not supported (yet)");
     }
 
     private void parseData(int lineno, String line) throws ARFFParseError {
         int num_attributes = attribute_names.size();
-        if (line.charAt(0) == '{' && line.charAt(line.length() - 1) == '}') {
-            throw new ARFFParseError(lineno, "Sparse data not supported (yet).");
-        } else {
-            String[] tokens = line.split("\\s*,\\s*");
+//        if (line.charAt(0) == '{' && line.charAt(line.length() - 1) == '}') {
+//            throw new ARFFParseError(lineno, "Sparse data not supported (yet).");
+//        } else {
+        {
+            String[] tokens = line.split(",");
             if (tokens.length != num_attributes) {
                 throw new ARFFParseError(lineno, "Warning: line " + lineno + " does not contain the right " +
                         "number of elements (should be " + num_attributes + ", got " + tokens.length + '.');
