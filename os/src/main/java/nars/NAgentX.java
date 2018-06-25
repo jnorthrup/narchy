@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.Util;
 import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
@@ -87,7 +88,7 @@ abstract public class NAgentX extends NAgent {
         NAR n = new NARS()
 
                 //.exe(new UniExec() {
-                .exe(new BufferedExec() {
+                .exe(new BufferedExec.AsyncExec(Util.concurrency()) {
                     @Override
                     public boolean concurrent() {
                         return true;
@@ -124,7 +125,8 @@ abstract public class NAgentX extends NAgent {
 
         //Exe.setExecutor(n.exe);
 
-        new MatrixDeriver(Derivers.nal(n, 1, 8, "curiosity.nal", "motivation.nal"));
+
+        new MatrixDeriver(Derivers.nal(n, 1, 8));
 
         n.dtDither.set(8);
         n.timeFocus.set(4);
@@ -176,8 +178,9 @@ abstract public class NAgentX extends NAgent {
         n.synch();
 
         SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
-                Derivers.nal(n, 6, 8, "curiosity.nal"/*, "motivation.nal"*/));
-        sd.power.set(4);
+                Derivers.nal(n, 2, 6, "curiosity.nal", "motivation.nal"),
+                SimpleDeriver.GlobalTermLinker);
+        sd.power.set(1);
 
         //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);
 

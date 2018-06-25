@@ -33,13 +33,5 @@ class PremisePatternCompoundTest {
                 r.toString());
     }
 
-    @Test
-    void testEqualityWithNonPatternDT() throws Narsese.NarseseException {
-        for (String s : new String[] { "(a ==> b)", "(a ==>+1 b)", "(a &&+1 b)" }) {
-            Compound t = $(s);
-            Compound p = (Compound) i.get(t, true).term();
-            assertEquals(t.dt(), p.dt());
-            assertEquals(t, p);
-        }
-    }
+
 }

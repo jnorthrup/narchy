@@ -394,10 +394,13 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             
             Random rng = nar.random();
             do {
-                Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));
+                Concept cc = concepts.get(rng.nextInt(numConcepts));
+                //Concept cc = nar.conceptualize(cc);
                 if (cc!=null) {
-                    a = new Activate(cc, 0);
-                    a.delete(); 
+                    a = new Activate(cc, 0f);
+                    //nar.activate(cc, 1f);
+                    ///a = new Activate(cc, 0);
+                    //a.delete();
                 } else {
                     a = null;
                     if (remainMissing-- <= 0) 

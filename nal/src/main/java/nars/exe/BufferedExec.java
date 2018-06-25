@@ -1,6 +1,7 @@
 package nars.exe;
 
 import jcog.Util;
+import jcog.exe.AffinityExecutor;
 import jcog.list.FasterList;
 import jcog.util.Flip;
 import nars.NAR;
@@ -39,6 +40,10 @@ public class BufferedExec extends UniExec {
         executeLater(r);
     }
 
+    @Override
+    public void execute(Runnable r) {
+        executeLater(r);
+    }
 
     @Override
     public boolean concurrent() {
@@ -48,28 +53,32 @@ public class BufferedExec extends UniExec {
     final AtomicBoolean busy = new AtomicBoolean();
 
     protected void onCycle() {
+        onCycle(concurrent());
+    }
+
+    protected void onCycle(boolean concurrent) {
         if (!busy.compareAndSet(false, true))
             return; //busy
         try {
             List b = buffer.commit();
 
 
-
-            int concurrency = Util.concurrency();
-            double timeSliceNS = 10.0 * 1_000_000 * concurrency;
+            int concurrency = concurrent ? Util.concurrency() :1;
+            //double timeSliceNS = 100.0 * 1_000_000 * concurrency;
+            long timeSliceNS = (concurrent ? concurrency : 1) * cpu.cycleTimeNS.longValue();
 
             can.forEachValue(c -> {
 
-                double maxIters = 1 + (c.pri() * timeSliceNS / (c.iterTimeNS.getMean()/(1 + c.iterations.getMean())));
+                double maxIters = 1 + (c.pri() * timeSliceNS / (c.iterTimeNS.getMean() / (1 + c.iterations.getMean())));
                 int work = maxIters == maxIters ? (int) Math.max(1, Math.ceil(maxIters)) : 1;
 
                 //int workRequested = c.;
                 b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
 
-                        if (c.start()) {
-                            c.next(work);
-                            c.stop();
-                        }
+                    if (c.start()) {
+                        c.next(work);
+                        c.stop();
+                    }
 
 
                 }));
@@ -88,15 +97,16 @@ public class BufferedExec extends UniExec {
 //                    break;
                 default:
                     //TODO sort, distribute etc
-                    if (bn > 4) {
+                    if (bn > 2) {
                         ((FasterList) b).sortThisByInt(x -> x.getClass().hashCode()); //sloppy sort by type
                     }
-                    if (!concurrent()) {
+                    if (concurrency <= 1) {
                         b.forEach(this::executeNow);
                     } else {
 
 
-                        (((FasterList<?>)b).chunkView(b.size() / concurrency ))
+                        float granularity = 2;
+                        (((FasterList<?>) b).chunkView((int) Math.min(concurrency, b.size() / (concurrency * granularity))))
                                 .parallelStream().forEach(x -> x.forEach(this::executeNow));
 
 //                                .forEach(c -> {
@@ -120,5 +130,44 @@ public class BufferedExec extends UniExec {
         }
     }
 
+
+    public static class AsyncExec extends BufferedExec {
+
+        public final int threads;
+        final AffinityExecutor exe = new AffinityExecutor();
+
+        public AsyncExec(int threads) {
+            this.threads = threads;
+
+        }
+
+        @Override
+        public void start(NAR n) {
+
+            synchronized (this) {
+                super.start(n);
+
+                exe.execute(() -> {
+                    while (true) {
+                        super.onCycle(false);
+                    }
+                }, threads);
+            }
+
+        }
+
+        @Override
+        public void stop() {
+            synchronized (this) {
+                exe.shutdownNow();
+                super.stop();
+            }
+        }
+
+        @Override
+        protected void onCycle() {
+            //not called this way
+        }
+    }
 
 }

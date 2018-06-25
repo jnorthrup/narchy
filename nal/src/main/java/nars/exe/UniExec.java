@@ -1,6 +1,8 @@
 package nars.exe;
 
+import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.Service;
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.exe.valve.AbstractWork;
@@ -10,8 +12,9 @@ import jcog.exe.valve.TimeSlicing;
 import jcog.pri.Pri;
 import nars.NAR;
 import nars.control.DurService;
+import nars.time.clock.RealTime;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * single thread executor used for testing
@@ -26,10 +29,13 @@ public class UniExec extends AbstractExec {
 
     final ConcurrentFastIteratingHashMap<Causable,MyAbstractWork> can = new ConcurrentFastIteratingHashMap<>(new MyAbstractWork[0]);
 
-    final ArrayBlockingQueue queue = new ArrayBlockingQueue(8192);
+    final BlockingQueue queue =
+            //new ArrayBlockingQueue(8192);
+            new DisruptorBlockingQueue(8192);
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
+    private long idleTimePerCycle;
 
     public final class MyAbstractWork extends InstrumentedWork {
 
@@ -153,10 +159,10 @@ public class UniExec extends AbstractExec {
 
                                 double valuePerSecondNormalized = (s.valuePerSecond - valRateMin[0])/valRateRange;
 
-                                s.priSet((float) s.valueNormalized);
-                                //s.priSet((float) valuePerSecondNormalized);
+                                //s.priSet((float) s.valueNormalized);
+                                s.priSet((float) valuePerSecondNormalized);
 
-                                System.out.println(s + " " + s.iterations.getMean());
+                                //System.out.println(s + " " + s.iterations.getMean());
 
                             });
                             super.commit();
@@ -208,6 +214,16 @@ public class UniExec extends AbstractExec {
     }
 
     protected void onCycle() {
+        if (nar.time instanceof RealTime) {
+            double throttle = nar.loop.throttle.floatValue();
+            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
+            cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
+
+            //TODO better idle calculation in each thread / worker
+            idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
+        }
+
+
         queue.removeIf(e -> {
             executeNow(e);
             return true;

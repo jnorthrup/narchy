@@ -145,7 +145,7 @@ public class NARS {
 
         derivers = new FasterList<>();
 
-        attention(()->new Attention(512));
+        attention(()->new Attention(256));
     }
 
     /**

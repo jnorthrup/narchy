@@ -87,7 +87,9 @@ public abstract class Param {
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            (t,b)->(t+b);
+            (t,b)->
+                    Util.or(t, b);
+                    //(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget

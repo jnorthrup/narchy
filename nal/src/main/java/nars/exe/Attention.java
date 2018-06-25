@@ -104,11 +104,7 @@ public class Attention extends DurService implements Sampler<Concept> {
 
     @Override
     protected void run(NAR n, long dt) {
-        update(n);
-    }
-
-    protected void update(NAR nar) {
-        active.commit(active.forget(nar.forgetRate.floatValue()));
+        active.commit(active.forget(n.forgetRate.floatValue()));
     }
 
     public Stream<Activate> active() {

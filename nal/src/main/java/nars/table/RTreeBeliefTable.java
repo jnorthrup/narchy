@@ -357,7 +357,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             assert(!input.isDeleted());
             RTreeBeliefModel.merged.remove();
             r.merge(existing);
-            assert(r.forgotten.containsInstance(input));
+            assert(existing==input || r.forgotten.containsInstance(input));
         } else {
             if (!r.forgotten.containsInstance(input))
                 r.remember(input);
