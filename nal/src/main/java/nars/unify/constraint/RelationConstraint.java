@@ -17,7 +17,7 @@ abstract public class RelationConstraint extends MatchConstraint {
     protected final boolean yNeg;
 
     protected RelationConstraint(Term x, Term y, String func, Term... args) {
-        super(x, func, args.length > 0 ? $.p(y, $.p(args)) : y);
+        super(x, func, args.length > 0 ? $.pFast(y, $.pFast(args)) : y);
         this.y = y;
         this.yUnneg = y.unneg();
         this.yNeg = y.op()==NEG;

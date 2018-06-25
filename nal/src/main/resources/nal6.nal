@@ -142,7 +142,7 @@
 
 
      (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized)
-     (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) || polarize(S,belief)))), (Belief:UnionDepolarized)
+     (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
 
 
 

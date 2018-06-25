@@ -4,15 +4,17 @@ import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.meta.AutoSurface;
 
+import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class Launcher {
 
     static class Experiment implements Runnable {
         final Class<? extends NAgentX> env;
-        final float fps = 20f;
+        final float fps = 10f;
 
         Experiment(Class<? extends NAgentX> env) {
             this.env = env;
@@ -38,13 +40,43 @@ public class Launcher {
             return env.getSimpleName();
         }
     }
+    static class MainRunner implements Runnable {
+        final Runnable env;
+
+        MainRunner(Runnable env) {
+            this.env = env;
+        }
+
+        @Override
+        public void run() {
+
+            new Thread(()-> {
+
+                    env.run();
+
+            }).start();
+        }
+
+        @Override
+        public String toString() {
+            return env.toString();
+        }
+    }
 
     public static void main(String[] args) {
 
 
         Set<Class<? extends NAgentX>> envs = new Reflections("nars").getSubTypesOf(NAgentX.class);
         SpaceGraph.window(
-                new AutoSurface<>(envs.stream().map(Experiment::new).collect(toList())),
+                grid(
+                    new AutoSurface<>(
+                            envs.stream().map(Experiment::new).collect(toList())
+                    ),
+                    new AutoSurface<>(
+                            List.of(new MainRunner(()->GUI.main(new String[] { })))
+//                            List.of(new MainRunner(OSMTest.class))
+                    )
+                ),
                 800, 800
         );
 

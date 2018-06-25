@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.bag.Bag;
 import jcog.pri.PriReference;
 import nars.$;
@@ -99,6 +100,9 @@ abstract public class Deriver extends Causable {
 
     @Override
     protected final int next(NAR n, final int iterations) {
+        if (!(iterations > 0))
+            throw new WTF();
+
 
         Derivation d = derivation.get().cycle(n, this);
 

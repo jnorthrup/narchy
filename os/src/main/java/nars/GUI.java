@@ -32,7 +32,7 @@ public class GUI {
 
         NAR nar = NARchy.ui();
 
-        Loop loop = nar.startFPS(10f); 
+        Loop loop = nar.startFPS(50f);
         
 
         

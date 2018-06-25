@@ -8,7 +8,7 @@ buildscript {
         }
         maven {
             url "http://jcenter.bintray.com"
-        }         //    maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
+        }
         //maven { url "https://oss.sonatype.org/content/groups/public/" }
 
     }
@@ -62,14 +62,23 @@ subprojects {
 //
 //        }
 //    }
+    repositories {
 
+        mavenCentral()
+//        mavenLocal()
+//        jcenter()
+
+        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url "http://jcenter.bintray.com" }
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
+    }
 
     tasks.withType(JavaCompile) {
 
         sourceCompatibility =
             targetCompatibility =
-                    //JavaVersion.VERSION_1_10
-                    JavaVersion.VERSION_11
+                //JavaVersion.VERSION_1_10
+                JavaVersion.VERSION_11
 
         options.encoding = 'UTF-8'
         options.incremental = true // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
@@ -85,6 +94,8 @@ subprojects {
                 //Runtime.runtime.availableProcessors().intdiv(2) ?: 1
                 Math.max(1, Runtime.runtime.availableProcessors())
 
+        maxHeapSize = "512m"
+        useJUnitPlatform()
         useJUnitPlatform {
 //            //includeTags 'fast', 'smoke & feature-a'
             excludeTags 'slow'

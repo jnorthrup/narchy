@@ -357,7 +357,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         byte puncOverride = 0;
         Occurrify.TaskTimeMerge time = Occurrify.mergeDefault;
 
-        Term[] modifiers = Terms.sorted(postcon[1].arrayShared());
+        Term[] modifiers = postcon!=null && postcon.length > 1  ? Terms.sorted(postcon[1].arrayShared()) : Op.EmptyTermArray;
         boolean varIntro = false;
         for (Term m: modifiers) {
             if (m.op() != Op.INH)
@@ -541,7 +541,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
                 //}
 
                 if (!b && !g) {
-                    throw new RuntimeException("can not assume this applies only to questions");
+                    throw new RuntimeException(ruleSrc + "\n^\tcan not assume this applies only to questions");
                 } else if (b && g) {
                     pre.add(TaskPunctuation.BeliefOrGoal);
                 } else if (b) {

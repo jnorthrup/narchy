@@ -167,33 +167,32 @@ public class MatrixDeriver extends Deriver {
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
+        /** conceptualize templates first, even if no tasklinks or termlinks */
+        Concept[] templates = templates(concept, nar);
+
+
+        //if (taskPriSum[0] > 0)
+        concept.templates().linkAndActivate(concept, conceptActivation.pri(), nar);
+
 
         if (!commit(nar, tasklinks, termlinks)) {
             //concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
             return;
         }
 
-        /** conceptualize templates first, even if no tasklinks or termlinks */
-        Concept[] templates = templates(concept, nar);
-
-
-
-
-
-
-        int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };
+         int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };
 
         
 
         int nTermLinks = termlinks.size();
         int nTaskLinks = tasklinks.size();
-        final float[] taskPriSum = {0};
+//        final float[] taskPriSum = {0};
         tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
             Task task = tasklink.get(nar);
             if (task != null) {
 
-                taskPriSum[0] += task.priElseZero();
+//                taskPriSum[0] += task.priElseZero();
 
                 activate(tasklink, templates, rng);
 
@@ -214,8 +213,6 @@ public class MatrixDeriver extends Deriver {
             return (--conceptTTL[0] > 0);
         });
 
-        if (taskPriSum[0] > 0)
-            concept.templates().linkAndActivate(concept, taskPriSum[0], nar);
     }
 
 

@@ -99,8 +99,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     @Override
     public final void accept(NAR nar) {
         
-        
-        
+
         if (!busy.compareAndSet(false, true))
             return;
 

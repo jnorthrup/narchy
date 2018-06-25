@@ -116,7 +116,7 @@ public class Attention extends DurService implements Sampler<Concept> {
     protected void stopping(NAR nar) {
         //if (active != null) {
             active.clear();
-            active = null;
+            //active = null;
         //}
 
         super.stopping(nar);

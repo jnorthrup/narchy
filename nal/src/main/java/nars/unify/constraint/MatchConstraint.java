@@ -54,7 +54,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
     }
 
     protected MatchConstraint(Term x, String func, Term... args) {
-        this(x, $.func(UnifyIf, x, $.func(func, args)));
+        this(x, $.funcFast(UnifyIf, x, $.funcFast(func, args)));
     }
 
 //    public static MatchConstraint[] combineConstraints(MatchConstraint[] cc) {

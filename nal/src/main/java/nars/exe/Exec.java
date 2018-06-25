@@ -75,7 +75,7 @@ abstract public class Exec implements Executor {
 
     public void stop() {
 
-        this.nar = null;
+        //this.nar = null;
     }
 
 

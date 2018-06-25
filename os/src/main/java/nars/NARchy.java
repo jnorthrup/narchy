@@ -1,8 +1,11 @@
 package nars;
 
 import jcog.User;
-import nars.exe.MixMultiExec;
-import nars.index.concept.CaffeineIndex;
+import jcog.Util;
+import nars.derive.Derivers;
+import nars.derive.deriver.MatrixDeriver;
+import nars.exe.BufferedExec;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
@@ -30,28 +33,16 @@ public class NARchy extends NARS {
 
         NAR nar = new DefaultNAR(8, true)
 
-                .index(new CaffeineIndex(1000 * 128 * 1024))
+                .index(new HijackConceptIndex(06*1024, 4))
 
-                .exe(new MixMultiExec.PoolMultiExec(128, 1))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                .exe(new BufferedExec.ForkJoinExec(Math.max(2,Util.concurrency())))
 
                 .time(new RealTime.MS(false ).durFPS(10f))
                 
                 .get();
 
+
+        nar.dtDither.set(20);
 
         nar.beliefPriDefault.set(0.5f);
         nar.goalPriDefault.set(0.75f);
@@ -65,7 +56,7 @@ public class NARchy extends NARS {
                 t -> !t.isInput()
                 , 16, 64);
 
-        
+        new MatrixDeriver(Derivers.nal(nar, 1, 8, "curiosity.nal", "motivation.nal"));
 
         new ArithmeticIntroduction(32, nar);
 
@@ -76,7 +67,7 @@ public class NARchy extends NARS {
         /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
         NAR nar = core();
         
-        nar.runLater(()->{
+        //nar.runLater(()->{
 
             User u = User.the();
 
@@ -100,7 +91,7 @@ public class NARchy extends NARS {
             i.runFPS(2);
 
 
-        });
+        //});
 
         return nar;
     }

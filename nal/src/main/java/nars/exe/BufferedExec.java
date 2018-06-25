@@ -94,9 +94,15 @@ public class BufferedExec extends UniExec {
             long timeSliceNS = (concurrent ? concurrency : 1) * cpu.cycleTimeNS.longValue();
 
             can.forEachValue(c -> {
-
-                double maxIters = 1 + (c.pri() * timeSliceNS / (c.iterTimeNS.getMean() / (1 + c.iterations.getMean())));
-                int work = maxIters == maxIters ? (int) Math.max(1, Math.ceil(maxIters)) : 1;
+                int MAX_ITER = 1024;
+                double iterTimeMean = c.iterTimeNS.getMean();
+                int work;
+                if (iterTimeMean==iterTimeMean) {
+                    double maxIters = 1 + (c.pri() * timeSliceNS / (iterTimeMean / (1.1 * c.iterations.getMean())));
+                    work = maxIters == maxIters ? (int) Math.round(Math.max(1, Math.min(MAX_ITER, maxIters))) : 1;
+                } else {
+                    work = 1;
+                }
 
                 //int workRequested = c.;
                 b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
