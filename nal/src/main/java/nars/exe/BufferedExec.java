@@ -2,6 +2,7 @@ package nars.exe;
 
 import jcog.Util;
 import jcog.exe.AffinityExecutor;
+import jcog.exe.util.RunnableForkJoin;
 import jcog.list.FasterList;
 import jcog.util.Flip;
 import nars.NAR;
@@ -9,6 +10,9 @@ import nars.task.NALTask;
 import nars.task.TaskProxy;
 
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -128,15 +132,16 @@ public class BufferedExec extends UniExec {
         } finally {
             busy.set(false);
         }
+
     }
 
 
-    public static class AsyncExec extends BufferedExec {
+    public static class WorkerExec extends BufferedExec {
 
         public final int threads;
         final AffinityExecutor exe = new AffinityExecutor();
 
-        public AsyncExec(int threads) {
+        public WorkerExec(int threads) {
             this.threads = threads;
 
         }
@@ -166,8 +171,74 @@ public class BufferedExec extends UniExec {
 
         @Override
         protected void onCycle() {
-            //not called this way
+            updateTiming();
         }
     }
 
+    public static class ForkJoinExec extends BufferedExec {
+
+        public final Semaphore threads;
+
+        public ForkJoinExec(int threads) {
+            this.threads = new Semaphore(threads);
+
+        }
+
+//        @Override
+//        public void execute(Runnable r) {
+//            ForkJoinPool.commonPool().execute(r);
+//        }
+
+
+        final class ForkJoinWorker extends RunnableForkJoin {
+
+
+            @Override
+            public boolean exec() {
+                onCycle(false);
+                //if (running) {
+                fork();
+
+                return false;
+//                    return false;
+//                } else {
+//                    return true;
+//                }
+
+            }
+        }
+
+        @Override
+        public void start(NAR n) {
+
+            synchronized (this) {
+
+                super.start(n);
+
+                int i1 = threads.availablePermits(); //TODO
+                for (int i = 0; i < i1; i++) {
+                    spawn();
+                }
+            }
+
+        }
+
+        private void spawn() {
+            ForkJoinPool.commonPool().execute((ForkJoinTask<?>) new ForkJoinWorker());
+        }
+
+
+        @Override
+        public void stop() {
+            synchronized (this) {
+                //exe.shutdownNow();
+                super.stop();
+            }
+        }
+
+        @Override
+        protected void onCycle() {
+            updateTiming();
+        }
+    }
 }

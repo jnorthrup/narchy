@@ -214,14 +214,10 @@ public class UniExec extends AbstractExec {
     }
 
     protected void onCycle() {
-        if (nar.time instanceof RealTime) {
-            double throttle = nar.loop.throttle.floatValue();
-            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
-            cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
+        if (nar==null)
+            return; //??
 
-            //TODO better idle calculation in each thread / worker
-            idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
-        }
+        updateTiming();
 
 
         queue.removeIf(e -> {
@@ -231,6 +227,17 @@ public class UniExec extends AbstractExec {
         can.forEachValue(c->
             c.c.run(nar, WORK_PER_CYCLE, x->x.get().run())
         );
+    }
+
+    protected void updateTiming() {
+        if (nar.time instanceof RealTime) {
+            double throttle = nar.loop.throttle.floatValue();
+            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
+            cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
+
+            //TODO better idle calculation in each thread / worker
+            idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
+        }
     }
 
 

@@ -88,7 +88,9 @@ abstract public class NAgentX extends NAgent {
         NAR n = new NARS()
 
                 //.exe(new UniExec() {
-                .exe(new BufferedExec.AsyncExec(Util.concurrency()) {
+                .exe(
+                    //new BufferedExec.WorkerExec(Util.concurrency()) {
+                        new BufferedExec.ForkJoinExec(Util.concurrency()) {
                     @Override
                     public boolean concurrent() {
                         return true;
