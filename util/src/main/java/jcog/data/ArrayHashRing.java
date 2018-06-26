@@ -22,15 +22,15 @@ public class ArrayHashRing<X> extends ArrayHashSet<X> {
 
     @Override
     protected void addUnique(X element) {
-        if (size() >= capacity)
-            pop(1);
+        pop(size()-capacity);
         super.addUnique(element);
     }
 
     public void pop(int n) {
         for (int i = 0; i < n; i++) {
-            boolean removed = remove(list.remove(0));
-            assert(removed);
+            X x = list.remove(0);
+            boolean removed = remove(x);
+            assert(removed): "tried to remove " + x + " but couldnt";
         }
     }
 

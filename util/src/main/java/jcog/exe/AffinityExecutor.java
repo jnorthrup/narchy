@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * uses affinity locking to pin new threads to their own unique, stable CPU core/hyperthread etc
@@ -82,17 +83,21 @@ public class AffinityExecutor implements Executor {
 
 
     public final void execute(Runnable worker, int count) {
+        execute(()->worker, count);
+    }
 
-            
+    public final void execute(Supplier<Runnable> worker, int count) {
 
-            for (int i = 0; i < count; i++) {
-                AffinityThread at = new AffinityThread(
+
+
+        for (int i = 0; i < count; i++) {
+            AffinityThread at = new AffinityThread(
                     id + "_" + serial.getAndIncrement(),
-                        worker);
-                add(at);
+                    worker.get());
+            add(at);
 
-                at.start();
-            }
+            at.start();
+        }
 
 
     }

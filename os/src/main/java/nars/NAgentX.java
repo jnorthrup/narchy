@@ -53,7 +53,6 @@ abstract public class NAgentX extends NAgent {
     public NAgentX(String id, NAR nar) {
         super(id, nar);
 
-
     }
 
     public static TimeAware runRT(Function<NAR, NAgent> init, float fps) {
@@ -89,8 +88,8 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(
-                    //new BufferedExec.WorkerExec(Util.concurrency()) {
-                        new BufferedExec.ForkJoinExec(Util.concurrency()) {
+                    new BufferedExec.WorkerExec(Util.concurrency()) {
+                    //    new BufferedExec.ForkJoinExec(Util.concurrency()) {
                     @Override
                     public boolean concurrent() {
                         return true;
@@ -135,7 +134,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(46);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -146,24 +145,25 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f);
         n.questPriDefault.set(0.2f);
 
-        n.forgetRate.set(0.9f);
 
-//        try {
-//            InterNAR i = new InterNAR(n, 8, 0);
-//            i.runFPS(4);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+
+        try {
+            InterNAR i = new InterNAR(n, 8, 0);
+            i.runFPS(4);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(16, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(32, n);
 
-        Inperience inp = new Inperience(n, 16);
+        Inperience inp = new Inperience(n, 32);
 
-        n.forgetRate.set(0.2f);
+        n.forgetRate.set(0.5f);
+        n.activateConceptRate.set(0.1f);
 
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
@@ -173,36 +173,37 @@ abstract public class NAgentX extends NAgent {
         n.emotion.want(MetaGoal.Desire, +0.06f);
         n.emotion.want(MetaGoal.Action, +0.10f);
 
-        NAgent a = init.apply(n);
         //a.motivation.set(0.75f);
-
-
-        n.on(a);
-        n.synch();
-
-        SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
-                Derivers.nal(n, 6, 6, "curiosity.nal", "motivation.nal"),
-                SimpleDeriver.GlobalTermLinker);
-        sd.power.set(1);
-
-
-        //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);
-
-        a.curiosity.set(0.0f);
 
         Loop loop = n.startFPS(narFPS);
 
+        n.synch();
+        System.gc();
+
         n.runLater(() -> {
 
-            NARui.agentWindow(a);
+            NAgent a = init.apply(n);
+            n.on(a);
 
-            SpaceGraph.window(NARui.top(n), 800, 800);
+            n.runLater(() -> {
+                SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
+                        Derivers.nal(n, 6, 6, "curiosity.nal", "motivation.nal"),
+                        SimpleDeriver.GlobalTermLinker);
+                a.curiosity.set(0.0f);
 
-            System.gc();
 
-            Loop aLoop = a.startFPS(agentFPS);
+                //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);
 
-            //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
+                NARui.agentWindow(a);
+
+                SpaceGraph.window(NARui.top(n), 800, 800);
+
+                System.gc();
+
+                //Loop aLoop = a.startFPS(agentFPS);
+
+                //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
+            });
         });
 
         return n;

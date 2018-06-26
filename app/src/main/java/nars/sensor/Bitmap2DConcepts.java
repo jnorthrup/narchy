@@ -8,7 +8,6 @@ import jcog.util.Int2Function;
 import nars.NAR;
 import nars.Task;
 import nars.concept.scalar.Scalar;
-import nars.link.TermlinkTemplates;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -55,25 +54,25 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
                 Scalar sss = new Scalar(pixelTerm.get(x, y), f, n) {
-                    @Override
-                    protected TermlinkTemplates buildTemplates(Term term) {
-                        TermlinkTemplates t = super.buildTemplates(term);
-                        if (xx > 0)
-                            t.add(pixelTerm.get(xx-1, yy));
-                        if (yy > 0)
-                            t.add(pixelTerm.get(xx, yy-1));
-                        if (xx < width-1)
-                            t.add(pixelTerm.get(xx+1, yy));
-                        if (yy < height-1)
-                            t.add(pixelTerm.get(xx, yy+1));
-
-                        return t;
-                    }
-
-                    @Override
-                    public TermlinkTemplates templates() {
-                        return super.templates();
-                    }
+//                    @Override
+//                    protected TermlinkTemplates buildTemplates(Term term) {
+//                        TermlinkTemplates t = super.buildTemplates(term);
+//                        if (xx > 0)
+//                            t.add(pixelTerm.get(xx-1, yy));
+//                        if (yy > 0)
+//                            t.add(pixelTerm.get(xx, yy-1));
+//                        if (xx < width-1)
+//                            t.add(pixelTerm.get(xx+1, yy));
+//                        if (yy < height-1)
+//                            t.add(pixelTerm.get(xx, yy+1));
+//
+//                        return t;
+//                    }
+//
+//                    @Override
+//                    public TermlinkTemplates templates() {
+//                        return super.templates();
+//                    }
                 }.pri(pixelPri);
 
                 matrix[x][y] = sss;

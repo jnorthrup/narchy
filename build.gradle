@@ -22,7 +22,7 @@ buildscript {
 }
 
 plugins {
-    id "se.patrikerdes.use-latest-versions" version "0.2.3"
+//    id "se.patrikerdes.use-latest-versions" version "0.2.3"
     id "com.github.johnrengelman.plugin-shadow" version "2.0.3"
 //    id "org.sonarqube" version "2.5"
 }
@@ -45,6 +45,8 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: "com.github.ben-manes.versions"
 
+
+
 //    apply plugin: 'org.junit.platform.gradle.plugin'
 
 //    buildscript {
@@ -66,26 +68,34 @@ subprojects {
 
         mavenCentral()
 //        mavenLocal()
-//        jcenter()
+        jcenter()
 
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url "http://jcenter.bintray.com" }
         maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
     }
 
+
     tasks.withType(JavaCompile) {
 
-        sourceCompatibility =
-            targetCompatibility =
-                //JavaVersion.VERSION_1_10
-                JavaVersion.VERSION_11
+
 
         options.encoding = 'UTF-8'
-        options.incremental = true // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
+        options.incremental = false // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
         options.fork = true
+
+    }
+
+    dependencies {
+        //TODO keep in sync with util/build.gradle junit deps
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.0-M1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.0-M1'
     }
 
     test {
+        useJUnitPlatform() {
+            excludeTags 'slow'
+        }
         reports {
             junitXml.enabled = false
             html.enabled = true
@@ -94,18 +104,18 @@ subprojects {
                 //Runtime.runtime.availableProcessors().intdiv(2) ?: 1
                 Math.max(1, Runtime.runtime.availableProcessors())
 
-        maxHeapSize = "512m"
-        useJUnitPlatform()
-        useJUnitPlatform {
-//            //includeTags 'fast', 'smoke & feature-a'
-            excludeTags 'slow'
-            includeEngines 'junit-jupiter'
-//            // excludeEngines 'junit-vintage'
-       }
-        systemProperties = [
-                'junit.jupiter.extensions.autodetection.enabled': 'true',
-                'junit.jupiter.testinstance.lifecycle.default': 'per_class'
-        ]
+        maxHeapSize = "1024m"
+//        useJUnitPlatform()
+//        useJUnitPlatform {
+////            //includeTags 'fast', 'smoke & feature-a'
+//            excludeTags 'slow'
+//            includeEngines 'junit-jupiter'
+////            // excludeEngines 'junit-vintage'
+//       }
+//        systemProperties = [
+//                'junit.jupiter.extensions.autodetection.enabled': 'true',
+//                'junit.jupiter.testinstance.lifecycle.default': 'per_class'
+//        ]
     }
 
 //    junitHtmlReport {

@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.User;
 import jcog.Util;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
@@ -23,19 +22,12 @@ public class NARchy extends NARS {
 
     public static NAR core() {
 
-        
-
-
-
-
-
-
 
         NAR nar = new DefaultNAR(8, true)
 
                 .index(new HijackConceptIndex(06*1024, 4))
 
-                .exe(new BufferedExec.ForkJoinExec(Math.max(2,Util.concurrency())))
+                .exe(new BufferedExec.WorkerExec(Util.concurrency()))
 
                 .time(new RealTime.MS(false ).durFPS(10f))
                 
@@ -67,9 +59,9 @@ public class NARchy extends NARS {
         /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
         NAR nar = core();
         
-        //nar.runLater(()->{
+        nar.runLater(()->{
 
-            User u = User.the();
+            //User u = User.the();
 
 
 
@@ -91,7 +83,7 @@ public class NARchy extends NARS {
             i.runFPS(2);
 
 
-        //});
+        });
 
         return nar;
     }

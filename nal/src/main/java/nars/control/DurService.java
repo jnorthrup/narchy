@@ -1,8 +1,8 @@
 package nars.control;
 
 import nars.NAR;
+import nars.term.Term;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,26 +20,25 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
      */
-    public final MutableFloat durations;
+    public final MutableFloat durations = new MutableFloat(1f);
 
     /** when the last cycle ended */
-    private volatile long lastStarted;
+    private volatile long lastStarted = Long.MIN_VALUE;
 
     protected final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected DurService(NAR n, float durs) {
-        this(n, new MutableFloat(durs));
-    }
-
-    protected DurService(@Nullable NAR n, MutableFloat durations) {
         super(n);
-        this.durations = durations;
-        this.lastStarted = Long.MIN_VALUE;
+        durations.set(durs);
     }
 
+
+    protected DurService(Term id) {
+        super(id);
+    }
 
     protected DurService(NAR nar) {
-        this(nar, new MutableFloat(1f));
+        this(nar, 1f);
     }
 
     /**
@@ -93,7 +92,8 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
     @Override
     protected void starting(NAR nar) {
-        nar.run(this); 
+        lastStarted = nar.time();
+        spawn(nar, durCycles(nar));
     }
 
     @Override
@@ -104,14 +104,10 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
             return;
 
         long atStart = nar.time();
-        int dur = nar.dur();
-        long durCycles = Math.round(durations.floatValue() * dur);
+        long durCycles = durCycles(nar);
 
 
         try {
-            if (lastStarted == Long.MIN_VALUE)
-                lastStarted = atStart;
-
             long delta = atStart - this.lastStarted;
 
             this.lastStarted = atStart;
@@ -125,11 +121,19 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         } finally {
             if (!isOff()) {
                 if (busy.compareAndSet(true, false))
-                    nar.runAt(atStart + durCycles, this);
+                    spawn(nar, atStart + durCycles);
             } else {
                 busy.set(false);
             }
         }
+    }
+
+    protected void spawn(NAR nar, long when) {
+        nar.runAt(when, this);
+    }
+
+    public int durCycles(NAR nar) {
+        return Math.round(durations.floatValue() * nar.dur());
     }
 
     /**

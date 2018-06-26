@@ -30,7 +30,7 @@ public class Attention extends DurService implements Sampler<Concept> {
     public Bag<?, Activate> active;
 
     public Attention(int concepts) {
-        super(null);
+        super((NAR)null);
 
         this.concepts = concepts;
     }

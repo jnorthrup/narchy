@@ -640,9 +640,9 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public List<Iterable<X>> chunkView(int chunkSize) {
-            if (size <= 0)
+            if (chunkSize <= 0)
             {
-                throw new IllegalArgumentException("Size for groups must be positive but was: " + size);
+                throw new IllegalArgumentException("Size for groups must be positive but was: " + chunkSize);
             }
 
 

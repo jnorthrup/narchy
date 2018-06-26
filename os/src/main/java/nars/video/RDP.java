@@ -40,7 +40,10 @@ public class RDP extends NAgentX {
     public static void main(String[] args) {
         NAgentX.runRT((n)->{
             try {
-                return new RDP(n, "localhost", 3389);
+                return new RDP(n, "localhost", 3389) {
+
+
+                };
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

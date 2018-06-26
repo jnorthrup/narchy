@@ -94,7 +94,7 @@ public abstract class NativeTask implements ITask, Priority {
     public static final class SchedTask extends NativeTask implements Comparable<SchedTask> {
 
         public final long when;
-        public final Object what;
+        public final Consumer<NAR> what;
 
         public SchedTask(long whenOrAfter, Consumer<NAR> what) {
             this.when = whenOrAfter;
@@ -102,8 +102,7 @@ public abstract class NativeTask implements ITask, Priority {
         }
 
         public SchedTask(long whenOrAfter, Runnable what) {
-            this.when = whenOrAfter;
-            this.what = what;
+            this(whenOrAfter, (n) -> what.run());
         }
 
         @Override
@@ -113,11 +112,7 @@ public abstract class NativeTask implements ITask, Priority {
 
         @Override
         public final ITask next(NAR n) {
-            if (what instanceof Consumer)
-                ((Consumer) what).accept(n);
-            else if (what instanceof Runnable)
-                ((Runnable) what).run();
-
+            what.accept(n);
             return null;
         }
 
@@ -130,8 +125,7 @@ public abstract class NativeTask implements ITask, Priority {
                 return t;
             }
 
-
-            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that));
+            return Integer.compare(System.identityHashCode(what), System.identityHashCode(that.what));
         }
     }
 

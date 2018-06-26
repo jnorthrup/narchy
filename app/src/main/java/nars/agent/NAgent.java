@@ -1,7 +1,6 @@
 package nars.agent;
 
 import com.google.common.collect.Iterables;
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.event.ListTopic;
@@ -21,7 +20,6 @@ import nars.concept.scalar.FilteredScalar;
 import nars.concept.scalar.Scalar;
 import nars.control.Activate;
 import nars.control.DurService;
-import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.ITask;
@@ -57,7 +55,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * an integration of sensor concepts and motor functions
  */
-abstract public class NAgent extends NARService implements NSense, NAct, Runnable {
+abstract public class NAgent extends DurService implements NSense, NAct {
 
 
     public static final Logger logger = LoggerFactory.getLogger(NAgent.class);
@@ -133,8 +131,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         this.curiosity = new FloatRange(0.10f, 0f, 1f);
 
-        if (nar!=null)
-            nar.on(this);
+//        if (nar!=null) {
+//            nar.on(this);
+//        }
     }
 
     protected NAgent() {
@@ -185,22 +184,22 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
 
-    /** creates a new loop to run this */
-    public Loop startFPS(float fps) {
-        synchronized (this) {
-            if (this.loop == null) {
-                return this.loop = new Loop(fps) {
-                    @Override
-                    public boolean next() {
-                        NAgent.this.run();
-                        return true;
-                    }
-                };
-            } else {
-                throw new RuntimeException("already started: " + loop);
-            }
-        }
-    }
+//    /** creates a new loop to run this */
+//    public Loop startFPS(float fps) {
+//        synchronized (this) {
+//            if (this.loop == null) {
+//                return this.loop = new Loop(fps) {
+//                    @Override
+//                    public boolean next() {
+//                        NAgent.this.run();
+//                        return true;
+//                    }
+//                };
+//            } else {
+//                throw new RuntimeException("already started: " + loop);
+//            }
+//        }
+//    }
 
     @Override
     public FloatRange curiosity() {
@@ -254,68 +253,71 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      */
     @Override
     protected void starting(NAR nar) {
-        synchronized (this) {
 
-            Term id = (this.id == null) ? nar.self() : this.id;
+        super.starting(nar);
 
-
-            this.happy =
-                    
-                    new FilteredScalar(
-                            new FloatCached( () -> reward, nar::time ),
-
-                            nar,
-                            
-                            pair(id, ///$.inh(id, "happy"),
-                                new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
-
-                            
-                            pair($.func("chronic", id), compose(
-                                new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-                                new FloatExpMovingAverage(0.02f)
-                            )),
-
-                            
-                            pair($.func("acute", id), compose(
-                                new FloatExpMovingAverage(0.1f, false),
-                                new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
-                            ))
-                    );
-
-            //happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));
-
-            alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
-            alwaysWant(happy.filter[1].term, nar.confDefault(GOAL)/2);
-            alwaysWant(happy.filter[2].term, nar.confDefault(GOAL)/2);
-
-            actions.keySet().forEach(a -> {
-                alwaysQuest(a, true);
-                //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
-                //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
-            });
-
-            this.in = nar.newChannel(this);
-            this.now = nar.time() - nar.dur(); 
+        Term id = (this.id == null) ? nar.self() : this.id;
 
 
+        this.happy =
 
-            
-            concepts.addAll(actions.keySet());
-            concepts.addAll(sensors.keySet());
-            always.forEach(t -> concepts.add(t.concept(nar,true)));
-            Iterables.addAll(concepts, happy);
+                new FilteredScalar(
+                        new FloatCached( () -> reward, nar::time ),
+
+                        nar,
+
+                        pair(id, ///$.inh(id, "happy"),
+                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
 
-            
-            enabled.set(true);
-        }
+                        pair($.func("chronic", id), compose(
+                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+                            new FloatExpMovingAverage(0.02f)
+                        )),
+
+
+                        pair($.func("acute", id), compose(
+                            new FloatExpMovingAverage(0.1f, false),
+                            new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
+                        ))
+                );
+
+        //happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));
+
+        this.in = nar.newChannel(this);
+        this.now = nar.time() - nar.dur();
+
+        init();
+
+        alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
+        alwaysWant(happy.filter[1].term, nar.confDefault(GOAL)/2);
+        alwaysWant(happy.filter[2].term, nar.confDefault(GOAL)/2);
+
+        actions.keySet().forEach(a -> {
+            alwaysQuest(a, true);
+            //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
+            //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
+        });
+
+        concepts.addAll(actions.keySet());
+        concepts.addAll(sensors.keySet());
+        //always.forEach(t -> concepts.add(t.concept(nar,true)));
+        Iterables.addAll(concepts, happy);
+
+
+        enabled.set(true);
+    }
+
+    protected void init() {
+
+
     }
 
     @Override
     protected void stopping(NAR nar) {
-        
-        
-        throw new TODO();
+        enabled.set(false);
+
+        super.stopping(nar);
     }
 
 
@@ -335,8 +337,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
 
-    /** runs a frame */
-    @Override public void run() {
+    @Override
+    protected void run(NAR n, long dt) {
         if (!enabled.get())
             return;
 
@@ -414,10 +416,10 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
     /** default rate = 1 dur/ 1 frame */
-    public void runSynch(int frames) {
-        DurService d = DurService.on(nar, this);
+    @Deprecated public void runSynch(int frames) {
+//        DurService d = DurService.on(nar, this);
         nar.run(frames * nar.dur() + 1);
-        d.off();
+//        d.off();
     }
 
 

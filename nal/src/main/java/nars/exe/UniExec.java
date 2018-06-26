@@ -11,8 +11,10 @@ import jcog.exe.valve.TimeSlicing;
 import jcog.pri.Pri;
 import nars.NAR;
 import nars.control.DurService;
+import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.function.Consumer;
 
 /**
  * single thread executor used for testing
@@ -28,7 +30,7 @@ public class UniExec extends AbstractExec {
 
     final ConcurrentFastIteratingHashMap<Causable,MyAbstractWork> can = new ConcurrentFastIteratingHashMap<>(new MyAbstractWork[0]);
 
-    final BlockingQueue queue =
+    final BlockingQueue in =
             //new ArrayBlockingQueue(8192);
             new DisruptorBlockingQueue(8192);
 
@@ -66,15 +68,16 @@ public class UniExec extends AbstractExec {
         synchronized (this) {
             super.start(n);
 
-            n.services.change.on((xb) -> {
+            Consumer<ObjectBooleanPair<Service<NAR>>> serviceChange = (xb) -> {
                 Service<NAR> s = xb.getOne();
                 if (s instanceof Causable) {
                     if (xb.getTwo())
                         UniExec.this.add((Causable) s);
                     else
-                        UniExec.this.remove((Causable)s);
+                        UniExec.this.remove((Causable) s);
                 }
-            });
+            };
+            n.services.change.on(serviceChange);
             n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
 
             n.onCycle(this::onCycle);
@@ -170,9 +173,14 @@ public class UniExec extends AbstractExec {
                                 //s.need((float) s.valueNormalized); //abs
 
                                 double valuePerSecondNormalized = (s.valuePerSecond - valRateMin[0])/valRateRange;
+                                if (Double.isFinite(valuePerSecondNormalized)) {
 
-                                //s.priSet((float) s.valueNormalized);
-                                s.priSet((float) valuePerSecondNormalized);
+
+                                    //s.priSet((float) s.valueNormalized);
+                                    s.priSet((float) valuePerSecondNormalized);
+                                } else {
+                                    s.priSet(0);
+                                }
 
                                 //System.out.println(s + " " + s.iterations.getMean());
 
@@ -217,7 +225,7 @@ public class UniExec extends AbstractExec {
         if (nar==null)
             return; //??
 
-        queue.removeIf(e -> {
+        in.removeIf(e -> {
             executeNow(e);
             return true;
         });

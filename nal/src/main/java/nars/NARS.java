@@ -138,6 +138,7 @@ public class NARS {
 
         exe = () -> new UniExec();
 
+
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 

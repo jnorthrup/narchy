@@ -338,17 +338,25 @@
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
     X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong, Time:TaskImmediate)
     X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN, Time:TaskImmediate)
+
         //X is the desired non-outcome.  C is a sequence ending in it.   this forms anti goal of the sequence minus the trailing
-        X, C, eventOfNeg(C,X) |- --conjDropIfLatest(C,--X), (Goal:Strong, Time:TaskImmediate)
-        X, C, eventOf(C,X) |- --conjDropIfLatest(C,X), (Goal:StrongN, Time:TaskImmediate)
+        //non-event is non-immediate
+        X, C, eventOf(C,X) |- --conjDrop(C,X), (Goal:StrongN, Time:TaskImmediate)
+        X, C, eventOfNeg(C,X) |- --conjDrop(C,--X), (Goal:Strong, Time:TaskImmediate)
+
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 
-    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Strong)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN)
+    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Strong, Time:TaskImmediate)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN, Time:TaskImmediate)
 
-        //to the degree that the desired sequence includes a state which is not the case, desire that case
-        //C, X, eventOf(C,X)    |- X, (Goal:WeakPN)
-        //C, X, eventOfNeg(C,X) |- --X, (Goal:Weak)
+        //to the degree that the desired sequence includes state which is not the case, desire that case
+        C, X, eventOf(C,X)    |- X, (Goal:WeakPN)
+        C, X, eventOfNeg(C,X) |- --X, (Goal:Weak)
+
+        //to the degree that the un-desired sequence includes state which is the case, desire not that case
+        C, X, eventOf(C,X)    |- --X, (Goal:WeakN)
+        C, X, eventOfNeg(C,X)    |- X, (Goal:WeakNN)
+
 
         //X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
         //X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)

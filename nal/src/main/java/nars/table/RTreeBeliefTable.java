@@ -354,10 +354,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         });
         Task existing = RTreeBeliefModel.merged.get();
         if (existing!=null && existing.equals(input)) {
-            assert(!input.isDeleted());
+            //assert(!input.isDeleted());
             RTreeBeliefModel.merged.remove();
             r.merge(existing);
-            assert(existing==input || r.forgotten.containsInstance(input));
+            //assert(existing==input || r.forgotten.containsInstance(input));
         } else {
             if (!r.forgotten.containsInstance(input))
                 r.remember(input);

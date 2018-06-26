@@ -32,6 +32,8 @@ import static nars.Op.*;
  * as it navigates the concept graph while also building an annotated
  * internal model of it that includes features not explicitly represented
  * in the basic NARS architecture
+ *
+ * TODO needs to be thread-isolated
  */
 public class Spider extends Causable {
 
@@ -56,17 +58,21 @@ public class Spider extends Causable {
         initialRoots.forEach(roots::add);
 
         actions.setCapacity(32);
-        actions.put(new TravelHome(0.01f));
-        actions.put(new TravelTermlink(0.02f));
-        actions.put(new TravelTasklink(0.02f));
-        actions.put(new TravelAnon(0.1f));
-        actions.put(new DeleteConcept(0.01f));
 
-        actions.put(new SqueezeTaskLinks(0.1f, 0.9f)); //soft
+        //actions.put(new DeleteConcept(0.0001f));
+
+        actions.put(new TravelTermlink(0.9f));
+        actions.put(new TravelTasklink(0.9f));
+
+        actions.put(new SqueezeTaskLinks(0.1f, 0.1f)); //soft
         for (byte p: new byte[]{BELIEF, GOAL, QUESTION, QUEST}) {
-            actions.put(new ClearTaskTable(0.002f, p));
-            actions.put(new SqueezeTaskTable(0.025f, p, 0.9f)); //soft
+            //actions.put(new ClearTaskTable(0.00001f, p));
+            actions.put(new SqueezeTaskTable(0.1f, p, 0.1f)); //soft
         }
+
+        actions.put(new TravelAnon(0.001f));
+
+        actions.put(new TravelHome(0.0001f));
 
     }
 
@@ -81,7 +87,7 @@ public class Spider extends Causable {
         assert (!actions.isEmpty());
 
         if (at == null || at.isDeleted())
-            home();
+            next();
         if (at == null || at.isDeleted())
             return -1; //no option
 
@@ -98,24 +104,33 @@ public class Spider extends Causable {
         return 0;
     }
 
-    public void go(Concept c) {
+    public boolean go(Concept c, boolean ifNotVisited) {
+        if (!ifNotVisited) {
+            visited.add(c.term());
+        } else {
+            if (!visited.add(c.term()))
+                return false;
+        }
         at = c;
-        visited.add(c.term());
-        logger.info("@{}", at);
+        //logger.info("@{}", at);
+        return true;
     }
 
     /**
      * select a random root and go there
      */
-    public Concept home() {
+    public Concept next() {
 
 
         for (int retry = 0; retry < roots.size(); retry++) {
-            Term x = roots.get(rng);
-            Concept c = nar.conceptualize(x);
-            if (c != null) {
-                go(c);
-                return c;
+            //Term x = roots.get(rng);
+            Term x = visited.isEmpty() ?  roots.get(rng) : visited.get(rng);
+            if (x!=null) {
+                Concept c = nar.conceptualize(x);
+                if (c != null) {
+                    go(c, false);
+                    return c;
+                }
             }
         }
 
@@ -128,12 +143,16 @@ public class Spider extends Causable {
 
     protected boolean tryGo(Term t) {
         if (t != null) {
-            Concept d = nar.concept(t); //ualize?
-            if (d != null) {
-                go(d);
-                return true;
+            if (visited.add(t)) {
+
+                Concept d = nar.concept(t); //ualize?
+                if (d != null) {
+
+                    return go(d, true);
+                }
             }
         }
+
         return false;
     }
 
@@ -157,7 +176,7 @@ public class Spider extends Causable {
 
         @Override
         public void accept(Spider spider) {
-            home();
+            next();
         }
     }
 
@@ -181,19 +200,17 @@ public class Spider extends Causable {
             Term anon = ct.anon();
             if (anon.equals(ct))
                 return; //already at anon
-            if (recentlyVisited(anon))
-                return;
-
 
             Concept d = nar.conceptualize(anon);
             if (d != null) {
-                go(d);
-                if (anon.hasVarQuery() || anon.hasXternal()) {
-                    nar.question(anon);
-                } else {
-                    Term i = INH.the(ct, anon);
-                    if (Task.validTaskTerm(i))
-                        nar.believe(i);
+                if (go(d, true)) {
+                    if (anon.hasVarQuery() || anon.hasXternal()) {
+                        nar.question(anon);
+                    } else {
+                        Term i = INH.the(ct, anon);
+                        if (Task.validTaskTerm(i))
+                            nar.believe(i);
+                    }
                 }
             }
 
@@ -218,9 +235,11 @@ public class Spider extends Causable {
         protected void sampleAndVisitUnique(int maxTries, Concept c) {
             bag(c).sample(rng, maxTries, x -> {
                 Term t = term(x);
-                if (!recentlyVisited(t)) {
-                    if (tryGo(t)) {
-                        return false; //done
+                if (t!=null) {
+                    if (!recentlyVisited(t)) {
+                        if (tryGo(t)) {
+                            return false; //done
+                        }
                     }
                 }
                 return true; //keep trying
@@ -311,9 +330,15 @@ public class Spider extends Causable {
                 if (s > 0) {
                     int ss = (int) Math.max(1, Math.floor(ratio * s));
                     if (ss != s) {
+                        int eteCap = ((DefaultBeliefTable) tt).eternal.capacity(); /* dont affect eternal */
+                        //"squeeze" temporarily causing compression
                         tt.setCapacity(
-                                ((DefaultBeliefTable) tt).eternal.capacity() /* dont affect eternal */,
+                                eteCap,
                                 ss);
+                        //release, restore capacity
+                        tt.setCapacity(
+                                eteCap,
+                                s);
                     }
                 }
             }

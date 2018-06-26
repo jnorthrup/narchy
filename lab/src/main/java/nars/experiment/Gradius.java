@@ -2,6 +2,7 @@ package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
 import jcog.Util;
+import jcog.WTF;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -19,20 +20,23 @@ import static nars.$.p;
 public class Gradius extends NAgentX {
 
 
-    private final Gradius4K g;
+    private final Gradius4K g = new Gradius4K();
+
     int lastScore;
 
     public Gradius(NAR nar) {
-
         super("g", nar);
+    }
 
-        this.g = new Gradius4K();
+    @Override
+    protected void init() {
+
 
         g.updateMS = 25; //TODO coordinate with fps
 
 
-        int dx = 2, dy = 3;
-        int px = 16, py = 24;
+        int dx = 2, dy = 2;
+        int px = 16, py = 16;
 
         assert(px%dx==0 && py%dy ==0);
         for (int i = 0; i < dx; i++)
@@ -41,9 +45,9 @@ public class Gradius extends NAgentX {
                 int jj = j;
                 //Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
-                        $.func((Atomic)id, $.the(ii), $.the(jj), $.p($.the(x), $.the(y)) ),
-                                //$.p(
-                                //$.inh(
+                                $.func((Atomic)id, $.the(ii), $.the(jj), $.p($.the(x), $.the(y)) ),
+                        //$.p(
+                        //$.inh(
 //                                        $.p(x, y),
 //                                        subSection
 //                                ),
@@ -148,6 +152,10 @@ public class Gradius extends NAgentX {
     @Override
     protected float act() {
 
+        if (g == null) {
+            new WTF().printStackTrace();
+            return 0;
+        }
         if (g.paused)
             return 0;
 

@@ -13,6 +13,7 @@
  */
 package jcog;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -26,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 
 /**
@@ -53,11 +53,11 @@ import java.util.stream.Stream;
  *     manager.addListener(new Listener() {
  *         public void stopped() {}
  *         public void healthy() {
- *           
+ *
  *         }
  *         public void failure(Service service) {
- *           
- *           
+ *
+ *
  *           System.exit(1);
  *         }
  *       },
@@ -65,16 +65,16 @@ import java.util.stream.Stream;
  *
  *     Runtime.getRuntime().addShutdownHook(new Thread() {
  *       public void run() {
- *         
- *         
+ *
+ *
  *         try {
  *           manager.stopAsync().awaitStopped(5, TimeUnit.SECONDS);
  *         } catch (TimeoutException timeout) {
- *           
+ *
  *         }
  *       }
  *     });
- *     manager.startAsync();  
+ *     manager.startAsync();
  *   }
  * }}</pre>
  * <p>
@@ -83,7 +83,7 @@ import java.util.stream.Stream;
  *
  * @author Luke Sandberg (original)
  */
-public class Services<C /* context */, K /* service key */>  {
+public class Services<C /* context */, K /* service key */> {
 
     final Logger logger;
     public final C id;
@@ -95,19 +95,34 @@ public class Services<C /* context */, K /* service key */>  {
 
     enum ServiceState {
         Off {
-            @Override public String toString() { return "-"; }
+            @Override
+            public String toString() {
+                return "-";
+            }
         },
         OffToOn {
-            @Override public String toString() { return "-+"; }
+            @Override
+            public String toString() {
+                return "-+";
+            }
         },
         On {
-            @Override public String toString() { return "+"; }
+            @Override
+            public String toString() {
+                return "+";
+            }
         },
         OnToOff {
-            @Override public String toString() { return "+-"; }
+            @Override
+            public String toString() {
+                return "+-";
+            }
         },
         Deleted {
-            @Override public String toString() { return "."; }
+            @Override
+            public String toString() {
+                return ".";
+            }
         }
     }
 
@@ -117,7 +132,10 @@ public class Services<C /* context */, K /* service key */>  {
     }
 
     public Services(C id) {
-        this(id, ForkJoinPool.commonPool());
+        this(id,
+                MoreExecutors.directExecutor()
+                /*ForkJoinPool.commonPool()*/
+        );
     }
 
     /**
@@ -129,7 +147,7 @@ public class Services<C /* context */, K /* service key */>  {
      *                                  are any duplicate services.
      */
     public Services(@Nullable C id, Executor exe) {
-        this.id = id == null ? (C)this : id;
+        this.id = id == null ? (C) this : id;
         this.logger = LoggerFactory.getLogger(id.toString());
         this.exe = exe;
         this.services = new ConcurrentHashMap<>(64);
@@ -150,12 +168,9 @@ public class Services<C /* context */, K /* service key */>  {
     public void add(K key, Service<C> s, boolean start) {
         Service<C> removed = services.put(key, s);
 
-        if (removed == s)
-            return; 
-
         if (removed != null) {
-            
-            removed.stop(this, exe, start ? ()-> s.start(this, exe) : null);
+
+            removed.stop(this, exe, start ? () -> s.start(this, exe) : null);
         } else {
             if (start) {
                 s.start(this, exe);
@@ -164,12 +179,13 @@ public class Services<C /* context */, K /* service key */>  {
     }
 
     public boolean remove(K serviceID) {
-        Service<C> s = services.get(serviceID);
-        if (s!=null) {
-            s.stop(this, exe, ()-> services.remove(serviceID));
+        Service<C> s = services.remove(serviceID);
+        if (s != null) {
+            s.stop(this, exe, () -> {
+            });
             return true;
         } else {
-            logger.error("can not remove unknown service: {}", serviceID);
+            //logger.error("can not remove unknown service: {}", serviceID);
             return false;
         }
     }
@@ -181,7 +197,7 @@ public class Services<C /* context */, K /* service key */>  {
      * @return this
      */
     public Services<C, K> stop() {
-        for (Service<C> service : services.values()) {
+        for (Service<C> service: services.values()) {
             service.stop(this, exe, null);
         }
         return this;

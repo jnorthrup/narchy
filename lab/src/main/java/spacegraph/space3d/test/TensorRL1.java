@@ -75,7 +75,6 @@ public class TensorRL1 {
 
             a.curiosity.set(0f);
 
-            n.onCycle(a::run);
             n.startFPS(25f);
 
             final Port rewardPort = new Port();

@@ -107,8 +107,8 @@ public abstract class ConsoleAgent extends NAgentX {
     }
 
     @Override
-    public void run() {
-        super.run();
+    protected void run(NAR n, long dt) {
+        super.run(n, dt);
         nar.input(Stream.concat(
                 W.input(),
                 R.input()

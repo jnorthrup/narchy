@@ -5,6 +5,7 @@ import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
 import nars.$;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
@@ -293,6 +294,8 @@ public class Occurrify extends TimeGraph {
                 this.prevUntransform = Map.copyOf(nextUntransform);
 
                 nextUntransform.forEach((x, y) -> {
+                    if (y.isAny(Op.BOOL.bit |  Op.INT.bit))
+                        return;
                     link(shadow(x), 0, shadow(y)); //weak
                 });
             } else {

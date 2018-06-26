@@ -123,7 +123,7 @@ abstract public class MixMultiExec extends AbstractExec {
         TIME = nar.time();
         double throttle = nar.loop.throttle.floatValue();
         double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
-        cpu.cycleTimeNS.set(Math.round(cycleNS * nar.loop.jiffy.floatValue()));
+        cpu.cycleTimeNS.set(Math.round(cycleNS));
 
         //TODO better idle calculation in each thread / worker
         idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));

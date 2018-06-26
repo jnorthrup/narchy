@@ -60,7 +60,7 @@ public class ArithmeticIntroduction extends LeakBack {
 
         IntHashSet ints = new IntHashSet(4);
         x.recurseTerms(t->t.hasAny(Op.INT), t -> {
-            if (t instanceof Anom) {
+            if (anon!=null && t instanceof Anom) {
                 t = anon.get(t);
             }
             if (t instanceof Int) {

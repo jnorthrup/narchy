@@ -32,23 +32,18 @@ public class GUI {
 
         NAR nar = NARchy.ui();
 
-        Loop loop = nar.startFPS(50f);
-        
+        Loop loop = nar.startFPS(10f);
 
-        
-        logger.info("start SpaceGraph UI");
-
-        
-        
-        
-        
-        
+        nar.runLater(()-> {
 
 
-        SpaceGraph.window(new Widget(NARui.top(nar)), 1024, 800);
+            logger.info("start SpaceGraph UI");
 
-        
 
+            SpaceGraph.window(new Widget(NARui.top(nar)), 1024, 800);
+
+
+        });
         
 
 

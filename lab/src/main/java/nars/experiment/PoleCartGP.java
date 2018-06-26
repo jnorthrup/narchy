@@ -85,7 +85,7 @@ public class PoleCartGP {
 //            SpaceGraph.window(v, 1200, 800);
 
             NARui.agentWindow(a);
-            a.startFPS(agentFPS);
+            //a.startFPS(agentFPS);
 
             SpaceGraph.window(NARui.top(n), 900, 500);
         });

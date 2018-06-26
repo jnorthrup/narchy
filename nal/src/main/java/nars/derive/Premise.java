@@ -97,7 +97,7 @@ public class Premise {
 
 
         boolean beliefConceptCanAnswerTaskConcept = false;
-        boolean unifiedBelief = false;
+        boolean beliefTransformed = false;
 
         Term beliefTerm = term();
         Op bo = beliefTerm.op();
@@ -131,7 +131,7 @@ public class Premise {
 
                 if (unifiedBeliefTerm[0] != null) {
                     beliefTerm = unifiedBeliefTerm[0];
-                    unifiedBelief = true;
+                    beliefTransformed = true;
                 }
 
 
@@ -140,14 +140,13 @@ public class Premise {
         }
 
 
-        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
+        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, beliefTransformed);
 
-        //if (unifiedBelief && belief!=null) linkVariable(unifiedBelief, n, beliefConcept);
 
         return d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
     }
 
-    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
+    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
 
 
         NAR n = d.nar;
@@ -257,6 +256,11 @@ public class Premise {
 
 
         }
+
+        if (unifiedBelief && belief!=null) {
+            linkVariable(unifiedBelief, d.nar, beliefConcept);
+        }
+
         return belief;
     }
 

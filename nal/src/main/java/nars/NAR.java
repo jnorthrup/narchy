@@ -19,6 +19,7 @@ import jcog.util.TriConsumer;
 import nars.Narsese.NarseseException;
 import nars.concept.Concept;
 import nars.concept.Operator;
+import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
@@ -129,11 +130,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         (this.time = time).reset();
 
-        this.exe = exe;
-
         named(Param.randomSelf());
 
+
+        this.exe = exe;
+
         services = new Services<>(this, exe);
+
+        exe.start(this);
+
 
         this.emotion = new Emotion(this);
 
@@ -142,7 +147,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         concepts.init(this);
         Builtin.init(this);
 
-        exe.start(this);
 
         this.attn = attn;
         this.on(attn);
@@ -609,11 +613,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * asynchronously adds the service
      */
     public final void on(NARService s) {
-        runLater(() -> services.add(s.term(), s, true));
+        services.add(s.term(), s, true);
     }
 
     public final void off(NARService s) {
-        runLater(() -> services.add(s.term(), s, false));
+        services.add(s.term(), s, false);
     }
 
     /**
@@ -860,7 +864,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        time.runAt(time(), t);
+        long later = time() + 1;
+        time.runAt(later, t);
     }
 
     /**
@@ -1083,8 +1088,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Concept on(Concept c) {
 
         Concept existing = concept(c);
-        if ((existing != null) && (existing != c))
-            throw new RuntimeException("concept already indexed for term: " + c.term());
+        if ((existing != null) ) {
+            if (existing == c)
+                return existing;
+
+            if (!(c instanceof PermanentConcept)) {
+                throw new RuntimeException("concept already indexed for term: " + c.term());
+            }
+        }
 
         c.state(conceptBuilder.awake());
         concepts.set(c);

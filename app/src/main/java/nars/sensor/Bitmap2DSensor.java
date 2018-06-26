@@ -258,8 +258,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
             
 
-            if (pixelsToProcess == 0)
-                return 0;
+            if (pixelsToProcess <= 0) //0 or -1
+                return pixelsToProcess;
 
             pixelsRemainPerUpdate -= pixelsToProcess;
 

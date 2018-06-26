@@ -67,7 +67,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        ons.add(peer.receive.on(this::receive));
         recv = nar.newChannel(this);
 
     }
@@ -113,12 +113,6 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     }
 
 
-
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-        ons.add(peer.receive.on(this::receive));
-    }
 
     protected void receive(UDPeer.MsgReceived m) {
         try {

@@ -52,7 +52,8 @@ public class Derivation extends PreDerivation {
     final static int ANON_INITIAL_CAPACITY = 16;
     private final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
-        ((NALTask) pp).causeMerge(tt);
+        if (pp instanceof NALTask)
+            ((NALTask) pp).causeMerge(tt);
         if (pp.isCyclic() && !tt.isCyclic()) {
 
             pp.setCyclic(false);
