@@ -328,10 +328,6 @@ public class Builtin {
         return statiks.get(x);
     }
 
-    public static void init(NAR nar) {
-        registerFunctors(nar);
-        registerOperators(nar);
-    }
 
     public static void registerFunctors(NAR nar) {
         for (Concept t : Builtin.statik) {
@@ -716,6 +712,10 @@ public class Builtin {
 //    }
 
 
+    public static void init(NAR nar) {
+        registerFunctors(nar);
+        registerOperators(nar);
+    }
 }
 
 

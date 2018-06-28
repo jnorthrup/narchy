@@ -17,7 +17,7 @@ import jcog.exe.Every;
 import jcog.io.BinTxt;
 import jcog.math.FloatRange;
 import jcog.math.RecycledSummaryStatistics;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.net.attn.HashMapTagSet;
 import jcog.pri.Priority;
 import org.HdrHistogram.ConcurrentHistogram;
@@ -136,7 +136,7 @@ public class UDPeer extends UDP {
                 port);*/
         
 
-        this.rng = new XorShift128PlusRandom(System.nanoTime());
+        this.rng = new XoRoShiRo128PlusRandom(System.nanoTime());
 
         int me;
         while ((me = (int)(UUID.randomUUID().getLeastSignificantBits() & 0xffff)) == UNKNOWN_ID) ;
@@ -195,7 +195,7 @@ public class UDPeer extends UDP {
 
         them.setCapacity(PEERS_CAPACITY);
 
-        seen = new PriorityHijackBag<Msg, Msg>(SEEN_CAPACITY, 3) {
+        seen = new PriorityHijackBag<>(SEEN_CAPACITY, 3) {
 
             @NotNull
             @Override

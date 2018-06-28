@@ -1,10 +1,8 @@
 package nars.exe;
 
 import jcog.exe.Can;
-import jcog.exe.Exe;
 import jcog.pri.NLink;
 import nars.NAR;
-import nars.Param;
 import nars.control.NARService;
 import nars.term.Term;
 import org.slf4j.Logger;
@@ -107,25 +105,25 @@ abstract public class Causable extends NARService {
 //        return workDone;
 //    }
 
-    public void record(int iterations, int workDone, long start, long end/*, MiniPID r*/) {
-        if (workDone >= 0) {
-            can.add((end - start), iterations, workDone);
-//            r.out(workDone);
-        }
+//    public void record(int iterations, int workDone, long start, long end/*, MiniPID r*/) {
+//        if (workDone >= 0) {
+//            can.add((end - start), iterations, workDone);
+////            r.out(workDone);
+//        }
+//
+//        Exe.profiled(can, start, end);
+//    }
 
-        Exe.profiled(can, start, end);
-    }
-
-    public void report(Throwable error) {
-        if (Param.DEBUG) {
-            if (error instanceof RuntimeException) {
-                throw ((RuntimeException) error);
-            } else {
-                throw new RuntimeException(error);
-            }
-        } else
-            logger.error("{} {}", this, error);
-    }
+//    public void report(Throwable error) {
+//        if (Param.DEBUG) {
+//            if (error instanceof RuntimeException) {
+//                throw ((RuntimeException) error);
+//            } else {
+//                throw new RuntimeException(error);
+//            }
+//        } else
+//            logger.error("{} {}", this, error);
+//    }
 
 
     /**

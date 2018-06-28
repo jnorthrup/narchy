@@ -271,7 +271,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     private void readAttributeDefinition(int lineno, String line) throws ARFFParseError {
         Scanner s = new Scanner(line);
         Pattern p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^\\}]+\\}|\\'[^\\']+\\'|\\\"[^\\\"]+\\\"");
-//        String keyword = s.findInLine(p);
+        String keyword = s.findInLine(p);
         String name = s.findInLine(p);
         String type = s.findInLine(p);
 
@@ -294,8 +294,8 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
                     defineNominal(name, line.split("\\s*,\\s*"));
                 }
             }
+            throw new ARFFParseError(lineno, "Attribute of type \"" + type + "\" not supported (yet)");
         }
-        throw new ARFFParseError(lineno, "Attribute of type \"" + type + "\" not supported (yet)");
     }
 
     private void parseData(int lineno, String line) throws ARFFParseError {
@@ -307,7 +307,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             String[] tokens = line.split(",");
             if (tokens.length != num_attributes) {
                 throw new ARFFParseError(lineno, "Warning: line " + lineno + " does not contain the right " +
-                        "number of elements (should be " + num_attributes + ", got " + tokens.length + '.');
+                        "number of elements (should be " + num_attributes + ", got " + tokens.length + ".\n\t" + line);
             }
 
             Object[] datum = new Object[num_attributes];

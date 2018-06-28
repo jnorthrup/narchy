@@ -46,7 +46,7 @@ public class Focus extends AtomicRoulette<Causable> {
     /**
      * how quickly the iteration demand can grow from previous (max) values
      */
-    
+
     static final float workGrowthRate = 1.01f;
 
 
@@ -79,7 +79,7 @@ public class Focus extends AtomicRoulette<Causable> {
                     remove(c);
             }
         });
-        
+
         n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
 
         n.onCycle(this::onCycle);
@@ -90,7 +90,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
         commit(() -> update(nar));
 
-        
+
 
 
 
@@ -158,14 +158,14 @@ public class Focus extends AtomicRoulette<Causable> {
             double jiffy = nar.loop.jiffy.floatValue();
             double throttle = nar.loop.throttle.floatValue();
 
-            
+
             double timePerSlice = this.timesliceNS = nar.loop.periodNS() * (jiffy * concurrency.intValue()) * throttle;
             idleTimePerCycle = nar.loop.periodNS() * (1-throttle);
 
             for (int i = 0; i < n; i++) {
                 Causable c = choice.get(i);
                 if (c == null)
-                    continue; 
+                    continue;
 
                 c.can.commit(commiter);
 
@@ -187,7 +187,7 @@ public class Focus extends AtomicRoulette<Causable> {
                     value[i] = (c.value());
 
                 } else {
-                    
+
                     value[i] *= 0.9f;
                 }
 
@@ -224,14 +224,14 @@ public class Focus extends AtomicRoulette<Causable> {
                 }
                 //System.out.println(this.choice.get(i) + " " + pri + " x " + iterLimit);
             }
-            
+
         } finally {
             updating.set(false);
         }
     }
 
     private void realloc(int n) {
-        
+
 
         time = new DescriptiveStatistics[n];
         timePerWorkMean = new double[n];
@@ -245,7 +245,7 @@ public class Focus extends AtomicRoulette<Causable> {
             workDone[i] = new DescriptiveStatistics(WINDOW);
         }
 
-        
+
         value = new float[n];
 
         sliceWork = new int[n];
@@ -363,13 +363,13 @@ public class Focus extends AtomicRoulette<Causable> {
             rbm.reconstruct(cur, next);
             rbm.contrastive_divergence(cur, learning_rate, learning_iters);
 
-            
-            
+
+
             for (int i = 0; i < numCauses; i++) {
-                
+
                 float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
-                        
-                        
+
+
                         (float) ((1f - rbmStrength) * cur[i] + rbmStrength * next[i]);
                 causes.get(i).setValue(j);
             }
@@ -438,11 +438,11 @@ public class Focus extends AtomicRoulette<Causable> {
 
 
         float momentum =
-                
+
                 0.5f;
-                
-                
-                
+
+
+
 
         long lastUpdate = ETERNAL;
         /**
@@ -457,7 +457,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
         @Override
         public void update(NAR nar) {
-            
+
             long time = nar.time();
             if (lastUpdate == ETERNAL)
                 lastUpdate = time;
@@ -503,18 +503,18 @@ public class Focus extends AtomicRoulette<Causable> {
 
                 Traffic[] cg = c.goal;
 
-                
+
                 float v = 0;
                 for (int j = 0; j < goals; j++) {
                     v += goal[j] * cg[j].last;
                 }
 
-                
 
 
 
 
-                
+
+
 
 
 

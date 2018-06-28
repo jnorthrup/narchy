@@ -28,8 +28,10 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     protected final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected DurService(NAR n, float durs) {
-        super(n);
+        super((NAR)null);
         durations.set(durs);
+        if (n!=null)
+            n.on(this);
     }
 
 
@@ -93,7 +95,10 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     @Override
     protected void starting(NAR nar) {
         lastStarted = nar.time();
-        spawn(nar, durCycles(nar));
+        nar.runLater(()->{
+            spawn(nar, durCycles(nar));
+        });
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
@@ -61,6 +62,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
         super(256, outRate, nar);
 
         assert(nar.time instanceof RealTime.MS && ((RealTime.MS)nar.time).t0 !=0 );
+        recv = nar.newChannel(this);
 
         try {
             peer = new UDPeer(port, discover);
@@ -68,7 +70,21 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
             throw new RuntimeException(e);
         }
         ons.add(peer.receive.on(this::receive));
-        recv = nar.newChannel(this);
+
+        nar.onOp1("ping", (term,nn)->{
+           try {
+               String s = Texts.unquote(term.toString());
+               String[] addressPort = s.split(":");
+               String address = addressPort[0];
+               int pport = Texts.i(addressPort[1]);
+
+               InetSocketAddress a = new InetSocketAddress(address, pport);
+               logger.info("ping {}", a);
+               ping(a);
+           } catch (Throwable tt) {
+               logger.error("ping {}", tt);
+           }
+        });
 
     }
     @Override
@@ -78,6 +94,8 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
 
     @Override
     protected int next(NAR nar, int iterations) {
+        if (peer == null) return 0; //HACK TODO
+
         if (!peer.connected())
             return -1;
 
@@ -175,7 +193,9 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     }
 
     public void runFPS(float fps) {
+        nar.runLater(()->{
         peer.runFPS(fps);
+        });
     }
 
     public InetSocketAddress addr() {

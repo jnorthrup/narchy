@@ -60,58 +60,6 @@ public class Revision {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b) {
         return revise(a, b, 1f, 0f);
     }
@@ -127,62 +75,51 @@ public class Revision {
         Op ao = a.op();
         Op bo = b.op();
         if (ao != bo)
-            return Null; 
-
-
-
-
-
-
+            return Null;
 
 
         int len = a.subs();
-        if (len > 0) {
+        assert (len > 0);
 
-            if (ao.temporal) {
+        if (ao.temporal) {
 
 
-                if (ao == CONJ) {
+            if (ao == CONJ) {
 
-                    
-                    
-                    return Conj.conjIntermpolate(a, b, bOffset, nar);
 
-                } else if (ao == IMPL) {
-                    return dtMergeDirect(a, b, aProp, curDepth, nar);
-                } else
-                    throw new UnsupportedOperationException();
-            } else {
-                if (a.equals(b)) {
-                    return a;
-                }
+                return Conj.conjIntermpolate(a, b, bOffset, nar);
 
-                Term[] ab = new Term[len];
-                boolean change = false;
-                Subterms aa = a.subterms();
-                Subterms bb = b.subterms();
-                for (int i = 0; i < len; i++) {
-                    Term ai = aa.sub(i);
-                    Term bi = bb.sub(i);
-                    if (!ai.equals(bi)) {
-                        Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
-                        if (y instanceof Bool && (!(ai instanceof Bool)))
-                            return Null; 
+            } else if (ao == IMPL) {
+                return dtMergeDirect(a, b, aProp, curDepth, nar);
+            } else
+                throw new UnsupportedOperationException();
+        } else {
 
-                        if (!ai.equals(y)) {
-                            change = true;
-                            ai = y;
-                        }
+
+            Term[] ab = new Term[len];
+            boolean change = false;
+            Subterms aa = a.subterms();
+            Subterms bb = b.subterms();
+            for (int i = 0; i < len; i++) {
+                Term ai = aa.sub(i);
+                Term bi = bb.sub(i);
+                if (!ai.equals(bi)) {
+                    Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
+                    if (y instanceof Bool && (!(ai instanceof Bool)))
+                        return Null;
+
+                    if (!ai.equals(y)) {
+                        change = true;
+                        ai = y;
                     }
-                    ab[i] = ai;
                 }
-
-                return !change ? a : ao.the(choose(a, b, aProp, nar.random()).dt(), ab);
+                ab[i] = ai;
             }
 
+            return !change ? a : ao.the(choose(a, b, aProp, nar.random()).dt(), ab);
         }
 
-        return choose(a, b, aProp, nar.random());
+        //        return choose(a, b, aProp, nar.random());
 
     }
 
@@ -192,9 +129,6 @@ public class Revision {
 
         int adt = a.dt();
         int bdt = b.dt();
-
-
-
 
 
         depth /= 2f;
@@ -207,14 +141,14 @@ public class Revision {
             if ((adt == XTERNAL) || (bdt == XTERNAL)) {
                 dt = XTERNAL;
             } else if ((adt == DTERNAL || bdt == DTERNAL) || ((adt >= 0) != (bdt >= 0))) {
-                
+
                 dt = DTERNAL;
             } else {
 
 //                boolean mergeOrChoose = nar.dtMergeOrChoose();
 //                if (mergeOrChoose) {
 
-                    dt = lerp(aProp, bdt, adt);
+                dt = lerp(aProp, bdt, adt);
 
 //                } else {
 //                    dt = (choose(a, b, aProp, nar.random()) == a) ? adt : bdt;
@@ -246,30 +180,15 @@ public class Revision {
         return (rng.nextFloat() < aBalance) ? a : b;
     }
 
-    /*@NotNull*/
-    public static Term[] choose(/*@NotNull*/ Term[] a, Term[] b, float aBalance, /*@NotNull*/ Random rng) {
-        int l = a.length;
-        Term[] x = new Term[l];
-        for (int i = 0; i < l; i++) {
-            x[i] = choose(a[i], b[i], aBalance, rng);
-        }
-        return x;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//    /*@NotNull*/
+//    public static Term[] choose(/*@NotNull*/ Term[] a, Term[] b, float aBalance, /*@NotNull*/ Random rng) {
+//        int l = a.length;
+//        Term[] x = new Term[l];
+//        for (int i = 0; i < l; i++) {
+//            x[i] = choose(a[i], b[i], aBalance, rng);
+//        }
+//        return x;
+//    }
 
 
     public static Term intermpolate(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, NAR nar) {
@@ -284,68 +203,26 @@ public class Revision {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * forces projection
      */
     @Nullable
     public static Task merge(NAR nar, TaskRegion... tt) {
-        assert(tt.length>1);
+        assert (tt.length > 1);
         long[] u = Tense.union(tt);
         return merge(nar, nar.dur(), u[0], u[1], true, tt);
     }
 
 
-
     @Nullable
     public static Task merge(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
 
-        tasks = ArrayUtils.removeNulls(tasks, Task[]::new); 
+        tasks = ArrayUtils.removeNulls(tasks, Task[]::new);
 
         if (start == ETERNAL) {
             long minStart = MAX_VALUE;
             long maxStart = Long.MIN_VALUE;
-            for (TaskRegion z : tasks) {
+            for (TaskRegion z: tasks) {
                 long zs = z.start();
                 if (zs != ETERNAL) {
                     minStart = Math.min(minStart, zs);
@@ -353,14 +230,14 @@ public class Revision {
                 }
             }
             if (minStart != MAX_VALUE) {
-                
+
                 start = minStart;
                 end = maxStart;
             }
         }
 
         /*Truth.EVI_MIN*/
-        
+
         float range = (start != ETERNAL) ? (end - start + 1) : 1;
         float eviMinInteg = Param.TRUTH_MIN_EVI;
         Task defaultTask;
@@ -374,13 +251,13 @@ public class Revision {
         TruthPolation T = Param.truth(start, end, dur).add(tasks);
         LongSet stamp = T.filterCyclic();
         if (!forceProjection && T.size() == 1) {
-            
+
             return defaultTask;
         }
 
         Truth baseTruth = T.truth(nar);
         if (baseTruth == null)
-            return defaultTask; 
+            return defaultTask;
 
         float truthEvi = baseTruth.evi();
 
@@ -404,19 +281,16 @@ public class Revision {
         );
 
         if (t == null)
-            return null; 
+            return null;
 
-        tasks = T.tasks(); 
+        tasks = T.tasks();
 
         t.priSet(Priority.fund(Util.max((TaskRegion p) -> p.task().priElseZero(), tasks),
                 true,
-                
+
                 Tasked::task, tasks));
 
         ((NALTask) t).cause(Cause.sample(Param.causeCapacity.intValue(), tasks));
-
-
-
 
 
         return t;
@@ -440,13 +314,10 @@ public class Revision {
         if (a.equals(b)) return 0f;
 
 
-
-
-
         Op ao = a.op();
         Op bo = b.op();
         if (ao != bo)
-            return Float.POSITIVE_INFINITY; 
+            return Float.POSITIVE_INFINITY;
 
 
         Subterms aa = a.subterms();
@@ -457,7 +328,7 @@ public class Revision {
 
         boolean aSubsEqualsBSubs = aa.equals(bb);
         if (a.op() == CONJ && !aSubsEqualsBSubs) {
-            
+
             Conj c = new Conj();
             String as = Conj.sequenceString(a, c).toString();
             String bs = Conj.sequenceString(b, c).toString();
@@ -465,7 +336,7 @@ public class Revision {
             int levDist = Texts.levenshteinDistance(as, bs);
             float seqDiff = (((float) levDist) / (Math.min(as.length(), bs.length())));
 
-            
+
             float rangeDiff = Math.max(1f, Math.abs(a.dtRange() - b.dtRange()));
 
             d += (1f + rangeDiff) * (1f + seqDiff);
@@ -482,7 +353,7 @@ public class Revision {
                 int adt = a.dt();
                 int bdt = b.dt();
                 if (adt != bdt) {
-                    if (adt == XTERNAL || bdt ==XTERNAL) {
+                    if (adt == XTERNAL || bdt == XTERNAL) {
                         //zero, match
                     } else {
 
@@ -523,11 +394,11 @@ public class Revision {
         if (x.equals(y))
             return x;
 
-        
+
         Top<Task> top = new Top<>(t -> TruthIntegration.eviAvg(t, start, end, 1));
 
         if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
-            
+
             Task xy = merge(nar, nar.dur(), start, end, true, x, y);
             if (xy != null && (filter == null || filter.test(xy)))
                 top.accept(xy);

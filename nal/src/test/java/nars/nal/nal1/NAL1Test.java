@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    private final int cycles = 30;
+    private final int cycles = 5;
 
     @Override protected NAR nar() {
         return NARS.tmp(1);
@@ -270,7 +270,7 @@ public class NAL1Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<bird <-> swan>", 0.9f, 0.9f);
         tester.ask("<swan --> bird>");
-        tester.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.73f);
+        tester.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.9f);
 
     }
 

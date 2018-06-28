@@ -137,15 +137,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         services = new Services<>(this, exe);
 
+        this.conceptBuilder = conceptBuilder;
+
+        concepts.init(this);
+        Builtin.init(this);
+
+
         exe.start(this);
 
 
         this.emotion = new Emotion(this);
 
-        this.conceptBuilder = conceptBuilder;
-
-        concepts.init(this);
-        Builtin.init(this);
 
 
         this.attn = attn;
@@ -774,23 +776,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (!busy.compareAndSet(false, true))
             return;
 
-        try {
+        emotion.cycle();
 
-            emotion.cycle();
+        time.cycle(this);
 
-            time.cycle(this);
-
-            if (exe.concurrent()) {
-                eventCycle.emitAsync(this, exe, () -> busy.set(false));
-            } else {
-                eventCycle.emit(this);
-                busy.set(false);
-            }
-
-        } catch (Throwable t) {
+        if (exe.concurrent()) {
+            eventCycle.emitAsync(this, exe, () -> busy.set(false));
+        } else {
+            eventCycle.emit(this);
             busy.set(false);
-            throw t;
         }
+
     }
 
     public NAR trace(Appendable out, Predicate<String> includeKey) {
@@ -864,8 +860,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        long later = time() + 1;
-        time.runAt(later, t);
+        time.runAt(time(), t);
     }
 
     /**
@@ -1089,11 +1084,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Concept existing = concept(c);
         if ((existing != null) ) {
-            if (existing == c)
-                return existing;
+            if (existing != c) {
 
-            if (!(c instanceof PermanentConcept)) {
-                throw new RuntimeException("concept already indexed for term: " + c.term());
+                if (!(c instanceof PermanentConcept)) {
+                    throw new RuntimeException("concept already indexed for term: " + c.term());
+                }
             }
         }
 

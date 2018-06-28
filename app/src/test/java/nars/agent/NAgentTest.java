@@ -126,6 +126,7 @@ public class NAgentTest {
         public MiniTest(Term id, NAR n) {
             super(id, n);
             statPrint = n.emotion.printer(System.out);
+            n.on(this);
         }
 
 

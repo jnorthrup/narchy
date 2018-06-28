@@ -100,7 +100,7 @@ abstract public class Deriver extends Causable {
 
     @Override
     protected final int next(NAR n, final int iterations) {
-        if (!(iterations > 0))
+        if (n == null || !(iterations > 0))
             throw new WTF();
 
 

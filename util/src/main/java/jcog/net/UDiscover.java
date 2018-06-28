@@ -56,11 +56,19 @@ abstract public class UDiscover<P>  {
 
                 ms.setBroadcast(true);
 
-                //ms.setReuseAddress(true);
+                ms.setReuseAddress(true);
+                ms.setTimeToLive(3);
+
 
                 
                 ms.setSoTimeout(TIMEOUT_MS);
                 ms.joinGroup(ia);
+                //System.out.println("ttl=" + ms.getTimeToLive());
+
+                //HACK
+//                NetworkInterface bestNic = NetworkInterface.networkInterfaces().max(Comparator.comparingInt(n -> n.getInterfaceAddresses().size())).get();
+//                ms.setNetworkInterface(bestNic);
+                //System.out.println("nic=" + ms.getNetworkInterface());
 
                 theirID = new byte[MAX_PAYLOAD_ID];
                 myID = Util.toBytes(id);

@@ -22,17 +22,17 @@ class ARFFTest {
                 "@relation foobar\n" +
                 "@attribute x real\n" +
                 "@attribute y string\n" +
-                //"@attribute y {yes, no}\n" +
+                "@attribute z {yes, no}\n" +
                 "@data\n" +
-                "1.0,yes\n" +
-                "0,no\n\n";
+                "1.0,what,yes\n" +
+                "0,ffukk,no\n\n";
 
 
         ARFF arff = new ARFF(file);
         System.out.println(arff.describe());
         arff.write(System.out);
 
-        assertEquals(2, arff.attrCount());
+        assertEquals(3, arff.attrCount());
         assertEquals(2, arff.data.size());
 
 

@@ -282,8 +282,9 @@ public class Derivation extends PreDerivation {
                     nar.concept("withoutPosOrNeg"),
             };
             Map<Term, Termed> m = new HashMap<>(derivationFunctors.length);
-            for (Termed x : derivationFunctors) //override any statik's
+            for (Termed x : derivationFunctors) { //override any statik's
                 m.put(x.term(), x);
+            }
             this.derivationFunctors = Maps.immutable.ofMap(m);
         }
 
@@ -519,7 +520,11 @@ public class Derivation extends PreDerivation {
     }
 
     public Derivation cycle(NAR nar, Deriver deri) {
+        if (nar == null)
+            return null;
+
         TimeAware pnar = this.nar;
+
         if (pnar != nar) {
             init(nar);
         }

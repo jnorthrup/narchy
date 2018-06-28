@@ -51,6 +51,7 @@ public class OpjectsTest {
                 return super.evoked(method, instance, params);
             }
         };
+        n.run();
 
         final SimpleClass x = objs.the("x", new SimpleClass());
         StringBuilder sb = new StringBuilder();

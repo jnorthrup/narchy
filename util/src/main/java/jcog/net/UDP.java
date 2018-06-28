@@ -24,8 +24,8 @@ public class UDP extends Loop {
 
     static {
         System.setProperty("java.net.preferIPv6Addresses",
-            "true"
-            //"false"
+                "true"
+                //"false"
         );
     }
 
@@ -35,41 +35,13 @@ public class UDP extends Loop {
      */
     static final int MAX_PACKET_SIZE = 1024;
 
-    
 
     private static final Logger logger = LoggerFactory.getLogger(UDP.class);
 
-    
 
     private final int port;
     protected final DatagramChannel c;
     public final InetSocketAddress addr;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public UDP(@Nullable InetAddress a, int port) throws IOException {
@@ -81,25 +53,25 @@ public class UDP extends Loop {
         c.setOption(StandardSocketOptions.SO_RCVBUF, 1024 * 128);
         c.setOption(StandardSocketOptions.SO_SNDBUF, 1024 * 128);
         //c.socket().setBroadcast(true);
-        //c.setOption(StandardSocketOptions.SO_BROADCAST, true);
+        ///c.setOption(StandardSocketOptions.SO_BROADCAST, true);
         c.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         c.setOption(StandardSocketOptions.SO_REUSEPORT, true);
         c.bind(new InetSocketAddress(a, port));
 
 
         this.addr = (InetSocketAddress) c.getLocalAddress();
-        this.port = port;
+        this.port = ((InetSocketAddress) c.getLocalAddress()).getPort();
 
-        logger.info("start {}" , addr);
+        logger.info("start {}", addr);
     }
 
-    public UDP(int port) throws IOException {
-        this(null, port);
-    }
-
-    public UDP() throws IOException {
-        this(null, 0);
-    }
+//    public UDP(int port) throws IOException {
+//        this(null, port);
+//    }
+//
+//    public UDP() throws IOException {
+//        this(null, 0);
+//    }
 
     public int port() {
         return port;
@@ -114,35 +86,11 @@ public class UDP extends Loop {
                 c.disconnect();
                 c.configureBlocking(false);
             }
-            logger.info("stop {}" , addr);
+            logger.info("stop {}", addr);
         } catch (IOException e) {
             logger.error("close {}", e);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     final ByteBuffer b = ByteBuffer.allocate(MAX_PACKET_SIZE);
@@ -182,11 +130,6 @@ public class UDP extends Loop {
     }
 
     public boolean outJSON(Object x, InetSocketAddress addr) {
-        
-
-
-
-
 
 
         byte[] b;
@@ -201,15 +144,11 @@ public class UDP extends Loop {
     }
 
 
-
-
-
-
     public boolean outBytes(byte[] data, InetSocketAddress to) {
         try {
             int sent = c.send(ByteBuffer.wrap(data), to);
             if (sent < data.length) {
-                logger.warn("output overflow: {}/{} bytes sent to {}", sent, data.length, to );
+                logger.warn("output overflow: {}/{} bytes sent to {}", sent, data.length, to);
             }
             return true;
         } catch (Exception e) {
@@ -225,25 +164,6 @@ public class UDP extends Loop {
     protected void in(InetSocketAddress msgOrigin, byte[] data, int position) {
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

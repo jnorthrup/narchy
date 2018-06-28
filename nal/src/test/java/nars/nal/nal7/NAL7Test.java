@@ -562,7 +562,7 @@ public class NAL7Test extends NALTest {
         tester.inputAt(t, component + ". :|:");
         tester.inputAt(t + dt, "enter(John,room). :|:");
 
-        tester.mustBelieve((4 * (t + Math.max(2, dt)) + Math.max(2, dt) + 1) /** approx */,
+        tester.mustBelieve((6 * (t + Math.max(2, dt)) + Math.max(2, dt) + 1) /** approx */,
                 "(" + component + " ==>+" + dt + " enter(John,room))",
                 1.00f, 0.45f,
                 t);

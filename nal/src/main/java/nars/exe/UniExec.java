@@ -80,8 +80,6 @@ public class UniExec extends AbstractExec {
             n.services.change.on(serviceChange);
             n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
 
-            n.onCycle(this::onCycle);
-            DurService.on(n, this::onDur);
 
             cpu = new TimeSlicing<>("CPU", 1, nar.exe) {
 
@@ -204,6 +202,8 @@ public class UniExec extends AbstractExec {
             };
             sharing.can(cpu);
 
+            n.onCycle(this::onCycle);
+            DurService.on(n, this::onDur);
         }
     }
 

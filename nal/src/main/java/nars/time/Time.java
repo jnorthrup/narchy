@@ -102,7 +102,7 @@ public abstract class Time implements Clock, Serializable {
 
 
     @Nullable
-    private List<SchedTask> exeScheduled() {
+    public List<SchedTask> exeScheduled() {
 
         
 
@@ -170,6 +170,7 @@ public abstract class Time implements Clock, Serializable {
         if (l!=null)
             n.input(l);
     }
+
 
 
     /** returns a string containing the time elapsed/to the given time */

@@ -43,19 +43,19 @@ public enum TruthFunctions2 { ;
         return z!=null ? z.neg() : null;
     }
 
-    @Nullable
-    public static Truth deduction(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
-
-        
-        float f = and(a.freq(), bF);
-        
-        
-        float aC = a.conf();
-        
-        float c = Util.lerp(bC/(bC + aC), 0 ,aC);
-
-        return c >= minConf ? t(f, c) : null;
-    }
+//    @Nullable
+//    public static Truth deduction(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
+//
+//
+//        float f = and(a.freq(), bF);
+//
+//
+//        float aC = a.conf();
+//
+//        float c = Util.lerp(bC/(bC + aC), 0 ,aC);
+//
+//        return c >= minConf ? t(f, c) : null;
+//    }
 
     @Nullable
     public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
@@ -109,7 +109,8 @@ public enum TruthFunctions2 { ;
 
 
 
-            float f = Util.lerp(beliefFreq, 0.5f, goal.freq());
+            //float f = Util.lerp(beliefFreq, 0.5f, goal.freq());
+            float f = goal.freq();
 
             return $.t(f, c);
 

@@ -1,11 +1,23 @@
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
+//apply plugin: "us.kirchmeier.capsule"
 
 repositories {
 //    maven { url 'https://jitpack.io' }
     mavenCentral()
 }
-
+//
+//task mavenCapsule(type: MavenCapsule){
+//
+//    from project(':util').jar
+//    from project(':nal').jar
+//    from project(':gp').jar
+//    from project(':os').jar
+//    //from jar // embed our application jar
+//    from { configurations.compile } // embed dependencies
+//
+//    applicationClass 'nars.Launcher'
+//}
 
 dependencies {
 //    compile 'com.github.kotlin-graphics:imgui:-SNAPSHOT'
