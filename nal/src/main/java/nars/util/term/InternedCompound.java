@@ -53,6 +53,10 @@ public final class InternedCompound extends ByteKey  {
         return new InternedCompound(key, o, dt, x::arrayShared);
     }
 
+    public static InternedCompound get(Op o, Term... subs) {
+        return get(o, DTERNAL, subs);
+    }
+
     public static InternedCompound get(Op o, int dt, Term... subs) {
         DynBytes key = new DynBytes(32 * subs.length /* ESTIMATE */);
 

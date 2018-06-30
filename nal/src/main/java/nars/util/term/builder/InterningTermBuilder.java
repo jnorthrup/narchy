@@ -1,7 +1,6 @@
 package nars.util.term.builder;
 
 import jcog.Util;
-import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -14,6 +13,7 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * can intern subterms and compounds.
@@ -22,12 +22,12 @@ import static nars.time.Tense.DTERNAL;
 public class InterningTermBuilder extends HeapTermBuilder {
 
     final HijackTermCache[] terms;
-    final HijackTermCache normalizes;
 
     private final int cacheSizePerOp;
 
     private final HijackTermCache statements;
     private final HijackTermCache conj;
+    final HijackTermCache normalize, concept, root;
 
 
     public InterningTermBuilder() {
@@ -43,7 +43,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
             terms[i] = newOpCache(this::compoundInterned, cacheSizePerOp);
         }
 
-        normalizes = newOpCache(this::normalize, cacheSizePerOp);
+        concept = newOpCache(this::_concept, cacheSizePerOp);
+        root = newOpCache(this::_root, cacheSizePerOp);
+
+        normalize = newOpCache(this::_normalize, cacheSizePerOp);
         conj = newOpCache(this::_conj, cacheSizePerOp);
         statements = newOpCache(this::_statement, cacheSizePerOp*3);
 
@@ -162,7 +165,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //    }
 
     public String summary() {
-        return summary(terms, normalizes);
+        return summary(terms, normalize);
+        //return summary(terms, conj, statements, normalize, concept, root);
     }
 
     static String summary(HijackTermCache[] termCache, HijackTermCache transforms) {
@@ -174,31 +178,44 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term normalize(Compound x, byte varOffset) {
 
-        if (!x.hasVars())
-            throw new WTF();
+//        if (!x.hasVars())
+//            throw new WTF();
 
         if (varOffset == 0) {
             Term xx = x.the();
             if (xx != null)
-                return normalizes.apply(InternedCompound.get(PROD, DTERNAL, xx)); //new LighterCompound(PROD, x, NORMALIZE)));
+                return normalize.apply(InternedCompound.get(PROD, xx)); //new LighterCompound(PROD, x, NORMALIZE)));
         }
 
         return super.normalize(x, varOffset);
 
     }
 
-    protected Term normalize(InternedCompound i) {
-        Term[] termAndTransform = i.rawSubs.get();
-        Term term = termAndTransform[0];
-//        int transform = ((Int)termAndTransform[1]).id;
-//        switch (transform) {
-//            case 1: /* normalize */
-                return super.normalize((Compound)term, (byte)0);
-//            default:
-//                throw new  UnsupportedOperationException();
-//        }
-    }
 
+
+    protected Term _normalize(InternedCompound i) {
+        return super.normalize((Compound) i.rawSubs.get()[0], (byte)0);
+    }
+    @Override
+    public Term concept(Compound x) {
+        Term xx = x.the();
+        if (xx == null)
+            return super.concept(x);
+        return concept.apply(InternedCompound.get(PROD, xx));
+    }
+    public Term _concept(InternedCompound i) {
+        return super.concept((Compound) i.rawSubs.get()[0]);
+    }
+    @Override
+    public Term root(Compound x) {
+        Term xx = x.the();
+        if (xx == null)
+            return super.root(x);
+        return root.apply(InternedCompound.get(PROD, xx));
+    }
+    public Term _root(InternedCompound i) {
+        return super.root((Compound) i.rawSubs.get()[0]);
+    }
     @Override
     public Term statement(Op op, int dt, Term subject, Term predicate) {
         if (op==SIM) {
@@ -224,17 +241,27 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
     }
 
+    @Override
+    public Term conj(int dt, Term[] u) {
+        //TODO presort if commutive?
+        if (internable(CONJ, dt, u)) {
+            switch(dt) {
+                case 0:
+                case DTERNAL:
+                case XTERNAL:
+                    //pre-sort
+                    Arrays.sort(u);
+                    break;
+            }
+            return conj.apply(InternedCompound.get(CONJ, dt, u));
+        } else
+            return super.conj(dt, u);
+    }
+
     private Term _conj (InternedCompound c) {
         Term[] s = c.rawSubs.get();
         return super.conj(c.dt, s);
     }
 
-    @Override
-    public Term conj(int dt, Term[] u) {
-        //TODO presort if commutive?
-        if (internable(CONJ, dt, u))
-            return conj.apply(InternedCompound.get(CONJ, dt, u));
-        else
-            return super.conj(dt, u);
-    }
+
 }

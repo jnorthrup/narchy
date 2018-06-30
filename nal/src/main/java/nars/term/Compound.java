@@ -644,6 +644,16 @@ public interface Compound extends Term, IPair, Subterms {
         return Op.terms.normalize(this, varOffset);
     }
 
+    @Override
+    default Term root() {
+        return Op.terms.root(this);
+    }
+
+
+    @Override
+    default Term concept() {
+        return Op.terms.concept(this);
+    }
 
     @Override
     default int dtRange() {
@@ -692,39 +702,7 @@ public interface Compound extends Term, IPair, Subterms {
         return r.transformCompound(this);
     }
 
-    /*@NotNull*/
-    @Override
-    default Term root() {
-        return temporalize(Retemporalize.root);
-    }
 
-
-    @Override
-    default Term concept() {
-
-        Term term = unneg().root(); 
-
-        Op op = term.op();
-        assert (op != NEG): this + " concept() to NEG: " + unneg().root();
-        if (!op.conceptualizable)
-            return Null;
-
-
-        Term term2 = term.normalize();
-        if (term2 != term) {
-            if (term2 == null)
-                return Null;
-
-            assert (term2.op() == op): term2 + " not a normal normalization of " + term;
-
-
-
-            term = term2;
-        }
-
-
-        return term;
-    }
 
     @Override
     default boolean equalsRoot(Term x) {

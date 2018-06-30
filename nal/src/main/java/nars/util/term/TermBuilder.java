@@ -17,6 +17,7 @@ import nars.term.compound.util.Conj;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.transform.CompoundNormalization;
+import nars.util.term.transform.Retemporalize;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
@@ -535,4 +536,33 @@ public abstract class TermBuilder {
         }
 
     }
+
+    public Term root(Compound x) {
+        return x.temporalize(Retemporalize.root);
+    }
+    public Term concept(Compound x) {
+        Term term = x.unneg().root();
+
+        Op op = term.op();
+        assert (op != NEG): this + " concept() to NEG: " + x.unneg().root();
+        if (!op.conceptualizable)
+            return Null;
+
+
+        Term term2 = term.normalize();
+        if (term2 != term) {
+            if (term2 == null)
+                return Null;
+
+            assert (term2.op() == op): term2 + " not a normal normalization of " + term;
+
+
+
+            term = term2;
+        }
+
+
+        return term;
+    }
+
 }
