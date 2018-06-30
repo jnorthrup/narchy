@@ -8,6 +8,7 @@ import nars.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
 /**
@@ -26,8 +27,9 @@ abstract public class Causable extends NARService {
     public final Can can;
 
     /** id as set by the scheduler to identify it */
-    public volatile int scheduledID = -1;
+    @Deprecated public volatile int scheduledID = -1;
 
+    final Semaphore instance;
 
     @Deprecated
     protected Causable(NAR nar) {
@@ -45,6 +47,7 @@ abstract public class Causable extends NARService {
         if (nar != null)
             nar.on(this);
         this.nar = nar;
+        this.instance = new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
     }
 
     @Override
@@ -59,6 +62,7 @@ abstract public class Causable extends NARService {
     public boolean singleton() {
         return true;
     }
+
 
 
 

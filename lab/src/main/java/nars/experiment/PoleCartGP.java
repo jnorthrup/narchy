@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
-import nars.exe.MixMultiExec;
+import nars.exe.BufferedExec;
 import nars.gui.NARui;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
@@ -50,7 +50,7 @@ public class PoleCartGP {
         float systemFPS = 30f;
         float agentFPS = 10f;
 
-        NAR n = NARS.realtime(systemFPS).exe(new MixMultiExec.WorkerMultiExec(512, 4)).get();
+        NAR n = NARS.realtime(systemFPS).exe(new BufferedExec.WorkerExec(4)).get();
         n.beliefPriDefault.set(0.01f);
         n.goalPriDefault.set(0.02f);
         n.questionPriDefault.set(0.005f);
