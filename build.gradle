@@ -6,9 +6,9 @@ buildscript {
         maven {
             url "http://plugins.gradle.org/m2/"
         }
-        maven {
+/*        maven {
             url "http://jcenter.bintray.com"
-        }
+        }*/
         //maven { url "https://oss.sonatype.org/content/groups/public/" }
 
     }
@@ -27,19 +27,21 @@ plugins {
 //    id "org.sonarqube" version "2.5"
 
 }
-
+/*
 repositories {
     repositories {
         mavenCentral()
         jcenter()
     }
 }
+*/
 /*
 buildScan {
     licenseAgreementUrl = 'http://gradle.com/terms-of-service'
     licenseAgree = 'yes'
 }
 */
+
 
 allprojects {
     group = 'narchy'
@@ -53,6 +55,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: "com.github.ben-manes.versions"
+
 
 
 //    apply plugin: 'org.junit.platform.gradle.plugin'
@@ -77,16 +80,18 @@ subprojects {
         mavenCentral()
 //        mavenLocal()
         jcenter()
+	    maven { url 'https://dl.bintray.com/konsoletyper/teavm' }
 
-        maven { url "http://repo.maven.apache.org/maven2" }
-        maven { url "http://jcenter.bintray.com" }
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
+        //maven { url "http://repo.maven.apache.org/maven2" }
+        //maven { url "http://jcenter.bintray.com" }
+        //maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
     }
 
 
     tasks.withType(JavaCompile) {
 
-
+        sourceCompatibility = '1.10'
+        targetCompatibility = '1.10'
 
         options.encoding = 'UTF-8'
         options.incremental = false // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11

@@ -2,6 +2,8 @@ package jcog.net.http;
 
 import jcog.net.http.HttpConnection.ConnectionStateChangeListener;
 import jcog.net.http.HttpConnection.STATE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -9,18 +11,16 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Joris
  */
 class HttpSelector implements ConnectionStateChangeListener {
 
-    private final long TIMEOUT_CHECK_PERIOD_ms = 1_000;
+    //private final long TIMEOUT_CHECK_PERIOD_ms = 1_000;
     private final long TIMEOUT_PERIOD_ms = 5_000;
 
-    private static final Logger log = Logger.getLogger("jcog/net/http");
+    private static final Logger log = LoggerFactory.getLogger("jcog/net/http");
     private final WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler;
     private final ByteBuffer buf = ByteBuffer.allocateDirect(HttpServer.BUFFER_SIZE);
     private final ConcurrentLinkedQueue<SocketChannel> newChannels = new ConcurrentLinkedQueue<>();
@@ -44,7 +44,7 @@ class HttpSelector implements ConnectionStateChangeListener {
             try {
                 conn.channel.close();
             } catch (IOException ex) {
-                log.log(Level.SEVERE, null, ex);
+                log.error("{}",ex);
             }
 
         } else if (newState == STATE.UPGRADE) {
@@ -60,7 +60,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                 try {
                     conn.channel.close();
                 } catch (IOException ex) {
-                    log.log(Level.SEVERE, null, ex);
+                    log.error("{}",ex);
                 }
             }
         }
@@ -111,7 +111,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                     SocketAddress remote = conn.channel.getRemoteAddress();
                     conn.channel.close();
                     conn.closed();
-                    log.log(Level.INFO, "timeout {0}", remote);
+                    log.debug("timeout {}", remote);
                 }
             }
         }
@@ -146,7 +146,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                     conn.writeable();
                 }
             } catch (IOException ex) {
-                log.log(Level.WARNING, null, ex);
+                log.warn("{}",ex);
 
                 key.attach(null);
                 key.cancel();

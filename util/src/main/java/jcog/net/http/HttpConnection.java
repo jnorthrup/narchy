@@ -33,7 +33,7 @@ public class HttpConnection {
     private final ConnectionStateChangeListener stateChangeListener;
 
     private final Deque<HttpResponse> responses = new ArrayDeque<>(4); 
-    protected final Map<String, String> request = new HashMap<>();
+    public final Map<String, String> request = new HashMap<>();
 
     private final HttpModel model;
 
@@ -516,6 +516,9 @@ public class HttpConnection {
         setState(STATE.CLOSED);
     }
 
+    public URI url() {
+        return requestUri;
+    }
 
 
     enum STATE {

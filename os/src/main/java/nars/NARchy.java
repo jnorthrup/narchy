@@ -4,28 +4,27 @@ import jcog.Util;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.BufferedExec;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 import static nars.Op.BELIEF;
 
 public class NARchy extends NARS {
 
-    static final Logger logger = LoggerFactory.getLogger(NARchy.class);
+    //static final Logger logger = LoggerFactory.getLogger(NARchy.class);
 
     public static NAR core() {
 
 
-        NAR nar = new DefaultNAR(8, true)
+        NAR nar = new DefaultNAR(0, true)
 
-                .index(new HijackConceptIndex(06*1024, 4))
+                .index(new CaffeineIndex(32*1024))
+                //.index(new HijackConceptIndex(32*1024, 4))
 
                 .exe(new BufferedExec.WorkerExec(Util.concurrency()))
 

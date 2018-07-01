@@ -28,7 +28,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
         return new CaffeineIndex(Caffeine.newBuilder().weakValues(), false);
     }
 
-    @Deprecated public CaffeineIndex(long capacity) {
+    public CaffeineIndex(long capacity) {
         this(capacity, Termed::volume);
     }
 
