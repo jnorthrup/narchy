@@ -45,9 +45,7 @@ public class UniExec extends AbstractExec {
             super(new AbstractWork<>(sharing.start(c), "CPU", 0.5f) {
                 @Override
                 public boolean start() {
-                    if (!c.instance.tryAcquire())
-                        return false;
-                    return super.start();
+                    return super.start() && c.instance.tryAcquire();
                 }
 
                 @Override
@@ -68,11 +66,11 @@ public class UniExec extends AbstractExec {
             });
             this.c = c;
         }
-
-        @Override
-        public boolean next() {
-            return super.next();
-        }
+//
+//        @Override
+//        public boolean next() {
+//            return super.next();
+//        }
     }
 
     @Override

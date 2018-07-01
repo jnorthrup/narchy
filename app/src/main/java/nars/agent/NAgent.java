@@ -287,7 +287,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         this.in = nar.newChannel(this);
         this.now = nar.time() - nar.dur();
 
-        init();
+        init(nar);
 
         alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
         alwaysWant(happy.filter[1].term, nar.confDefault(GOAL)/2);
@@ -308,7 +308,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         enabled.set(true);
     }
 
-    protected void init() {
+    protected void init(NAR nar) {
 
 
     }

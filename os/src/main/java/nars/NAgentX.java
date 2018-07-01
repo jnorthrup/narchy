@@ -20,7 +20,6 @@ import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
-import nars.util.TimeAware;
 import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
@@ -55,14 +54,9 @@ abstract public class NAgentX extends NAgent {
 
     }
 
-    public static TimeAware runRT(Function<NAR, NAgent> init, float fps) {
-        return runRT(init,
-                fps ,
 
-                fps);
-    }
 
-    public static TimeAware runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
+    public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
 
         /*
         try {
@@ -198,11 +192,9 @@ abstract public class NAgentX extends NAgent {
 
                 SpaceGraph.window(NARui.top(n), 800, 800);
 
-                System.gc();
-
-                //Loop aLoop = a.startFPS(agentFPS);
-
                 //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
+
+                System.gc();
             });
         });
 

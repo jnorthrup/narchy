@@ -579,7 +579,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
 
-    default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb /**@Nullable*/) {
+    default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb ) {
         return appendTo(sb, false);
     }
 
@@ -593,9 +593,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     }
 
-    @NotNull
+
     @Deprecated
-    default StringBuilder appendTo(StringBuilder buffer, /**@Nullable*/boolean showStamp) {
+    default StringBuilder appendTo(StringBuilder buffer, boolean showStamp) {
         boolean notCommand = punc() != Op.COMMAND;
         return appendTo(buffer, true, showStamp && notCommand,
                 notCommand,
@@ -603,8 +603,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         );
     }
 
-    @NotNull
-    default StringBuilder appendTo(@Nullable StringBuilder buffer, /**@Nullable*/boolean term, boolean showStamp, boolean showBudget, boolean showLog) {
+
+    default StringBuilder appendTo(@Nullable StringBuilder buffer, boolean term, boolean showStamp, boolean showBudget, boolean showLog) {
 
         String contentName = term ? term().toString() : "";
 

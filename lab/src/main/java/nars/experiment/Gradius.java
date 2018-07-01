@@ -29,7 +29,7 @@ public class Gradius extends NAgentX {
     }
 
     @Override
-    protected void init() {
+    protected void init(NAR nar) {
 
 
         g.updateMS = 25; //TODO coordinate with fps
@@ -76,15 +76,15 @@ public class Gradius extends NAgentX {
 //        actionToggle($.inh("pause", id),
 //                (b) -> g.paused = b);
 
-        actionUnipolar($.prop(nar.self(), $.the("deep")), (d)->{
+        actionUnipolar($.prop(this.nar.self(), $.the("deep")), (d)->{
             //deep incrases both duration and max term volume
-            nar.time.dur(Util.lerp(d*d, 20, 120));
-            nar.termVolumeMax.set(Util.lerp(d, 30, 50));
+            this.nar.time.dur(Util.lerp(d*d, 20, 120));
+            this.nar.termVolumeMax.set(Util.lerp(d, 30, 50));
             return d;
         });
 
-        actionUnipolar($.prop(nar.self(), $.the("awake")), (a)->{
-            nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
+        actionUnipolar($.prop(this.nar.self(), $.the("awake")), (a)->{
+            this.nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
             return a;
         });
 //        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
@@ -99,7 +99,7 @@ public class Gradius extends NAgentX {
 
     public static void main(String[] args) {
 
-        NAgentX.runRT(Gradius::new, 40f, 80f);
+        NAgentX.runRT(Gradius::new, 40f);
 
     }
 

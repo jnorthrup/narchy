@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static nars.$.$$;
 
@@ -103,22 +106,29 @@ class KIFInputTest {
     public void testGenerate() {
         String sumoDir = "file:///home/me/sumo/";
 
+        try {
+            Files.createDirectory(Path.of("/tmp/sumo"));
+        } catch (IOException e) {
+            //e.printStackTrace();
+        }
+
         NAR n = NARS.shell();
 
         n.memory.on(KIFInput.load);
+
 
         n.memory.contents(sumoDir).parallel().forEach(I -> {
             String ii = Texts.unquote(I.toString());
             if (!ii.endsWith(".kif"))
                 return;
 
-            if (ii.startsWith("WorldAirports")) //exclusions
+            if (ii.contains("WorldAirports")) //exclusions
                 return;
 
-            String name = ii.substring(ii.lastIndexOf('/') + 1, ii.lastIndexOf('.'));
-            Term O = Atomic.the("file:///tmp/sumo/" + name + ".kif.nalz");
-            Runnable r = n.memory.copy(I, O);
-            r.run();
+            String name = ii.substring(ii.lastIndexOf('/') + 1, ii.lastIndexOf('.')).toLowerCase();
+
+            n.memory.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nalz")).run();
+            n.memory.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nal")).run();
         });
 
     }

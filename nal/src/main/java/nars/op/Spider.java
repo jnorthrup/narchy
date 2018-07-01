@@ -92,7 +92,7 @@ public class Spider extends Causable {
             return -1; //no option
 
         actions.sample(rng, iterations, (a) -> {
-            //System.out.println(a);
+            //System.out.println(at + " "  +a);
             a.accept(this);
         });
 

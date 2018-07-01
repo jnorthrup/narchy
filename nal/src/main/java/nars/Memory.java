@@ -97,7 +97,29 @@ public class Memory {
 
     final static Atomic stdin = Atomic.the("stdin");
     final static Atomic stdout = Atomic.the("stdout");
-    static final TasksToBytes Tasks_To_Binary = new TasksToBytes("nal") {
+
+
+    /**
+     * text
+     */
+    static final TasksToBytes Tasks_To_Text = new TasksToBytes("nal") {
+        @Override
+        public void accept(Stream<Task> tt, OutputStream out) {
+            tt.forEach(t -> {
+                try {
+                    out.write(t.toString(false).toString().getBytes());
+                    out.write('\n');
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    };
+
+    /**
+     * binary, uncompressed
+     */
+    static final TasksToBytes Tasks_To_Binary = new TasksToBytes("nalb") {
         @Override
         public void accept(Stream<Task> tt, OutputStream out) {
             tt.forEach(t -> {
@@ -109,6 +131,7 @@ public class Memory {
             });
         }
     };
+
     /**
      * bzip2 compressed
      * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
@@ -126,7 +149,7 @@ public class Memory {
                     }
                 });
             } catch (ArithmeticException f) {
-                return; 
+                return;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -182,7 +205,7 @@ public class Memory {
                                     return read(url.openStream(), formats);
                                 } catch (Exception e) {
                                     logger.warn("{} {}", u, e);
-                                    return null; 
+                                    return null;
                                 }
                             };
                         }
@@ -279,8 +302,8 @@ public class Memory {
     public Memory() {
         resolvers.add(URIResolver);
         resolvers.add(StdIOResolver);
+        on(Tasks_To_Text);
         on(Tasks_To_Binary);
-        
         on(Tasks_To_BinaryZipped);
         on(BinaryZipped_To_Tasks);
     }
@@ -292,8 +315,7 @@ public class Memory {
 
     @Nullable
     static String extension(URI u) {
-        
-        
+
 
         String path = u.getPath();
         int afterPeriod = path.lastIndexOf('.');
@@ -315,11 +337,11 @@ public class Memory {
                 URI u = URI.create(s);
                 return Stream.of(u);
             } catch (IllegalArgumentException e) {
-                
+
             }
         }
 
-        
+
         return null;
     }
 
@@ -327,7 +349,7 @@ public class Memory {
         if (readFormats.size() == 1) {
             return readFormats.iterator().next().apply(in);
         } else {
-            
+
             byte[] b = in.readAllBytes();
             return readFormats.stream().flatMap(r -> r.apply(new ByteArrayInputStream(b)));
         }
@@ -351,12 +373,12 @@ public class Memory {
     }
 
     public void on(BytesToTasks f) {
-        for (String e : f.extensions)
+        for (String e: f.extensions)
             readFormats.put(e, f);
     }
 
     public void on(TasksToBytes f) {
-        for (String e : f.extensions)
+        for (String e: f.extensions)
             writeFormats.put(e, f);
     }
 
@@ -394,7 +416,7 @@ public class Memory {
                     if (writers.size() == 1) {
                         writers.iterator().next().accept(toOut);
                     } else {
-                        
+
                         List<Task> outs = toOut.collect(toList());
 
                         writers.forEach(w -> w.accept(outs.stream()));
