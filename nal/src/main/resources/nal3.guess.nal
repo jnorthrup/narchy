@@ -10,10 +10,10 @@
 
 
 //intesection question formation
-    (W --> S), (W --> B), task("?"), is(S,"|") |- (W --> (|,S,B)), (Punctuation:Question)
-    (W --> S), (W --> B), task("?"), is(S,"&") |- (W --> (&,S,B)), (Punctuation:Question)
-    (S --> W), (B --> W), task("?"), is(S,"&") |- ((&,S,B) --> W), (Punctuation:Question)
-    (S --> W), (B --> W), task("?"), is(S,"|") |- ((|,S,B) --> W), (Punctuation:Question)
+    (W --> S), (W --> B), task("?"), is(S,"|"), neqRCom(S,B) |- (W --> (|,S,B)), (Punctuation:Question)
+    (W --> S), (W --> B), task("?"), is(S,"&"), neqRCom(S,B) |- (W --> (&,S,B)), (Punctuation:Question)
+    (S --> W), (B --> W), task("?"), is(S,"&"), neqRCom(S,B) |- ((&,S,B) --> W), (Punctuation:Question)
+    (S --> W), (B --> W), task("?"), is(S,"|"), neqRCom(S,B) |- ((|,S,B) --> W), (Punctuation:Question)
 
     //TODO difference questions
 
@@ -22,9 +22,9 @@
     (W --> S), (W --> B), task("?"), is(S,"|"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     (S --> W), (B --> W), task("?"), is(S,"&"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
-    (W --> (S-B)), (W --> B), task("?"), neq(S,B) |- (W --> (S-B)), (Belief:BeliefStructuralDifference, Punctuation:Belief)
-    ((S~B) --> W), (B --> W), task("?"), neq(S,B) |- ((S~B) --> W), (Belief:BeliefStructuralDifference, Punctuation:Belief)
-        (S~B), B, task("?"), neq(S,B) |- (S~B), (Belief:BeliefStructuralDifference, Punctuation:Belief)
+    (W --> (S-B)), (W --> B), task("?"), neqRCom(S,B) |- (W --> (S-B)), (Belief:BeliefStructuralDifference, Punctuation:Belief)
+    ((S~B) --> W), (B --> W), task("?"), neqRCom(S,B) |- ((S~B) --> W), (Belief:BeliefStructuralDifference, Punctuation:Belief)
+        (S~B), B, task("?"), neqRCom(S,B) |- (S~B), (Belief:BeliefStructuralDifference, Punctuation:Belief)
 
     (?1 --> S), (X --> S), task("?"), neq(X,?1) |- ((X | ?1) --> S), (Punctuation:Question)
     (?1 --> S), (X --> S), task("?"), neq(X,?1) |- ((X & ?1) --> S), (Punctuation:Question)

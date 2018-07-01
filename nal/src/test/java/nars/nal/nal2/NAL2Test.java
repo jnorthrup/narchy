@@ -233,7 +233,9 @@ public class NAL2Test extends NALTest {
                 .believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f) 
                 .believe("<planetX --> {Pluto,Saturn}>", 0.7f, 0.9f) 
                 .mustBelieve(cycles, "<planetX --> {Mars,Pluto,Saturn,Venus}>", 0.97f, 0.81f) 
-                .mustBelieve(cycles, "<planetX --> {Pluto}>", 0.63f, 0.81f); 
+                .mustBelieve(cycles, "<planetX --> {Pluto}>",
+                        0.8f, 0.73f);
+                        //0.63f, 0.81f);
 
     }
 
@@ -301,10 +303,10 @@ public class NAL2Test extends NALTest {
     void set_operations4() {
 
         TestNAR tester = test;
-        tester.believe("<[marsy,earthly,venusy] --> planetX>", 1.0f, 0.9f); 
-        tester.believe("<[earthly,saturny] --> planetX>", 0.1f, 0.9f); 
-        tester.mustBelieve(cycles, "<[marsy,earthly,saturny,venusy] --> planetX>", 1.0f, 0.81f); 
-        tester.mustBelieve(cycles, "<[marsy,venusy] --> planetX>", 0.90f, 0.81f); 
+        tester.believe("<[marsy,earthly,venusy] --> planetX>", 1.0f, 0.9f);
+        tester.believe("<[earthly,saturny] --> planetX>", 0.1f, 0.9f);
+        tester.mustBelieve(cycles, "<[marsy,earthly,saturny,venusy] --> planetX>", 1.0f, 0.81f);
+        tester.mustBelieve(cycles, "<[marsy,venusy] --> planetX>", 0.90f, 0.81f);
 
     }
 

@@ -1,6 +1,5 @@
 package nars.web;
 
-import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.JSProperty;
 import org.teavm.jso.browser.Location;
@@ -16,16 +15,16 @@ public interface WebSocket extends JSObject {
     }
 
     static WebSocket newSocket(String host, int port, String path) {
-        return Util.newSocket("ws://" + host + ":" + port + "/" + path);
+        return WebSocketUtil.newSocket("ws://" + host + ":" + port + "/" + path);
     }
 
     void send(JSObject obj);
 
     void send(String text);
 
-//    default void setOnData(JSConsumer each) {
-//        Util.setMessageConsumer(this, each);
-//    }
+    default void setOnData(JSConsumer each) {
+        WebSocketUtil.setMessageConsumer(this, each);
+    }
 
     @JSProperty("onopen")
     void setOnOpen(JSRunnable r);
@@ -33,16 +32,4 @@ public interface WebSocket extends JSObject {
     @JSProperty("onclose")
     void setOnClose(JSRunnable r);
 
-    class Util {
-        @JSBody(params = {"url"},
-                script = "const ws = new WebSocket(url);" +
-                        "ws.binaryType = 'arraybuffer';" +
-                        "return ws;")
-        native static WebSocket newSocket(String url);
-
-        @JSBody(params = {"socket", "each"},
-                script = "socket.onmessage = function(m) {  each(m.data); };")
-        native static void setMessageConsumer(WebSocket socket, JSConsumer each);
-
-    }
 }

@@ -257,7 +257,7 @@ public class NAL3Test extends NALTest {
         test
             .believe("--(#1-->(RealNumber&ComplexNumber))")
             .believe("(x-->RealNumber)")
-            .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f);
+            .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f)
         ;
 
     }

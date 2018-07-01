@@ -66,10 +66,10 @@
 
      //intersection conditional goal decompose
      //TODO arity>2
-     ((S|P) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositivePositive)
-     ((S&P) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositiveNegativePositive)
-     (M --> (S&P)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositivePositive)
-     (M --> (S|P)), (M --> S) |- (M --> P), (Goal:DecomposePositiveNegativePositive)
+     ((|,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositivePositive)
+     ((&,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositiveNegativePositive)
+     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositivePositive)
+     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePositiveNegativePositive)
 
 
 //NAL3 single premise decompose

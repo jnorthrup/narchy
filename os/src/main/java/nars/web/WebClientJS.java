@@ -4,29 +4,14 @@ import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
-import org.teavm.tooling.TeaVMTool;
-import org.teavm.tooling.TeaVMToolException;
 
-import java.io.File;
 import java.util.Random;
 
 /** see: https://github.com/automenta/spimedb/commit/93cc982f6d31cacb9c5d23e29f93d54ac5b9c1a8 */
 public class WebClientJS {
 
-    public static void generate() {
-        try {
-            TeaVMTool tea = new TeaVMTool();
-            tea.setMainClass(WebClientJS.class.getName());
-            tea.setCacheDirectory(new File("/tmp/tea"));
-            tea.setTargetDirectory(new File("/tmp/tea"));
 
-            tea.generate();
-        } catch (TeaVMToolException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private HTMLDocument document = HTMLDocument.current();
+    private final HTMLDocument document;
     private HTMLCanvasElement canvas;
     private CanvasRenderingContext2D graphics;
     private boolean[][] cells;
@@ -34,19 +19,45 @@ public class WebClientJS {
     private int height;
     private int delay;
 
-    public WebClientJS(int width, int height, int delay) {
-        this.width = width;
-        this.height = height;
-        this.delay = delay;
+    WebClientJS() {
+//        this.width = width;
+//        this.height = height;
+//        this.delay = delay;
 
-        canvas = document.createElement("canvas").cast();
-        canvas.setWidth(width);
-        canvas.setHeight(height);;
-        document.getBody().appendChild(canvas);
+//
 
-        graphics = canvas.getContext("2d").cast();
+        document = HTMLDocument.current();
+//        width = 100;
+//        height = 100;
+//        delay = 10;
+//        canvas = document.createElement("canvas").cast();
+//        canvas.setWidth(width);
+//        canvas.setHeight(height);
+//        document.getBody().appendChild(canvas);
+////
+//        graphics = canvas.getContext("2d").cast();
+////
+//        cells = new boolean[height][width];
 
-        cells = new boolean[height][width];
+        document.getBody().appendChild(document.createTextNode("start"));
+
+        //WebSocket ws = WebSocket.newSocket("attn");
+        String host = "localhost";
+        int port = 60606;
+        String path = "";
+        WebSocket ws = WebSocketUtil.newSocket("ws://" + host + ":" + port + "/" + path);
+
+
+//        ws.setOnData((msg)->{
+//            document.getBody().appendChild(document.createTextNode(JSON.stringify(msg)));
+//        });
+//        ws.setOnOpen(()->{
+//            ws.send("");
+//
+//            document.getBody().appendChild(document.createElement("div")).appendChild(
+//                    document.createTextNode(JSON.stringify(ws)));
+//
+//        });
     }
 
     private void start() throws InterruptedException {
@@ -139,7 +150,11 @@ public class WebClientJS {
         graphics.putImageData(image, 0, 0);
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        new WebClientJS(300, 300, 200).start();
+    public static void main(String[] args) {
+//        try {
+            new WebClientJS(); //.start();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 }

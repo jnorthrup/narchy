@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static nars.Op.CONJ;
+import static nars.Op.SetBits;
 import static nars.time.Tense.XTERNAL;
 
 public class TermlinkTemplates extends FasterList<Term> {
@@ -140,7 +141,7 @@ public class TermlinkTemplates extends FasterList<Term> {
                         return +1;
                     break;
                 case INH:
-                    if (depth == 1 && x.isAny(Op.SectBits | Op.SetBits | Op.DiffBits | Op.PROD.bit))
+                    if (depth == 1 && x.isAny(Op.SectBits | SetBits | Op.DiffBits | Op.PROD.bit))
                         return +1;
                     break;
                 case CONJ:
@@ -192,7 +193,7 @@ public class TermlinkTemplates extends FasterList<Term> {
             }
 
             case INH: {
-//                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits
+//                if (x.subterms().OR(xx -> xx.unneg().isAny(Op.SetBits | Op.SectBits
 //                        | Op.PROD.bit
 //                        )))
 //                    return 3;
