@@ -1,4 +1,4 @@
-package nars.concept.scalar;
+package nars.concept.signal;
 
 import jcog.math.FloatSupplier;
 import nars.$;
@@ -37,17 +37,17 @@ public class DigitizedScalar extends DemultiplexedScalar {
         float truth(float x, int digit, int maxDigits);
     }
 
-    public final List<Scalar> sensors;
+    public final List<Signal> sensors;
 
 
 
-    public final Stream<Scalar> stream() {
+    public final Stream<Signal> stream() {
         return sensors.stream();
     }
 
 
     @Override
-    public Iterator<Scalar> iterator() {
+    public Iterator<Signal> iterator() {
         return sensors.iterator();
     }
 
@@ -162,7 +162,7 @@ public class DigitizedScalar extends DemultiplexedScalar {
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
-            Scalar sc = new Scalar(s,
+            Signal sc = new Signal(s,
                 () -> freqer.truth(asFloat(), ii, states.length),
                 nar);
             sensors.add(sc);

@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Param;
 import nars.concept.action.ActionConcept;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.term.atom.Atomic;
 
 import java.util.Arrays;
@@ -47,13 +47,13 @@ public class Line1DContinuous extends NAgent {
         for (int i = 0; i < size; i++) {
             int ii = i;
             
-            addSensor(new Scalar(
+            addSensor(new Signal(
                     $.func("h", Atomic.the("x"), $.the( i)),
                     
                     ()-> ins[ii], n));
 
             
-            addSensor(new Scalar(
+            addSensor(new Signal(
                     $.func("e", Atomic.the("x"), $.the( i)),
                     
                     

@@ -1,11 +1,11 @@
-package nars.concept.scalar;
+package nars.concept.signal;
 
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Sensor;
-import nars.concept.dynamic.ScalarBeliefTable;
+import nars.concept.dynamic.SignalBeliefTable;
 import nars.concept.util.ConceptBuilder;
 import nars.control.DurService;
 import nars.task.signal.SignalTask;
@@ -23,13 +23,13 @@ import static nars.Op.GOAL;
 
 
 /**
- * primarily a collector for belief-generating time-changing input scalar (1-d real value) signals
+ * primarily a collector for belief-generating time-changing (live) input scalar (1-d real value) signals
  *
  *
  * In vector analysis, a scalar quantity is considered to be a quantity that has magnitude or size, but no motion. An example is pressure; the pressure of a gas has a certain value of so many pounds per square inch, and we can measure it, but the notion of pressure does not involve the notion of movement of the gas through space. Therefore pressure is a scalar quantity, and it's a gross, external quantity since it's a scalar. Note, however, the dramatic difference here between the physics of the situation and mathematics of the situation. In mathematics, when you say something is a scalar, you're just speaking of a number, without having a direction attached to it. And mathematically, that's all there is to it; the number doesn't have an internal structure, it doesn't have internal motion, etc. It just has magnitude - and, of course, location, which may be attachment to an object.
  * http://www.cheniere.org/misc/interview1991.htm#Scalar%20Detector
  */
-public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier {
+public class Signal extends Sensor implements FloatFunction<Term>, FloatSupplier {
 
     /**
      * update directly with next value
@@ -45,21 +45,21 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
 
     private volatile float currentValue = Float.NaN;
 
-    public Scalar(Term c, FloatSupplier signal, NAR n) {
+    public Signal(Term c, FloatSupplier signal, NAR n) {
         this(c, BELIEF, signal, n);
     }
 
-    public Scalar(Term c, byte punc, FloatSupplier signal, NAR n) {
+    public Signal(Term c, byte punc, FloatSupplier signal, NAR n) {
         this(c, punc, signal, n.conceptBuilder);
         pri(() -> n.priDefault(punc));
-        ((ScalarBeliefTable) beliefs()).res(resolution);
+        ((SignalBeliefTable) beliefs()).res(resolution);
         n.on(this);
     }
 
-    private Scalar(Term term, byte punc, FloatSupplier signal, ConceptBuilder b) {
+    private Signal(Term term, byte punc, FloatSupplier signal, ConceptBuilder b) {
         super(term,
-                punc == BELIEF ? new ScalarBeliefTable(term, true, b) : b.newTable(term, true),
-                punc == GOAL ? new ScalarBeliefTable(term, false, b) : b.newTable(term, false),
+                punc == BELIEF ? new SignalBeliefTable(term, true, b) : b.newTable(term, true),
+                punc == GOAL ? new SignalBeliefTable(term, false, b) : b.newTable(term, false),
                 b);
 
         this.signal = signal;
@@ -119,7 +119,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         if (nextValue == nextValue /* not NaN */) {
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
-                SignalTask x = ((ScalarBeliefTable) beliefs()).add(nextTruth,
+                SignalTask x = ((SignalBeliefTable) beliefs()).add(nextTruth,
                         start, end, dur, this, n);
 
 
@@ -131,13 +131,13 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
     }
 
 
-    public Scalar resolution(float r) {
+    public nars.concept.signal.Signal resolution(float r) {
         resolution.set(r);
         return this;
     }
 
-    public Scalar pri(FloatSupplier pri) {
-        ((ScalarBeliefTable) beliefs()).pri(pri);
+    public nars.concept.signal.Signal pri(FloatSupplier pri) {
+        ((SignalBeliefTable) beliefs()).pri(pri);
         return this;
     }
 

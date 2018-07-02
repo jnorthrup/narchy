@@ -6,7 +6,7 @@ import jcog.WTF;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.concept.scalar.DigitizedScalar;
+import nars.concept.signal.DigitizedScalar;
 import nars.term.atom.Atomic;
 import nars.video.Scale;
 

@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.Concept;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.gui.NARui;
 import nars.time.clock.RealTime;
 import nars.truth.Truth;
@@ -33,7 +33,7 @@ public class PredictDemo {
 
 
         float[] xf = new float[1];
-        @Nullable Concept X = new Scalar($.the("x"), ()->{
+        @Nullable Concept X = new Signal($.the("x"), ()->{
             return xf[0];
         }, n);
         n.on(X);
@@ -48,7 +48,7 @@ public class PredictDemo {
             xf[0] = (float) (0.5f + 0.5f * Math.sin(t / 6f));
             
 
-            ((Scalar) X).update(truther, n);
+            ((Signal) X).update(truther, n);
 
             
         }).runFPS(15f);

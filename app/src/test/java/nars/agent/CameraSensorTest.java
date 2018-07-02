@@ -4,7 +4,7 @@ import jcog.signal.ArrayBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.sensor.Bitmap2DSensor;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Assertions;
@@ -70,7 +70,7 @@ public class CameraSensorTest {
     static void assertEquals(Bitmap2DSensor c, float[][] f, long when, NAR n) {
         for (int i = 0; i < c.width; i++) {
             for (int j = 0; j < c.height; j++) {
-                Scalar p = c.get(i, j);
+                Signal p = c.get(i, j);
                 Truth t = n.beliefTruth(p, when);
                 if (t == null || Math.abs(f[i][j] - t.freq()) > tolerance) {
                     System.err.println("pixel " + p + " incorrect @ t=" + n.time());

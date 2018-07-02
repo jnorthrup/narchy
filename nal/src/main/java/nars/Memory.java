@@ -18,7 +18,6 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -249,7 +248,7 @@ public class Memory {
         public Stream<Term> contents(Term x, Memory m) {
             Stream<URI> uri = termToURIs(x);
             if (uri != null) {
-                return uri.map(Path::of).filter(p -> Files.isDirectory(p)).flatMap(p -> {
+                return uri.map((URI u)->Paths.get((URI)u)).filter(p -> Files.isDirectory(p)).flatMap(p -> {
                     try {
                         return Files.list(p).map(pp -> uriToTerm(pp.toUri()));
                     } catch (IOException e) {
@@ -263,7 +262,7 @@ public class Memory {
     };
     /**
      * bzip2 compressed
-     * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
+     * note: doesnt write the 'BZ' 2 byte header which is standard identifying prefix for bzip2 files
      */
     final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
 

@@ -10,6 +10,7 @@ import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TemporalBeliefTable;
 import nars.term.Compound;
+import nars.term.Conceptor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.compound.util.Image;
@@ -30,6 +31,11 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
      * passes through terms without creating any concept anything
      */
     ConceptBuilder Null = new ConceptBuilder() {
+
+        @Override
+        public void on(Conceptor c) {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
         public Concept build(Term term) {
@@ -253,5 +259,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         return c;
     }
 
+    /** register a Conceptor */
+    void on(Conceptor c);
 
 }

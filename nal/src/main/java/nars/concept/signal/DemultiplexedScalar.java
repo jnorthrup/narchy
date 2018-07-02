@@ -1,4 +1,4 @@
-package nars.concept.scalar;
+package nars.concept.signal;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 import static nars.Op.BELIEF;
 
 /** base class for a multi-concept representation of a real scalar value input */
-abstract public class DemultiplexedScalar extends NARService implements Iterable<Scalar>, Consumer<NAR>, FloatSupplier {
+abstract public class DemultiplexedScalar extends NARService implements Iterable<Signal>, Consumer<NAR>, FloatSupplier {
 
     public final AtomicFloat value = new AtomicFloat();
 

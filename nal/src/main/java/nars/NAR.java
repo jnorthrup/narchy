@@ -36,6 +36,7 @@ import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
+import nars.term.Conceptor;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -1082,6 +1083,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final Concept on(Concept c) {
 
+        if (c instanceof Conceptor) {
+            conceptBuilder.on((Conceptor)c);
+            return c;
+        }
+
         Concept existing = concept(c);
         if ((existing != null) ) {
             if (existing != c) {
@@ -1102,8 +1108,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * registers a term rewrite functor
      */
 
-    public final Concept on(String termAtom, Function<Subterms, Term> f) {
-        return on(f(termAtom, f));
+    public final Functor.LambdaFunctor on(String termAtom, Function<Subterms, Term> f) {
+        return (Functor.LambdaFunctor) on(f(termAtom, f));
     }
 
 

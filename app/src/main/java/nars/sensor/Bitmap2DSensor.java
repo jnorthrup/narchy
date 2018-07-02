@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.NAgent;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.control.DurService;
 import nars.control.channel.BufferedCauseChannel;
 import nars.exe.Causable;
@@ -24,7 +24,7 @@ import static nars.Op.BELIEF;
  * manages reading a camera to a pixel grid of SensorConcepts
  * monochrome
  */
-public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> implements Iterable<Scalar> {
+public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> implements Iterable<Signal> {
 
     private final NAR nar;
     private FloatFloatToObjectFunction<Truth> mode;
@@ -42,11 +42,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
         /** modes */
         SET = (p, v) ->
-                Scalar.SET.apply(() ->
+                Signal.SET.apply(() ->
                         nar.confDefault(BELIEF)).value(p, v);
 
         DIFF = (p, v) ->
-                Scalar.DIFF.apply(() ->
+                Signal.DIFF.apply(() ->
                         nar.confDefault(BELIEF)).value(p, v);
 
         mode = SET;

@@ -15,9 +15,9 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
-import nars.concept.scalar.DigitizedScalar;
-import nars.concept.scalar.FilteredScalar;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.DigitizedScalar;
+import nars.concept.signal.FilteredScalar;
+import nars.concept.signal.Signal;
 import nars.control.Activate;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
@@ -61,7 +61,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     public static final Logger logger = LoggerFactory.getLogger(NAgent.class);
     
 
-    public final Map<Scalar, CauseChannel<ITask>> sensors = new LinkedHashMap();
+    public final Map<Signal, CauseChannel<ITask>> sensors = new LinkedHashMap();
 
     @Deprecated public final Set<DigitizedScalar> senseNums = new LinkedHashSet<>();
     @Deprecated public final Set<Bitmap2DSensor<?>> sensorCam = new LinkedHashSet<>();
@@ -208,7 +208,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     @NotNull
     @Override
-    public final Map<Scalar, CauseChannel<ITask>> sensors() {
+    public final Map<Signal, CauseChannel<ITask>> sensors() {
         return sensors;
     }
 

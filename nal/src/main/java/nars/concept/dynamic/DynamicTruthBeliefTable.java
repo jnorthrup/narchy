@@ -42,13 +42,6 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         return yy != null ? yy.task(template, model, beliefOrGoal, nar) : null;
     }
 
-    @Override
-    public void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar) {
-
-        Task x = taskDynamic(start, end, term, nar);
-        if (x != null)
-            n.accept(x);
-    }
 
     @Override
     protected @Nullable Truth truthDynamic(long start, long end, Term template, NAR nar) {

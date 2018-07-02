@@ -1,4 +1,4 @@
-package nars.concept.scalar;
+package nars.concept.signal;
 
 import jcog.Util;
 import jcog.math.FloatSupplier;
@@ -30,7 +30,7 @@ public class FilteredScalar extends DemultiplexedScalar {
             filter[j++] = new Filter(p.getOne(), input, p.getTwo(), nar);
         }
 
-        for (Scalar s : filter)
+        for (Signal s : filter)
             nar.on(s);
 
         nar.on(this);
@@ -48,15 +48,12 @@ public class FilteredScalar extends DemultiplexedScalar {
 
 
     @Override
-    public Iterator<Scalar> iterator() {
+    public Iterator<Signal> iterator() {
         return ArrayIterator.get(filter);
     }
 
-    public static class Filter extends Scalar {
-
-        
-        
-        
+    /** TODO use Scalar */
+    @Deprecated public static class Filter extends Signal {
 
         Filter(Term id, FloatSupplier input, FloatToFloatFunction f, NAR nar) {
             super(id,

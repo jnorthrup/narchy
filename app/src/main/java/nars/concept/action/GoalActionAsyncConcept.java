@@ -2,7 +2,7 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
-import nars.concept.dynamic.ScalarBeliefTable;
+import nars.concept.dynamic.SignalBeliefTable;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -93,7 +93,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
             fg = null;
 
         int dur = nar.dur();
-        ScalarBeliefTable beliefs = (ScalarBeliefTable) beliefs();
+        SignalBeliefTable beliefs = (SignalBeliefTable) beliefs();
         SignalTask fb = beliefs.add(f, start, end, dur, this, nar);
 
         in.input(

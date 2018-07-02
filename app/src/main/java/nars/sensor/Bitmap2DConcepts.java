@@ -7,7 +7,7 @@ import jcog.util.Array2DIterable;
 import jcog.util.Int2Function;
 import nars.NAR;
 import nars.Task;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -23,13 +23,13 @@ import static nars.Op.BELIEF;
 /**
  * rectangular region of pixels
  */
-public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
+public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
-    public final Scalar[][] matrix;
+    public final Signal[][] matrix;
     public final int width, height, area;
     public final P src;
 
-    public final Array2DIterable<Scalar> iter;
+    public final Array2DIterable<Signal> iter;
 
     /** each pixel's belief task priority for next input */
     public final FloatRange pixelPri = new FloatRange(0, 0, 1f);
@@ -44,7 +44,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
         this.src = src;
         this.pixelPri.set( n.priDefault(BELIEF)*(1/Math.sqrt(area) ));
 
-        this.matrix = new Scalar[width][height];
+        this.matrix = new Signal[width][height];
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -53,7 +53,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
 
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
-                Scalar sss = new Scalar(pixelTerm.get(x, y), f, n) {
+                Signal sss = new Signal(pixelTerm.get(x, y), f, n) {
 //                    @Override
 //                    protected TermlinkTemplates buildTemplates(Term term) {
 //                        TermlinkTemplates t = super.buildTemplates(term);
@@ -83,7 +83,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
     }
 
     /** iterate columns (x) first, then rows (y) */
-    @Override final public Iterator<Scalar> iterator() {
+    @Override final public Iterator<Signal> iterator() {
         return iter.iterator();
     }
 
@@ -91,7 +91,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
         src.update();
     }
 
-    public Scalar get(int i) {
+    public Signal get(int i) {
         return iter.order.get(i);
     }
 
@@ -129,10 +129,10 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
         ;
     }
 
-    public Scalar getSafe(int i, int j) {
+    public Signal getSafe(int i, int j) {
         return matrix[i][j];
     }
-    @Nullable public Scalar get(int i, int j) {
+    @Nullable public Signal get(int i, int j) {
         if ((i < 0) || (j < 0) || (i >= width || j >= height))
                 return null;
         return getSafe(i, j);

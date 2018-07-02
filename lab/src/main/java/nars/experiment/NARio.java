@@ -5,7 +5,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
@@ -118,9 +118,9 @@ public class NARio extends NAgentX {
         
 
 
-        Scalar dvx = senseNumberDifference($$("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Signal dvx = senseNumberDifference($$("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.02f);
-        Scalar dvy = senseNumberDifference($$("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Signal dvy = senseNumberDifference($$("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.02f);
 
 

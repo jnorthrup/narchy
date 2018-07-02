@@ -1,4 +1,4 @@
-package nars.util.signal;
+package nars.concept.signal;
 
 import com.google.common.base.Joiner;
 import jcog.Texts;
@@ -10,7 +10,6 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.concept.scalar.DigitizedScalar;
 import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;

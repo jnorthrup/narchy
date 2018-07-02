@@ -3,7 +3,7 @@ package nars.agent;
 import jcog.Util;
 import jcog.math.FloatRange;
 import nars.$;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 
 
 /**
@@ -28,7 +28,7 @@ public class Line1DSimplest extends NAgent {
      * the current value
      */
 
-    public final Scalar in;
+    public final Signal in;
 
 
     public Line1DSimplest() {

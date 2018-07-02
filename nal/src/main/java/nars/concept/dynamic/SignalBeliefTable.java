@@ -34,7 +34,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
  * dynamically computes matching truths and tasks according to
  * a lossy 1-D wave updated directly by a signal input
  */
-public class ScalarBeliefTable extends DynamicBeliefTable {
+public class SignalBeliefTable extends DynamicBeliefTable {
 
 
     /**
@@ -325,18 +325,18 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
     public final TimeSeries series;
 
-    public ScalarBeliefTable(Term term, boolean beliefOrGoal, ConceptBuilder conceptBuilder) {
+    public SignalBeliefTable(Term term, boolean beliefOrGoal, ConceptBuilder conceptBuilder) {
         this(term, beliefOrGoal, conceptBuilder.newTemporalTable(term));
     }
 
-    public ScalarBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
+    public SignalBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
         this(c, beliefOrGoal,
                 new DefaultTimeSeries(new ConcurrentSkipListMap<>()
                         , /*@Deprecated*/ 256),
                 t);
     }
 
-    ScalarBeliefTable(Term c, boolean beliefOrGoal, TimeSeries series, TemporalBeliefTable t) {
+    SignalBeliefTable(Term c, boolean beliefOrGoal, TimeSeries series, TemporalBeliefTable t) {
         super(c, beliefOrGoal, EternalTable.EMPTY, t);
         this.series = series;
     }

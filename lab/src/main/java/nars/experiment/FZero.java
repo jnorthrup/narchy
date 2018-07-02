@@ -6,10 +6,10 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
-import nars.concept.scalar.DemultiplexedScalar;
-import nars.concept.scalar.DigitizedScalar;
-import nars.concept.scalar.Scalar;
-import nars.concept.scalar.SwitchAction;
+import nars.concept.signal.DemultiplexedScalar;
+import nars.concept.signal.DigitizedScalar;
+import nars.concept.signal.Signal;
+import nars.concept.signal.SwitchAction;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DConcepts;
 import nars.time.Tense;
@@ -23,7 +23,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static com.google.common.collect.Iterables.concat;
 import static nars.Op.INH;
 
 /**
@@ -35,7 +34,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
-    static float fps = 20f;
+    static float fps = 60f;
 
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
     final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
@@ -140,10 +139,10 @@ public class FZero extends NAgentX {
 
 
 
-        Scalar dVelX = senseNumberDifference($.inh(id,$.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
-        Scalar dVelY = senseNumberDifference($.inh(id,$.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
-        Scalar dAccel = senseNumberDifference($.inh(id,"accel"), () -> (float) fz.vehicleMetrics[0][6]);
-        Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);
+        Signal dVelX = senseNumberDifference($.inh(id,$.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
+        Signal dVelY = senseNumberDifference($.inh(id,$.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
+        Signal dAccel = senseNumberDifference($.inh(id,"accel"), () -> (float) fz.vehicleMetrics[0][6]);
+        Signal dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);
         DemultiplexedScalar ang = senseNumber(angle -> $.p($.the("ang"), /*$.the(id ),*/ $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 9, 
@@ -162,8 +161,8 @@ public class FZero extends NAgentX {
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
-                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
+//        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
+//                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
 
 

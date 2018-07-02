@@ -240,7 +240,6 @@ public class UniExec extends AbstractExec {
             return true;
         });
         can.forEachValue(c->
-            //c.c.run(nar, WORK_PER_CYCLE, x->x.get().run())
             c.c.next(nar, WORK_PER_CYCLE)
         );
     }

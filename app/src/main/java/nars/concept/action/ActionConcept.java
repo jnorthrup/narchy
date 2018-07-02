@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Sensor;
-import nars.concept.dynamic.ScalarBeliefTable;
+import nars.concept.dynamic.SignalBeliefTable;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
 import nars.link.TermlinkTemplates;
@@ -23,11 +23,11 @@ public abstract class ActionConcept extends Sensor {
 
     protected ActionConcept(Term term, NAR n) {
         super(term,
-                new ScalarBeliefTable(term, true, n.conceptBuilder),
+                new SignalBeliefTable(term, true, n.conceptBuilder),
                 n.conceptBuilder.newTable(term, false),
                 n.conceptBuilder);
-        ((ScalarBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
-        ((ScalarBeliefTable)beliefs()).res(resolution);
+        ((SignalBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
+        ((SignalBeliefTable)beliefs()).res(resolution);
     }
 
     @Override

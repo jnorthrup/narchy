@@ -7,8 +7,8 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.Op;
-import nars.concept.scalar.DigitizedScalar;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.DigitizedScalar;
+import nars.concept.signal.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
@@ -45,40 +45,40 @@ public interface NSense {
         return p(a, b);
     }
 
-    @NotNull Map<Scalar, CauseChannel<ITask>> sensors();
+    @NotNull Map<Signal, CauseChannel<ITask>> sensors();
 
     NAR nar();
 
     @NotNull
-    default Scalar sense(@NotNull Term term, @NotNull BooleanSupplier value) {
+    default Signal sense(@NotNull Term term, @NotNull BooleanSupplier value) {
         return sense(term, () -> value.getAsBoolean() ? 1f : 0f);
     }
 
     @NotNull
-    default Scalar sense(@NotNull Term term, FloatSupplier value) {
+    default Signal sense(@NotNull Term term, FloatSupplier value) {
         return sense(term, value, (x) -> $.t(x, nar().confDefault(Op.BELIEF)));
     }
 
     @NotNull
-    default Scalar sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        Scalar s = new Scalar(term, value, nar());
+    default Signal sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
+        Signal s = new Signal(term, value, nar());
         addSensor(s);
         return s;
     }
 
     @NotNull
-    default Scalar sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        Scalar s = new Scalar(term, value, nar());
+    default Signal sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
+        Signal s = new Signal(term, value, nar());
         addSensor(s, c);
         return s;
     }
 
-    default void addSensor(Scalar s, CauseChannel cause) {
+    default void addSensor(Signal s, CauseChannel cause) {
         CauseChannel<ITask> existing = sensors().put(s, cause);
         assert (existing == null);
     }
 
-    default void addSensor(Scalar c) {
+    default void addSensor(Signal c) {
         CauseChannel<ITask> cause = nar().newChannel(c);
         addSensor(c, cause);
     }
@@ -142,8 +142,8 @@ public interface NSense {
     }
 
     @NotNull
-    default List<Scalar> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
-        List<Scalar> l = newArrayList(to - from);
+    default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
+        List<Signal> l = newArrayList(to - from);
         for (int i = from; i < to; i++) {
             l.add(senseNumber(id.apply(i), v.apply(i)));
         }
@@ -151,7 +151,7 @@ public interface NSense {
     }
 
 
-    default Scalar senseNumberDifference(Term id, FloatSupplier v) {
+    default Signal senseNumberDifference(Term id, FloatSupplier v) {
         return senseNumber(id, new FloatPolarNormalized(
                 new FloatFirstOrderDifference(nar()::time, v)));
     }
@@ -163,8 +163,8 @@ public interface NSense {
         return senseNumber(x, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, HIH));
     }
 
-    default Scalar senseNumber(Term id, FloatSupplier v) {
-        Scalar c = new Scalar(id, v, nar()
+    default Signal senseNumber(Term id, FloatSupplier v) {
+        Signal c = new Signal(id, v, nar()
         );
         addSensor(c);
         return c;
@@ -207,7 +207,7 @@ public interface NSense {
         return senseNumber(v, DigitizedScalar.Needle, p(id, LOW), p(id, MID), p(id, HIH));
     }
 
-    default Scalar senseNumber(String id, FloatSupplier v) throws Narsese.NarseseException {
+    default Signal senseNumber(String id, FloatSupplier v) throws Narsese.NarseseException {
         return senseNumber($(id), v);
     }
 

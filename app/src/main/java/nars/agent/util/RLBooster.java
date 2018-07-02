@@ -10,7 +10,7 @@ import nars.NAR;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -38,7 +38,7 @@ public class RLBooster implements Consumer<NAR> {
     final int inD, outD;
     final ActionConcept[] actions;
     private final CauseChannel<ITask> in;
-    private final List<Scalar> inputs;
+    private final List<Signal> inputs;
     private final int actionDiscretization;
 
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
@@ -62,7 +62,7 @@ public class RLBooster implements Consumer<NAR> {
 
 
 
-        List<Scalar> sc = $.newArrayList();
+        List<Signal> sc = $.newArrayList();
 
 
 
@@ -105,7 +105,7 @@ public class RLBooster implements Consumer<NAR> {
     float[] input() {
         
         int i = 0;
-        for (Scalar s : inputs) {
+        for (Signal s : inputs) {
             input[i++] = s.asFloat();
         }
 

@@ -1,27 +1,28 @@
-package nars.concept.dynamic;
+package nars.concept.signal;
 
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.scalar.Scalar;
+import nars.concept.dynamic.SignalBeliefTable;
 import nars.control.DurService;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ScalarBeliefTableTest {
+class SignalBeliefTableTest {
 
     @Test
     void test1() {
         NAR n = NARS.shell();
 
         MutableFloat xx = new MutableFloat(0);
-        Scalar x = new Scalar($.the("x"), xx, n);
-        DurService xAuto = x.auto(n, 1);
-        ScalarBeliefTable xb = (ScalarBeliefTable) x.beliefs();
-        n.synch();
+        Signal x = new Signal($.the("x"), xx, n);
 
+        DurService xAuto = x.auto(n, 1);
+        n.run(1);
+
+        SignalBeliefTable xb = (SignalBeliefTable) x.beliefs();
         n.run(1);
         assertEquals(1, xb.series.size());
         assertEquals(1, xb.size());

@@ -14,11 +14,17 @@ import nars.concept.dynamic.DynamicTruthModel;
 import nars.link.TaskLink;
 import nars.link.TaskLinkCurveBag;
 import nars.table.*;
+import nars.term.Conceptor;
+import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Termed;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+import static nars.Op.PROD;
 import static nars.Op.goalable;
 
 public class DefaultConceptBuilder implements ConceptBuilder {
@@ -27,6 +33,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     private final ConceptState awake;
     private final ConceptState sleep;
 
+    final Map<Term, Conceptor> conceptors = new ConcurrentHashMap();
 
     public DefaultConceptBuilder() {
         this(
@@ -45,6 +52,11 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         return Task.validTaskTerm(t) ? taskConcept(t) : nodeConcept(t);
     }
 
+    @Override
+    public void on(Conceptor c) {
+        conceptors.put(c.term, c);
+    }
+
     private Concept nodeConcept(Term t) {
         return new NodeConcept(t, newLinkBags(t));
     }
@@ -61,6 +73,20 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                     this);
 
         } else {
+            Term conceptor = Functor.funcName(t);
+            if (conceptor!=Null) {
+                @Nullable Termed conceptorc = conceptors.get(conceptor);
+                if (conceptorc instanceof Conceptor) {
+                    Term[] args = Functor.funcArgsArray(t);
+                    if (args.length > 0) {
+                        Concept x = ((Conceptor) conceptorc).apply(args[0],
+                                args.length > 1 && args[1].op()==PROD ? args[1].subterms() : Op.EmptySubterms);
+                        if (x!=null)
+                            return (TaskConcept) x;
+                    }
+                }
+            }
+
             return new TaskConcept(t, this);
         }
     }

@@ -1,16 +1,15 @@
 package nars.exe;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.exe.AffinityExecutor;
 import jcog.list.FasterList;
-import jcog.util.Flip;
 import nars.NAR;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
@@ -29,7 +28,8 @@ abstract public class BufferedExec extends UniExec {
 
             cpu.cycleTimeNS.set(Math.max(1, Math.round(cycleNS * throttle)));
 
-        }
+        } else
+            throw new TODO();
     }
 
     @Override
@@ -87,7 +87,7 @@ abstract public class BufferedExec extends UniExec {
 
 
 
-        in.drainTo(b, (int) Math.ceil(in.size()*(1f/concurrency)));
+        in.drainTo(b, (int) Math.ceil(in.size()*(1f/Math.max(1, (concurrency-1)))));
 
 
         long dutyTimeStart = System.nanoTime();
@@ -141,7 +141,7 @@ abstract public class BufferedExec extends UniExec {
             int work;
             if (iterTimeMean == iterTimeMean) {
                 double maxIters = (c.pri() * finalTimeSliceNS / (iterTimeMean / (c.iterations.getMean())));
-                work = maxIters == maxIters ? (int) Math.round(Math.max(1, Math.min(MAX_ITER, maxIters))) : 1;
+                work = (maxIters == maxIters) ? (int) Math.round(Math.max(1, Math.min(MAX_ITER, maxIters))) : 1;
             } else {
                 work = 1;
             }
@@ -162,24 +162,24 @@ abstract public class BufferedExec extends UniExec {
         });
     }
 
-    public static class UniBufferedExec extends BufferedExec {
-        final Flip<List> buffer = new Flip<>(() -> new FasterList<>());
-
-        final AtomicBoolean cycleBusy = new AtomicBoolean();
-
-        @Override
-        protected void onCycle() {
-            super.onCycle();
-
-            if (!cycleBusy.compareAndSet(false, true))
-                return; //busy
-            try {
-                onCycle(buffer.write(), concurrent());
-            } finally {
-                cycleBusy.set(false);
-            }
-        }
-    }
+//    public static class UniBufferedExec extends BufferedExec {
+//        final Flip<List> buffer = new Flip<>(FasterList::new);
+//
+//        final AtomicBoolean cycleBusy = new AtomicBoolean();
+//
+//        @Override
+//        protected void onCycle() {
+//            super.onCycle();
+//
+//            if (!cycleBusy.compareAndSet(false, true))
+//                return; //busy
+//            try {
+//                onCycle(buffer.write(), concurrent());
+//            } finally {
+//                cycleBusy.set(false);
+//            }
+//        }
+//    }
 
     public static class WorkerExec extends BufferedExec {
 

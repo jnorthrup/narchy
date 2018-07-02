@@ -4,7 +4,7 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.dynamic.ScalarBeliefTable;
+import nars.concept.dynamic.SignalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
@@ -24,7 +24,7 @@ import static nars.truth.TruthFunctions.c2w;
 public class GoalActionConcept extends ActionConcept {
 
     
-    private final ScalarBeliefTable feedback;
+    private final SignalBeliefTable feedback;
 
     private final FloatRange curiosity;
 
@@ -40,7 +40,7 @@ public class GoalActionConcept extends ActionConcept {
 
         
 
-        this.feedback = (ScalarBeliefTable)beliefs();
+        this.feedback = (SignalBeliefTable)beliefs();
         
         
 

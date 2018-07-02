@@ -118,7 +118,12 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         return matchThe(TaskMatch.sampled(start, end, null, nar.random()), nar);
     }
 
-    abstract public void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar);
+    /** default implementation */
+    public void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar) {
+        Task x = taskDynamic(start, end, term, nar);
+        if (x != null)
+            n.accept(x);
+    }
 
     @Override
     public void match(TaskMatch m, NAR nar, Consumer<Task> target) {

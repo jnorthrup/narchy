@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.NAR;
 import nars.agent.NAgent;
 import nars.concept.TaskConcept;
-import nars.concept.scalar.Scalar;
+import nars.concept.signal.Signal;
 import nars.control.DurService;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
@@ -44,9 +44,9 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private long start, end;
     int dur;
 
-    private Scalar touchConcept;
+    private Signal touchConcept;
 
-    private Consumer<Scalar> touchMode = (x) -> { };
+    private Consumer<Signal> touchMode = (x) -> { };
 
     public CameraSensorView(Bitmap2DSensor cam, NAgent a) {
         this(cam, a.nar());
@@ -59,7 +59,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         this.dur = n.dur();
     }
 
-    public void onConceptTouch(Consumer<Scalar> c) {
+    public void onConceptTouch(Consumer<Signal> c) {
         touchMode = c;
     }
 
@@ -77,7 +77,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         }
 
         if (finger.clickedNow(OPEN_CONCEPT_BUTTON, this)) {
-            Scalar c = this.touchConcept;
+            Signal c = this.touchConcept;
             if (c != null)
                 NARui.conceptWindow(c, nar);
         }
@@ -86,7 +86,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
             @Override
             protected boolean drag(Finger f) {
                 updateTouch(finger);
-                Scalar c = touchConcept;
+                Signal c = touchConcept;
                 if (c!=null)
                     onTouch(touchConcept);
                 return true;
@@ -98,7 +98,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
 
-    void onTouch(Scalar touchConcept) {
+    void onTouch(Signal touchConcept) {
         touchMode.accept(touchConcept);
     }
 

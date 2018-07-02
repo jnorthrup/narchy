@@ -1,4 +1,4 @@
-package nars.concept.scalar;
+package nars.concept.signal;
 
 import jcog.decide.DecideEpsilonGreedy;
 import jcog.decide.Deciding;
@@ -32,7 +32,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
 
     protected int decide(long start, long end) {
         for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
-            Scalar x = sensors.get(i);
+            Signal x = sensors.get(i);
             Truth g = x.goals().truth(start, end, nar);
 
             exp[i] = g != null ?
