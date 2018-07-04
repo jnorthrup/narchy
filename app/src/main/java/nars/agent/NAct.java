@@ -80,58 +80,6 @@ public interface NAct {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Nullable
     default Truth toggle(@Nullable Truth d, @NotNull Runnable on, @NotNull Runnable off, boolean next) {
         float freq;
@@ -144,7 +92,7 @@ public interface NAct {
         }
 
         return $.t(freq,
-                
+
                 nar().confDefault(BELIEF) /*d.conf()*/);
     }
 
@@ -164,16 +112,16 @@ public interface NAct {
      * initial state is neutral.
      */
     default GoalActionAsyncConcept[] actionTriState(@NotNull Term cc, @NotNull IntPredicate i) {
-        
-        
+
+
         GoalActionAsyncConcept[] g = actionBipolar(cc, true, (float f) -> {
 
             f = f / 2f + 0.5f;
 
-            
+
             float deadZoneFreqRadius =
                     1 / 6f;
-            
+
             int s;
             if (f > 0.5f + deadZoneFreqRadius)
                 s = +1;
@@ -184,11 +132,8 @@ public interface NAct {
 
             if (i.test(s)) {
 
-                
-                
-                
-                
-                switch (s) { 
+
+                switch (s) {
                     case -1:
                         return -1f;
                     case 0:
@@ -202,9 +147,9 @@ public interface NAct {
             }
 
             return 0f;
-            
+
         });
-        float res = 0.5f; 
+        float res = 0.5f;
         g[0].resolution.set(res);
         g[1].resolution.set(res);
         return g;
@@ -221,9 +166,6 @@ public interface NAct {
     default GoalActionConcept actionTriStateContinuous(@NotNull Term s, @NotNull IntPredicate i) {
 
         GoalActionConcept m = new GoalActionConcept(s, nar(), curiosity(), (b, d) -> {
-            
-            
-            
 
 
             int ii;
@@ -242,7 +184,7 @@ public interface NAct {
 
             boolean accepted = i.test(ii);
             if (!accepted)
-                ii = 0; 
+                ii = 0;
 
             float f;
             switch (ii) {
@@ -261,7 +203,7 @@ public interface NAct {
 
             return $.t(f, nar().confDefault(BELIEF));
         });
-        
+
 
         return addAction(m);
     }
@@ -306,12 +248,12 @@ public interface NAct {
             }
 
             return
-                    
+
                     $.t(f,
-                            
+
                             nar().confDefault(BELIEF)
                     )
-                    
+
                     ;
         });
         return addAction(m);
@@ -335,12 +277,6 @@ public interface NAct {
     }
 
     default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
-        
-
-
-
-
-
 
 
         actionPushButton(s, onChange);
@@ -349,7 +285,7 @@ public interface NAct {
 
     default void actionPushReleaseButton(@NotNull Term t, @NotNull BooleanProcedure on) {
 
-        float thresh = 0.1f; 
+        float thresh = 0.1f;
         action(t, (b, g) -> {
             float G = g != null ? g.expectation() : 0.0f;
             boolean positive;
@@ -365,120 +301,92 @@ public interface NAct {
     }
 
     default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
-        actionPushButton(t, (x)-> { on.value(x); return x; });
+        actionPushButton(t, (x) -> {
+            on.value(x);
+            return x;
+        });
     }
 
-    default void actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
+    default void actionPushButtonMutex0(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
         FloatSupplier thresh = () ->
                 //0.66f;
                 0.5f;
 
+
         boolean[] lr = new boolean[2];
 
-        actionPushButton(l, thresh, ll->{
+        actionPushButton(l, thresh, ll -> {
             boolean x = ll;
-            lr[0] = x;
             if (x && lr[1]) {
-                //R.value(false);
                 x = false;
             }
+            lr[0] = x;
             L.value(x);
             return x;
         });
-        actionPushButton(r, thresh, rr->{
+        actionPushButton(r, thresh, rr -> {
             boolean x = rr;
-            lr[1] = x;
             if (x && lr[0]) {
-                //L.value(false);
                 x = false;
             }
+            lr[1] = x;
             R.value(x);
             return x;
         });
     }
 
-    default void actionPushButton(@NotNull Term t, @NotNull BooleanToBooleanFunction on) {
-        actionPushButton(t, ()->0.5f + nar().freqResolution.get(), on);
+    default void actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
+
+        float thresh = 0.5f;
+
+        float[] lr = new float[2];
+
+        GoalActionConcept LA = action(l, (b, g) -> {
+            float ll = g != null ? g.freq() : 0;
+            boolean x = ll > thresh;
+            lr[0] = ll;
+            if (x) {
+                if (lr[1] > thresh) {
+                    x = false;
+                }
+            }
+            L.value(x);
+            //System.out.println("L=" + x  + " <- " + ll );
+            return $.t(x ? 1 : 0, nar().confDefault(BELIEF));
+        });
+        GoalActionConcept RA = action(r, (b, g) -> {
+            float rr = g != null ? g.freq() : 0;
+            boolean x = rr > thresh;
+            lr[1] = rr;
+            if (x) {
+                if (lr[0] > thresh) {
+                    x = false;
+                }
+            }
+            R.value(x);
+            //System.out.println("R=" + x  + " <- " + rr );
+            return $.t(x ? 1 : 0, nar().confDefault(BELIEF));
+        });
+        LA.resolution.set(1f);
+        RA.resolution.set(1f);
+
     }
+
+    default void actionPushButton(@NotNull Term t, @NotNull BooleanToBooleanFunction on) {
+        actionPushButton(t, () -> 0.5f /*+ nar().freqResolution.get()*/, on);
+    }
+
     default void actionPushButton(@NotNull Term t, FloatSupplier thresh, @NotNull BooleanToBooleanFunction on) {
 
-        
 
         GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
-            boolean posOrNeg = f >= thresh.asFloat();
+            boolean posOrNeg = f > thresh.asFloat();
             return on.valueOf(posOrNeg) ? 1f : 0f;
         });
         b.resolution.set(1f);
 
 
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -508,10 +416,8 @@ public interface NAct {
 
     default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
         return actionBipolarFrequencyDifferential(s, fair, false, update);
-        
-        
-        
-        
+
+
     }
 
     default void actionBipolarSteering(@NotNull Term s, FloatConsumer act) {
@@ -530,31 +436,19 @@ public interface NAct {
         });
 
 
-
-
-
-
-
-
-
-
-
     }
 
     default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, boolean latchPreviousIfUndecided, @NotNull FloatToFloatFunction update) {
 
         Term pt =
-                
+
                 $.inh(s, PLUS);
-        
-        
-        
+
+
         Term nt =
-                
+
                 $.inh(s, NEG);
-        
-        
-        
+
 
         final float g[] = new float[2];
         final float e[] = new float[2];
@@ -563,7 +457,7 @@ public interface NAct {
 
         final float[] lastX = {0};
 
-        GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2]; 
+        GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2];
 
         @NotNull BiConsumer<GoalActionAsyncConcept, Truth> u = (action, gg) -> {
 
@@ -573,19 +467,14 @@ public interface NAct {
 
             if (now != lastUpdate[0]) {
                 lastUpdate[0] = now;
-                CC[0] = CC[1] = null; 
+                CC[0] = CC[1] = null;
             }
-
 
 
             float confMin = n.confMin.floatValue();
 
             float feedbackConf =
                     n.confDefault(BELIEF);
-            
-            
-            
-            
 
 
             boolean p = action.term().equals(pt);
@@ -593,18 +482,18 @@ public interface NAct {
             CC[ip] = action;
             g[ip] = gg != null ?
                     gg.freq()
-                    
+
                     :
-                    
+
                     Float.NaN;
             e[ip] = gg != null ?
                     gg.evi()
-                    
+
                     :
                     0f;
 
 
-            float x; 
+            float x;
 
             boolean curious;
             if (CC[0] != null && CC[1] != null /* both ready */) {
@@ -627,9 +516,6 @@ public interface NAct {
                     x = (rng.nextFloat() - 0.5f) * 2f;
 
 
-
-
-
                     e[0] = e[1] = feedbackConf;
                     coherence = 1f;
                     curious = true;
@@ -646,32 +532,17 @@ public interface NAct {
                     } else {
 
 
+                        x = ((g[0] - g[1]));
 
 
-
-
-
-
-                        
-
-                        
-                        x = ((g[0] - g[1])); 
-
-                        
-                        
-
-
-                        
                         if (fair) {
-                            
+
                             x *= coherence;
-                            
-                            
-                            
+
+
                         }
-                        
-                        
-                        
+
+
                     }
 
 
@@ -681,15 +552,13 @@ public interface NAct {
 
                 lastX[0] = x;
 
-                float y = update.valueOf(x); 
-                
+                float y = update.valueOf(x);
 
 
-                
                 PreciseTruth Nb, Ng, Pb, Pg;
 
                 if (y == y) {
-                    
+
                     float yp, yn;
                     if (Math.abs(y) >= n.freqResolution.floatValue()) {
                         yp = 0.5f + y / 2f;
@@ -699,78 +568,20 @@ public interface NAct {
                     }
 
 
-
                     float pbf = yp;
                     float nbf = yn;
                     Pb = $.t(pbf, feedbackConf);
                     Nb = $.t(nbf, feedbackConf);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     Pg = null;
                     Ng = null;
-
-
-
-
-
-
-
 
 
                 } else {
                     Pb = Nb = Pg = Ng = null;
                 }
 
-
-                
 
                 long lastFb = lastFeedback[0];
                 lastFeedback[0] = now;
@@ -783,11 +594,11 @@ public interface NAct {
 
         CauseChannel<ITask> cause = nar().newChannel(s);
         GoalActionAsyncConcept p = new GoalActionAsyncConcept(pt, nar(), cause, u);
-        GoalActionAsyncConcept n = new GoalActionAsyncConcept(nt, nar(),  cause, u);
+        GoalActionAsyncConcept n = new GoalActionAsyncConcept(nt, nar(), cause, u);
 
         addAction(p);
         addAction(n);
-        
+
         CC[0] = p;
         CC[1] = n;
         return CC;
@@ -815,8 +626,7 @@ public interface NAct {
             if (bFreq == bFreq) {
                 float confFeedback =
                         nar().confDefault(BELIEF);
-                
-                
+
 
                 return $.t(bFreq, confFeedback);
             } else
@@ -831,19 +641,19 @@ public interface NAct {
     @NotNull
     default GoalActionConcept actionExpUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
         final float[] x = {0f}, xPrev = {0f};
-        
+
         return action(s, (b, d) -> {
             float o = (d != null) ?
-                    
+
                     d.expectation() - 0.5f
-                    : xPrev[0]; 
+                    : xPrev[0];
             float ff;
             if (o >= 0f) {
-                
-                
+
+
                 float fb = update.valueOf(o /*y.asFloat()*/);
                 if (fb != fb) {
-                    
+
                     return null;
                 } else {
                     xPrev[0] = fb;

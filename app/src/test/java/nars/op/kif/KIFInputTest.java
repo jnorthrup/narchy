@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static nars.$.$$;
 
@@ -107,7 +107,7 @@ class KIFInputTest {
         String sumoDir = "file:///home/me/sumo/";
 
         try {
-            Files.createDirectory(Path.of("/tmp/sumo"));
+            Files.createDirectory(Paths.get("/tmp/sumo"));
         } catch (IOException e) {
             //e.printStackTrace();
         }

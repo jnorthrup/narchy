@@ -114,17 +114,14 @@ public class AutoSurface<X> extends Gridding {
 
     private ButtonSet newSwitch(EnumParam x) {
 
-        ToggleButton[] b = ((EnumSet<?>) EnumSet.allOf(x.klass)).stream().map(e -> {
+        return new ButtonSet<>(ButtonSet.Mode.One, ((EnumSet<?>) EnumSet.allOf(x.klass)).stream().map(e -> {
             CheckBox tb = new CheckBox(e.name());
             tb.on((c, enabled) -> {
                 if (enabled)
                     x.set(e);
             });
             return tb;
-        }).toArray(ToggleButton[]::new);
-
-        ButtonSet s = new ButtonSet(ButtonSet.Mode.One, b);
-        return s;
+        }).toArray(ToggleButton[]::new));
     }
 
     private Surface collectElements(Iterable<?> x, int depth) {

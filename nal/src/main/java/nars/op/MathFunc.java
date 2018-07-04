@@ -1,6 +1,7 @@
 package nars.op;
 
 import nars.$;
+import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
@@ -88,7 +89,7 @@ public enum MathFunc { ;
 
             
 
-    abstract static class ArithmeticCommutiveBinaryBidiFunctor extends Functor.InlineCommutiveBinaryBidiFunctor {
+    abstract static class ArithmeticCommutiveBinaryBidiFunctor extends Functor.InlineCommutiveBinaryBidiFunctor implements The /* THE */ {
 
         public ArithmeticCommutiveBinaryBidiFunctor(String name) {
             super(name);
