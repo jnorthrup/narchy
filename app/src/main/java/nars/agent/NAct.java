@@ -344,12 +344,13 @@ public interface NAct {
         GoalActionConcept LA = action(l, (b, g) -> {
             float ll = g != null ? g.freq() : 0;
             boolean x = ll > thresh;
-            lr[0] = ll;
             if (x) {
                 if (lr[1] > thresh) {
                     x = false;
+                    //ll = 0;
                 }
             }
+            lr[0] = ll;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
             return $.t(x ? 1 : 0, nar().confDefault(BELIEF));
@@ -357,12 +358,13 @@ public interface NAct {
         GoalActionConcept RA = action(r, (b, g) -> {
             float rr = g != null ? g.freq() : 0;
             boolean x = rr > thresh;
-            lr[1] = rr;
             if (x) {
                 if (lr[0] > thresh) {
                     x = false;
+                    //rr = 0;
                 }
             }
+            lr[1] = rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, nar().confDefault(BELIEF));

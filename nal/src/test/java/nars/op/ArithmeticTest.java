@@ -42,12 +42,8 @@ class ArithmeticTest {
         NAR t = NARS.shell();
         String fwd = $.$("add(#x,1)").eval(t, false).toString();
         String rev = $.$("add(1,#x)").eval(t, false).toString();
-        assertEquals(
-                "add(#1,1)",
-                fwd);
-        assertEquals(
-                fwd,
-                rev);
+        assertEquals("add(#1,1)", fwd);
+        assertEquals(fwd, rev);
 
     }
 
@@ -71,25 +67,21 @@ class ArithmeticTest {
     void test1() throws Narsese.NarseseException {
         assertEquals(
                 //"((#1,add(#1,1))&&(#1<->2))",
-                "((#1,add(#1,1))&&(#1<->2))",
-                
-                
+                "((#1,add(#1,1))&&equal(#1,2))",
                 ArithmeticIntroduction.apply($.$("(2,3)"), true, rng).toString());
     }
 
     @Test
-    void test2() throws Narsese.NarseseException {
+    void test2() {
         assertEquals(
-                "(x(#1,add(#1,1))&&(#1<->2))",
-                
-                ArithmeticIntroduction.apply($.$("x(2,3)"), true, rng).toString());
+                "(x(#1,add(#1,1))&&equal(#1,2))",
+                ArithmeticIntroduction.apply($.$$("x(2,3)"), true, rng).toString());
     }
     @Test
-    void test2b() throws Narsese.NarseseException {
+    void test2b() {
         assertEquals(
-                "(x(#1,add(#1,1))&|(#1<->2))",
-                
-                ArithmeticIntroduction.apply($.$("x(2,3)"), false, rng).toString());
+                "(x(#1,add(#1,1))&|equal(#1,2))",
+                ArithmeticIntroduction.apply($.$$("x(2,3)"), false, rng).toString());
 
     }
 
@@ -103,34 +95,42 @@ class ArithmeticTest {
 
     @Test
     void testEqBackSubstitution() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
-        n.termVolumeMax.set(12);
-        TestNAR t = new TestNAR(n);
-        //t.log();
-        t.mustBelieve(100, "((#1,4)&&(#1,3))", 1f, 0.9f);
-        n.input("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2)).");
-        t.test();
+        assertSolves("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2))", "((#1,4)&&(#1,3))");
+
     }
     @Test
     void testSimBackSubstitution() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
-        n.termVolumeMax.set(14);
-        TestNAR t = new TestNAR(n);
-        //t.mustBelieve(100, "((#1,4)&&(#1,3))", 1f, 0.9f);
-        //n.input("(&&,(#1,add(#2,1)),(#1,#2),(#2 <-> 3)).");
-        n.input("(&&,(#1,#2),(#2 <-> 3)).");
-        t.mustBelieve(100, "(#1,3)", 1f, 0.81f);
-        t.test();
+        assertSolves("(&&,(#1,#2),(#2 <-> 3))", "(#1,3)");
     }
 
     @Test
     void testSimBackSubstitution2() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
-        n.termVolumeMax.set(14);
+        assertSolves("(&&,(#1,add(#2,1)),(#1,#2),equal(#2,3))", "((#1,3)&&(#1,4))");
+    }
+
+    static void assertSolves(String q, String a) throws Narsese.NarseseException {
+        NAR n = NARS.tmp(2);
+        //n.termVolumeMax.set(14);
         TestNAR t = new TestNAR(n);
-        n.input("(&&,(#1,add(#2,1)),(#1,#2),(#2 <-> 3)).");
-        t.mustBelieve(100, "((#1,4)&&(#1,3))", 1f, 0.81f);
+        t.mustBelieve(16, a, 1f,1f, 0.5f,0.9f);
+        n.input(q + ".");
         t.test();
+    }
+
+    @Test public void testEqualSolution() {
+        /*
+
+        (&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))
+
+        "equal(add(#1,1),1)" ===> (1 == 1+x) ===> (0 == x)
+
+        drastic simplification:
+            (&&,(--,(g(add(#1,1),0,(0,add(#1,10))&&equal(#1, 0)),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))
+            etc (&&,(--,(g(add(#1,1),0,(0,10)),(--,chronic(1)),(--,0),(--,down))
+         */
+
+        String t = "(&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))";
+
     }
 
     @Test
@@ -138,12 +138,12 @@ class ArithmeticTest {
         NAR n = NARS.tmp(6);
         new ArithmeticIntroduction(8, n);
 
-        final int cycles = 4000;
+        final int cycles = 2000;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
         n.freqResolution.set(0.1f);
-        n.termVolumeMax.set(16);
+        n.termVolumeMax.set(12);
         //t.log();
 
 

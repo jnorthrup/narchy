@@ -255,7 +255,11 @@ public class ArithmeticIntroduction extends LeakBack {
             //Task yy = Task.clone(xx, y);
             Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) ->
                     new UnevaluatedTask(c, xx, t));
-            
+
+            //discount pri by increase in term volume
+            float xv = x.volume();
+            yy.priMult(Math.min(1, (xv /(y.volume())))  );
+
             if (yy!=null) {
                 input(yy);
                 return 1;
