@@ -147,7 +147,7 @@ public class TensorGlow {
     public static Gridding haiQWindow(HaiQae q, float[] in) {
         return new Gridding(
                 new Label("HaiQ"),
-                new AutoSurface<>(q),
+                new AutoSurface(q),
                 new Gridding(VERTICAL,
                         new AutoUpdateMatrixView(in),
                         new AutoUpdateMatrixView(q.ae.x),

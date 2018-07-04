@@ -10,7 +10,6 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.utility.ArrayIterate;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.*;
 
@@ -345,21 +344,21 @@ public class FasterList<X> extends FastList<X> {
     /**
      * try to use toArrayRecycled where possible
      */
-    public X[] toArray(IntFunction<X[]> arrayBuilder) {
+    public X[] toArrayWith(IntFunction<X[]> arrayBuilder) {
         return fillArray(arrayBuilder.apply(size));
     }
 
-    public final X[] fillArrayNullPadded(X[] array) {
-        int s = size;
-        int l = array.length;
-        if (array == null || array.length < (s + 1)) {
-            array = (X[]) Array.newInstance(array.getClass().getComponentType(), s + 1);
-        }
-        System.arraycopy(items, 0, array, 0, s);
-        if (s < l)
-            Arrays.fill(array, s, l, null);
-        return array;
-    }
+//    public final X[] fillArrayNullPadded(X[] array) {
+//        int s = size;
+//        int l = array.length;
+//        if (array == null || array.length < (s + 1)) {
+//            array = (X[]) Array.newInstance(array.getClass().getComponentType(), s + 1);
+//        }
+//        System.arraycopy(items, 0, array, 0, s);
+//        if (s < l)
+//            Arrays.fill(array, s, l, null);
+//        return array;
+//    }
 
     public final X[] fillArray(X[] array) {
         int s = size;
@@ -552,7 +551,7 @@ public class FasterList<X> extends FastList<X> {
         if (s == a.length && a.getClass() != Object[].class)
             return a;
         else
-            return toArray(ii);
+            return toArrayWith(ii);
     }
 
     /**
