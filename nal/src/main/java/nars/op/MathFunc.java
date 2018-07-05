@@ -6,12 +6,12 @@ import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
+import static nars.Op.INT;
+import static nars.Op.Null;
 
 public enum MathFunc { ;
 
@@ -96,7 +96,7 @@ public enum MathFunc { ;
 
         @Override
         public Term applyInline(Subterms args) {
-            return args.subs() == 2 && !args.OR(x -> x instanceof Variable) ? super.applyInline(args) : null;
+            return args.subs() == 2 && args.AND(x -> x.op()==INT) ? super.applyInline(args) : null;
         }
 
         abstract protected Term compute(int xx, int yy);

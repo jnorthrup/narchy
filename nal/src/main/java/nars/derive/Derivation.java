@@ -190,7 +190,7 @@ public class Derivation extends PreDerivation {
      */
     public long taskAt, beliefAt;
     public boolean taskBeliefTimeIntersects;
-    private ImmutableMap<Term, Termed> staticFunctors;
+    //private ImmutableMap<Term, Termed> staticFunctors;
     private ImmutableMap<Term, Termed> derivationFunctors;
     private Term _beliefTerm;
     private long[] evidenceDouble, evidenceSingle;
@@ -259,6 +259,13 @@ public class Derivation extends PreDerivation {
         this.nar = nar;
 
         {
+
+            Map<Term, Termed> m = new HashMap<>();
+
+            for (Termed s : Builtin.statik)
+                if (s instanceof Functor.InlineFunctor)
+                    m.put(s.term(), s);
+
             Termed[] derivationFunctors = new Termed[]{
                     mySubIfUnify,
                     mySubst,
@@ -281,21 +288,23 @@ public class Derivation extends PreDerivation {
                     nar.concept("without"),
                     nar.concept("withoutPosOrNeg"),
             };
-            Map<Term, Termed> m = new HashMap<>(derivationFunctors.length);
-            for (Termed x : derivationFunctors) { //override any statik's
+
+            for (Termed x : derivationFunctors) //override any statik's
                 m.put(x.term(), x);
-            }
+
+
+
             this.derivationFunctors = Maps.immutable.ofMap(m);
         }
 
-        {
-            Map<Term, Termed> n = new HashMap<>(Builtin.statik.length);
-            for (Termed s : Builtin.statik) {
-                if (s instanceof Functor.InlineFunctor)
-                    n.put(s.term(), s);
-            }
-            this.staticFunctors = Maps.immutable.ofMap(n);
-        }
+//        {
+//            Map<Term, Termed> n = new HashMap<>(Builtin.statik.length);
+//            for (Termed s : Builtin.statik) {
+//                if (s instanceof Functor.InlineFunctor)
+//                    n.put(s.term(), s);
+//            }
+//            this.staticFunctors = Maps.immutable.ofMap(n);
+//        }
 
     }
 

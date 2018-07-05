@@ -61,20 +61,20 @@ class ConjReductionsTest {
     @Test
     void testConjParallelOverrideEternal() {
 
-        TermReductionsTest.assertReduction(
+        TermReductionsTest.assertEq(
                 "(a&|b)",
                 "( (a&&b) &| (a&|b) )");
 
     }
     @Test
     void testConjNearIdentity() {
-        TermReductionsTest.assertReduction(True, "( (a&&b) ==> (a&|b) )");
+        TermReductionsTest.assertEq(True, "( (a&&b) ==> (a&|b) )");
 
-        TermReductionsTest.assertReduction(
+        TermReductionsTest.assertEq(
                 "((X,x)&|#1)",
                 "( ((X,x)&&#1) &| ((X,x)&|#1) )");
 
-        TermReductionsTest.assertReduction("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
+        TermReductionsTest.assertEq("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
     }
 
 }

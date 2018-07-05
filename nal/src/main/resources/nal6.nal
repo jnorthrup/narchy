@@ -117,18 +117,15 @@
 //        (M ==> P), (M ==> S) |- (P ==> S), (Belief:Comparison)
 
 // Contraposition (structural)
-// (A ==> B) |-   (--B ==> --A)
-//              --(--B ==> A)
-// (A ==> B) |- <--B ==> --A>
-
+//    a→b == ¬b→¬a		# contra positition [Lex contrapositionis]
 // "If not smoking causes health, being not healthy may be the result of smoking"
 // "If smoking causes not health, being healthy may be the result of not smoking"
 
-// original:	    ( --S ==> P),   P |- ( --P ==> S), (Truth:Contraposition, Derive:AllowBackward)
-// original:	    ( --S ==> P), --S |- ( --P ==> S), (Truth:Contraposition, Derive:AllowBackward)
+    (--S ==> P), P |- (--P ==> --S), (Belief:StructuralReduction)
 
-    ( --S ==> P), P |- ( --P ==> S), (Belief:Contraposition)
-    //( --S ==> P), P |- ( P ==> S), (Belief:ContrapositionN)
+        //original, using the original imbalanced truth function:
+        //(--S ==> P), P |- (--P ==> S), (Belief:Contraposition)
+
 
 
 

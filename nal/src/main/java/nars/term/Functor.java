@@ -290,7 +290,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
      */
     public interface InlineFunctor extends BiFunction<Evaluation, Subterms,Term> {
 
-        default Term applyInline(Term args) {
+        /** dont override this one, override the Subterms arg version */
+        default /*final */ Term applyInline(Term args) {
             return applyInline(args.subterms());
         }
         default Term applyInline(Subterms args) {
@@ -629,10 +630,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         public MyAbstractInlineFunctor1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
             super(termAtom);
             this.ff = ff;
-        }
-
-        @Override public final Term applyInline(Term x) {
-            return ff.apply(x.sub(0));
         }
 
         @Override

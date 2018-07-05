@@ -103,27 +103,6 @@ class TemporalTermTest {
         assertEquals("((x&|y)&&e)", $$("((x&|y)&&e)").toString());
     }
 
-    @Test
-    void testValidInheritanceOfEternalAndItsTemporal() throws Narsese.NarseseException {
-        String[] cases = {
-                "((a &&+1 b)-->(a&&b))",
-                "((--,(a &&+1 b))-->(--,(a&&b)))",
-                "((a&&b)-->(a &&+1 b))",
-
-                "((a&&b)<->(a &&+1 b))"
-
-//                "((a==>b)==>(a ==>+2 b))",
-//                "((a ==>+1 b)==>(a ==>+2 b))"
-        };
-
-        for (String s : cases) {
-            assertEquals(
-                s,
-                $(s).toString()
-            );
-        }
-
-    }
 
     @Test
     void testInvalidInheritanceOfEternalTemporalNegated() throws Narsese.NarseseException {

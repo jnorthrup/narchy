@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.$.and;
+import static nars.$.or;
 import static nars.Op.*;
-import static nars.term.TermReductionsTest.assertReduction;
+import static nars.term.TermReductionsTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -89,16 +91,6 @@ class BoolTest {
         assertEquals(Null, IMPL.the(x, Null));
     }
 
-    @Test
-    void testConjTautologies() {
-        assertEquals("x", CONJ.the(True, x).toString());
-        assertEquals(False, CONJ.the(False, x));
-        assertEquals(False, CONJ.the(False, True));
-        assertEquals(True, CONJ.the(True, True));
-        assertEquals(False, CONJ.the(False, False));
-        assertEquals(Null, CONJ.the(Null, x));
-        assertEquals(Null, CONJ.the(Null, Null));
-    }
 
 
     @Test
@@ -119,23 +111,23 @@ class BoolTest {
             String diff = o.str;
 
 
-            assertReduction(False, "(x" + diff + "x)");
-            assertReduction(
+            assertEq(False, "(x" + diff + "x)");
+            assertEq(
 
                     True,
                     "(x" + diff + "(--,x))");
-            assertReduction(
+            assertEq(
 
                     False,
                     "((--,x)" + diff + "x)");
 
 
-            assertReduction("(false-->y)", "((x" + diff + "x)-->y)");
-            assertReduction("(true-->y)", "(--(x" + diff + "x)-->y)");
+            assertEq("(false-->y)", "((x" + diff + "x)-->y)");
+            assertEq("(true-->y)", "(--(x" + diff + "x)-->y)");
 
 
-            assertReduction("(y-->false)", "(y --> (x" + diff + "x))");
-            assertReduction("(y-->true)", "(y --> --(x" + diff + "x))");
+            assertEq("(y-->false)", "(y --> (x" + diff + "x))");
+            assertEq("(y-->true)", "(y --> --(x" + diff + "x))");
 
 
             assertEquals(False, o.the(x, x));
@@ -161,8 +153,8 @@ class BoolTest {
     void testDiffOfIntersectionsWithCommonSubterms() {
 
 
-        assertReduction("(c-->((a-b)&x))", $$("(c --> ((a & x)-(b & x)))"));
-        assertReduction("(((a~b)|x)-->c)", $$("(((a | x)~(b | x)) --> c)"));
+        assertEq("(c-->((a-b)&x))", $$("(c --> ((a & x)-(b & x)))"));
+        assertEq("(((a~b)|x)-->c)", $$("(((a | x)~(b | x)) --> c)"));
 
 
         assertEquals(Null, $$("((&,x,a)-(&,x,a,b))"));
@@ -174,8 +166,8 @@ class BoolTest {
     void testDiffOfUnionsWithCommonSubterms() {
 
 
-        assertReduction("(c-->((a-b)|(--,x)))", $$("(c --> ((a | x)-(b | x)))"));
-        assertReduction("(((a~b)&(--,x))-->c)", $$("(((a & x)~(b & x)) --> c)"));
+        assertEq("(c-->((a-b)|(--,x)))", $$("(c --> ((a | x)-(b | x)))"));
+        assertEq("(((a~b)&(--,x))-->c)", $$("(((a & x)~(b & x)) --> c)"));
     }
 
 
@@ -194,7 +186,7 @@ class BoolTest {
 
 
             assertEquals(x, o.the(x, x));
-            assertReduction("((--,x)" + sect + "x)", o.the(x, x.neg()));
+            assertEq("((--,x)" + sect + "x)", o.the(x, x.neg()));
 
             assertEquals(x, o.the(x, True));
             assertEquals(Null /* False ?  */, o.the(x, False));
@@ -208,6 +200,187 @@ class BoolTest {
     }
 
     private static final Term x = $$("x");
-    static final Term y = $$("y");
+    private static final Term y = $$("y");
+
+
+    /** Huntington conj/disj tautologies */
+    @Test void testConjTautologies() {
+        //a∧true == a		# neutral element (Huntington axiom)
+        assertEquals(x, and(x, True));
+        //a∨false == a		# neutral element (Huntington axiom)
+        assertEquals(x, or(x, False));
+        //a∧¬a == false		# complement (Huntington axiom) induces Principium contradictionis
+        assertEquals(False, and(x, x.neg()));
+        //a∨¬a == true		# complement (Huntington axiom) induces Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
+        assertEquals(True, or(x, x.neg()));
+
+        //a∧a == a		# idempotent
+        assertEquals(x, and(x, x));
+        //a∨a == a		# idempotent
+        assertEquals(x, or(x, x));
+
+        //a∧false == false	# (dual to neutral element)
+        assertEquals(False, and(False, x));
+        //a∨true == true		# (dual to neutral element)
+        assertEquals(True, or(True, x));
+
+        //a∧(a∨b) == a		# absorbtion
+        assertEquals(x, or(x, and(x, or(x, y))));
+        //a∨(a∧b) == a		# absorbtion <=(a),(c),(idem)
+        assertEquals(x, or(x, or(x, and(x, y))));
+
+        //¬(a∧b) == ¬a∨¬b		# deMorgan
+        assertEquals(or(x.neg(), y.neg()), and(x,y).neg());
+        //¬(a∨b) == ¬a∧¬b		# deMorgan
+        assertEquals(and(x.neg(), y.neg()), or(x,y).neg());
+
+
+        assertEquals(False, and(False, True));
+        assertEquals(True, and(True, True));
+        assertEquals(False, and(False, False));
+        assertEquals(Null, and(Null, x));
+        assertEquals(Null, and(Null, Null));
+
+    }
+
+    @Test void testHuntington3() {
+        //¬(¬a∨b) ∨ ¬(¬a∨¬b) == a	# Hungtington3
+        assertEquals(x, or(or(x.neg(), y).neg(), or(x.neg(), y.neg()).neg()));
+    }
+
+    @Test void testRobbinsAxiom3() {
+        //¬(¬(a∨b) ∨ ¬(a∨¬b)) == a	# Robbins Algebra axiom3
+        assertEquals(x, or( or(x,y).neg(), or(x,y.neg()).neg() ).neg() );
+    }
+
+
+/*
+from: 'orbital' , file: semantic-equivalence.utf8.txt
+#
+# Huntington axioms of boolean algebraic logic
+#
+a∧b == b∧a		# commutative (Huntington axiom)
+a∨b == b∨a		# commutative (Huntington axiom)
+(a∧b)∨c == (a∨c)∧(b∨c)	# distributive (Huntington axiom)
+(a∨b)∧c == (a∧c)∨(b∧c)	# distributive (Huntington axiom)
+a∧true == a		# neutral element (Huntington axiom)
+a∨false == a		# neutral element (Huntington axiom)
+a∧¬a == false		# complement (Huntington axiom) induces Principium contradictionis
+a∨¬a == true		# complement (Huntington axiom) induces Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
+#
+# alternative form of Huntington axioms (from Huntington[33b] and [33a])
+# for the logic basis (¬,∨)
+#
+a∨b == b∨a		# commutative (Huntington axiom)
+(a∨b)∨c == a∨(b∨c)	# associative
+¬(¬a∨b) ∨ ¬(¬a∨¬b) == a	# Hungtington3
+#
+# Robbins algebra (after 1990 proven to be equivalent to alternative Huntington axioms)
+# for the logic basis (¬,∨)
+#
+a∨b == b∨a		# commutative (Huntington axiom)
+(a∨b)∨c == a∨(b∨c)	# associative
+¬(¬(a∨b) ∨ ¬(a∨¬b)) == a	# Robbins Algebra axiom3
+#
+# laws derived from Huntington axioms
+#
+(a∧b)∧c == a∧(b∧c)	# associative
+(a∨b)∨c == a∨(b∨c)	# associative
+a∧a == a		# idempotent
+a∨a == a		# idempotent
+a∧(a∨b) == a		# absorbtion
+a∨(a∧b) == a		# absorbtion <=(a),(c),(idem)
+¬(¬a) == a		# involution "duplex negatio est affirmatio". (induces duality forall a exists b: b = ¬a. dualities: a ¬a, ∧ ∨)
+¬(a∧b) == ¬a∨¬b		# deMorgan
+¬(a∨b) == ¬a∧¬b		# deMorgan
+a∧false == false	# (dual to neutral element)
+a∨true == true		# (dual to neutral element)
+#
+# additional equivalences
+#
+a→b == ¬b→¬a		# contra positition [Lex contrapositionis]
+a→b == ¬a∨b		# material implication
+¬(a→b) == a∧¬b		# negated implication
+a→b == ¬(a∧¬b)
+|= a↔a		# reflexive
+a↔b == b↔a		# commutative
+(a↔b)↔c == a↔(b↔c)	# associative
+a↔b == (a→b)∧(b→a)	# coimplication (alias '↔' introduction or elimination)
+a↔b == (a∧b) ∨ (¬a∧¬b)	# equivalence in DNF
+a↔b == (a∨¬b) ∧ (¬a∨b)	# equivalence in CNF
+¬a↔b == a↔¬b	# "¬ behaves like scalar-multiplication in scalar-product"
+¬a↔b == ¬(a↔b)	# "¬ behaves like scalar-multiplication in scalar-product"
+a^b == ¬(a↔b)		# "duality" of equivalence and antivalence
+a^b == ¬a↔b		#
+a^b == b^a		# commutative
+a^b == (a∧¬b) ∨ (¬a∧b)	# antivalence in DNF
+a^b == (a∨b) ∧ (¬a∨¬b)	# antivalence in CNF
+a^a == false
+(a^b)^c == a^(b^c)	# associative
+(a^b)^c == a↔b↔c	#
+(a→b)→c == a→b && b→c
+a∧b→c == a→(b→c)	# exportation / importation [Lex exportationis, Lex importationis]
+¬a == a→false		# not in INF
+¬a == a↔false		# not with equivalence
+#
+# some important tautologies from axioms
+#
+|= ¬(a∧¬a)		# Principium contradictionis
+|= a ∨ ¬a		# Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
+|= a → a		# self implication (c reflexive)
+#
+# implicative properties of |= and thus inference rules
+#
+p→q, p |= q		# Modus (ponendo) ponens	 (resp. assuming p→q, p is sufficient for q. repeated application is forward chaining)
+p→q, ¬q |= ¬p		# Modus (tollendo) tollens (resp. assuming p→q, q is necessary for p. repeated application is backward chaining)
+p→q, q→r |= p→r	# hypothetical "syllogism" Principle of Syllogism (due to affinity to mode Barbara)
+p∨q, ¬p |= q		# disjunctive "syllogism"
+p, q |= p∧q		# conjunction
+p |= p∨q		# weakening addition (alias '∨' introduction)
+p∧q |= p		# weakening subtraction (alias '∧' elimination)
+a |= b→a		# weakening conditional
+a→b, b→c |= a→c	# transitivity
+#
+# tautological properties of == aka |=∨ (thus inference rules, as well)
+#
+p→¬p == ¬p
+(p→q), (p→r) == p→(q∧r)
+p→(q→r) == (p∧q)→r	# chain rule
+p→(q→r) == (p∧q)→r	# distribute
+p→(q→r) == (p→q)→(p→r)	# distributive
+# Rules for quantifiers
+# some rules
+p→(p→q) |= p→q	# rule of reduction
+p→(q→r) |= q→(p→r)	# Law of Permutation, the 'commutative principle' (Russel/Whitehead. Principia Mathematica. 1910, 99 *2.04)
+¬p→p |= p		# consequentia mirabilis
+(p→r), (q→s) |= (p∧q)→(r∧s)	# Praeclarum Theorema
+|= p→(q→p)		# principle of simplification (Russel/Whitehead. Principia Mathematica. 1910, 100 *2.03)
+|= p→p			# principle of identity (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.08)
+|= p→¬¬p		# Affirmatio est duplex negatio, principle of double negation (Russel/Whitehead. Principia Mathematica. 1910, 101 f)
+|= ¬¬p→p		# Duplex negatio est affirmatio, principle of double negation (Russel/Whitehead. Principia Mathematica. 1910, 101 f)
+false |= a		# 'ex falso quodlibet'
+#
+# some less important
+#
+# diverse
+p∨q == ¬p→q		# ∨ as ¬,→
+p∧q == ¬(p→¬q)		# ∧ as ¬,→
+¬p→p == p		# self proof
+p→¬p |= ¬p		# self contradiction
+p→q, ¬p→q |= q	# reasoning by cases
+¬(p→q) == p∧¬q		# negative implication
+¬(p↔q) == (p∨q)∧(¬p∨¬q) # negative equivalence
+¬(p↔q) == p↔¬q
+p↔¬q == ¬p↔q
+p→q |= (p∨r)→(q∨r)
+p→r, q→r |= (p∨q)→r
+|= (f→g) ∨ (g→f)	# material implication has strange causal relations
+#
+# definitions
+#
+X≠Y == ¬(X=Y)
+# a nor b == ¬(a∨b)		# Peirce function
+# a nand b == ¬(a∧b)
+*/
 
 }

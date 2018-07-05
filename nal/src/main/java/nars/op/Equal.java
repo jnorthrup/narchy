@@ -5,7 +5,6 @@ import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Variable;
 
 import static nars.Op.False;
 import static nars.Op.True;
@@ -24,7 +23,9 @@ public class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements T
             Term x = args.sub(0);
             Term y = args.sub(1);
             if (x.equals(y)) return True;
-            if (x instanceof Variable || y instanceof Variable) return null;
+            //if (x instanceof Variable || y instanceof Variable) return null; //undecidable inline
+            if (x.hasVars() || y.hasVars())
+                return null; //undecidable inline
             return False;
         }
         //TODO support N-ary equality
@@ -71,7 +72,7 @@ public class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements T
             return null;
         }
 
-        return False;
+        return False; //constant
     }
 
     @Override
