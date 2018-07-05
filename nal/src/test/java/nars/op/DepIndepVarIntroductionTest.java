@@ -3,7 +3,6 @@ package nars.op;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
@@ -19,23 +18,23 @@ class DepIndepVarIntroductionTest {
     private final NAR n = NARS.shell();
 
     @Test
-    void testIntroduceIndepVar() throws Narsese.NarseseException {
+    void testIntroduceIndepVar() {
 
-        assertEquals("[((a-->$X)==>(b-->$X))]",
+        assertEquals("[((a-->$1)==>(b-->$1))]",
                 introduce("((a-->c)==>(b-->c))", 16).toString());
 
-        assertEquals("[((a-->$X)=|>(b-->$X))]",
+        assertEquals("[((a-->$1)=|>(b-->$1))]",
                 introduce("((a-->c)=|>(b-->c))", 16).toString());
     }
 
     @Test
-    void testIntroduceIndepVar2() throws Narsese.NarseseException {
+    void testIntroduceIndepVar2() {
         assertEquals("[((a-->($X,#1))=|>(b-->($X,#1))), ((a-->$X)=|>(b-->$X))]",
                 introduce("((a-->(x,#1))=|>(b-->(x,#1)))", 16).toString());
     }
 
     @Test
-    void testIntroduceDepVar() throws Narsese.NarseseException {
+    void testIntroduceDepVar() {
 
         assertEquals("[((a-->#1)&&(b-->#1))]",
                 introduce("(&&,(a-->c),(b-->c))", 16).toString());

@@ -953,12 +953,12 @@ class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    void testAllowInhAndSimBetweenTemporallySimilarButInequalTerms() {
+    void testDisallowInhAndSimBetweenTemporallySimilarButInequalTerms() {
 
 
-        assertValid("((x &&+1 y)<->(x &&+10 y))");
-        assertValid("((y &&+10 x)<->(x &&+1 y))");
-        assertValid("((x=|>y)-->(x ==>-10 y))");
+        assertReduction(Null,"((x &&+1 y)<->(x &&+10 y))");
+        assertReduction(Null,"((y &&+10 x)<->(x &&+1 y))");
+        assertReduction(Null,"((x=|>y)-->(x ==>-10 y))");
     }
 
     @Test

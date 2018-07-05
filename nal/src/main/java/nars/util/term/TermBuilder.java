@@ -190,6 +190,8 @@ public abstract class TermBuilder {
         if (dtConcurrent) {
             if (subject.equals(predicate))
                 return True;
+            if ((op == INH || op == SIM) && subject.equalsRoot(predicate))
+                return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
         }
 
         if (op == IMPL) {

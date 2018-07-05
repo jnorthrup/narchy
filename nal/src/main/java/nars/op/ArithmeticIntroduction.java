@@ -108,7 +108,7 @@ public class ArithmeticIntroduction extends LeakBack {
 
         Term equality =
                 //SIM.the(baseTerm, V);
-                $.func(Builtin.EQUAL, Terms.sorted(baseTerm, V));
+                $.func(Equal.the, Terms.sorted(baseTerm, V));
 
         Term y = CONJ.the(equality, eternal ? DTERNAL : 0, yy);
         if (y.op()!=CONJ) return null;

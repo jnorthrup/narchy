@@ -94,7 +94,7 @@ public interface TermTransform {
         //Subterms xx = x.subterms();
         if (yy != xx) {
             Term[] a = ((TermList) yy).arraySharedKeep();
-            if (op == INH && eval() && a[1] instanceof Functor && a[0].op()==PROD) {
+            if (op == INH && eval() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
                 Term pred = a[1];
                 Term args = a[0];
                 Term v = ((Functor.InlineFunctor) pred).applyInline(args);
@@ -103,7 +103,7 @@ public interface TermTransform {
             }
             y = the(op, dt, a); //transformed subterms
         } else if (op != x.op()) {
-            if (op == INH && eval() && xx.sub(1) instanceof Functor && xx.sub(0).op()==PROD) {
+            if (op == INH && eval() && xx.sub(1) instanceof Functor.InlineFunctor && xx.sub(0).op()==PROD) {
                 Term pred = xx.sub(1);
                 Term args = xx.sub(0);
                 Term v = ((Functor.InlineFunctor) pred).applyInline(args);

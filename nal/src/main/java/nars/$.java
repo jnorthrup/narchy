@@ -405,12 +405,20 @@ public enum $ {
         return CONJ.the(0, s);
     }
 
-    public static Term disj(Term... a) {
-        Term[] b = a.clone();
+    public static Term disj(Term... x) {
+        Term[] b = x.clone();
         neg(b);
         return CONJ.the(b).neg();
     }
 
+    /** alias for disjunction */
+    public static Term or(Term... x) {
+        return disj(x);
+    }
+    /** alias for conjunction */
+    public static Term and(Term... x) {
+        return CONJ.the(x);
+    }
 
     public static Term secte(SortedSet<Term> x) {
         return SECTe.the(DTERNAL, x);

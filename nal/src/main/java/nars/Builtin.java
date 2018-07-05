@@ -5,10 +5,7 @@ import jcog.User;
 import jcog.list.FasterList;
 import jcog.pri.PriReference;
 import nars.concept.Concept;
-import nars.op.ListFunc;
-import nars.op.MathFunc;
-import nars.op.SetFunc;
-import nars.op.Subst;
+import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
 import nars.subterm.Subterms;
@@ -47,76 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 public class Builtin {
 
-    public static final Functor.InlineCommutiveBinaryBidiFunctor EQUAL = new Functor.InlineCommutiveBinaryBidiFunctor("equal") {
-
-        @Override
-        public Term applyInline(Subterms args) {
-            if (args.subs()==2) {
-                Term x = args.sub(0);
-                Term y = args.sub(1);
-                if (x.equals(y)) return True;
-                if (x instanceof Variable) return null;
-                if (y instanceof Variable) return null;
-                return False;
-            }
-            return null;
-        }
-
-        @Override
-        protected Term apply2(Evaluation e, Term x, Term y) {
-            if (x.equals(y))
-                return True; //fast equality pre-test
-
-
-            boolean xVar = x.op().var;
-            boolean yVar = y.op().var;
-            if (xVar ^ yVar) {
-                if (xVar) {
-                    if (e != null) {
-                        e.replace(x, y);
-                        //return True;
-                    }
-                    return null;
-                } else {
-                    if (e != null) {
-                        e.replace(y, x);
-                        //return True;
-                    }
-                    return null;
-                }
-            }
-
-
-            return super.apply2(e, x, y);
-        }
-
-
-        @Override
-        protected Term compute(Evaluation e, Term x, Term y) {
-            if (x.equals(y))
-                return True;
-
-            if (x.hasVars() || y.hasVars()) {
-                if (x.equalsNeg(y))
-                    return False; //experimental assumption: x!=--x
-                return null;
-            }
-
-            return False;
-        }
-
-        @Override
-        protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
-            return null;
-        }
-
-        @Override
-        protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
-            return xy == True ? y : null;
-        }
-
-    };
-
     public static final Functor[] statik = {
 
             Subst.replace,
@@ -134,6 +61,14 @@ public class Builtin {
             Image.imageNormalize,
             Image.imageInt,
             Image.imageExt,
+
+            /** XOR(a,b) == (a && --b) || (--a && b) */
+            new Functor.AbstractInlineFunctor2("xor") {
+                @Override
+                protected Term apply(Term a, Term b) {
+                    return $.or( $.and(a, b.neg()), $.and(a.neg(), b) );
+                }
+            },
 
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
             new Functor.AbstractInlineFunctor2("conjWithout") {
@@ -271,7 +206,7 @@ public class Builtin {
                 }
             },
 
-            EQUAL,
+            Equal.the,
 
             Functor.f2("if", (condition, conseq) -> {
                 if (condition.hasVars()) return null;
@@ -716,6 +651,7 @@ public class Builtin {
         registerFunctors(nar);
         registerOperators(nar);
     }
+
 }
 
 
