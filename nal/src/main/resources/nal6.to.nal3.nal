@@ -1,0 +1,12 @@
+//NAL6 -> NAL3 bridge
+
+//TODO verify interpretation of the conjunction's internal timing
+//TODO n-ary
+  ((A-->X) && (B-->X)),   X, neq(A,B)  |- ((A|B)-->X), (Goal:Identity)
+(--(A-->X) && --(B-->X)), X, neq(A,B)  |- ((A&B)-->X), (Goal:IdentityN)
+
+  ((X-->A) && (X-->B)),   X, neq(A,B)  |- (X-->(A&B)), (Goal:Identity)
+(--(X-->A) && --(X-->B)), X, neq(A,B)  |- (X-->(A|B)), (Goal:IdentityN)
+
+  ((X-->A) - (X-->B)),   X  |- (X-->(A-B)), (Goal:Identity)
+  ((A-->X) - (B-->X)),   X  |- ((A-B)-->X), (Goal:Identity)

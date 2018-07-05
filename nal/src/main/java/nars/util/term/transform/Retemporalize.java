@@ -64,7 +64,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
             switch (xop) {
                 case CONJ:
-                    return conjCorrupted(x, y);
+                    return !conjStructurallySimilar(x, y);
                 case IMPL:
                     return (y.op() != IMPL || x.structure() != y.structure() || x.volume() != y.volume());
                 default:
@@ -73,42 +73,42 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
         }
 
-        private boolean conjCorrupted(Term x, Term y) {
-            if (y.structure() != x.structure()) {
-                return true;
-            } else {
-
-                switch (x.dt()) {
-                    case 0:
-                    case DTERNAL:
-                    case XTERNAL:
-                        return (x.subs() != y.subs() || x.volume() != y.volume());
-
-                    default:
-
-
-
-                        return recursiveEvents(x) != recursiveEvents(y);
-                }
-            }
-        }
-
-        int recursiveEvents(Term x) {
-            return x.intifyShallow((s, t) -> {
-                switch (t.op()) {
-                    case CONJ:
-                        return s + recursiveEvents(t); 
-                    default:
-                        return s + 1;
-                }
-            }, 0);
-        }
-
         @Override
         public int dt(Compound x) {
             return DTERNAL;
         }
     };
+
+    static boolean conjStructurallySimilar(Term x, Term y) {
+        if (y.structure() != x.structure()) {
+            return false;
+        } else {
+
+            switch (x.dt()) {
+                case 0:
+                case DTERNAL:
+                case XTERNAL:
+                    return !((x.subs() != y.subs() || x.volume() != y.volume()));
+
+                default:
+                    return recursiveEvents(x) == recursiveEvents(y);
+            }
+        }
+    }
+
+    /** counts total events (individual 'leaf' terms), even inside negations */
+    static int recursiveEvents(Term x) {
+        return x.intifyShallow((s, t) -> {
+            t = t.unneg();
+            switch (t.op()) {
+                case CONJ:
+                    return s + recursiveEvents(t);
+                default:
+                    return s + 1;
+            }
+        }, 0);
+    }
+
 
     int dt(Compound x);
 

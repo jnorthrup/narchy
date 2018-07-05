@@ -152,11 +152,11 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(32, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
         Inperience inp = new Inperience(n, 32);
 
-        n.forgetRate.set(0.5f);
+        n.forgetRate.set(0.85f);
         n.activateConceptRate.set(0.1f);
 
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
@@ -177,12 +177,15 @@ abstract public class NAgentX extends NAgent {
         n.runLater(() -> {
 
             NAgent a = init.apply(n);
+            a.durs(2f); //nyquist
+
             n.on(a);
 
             n.runLater(() -> {
                 SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
                         Derivers.nal(n, 6, 6, "curiosity.nal", "motivation.nal"),
                         SimpleDeriver.GlobalTermLinker);
+
                 a.curiosity.set(0.0f);
 
 

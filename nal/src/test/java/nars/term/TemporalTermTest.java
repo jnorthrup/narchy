@@ -117,6 +117,15 @@ class TemporalTermTest {
 
     }
 
+    @Test public void testInvalidNormlization111() {
+        String s = "(--,((--,(right &&+24 #1)) &&+24 #1))";
+        Term t = $$(s);
+        assertEquals(s,t.toString());
+        assertEquals("(--,((--,(right &&+24 #1)) &&+24 #1))",t.normalize().toString());
+        assertEquals("(--,((--,(right&&#1)) &&+- #1))",t.root().toString());
+        assertEquals("((--,(right&&#1)) &&+- #1)",t.concept().toString());
+    }
+
     private void assertInvalidTask(@NotNull String ss) {
         try {
             Narsese.the().task(ss, n);

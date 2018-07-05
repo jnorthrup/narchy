@@ -25,6 +25,7 @@ public class Derivers {
                     files.add("nal6.nal");
                     files.add("nal6.guess.nal");
                     files.add("nal6.layer2.nal");
+                    files.add("nal6.to.nal3.nal");
 
                     files.add("induction.nal");
                     files.add("hol.nal");
