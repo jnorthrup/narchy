@@ -2,7 +2,10 @@ package nars.experiment;
 
 import jcog.math.FloatRange;
 import jcog.signal.Bitmap2D;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.NAgentX;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;

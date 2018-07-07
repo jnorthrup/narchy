@@ -5,6 +5,8 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.term.Term;
+import nars.term.atom.Int;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
@@ -17,25 +19,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /** arithmetic operators and arithmetic introduction tests */
 class ArithmeticTest {
 
+    @Test
+    void testAddSolve() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.log();
+        n.believe("(add(1,$x,3)==>its($x))");
+        n.run(2);
+        //TODO
+    }
 
     @Test
-    void testAdd() throws Narsese.NarseseException {
+    void testAdd() {
         NAR t = NARS.shell();
-        assertEquals("2",
-                $.$("add(1,1)").eval(t, false).toString());
-        assertEquals("1",
-                $.$("add(2,-1)").eval(t, false).toString());
-        assertEquals("#1",
-                $.$("add(#1,0)").eval(t, false).toString());
+        assertEval(Int.the(2), "add(1,1)");
+        assertEval(Int.the(1), "add(2,-1)");
+        assertEval($.varDep(1), "add(#1,0)");
     }
-    @Test
-    void testMul() throws Narsese.NarseseException {
-        NAR t = NARS.shell();
-        assertEquals("0",
-                $.$("mul(x,0)").eval(t, false).toString());
-        assertEquals("x",
-                $.$("mul(x,1)").eval(t, false).toString());
-    }
+
+
 
     @Test
     void testAddCommutive() throws Narsese.NarseseException {
@@ -48,16 +49,14 @@ class ArithmeticTest {
     }
 
     @Test
-    void testAddMulIdentity() throws Narsese.NarseseException {
-        NAR t = NARS.shell();
-        assertEquals("#1",
-                $.$("add(#1,0)").eval(t, false).toString());
-        assertEquals("#1",
-                $.$("add(0,#1)").eval(t, false).toString());
-        assertEquals("#1",
-                $.$("mul(1,#1)").eval(t, false).toString());
-        assertEquals("#1",
-                $.$("mul(#1,1)").eval(t, false).toString());
+    void testAddMulIdentity() {
+
+        assertEval($.varDep(1), "add(#1,0)");
+        assertEval($.varDep(1), "add(0,#1)");
+        assertEval(Int.the(0), "mul(x,0)");
+        assertEval($$("x"), "mul(x,1)");
+        assertEval($.varDep(1), "mul(1,#1)");
+        assertEval($.varDep(1), "mul(#1,1)");
 
     }
 
@@ -87,9 +86,12 @@ class ArithmeticTest {
 
     @Test
     void testContradictionResultsInFalse() {
-        assertEquals(
-                False,
-                $$("(add(1,1,#2) && add(#2,1,1))").eval(NARS.shell(), false)
+        assertEval(False, "(add(1,1,#2) && add(#2,1,1))");
+    }
+
+    static void assertEval(Term out, String in) {
+        assertEquals( out,
+                $$(in).eval(NARS.shell(), false)
         );
     }
 
@@ -117,7 +119,11 @@ class ArithmeticTest {
         t.test();
     }
 
-    @Test public void testEqualSolution() {
+    @Test public void testEqualSolutionAddInverse() {
+        assertEval($$("x(0)"), "(x(#1) && equal(add(#1,1),1))");
+    }
+
+    @Test public void testEqualSolutionComplex() {
         /*
 
         (&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))
@@ -129,8 +135,9 @@ class ArithmeticTest {
             etc (&&,(--,(g(add(#1,1),0,(0,10)),(--,chronic(1)),(--,0),(--,down))
          */
 
-        String t = "(&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))";
+        String t = "(&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,c(add(#1,1))),(--,add(#1,1)),(--,down))";
 
+        assertEval($$("(&&,(--,g(1,0,(0,10))),(--,c(1)),(--,down),(--,1))"), t);
     }
 
     @Test

@@ -1,7 +1,6 @@
 package jcog.bag;
 
 import jcog.Util;
-import jcog.bag.util.ProxyBag;
 import jcog.list.table.Table;
 import jcog.pri.Prioritized;
 import jcog.pri.op.PriForget;

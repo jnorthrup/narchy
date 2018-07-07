@@ -73,7 +73,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                     this);
 
         } else {
-            Term conceptor = Functor.funcName(t);
+            Term conceptor = Functor.func(t);
             if (conceptor!=Null) {
                 @Nullable Termed conceptorc = conceptors.get(conceptor);
                 if (conceptorc instanceof Conceptor) {

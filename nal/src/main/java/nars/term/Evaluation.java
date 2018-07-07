@@ -70,7 +70,7 @@ public class Evaluation {
     static final TermTransform trueUnwrapper = new TermTransform.NegObliviousTermTransform() {
         @Override
         public @Nullable Term transformCompoundUnneg(Compound x) {
-            if (Functor.funcName(x).equals(TRUE)) {
+            if (Functor.func(x).equals(TRUE)) {
                 return transform(Operator.arg(x, 0));
             }
             return TermTransform.NegObliviousTermTransform.super.transformCompoundUnneg(x);

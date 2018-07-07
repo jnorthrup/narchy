@@ -121,10 +121,10 @@
 // "If not smoking causes health, being not healthy may be the result of smoking"
 // "If smoking causes not health, being healthy may be the result of not smoking"
 
-    (--S ==> P), P |- (--P ==> --S), (Belief:StructuralReduction)
+    (--S ==> P), P |- (--P ==> S), (Belief:Contraposition)
 
-        //original, using the original imbalanced truth function:
-        //(--S ==> P), P |- (--P ==> S), (Belief:Contraposition)
+
+
 
 
 
@@ -338,8 +338,8 @@
 
         //X is the desired non-outcome.  C is a sequence ending in it.   this forms anti goal of the sequence minus the trailing
         //non-event is non-immediate
-        X, C, eventOf(C,X) |- --conjDrop(C,X), (Goal:StrongN, Time:TaskImmediate)
-        X, C, eventOfNeg(C,X) |- --conjDrop(C,--X), (Goal:Strong, Time:TaskImmediate)
+        X, C, eventOf(C,X) |- --conjDropIfLatest(C,X), (Goal:StrongN, Time:TaskImmediate)
+        X, C, eventOfNeg(C,X) |- --conjDropIfLatest(C,--X), (Goal:Strong, Time:TaskImmediate)
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 

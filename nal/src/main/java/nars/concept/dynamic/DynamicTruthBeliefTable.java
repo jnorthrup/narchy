@@ -8,8 +8,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
-
 
 /**
  * computes dynamic truth according to implicit truth functions

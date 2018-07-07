@@ -135,4 +135,31 @@ public enum TruthFunctions2 { ;
         float sim = 1f - dF;
         return $.t(sim, c * sim );
     }
+
+    /**
+     * {<A ==> B>} |- <--B ==> --A>
+     *
+     * @param t Truth value of the premise
+     * @return Truth value of the conclusion
+     */
+    public static Truth contraposition(Truth t, float minConf) {
+        float f = t.freq();
+        float fPolarization = 2 * Math.abs(f - 0.5f);
+        float c = fPolarization * t.conf();
+        return c >= minConf ? t((1 - f), c) : null;
+    }
+    @Nullable
+    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
+
+        float f = and(a.freq(), bF);
+        float c = and(f,
+                and //original
+                //or
+                //aveAri
+                    (a.conf(), bC)
+        );
+
+        return c >= minConf ? t(f, c) : null;
+    }
+
 }

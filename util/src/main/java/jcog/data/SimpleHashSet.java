@@ -1,6 +1,9 @@
 package jcog.data;
 
-import java.util.*;
+import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A simple HashSet, save 25% memory.

@@ -125,7 +125,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
             if (negated)
                 p = p.unneg();
 
-            Term name = Functor.funcName(p);
+            Term name = Functor.func(p);
             if (name == Null)
                 throw new RuntimeException("invalid precondition: " + p);
 
@@ -439,7 +439,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
         {
             //add subIfUnify prefilter
-            if (Functor.funcName(finalConcPattern).equals(SubIfUnify.SubIfUnify)) {
+            if (Functor.func(finalConcPattern).equals(SubIfUnify.SubIfUnify)) {
                 Subterms args = Operator.args(finalConcPattern);
                 Term x = args.sub(1);
                 Term y = args.sub(2);
@@ -626,7 +626,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         return rawRules.map(src -> {
             try {
                 return parse(src);
-            } catch (Narsese.NarseseException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("rule parse: " + e + "\n\t" + src);
             }
         });

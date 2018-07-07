@@ -9,8 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
-import static nars.$.and;
+import static nars.$.*;
 import static nars.$.or;
 import static nars.Op.*;
 import static nars.term.TermReductionsTest.assertEq;
@@ -201,6 +200,7 @@ class BoolTest {
 
     private static final Term x = $$("x");
     private static final Term y = $$("y");
+    private static final Term z = $$("z");
 
 
     /** Huntington conj/disj tautologies */
@@ -243,9 +243,29 @@ class BoolTest {
 
     }
 
+
+    @Test void testConjFactor2() {
+        assertEquals(False, and(and(x, y), and(x, y.neg())));
+    }
+    @Test void testConjFactor3() {
+        assertEquals("(&&,x,y,z)", and(and(x, y), and(x, z)).toString());
+    }
+
+    @Test void testDisjFactor2() {
+        assertEquals(x, or(and(x, y), and(x, y.neg())) );
+    }
+    @Test void testDisjFactor2Neg() {
+        assertEquals(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())) );
+    }
+
     @Test void testHuntington3() {
         //¬(¬a∨b) ∨ ¬(¬a∨¬b) == a	# Hungtington3
         assertEquals(x, or(or(x.neg(), y).neg(), or(x.neg(), y.neg()).neg()));
+    }
+
+    @Test void testRobbinsAxiom3a() {
+        //¬(a∨b) ∨ ¬(a∨¬b) == ¬a	# Robbins Algebra axiom3
+        assertEquals(x.neg(), or( or(x,y).neg(), or(x,y.neg()).neg() ) );
     }
 
     @Test void testRobbinsAxiom3() {

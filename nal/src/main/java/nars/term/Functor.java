@@ -43,7 +43,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         super(atom, ConceptBuilder.Null);
     }
 
-    public static Term funcName(Term operation) {
+    public static Term func(Term operation) {
         return (operation.hasAll(Op.FuncBits) && operation.op()==INH && operation.sub(0).op()==PROD ) ? operation.sub(1) : Op.Null;
     }
 

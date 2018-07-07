@@ -34,7 +34,7 @@ public enum NALTruth implements TruthFunc {
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            return TruthFunctions.deduction(T, B.freq(), B.conf(), minConf);
+            return TruthFunctions2.deduction(T, B.freq(), B.conf(), minConf);
 
         }
     },
@@ -53,16 +53,8 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @SinglePremise @AllowOverlap
-    StructuralStrong() {
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return T != null ? NALTruth.Analogy.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
-        }
-    },
-
-
     /**
-     * maintains input frequency but reduces confidence
+     * similar to structural deduction but keeps the same input frequency, only reducing confidence
      */
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
@@ -71,6 +63,16 @@ public enum NALTruth implements TruthFunc {
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
+
+    @SinglePremise @AllowOverlap
+    StructuralStrong() {
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return T != null ? NALTruth.Analogy.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
+        }
+    },
+
+
+
 
     /**
      * maintains input frequency but reduces confidence
@@ -183,7 +185,7 @@ public enum NALTruth implements TruthFunc {
     Contraposition() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.contraposition(T, minConf);
+            return TruthFunctions2.contraposition(T, minConf);
         }
     },
 
@@ -198,7 +200,7 @@ public enum NALTruth implements TruthFunc {
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            @Nullable Truth z = TruthFunctions.intersection(T.neg(), B.neg(), minConf);
+            @Nullable Truth z = Intersection.apply(T.neg(), B.neg(), m, minConf);
             return z != null ? z.neg() : null;
         }
     },

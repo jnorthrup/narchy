@@ -5,9 +5,9 @@ import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.atom.Int;
 
-import static nars.Op.False;
-import static nars.Op.True;
+import static nars.Op.*;
 
 public class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
 
@@ -69,6 +69,21 @@ public class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements T
         if (x.hasVars() || y.hasVars()) {
             if (x.equalsNeg(y))
                 return False; //experimental assumption: x!=--x
+
+            //try algebraic reductions
+            //HACK hardcoded but would be nice to use a symbolic algebra system
+            Term xf = Functor.func(x);
+            if (xf.equals(MathFunc.add)) {
+                Term[] xa = Functor.funcArgsArray(x);
+                if (xa.length == 2 && xa[1].op()==INT && xa[0].op().var) {
+                    if (y.op()==INT) {
+                        //"equal(add(#x,a),b)"
+                        e.replace(xa[0], Int.the( ((Int)y).id - ((Int)xa[1]).id ));
+                        return null;
+                    }
+                }
+            }
+
             return null;
         }
 

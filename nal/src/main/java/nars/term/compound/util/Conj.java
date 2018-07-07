@@ -11,8 +11,10 @@ import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
@@ -151,7 +153,7 @@ public class Conj extends AnonMap {
 
         Conj ce = new Conj(eventsSize);
 
-        for (LongObjectPair<Term> o: events) {
+        for (LongObjectPair<Term> o : events) {
             if (!ce.add(o.getOne(), o.getTwo())) {
                 break;
             }
@@ -171,7 +173,7 @@ public class Conj extends AnonMap {
 
         Conj ce = new Conj();
 
-        for (LongObjectPair<Term> o: events) {
+        for (LongObjectPair<Term> o : events) {
             if (!ce.add(o.getOne(), o.getTwo())) {
                 break;
             }
@@ -483,7 +485,7 @@ public class Conj extends AnonMap {
             //no capacity, upgrade to RoaringBitmap
 
             RoaringBitmap rb = new RoaringBitmap();
-            for (byte bb: b)
+            for (byte bb : b)
                 rb.add(bb);
             rb.add(id);
             event.put(at, rb);
@@ -562,7 +564,7 @@ public class Conj extends AnonMap {
         if (o instanceof RoaringBitmap) {
             boolean b = false;
             RoaringBitmap oo = (RoaringBitmap) o;
-            for (int ii: i)
+            for (int ii : i)
                 b |= oo.checkedRemove(ii);
             if (!b) return 0;
             if (oo.isEmpty()) {
@@ -579,7 +581,7 @@ public class Conj extends AnonMap {
             if (num == -1) num = b.length;
 
             int removals = 0;
-            for (int ii: i) {
+            for (int ii : i) {
                 int bi = ArrayUtils.indexOf(b, (byte) ii);
                 if (bi != -1) {
                     if (b[bi] != 0) {
@@ -698,7 +700,7 @@ public class Conj extends AnonMap {
             ci = eternal;
         } else {
             FasterList<LongObjectPair<Term>> temporals = new FasterList<>(numTimes - (eternal != null ? 1 : 0));
-            for (LongObjectPair<Term> next: (Iterable<LongObjectPair<Term>>) event.keyValuesView()) {
+            for (LongObjectPair<Term> next : (Iterable<LongObjectPair<Term>>) event.keyValuesView()) {
                 long when = next.getOne();
                 if (when == ETERNAL)
                     continue;
@@ -767,7 +769,7 @@ public class Conj extends AnonMap {
                         PeekableIntIterator ncc = nc.getIntIterator();
                         while (ncc.hasNext()) {
                             int nccc = ncc.next();
-                            for (int aBb: bb) {
+                            for (int aBb : bb) {
                                 Term NC = cci.sub(nccc).unneg();
                                 Term NX = cci.sub(aBb).unneg();
                                 if (NC.contains(NX)) {
@@ -816,24 +818,27 @@ public class Conj extends AnonMap {
         final byte[] b;
         int n;
         if (what instanceof byte[]) {
-            b = (byte[]) what;
             rb = null;
-            n = indexOfZeroTerminated(b, (byte) 0);
-            if (n == 1) {
-
-                return sub(b[0], null, validator);
-            }
+            b = (byte[]) what;
+            n = indexOfZeroTerminated(b, (byte) 0); //TODO cardinality(byte[] b)
         } else {
-            rb = (RoaringBitmap) what;
             b = null;
+            rb = (RoaringBitmap) what;
             n = rb.getCardinality();
         }
 
+        if (n == 0) {
+            return True; //does this happen?
+        }
+        if (n == 1) {
+            //only event at this time
+            return sub(b[0], null, validator);
+        }
 
         final boolean[] negatives = {false};
         TreeSet<Term> t = new TreeSet<>();
         if (b != null) {
-            for (byte x: b) {
+            for (byte x : b) {
                 if (x == 0)
                     break;
                 t.add(sub(x, negatives, validator));
@@ -844,38 +849,9 @@ public class Conj extends AnonMap {
             );
         }
 
-        if (negatives[0] && n > 1) {
-
-
-            Iterator<Term> oo = t.iterator();
-            List<Term> csa = null;
-            while (oo.hasNext()) {
-                Term x = oo.next();
-                if (x.hasAll(NEG.bit | CONJ.bit)) {
-                    if (x.op() == NEG) {
-                        Term x0 = x.sub(0);
-                        if (x0.op() == CONJ && commute(x0.dt(), x0.subs())) {
-                            Term disj = x.unneg();
-                            SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
-
-                            if (!disjSubs.isEmpty()) {
-
-                                oo.remove();
-
-                                if (!disjSubs.isEmpty()) {
-                                    if (csa == null)
-                                        csa = new FasterList(1);
-                                    csa.add(
-                                            CONJ.the(disj.dt(), disjSubs).neg()
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (csa != null)
-                t.addAll(csa);
+        if (negatives[0]) {
+            //TODO factor
+            factorDisj(t);
         }
 
         int ts = t.size();
@@ -885,29 +861,146 @@ public class Conj extends AnonMap {
             case 1:
                 return t.first();
             default: {
-                int dt;
-                if (when == ETERNAL) {
-                    dt = DTERNAL;
-                } else {
-                    dt = 0;
-                }
-                return Op.compoundExact(CONJ, dt, t.toArray(Op.EmptyTermArray) /* sorted iff t is SortedSet */);
+                return Op.compoundExact(CONJ,
+                        when == ETERNAL ? DTERNAL : 0,
+                        t.toArray(Op.EmptyTermArray) /* sorted iff t is SortedSet */);
 
             }
         }
     }
 
-    public Term sub(int termIndex) {
-        return sub(termIndex, null, null);
+    private void factorDisj0(TreeSet<Term> t) {
+        Iterator<Term> oo = t.iterator();
+        List<Term> csa = null;
+        while (oo.hasNext()) {
+            Term x = oo.next();
+            if (x.hasAll(NEG.bit | CONJ.bit)) {
+                if (x.op() == NEG) {
+                    Term disj = x.unneg();
+                    if (disj.op() == CONJ && commute(disj.dt(), disj.subs())) {
+                        SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
+                        int ds = disjSubs.size();
+                        if (ds == disj.subs())
+                            continue; //no change
+
+                        oo.remove();
+
+                        if (ds > 0) {
+
+                            if (csa == null)
+                                csa = new FasterList<>(1);
+
+                            csa.add(CONJ.the(disj.dt(), disjSubs).neg());
+                        }
+                    }
+                }
+            }
+        }
+        if (csa != null)
+            t.addAll(csa);
     }
 
-    public Term sub(int termIndex, @Nullable boolean[] negatives, @Nullable IntPredicate validator) {
+    private void factorDisj(TreeSet<Term> t) {
+
+        List<Term> d;
+        boolean stable;
+        do {
+
+            d = disjComponents(t);
+            if (d == null)
+                return; //no change
+
+            stable = true;
+
+            //1. disj components sharing components that need factored out
+            if (d.size() > 1) {
+                UnifiedMap<Term, MetalBitSet> components = new UnifiedMap();
+                final boolean[] hasMultiAppearance = {false};
+                for (int i = 0, dSize = d.size(); i < dSize; i++) {
+                    Term dd = d.get(i);
+                    int ii = i;
+                    dd.unneg().subterms().forEach(ddd -> {
+                        MetalBitSet ap = components.computeIfAbsent(ddd, dddd -> MetalBitSet.bits(dSize));
+                        ap.set(ii);
+                        if (ap.cardinality() > 1) {
+                            hasMultiAppearance[0] = true;
+                        }
+                    });
+                }
+                if (hasMultiAppearance[0]) {
+                    //select most commonly appearing, and process first.  then proceed to next until none left
+                    Pair<Term, MetalBitSet> factorable = components.keyValuesView().select(p -> p.getTwo().cardinality() > 1).maxBy(p -> p.getTwo().cardinality());
+                    Term f = factorable.getOne();
+                    MetalBitSet b = factorable.getTwo();
+                    SortedSet<Term> ff = new TreeSet<>(/*cardinality*/);
+                    for (int i = 0; i < d.size(); i++) {
+                        if (b.get(i)) {
+                            Term di = d.get(i);
+                            ff.add(Conj.without(di.unneg(), f, false));
+                            boolean rdi = t.remove(di);
+                            assert(rdi);
+                        }
+                    }
+                    t.add(CONJ.the(DTERNAL, f, CONJ.the(DTERNAL, ff).neg()).neg()); //DTERNAL or 0?
+                    stable = false;
+                }
+            }
+        } while (!stable);
+
+        //2. disj components contradicting non-disjunctive components
+        List<Term> csa = null;
+
+        for (Term disjNeg : d) {
+
+            Term disj = disjNeg.unneg();
+            SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
+            int ds = disjSubs.size();
+            if (ds == disj.subs())
+                continue; //no change
+
+            boolean rem = t.remove(disjNeg);
+            assert(rem);
+
+            if (ds > 0) {
+
+                if (csa == null)
+                    csa = new FasterList<>(1);
+
+                csa.add(CONJ.the(disj.dt(), disjSubs).neg());
+            }
+        }
+
+        if (csa != null)
+            t.addAll(csa);
+    }
+
+    @Nullable private List<Term> disjComponents(TreeSet<Term> t) {
+        List<Term> d = null;
+        Iterator<Term> oo = t.iterator();
+        while (oo.hasNext()) {
+            Term x = oo.next();
+            if (x.hasAll(NEG.bit | CONJ.bit)) {
+                if (x.op() == NEG) {
+                    Term disj = x.unneg();
+                    if (disj.op() == CONJ && commute(disj.dt(), disj.subs())) {
+                        if (d == null)
+                            d = new FasterList<>(t.size());
+                        d.add(x);
+                    }
+                    //TODO handle non-commutive sub-disjunctive sequences
+                }
+            }
+        }
+        return d;
+    }
+
+
+    private Term sub(int termIndex, @Nullable boolean[] negatives, @Nullable IntPredicate validator) {
         assert (termIndex != 0);
 
-        boolean neg = false;
-        if (termIndex < 0) {
+        boolean neg = termIndex < 0;
+        if (neg) {
             termIndex = -termIndex;
-            neg = true;
         }
 
         if (validator != null && !validator.test(termIndex))

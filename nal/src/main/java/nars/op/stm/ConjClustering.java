@@ -86,7 +86,7 @@ public class ConjClustering extends Causable {
         nar.onTask(t -> {
             if (!t.isEternal()
                     && t.punc() == punc
-                    //&& !t.hasVars()
+                    && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
                     && filter.test(t)) {
                 bag.put(t,
 

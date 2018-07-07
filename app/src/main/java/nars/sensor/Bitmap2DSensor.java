@@ -191,7 +191,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         static final int minUpdateDurs = 1;
 
 
-        float conf;
+        float conf = Float.NaN;
 
         FloatFloatToObjectFunction<Truth> mode;
 
@@ -200,7 +200,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
             lastUpdate = Bitmap2DSensor.this.nar.time();
             pixelsRemainPerUpdate = area;
             in = nar.newChannel(Bitmap2DSensor.this).buffered(width*height /* plus extra? */);
-            conf = nar.confDefault(BELIEF);
             this.mode = mode;
                     //(p, v) -> mode.apply(() -> conf).value(p, v);
         }
@@ -221,9 +220,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         protected int next(NAR nar, int work) {
 
             int dur = this.dur();
-            conf = nar.confDefault(BELIEF);
 
             int totalPixels = area;
+
+
+            //conf = Math.max(nar.confMin.floatValue(), w2cSafe(c2wSafe(nar.confDefault(BELIEF)) / totalPixels)); //evidence divided equally among pixels
+            conf = nar.confDefault(BELIEF);
 
             long now = nar.time();
             if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {

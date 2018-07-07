@@ -11,8 +11,6 @@ import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.term.Terms;
-import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
