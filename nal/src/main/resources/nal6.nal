@@ -347,12 +347,14 @@
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN, Time:TaskImmediate)
 
         //to the degree that the desired sequence includes state which is not the case, desire that case
-        C, X, eventOf(C,X)    |- X, (Goal:WeakPN)
-        C, X, eventOfNeg(C,X) |- --X, (Goal:Weak)
+            //TODO check conclusion polarity
+        //C, X, eventOf(C,X)    |- X, (Goal:WeakPN)
+        //C, X, eventOfNeg(C,X) |- --X, (Goal:Weak)
 
         //to the degree that the un-desired sequence includes state which is the case, desire not that case
-        C, X, eventOf(C,X)    |- --X, (Goal:WeakN)
-        C, X, eventOfNeg(C,X)    |- X, (Goal:WeakNN)
+            //TODO check conclusion polarity
+        //C, X, eventOf(C,X)    |- --X, (Goal:WeakN)
+        //C, X, eventOfNeg(C,X)    |- X, (Goal:WeakNN)
 
 
         //X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)

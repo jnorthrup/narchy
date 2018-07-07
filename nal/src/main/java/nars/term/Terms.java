@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
+import static nars.Op.CONJ;
 import static nars.Op.NEG;
 
 /**
@@ -151,7 +152,12 @@ public enum Terms {
     public static boolean allNegated(Subterms subterms) {
         return subterms.hasAny(Op.NEG) && subterms.AND((Term t) -> t.op() == NEG);
     }
-
+    public static int countNegated(Subterms subterms) {
+        return subterms.hasAny(Op.NEG) ? subterms.subs(NEG) : 0;
+    }
+    public static int countNegatedNonConj(Subterms subterms) {
+        return subterms.hasAny(Op.NEG) ? subterms.subs(x->x.op()==NEG && !x.hasAny(CONJ)) : 0;
+    }
 
     /**
      * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria

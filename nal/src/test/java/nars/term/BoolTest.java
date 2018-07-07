@@ -234,6 +234,8 @@ class BoolTest {
         //¬(a∨b) == ¬a∧¬b		# deMorgan
         assertEquals(and(x.neg(), y.neg()), or(x,y).neg());
 
+        //half deMorgan
+        assertEquals(or(x, y.neg()), and(x.neg(),y).neg());
 
         assertEquals(False, and(False, True));
         assertEquals(True, and(True, True));
@@ -254,9 +256,25 @@ class BoolTest {
     @Test void testDisjFactor2() {
         assertEquals(x, or(and(x, y), and(x, y.neg())) );
     }
+    @Test void testDisjFactor2_0() {
+        assertEquals(x, or(x, and(x, y), and(x, y.neg())) );
+    }
+
     @Test void testDisjFactor2Neg() {
         assertEquals(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())) );
     }
+
+    @Test void testDisjFactor1() {
+        assertEquals(x, or(x, and(x, z)));
+    }
+    @Test void testDisjFactor1Neg() {
+        assertEquals("???", or(x.neg(), and(x.neg(), z)));
+    }
+
+    @Test void testDisjFactor3() {
+        assertEquals(x, or(and(x, y), and(x, y.neg()), and(x,z)) );
+    }
+
 
     @Test void testHuntington3() {
         //¬(¬a∨b) ∨ ¬(¬a∨¬b) == a	# Hungtington3

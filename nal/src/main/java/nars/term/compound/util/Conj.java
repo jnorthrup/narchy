@@ -869,36 +869,36 @@ public class Conj extends AnonMap {
         }
     }
 
-    private void factorDisj0(TreeSet<Term> t) {
-        Iterator<Term> oo = t.iterator();
-        List<Term> csa = null;
-        while (oo.hasNext()) {
-            Term x = oo.next();
-            if (x.hasAll(NEG.bit | CONJ.bit)) {
-                if (x.op() == NEG) {
-                    Term disj = x.unneg();
-                    if (disj.op() == CONJ && commute(disj.dt(), disj.subs())) {
-                        SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
-                        int ds = disjSubs.size();
-                        if (ds == disj.subs())
-                            continue; //no change
-
-                        oo.remove();
-
-                        if (ds > 0) {
-
-                            if (csa == null)
-                                csa = new FasterList<>(1);
-
-                            csa.add(CONJ.the(disj.dt(), disjSubs).neg());
-                        }
-                    }
-                }
-            }
-        }
-        if (csa != null)
-            t.addAll(csa);
-    }
+//    private void factorDisj0(TreeSet<Term> t) {
+//        Iterator<Term> oo = t.iterator();
+//        List<Term> csa = null;
+//        while (oo.hasNext()) {
+//            Term x = oo.next();
+//            if (x.hasAll(NEG.bit | CONJ.bit)) {
+//                if (x.op() == NEG) {
+//                    Term disj = x.unneg();
+//                    if (disj.op() == CONJ && commute(disj.dt(), disj.subs())) {
+//                        SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
+//                        int ds = disjSubs.size();
+//                        if (ds == disj.subs())
+//                            continue; //no change
+//
+//                        oo.remove();
+//
+//                        if (ds > 0) {
+//
+//                            if (csa == null)
+//                                csa = new FasterList<>(1);
+//
+//                            csa.add(CONJ.the(disj.dt(), disjSubs).neg());
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        if (csa != null)
+//            t.addAll(csa);
+//    }
 
     private void factorDisj(TreeSet<Term> t) {
 
@@ -941,8 +941,19 @@ public class Conj extends AnonMap {
                             assert(rdi);
                         }
                     }
-                    t.add(CONJ.the(DTERNAL, f, CONJ.the(DTERNAL, ff).neg()).neg()); //DTERNAL or 0?
+
                     stable = false;
+
+                    Term fff = CONJ.the(DTERNAL, f, CONJ.the(DTERNAL, ff).neg()).neg();
+                    if (fff != True) {
+                        if ((fff == False) || (fff == Null)) {
+                            t.clear();
+                            t.add(fff);
+                            return;
+                        } else {
+                            t.add(fff);
+                        }
+                    }
                 }
             }
         } while (!stable);

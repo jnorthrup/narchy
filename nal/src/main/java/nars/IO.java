@@ -520,8 +520,9 @@ public class IO {
                         Term cx = c.unneg();
                         if (cx.op() == CONJ && cx.dt() == DTERNAL) {
                             Subterms cxx = cx.subterms();
-                            if (Terms.allNegated(cxx)) {
-                                compoundAppend(Op.DISJstr, cxx, Term::unneg, p);
+                            //if (Terms.allNegated(cxx)) {
+                            if (Terms.countNegatedNonConj(cxx) >= cxx.subs()/2) {
+                                compoundAppend(Op.DISJstr, cxx, Term::neg, p);
                                 return;
                             }
                         }

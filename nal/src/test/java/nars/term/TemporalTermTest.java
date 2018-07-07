@@ -195,7 +195,9 @@ class TemporalTermTest {
     @Test
     void testConceptualizationWithoutConjReduction2() throws Narsese.NarseseException {
         String s = "(((--,((--,(joy-->tetris))&|#1)) &&+30 #1) &&+60 (joy-->tetris))";
-        assertEquals("(((--,((--,(joy-->tetris))&&#1)) &&+- #1)&&(joy-->tetris))",
+        assertEquals(
+                //"(((--,((--,(joy-->tetris))&&#1)) &&+- #1)&&(joy-->tetris))",
+                "(((||,(joy-->tetris),(--,#1)) &&+- #1)&&(joy-->tetris))",
                 $(s).concept().toString());
     }
 
