@@ -348,7 +348,6 @@
     //X, C, eventOf(C,X) |- conjEarliestIfLatest(C,X), (Goal:Strong, Time:TaskImmediate)
     //X, C, eventOfNeg(C,X) |- conjEarliestIfLatest(C,--X), (Goal:StrongN, Time:TaskImmediate)
 
-
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
@@ -357,14 +356,12 @@
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN, Time:TaskImmediate)
 
         //to the degree that the desired sequence includes state which is not the case, desire that case
-            //TODO check conclusion polarity
-        //C, X, eventOf(C,X)    |- X, (Goal:WeakPN)
-        //C, X, eventOfNeg(C,X) |- --X, (Goal:Weak)
+        C, X, eventOf(C,X)    |- X, (Goal:GoalductionWeakPN)
+        C, X, eventOfNeg(C,X) |- --X, (Goal:GoalductionWeak)
 
         //to the degree that the un-desired sequence includes state which is the case, desire not that case
-            //TODO check conclusion polarity
-        //C, X, eventOf(C,X)    |- --X, (Goal:WeakN)
-        //C, X, eventOfNeg(C,X)    |- X, (Goal:WeakNN)
+        C, X, eventOf(C,X)    |- --X, (Goal:GoalductionWeakN)
+        C, X, eventOfNeg(C,X) |- X, (Goal:GoalductionWeakNN)
 
 
         //X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)

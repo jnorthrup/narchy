@@ -838,7 +838,11 @@ public class Conj extends AnonMap {
             for (byte x : b) {
                 if (x == 0)
                     break;
-                t.add(sub(x, negatives, validator));
+                Term s = sub(x, negatives, validator);
+                if (s == Null || s == False) {
+                    return s;
+                }
+                t.add(s);
             }
         } else {
             rb.forEach((int termIndex) ->
@@ -895,9 +899,12 @@ public class Conj extends AnonMap {
                     //Unfactor z to each component of the sequence
                     if (theSequence.dt()!=XTERNAL) {
                         Conj cs = Conj.from(theSequence);
-                        cs.event.keysView().allSatisfy(csw ->
-                                cs.add(csw, z) //short-circuits if non-valid
-                        );
+                        assert(cs.event.size() > 1);
+                        LongIterator ii = cs.event.keysView().longIterator();
+                        while (ii.hasNext() && cs.add(ii.next(), z)) { }
+//                        cs.event.keysView().allSatisfy(csw ->
+//                                cs.add(csw, z) //short-circuits if non-valid
+//                        );
                         return cs.term();
                     } else {
                         //special handling for XTERNAL which is not decomposed by Conj

@@ -337,7 +337,9 @@ public interface NAct {
 
     default void actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
-        float thresh = 0.5f;
+        float thresh =
+                //0.5f;
+                0.66f;
 
         float[] lr = new float[2];
 
