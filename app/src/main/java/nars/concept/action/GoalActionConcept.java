@@ -71,11 +71,15 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth goal;
 
-        long gStart = pNow - dur/2, gEnd =pNow + dur/2;
-        //long gStart = pNow, gEnd = pNow;
 
-
-        goal = this.goals().truth(gStart, gEnd, nar);
+        long gStart, gEnd;
+//        gStart = pNow; gEnd = pNow;
+//        goal = this.goals().truth(pNow, pNow, nar);
+//        if (goal == null) {
+//            //HACK expand radius - this should be done by the truthpolation impl
+            gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
+            goal = this.goals().truth(gStart, gEnd, nar);
+//        }
 
 
 

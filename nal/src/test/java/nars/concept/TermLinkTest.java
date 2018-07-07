@@ -128,10 +128,16 @@ class TermLinkTest {
                 "[(y&&z), x]"
         );
     }
+
     @Test
     void testTemplateConjInsideConjInsideImpl() {
         testTemplates("(a ==> (x && y))",
                 "[(x&&y), a, x, y]");
+    }
+    @Test
+    void testTemplateConjInsideConjInsideImplVar() {
+        testTemplates("(a ==> (x && #1))",
+                "[(x&&#1), a, x, #1]");
     }
 
     @Test

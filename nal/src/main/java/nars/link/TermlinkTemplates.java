@@ -21,7 +21,6 @@ import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.SetBits;
-import static nars.time.Tense.XTERNAL;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -114,7 +113,7 @@ public class TermlinkTemplates extends FasterList<Term> {
         int nextDepth = depth;
         int nextMaxDepth = maxDepth;
 
-        if (xo == CONJ && bb.hasAny(CONJ) && x.dt()!=XTERNAL) {
+        if (xo == CONJ && bb.hasAny(CONJ)/* && x.dt()!=XTERNAL*/) {
 
 //            int xdt = x.dt();
             x.eventsWhile((when, what) -> {
