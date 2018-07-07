@@ -21,6 +21,7 @@ import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.SetBits;
+import static nars.time.Tense.XTERNAL;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -33,9 +34,9 @@ public class TermlinkTemplates extends FasterList<Term> {
     /**
      * index of the last concept template; any others beyond this index are non-conceptualizable
      */
-    byte concepts;
+    protected byte concepts;
 
-    TermlinkTemplates(Term[] terms) {
+    public TermlinkTemplates(Term[] terms) {
         super(terms.length, terms);
 
         if (size > 1)
@@ -113,7 +114,7 @@ public class TermlinkTemplates extends FasterList<Term> {
         int nextDepth = depth;
         int nextMaxDepth = maxDepth;
 
-        if (xo == CONJ && bb.hasAny(CONJ)/* && x.dt()!=XTERNAL*/) {
+        if (xo == CONJ && bb.hasAny(CONJ) && x.dt()!=XTERNAL) {
 
 //            int xdt = x.dt();
             x.eventsWhile((when, what) -> {
@@ -253,8 +254,9 @@ public class TermlinkTemplates extends FasterList<Term> {
      */
     public void linkAndActivate(Concept src, float pri, NAR nar) {
 
+        int localSize = size();
 
-        int n = this.size();
+        int n = localSize;
         if (n == 0)
             return;
 
@@ -263,11 +265,15 @@ public class TermlinkTemplates extends FasterList<Term> {
         Term srcTerm = src.term();
 
         float balance = nar.termlinkBalance.floatValue();
-        float budgetedForward = concepts == 0 ? 0 :
-                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
+        float budgetedForward;
+
+        //calculate exact based on the subset that are concepts
+        budgetedForward = concepts == 0 ? 0 :
+                    Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
+
         float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n);
 
-        Iterable<PriReference<Term>> srcTermLinks = src.termlinks();
+        Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
         for (int i = 0; i < n; i++) {
             Term tgtTerm = get(i);
 
@@ -292,7 +298,7 @@ public class TermlinkTemplates extends FasterList<Term> {
                 refund.add(budgetedForward);
             }
 
-            ((Bag) srcTermLinks).put(new PLink<>(tgtTerm, budgetedReverse), refund);
+            srcTermLinks.put(new PLink<>(tgtTerm, budgetedReverse), refund);
 
         }
     }

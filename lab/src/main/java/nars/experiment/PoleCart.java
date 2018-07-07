@@ -60,7 +60,7 @@ public class PoleCart extends NAgentX {
                 e.printStackTrace();
                 return null;
             }
-        }, 60);
+        }, 40);
     }
 
     private final JPanel panel;
@@ -84,7 +84,8 @@ public class PoleCart extends NAgentX {
     static final double gravity = 9.8; 
     static final double forceMag = 100.;
     static final double tau =
-            0.005;
+            0.01;
+            //0.005;
             //0.0025f;
     static final double fricCart = 0.00005;
     static final double fricPole =

@@ -118,7 +118,11 @@ class ConjTest {
         c.add(ETERNAL, $.the("x"));
         c.add(1, $.the("y"));
         c.add(2, $.the("z"));
-        assertEquals("((y &&+1 z)&&x)", c.term().toString());
+        assertEquals(
+                //"((y &&+1 z)&&x)",
+                "((x&|y) &&+1 (x&|z))",
+                c.term().toString());
+
     }
 
     private final Random rng = new XoRoShiRo128PlusRandom(1);
@@ -195,74 +199,65 @@ class ConjTest {
     @Test
     void testWrappingCommutiveConjunction() {
 
-        {
 
-            
-            Term xEternal = $$("((((--,angX) &&+4 x) &&+10244 angX) && y)");
-            assertEquals("((((--,angX) &&+4 x) &&+10244 angX)&&y)",
-                    xEternal.toString());
-        }
+        Term xEternal = $$("((((--,angX) &&+4 x) &&+10244 angX) && y)");
+        assertEquals(
+                //"((((--,angX) &&+4 x) &&+10244 angX)&&y)",
+                "((((--,angX)&|y) &&+4 (x&|y)) &&+10244 (y&|angX))",
+                xEternal.toString());
     }
     @Test @Disabled
     void testWrappingCommutiveConjunctionX() {
-        {
-            
-            Term xFactored = $$("((x&&y) &&+1 (y&&z))");
-            assertEquals("((x &&+1 z)&&y)", xFactored.toString());
 
-            
-            Term xAndContradict = $$("((x &&+1 x)&&--x)");
-            assertEquals(False,
-                    xAndContradict);
-
-            
-            Term xAndRedundant = $$("((x &&+1 x)&&x)");
-            assertEquals("(x &&+1 x)",
-                    xAndRedundant.toString());
-
-            
-            Term xAndRedundantParallel = $$("(((x &| y) &| z)&&x)");
-            assertEquals("(&|,x,y,z)",
-                    xAndRedundantParallel.toString());
-
-            
-            Term xAndContradictParallel = $$("(((x &| y) &| z)&&--x)");
-            assertEquals(False,
-                    xAndContradictParallel);
-
-            
-            Term xAndContradictParallelMultiple = $$("(&&,x,y,((x &| y) &| z))");
-            assertEquals("(&|,x,y,z)",
-                    xAndContradictParallelMultiple.toString());
-
-            
-            Term xAndContradict2 = $$("((((--,angX) &&+4 x) &&+10244 angX) && --x)");
-            assertEquals(False, xAndContradict2);
-
-            
-            Term xAndContradict3 = $$("((((--,angX) &&+4 x) &&+10244 angX) && angX)");
-            assertEquals(False, xAndContradict3);
-
-            
-            Term xParallel = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 y)");
-            assertEquals(False, xParallel);
-
-        }
-
-        {
-            
-
-            Term xParallelContradiction4 = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 angX)");
-            assertEquals(False, xParallelContradiction4);
-        }
+        Term xFactored = $$("((x&&y) &&+1 (y&&z))");
+        assertEquals("((x &&+1 z)&&y)", xFactored.toString());
 
 
-        {
-            Term x = $$("((((--,angX) &&+4 x) &&+10244 angX) &| angX)");
-            Term y = $$("(angX &| (((--,angX) &&+4 x) &&+10244 angX))");
-            assertEquals(x, y);
-            
-        }
+        Term xAndContradict = $$("((x &&+1 x)&&--x)");
+        assertEquals(False,
+                xAndContradict);
+
+
+        Term xAndRedundant = $$("((x &&+1 x)&&x)");
+        assertEquals("(x &&+1 x)",
+                xAndRedundant.toString());
+
+
+        Term xAndRedundantParallel = $$("(((x &| y) &| z)&&x)");
+        assertEquals("(&|,x,y,z)",
+                xAndRedundantParallel.toString());
+
+
+        Term xAndContradictParallel = $$("(((x &| y) &| z)&&--x)");
+        assertEquals(False,
+                xAndContradictParallel);
+
+
+        Term xAndContradictParallelMultiple = $$("(&&,x,y,((x &| y) &| z))");
+        assertEquals("(&|,x,y,z)",
+                xAndContradictParallelMultiple.toString());
+
+
+        Term xAndContradict2 = $$("((((--,angX) &&+4 x) &&+10244 angX) && --x)");
+        assertEquals(False, xAndContradict2);
+
+
+        Term xAndContradict3 = $$("((((--,angX) &&+4 x) &&+10244 angX) && angX)");
+        assertEquals(False, xAndContradict3);
+
+
+        Term xParallel = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 y)");
+        assertEquals(False, xParallel);
+
+
+        Term xParallelContradiction4 = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 angX)");
+        assertEquals(False, xParallelContradiction4);
+
+
+        Term x = $$("((((--,angX) &&+4 x) &&+10244 angX) &| angX)");
+        Term y = $$("(angX &| (((--,angX) &&+4 x) &&+10244 angX))");
+        assertEquals(x, y);
+
     }
 
     @Disabled

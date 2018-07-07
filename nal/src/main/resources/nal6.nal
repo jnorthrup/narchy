@@ -13,14 +13,14 @@
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
 
-    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
-    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
+    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:GoalductionWeak, Time:TaskPlusBeliefDT)
+    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:GoalductionWeakPN, Time:TaskPlusBeliefDT)
 
-    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
-    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:GoalductionWeakN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:GoalductionWeakNN, Time:TaskPlusBeliefDT)
 
-    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
-    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Goalduction, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:GoalductionNN, Time:TaskMinusBeliefDT)
 
 
         Y, ((&&,X,A..+) ==> Z), --is(Y,"==>") |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y), (Belief:Deduction)
@@ -33,10 +33,10 @@
 
 //            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==> (&&,A..+)),C,B), (Belief:Abduction)
 //            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==> (&&,A..+)),C,B), (Belief:AbductionN)
-        //B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:Induction)
-        //B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:DeductionN, Goal:InductionN)
-                //B, (--(&&,C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:Deduction, Goal:Induction)
-                //B, (--(&&,--C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:DeductionN, Goal:InductionN)
+        //B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:GoalductionWeak)
+        //B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:DeductionN, Goal:GoalductionWeakN)
+                //B, (--(&&,C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:Deduction, Goal:GoalductionWeak)
+                //B, (--(&&,--C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:DeductionN, Goal:GoalductionWeakN)
 //            B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:Deduction)
 //            B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:DeductionN)
 //                B, (--(&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:Deduction)
@@ -328,6 +328,16 @@
 
 //// conjunction decompose AND dependent variable elimination - decomposition with elimination of a variable
 
+    //Conjunction structural decompose: C = (&&,a,b,..)
+    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
+        //, Goal:StructuralStrong
+           //maybe subOf?
+    //C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
+    //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
+
+    //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
+    //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+        //C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN, Time:Task)
 
     //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
 
@@ -335,14 +345,14 @@
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
     X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong, Time:TaskImmediate)
     X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN, Time:TaskImmediate)
+    //X, C, eventOf(C,X) |- conjEarliestIfLatest(C,X), (Goal:Strong, Time:TaskImmediate)
+    //X, C, eventOfNeg(C,X) |- conjEarliestIfLatest(C,--X), (Goal:StrongN, Time:TaskImmediate)
 
-        //X is the desired non-outcome.  C is a sequence ending in it.   this forms anti goal of the sequence minus the trailing
-        //non-event is non-immediate
-        X, C, eventOf(C,X) |- --conjDropIfLatest(C,X), (Goal:StrongN, Time:TaskImmediate)
-        X, C, eventOfNeg(C,X) |- --conjDropIfLatest(C,--X), (Goal:Strong, Time:TaskImmediate)
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 
+    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN)
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Strong, Time:TaskImmediate)
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN, Time:TaskImmediate)
 
@@ -383,13 +393,6 @@
     //X, C, eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
 
 
-    //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
-    //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
-
-    //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
-    //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-        //C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN, Time:Task)
 
 
 

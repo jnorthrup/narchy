@@ -319,34 +319,34 @@ public class FZero extends NAgentX {
             switch (a) {
                 case 0: {
                     fz.thrust = true;
-                    nar.goal(INH.the($.the("fwd"), id), Tense.Present, 1f, conf);
-                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("fwd"), id), Tense.Present, 1f, conf);
+                    nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
                     break;
                 }
                 case 1: {
                     fz.thrust = false;
                     fz.left = fz.right = false;
-                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 1f, conf);
-                    nar.goal(INH.the($.the("fwd"), id), Tense.Present, 0f, conf);
-                    nar.goal(INH.the($.the("left"), id), Tense.Present, 0f, conf);
-                    nar.goal(INH.the($.the("right"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("brake"), id), Tense.Present, 1f, conf);
+                    nar.want(INH.the($.the("fwd"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("left"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("right"), id), Tense.Present, 0f, conf);
                     break;
                 }
                 case 2: {
                     fz.left = true;
                     fz.right = false;
-                    nar.goal(INH.the($.the("left"), id), Tense.Present, 1f, conf);
+                    nar.want(INH.the($.the("left"), id), Tense.Present, 1f, conf);
                     
-                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
-                    nar.goal(INH.the($.the("right"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("right"), id), Tense.Present, 0f, conf);
                     break;
                 }
                 case 3: {
                     fz.right = true;
                     fz.left = false;
-                    nar.goal(INH.the($.the("right"), id), Tense.Present, 1f, conf);
-                    nar.goal(INH.the($.the("left"), id), Tense.Present, 0f, conf);
-                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("right"), id), Tense.Present, 1f, conf);
+                    nar.want(INH.the($.the("left"), id), Tense.Present, 0f, conf);
+                    nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
                     break;
                 }
 

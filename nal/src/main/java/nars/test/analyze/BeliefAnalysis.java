@@ -38,7 +38,7 @@ public class BeliefAnalysis implements Termed {
 
 	@NotNull
 	public BeliefAnalysis goal(float freq, float conf) {
-		nar.goal(term, freq, conf);
+		nar.want(term, freq, conf);
 		return this;
 	}
 

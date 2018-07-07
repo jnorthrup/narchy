@@ -8,6 +8,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
+import nars.concept.Operator;
 import nars.concept.TaskConcept;
 import nars.concept.dynamic.DynamicTruthBeliefTable;
 import nars.concept.dynamic.DynamicTruthModel;
@@ -24,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-import static nars.Op.PROD;
 import static nars.Op.goalable;
 
 public class DefaultConceptBuilder implements ConceptBuilder {
@@ -77,13 +77,10 @@ public class DefaultConceptBuilder implements ConceptBuilder {
             if (conceptor!=Null) {
                 @Nullable Termed conceptorc = conceptors.get(conceptor);
                 if (conceptorc instanceof Conceptor) {
-                    Term[] args = Functor.funcArgsArray(t);
-                    if (args.length > 0) {
-                        Concept x = ((Conceptor) conceptorc).apply(args[0],
-                                args.length > 1 && args[1].op()==PROD ? args[1].subterms() : Op.EmptySubterms);
-                        if (x!=null)
-                            return (TaskConcept) x;
-                    }
+
+                Concept x = ((Conceptor) conceptorc).apply(conceptor, Operator.args(t));
+                if (x!=null)
+                    return (TaskConcept) x;
                 }
             }
 

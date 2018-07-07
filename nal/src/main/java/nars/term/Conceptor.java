@@ -1,6 +1,7 @@
 package nars.term;
 
 import nars.$;
+import nars.Op;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
@@ -12,8 +13,6 @@ import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
-
-import static nars.Op.PROD;
 
 /** dynamic concept builder.
  *
@@ -30,9 +29,13 @@ abstract public class Conceptor extends NodeConcept implements PermanentConcept,
     }
 
     /** names the concept with this conceptor and params */
-    public Term id(Term base, Subterms param) {
-        return $.func((Atomic)this.term, base, PROD.the(param.arrayShared()));
+    public Term id(Subterms args) {
+        return $.func((Atomic)this.term, args.arrayShared());
     }
+    public Term id(Term... args) {
+        return id(Op.terms.subterms(args));
+    }
+
 
     @Override
     protected TermlinkTemplates buildTemplates(Term term) {

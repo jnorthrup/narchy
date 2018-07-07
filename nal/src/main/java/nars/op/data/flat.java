@@ -46,7 +46,7 @@ public abstract class flat extends Functor.AbstractInlineFunctor1 {
     }
 
     @Override
-    public @Nullable Term applyInline(Subterms x) {
+    public @Nullable Term apply1(Term x) {
 
         List<Term> l = $.newArrayList(x.volume());
         collect(x.arrayClone(), l);

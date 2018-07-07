@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.dynamic.DynamicBeliefTable;
 import nars.table.EternalTable;
-import nars.table.TemporalBeliefTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
@@ -28,21 +27,27 @@ public class Scalar extends Sensor {
 
     public Scalar(Term term, @Nullable LongToFloatFunction belief, @Nullable LongToFloatFunction goal, NAR n) {
         super(term,
-                belief != null ? new ScalarBeliefTable(term, true, belief, n.conceptBuilder.newTemporalTable(term)) : n.conceptBuilder.newTable(term, true),
-                goal != null ? new ScalarBeliefTable(term, false, goal, n.conceptBuilder.newTemporalTable(term)) : n.conceptBuilder.newTable(term, false),
+                belief != null ? new ScalarBeliefTable(term, true, belief, n) : n.conceptBuilder.newTable(term, true),
+                goal != null ? new ScalarBeliefTable(term, false, goal, n) : n.conceptBuilder.newTable(term, false),
                 n.conceptBuilder);
 //            this.belief = belief;
 //            this.goal = goal;
-        n.on(this);
+//        n.on(this);
     }
 
     /** samples at time-points */
     static class ScalarBeliefTable extends DynamicBeliefTable {
 
         private final LongToFloatFunction value;
+        long stampSeed, stampStart;
 
-        protected ScalarBeliefTable(Term c, boolean beliefOrGoal, LongToFloatFunction value, TemporalBeliefTable t) {
-            super(c, beliefOrGoal, EternalTable.EMPTY, t);
+        protected ScalarBeliefTable(Term term, boolean beliefOrGoal, LongToFloatFunction value, NAR n) {
+            super(term, beliefOrGoal, EternalTable.EMPTY,
+                    n.conceptBuilder.newTemporalTable(term));
+            stampStart = n.time();
+
+            this.stampSeed = term.hashCode();
+
             this.value = value;
         }
 
@@ -53,7 +58,10 @@ public class Scalar extends Sensor {
             if (t == null)
                 return null;
             else {
-                return new SignalTask(term, punc(), t, nar.time(), mid, mid);
+
+                long stampDelta = mid - stampStart; //TODO optional dithering
+                long stamp = stampDelta ^ stampSeed; //hash
+                return new SignalTask(term, punc(), t, nar.time(), mid, mid, stamp);
             }
         }
 

@@ -688,7 +688,11 @@ public class Occurrify extends TimeGraph {
         }
 
         private static boolean immediateIfPast(Derivation d, long[] o) {
-            if (o[0] != ETERNAL) {
+
+            if (o[0] == ETERNAL) {
+                //convert eternal to present
+                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
+            } else  {
                 long NOW = d.time;
                 if (o[0] < NOW) {
                     if (NOW <= o[1]) {

@@ -74,7 +74,7 @@ class ImplicationNetworkTest {
 
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
-        n.goal(a);
+        n.want(a);
         n.run(100);
 
         BeliefTable aGoals = n.concept(a).goals();

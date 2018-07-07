@@ -173,9 +173,15 @@ public interface BeliefTable extends TaskTable {
             @Nullable PreciseTruth tt = t.truth().dither(nar);
             if (tt!=null) {
                 t = Task.clone(t, t.term(), tt, t.punc());
+            } else {
+                t = null;
             }
         }
         return t;
+    }
+
+    default Task answer(Task r, NAR n) {
+        return answer(r.start(), r.end(), r.term(), null, n);
     }
 
 
@@ -183,7 +189,7 @@ public interface BeliefTable extends TaskTable {
 
 
 
-    
+
 
 
 

@@ -76,7 +76,7 @@ class QuestTest {
     }
 
     private void goal(NAR nar) throws Narsese.NarseseException {
-        nar.goal($.$("a:b"), Tense.Eternal, 1.0f, 0.9f);
+        nar.want($.$("a:b"), Tense.Eternal, 1.0f, 0.9f);
     }
 
 

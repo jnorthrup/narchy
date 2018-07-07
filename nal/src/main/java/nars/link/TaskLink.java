@@ -8,6 +8,8 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.dynamic.DynamicBeliefTable;
+import nars.table.BeliefTable;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -87,29 +89,52 @@ public interface TaskLink extends Priority, Termed {
 
             Term t = term.unneg();
 
-
             Concept c = n.conceptualizeDynamic(t);
+            Task r;
             if (c != null) {
                 long[] se = n.timeFocus(when);
-                Task result = c.table(punc).sample(se[0], se[1], t, n);
+                r = c.table(punc).sample(se[0], se[1], t, n);
 
-                return result == null || result.isDeleted() ? null : result;
+                //r = result == null || result.isDeleted() ? null : result;
             } else {
                 //TODO if term supports dynamic truth, then possibly conceptualize and then match as above?
 
                 //form a question/quest task for the missing concept
-                byte punc = this.punc;
-
-                if (punc == BELIEF) punc = QUESTION;
-                else if (punc == GOAL) punc = QUEST;
+                byte punc;
+                switch (this.punc) {
+                    case BELIEF:
+                        punc = QUESTION; break;
+                    case GOAL:
+                        punc = QUEST; break;
+                    case QUESTION:
+                    case QUEST:
+                        punc = this.punc;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
 
                 long[] se = n.timeFocus(when);
-                Task d = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
+                r = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
                 if (Param.DEBUG)
-                    d.log("Tasklinked");
-                d.pri(link.priElseZero());
-                return d;
+                    r.log("Tasklinked");
+                r.pri(link.priElseZero());
             }
+
+            if (c!=null && r!=null) {
+                if (r.isQuestionOrQuest()) {
+                    BeliefTable answers = c.tableAnswering(r.punc());
+                    if (answers instanceof DynamicBeliefTable) {
+                        //match an answer emulating a virtual self-termlink being matched during premise formation
+                        Task a = answers.answer(r, n);
+                        if (a!=null) {
+                            n.input(a);
+                        }
+                    }
+                }
+            }
+
+            return r;
 
         }
     }

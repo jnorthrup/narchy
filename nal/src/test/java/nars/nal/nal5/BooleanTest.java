@@ -160,7 +160,7 @@ class BooleanTest {
                         Term condition = $.impl(x.negIf(!subjPolarity), y.negIf(!predPolarity));
 
                         NAR n = NARS.tmp();
-                        n.goal(goal);
+                        n.want(goal);
                         n.believe(condition);
                         n.run(128);
 

@@ -472,6 +472,56 @@ public class Builtin {
             }
         });
 
+        nar.on(new Functor.AbstractInlineFunctor1("conjNonSequence") {
+            @Override
+            public Term apply1(Term conj) {
+                if (conj.dtRange()!=0) return Null;
+                else return conj;
+            }
+        });
+
+        /** if the supplied argument is the latest event of the sequence, then return the earliest event */
+        nar.on(new Functor.AbstractInlineFunctor2("conjEarliestIfLatest") {
+            @Override
+            protected Term apply(Term conj, Term event) {
+                if (conj.dtRange()==0) {
+                    //conjDropIfLatest in eternal/parallel case
+                    Term x = Conj.conjDrop(conj, event, false);
+                    if (conj.equals(x))
+                        return Null;
+                    return x;
+                } else {
+                    FasterList<LongObjectPair<Term>> events = Conj.eventList(conj);
+                    int eventsSize = events.size();
+                    if (eventsSize < 2)
+                        return Null;
+                    long startTime = events.getFirst().getOne();
+                    long endTime = events.getLast().getOne();
+                    assert(startTime!=endTime);
+                    for (int i = eventsSize-1; i >= 0; i--) {
+                        LongObjectPair<Term> e = events.get(i);
+                        if (e.getOne()!=endTime)
+                            return Null; //isnt end event
+
+                        if (e.getTwo().equals(event)) {
+                            break; //found
+                        }
+                    }
+                    //choose a start event at random if >1
+                    int numAtStart;
+                    for (numAtStart = 0; numAtStart < eventsSize && events.get(numAtStart).getOne()==startTime; numAtStart++) {
+
+                    }
+                    if (numAtStart == 1)
+                        return events.get(0).getTwo();
+                    else {
+                        //choose random
+                        return events.get(nar.random().nextInt(numAtStart)).getTwo();
+                    }
+                }
+            }
+        });
+
         nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatest") {
             @Override
             protected Term apply(Term conj, Term event) {

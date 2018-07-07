@@ -35,7 +35,7 @@ class DiffGoalTest {
 
     }
 
-    private TestNAR testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, boolean diffIsEx, float f, float c) {
+    static private TestNAR testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, boolean diffIsEx, float f, float c) {
         String goalTerm, beliefTerm;
         String first, second;
         if (diffIsFwd) {

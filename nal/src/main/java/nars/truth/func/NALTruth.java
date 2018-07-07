@@ -377,12 +377,14 @@ public enum NALTruth implements TruthFunc {
             return (res != null) ? res.neg() : null;
         }
     },
-    Strong() {
+
+    @Deprecated Strong() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions2.desireNew(T, B, minConf, true);
+            return Goalduction.apply(T, B, m, minConf);
         }
     },
+
     Goalduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -396,13 +398,12 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    Weak() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions2.desireNew(T, B, minConf, false);
-
-        }
-    },
+//    @Deprecated Weak() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            return GoalductionWeak.apply(T, B, m, minConf);
+//        }
+//    },
 
     @SinglePremise @AllowOverlap Curiosity() {
         @Override

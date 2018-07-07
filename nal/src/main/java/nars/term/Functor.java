@@ -75,6 +75,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return null;
     }
 
+
+
     @Override
     public final byte[] bytes() {
         return ((Atomic) term).bytes();
@@ -313,10 +315,17 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
             super(atom);
         }
 
+        abstract public Term apply1(Term arg);
 
         @Override
-        final public Term apply(Evaluation e, Subterms terms) {
-            return terms.subs() != 1 ? Null : applyInline(terms.sub(0));
+        public final Term applyInline(Subterms args) {
+            if (args.subs()!=1) return Null;
+            return apply1(args.sub(0));
+        }
+
+        @Override
+        public final Term apply(Evaluation e, Subterms terms) {
+            return terms.subs() != 1 ? Null : apply1(terms.sub(0));
         }
 
     }
@@ -633,9 +642,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         }
 
         @Override
-        public Term applyInline(Subterms x) {
-            return ff.apply(x.sub(0));
+        public final Term apply1(Term arg) {
+            return ff.apply(arg);
         }
+
     }
 
     protected static class TheAbstractInlineFunctor1Inline extends MyAbstractInlineFunctor1Inline implements The {

@@ -118,15 +118,17 @@ public class NARS {
     public NARS() {
 
         index = () ->
+
+//                new CaffeineIndex(16*1024);
                 
                 new MapConceptIndex(
-                        
+
                         new MRUCache<>(16*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();
                                 if (c instanceof PermanentConcept) {
-                                    throw new TODO("Should not evict " + c); 
+                                    throw new TODO("Should not evict " + c);
                                 } else {
                                     ((Concept)c).delete(null /* HACK */);
                                 }

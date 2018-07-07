@@ -127,9 +127,17 @@ class TemporalTermTest {
     }
 
     @Test public void testConjConceptualizationWithFalse() {
-        String s = "((--,chronic(g))&&((--,up)&|false))";
-        Term t = $$(s);
-        assertEquals(False,t);
+        assertEquals(False, $$("((--,chronic(g))&&((--,up)&|false))"));
+    }
+    
+    @Test public void testFactorDternalComponentIntoTemporals1() {
+        assertEquals("((a&|x) &&+1 (a&|y))", $$("((x &&+1 y) && a)").toString());
+    }
+    @Test public void testFactorDternalComponentIntoTemporals2() {
+        assertEquals("((a&&x) &&+- (a&&y))", $$("((x &&+- y) && a)").toString());
+    }
+    @Test public void testFactorDternalComponentIntoTemporals3() {
+        assertEquals("((x&&y) &&+- x)", $$("(((x && y) &&+- x)&&x)").toString());
     }
 
     private void assertInvalidTask(@NotNull String ss) {
@@ -193,11 +201,20 @@ class TemporalTermTest {
     }
 
     @Test
+    void testConceptualizationWithoutConjReduction2a() throws Narsese.NarseseException {
+        String s = "((x &&+1 y) &&+1 z)";
+        assertEquals(
+                "(&&,x,y,z)",
+                $(s).concept().toString());
+    }
+
+    @Test
     void testConceptualizationWithoutConjReduction2() throws Narsese.NarseseException {
         String s = "(((--,((--,(joy-->tetris))&|#1)) &&+30 #1) &&+60 (joy-->tetris))";
         assertEquals(
                 //"(((--,((--,(joy-->tetris))&&#1)) &&+- #1)&&(joy-->tetris))",
                 "(((||,(joy-->tetris),(--,#1)) &&+- #1)&&(joy-->tetris))",
+
                 $(s).concept().toString());
     }
 
@@ -228,11 +245,6 @@ class TemporalTermTest {
         assertEquals("((--,((#1-->happy)&&(#1-->neutral)))&&(--,(#1-->sad)))", c1.toString());
     }
 
-    @Test
-    void testStableConceptualization5() throws Narsese.NarseseException {
-        Term c1 = ceptualStable("((((--,a)&&b) &&+- a)&&(--,b))");
-        assertEquals("((((--,a)&&b) &&+- a)&&(--,b))", c1.toString());
-    }
 
     @Test
     void testStableConceptualization6() throws Narsese.NarseseException {

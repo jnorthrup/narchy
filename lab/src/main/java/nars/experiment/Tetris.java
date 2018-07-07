@@ -6,9 +6,14 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
+import nars.concept.Concept;
+import nars.concept.Scalar;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
+import nars.subterm.Subterms;
+import nars.term.Conceptor;
 import nars.term.Term;
+import nars.term.atom.Int;
 import nars.util.TimeAware;
 
 import java.util.Arrays;
@@ -63,11 +68,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
         };
 
 
+
         addCamera(
                 pixels = new Bitmap2DSensor<>(
                         (x, y) -> $.p(id, $.the(x), $.the(y))
-
-
                         , this, nar)
 
         );
@@ -93,13 +97,13 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
             //Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
-            n.freqResolution.set(0.02f);
-            n.confResolution.set(0.01f);
-            n.dtDither.set(5); //for fine-grain Opjects timing
+            n.freqResolution.set(0.05f);
+            //n.confResolution.set(0.01f);
+            //n.dtDither.set(5); //for fine-grain Opjects timing
 
 
             return a;
-        }, 20f);
+        }, 40f);
 
 
 

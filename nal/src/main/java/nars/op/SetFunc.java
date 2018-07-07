@@ -93,7 +93,7 @@ public class SetFunc {
             case 0: return Null;
             case 1: return cc.first();
             default:
-                return Op.compoundExact(o, DTERNAL, cc.toArray(Op.EmptyTermArray));
+                return Op.theExact(o, DTERNAL, cc.toArray(Op.EmptyTermArray));
         }
 
 

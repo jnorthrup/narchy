@@ -323,7 +323,7 @@ public class Conj extends AnonMap {
         }
 
 
-        return Op.compoundExact(CONJ, dt, left, right);
+        return Op.theExact(CONJ, dt, left, right);
     }
 
     /**
@@ -670,7 +670,7 @@ public class Conj extends AnonMap {
 
         IntPredicate validator = null;
         Object eternalWhat = event.get(ETERNAL);
-        Term eternal = term(ETERNAL, eternalWhat);
+        final Term eternal = eternalWhat!=null ? term(ETERNAL, eternalWhat) : null;
         if (eternal != null) {
 
             if (eternal instanceof Bool)
@@ -689,8 +689,7 @@ public class Conj extends AnonMap {
                         validator = (i) -> !b.contains(-i);
                     }
                 } else {
-                    Term finalEternal = eternal;
-                    validator = (t) -> !finalEternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
+                    validator = (t) -> !eternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
                 }
             }
         }
@@ -812,8 +811,6 @@ public class Conj extends AnonMap {
 
     private Term term(long when, Object what, IntPredicate validator) {
 
-        if (what == null) return null;
-
         final RoaringBitmap rb;
         final byte[] b;
         int n;
@@ -861,10 +858,59 @@ public class Conj extends AnonMap {
             case 1:
                 return t.first();
             default: {
-                return Op.compoundExact(CONJ,
-                        when == ETERNAL ? DTERNAL : 0,
-                        t.toArray(Op.EmptyTermArray) /* sorted iff t is SortedSet */);
+                int dt;
+                Term theSequence = null;
+                if (when == ETERNAL) {
+                    int sequences = 0;
+                    for (Term x : t) {
+                        if (x.op()==CONJ) {
+                            switch (x.dt())  {
+                                case 0:
+                                case DTERNAL:
+                                    break; //dont
+                                case XTERNAL:
+                                default:
+                                    //assert(x.dtRange()!=0);
+                                    theSequence = x;
+                                    sequences++;
+                                    break;
+                            }
+                        }
+                    }
+                    if (sequences == 1) {
+                        t.remove(theSequence); //handled below
+                    } else {
+                        theSequence = null; //dont do anything
+                    }
+                    dt = DTERNAL;
+                } else {
+                    dt = 0;
+                }
 
+                Term z = t.size() > 1 ? Op.theExact(CONJ,
+                        dt,
+                        t.toArray(Op.EmptyTermArray) /* sorted iff t is SortedSet */) : t.first();
+
+                if (theSequence!=null) {
+                    //Unfactor z to each component of the sequence
+                    if (theSequence.dt()!=XTERNAL) {
+                        Conj cs = Conj.from(theSequence);
+                        cs.event.keysView().allSatisfy(csw ->
+                                cs.add(csw, z) //short-circuits if non-valid
+                        );
+                        return cs.term();
+                    } else {
+                        //special handling for XTERNAL which is not decomposed by Conj
+                        SortedSet<Term> xs = new TreeSet();
+                        theSequence.eventsWhile((whn,wht)->{
+                            xs.add(CONJ.the(DTERNAL, wht, z));
+                            return true;
+                        }, 0, false, false, true, 0);
+                        return CONJ.the(XTERNAL, xs);
+                    }
+                }
+
+                return z;
             }
         }
     }

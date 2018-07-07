@@ -290,8 +290,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         init(nar);
 
         alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
-        alwaysWant(happy.filter[1].term, nar.confDefault(GOAL)/2);
-        alwaysWant(happy.filter[2].term, nar.confMin.floatValue());
+        alwaysWant(happy.filter[1].term, nar.confDefault(GOAL) * 0.5f); //chronic
+        alwaysWant(happy.filter[2].term, nar.confMin.floatValue()); //acute
 
         actions.keySet().forEach(a -> {
             alwaysQuest(a, true);

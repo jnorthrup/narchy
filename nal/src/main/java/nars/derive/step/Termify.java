@@ -94,8 +94,13 @@ public final class Termify extends AbstractPred<Derivation> {
                 unwrapNeg = false;
             }
             Pair<Term, long[]> timing = time.solve(d, c1);
-            if (timing == null)
+            if (timing == null) {
+                d.nar.emotion.deriveFailTemporal.increment(/*() ->
+                        rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
+                */);
                 return false;
+            }
+
             c2 = timing.getOne();
             long[] occ = timing.getTwo();
             if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&

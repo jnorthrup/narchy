@@ -104,7 +104,7 @@ class OperatorTest {
         n.run(4);
         n.input("x(0)! :|:");
         n.run(4);
-        n.goal("good");
+        n.want("good");
         n.run(1000);
     }
 

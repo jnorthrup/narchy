@@ -256,7 +256,7 @@ public class TestNAR {
     public TestNAR goal(String t, Tense tense, float f, float c) {
         finished = false;
         try {
-            nar.goal($.$(t), tense, f, c);
+            nar.want($.$(t), tense, f, c);
         } catch (Narsese.NarseseException e) {
             throw new RuntimeException(e);
         }
@@ -265,7 +265,7 @@ public class TestNAR {
 
 
     public TestNAR goal(String s) {
-        nar.goal(s);
+        nar.want(s);
         return this;
     }
 

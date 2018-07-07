@@ -235,7 +235,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
             return new CheckBox(s, () -> {
                 view.onConceptTouch((c) -> {
                     next.set(() ->
-                            view.nar.goal(c.term(), Tense.Present, v)
+                            view.nar.want(c.term(), Tense.Present, v)
                     );
                 });
             });

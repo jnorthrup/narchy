@@ -106,6 +106,19 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
         }
     }
 
+    default BeliefTable tableAnswering(byte punc) {
+        switch (punc) {
+            case BELIEF:
+            case QUESTION:
+                return beliefs();
+            case GOAL:
+            case QUEST:
+                return goals();
+            default:
+                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + "'");
+        }
+    }
+
     String printIndent = "  \t";
 
     /**

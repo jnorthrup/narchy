@@ -438,7 +438,7 @@ public abstract class TermBuilder {
                     if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
 
 
-                        return compoundExact(CONJ, dt, sorted(u[0], u[1]));
+                        return theExact(CONJ, dt, sorted(u[0], u[1]));
                     }
 
                 }
@@ -508,7 +508,7 @@ public abstract class TermBuilder {
 
                                     Term[] xu = {CONJ.the(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
                                     Arrays.sort(xu);
-                                    return compoundExact(CONJ, XTERNAL, xu);
+                                    return theExact(CONJ, XTERNAL, xu);
                                 }
                             }
 
@@ -521,7 +521,7 @@ public abstract class TermBuilder {
                 }
 
                 if (u.length > 1) {
-                    return compoundExact(CONJ, XTERNAL, u);
+                    return theExact(CONJ, XTERNAL, u);
                 } else {
                     return u[0];
                 }

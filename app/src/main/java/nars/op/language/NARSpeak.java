@@ -107,14 +107,14 @@ public class NARSpeak {
             nar.on1("str", (Term t)->$.quote(t.toString()));
 
             try {
-                nar.goal($.$("say(ready)"), Tense.Present, 1f, 0.9f);
+                nar.want($.$("say(ready)"), Tense.Present, 1f, 0.9f);
                 nar.believe($.$("(" + a.happy.id + " =|> say(happy))"));
-                nar.goal($.$("(" + a.happy.id + " &| say(happy))"));
+                nar.want($.$("(" + a.happy.id + " &| say(happy))"));
                 nar.believe($.$("(" + a.happy.id.neg() + " =|> say(sad))"));
-                nar.goal($.$("(" + a.happy.id.neg() + " &| say(sad))"));
-                nar.goal($.$("(#x &| say(#x))"));
+                nar.want($.$("(" + a.happy.id.neg() + " &| say(sad))"));
+                nar.want($.$("(#x &| say(#x))"));
                 nar.believe($.$("($x =|> say($x))"));
-                nar.goal($.$("say(#1)"));
+                nar.want($.$("say(#1)"));
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }

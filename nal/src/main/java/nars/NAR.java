@@ -117,7 +117,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     private final AtomicReference<Term> self = new AtomicReference<>(null);
     public final ConceptBuilder conceptBuilder;
 
-    /** default attention; other attentions can be attached as services */
+    /**
+     * default attention; other attentions can be attached as services
+     */
     public final Attention attn;
 
     public volatile Logger logger;
@@ -148,7 +150,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
         this.emotion = new Emotion(this);
-
 
 
         this.attn = attn;
@@ -383,20 +384,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @Nullable
-    public Task goal(String goalTermString, Tense tense, float freq, float conf) throws NarseseException {
-        return goal($(goalTermString), tense, freq, conf);
+    public Task want(String goalTermString, Tense tense, float freq, float conf) throws NarseseException {
+        return want($(goalTermString), tense, freq, conf);
     }
 
-    public Task goal(Term goal, Tense tense, float freq) {
-        return goal(goal, tense, freq, confDefault(GOAL));
+    public Task want(Term goal, Tense tense, float freq) {
+        return want(goal, tense, freq, confDefault(GOAL));
     }
 
     /**
      * desire goal
      */
     @Nullable
-    public Task goal(Term goalTerm, Tense tense, float freq, float conf) {
-        return goal(
+    public Task want(Term goalTerm, Tense tense, float freq, float conf) {
+        return want(
                 priDefault(GOAL),
                 goalTerm, time(tense), freq, conf);
     }
@@ -421,8 +422,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return believe(term, Tense.Eternal, freq, conf);
     }
 
-    public Task goal(Term term, float freq, float conf) {
-        return goal(term, Tense.Eternal, freq, conf);
+    public Task want(Term term, float freq, float conf) {
+        return want(term, Tense.Eternal, freq, conf);
     }
 
     public TimeAware believe(String term, Tense tense, float freq, float conf) {
@@ -443,9 +444,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    public Task goal(String termString) {
+    public Task want(String termString) {
         try {
-            return goal($(termString), true);
+            return want($(termString), true);
         } catch (NarseseException e) {
             throw new RuntimeException(e);
         }
@@ -464,8 +465,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    public Task goal(String termString, boolean isTrue) throws NarseseException {
-        return goal($(termString), isTrue);
+    public Task want(String termString, boolean isTrue) throws NarseseException {
+        return want($(termString), isTrue);
     }
 
     public Task believe(Term term) {
@@ -476,20 +477,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return believe(term, trueOrFalse, confDefault(BELIEF));
     }
 
-    public Task goal(Term term) {
-        return goal(term, true);
+    public Task want(Term term) {
+        return want(term, true);
     }
 
-    public Task goal(Term term, boolean trueOrFalse) {
-        return goal(term, trueOrFalse, confDefault(BELIEF));
+    public Task want(Term term, boolean trueOrFalse) {
+        return want(term, trueOrFalse, confDefault(BELIEF));
     }
 
     public Task believe(Term term, boolean trueOrFalse, float conf) {
         return believe(term, trueOrFalse ? 1.0f : 0f, conf);
     }
 
-    public Task goal(Term term, boolean trueOrFalse, float conf) {
-        return goal(term, trueOrFalse ? 1.0f : 0f, conf);
+    public Task want(Term term, boolean trueOrFalse, float conf) {
+        return want(term, trueOrFalse ? 1.0f : 0f, conf);
     }
 
     public NAR believe(Term term, long occurrenceTime) throws InvalidTaskException {
@@ -501,11 +502,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return input(pri, term, BELIEF, occurrenceTime, freq, conf);
     }
 
-    public Task goal(float pri, Term goal, long when, float freq, float conf) throws InvalidTaskException {
+    public Task want(float pri, Term goal, long when, float freq, float conf) throws InvalidTaskException {
         return input(pri, goal, GOAL, when, when, freq, conf);
     }
 
-    public Task goal(float pri, Term goal, long start, long end, float freq, float conf) throws InvalidTaskException {
+    public Task want(float pri, Term goal, long start, long end, float freq, float conf) throws InvalidTaskException {
         return input(pri, goal, GOAL, start, end, freq, conf);
     }
 
@@ -639,6 +640,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public final Operator onOp1(Atom atom, BiConsumer<Term, NAR> exe) {
         return onOp(atom, (task, nar) -> {
+
             Subterms ss = task.term().sub(0).subterms();
             if (ss.subs() == 1)
                 exe.accept(ss.sub(0), nar);
@@ -648,6 +650,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public final void onOp2(String atom, TriConsumer<Term, Term, NAR> exe) {
         onOp(atom, (task, nar) -> {
+
             Subterms ss = task.term().sub(0).subterms();
             if (ss.subs() == 2)
                 exe.accept(ss.sub(0), ss.sub(1), nar);
@@ -660,6 +663,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final void onOp(String a, BiConsumer<Task, NAR> exe) {
         onOp(a, (task, nar) -> {
+
             exe.accept(task, nar);
             return null;
         });
@@ -677,7 +681,30 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final Operator onOp(Atom a, BiFunction<Task, NAR, Task> exe) {
         Operator op;
-        concepts.set(op = new Operator(a, exe, this));
+        concepts.set(op = new Operator(a, (task, nar) -> {
+            //default handler
+            if (task.isCommand())
+                return exe.apply(task, nar);
+            else {
+                if (task.expectation() > 0.5f) {
+                    long s = task.start();
+                    long now = nar.time();
+                    int dur = nar.dur();
+                    if (s >= now - dur / 2) {
+                        if (s > now + dur / 2) {
+                            //delayed
+                            nar.runAt(s, () -> {
+                                nar.input(exe.apply(task, nar));
+                            });
+                        } else {
+                            return exe.apply(task, nar);
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }, this));
         return op;
     }
 
@@ -960,18 +987,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * tasks in concepts
      */
 
-    public Stream<Task> tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests) {
+    public Stream<Task> tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions,
+                              boolean includeConceptGoals, boolean includeConceptQuests) {
         return concepts().flatMap(c ->
                 c.tasks(includeConceptBeliefs, includeConceptQuestions, includeConceptGoals, includeConceptQuests));
     }
 
-    public void tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests, BiConsumer<Concept, Task> each) {
+    public void tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals,
+                      boolean includeConceptQuests, BiConsumer<Concept, Task> each) {
         concepts().forEach(c ->
 
-            c.tasks(includeConceptBeliefs,
-                    includeConceptQuestions,
-                    includeConceptGoals,
-                    includeConceptQuests).forEach(t -> each.accept(c, t))
+                c.tasks(includeConceptBeliefs,
+                        includeConceptQuestions,
+                        includeConceptGoals,
+                        includeConceptQuests).forEach(t -> each.accept(c, t))
         );
     }
 
@@ -1084,12 +1113,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Concept on(Concept c) {
 
         if (c instanceof Conceptor) {
-            conceptBuilder.on((Conceptor)c);
-            return c;
+            conceptBuilder.on((Conceptor) c);
+            //return c;
         }
 
         Concept existing = concept(c);
-        if ((existing != null) ) {
+        if ((existing != null)) {
             if (existing != c) {
 
                 if (!(c instanceof PermanentConcept)) {
@@ -1398,7 +1427,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         /** conceptualize regardless */
         Concept c = concept(t, true /*false */ /* true */);
 
-        if (c!=null && !eventActivate.isEmpty()) {
+        if (c != null && !eventActivate.isEmpty()) {
             eventActivate.emit(new Activate(c, activationApplied * activateConceptRate.floatValue()));
         }
     }
@@ -1439,12 +1468,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
     }
 
-    /** conceptualize a term if dynamic truth is possible; otherwise return concept if exists */
+    /**
+     * conceptualize a term if dynamic truth is possible; otherwise return concept if exists
+     */
     public final Concept conceptualizeDynamic(Termed concept) {
 
         Concept x = concept(concept);
-        if (x==null) {
-            if (ConceptBuilder.dynamicModel(concept.term())!=null) {
+        if (x == null) {
+            if (ConceptBuilder.dynamicModel(concept.term()) != null) {
                 //try conceptualizing the dynamic
                 return conceptualize(concept);
             }
@@ -1491,12 +1522,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 case 0:
                     return;
                 case 1:
-                    input((ITask)x[0]);
+                    input((ITask) x[0]);
                     break;
                 default:
                     for (Object xx : x) {
                         if (process(xx))
-                            input((ITask)xx);
+                            input((ITask) xx);
                     }
                     //NAR.this.input(Iterables.filter(ArrayIterator.iterable(x), this::process));
                     break;

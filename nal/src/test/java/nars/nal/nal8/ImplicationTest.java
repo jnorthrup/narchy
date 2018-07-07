@@ -94,7 +94,7 @@ class ImplicationTest {
                         Term impl = IMPL.the(x.negIf(!xx), y.negIf(!yy));
 
                         n.believe(impl);
-                        n.goal(cond);
+                        n.want(cond);
                         n.run(CYCLES);
 
                         Term nz = sp ? y : x;
