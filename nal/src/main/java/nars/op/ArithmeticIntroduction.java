@@ -256,11 +256,11 @@ public class ArithmeticIntroduction extends LeakBack {
             Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) ->
                     new UnevaluatedTask(c, xx, t));
 
-            //discount pri by increase in term complexity
-            float xc = x.complexity();
-            yy.priMult(Math.min(1, (xc /(y.complexity())))  );
-
             if (yy!=null) {
+                //discount pri by increase in term complexity
+                float xc = x.complexity();
+                yy.priMult(Math.min(1, (xc /(y.complexity())))  );
+
                 input(yy);
                 return 1;
             }

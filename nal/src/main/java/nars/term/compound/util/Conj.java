@@ -102,29 +102,56 @@ public class Conj extends AnonMap {
                 else
                     return CONJ.the(cdt, csDropped);
             }
-        }
-
-        Conj c = Conj.from(conj);
-        long targetTime;
-        if (c.event.size() == 1) {
-
-            targetTime = c.event.keysView().longIterator().next();
-        } else if (earlyOrLate) {
-            Object eternalTemporarilyRemoved = c.event.remove(ETERNAL);
-            targetTime = c.event.keysView().min();
-            if (eternalTemporarilyRemoved != null)
-                c.event.put(ETERNAL, eternalTemporarilyRemoved);
         } else {
-            targetTime = c.event.keysView().max();
-        }
-        assert (targetTime != XTERNAL);
-        boolean removed = c.remove(event, targetTime);
-        if (!removed) {
-            return Null;
+
+            Conj c = Conj.from(conj);
+            long targetTime;
+            if (c.event.size() == 1) {
+
+                targetTime = c.event.keysView().longIterator().next();
+            } else if (earlyOrLate) {
+                Object eternalTemporarilyRemoved = c.event.remove(ETERNAL);
+                targetTime = c.event.keysView().min();
+                if (eternalTemporarilyRemoved != null)
+                    c.event.put(ETERNAL, eternalTemporarilyRemoved);
+            } else {
+                //check that event.neg doesnt occurr sooner. it would be absurd to goal the opposite just to reach the desired later
+                byte id = c.get(event);
+                if (id == Byte.MIN_VALUE)
+                    return conj; //not found
+
+                byte idNeg = (byte) -id;
+
+                targetTime = c.event.keysView().max();
+
+                final boolean[] foundEarlierOpposite = {false};
+                c.event.forEachKeyValue((w, wh) -> {
+                    if (w == targetTime || foundEarlierOpposite[0])
+                        return;
+                    if (wh instanceof byte[]) {
+                        byte[] b = (byte[]) wh;
+                        if (ArrayUtils.indexOf(b, idNeg) == -1)
+                            return;
+                    } else {
+                        RoaringBitmap r = (RoaringBitmap) wh;
+                        if (!r.contains(idNeg))
+                            return;
+                    }
+                    foundEarlierOpposite[0] = true;
+                });
+                if (foundEarlierOpposite[0])
+                    return Null;
+            }
+            assert (targetTime != XTERNAL);
+            boolean removed = c.remove(event, targetTime);
+            if (!removed) {
+                return Null;
+            }
+
+            return c.term();
         }
 
-        return c.term();
-
+        return conj; //no change
 
     }
 
@@ -517,7 +544,7 @@ public class Conj extends AnonMap {
     /**
      * returns index of an item if it is present, or -1 if not
      */
-    public byte index(Term t) {
+    private byte index(Term t) {
         return termToId.getIfAbsent(t.unneg(), (byte) -1);
     }
 
@@ -625,6 +652,9 @@ public class Conj extends AnonMap {
         }
 
         int i = get(t);
+        if (i == Byte.MIN_VALUE)
+            return false;
+
         int[] ii;
         if (pos && neg) {
             ii = new int[]{i, -i};

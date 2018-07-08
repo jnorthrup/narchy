@@ -5,6 +5,8 @@ import jcog.math.FloatSupplier;
 import jcog.util.ArrayIterator;
 import nars.NAR;
 import nars.term.Term;
+import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 
@@ -17,11 +19,11 @@ public class FilteredScalar extends DemultiplexedScalar {
 
     public final Filter[] filter;
 
-    public FilteredScalar(FloatSupplier input, NAR nar, Pair<Term,FloatToFloatFunction>... filters) {
+    public FilteredScalar(FloatSupplier input, FloatFloatToObjectFunction<Truth> truther, NAR nar, Pair<Term,FloatToFloatFunction>... filters) {
         super(input,
                 
                 CONJ.the
-                    (Util.map(Pair::getOne, Term[]::new, filters)), nar);
+                    (Util.map(Pair::getOne, Term[]::new, filters)), nar, truther);
 
         this.filter = new Filter[filters.length];
 

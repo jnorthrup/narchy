@@ -5,7 +5,6 @@ import jcog.learn.Autoencoder;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.agent.NAgent;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
@@ -107,8 +106,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
                 for (int k = 0; k < states; k++) {
                     Term term = $.prop(coord, $.the(k));
                     int ii = i;  int jj = j; int kk = k;
-                    agent.sense(c, term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, (v) ->
-                            pixConf[ii][jj] > Param.TRUTH_EPSILON  ? $.t(v, pixConf[ii][jj]) : null);
+                    agent.sense(c, term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN);
                 }
             }
         }

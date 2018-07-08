@@ -39,7 +39,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     @SuppressWarnings("unused")
     private boolean focused;
-    private MapScene mapScene;
+    public MapScene mapScene;
     int delay;
     public BufferedImage image;
 

@@ -267,8 +267,6 @@ public class NARS {
             nar.termVolumeMax.set(26);
 
 
-//            nar.activateConceptRate.set(0.4f);
-
             nar.forgetRate.set(0.5f);
 
             nar.beliefPriDefault.set(0.5f);

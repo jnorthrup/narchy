@@ -35,22 +35,22 @@ class NARTestOptimize {
             };
 
             Lab<NAR> l = new Lab<>(() -> NARS.tmp(nalLevel))
-//                .var("ttlMax", 6, 50, 3,
+//                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-                .var("termlinkBalance", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.termlinkBalance.set(f))
-                .var("forgetRate", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.forgetRate.set(f))
+//                .var("termlinkBalance", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.termlinkBalance.set(f))
+//                .var("forgetRate", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.forgetRate.set(f))
                 .var("activationRate", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.activateConceptRate.set(f))
-                .var("derivationComplexityExponent", 1, 3f, 0.1f,
+                .var("derivationComplexityExponent", 0.5f, 4f, 0.5f,
                         (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
                                 ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
                                         relGrowthExponent.set(f)))
-                .var("derivationScale", 0, 2f, 0.1f,
-                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
-                                        scale.set(f)))
+//                .var("derivationScale", 0, 2f, 0.1f,
+//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+//                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
+//                                        scale.set(f)))
             ;
 
 

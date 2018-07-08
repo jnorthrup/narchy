@@ -52,20 +52,15 @@ public interface Compound extends Term, IPair, Subterms {
 
     static boolean equals(/*@NotNull*/ Compound a, Object b) {
         if (a == b) return true;
-        if (!(b instanceof Compound) || (a.hashCode()!=b.hashCode())) return false;
-        return equals(a, (Compound)b);
-    }
 
-    static boolean equals(/*@NotNull*/ Compound a, @Nullable Compound bb) {
-        assert (a != bb) : "instance check should have already been performed before calling this";
-
-        return
-                (a.op() == bb.op())
-                        &&
-                        (a.dt() == bb.dt())
-                        &&
-                        (a.subterms().equals(bb.subterms()))
-
+        return (b instanceof Compound) &&
+                (a.hashCode()==b.hashCode())
+                &&
+                (a.op() == ((Compound)b).op())
+                &&
+                (a.dt() == ((Compound)b).dt())
+                &&
+                (a.subterms().equals(((Compound)b).subterms()))
                 ;
     }
 

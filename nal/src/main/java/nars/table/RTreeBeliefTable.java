@@ -107,7 +107,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         if (next instanceof Leaf) {
 
             Leaf l = (Leaf) next;
-            for (Object _x: l.data) {
+            for (Object _x : l.data) {
                 if (_x == null)
                     break;
 
@@ -134,7 +134,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             Branch b = (Branch) next;
 
-            for (Node ww: b.data) {
+            for (Node ww : b.data) {
                 if (ww == null)
                     break;
                 else if (!findEvictable(tree, ww, closest, weakest, weakLeaf))
@@ -353,7 +353,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
         });
         Task existing = RTreeBeliefModel.merged.get();
-        if (existing!=null && existing.equals(input)) {
+        if (existing != null && existing.equals(input)) {
             //assert(!input.isDeleted());
             RTreeBeliefModel.merged.remove();
             r.merge(existing);
@@ -393,7 +393,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     perceptDur, remember, nar))
                 return false;
             e++;
-            assert(e < cap);
+            assert (e < cap);
         }
 
         assert (treeRW.size() <= cap);
@@ -548,9 +548,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
 
             case MergeInputClosest: {
-                if (treeRW.remove(C) && treeRW.add(IC)) {
+                if (treeRW.remove(C)) {
                     r.forget(C);
-                    r.remember(IC);
+                    if (treeRW.add(IC)) {
+                        r.remember(IC);
+                    } //else: already contained the merger
                     return true;
                 }
                 throw new WTF();
@@ -586,8 +588,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
 
-
-    @Override public long tableDur() {
+    @Override
+    public long tableDur() {
         TaskRegion root = (TaskRegion) root().bounds();
         if (root == null)
             return 0;
@@ -717,12 +719,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
 
 
-        /** HACK store merge notifications */
+        /**
+         * HACK store merge notifications
+         */
         final static ThreadLocal<Task> merged = new ThreadLocal();
 
         @Override
         protected void merge(TaskRegion existing, TaskRegion incoming) {
-            merged.set((Task)existing);
+            merged.set((Task) existing);
         }
 
     }

@@ -8,6 +8,7 @@ import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.IMPL;
+import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -59,6 +60,12 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
             if ((xop = x.op()) != y.op())
                 return true;
 
+            if (xop == NEG) {
+                //neg oblivious
+                x = x.unneg();
+                y = y.unneg();
+            }
+
             if (x.subterms().equals(y.subterms()))
                 return false; 
 
@@ -68,7 +75,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
                 case IMPL:
                     return (y.op() != IMPL || x.structure() != y.structure() || x.volume() != y.volume());
                 default:
-                    return (x.subs() != y.subs()) || (y.volume() != x.volume()) || y.structure() != x.structure(); 
+                    return (x.subs() != y.subs()) || (y.volume() != x.volume()) || y.structure() != x.structure();
             }
 
         }

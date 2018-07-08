@@ -5,6 +5,7 @@ import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
@@ -121,7 +122,7 @@ public interface TaskLink extends Priority, Termed {
                 r.pri(link.priElseZero());
             }
 
-            if (c!=null && r!=null) {
+            if (c!=null && r!=null && !t.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
                 if (r.isQuestionOrQuest()) {
                     BeliefTable answers = c.tableAnswering(r.punc());
                     if (answers instanceof DynamicBeliefTable) {

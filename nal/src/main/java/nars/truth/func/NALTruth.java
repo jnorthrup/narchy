@@ -251,7 +251,7 @@ public enum NALTruth implements TruthFunc {
     Difference() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.intersection(T, B.neg(), minConf);
+            return Intersection.apply(T, B.neg(), m, minConf);
         }
     },
 
@@ -268,12 +268,12 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions2.analogy(T, B, minConf);
         }
     },
-    ReduceConjunction() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.reduceConjunction(T, B, minConf);
-        }
-    },
+//    ReduceConjunction() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            return TruthFunctions.reduceConjunction(T, B, minConf);
+//        }
+//    },
 
 
     AnonymousAnalogy() {

@@ -12,7 +12,6 @@ import nars.derive.deriver.SimpleDeriver;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -55,7 +54,6 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
 
         /*
@@ -82,13 +80,13 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(
-                    new BufferedExec.WorkerExec(Util.concurrency()) {
-                    //    new BufferedExec.ForkJoinExec(Util.concurrency()) {
-                    @Override
-                    public boolean concurrent() {
-                        return true;
-                    }
-                })
+                        new BufferedExec.WorkerExec(Util.concurrency()) {
+                            //    new BufferedExec.ForkJoinExec(Util.concurrency()) {
+                            @Override
+                            public boolean concurrent() {
+                                return true;
+                            }
+                        })
 
 //                .exe(MixMultiExec.get(
 //                            1024,
@@ -110,8 +108,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        //newCaffeineIndex()
-                        new HijackConceptIndex(96 * 1024, 4)
+                        new CaffeineIndex(200 * 1024, c -> (int) Math.ceil(c.voluplexity()))
+                        //new HijackConceptIndex(96 * 1024, 4)
 
 
                 )
@@ -138,7 +136,6 @@ abstract public class NAgentX extends NAgent {
         n.goalPriDefault.set(0.5f);
         n.questionPriDefault.set(0.1f);
         n.questPriDefault.set(0.2f);
-
 
 
         try {
@@ -202,22 +199,6 @@ abstract public class NAgentX extends NAgent {
         });
 
         return n;
-    }
-
-    public static CaffeineIndex newCaffeineIndex() {
-        return new CaffeineIndex(
-
-                400 * 1024,
-
-
-                c -> {
-
-
-                    return (int) Math.ceil(c.voluplexity());
-
-
-                }
-        );
     }
 
 

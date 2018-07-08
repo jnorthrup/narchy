@@ -42,7 +42,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
     }
 
     @Override
-    public boolean start() {
+    public final boolean start() {
         
         beforeStart = nanoTime();
         boolean starting = work.start();
@@ -71,7 +71,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
     }
 
     @Override
-    public void stop() {
+    public final void stop() {
 
         if (iterationsThisCycle > 0) {
             iterations.addValue(iterationsThisCycle);

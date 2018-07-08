@@ -264,6 +264,9 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                 new FilteredScalar(
                         new FloatCached( () -> reward, nar::time ),
 
+                        //(prev,next) -> next==next ? $.t(Util.unitize(next), Math.max(nar.confMin.floatValue(),  Math.abs(next-0.5f)*2f * nar.confDefault(BELIEF))) : null,
+                        (prev,next) -> next==next ? $.t(Util.unitize(next),nar.confDefault(BELIEF)) : null,
+
                         nar,
 
                         pair(id, ///$.inh(id, "happy"),

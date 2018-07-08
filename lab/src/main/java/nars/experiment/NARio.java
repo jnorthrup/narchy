@@ -9,6 +9,7 @@ import nars.concept.signal.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
+import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.sensor.Bitmap2DSensor;
 import nars.util.TimeAware;
@@ -18,12 +19,13 @@ import javax.swing.*;
 
 import static jcog.Util.unitize;
 import static nars.$.$$;
+import static nars.experiment.mario.level.Level.*;
 
 public class NARio extends NAgentX {
 
     private final MarioComponent mario;
 
-    public NARio(NAR nar) {
+    public NARio(NAR nar)  {
         super("nario", nar);
         
 
@@ -63,7 +65,31 @@ public class NARio extends NAgentX {
         Bitmap2DSensor ccb;
         addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.03f);
 
-
+        try {
+            final int tileMax = 3; //0..4
+            senseSwitch($$("tile(nario,right)"), () -> {
+                int b = tile(1, 0);
+                //System.out.println("right: " + b);
+                return b;
+            }, 0, tileMax);
+            senseSwitch($$("tile(nario,below)"), () -> {
+                int b = tile(0, 1);
+                //System.out.println("below: " + b);
+                return b;
+            }, 0, tileMax);
+            senseSwitch($$("tile(nario,left)"), () -> {
+                int b = tile(-1, 0);
+                //System.out.println("left: " + b);
+                return b;
+            }, 0, tileMax);
+            senseSwitch($$("tile(nario,above)"), () -> {
+                int b = tile(0, -1);
+                //System.out.println("above: " + b);
+                return b;
+            }, 0, tileMax);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
 
@@ -118,9 +144,9 @@ public class NARio extends NAgentX {
         
 
 
-        Signal dvx = senseNumberDifference($$("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Signal dvx = senseNumberDifference($$("vx(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.02f);
-        Signal dvy = senseNumberDifference($$("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Signal dvy = senseNumberDifference($$("vy(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.02f);
 
 
@@ -141,12 +167,35 @@ public class NARio extends NAgentX {
 
     }
 
+
+    public int tile(int dx, int dy) {
+        if (this.mario.scene instanceof LevelScene) {
+            LevelScene s = (LevelScene) mario.scene;
+            Level ll = s.level;
+            if (ll!=null) {
+                //System.out.println(s.mario.x + " " + s.mario.y);
+                byte block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
+                byte t = Level.TILE_BEHAVIORS[block & 0xff];
+                boolean breakable = ((t & BIT_BREAKABLE) != 0) || ((t & BIT_PICKUPABLE) != 0) || (t & BIT_BUMPABLE) != 0;
+                if (breakable)
+                    return 2;
+                boolean blocking = ((t & BIT_BLOCK_ALL) != 0);
+                if (blocking)
+                    return 1;
+            }
+
+        }
+        return 0;
+    }
+
     private void initButton() {
 
-        actionToggle($$("left"),
-                n -> mario.scene.key(Mario.KEY_LEFT, n));
-        actionToggle($$("right"),
+        actionPushButtonMutex(
+                $$("left(nario)"),
+                $$("right(nario)"),
+                n -> mario.scene.key(Mario.KEY_LEFT, n),
                 n -> mario.scene.key(Mario.KEY_RIGHT, n));
+
         actionToggle($$("jump"),
                 n -> mario.scene.key(Mario.KEY_JUMP, n));
         actionToggle($$("down"),

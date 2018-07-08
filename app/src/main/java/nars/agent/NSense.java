@@ -13,9 +13,6 @@ import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -30,44 +27,42 @@ import static nars.$.*;
  */
 public interface NSense {
 
-    @NotNull Atomic LOW = Atomic.the("low");
-    @NotNull Atomic MID = Atomic.the("mid");
-    @NotNull Atomic HIH = Atomic.the("hih");
+    Atomic LOW = Atomic.the("low");
+    Atomic MID = Atomic.the("mid");
+    Atomic HIH = Atomic.the("hih");
 
-    @NotNull
+    
     static Term switchTerm(String a, String b) throws Narsese.NarseseException {
         return switchTerm($(a), $(b));
     }
 
-    @NotNull
+    
     static Term switchTerm(Term a, Term b) {
 
-        return p(a, b);
+        //return p(a, b);
+        return $.prop(a,b);
     }
 
-    @NotNull Map<Signal, CauseChannel<ITask>> sensors();
+    Map<Signal, CauseChannel<ITask>> sensors();
 
     NAR nar();
 
-    @NotNull
-    default Signal sense(@NotNull Term term, @NotNull BooleanSupplier value) {
+    
+    default Signal sense(Term term, BooleanSupplier value) {
         return sense(term, () -> value.getAsBoolean() ? 1f : 0f);
     }
 
-    @NotNull
-    default Signal sense(@NotNull Term term, FloatSupplier value) {
-        return sense(term, value, (x) -> $.t(x, nar().confDefault(Op.BELIEF)));
-    }
 
-    @NotNull
-    default Signal sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
+
+    
+    default Signal sense(Term term, FloatSupplier value) {
         Signal s = new Signal(term, value, nar());
         addSensor(s);
         return s;
     }
 
-    @NotNull
-    default Signal sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
+    
+    default Signal sense(CauseChannel c, Term term, FloatSupplier value) {
         Signal s = new Signal(term, value, nar());
         addSensor(s, c);
         return s;
@@ -93,7 +88,7 @@ public interface NSense {
     /**
      * interpret an int as a selector between enumerated values
      */
-    default <E extends Enum> void senseSwitch(String term, @NotNull Supplier<E> value) throws Narsese.NarseseException {
+    default <E extends Enum> void senseSwitch(String term, Supplier<E> value) throws Narsese.NarseseException {
         E[] values = ((Class<? extends E>) value.get().getClass()).getEnumConstants();
         for (E e : values) {
             Term t = switchTerm(term, e.toString());
@@ -101,14 +96,14 @@ public interface NSense {
         }
     }
 
-    default void senseSwitch(Term term, @NotNull IntSupplier value, int min, int max) {
+    default void senseSwitch(Term term, IntSupplier value, int min, int max) {
         senseSwitch(term, value, Util.intSequence(min, max));
     }
 
     /**
      * interpret an int as a selector between (enumerated) integer values
      */
-    default void senseSwitch(Term term, @NotNull IntSupplier value, @NotNull int[] values) {
+    default void senseSwitch(Term term, IntSupplier value, int[] values) {
         for (int e : values) {
             Term t = switchTerm(term, the(e));
             sense(t, () -> value.getAsInt() == e);
@@ -118,7 +113,7 @@ public interface NSense {
     /**
      * interpret an int as a selector between (enumerated) object values
      */
-    default <O> void senseSwitch(String term, @NotNull Supplier<O> value, @NotNull O... values) throws Narsese.NarseseException {
+    default <O> void senseSwitch(String term, Supplier<O> value, O... values) throws Narsese.NarseseException {
         for (O e : values) {
             Term t = switchTerm(term, '"' + e.toString() + '"');
             sense(t, () -> value.get().equals(e));
@@ -126,7 +121,7 @@ public interface NSense {
     }
 
 
-    default void senseFields(String id, @NotNull Object o) {
+    default void senseFields(String id, Object o) {
         Field[] ff = o.getClass().getDeclaredFields();
         for (Field f : ff) {
             if (Modifier.isPublic(f.getModifiers())) {
@@ -136,12 +131,12 @@ public interface NSense {
     }
 
 
-    default void sense(String id, Object o, @NotNull String exp) {
+    default void sense(String id, Object o, String exp) {
 
 
     }
 
-    @NotNull
+    
     default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
         List<Signal> l = newArrayList(to - from);
         for (int i = from; i < to; i++) {
@@ -170,7 +165,7 @@ public interface NSense {
         return c;
     }
 
-    @NotNull
+    
     default DigitizedScalar senseNumber(FloatSupplier v, DigitizedScalar.ScalarEncoder model, Term... states) {
 
         assert (states.length > 1);
@@ -188,7 +183,7 @@ public interface NSense {
 
     On onFrame(Consumer r);
 
-    @NotNull
+    
     default DigitizedScalar senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, DigitizedScalar.ScalarEncoder model) {
 
 
@@ -197,12 +192,12 @@ public interface NSense {
                         levelTermizer, Term[]::new));
     }
 
-    @NotNull
+    
     default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {
         return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, HIH));
     }
 
-    @NotNull
+    
     default DigitizedScalar senseNumberTri(Term id, FloatSupplier v) {
         return senseNumber(v, DigitizedScalar.Needle, p(id, LOW), p(id, MID), p(id, HIH));
     }

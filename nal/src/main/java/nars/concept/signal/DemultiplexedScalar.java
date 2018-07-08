@@ -38,7 +38,12 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
         return value.floatValue();
     }
 
+
     protected DemultiplexedScalar(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
+        this(input, id, nar, (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null);
+    }
+
+    protected DemultiplexedScalar(@Nullable FloatSupplier input, @Nullable Term id, NAR nar, FloatFloatToObjectFunction<Truth> truther) {
         super(id);
 
         this.term = id;
@@ -46,7 +51,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
         this.last = nar.time();
         this.input = input; 
         this.in = nar.newChannel(id);
-        this.truther = (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null;
+        this.truther = truther;
     }
 
     public DemultiplexedScalar resolution(float r) {

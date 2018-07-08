@@ -86,8 +86,7 @@ abstract public class BufferedExec extends UniExec {
         long timeSliceNS = cpu.cycleTimeNS.longValue();
 
 
-
-        in.drainTo(b, (int) Math.ceil(in.size()*(1f/Math.max(1, (concurrency-1)))));
+        in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
 
 
         long dutyTimeStart = System.nanoTime();
@@ -129,13 +128,16 @@ abstract public class BufferedExec extends UniExec {
                 break;
         }
         long dutyTimeEnd = System.nanoTime();
-        timeSliceNS = timeSliceNS - Math.max(0, (dutyTimeEnd-dutyTimeStart));
+        timeSliceNS = timeSliceNS - Math.max(0, (dutyTimeEnd - dutyTimeStart));
 
         b.clear();
 
 
-        double finalTimeSliceNS = Math.max(1,timeSliceNS * nar.loop.jiffy.floatValue());
+        double finalTimeSliceNS = Math.max(1, timeSliceNS * nar.loop.jiffy.floatValue());
         can.forEachValue(c -> {
+            if (c.c.singleton() && c.c.instance.availablePermits() == 0)
+                return;
+
             int MAX_ITER = 4096;
             double iterTimeMean = c.iterTimeNS.getMean();
             int work;
@@ -151,8 +153,11 @@ abstract public class BufferedExec extends UniExec {
             b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
 
                 if (c.start()) {
-                    c.next(work);
-                    c.stop();
+                    try {
+                        c.next(work);
+                    } finally {
+                        c.stop();
+                    }
                 }
 
 

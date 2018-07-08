@@ -62,7 +62,7 @@
 
 //// inheritance from similarty <- todo check why this one was missing ////////////////////////////////////////////////////////////////////////////////////
     (S <-> P), P         |- (S --> P), (Belief:Identity)
-    (S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Goal:Goalduction)
+    //(S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Goal:Goalduction)
     (P --> S), (S <-> P), task("?") |- (P --> S), (Belief:BeliefIdentity, Punctuation:Belief)
 
 

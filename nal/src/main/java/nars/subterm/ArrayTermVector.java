@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 /**
  * Holds a vector or tuple of terms.
  * Useful for storing a fixed number of subterms
-
  */
 public class ArrayTermVector extends TermVector {
 
@@ -24,10 +23,18 @@ public class ArrayTermVector extends TermVector {
     private final Term[] terms;
 
     public ArrayTermVector(/*@NotNull */Term... terms) {
-         super(terms);
-         this.terms = terms;
+        super(terms);
+        this.terms = terms;
         testIfInitiallyNormalized();
 
+    }
+
+    @Override
+    protected void equivalentTo(TermVector that) {
+//        if (that instanceof ArrayTermVector) {
+//            ((ArrayTermVector) that).terms = terms;
+//        }
+        super.equivalentTo(that);
     }
 
     @Override
@@ -42,9 +49,10 @@ public class ArrayTermVector extends TermVector {
         return v;
     }
 
-    @Override public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+    @Override
+    public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         for (Term t : terms)
-            v = t.intifyRecurse(reduce, v); 
+            v = t.intifyRecurse(reduce, v);
         return v;
     }
 
@@ -54,30 +62,46 @@ public class ArrayTermVector extends TermVector {
 
         if (!(obj instanceof Subterms))
             return false;
+
         Subterms that = (Subterms) obj;
-        if (hash!= that.hashCodeSubterms())
+        if (hash != that.hashCodeSubterms())
             return false;
 
         if (obj instanceof ArrayTermVector) {
-            
+
             ArrayTermVector v = (ArrayTermVector) obj;
+//            if (terms == v.terms)
+//                return true;
+//            int n = terms.length;
+//            if (v.terms.length != n)
+//                return false;
+//            for (int i = 0; i < terms.length; i++) {
+//                Term a = terms[i];
+//                Term b = v.terms[i];
+//                if (a == b) continue;
+//                if (a.equals(b)) {
+//                    v.terms[i] = a; //share copy
+//                } else {
+//                    return false; //mismatch
+//                }
+//            }
             if (!Arrays.equals(terms, v.terms))
                 return false;
 
-            equivalentTo(v);
         } else {
             final Term[] x = this.terms;
             int s = x.length;
             if (s != that.subs())
                 return false;
+
             for (int i = 0; i < s; i++)
                 if (!x[i].equals(that.sub(i)))
                     return false;
 
-            if (obj instanceof TermVector)
-                equivalentTo((TermVector)obj);
         }
 
+        if (obj instanceof TermVector)
+            equivalentTo((TermVector) obj);
 
 
         return true;
@@ -90,8 +114,8 @@ public class ArrayTermVector extends TermVector {
     }
 
 
-
-    @Override public final Term[] arrayClone() {
+    @Override
+    public final Term[] arrayClone() {
         return terms.clone();
     }
 
@@ -127,7 +151,8 @@ public class ArrayTermVector extends TermVector {
         return false;
     }
 
-    @Override public final boolean AND(Predicate<Term> p) {
+    @Override
+    public final boolean AND(Predicate<Term> p) {
         Term[] t = this.terms;
         for (Term i : t)
             if (!p.test(i))
@@ -144,7 +169,7 @@ public class ArrayTermVector extends TermVector {
         }
         return true;
     }
-    
+
     public final void append(ByteArrayDataOutput out) {
         Term[] t = this.terms;
         out.writeByte(t.length);

@@ -1,5 +1,6 @@
 package nars.subterm.util;
 
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -60,6 +61,10 @@ abstract public class TermMetadata implements Termlike {
         return x.recurseTerms(Termlike::hasVars, (v) -> {
             if (v instanceof Variable) {
                 if (v instanceof NormalizedVariable) {
+                    
+                    if (v == Op.imInt || v == Op.imExt)
+                        return true;
+
                     NormalizedVariable nv = (NormalizedVariable) v;
                     byte varID = nv.anonNum();
                     if (varID == minID[0]) {

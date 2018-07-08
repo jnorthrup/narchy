@@ -168,4 +168,7 @@ public enum TruthFunctions2 {
         return c >= minConf ? t(f, c) : null;
     }
 
+
+//        float f = 0.5f * ((f1-0.5f)*2*(f2-0.5f)*2 + 1);
+
 }
