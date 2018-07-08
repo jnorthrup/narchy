@@ -101,8 +101,7 @@ public enum TruthFunctions2 {
         //float c = and(goal.conf(), belief.conf());
 
         if (!strong) {
-            //c *= TruthFunctions.w2cSafe(1.0f);
-            c = w2cSafe(c);
+            c = weak(c);
         }
 
         if (c >= minConf) {
@@ -135,9 +134,12 @@ public enum TruthFunctions2 {
         if (c < minConf) return null;
         float dF = Math.abs(t.freq() - b.freq());
         float sim = 1f - dF;
-        float cc = c * sim;
-        cc = w2cSafe(cc); //weaken
+        float cc = weak(c * sim);
         return cc >= minConf ? $.t(sim, cc) : null;
+    }
+    static float weak(float c) {
+        //return w2cSafe(c);
+        return c * TruthFunctions.w2cSafe(1.0f);
     }
 
     /**
@@ -149,8 +151,7 @@ public enum TruthFunctions2 {
     public static Truth contraposition(Truth t, float minConf) {
         float f = t.freq();
         float fPolarization = 2 * Math.abs(f - 0.5f);
-        float c = fPolarization * t.conf();
-        c = w2cSafe(c);
+        float c = weak(fPolarization * t.conf());
         return c >= minConf ? t((1 - f), c) : null;
     }
 

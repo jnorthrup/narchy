@@ -101,7 +101,7 @@ public class ConjClustering extends Causable {
 
     @Override
     public void run(NAR n, int workRequested, Consumer<NLink<Runnable>> buffer) {
-        if (bag.bag.isEmpty())
+        if (bag == null || bag.bag.isEmpty())
             return;
 
         super.run(n, workRequested, buffer);
@@ -110,7 +110,7 @@ public class ConjClustering extends Causable {
     @Override
     protected int next(NAR nar, int iterations /* max tasks generated per centroid, >=1 */) {
 
-        if (bag.bag.isEmpty()) return -1;
+        if (bag==null || bag.bag.isEmpty()) return -1;
 
         this.now = nar.time();
         this.dur = nar.dur();

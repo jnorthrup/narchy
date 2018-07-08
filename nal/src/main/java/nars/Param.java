@@ -119,7 +119,7 @@ public abstract class Param {
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */
-    public final FloatRange timeFocus = new FloatRange(0.5f, 0, 10);
+    public final FloatRange timeFocus = new FloatRange(0.5f, 0, 100);
 
     /** creates instance of the default truthpolation implementation */
     public static TruthPolation truth(long start, long end, int dur) {

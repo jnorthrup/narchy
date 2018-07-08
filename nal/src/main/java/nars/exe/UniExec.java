@@ -33,7 +33,7 @@ public class UniExec extends AbstractExec {
 
     final BlockingQueue in =
             //new ArrayBlockingQueue(8192);
-            new DisruptorBlockingQueue(8192);
+            new DisruptorBlockingQueue(32*1024);
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;

@@ -11,7 +11,7 @@ import nars.derive.deriver.MatrixDeriver;
 import nars.derive.deriver.SimpleDeriver;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -101,8 +101,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(600 * 1024, c -> (int) Math.ceil(c.voluplexity()))
-                        //new HijackConceptIndex(96 * 1024, 4)
+                        //new CaffeineIndex(600 * 1024, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(96 * 1024, 4)
 
 
                 )
@@ -114,8 +114,8 @@ abstract public class NAgentX extends NAgent {
 
         new MatrixDeriver(Derivers.nal(n, 1, 8));
 
-        n.dtDither.set(8);
-        n.timeFocus.set(4);
+        n.dtDither.set(16);
+        n.timeFocus.set(10);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
