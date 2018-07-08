@@ -108,7 +108,7 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(200 * 1024, c -> (int) Math.ceil(c.voluplexity()))
+                        new CaffeineIndex(600 * 1024, c -> (int) Math.ceil(c.voluplexity()))
                         //new HijackConceptIndex(96 * 1024, 4)
 
 
@@ -174,7 +174,7 @@ abstract public class NAgentX extends NAgent {
         n.runLater(() -> {
 
             NAgent a = init.apply(n);
-            a.durs(2f); //nyquist
+            //a.durs(2f); //nyquist?
 
             n.on(a);
 

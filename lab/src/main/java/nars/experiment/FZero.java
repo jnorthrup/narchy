@@ -1,6 +1,5 @@
 package nars.experiment;
 
-import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
@@ -512,12 +511,12 @@ public class FZero extends NAgentX {
 
 
 
-        float r = Util.clamp(
-                
-                (float) (-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                        
-                        deltaDistance / (fps*2)), -1f, +1f);
+//        float r = Util.clamp(
+//                ((float)
+//                        //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
+//                        deltaDistance / (fps*2)), -1f, +1f) - 0.5f;
 
+        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 4)) : 0; //-1f;
         
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 

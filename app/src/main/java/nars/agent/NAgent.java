@@ -28,6 +28,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.TimeAware;
@@ -110,7 +111,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
 
     //public final FloatRange motivation = new FloatRange(1f, 0f, 2f);
-    public List<Task> always = $.newArrayList();
+    public List<Supplier<Task>> always = $.newArrayList();
 
     /** non-null if an independent loop process has started */
     private volatile Loop loop = null;
@@ -156,31 +157,37 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                 
         );
 
-        always.add(t);
+        always.add(()->t);
         return t;
     }
 
-    public Task alwaysQuestion(Termed x, boolean stamped) {
-        return alwaysQuestion(x, true, stamped );
+    public void alwaysQuestion(Termed x, boolean stamped) {
+        alwaysQuestion(x, true, stamped );
     }
-    public Task alwaysQuest(Termed x, boolean stamped) {
-        return alwaysQuestion(x, false, stamped);
+    public void alwaysQuest(Termed x, boolean stamped) {
+        alwaysQuestion(x, false, stamped);
     }
 
-    private Task alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
-        Task t = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
-                ETERNAL, ETERNAL,
-                
-                stamped ? nar.evidence() : Stamp.UNSTAMPED
-        ) {
-            @Override
-            public boolean isInput() {
-                return false;
-            }
+    private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
+
+        Supplier<Task> t = () -> {
+
+            long now = Tense.dither(this.now, nar);
+            long next = Tense.dither(this.now + nar.dur(), nar);
+
+            return new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
+                    now, next,
+
+                    stamped ? nar.evidence() : Stamp.UNSTAMPED
+            ) {
+                @Override
+                public boolean isInput() {
+                    return false;
+                }
+            };
         };
 
         always.add(t);
-        return t;
     }
 
 
@@ -325,18 +332,11 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
 
     protected void always(float activation) {
-        int n = always.size();
-        if (n == 0)
-            return;
-
-        for (int i = 0; i < n; i++) {
-            Task x = always.get(i);
+        in.input(always.stream().map(x->x.get()).peek(x->{
             x.pri(
-                activation * nar.priDefault(x.punc())
+                    activation * nar.priDefault(x.punc())
             );
-        }
-
-        in.input(always);
+        }));
     }
 
 
