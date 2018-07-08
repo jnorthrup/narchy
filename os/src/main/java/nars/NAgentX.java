@@ -9,6 +9,7 @@ import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.derive.deriver.SimpleDeriver;
+import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
@@ -78,6 +79,8 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
+                .attention(()->new Attention(512))
+
                 //.exe(new UniExec() {
                 .exe(new BufferedExec.WorkerExec(Util.concurrency()))
 
@@ -109,8 +112,6 @@ abstract public class NAgentX extends NAgent {
                 .get();
 
 
-        //Exe.setExecutor(n.exe);
-
 
         new MatrixDeriver(Derivers.nal(n, 1, 8));
 
@@ -139,8 +140,8 @@ abstract public class NAgentX extends NAgent {
         }
 
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 128);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
@@ -159,10 +160,6 @@ abstract public class NAgentX extends NAgent {
 
         //a.motivation.set(0.75f);
 
-        Loop loop = n.startFPS(narFPS);
-
-        n.synch();
-        System.gc();
 
         n.runLater(() -> {
 
@@ -190,6 +187,8 @@ abstract public class NAgentX extends NAgent {
                 System.gc();
             });
         });
+
+        Loop loop = n.startFPS(narFPS);
 
         return n;
     }

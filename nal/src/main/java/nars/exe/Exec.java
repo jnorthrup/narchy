@@ -1,7 +1,6 @@
 package nars.exe;
 
 import nars.NAR;
-import nars.Param;
 import nars.task.ITask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,24 +41,22 @@ abstract public class Exec implements Executor {
 
     /** inline, synchronous */
     protected final void executeNow(Object t) {
-        try {
+        //try {
             if (t instanceof ITask) {
-//                ITask tt = (ITask) t;
-//                if (Param.CAUSE_MULTIPLY_EVERY_TASK && t instanceof Task) {
-//                    tt.priMult(nar.amp((Task) tt), Pri.EPSILON);
-//                }
-                ((ITask) t).run(nar);
+                executeNow((ITask) t);
             } else if (t instanceof Runnable)
                 ((Runnable) t).run();
             else 
                 ((Consumer) t).accept(nar);
 
+//        } catch (Throwable e) {
+//            logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
+//        }
 
+    }
 
-        } catch (Throwable e) {
-            logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
-        }
-
+    protected final void executeNow(ITask t) {
+        t.run(nar);
     }
 
     @Override abstract public void execute(Runnable async);

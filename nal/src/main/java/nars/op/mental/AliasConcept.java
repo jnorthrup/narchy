@@ -6,7 +6,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
-import nars.link.TermlinkTemplates;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.term.Term;
@@ -24,16 +23,18 @@ import nars.unify.Unify;
  */
 public final class AliasConcept extends TaskConcept {
 
+    /** the abbreviated (decompressed) concept that this abbreviates */
     public final Concept abbr;
 
 
-    AliasConcept(Term id, Concept decompressed, NAR nar) {
+    AliasConcept(Term id, Concept abbr) {
         super(
                 id,
                 null, null, null, null,
-                new Bag[]{decompressed.termlinks(), decompressed.tasklinks()});
+                abbr.linker(), //shared
+                new Bag[]{abbr.termlinks(), abbr.tasklinks()});
 
-        this.abbr = decompressed;
+        this.abbr = abbr;
 
 
     }
@@ -46,11 +47,6 @@ public final class AliasConcept extends TaskConcept {
             ((TaskConcept) abbr).add(Remember.the(Task.clone(t.input, abbr.term()), n), n);
         }
 
-    }
-
-    @Override
-    public TermlinkTemplates templates() {
-        return abbr.templates();
     }
 
     @Override

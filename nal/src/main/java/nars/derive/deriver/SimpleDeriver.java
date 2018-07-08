@@ -93,7 +93,7 @@ public class SimpleDeriver extends Deriver {
 
 
         int deriveTTL = n.deriveBranchTTL.intValue();
-        int matchTTL = deriveTTL / 4;
+        int matchTTL = matchTTL();
 
         source.accept(a -> {
             if (a == null)
@@ -109,14 +109,14 @@ public class SimpleDeriver extends Deriver {
             Supplier<PriReference<Term>> termlinker = model.termlinks();
 
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
-            float taskPriSum = 0;
+//            float taskPriSum = 0;
             for (TaskLink tasklink : tasklinks) {
 
 
                 Task task = tasklink.get(nar);
                 if (task != null) {
 
-                    taskPriSum += task.priElseZero();
+//                    taskPriSum += task.priElseZero();
 
                     activate(tasklink, templates, d.random);
 
@@ -138,13 +138,13 @@ public class SimpleDeriver extends Deriver {
 
             }
 
-            if (taskPriSum > 0)
-                concept.templates().linkAndActivate(concept, taskPriSum, nar);
-            else {
-                
-                
-                //concept.templates().linkAndActivate(concept, a.pri(), nar);
-            }
+//            if (taskPriSum > 0)
+//                concept.linker().link(concept, taskPriSum, nar);
+//            else {
+//
+//
+            concept.linker().link(concept, a.pri(), nar);
+//            }
 
             return ii[0]-- > 0;
         });

@@ -5,12 +5,11 @@ import jcog.data.map.CompactArrayMap;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
 import nars.link.TaskLink;
-import nars.link.TermlinkTemplates;
+import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.term.Term;
@@ -28,7 +27,7 @@ public class NodeConcept implements Concept {
     public final Bag<?, TaskLink> taskLinks;
     public final Bag<Term, PriReference<Term>> termLinks;
     public transient ConceptState state = New;
-    private final TermlinkTemplates templates;
+    private final TermLinker linker;
 
     private final int hash;
 
@@ -37,26 +36,33 @@ public class NodeConcept implements Concept {
     public NodeConcept(Term term, NAR nar) {
         this(term, nar.conceptBuilder);
     }
-
-    public NodeConcept(Term term, ConceptBuilder b) {
-        this(term, b.newLinkBags(term));
+    public NodeConcept(Term term, TermLinker linker, NAR nar) {
+        this(term, linker, nar.conceptBuilder);
     }
 
-    public NodeConcept(Term term, Bag[] bags) {
+    public NodeConcept(Term term, ConceptBuilder b) {
+        this(term, b.termlinker(term), b.newLinkBags(term));
+    }
+
+    public NodeConcept(Term term, TermLinker linker, ConceptBuilder b) {
+        this(term, linker, b.newLinkBags(term));
+    }
+
+    public NodeConcept(Term term, TermLinker linker, Bag[] bags) {
         assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
         this.termLinks = bags[0];
         this.taskLinks = bags[1];
         this.hash = term.hashCode();
 
-        templates = buildTemplates(term);
-        if (Param.DEBUG_EXTRA) {
-            for (Term target : templates) {
-                if (!target.term().equals(target.term().concept())) {
-                    throw new RuntimeException("attempted non-root linkage: " + target);
-                }
-            }
-        }
+        this.linker = linker;
+//        if (Param.DEBUG_EXTRA) {
+//            for (Term target : this.linker) {
+//                if (!target.term().equals(target.term().concept())) {
+//                    throw new RuntimeException("attempted non-root linkage: " + target);
+//                }
+//            }
+//        }
 
     }
 
@@ -68,12 +74,6 @@ public class NodeConcept implements Concept {
     @Override public QuestionTable questions() { return QuestionTable.Empty; }
 
     @Override public QuestionTable quests() { return QuestionTable.Empty; }
-
-    /** called during initializer to cache the templates. override to define custom template patterns */
-    protected TermlinkTemplates buildTemplates(Term term) {
-        return TermlinkTemplates.templates(term);
-    }
-
 
     @Override
     public Term term() {
@@ -99,8 +99,8 @@ public class NodeConcept implements Concept {
 
 
     @Override
-    public TermlinkTemplates templates() {
-        return templates;
+    public final TermLinker linker() {
+        return linker;
     }
 
     @Override

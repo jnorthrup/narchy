@@ -4,7 +4,8 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.link.TermlinkTemplates;
+import nars.link.TemplateTermLinker;
+import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -39,14 +40,11 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
     public final BiFunction<Task, NAR, Task> execute;
 
     public Operator(Atom atom, BiFunction<Task, NAR, Task> execute, NAR n) {
-        super(atom, n);
+        super(atom, TermLinker.Empty, n);
         this.execute = execute;
     }
 
-    @Override
-    protected TermlinkTemplates buildTemplates(Term term) {
-        return TermlinkTemplates.EMPTY;
-    }
+
 
     @Override
     public Term term() {

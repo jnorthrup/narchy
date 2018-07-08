@@ -29,7 +29,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptState;
 import nars.link.TaskLink;
-import nars.link.TermlinkTemplates;
+import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TaskTable;
@@ -106,6 +106,7 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
         }
     }
 
+    /** the belief table for the punctuation, or which anwers questions/quests for it */
     default BeliefTable tableAnswering(byte punc) {
         switch (punc) {
             case BELIEF:
@@ -224,10 +225,7 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
      */
     ConceptState state(ConceptState c);
 
-    /** should not include itself, although this will be included with these templates on activation
-     *  should use something like an ArrayList which supports fast random access by index
-     * */
-    TermlinkTemplates templates();
+    TermLinker linker();
 
     Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests);
 

@@ -58,7 +58,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
     private Concept nodeConcept(Term t) {
-        return new NodeConcept(t, newLinkBags(t));
+        return new NodeConcept(t, this);
     }
 
 

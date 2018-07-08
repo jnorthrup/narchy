@@ -236,7 +236,7 @@ public class UniExec extends AbstractExec {
         revaluator.update(nar);
     }
 
-    protected void onCycle() {
+    protected void onCycle(NAR nar) {
 //        if (nar==null)
 //            return; //??
 

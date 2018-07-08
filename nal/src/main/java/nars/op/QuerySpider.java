@@ -54,7 +54,7 @@ public class QuerySpider extends NARService {
             if (!tl.isEmpty()) {
                 TermGraph.termlink(nar, tl.stream().map(PriReference::get), g);
             } else {
-                TermGraph.termlink(nar, c.templates().stream(), g);
+                TermGraph.termlink(nar, c.linker().targets(), g);
             }
 
 

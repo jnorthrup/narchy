@@ -7,9 +7,11 @@ import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import jcog.list.FasterList;
 import nars.NAR;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -17,36 +19,33 @@ import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
 
+    private final static int CAN_ITER_MAX = 4096;
 
     protected long idleTimePerCycle;
 
-
     @Override
     public void execute(Object x) {
-        if (x instanceof NALTask || x instanceof TaskProxy) {
-            executeNow(x);
-        }
-//        else if (x instanceof NativeTask.SchedTask) {
-//            ForkJoinPool.commonPool().execute(()->((ITask) x).run(nar));
+        if (x instanceof NALTask || x instanceof TaskProxy)
+            executeNow((ITask)x);
         else
             executeLater(x);
     }
 
-    public void executeLater(Object x) {
+    public void executeLater(@NotNull Object x) {
 
-        if (x != null && !in.offer(x)) {
+        if (!in.offer(x)) {
             logger.warn("{} blocked queue on: {}", this, x);
             in.add(x);
         }
     }
 
     @Override
-    public void execute(Runnable r) {
+    public final void execute(Runnable r) {
         executeLater(r);
     }
 
     @Override
-    public void execute(Consumer<NAR> r) {
+    public final void execute(Consumer<NAR> r) {
         executeLater(r);
     }
 
@@ -63,7 +62,7 @@ abstract public class BufferedExec extends UniExec {
         sharing.commit();
     }
 
-    protected void onCycle() {
+    protected void onCycle(NAR nar) {
 
         if (nar.time instanceof RealTime) {
             double throttle = nar.loop.throttle.floatValue();
@@ -81,13 +80,13 @@ abstract public class BufferedExec extends UniExec {
 
     }
 
-    protected void onCycle(List b, boolean concurrent) {
+    /** work and play execution */
+    protected void onCycle(List b, int concurrency) {
 
 
-        int concurrency = concurrent ? Util.concurrency() : 1;
-        //double timeSliceNS = 100.0 * 1_000_000 * concurrency;
+        if (concurrency!=1)
+            throw new TODO("just need parallel execution of the 'play' phase");
 
-        long timeSliceNS = cpu.cycleTimeNS.longValue();
 
 
         in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
@@ -131,30 +130,29 @@ abstract public class BufferedExec extends UniExec {
                 //(parallel ? b.parallelStream() : b.stream()).forEach(this::executeNow);
                 break;
         }
-        long dutyTimeEnd = System.nanoTime();
-        timeSliceNS = timeSliceNS - Math.max(0, (dutyTimeEnd - dutyTimeStart));
 
         b.clear();
 
-
-        double finalTimeSliceNS = Math.max(1, timeSliceNS * nar.loop.jiffy.floatValue());
+        long dutyTimeEnd = System.nanoTime();
+        long timeSliceNS = cpu.cycleTimeNS.longValue()- Math.max(0, (dutyTimeEnd - dutyTimeStart));
+        double finalTimeSliceNS = Math.max(1, timeSliceNS * nar.loop.jiffy.doubleValue());
         can.forEachValue(c -> {
-            if (c.c.singleton() && c.c.instance.availablePermits() == 0)
+            if (c.c.instance.availablePermits() == 0)
                 return;
 
-            int MAX_ITER = 4096;
+
             double iterTimeMean = c.iterTimeNS.getMean();
             int work;
             if (iterTimeMean == iterTimeMean) {
-                double maxIters = (c.pri() * finalTimeSliceNS / (iterTimeMean / (c.iterations.getMean())));
-                work = (maxIters == maxIters) ? (int) Math.round(Math.max(1, Math.min(MAX_ITER, maxIters))) : 1;
+                double maxIters = (c.pri() * finalTimeSliceNS / (iterTimeMean / Math.max(1,c.iterations.getMean())));
+                work = (maxIters == maxIters) ? (int) Math.round(Math.max(1, Math.min(CAN_ITER_MAX, maxIters))) : 1;
             } else {
                 work = 1;
             }
 //            System.out.println(c + " " + work);
 
             //int workRequested = c.;
-            b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
+            //b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
 
                 if (c.start()) {
                     try {
@@ -165,7 +163,7 @@ abstract public class BufferedExec extends UniExec {
                 }
 
 
-            }));
+            //}));
 
             //c.c.run(nar, WORK_PER_CYCLE, x -> b.add(x.get()));
         });
@@ -250,7 +248,7 @@ abstract public class BufferedExec extends UniExec {
             @Override
             public void run() {
                 while (running) {
-                    WorkerExec.super.onCycle(buffer, false);
+                    WorkerExec.super.onCycle(buffer, 1);
 
                     Util.sleepNS(idleTimePerCycle);
                 }

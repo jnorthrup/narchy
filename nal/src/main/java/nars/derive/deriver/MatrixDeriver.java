@@ -7,7 +7,6 @@ import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
@@ -48,21 +47,22 @@ public class MatrixDeriver extends Deriver {
     @Range(min = 1, max = 1024)
     public int burstMax = 32;
 
+
+
     public MatrixDeriver(PremiseDeriverRuleSet rules) {
         this(rules, rules.nar);
     }
-
 
     public MatrixDeriver(Set<PremiseDeriverProto> rules, NAR nar) {
         super(nar.attn, rules, nar);
     }
 
-    public MatrixDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules, NAR nar) {
+    public MatrixDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
         super(source, target, rules, nar);
     }
 
     @Override protected void derive(NAR n, int iterations, Derivation d) {
-        int matchTTL = Param.TTL_MIN * 2;
+        int matchTTL = matchTTL();
         int deriveTTL = n.deriveBranchTTL.intValue();
 
 
@@ -125,6 +125,9 @@ public class MatrixDeriver extends Deriver {
         }
 
     }
+
+
+
     private void selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each, Random rng) {
 
         int premisesRemain[] = new int[]{premisesMax};
@@ -145,6 +148,7 @@ public class MatrixDeriver extends Deriver {
 
             int termlinks = //(int) Math.ceil(Pri.EPSILON + a.pri() * termLinksPerTaskLink);
                     termLinksPerTaskLink;
+
             premiseMatrix(a,
                     nar, continueHypothesizing,
                     tasklinks, termlinks, rng);
@@ -168,21 +172,19 @@ public class MatrixDeriver extends Deriver {
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
         /** conceptualize templates first, even if no tasklinks or termlinks */
-        Concept[] templates = templates(concept, nar);
+        Concept[] templates =  templates(concept, nar);
 
 
         //if (taskPriSum[0] > 0)
-        concept.templates().linkAndActivate(concept, conceptActivation.pri(), nar);
+        concept.linker().link(concept, conceptActivation.pri(), nar);
 
 
         if (!commit(nar, tasklinks, termlinks)) {
-            //concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
             return;
         }
 
-         int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };
+        int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };
 
-        
 
         int nTermLinks = termlinks.size();
         int nTaskLinks = tasklinks.size();

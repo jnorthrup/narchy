@@ -5,6 +5,8 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.dynamic.DynamicTruthModel;
+import nars.link.TemplateTermLinker;
+import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
@@ -42,6 +44,10 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
             return null;
         }
 
+        @Override
+        public TermLinker termlinker(Term term) {
+            return TermLinker.Empty;
+        }
 
         @Override
         public ConceptState init() {
@@ -262,4 +268,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
     /** register a Conceptor */
     void on(Conceptor c);
 
+    default TermLinker termlinker(Term term) {
+        return TemplateTermLinker.of(term);
+    }
 }

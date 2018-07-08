@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.Scalar;
-import nars.link.TermlinkTemplates;
 import nars.subterm.Subterms;
 import nars.term.Conceptor;
 import nars.term.Term;
@@ -130,27 +129,26 @@ public class ConceptorTest {
         int w = 4, h = 4;
         n.on(new Conceptor("pixel") {
 
-            private TermlinkTemplates templates = new TermlinkTemplates(Op.EmptyTermArray) {
-                @Override
-                public Concept[] concepts(NAR nar, boolean conceptualize) {
-
-                    //random pixel
-                    int x = nar.random().nextInt(w);
-                    int y = nar.random().nextInt(h);
-                    Term c = id(Int.the(x), Int.the(y));
-                    clear();
-                    add(c);
-                    concepts = 1;
-                    return super.concepts(nar, conceptualize);
-
-//                    return new Concept[] { nar.conceptualize(c) };
-                }
-            };
-
-            @Override
-            public TermlinkTemplates templates() {
-                return templates;
-            }
+//            private TemplateTermLinker templates = new TemplateTermLinker(Op.EmptyTermArray) {
+//                @Override
+//                public Concept[] concepts(NAR nar, boolean conceptualize) {
+//
+//                    //random pixel
+//                    int x = nar.random().nextInt(w);
+//                    int y = nar.random().nextInt(h);
+//                    Term c = id(Int.the(x), Int.the(y));
+//                    clear();
+//                    add(c);
+//                    concepts = 1;
+//                    return super.concepts(nar, conceptualize);
+//
+////                    return new Concept[] { nar.conceptualize(c) };
+//                }
+//            };
+//            @Override
+//            public TemplateTermLinker linker() {
+//                return templates;
+//            }
 
             @Override
             public Concept apply(Term term, Subterms args) {

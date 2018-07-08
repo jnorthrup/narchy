@@ -12,31 +12,63 @@ import nars.Param;
 import nars.concept.Concept;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Bool;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
 import static nars.Op.SetBits;
 import static nars.time.Tense.XTERNAL;
 
-public class TermlinkTemplates extends FasterList<Term> {
+/** default general-purpose termlink template impl. for compound terms
+ *  contains a fixed set of subterm components that can be term-linked with.
+ *  this implementation stores the conceptualizable terms in the lower part of a list
+ *  so that they can be accessed quickly as separate from non-conceptualizables.
+ *  */
+public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
 
-    public static final TermlinkTemplates EMPTY = new TermlinkTemplates(Op.EmptyTermArray) {
-        {
-            concepts = 0;
-        }
-    };
 
     /**
      * index of the last concept template; any others beyond this index are non-conceptualizable
      */
     protected byte concepts;
 
-    public TermlinkTemplates(Term[] terms) {
+
+    @Override
+    public Stream<? extends Termed> targets() {
+        return stream();
+    }
+
+    /**
+     * default recursive termlink templates constructor
+     */
+    public static TermLinker of(Term term) {
+
+        if (term.subs() > 0) {
+
+            if (Param.DEBUG_EXTRA) {
+                if (!term.equals(term.concept()))
+                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
+            }
+
+            ArrayHashSet<Term> tc = new ArrayHashSet<>(term.volume() /* estimate */);
+
+            add(term, tc, 0, term, layers(term) );
+
+            int tcs = tc.size();
+            if (tcs > 0)
+                return new TemplateTermLinker(((FasterList<Term>) tc.list).toArrayRecycled(Term[]::new));
+        }
+
+        return Empty;
+    }
+
+    private TemplateTermLinker(Term[] terms) {
         super(terms.length, terms);
 
         if (size > 1)
@@ -57,45 +89,11 @@ public class TermlinkTemplates extends FasterList<Term> {
         return new Term[newCapacity];
     }
 
-    /**
-     * see:
-     * https:
-     */
-    public static TermlinkTemplates templates(Term term) {
-
-        if (term.subs() <= 0)
-            return EMPTY;
-
-
-        ArrayHashSet<Term> tc =
-                new ArrayHashSet<>(term.volume() /* estimate */);
-
-        if (Param.DEBUG_EXTRA) {
-            if (!term.equals(term.concept())) {
-                throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
-            }
-        }
-
-        templates(term, tc, 0,
-
-
-                term, layers(term)
-        );
-
-
-        int tcs = tc.size();
-        if (tcs > 0) {
-            return new TermlinkTemplates(((FasterList<Term>)tc.list).toArrayRecycled(Term[]::new));
-        }
-
-
-        return EMPTY;
-    }
 
     /**
-     * recurses
+     * recurses into subterms
      */
-    static void templates(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
+    private static void add(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
         if (x instanceof Bool || x == Op.imExt || x == Op.imInt)
             return;
@@ -118,14 +116,14 @@ public class TermlinkTemplates extends FasterList<Term> {
 
 //            int xdt = x.dt();
             x.eventsWhile((when, what) -> {
-                templates(what.unneg(), tc, nextDepth, root, nextMaxDepth);
+                add(what.unneg(), tc, nextDepth, root, nextMaxDepth);
                 return true;
             }, 0, true, true, true, 0);
             return;
         }
 
 
-        bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, nextMaxDepth));
+        bb.forEach(s -> add(s.unneg(), tc, nextDepth, root, nextMaxDepth));
 
     }
 
@@ -229,7 +227,7 @@ public class TermlinkTemplates extends FasterList<Term> {
     /**
      * creates a sub-array of the conceptualizable terms and shuffles them
      */
-    public Concept[] concepts(NAR nar, boolean conceptualize) {
+    @Deprecated @Override public Concept[] concepts(NAR nar) {
         int concepts = this.concepts;
         if (concepts == 0)
             return Concept.EmptyArray;
@@ -237,7 +235,7 @@ public class TermlinkTemplates extends FasterList<Term> {
         Concept[] x = new Concept[concepts];
         int nulls = 0;
         for (int i = 0; i < concepts; i++) {
-            if ((x[i] = nar.concept(items[i], conceptualize)) == null)
+            if ((x[i] = nar.conceptualize(items[i])) == null)
                 nulls++;
         }
         if (nulls == concepts)
@@ -249,10 +247,7 @@ public class TermlinkTemplates extends FasterList<Term> {
         }
     }
 
-    /**
-     * termlink and activate the templates
-     */
-    public void linkAndActivate(Concept src, float pri, NAR nar) {
+    @Override public void link(Concept src, float pri, NAR nar) {
 
         int localSize = size();
 
@@ -260,27 +255,27 @@ public class TermlinkTemplates extends FasterList<Term> {
         if (n == 0)
             return;
 
-        MutableFloat refund = new MutableFloat(0);
 
         Term srcTerm = src.term();
 
         float balance = nar.termlinkBalance.floatValue();
-        float budgetedForward;
 
-        //calculate exact based on the subset that are concepts
-        budgetedForward = concepts == 0 ? 0 :
-                    Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
+
+        //calculate exactly according to the size of the subset that are actually conceptualizable
+        float budgetedForward = concepts == 0 ? 0 :
+                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
 
         float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n);
 
         Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
+        MutableFloat refund = new MutableFloat(0);
         for (int i = 0; i < n; i++) {
             Term tgtTerm = get(i);
 
             boolean conceptualizable = i < concepts;
             if (conceptualizable) {
 
-                @Nullable Concept tgt = nar.conceptualize(tgtTerm);
+                @Nullable Concept tgt = nar.activate(tgtTerm, budgetedForward);
 
                 if (tgt != null) {
 
@@ -289,7 +284,8 @@ public class TermlinkTemplates extends FasterList<Term> {
                             new PLink<>(srcTerm, budgetedForward), refund
                     );
 
-                    nar.activate(tgt, budgetedForward);
+                    /** TODO batch */
+
 
                     tgtTerm = tgt.term();
                 }

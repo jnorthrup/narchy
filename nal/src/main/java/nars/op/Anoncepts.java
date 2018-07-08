@@ -2,7 +2,6 @@ package nars.op;
 
 import jcog.Paper;
 import jcog.Skill;
-import jcog.TODO;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
@@ -10,7 +9,6 @@ import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.link.CauseLink;
-import nars.link.TermlinkTemplates;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
@@ -80,14 +78,10 @@ public class Anoncepts extends LeakBack {
         return 1;
     }
 
+
     private static class AnonConcept extends NodeConcept {
         AnonConcept(Term a, NAR nar) {
-            super(a, nar);
-        }
-
-        @Override protected TermlinkTemplates buildTemplates(Term term) {
-            throw new TODO();
-            
+            super(a, /* TODO AnonTermLinker */nar);
         }
     }
 

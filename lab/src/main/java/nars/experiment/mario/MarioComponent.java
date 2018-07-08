@@ -1,5 +1,6 @@
 package nars.experiment.mario;
 
+import jcog.Util;
 import nars.experiment.mario.level.LevelGenerator;
 import nars.experiment.mario.sprites.Mario;
 
@@ -156,7 +157,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             lTick = tm;
             scene.tick();
 
-            float alpha = (float) (System.currentTimeMillis() - lTick);
+            //float alpha = (float) (System.currentTimeMillis() - lTick);
             
 
             @SuppressWarnings("unused")
@@ -166,15 +167,15 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
             og.fillRect(0, 0, 320, 240);
 
-            alpha = 0;
+            float alpha = 0;
             scene.render(og, alpha);
 
-            if (lTick / 4 % 2 == 0 && (scene instanceof TitleScene)) {
-                String msg = "INSERT COIN";
-
-                
-                
-            }
+//            if (lTick / 4 % 2 == 0 && (scene instanceof TitleScene)) {
+//                String msg = "INSERT COIN";
+//
+//
+//
+//            }
             og.setColor(Color.BLACK);
 
             if (width != 320 || height != 240) {
@@ -184,12 +185,10 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             }
 
             if (delay > 0)
-                try {
-                    tm += delay;
-                    Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
-                } catch (InterruptedException e) {
-                    break;
-                }
+
+                tm += delay;
+                Util.sleep(Math.max(0, tm - System.currentTimeMillis()));
+
         }
 
         Art.stopMusic();

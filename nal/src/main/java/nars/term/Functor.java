@@ -11,7 +11,7 @@ import nars.concept.NodeConcept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.link.TermlinkTemplates;
+import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -40,7 +40,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     protected Functor(@NotNull Atom atom) {
-        super(atom, ConceptBuilder.Null);
+        super(atom, TermLinker.Empty, ConceptBuilder.Null);
     }
 
     public static Term func(Term operation) {
@@ -82,10 +82,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return ((Atomic) term).bytes();
     }
 
-    @Override
-    protected TermlinkTemplates buildTemplates(Term term) {
-        return TermlinkTemplates.EMPTY;
-    }
 
     @Override
     public final Term term() {

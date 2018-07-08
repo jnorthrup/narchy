@@ -6,6 +6,7 @@ import jcog.bag.Bag;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
@@ -125,13 +126,7 @@ abstract public class Deriver extends Causable {
 
     /** tasklink templates */
     protected final void activate(TaskLink tasklink, Concept[] templates, Random r) {
-
-        float pri = tasklink.priElseZero();
-        Tasklinks.linkTask(tasklink, pri, templates, r);
-//
-//
-//        for (Concept x : templates)
-//            nar.activate(x, pri);
+        Tasklinks.linkTask(tasklink, tasklink.priElseZero(), templates, r);
     }
 
     static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, @Nullable Bag<Term, PriReference<Term>> termlinks) {
@@ -163,11 +158,14 @@ abstract public class Deriver extends Causable {
         }
     }
 
-    protected Concept[] templates(Concept concept, NAR nar) {
-        return concept.templates().concepts(nar, true);
+    @Deprecated protected Concept[] templates(Concept concept, NAR nar) {
+        return concept.linker().concepts(nar);
     }
 
-
+    /** unifier TTL used for matching in premise formation */
+    protected int matchTTL() {
+        return Param.TTL_MIN * 4;
+    }
 
 
     @Override

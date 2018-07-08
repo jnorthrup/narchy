@@ -325,12 +325,13 @@ public class SignalBeliefTable extends DynamicBeliefTable {
 
     public final TimeSeries series;
 
-    public SignalBeliefTable(Term term, boolean beliefOrGoal, ConceptBuilder conceptBuilder) {
-        this(term, beliefOrGoal, conceptBuilder.newTemporalTable(term));
+    public SignalBeliefTable(Term term, boolean beliefOrGoal, ConceptBuilder b) {
+        this(term, beliefOrGoal, b.newTemporalTable(term));
     }
 
     public SignalBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
         this(c, beliefOrGoal,
+                //TODO impl time series with concurrent ring buffer from gluegen
                 new DefaultTimeSeries(new ConcurrentSkipListMap<>()
                         , /*@Deprecated*/ 256),
                 t);

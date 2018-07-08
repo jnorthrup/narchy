@@ -228,7 +228,7 @@ class TermLinkTest {
         
         Concept c = n.conceptualize($$(term));
         Activate a = new Activate(c, 0.5f);
-        Collection<Termed> t = new TreeSet(c.templates());
+        Collection<Termed> t = new TreeSet(c.linker());
         assertEquals(expect, t.toString());
     }
 

@@ -8,6 +8,7 @@ import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
+import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TaskTable;
@@ -29,19 +30,21 @@ public class TaskConcept extends NodeConcept implements Concept {
     private final QuestionTable quests;
     private final QuestionTable questions;
 
-    public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder conceptBuilder) {
+    public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder b) {
         this(term,
-                beliefs != null ? beliefs : conceptBuilder.newTable(term, true),
-                goals != null ? goals : conceptBuilder.newTable(term, false),
-                conceptBuilder.questionTable(term, true),
-                conceptBuilder.questionTable(term, false),
-                conceptBuilder.newLinkBags(term));
+                beliefs != null ? beliefs : b.newTable(term, true),
+                goals != null ? goals : b.newTable(term, false),
+                b.questionTable(term, true),
+                b.questionTable(term, false),
+                b.termlinker(term),
+                b.newLinkBags(term));
     }
 
 
     public TaskConcept(Term term, ConceptBuilder b) {
         this(term, b.newTable(term, true), b.newTable(term, false),
                 b.questionTable(term, true), b.questionTable(term, false),
+                b.termlinker(term),
                 b.newLinkBags(term));
     }
 
@@ -55,8 +58,9 @@ public class TaskConcept extends NodeConcept implements Concept {
     public TaskConcept(Term term,
                        BeliefTable beliefs, BeliefTable goals,
                        QuestionTable questions, QuestionTable quests,
+                       TermLinker linker,
                        Bag[] bags) {
-        super(term, bags);
+        super(term, linker, bags);
         this.beliefs = beliefs;
         this.goals = goals;
         this.questions = questions;

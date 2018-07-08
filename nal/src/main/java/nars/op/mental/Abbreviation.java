@@ -115,7 +115,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
 
             Term aliasTerm = Atomic.the(nextSerialTerm());
-            AliasConcept a1 = new AliasConcept(aliasTerm, abbrConcept, nar);
+            AliasConcept a1 = new AliasConcept(aliasTerm, abbrConcept);
             a1.meta(Abbreviation.class.getName(), a1);
             //nar.on(a1);
 
