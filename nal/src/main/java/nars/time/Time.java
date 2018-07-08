@@ -1,16 +1,13 @@
 package nars.time;
 
-import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.netflix.servo.util.Clock;
-import jcog.list.FasterList;
 import nars.NAR;
 import nars.task.NativeTask.SchedTask;
 import org.jetbrains.annotations.Nullable;
 
 import javax.measure.Quantity;
 import java.io.Serializable;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -21,28 +18,20 @@ import java.util.function.Consumer;
 public abstract class Time implements Clock, Serializable {
 
 
-
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
 
-    final static int MAX_PRE_SCHED = 4 * 1024;
-    final ConcurrentQueue<SchedTask> preSched =
-            
-            new MultithreadConcurrentQueue<>(MAX_PRE_SCHED);
+    final static int MAX_INCOMING = 4 * 1024;
+    final MultithreadConcurrentQueue<SchedTask> incoming =
+            new MultithreadConcurrentQueue<>(MAX_INCOMING);
 
-    
-    
-    
 
-    final PriorityQueue<SchedTask> scheduled =
-            
-            
-            new PriorityQueue<>();
+    final PriorityQueue<SchedTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);
 
 
     public void clear(NAR n) {
-        synchronized(scheduled) {
+        synchronized (scheduled) {
             synch(n);
-            
+            incoming.clear();
             scheduled.clear();
         }
     }
@@ -87,93 +76,68 @@ public abstract class Time implements Clock, Serializable {
     }
 
     private void runAt(SchedTask event) {
+        if (!incoming.offer(event)) {
+            throw new RuntimeException(this + " overflow");
+        }
 
-        
-            if (!preSched.offer(event)) {
-                throw new RuntimeException(this + " overflow"); 
-            }
-
-
-
-
-        long w = event.when;
-        scheduledNext.updateAndGet(z -> Math.min(z, w));
+        scheduledNext.updateAndGet(z -> Math.min(z, event.when));
     }
 
 
+    /**
+     * drain scheduled tasks ready to be executed
+     */
     @Nullable
-    public List<SchedTask> exeScheduled() {
-
-        
-
-
-
+    public void drain(Consumer<SchedTask> each) {
 
 
         long now = now();
         long nextScheduled = scheduledNext.get();
         if ((now < nextScheduled) || !(scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE)))
-            return null;
+            return;
 
 
-        try  {
-
-            
-
-            List<SchedTask> pending =
-                    
-                    new FasterList(8);
-
-            int s = 0;
-            SchedTask p;
-            while ((p = preSched.poll())!=null && s++ <= MAX_PRE_SCHED) { 
+        int s = incoming.size();
+        if (s > 0) {
+            //SchedTask p;
+            //while ((p = preSched.poll()) != null && s-- > 0) {
+            for (int i = 0; i < s; i++) {
+                SchedTask p = incoming.poll();
                 if (p.when <= now)
-                    pending.add(p); 
+                    each.accept(p);
                 else
                     scheduled.offer(p);
             }
-
-
-
-            SchedTask next;
-            while (((next = scheduled.peek()) != null) && (next.when <= now)) {
-                SchedTask actualNext = scheduled.poll();
-                assert (next == actualNext);
-                pending.add(next);
-            }
-
-            long nextNextWhen = next!=null ? next.when : Long.MAX_VALUE; 
-            scheduledNext.updateAndGet(z -> Math.min(z, nextNextWhen ));
-
-            return pending.isEmpty() ? null : pending;
-
-        } catch (Throwable t) {
-            
-            t.printStackTrace();
-            scheduledNext.set(now); 
-            return null;
         }
 
 
+        SchedTask next;
+        while (((next = scheduled.peek()) != null) && (next.when <= now)) {
+            SchedTask actualNext = scheduled.poll();
+            each.accept(actualNext);
+            //assert (next == actualNext);
+        }
+
+        long nextNextWhen = next != null ? next.when : Long.MAX_VALUE;
+        scheduledNext.updateAndGet(z -> Math.min(z, nextNextWhen));
+
+
     }
 
-    public void cycle(NAR n) {
-        synch(n);
-    }
+    abstract public void cycle(NAR n);
 
 
     /**
      * flushes the pending work queued for the current time
      */
     public void synch(NAR n) {
-        List<SchedTask> l = exeScheduled();
-        if (l!=null)
-            n.input(l);
+        drain(n::input);
     }
 
 
-
-    /** returns a string containing the time elapsed/to the given time */
+    /**
+     * returns a string containing the time elapsed/to the given time
+     */
     public String durationToString(long target) {
         long now = now();
         return durationString(now - target);

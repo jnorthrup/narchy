@@ -39,6 +39,8 @@ import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
+import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 
 /**
@@ -636,6 +638,14 @@ public class Derivation extends PreDerivation {
     }
 
 
+    public boolean concTruthEviMul(float ratio) {
+        return concTruthEvi( c2wSafe(concTruth.conf()) * ratio );
+    }
+
+    public boolean concTruthEvi(float e) {
+        float cc = w2cSafe(e);
+        return cc >= confMin && (this.concTruth = $.t(concTruth.freq(), cc))!=null;
+    }
 }
 
 

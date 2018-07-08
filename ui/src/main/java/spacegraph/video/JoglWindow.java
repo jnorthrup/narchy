@@ -1,5 +1,6 @@
 package spacegraph.video;
 
+import com.jogamp.common.util.JarUtil;
 import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
@@ -87,10 +88,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     };
 
+    static {
+        JarUtil.class.hashCode(); //force load my version
+    }
+
     protected JoglWindow() {
         logger = LoggerFactory.getLogger(toString());
 
+
+
         renderer = new GameAnimatorControl();
+
         updater = new InstrumentedLoop() {
             @Override
             public boolean next() {

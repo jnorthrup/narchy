@@ -178,7 +178,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double range(final int dim) {
         switch (dim) {
             case 0:
-                return end()-start();
+                return 1 + end()-start();
             default:
                 return /*Math.abs*/(coordF(true, dim) - coordF(false, dim));
         }

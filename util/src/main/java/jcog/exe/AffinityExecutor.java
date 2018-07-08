@@ -1,5 +1,6 @@
 package jcog.exe;
 
+import jcog.event.Off;
 import net.openhft.affinity.AffinityLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,9 @@ public class AffinityExecutor implements Executor {
 
     public void stop() {
         threads.removeIf(t -> {
+            if (t instanceof Off)
+                ((Off)t).off();
+
             if (t.isAlive())
                 t.interrupt();
             return true;

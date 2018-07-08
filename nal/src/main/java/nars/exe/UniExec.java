@@ -4,6 +4,7 @@ import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.Service;
 import jcog.WTF;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
+import jcog.event.Ons;
 import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
@@ -36,6 +37,7 @@ public class UniExec extends AbstractExec {
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
+    private Ons ons = null;
 
     public final class MyAbstractWork extends InstrumentedWork {
 
@@ -212,8 +214,9 @@ public class UniExec extends AbstractExec {
             };
             sharing.can(cpu);
 
-            n.onCycle(this::onCycle);
-            DurService.on(n, this::onDur);
+            ons = new Ons();
+            ons.add(n.onCycle(this::onCycle));
+            ons.add(DurService.on(n, this::onDur));
         }
     }
 
@@ -221,6 +224,8 @@ public class UniExec extends AbstractExec {
     @Override
     public void stop() {
         synchronized (this) {
+            ons.off();
+            ons = null;
             sharing.off(cpu.what, cpu);
             super.stop();
         }
@@ -232,13 +237,16 @@ public class UniExec extends AbstractExec {
     }
 
     protected void onCycle() {
-        if (nar==null)
-            return; //??
+//        if (nar==null)
+//            return; //??
+
+        nar.time.drain(this::executeNow);
 
         in.removeIf(e -> {
             executeNow(e);
             return true;
         });
+
         can.forEachValue(c->
             c.c.next(nar, WORK_PER_CYCLE)
         );

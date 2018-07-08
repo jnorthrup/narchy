@@ -2,7 +2,9 @@ package nars.exe;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
+import jcog.exe.Exe;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.task.NALTask;
@@ -10,6 +12,7 @@ import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
@@ -17,20 +20,6 @@ abstract public class BufferedExec extends UniExec {
 
     protected long idleTimePerCycle;
 
-
-    protected void updateTiming() {
-        if (nar.time instanceof RealTime) {
-            double throttle = nar.loop.throttle.floatValue();
-            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
-
-            //TODO better idle calculation in each thread / worker
-            idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
-
-            cpu.cycleTimeNS.set(Math.max(1, Math.round(cycleNS * throttle)));
-
-        } else
-            throw new TODO();
-    }
 
     @Override
     public void execute(Object x) {
@@ -46,9 +35,14 @@ abstract public class BufferedExec extends UniExec {
     public void executeLater(Object x) {
 
         if (x != null && !in.offer(x)) {
-            logger.info("{} blocked queue on: {}", this, x);
+            logger.warn("{} blocked queue on: {}", this, x);
             in.add(x);
         }
+    }
+
+    @Override
+    public void execute(Runnable r) {
+        executeLater(r);
     }
 
     @Override
@@ -70,10 +64,20 @@ abstract public class BufferedExec extends UniExec {
     }
 
     protected void onCycle() {
-        if (nar == null)
-            return;
 
-        updateTiming();
+        if (nar.time instanceof RealTime) {
+            double throttle = nar.loop.throttle.floatValue();
+            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
+
+            //TODO better idle calculation in each thread / worker
+            idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
+
+            cpu.cycleTimeNS.set(Math.max(1, Math.round(cycleNS * throttle)));
+
+        } else
+            throw new TODO();
+
+        nar.time.drain(this::executeLater);
 
     }
 
@@ -191,7 +195,7 @@ abstract public class BufferedExec extends UniExec {
         public final int threads;
         final AffinityExecutor exe = new AffinityExecutor();
 
-        boolean running;
+
 
 
         public WorkerExec(int threads) {
@@ -206,12 +210,13 @@ abstract public class BufferedExec extends UniExec {
 
             synchronized (this) {
 
-                running = true;
-
                 super.start(n);
 
 
                 exe.execute(MyRunnable::new, threads);
+
+                /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
+                Exe.setExecutor(this);
             }
 
         }
@@ -220,20 +225,27 @@ abstract public class BufferedExec extends UniExec {
         @Override
         public void stop() {
             synchronized (this) {
-                running = false;
+                Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
+
                 exe.shutdownNow();
+
+
+                in.removeIf(e -> {
+                    executeNow(e);
+                    return true;
+                });
+
                 super.stop();
             }
         }
 
-        @Override
-        protected void onCycle() {
-            updateTiming();
-        }
 
-        private class MyRunnable implements Runnable {
+        private final class MyRunnable implements Runnable, Off {
 
-            final List buffer = new FasterList(1024);
+            private final List buffer = new FasterList(1024);
+
+            private boolean running = true;
+
 
             @Override
             public void run() {
@@ -242,6 +254,17 @@ abstract public class BufferedExec extends UniExec {
 
                     Util.sleepNS(idleTimePerCycle);
                 }
+            }
+
+            @Override
+            public synchronized void off() {
+                running = false;
+
+                //execute remaining tasks in callee's thread
+                buffer.removeIf(x->{
+                    executeNow(x);
+                    return true;
+                });
             }
         }
     }

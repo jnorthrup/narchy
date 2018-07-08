@@ -67,7 +67,6 @@ public abstract class RealTime extends Time {
 
     @Override
     public final void cycle(NAR n) {
-        super.cycle(n);
         last = t;
         t = (realtime()-start);
     }

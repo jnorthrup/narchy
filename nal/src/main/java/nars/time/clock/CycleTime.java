@@ -55,7 +55,6 @@ public class CycleTime extends Time {
 
     @Override
     public final void cycle(NAR n) {
-        super.cycle(n);
         t += dt;
     }
 

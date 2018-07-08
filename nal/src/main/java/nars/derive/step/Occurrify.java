@@ -4,7 +4,6 @@ import jcog.WTF;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
-import nars.$;
 import nars.Op;
 import nars.Param;
 import nars.Task;
@@ -429,6 +428,38 @@ public class Occurrify extends TimeGraph {
             }
 
         },
+
+        /** TaskRange is a specialization of Task timing that applies a conj's range to the result, effectively a union across its dt span */
+        TaskRange() {
+            @Override
+            public Pair<Term, long[]> solve(Derivation d, Term x) {
+                return solveDT(d, x, d.occ(x));
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                assert(d.taskTerm.op()==CONJ);
+
+                if (!d.task.isEternal()) {
+                    int r = d.taskTerm.dtRange();
+                    long[] o = new long[]{d.task.start(), r + d.task.end()};
+
+
+                    if (r > 0 && d.concTruth!=null) {
+                        //decrease evidence by proportion of time expanded
+                        float ratio = (float)(((double)d.task.range()) / (1 + o[1] - o[0]));
+                        if (!d.concTruthEviMul(ratio))
+                            return null;
+                    }
+
+                    return o;
+                } else {
+                    return new long[] { ETERNAL, ETERNAL };
+                }
+            }
+
+        },
+
         TaskImmediate() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
@@ -706,10 +737,9 @@ public class Occurrify extends TimeGraph {
                         if (delta > 0) {
                             //discount for projection
                             float e = (float) Param.evi(d.concTruth.evi(), delta, d.dur);
-                            float c = w2cSafe(e);
-                            if (c < d.confMin)
+                            if (!d.concTruthEvi(e)) {
                                 return false;
-                            d.concTruth = $.t(d.concTruth.freq(), c); //TODO if below min, stop here
+                            }
                         }
 
                         System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
@@ -763,13 +793,14 @@ public class Occurrify extends TimeGraph {
             return null;
         }
 
-        protected Pair<Term, long[]> solveDT(Derivation d, Term x, Occurrify o) {
+        @Nullable protected Pair<Term, long[]> solveDT(Derivation d, Term x, Occurrify o) {
             ArrayHashSet<Event> solutions = o.solutions(x);
             Term p = o.solveDT(x, solutions);
             if (p == null)
                 p = x;
 
-            return pair(p, occurrence(d));
+            long[] occ = occurrence(d);
+            return occ == null ? null : pair(p, occ);
         }
 
         /**

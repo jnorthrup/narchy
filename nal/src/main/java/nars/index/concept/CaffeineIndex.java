@@ -1,6 +1,7 @@
 package nars.index.concept;
 
 import com.github.benmanes.caffeine.cache.*;
+import jcog.exe.Exe;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -148,13 +149,14 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
 
     @Override
     public final void execute(Runnable command) {
-        if (nar == null) {
-            command.run();
-            return;
-        }
-
-        
-        nar.exe.execute(command);
+//        if (nar == null) {
+//            command.run();
+//            return;
+//        }
+//
+//
+//        nar.exe.execute(command);
+        Exe.invoke(command);
     }
 
 
