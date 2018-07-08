@@ -36,7 +36,7 @@ public class Gradius extends NAgentX {
 
 
         int dx = 2, dy = 2;
-        int px = 16, py = 16;
+        int px = 24, py = 24;
 
         assert(px%dx==0 && py%dy ==0);
         for (int i = 0; i < dx; i++)

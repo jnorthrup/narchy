@@ -22,7 +22,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static com.google.common.collect.Iterables.concat;
+import static nars.$.$$;
 import static nars.Op.INH;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 3/21/17.
@@ -40,13 +43,10 @@ public class FZero extends NAgentX {
 
     public static void main(String[] args) {
 
-        
-
 
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-
 
 
             a = new FZero(n);
@@ -66,250 +66,39 @@ public class FZero extends NAgentX {
         this.fz = new FZeroGame();
 
         Bitmap2DConcepts<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
-                
+
                 //24, 24
-                16,16
-                
-                
+                16, 16
+
+
         )/*.blur()*/)
                 //.diff()
                 .resolution(0.05f);
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
 
 
         initToggle();
-        
-        
-        
-        
-        
-
-        
+        initBipolar(true, 3.5f, 0.3f);
+        //initBipolar(false, 3.5f, 0.3f);
 
 
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-        Signal dVelX = senseNumberDifference($.inh(id,$.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
-        Signal dVelY = senseNumberDifference($.inh(id,$.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
-        Signal dAccel = senseNumberDifference($.inh(id,"accel"), () -> (float) fz.vehicleMetrics[0][6]);
+        Signal dVelX = senseNumberDifference($.inh(id, $.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
+        Signal dVelY = senseNumberDifference($.inh(id, $.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
+        Signal dAccel = senseNumberDifference($.inh(id, "accel"), () -> (float) fz.vehicleMetrics[0][6]);
         Signal dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);
-        DemultiplexedScalar ang = senseNumber(angle -> $.p($.the("ang"), /*$.the(id ),*/ $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+        DemultiplexedScalar ang = senseNumber(angle -> $.prop($.the("ang"), /*$.the(id ),*/ $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                9, 
+                5,
                 DigitizedScalar.FuzzyNeedle
-                
-                
-        ).resolution(0.01f);
+        );
 
-        
 
-
-
-
-
-
-        /*window(
-                Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
-
-//        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
-//                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
+                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
     }
+
     private void actionSwitch() {
-        SwitchAction s = new SwitchAction(nar, (a)->{
+        SwitchAction s = new SwitchAction(nar, (a) -> {
 
 
             fz.rotVel = 0.1f;
@@ -335,7 +124,7 @@ public class FZero extends NAgentX {
                     fz.left = true;
                     fz.right = false;
                     nar.want(INH.the($.the("left"), id), Tense.Present, 1f, conf);
-                    
+
                     nar.want(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
                     nar.want(INH.the($.the("right"), id), Tense.Present, 0f, conf);
                     break;
@@ -350,29 +139,32 @@ public class FZero extends NAgentX {
                 }
 
 
-
             }
             return true;
         }, INH.the($.the("fwd"), id),
                 INH.the($.the("brake"), id),
                 INH.the($.the("left"), id),
                 INH.the($.the("right"), id)
-                
+
         );
         onFrame(s);
-        SpaceGraph.window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
+        window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 
     private void initToggle() {
 
         this.actionPushButtonMutex(
-            $.the("left"), $.the("right"),
-            l-> fz.left = l, r-> fz.right = r
+                $.the("left"), $.the("right"),
+                l -> fz.left = l, r -> fz.right = r
         );
         this.actionPushButtonMutex(
-            $.the("fwd"), $.the("brake"),
-            f-> fz.thrust = f,
-            b-> { if (b) { fz.vehicleMetrics[0][6] *= 0.9f; } }
+                $.the("fwd"), $.the("brake"),
+                f -> fz.thrust = f,
+                b -> {
+                    if (b) {
+                        fz.vehicleMetrics[0][6] *= 0.9f;
+                    }
+                }
         );
     }
 
@@ -388,6 +180,7 @@ public class FZero extends NAgentX {
         });
 
     }
+
     private void initTankContinuous() {
 
         float res = 0.01f;
@@ -395,91 +188,58 @@ public class FZero extends NAgentX {
 
         final float[] left = new float[1];
         final float[] right = new float[1];
-        
+
         actionUnipolar($.inh("left", id), (x) -> {
-            float power = (x - 0.5f)*2f * powerScale;
+            float power = (x - 0.5f) * 2f * powerScale;
             left[0] = power;
-            fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed/2;
+            fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed / 2;
             fz.vehicleMetrics[0][6] +=
-                    
+
                     left[0]
-                    
-                            * fwdSpeed/2f;
+
+                            * fwdSpeed / 2f;
             return x;
         }).resolution.set(res);
-        
-        actionUnipolar($.inh("right",id), (x) -> {
-            float power = (x - 0.5f)*2f * powerScale;
+
+        actionUnipolar($.inh("right", id), (x) -> {
+            float power = (x - 0.5f) * 2f * powerScale;
             right[0] = power;
-            fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed/2;
+            fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed / 2;
             fz.vehicleMetrics[0][6] +=
-                    
+
                     right[0]
-                            
-                            * fwdSpeed/2f;
+
+                            * fwdSpeed / 2f;
             return x;
         }).resolution.set(res);
 
     }
 
-    public void initBipolar(boolean fair) {
-
-
-
-
-
-
-
-
-
-
-
-
+    public void initBipolar(boolean fair, float fwdFactor, float rotFactor) {
 
 
         final float[] _a = {0}, _r = {0};
-        actionUnipolar($.inh(id,"fwd"), true, (x)->0f, (a0) -> {
+        actionUnipolar(/*$.inh(id,*/ $$( "linear"), true, (x) -> 0f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a > 0.5f) {
-                float thrust = /*+=*/ (a - 0.5f) * 2f * (16*fwdSpeed); 
+                float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);
                 fz.vehicleMetrics[0][6] = thrust;
             } else
-                fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f))); 
+                fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f)));
             return a0;
         });
 
 
-
-
-        actionBipolarFrequencyDifferential($.p(id, $.the("turn")), fair, true, (r0) -> {
+        actionBipolarFrequencyDifferential($.p(/*id, */$.the("turn")), fair, true, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 
             fz.playerAngle +=
-                    
+
                     r *
-                    rotSpeed * 0.75f;
+                            rotSpeed * rotFactor;
             return r0;
         });
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-        
-
-
 
 
     }
@@ -500,15 +260,9 @@ public class FZero extends NAgentX {
 
         double distance = fz.vehicleMetrics[0][1];
         double deltaDistance = (distance - lastDistance);
-        
+
 
         lastDistance = distance;
-
-
-
-
-        
-
 
 
 //        float r = Util.clamp(
@@ -517,11 +271,11 @@ public class FZero extends NAgentX {
 //                        deltaDistance / (fps*2)), -1f, +1f) - 0.5f;
 
         float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 4)) : 0; //-1f;
-        
+
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 
         return r;
-        
+
     }
 
 
@@ -537,7 +291,7 @@ public class FZero extends NAgentX {
 
         public final double[][] vehicleMetrics = new double[10][9];
 
-        boolean[] K = new boolean[65535]; 
+        boolean[] K = new boolean[65535];
         public double power;
         public int rank;
         double rotVel = 0.06;
@@ -552,18 +306,8 @@ public class FZero extends NAgentX {
         final int[][][] wiresBitmap = new int[32][256][256];
         final int[][][] bitmaps = new int[6][32][32];
         final byte[][] raceTrack = new byte[512][512];
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
+
         final int[] powerOvalY = new int[2];
         boolean onPowerBar;
         final boolean playing = true;
@@ -584,25 +328,6 @@ public class FZero extends NAgentX {
         public FZeroGame() {
             powerOvalY[0] = -96;
 
-
-            
-
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-
-            
-
-            
 
             for (int spriteIndex = 0; spriteIndex < 10; spriteIndex++) {
                 vehicleSprites[spriteIndex] = new BufferedImage(
@@ -666,9 +391,6 @@ public class FZero extends NAgentX {
                         0, 0, 64, 32, vehicleSpriteData, 0, 64);
             }
 
-            
-
-            
 
             for (int y = 0; y < 512; y++) {
                 for (int x = 0; x < 512; x++) {
@@ -710,9 +432,6 @@ public class FZero extends NAgentX {
                 }
             }
 
-            
-
-            
 
             for (int y = 0; y < 32; y++) {
                 for (int x = 0; x < 32; x++) {
@@ -733,9 +452,6 @@ public class FZero extends NAgentX {
                 }
             }
 
-            
-
-            
 
             for (int y = 0; y < 192; y++) {
                 for (int x = 0; x < 320; x++) {
@@ -745,7 +461,6 @@ public class FZero extends NAgentX {
                 }
             }
 
-            
 
             setTitle("F-Zero 4K");
             setIconImage(vehicleSprites[0]);
@@ -763,19 +478,6 @@ public class FZero extends NAgentX {
             largeFont = getFont().deriveFont(100f);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
 
         public int C(double angle, double light, double dark) {
@@ -785,9 +487,8 @@ public class FZero extends NAgentX {
         }
 
         public void update() {
-            
 
-            
+
             wiresBitmapIndex = 0x1F & (wiresBitmapIndex + 1);
 
             if (paused > 0) {
@@ -816,7 +517,7 @@ public class FZero extends NAgentX {
                 }
             } else if (vehicleMetrics[0][1] < 81984 && power > 0) {
 
-                
+
                 rank = 1;
                 for (int i = 1; i < 4; i++) {
                     if (vehicleMetrics[0][1] < vehicleMetrics[i][1]) {
@@ -824,7 +525,7 @@ public class FZero extends NAgentX {
                     }
                 }
 
-                
+
                 if (hitWallCount > 0) {
                     hitWallCount--;
                     power -= 1;
@@ -833,13 +534,14 @@ public class FZero extends NAgentX {
                     }
                 }
 
-                
+
                 if (playing) {
                     boolean L = left || K[KeyEvent.VK_LEFT];
                     boolean R = right || K[KeyEvent.VK_RIGHT];
                     if (L && !R) {
                         playerAngle += rotVel;
-                    } if (R && !L) {
+                    }
+                    if (R && !L) {
                         playerAngle -= rotVel;
                     }
                 }
@@ -857,7 +559,7 @@ public class FZero extends NAgentX {
                 }
 
                 if (playing) {
-                    
+
                     for (int i = 1; i < 10; i++) {
                         if ((i < 4 && vehicleMetrics[i][6] < 20.5)
                                 || vehicleMetrics[i][6] < 10) {
@@ -884,7 +586,7 @@ public class FZero extends NAgentX {
                                 = vehicleMetrics[i][2] + vehicleMetrics[i][6] * vz / mag;
                     }
 
-                    
+
                     onPowerBar = false;
                     if (raceTrack[0x1FF & (((int) vehicleMetrics[0][1]) >> 5)]
                             [0x1FF & (((int) vehicleMetrics[0][0]) >> 5)] == 2) {
@@ -905,10 +607,10 @@ public class FZero extends NAgentX {
                     vehicleMetrics[0][8] = vehicleMetrics[0][3]
                             + vehicleMetrics[0][6] * cos;
 
-                    
+
                     for (int j = 0; j < 10; j++) {
 
-                        
+
                         for (int i = 0; i < 10; i++) {
                             if (i != j) {
                                 double normalX = (vehicleMetrics[j][0]
@@ -940,7 +642,7 @@ public class FZero extends NAgentX {
                             }
                         }
 
-                        
+
                         int vehicleX = ((int) vehicleMetrics[j][0]) >> 5;
                         int vehicleZ = ((int) vehicleMetrics[j][1]) >> 5;
                         for (int z = -2; z <= 2; z++) {
@@ -995,11 +697,6 @@ public class FZero extends NAgentX {
             }
 
 
-
-
-
-
-            
             double skyRed = 0x65;
             double skyGreen = 0x91;
             for (int y = 0, k = 0; y < 48; y++) {
@@ -1012,7 +709,7 @@ public class FZero extends NAgentX {
                 skyGreen += 1.625;
             }
 
-            
+
             for (int y = 0, k = 15360; y < 192; y++) {
                 for (int x = 0; x < 320; x++, k++) {
                     double X = projectionMap[y][x][0] - VIEWER_X;
@@ -1029,7 +726,7 @@ public class FZero extends NAgentX {
                         tileIndex = (z == 2) ? 5 : 4;
                     }
                     if (tileIndex < 0) {
-                        
+
                         screenBuffer[k]
                                 = wiresBitmap[wiresBitmapIndex][0xFF & zr][0xFF & xr];
                     } else {
@@ -1040,7 +737,7 @@ public class FZero extends NAgentX {
 
             image.setRGB(0, 0, 320, 240, screenBuffer, 0, 320);
 
-            
+
             for (int i = 0; i < 10; i++) {
                 double X = vehicleMetrics[i][0] - vehicleMetrics[0][0];
                 double Z = vehicleMetrics[i][1] - vehicleMetrics[0][1];
@@ -1067,14 +764,14 @@ public class FZero extends NAgentX {
                 }
             }
 
-            
+
             imageGraphics.setColor(power < 20 && (wiresBitmapIndex & 8) == 0
                     ? Color.WHITE : powerColor);
             imageGraphics.fillRect(224, 20, (int) power, 10);
             imageGraphics.setColor(Color.WHITE);
             imageGraphics.drawRect(224, 20, 80, 10);
 
-            
+
             if (onPowerBar) {
                 imageGraphics.setColor(Color.GREEN);
                 for (int i = 0; i < 2; i++) {
@@ -1084,7 +781,7 @@ public class FZero extends NAgentX {
 
 
             if (power <= 0 || (vehicleMetrics[0][1] >= 81984 && rank > 3)) {
-                
+
                 String failString = "FAIL";
                 imageGraphics.setFont(largeFont);
                 int width = imageGraphics.getFontMetrics().stringWidth(failString);
@@ -1094,7 +791,7 @@ public class FZero extends NAgentX {
                 imageGraphics.setColor(Color.RED);
                 imageGraphics.drawString(failString, x, 145);
             } else if (vehicleMetrics[0][1] >= 81984) {
-                
+
                 String rankString = Integer.toString(rank);
                 imageGraphics.setFont(largeFont);
                 int width = imageGraphics.getFontMetrics().stringWidth(rankString);
@@ -1105,7 +802,7 @@ public class FZero extends NAgentX {
                         ? Color.WHITE : Color.GREEN);
                 imageGraphics.drawString(rankString, x, 145);
             } else {
-                
+
                 imageGraphics.setColor((rank == 4) ? (wiresBitmapIndex & 8) == 0
                         ? Color.WHITE : Color.RED : Color.GREEN);
                 imageGraphics.drawString(Integer.toString(rank), 16, 32);
@@ -1127,8 +824,6 @@ public class FZero extends NAgentX {
         protected void processKeyEvent(KeyEvent e) {
             K[e.getKeyCode()] = e.getID() == 401;
         }
-
-
 
 
     }

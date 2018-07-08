@@ -19,6 +19,7 @@ public class CompoundNormalization extends VariableNormalization {
     @Override
     public @Nullable Term transformCompound(Compound x) {
         if (!x.equals(root)) {
+            /* if x is not the root term (ie. a subterm) */
             Term y = Image.imageNormalize(x);
             if (y!=x) {
                 Termed yy = transform(y);

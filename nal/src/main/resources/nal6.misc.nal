@@ -1,0 +1,13 @@
+//untested
+
+        //to the degree that the desired sequence includes state which is not the case, desire that case
+        C, X, eventOf(C,X)    |- X, (Goal:DesireWeakPN)
+        C, X, eventOfNeg(C,X) |- --X, (Goal:DesireWeak)
+
+        //to the degree that the un-desired sequence includes state which is the case, desire not that case
+        C, X, eventOf(C,X)    |- --X, (Goal:DesireWeakN)
+        C, X, eventOfNeg(C,X) |- X, (Goal:DesireWeakNN)
+
+        //desire what co-occurs with satisfied goal
+        X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:DesireWeak)
+        X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:DesireWeakN)

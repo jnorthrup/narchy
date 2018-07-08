@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    private final int cycles = 5;
+    private final int cycles = 15;
 
     @Override protected NAR nar() {
         return NARS.tmp(1);

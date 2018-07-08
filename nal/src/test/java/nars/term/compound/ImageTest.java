@@ -37,7 +37,8 @@ class ImageTest {
     }
 
     @Test
-    void testNormlizeSubterms() {
+    void testNormalizeSubtermsSIM() {
+
         assertEquals(
                 "(reaction(acid,base)<->x)",
                 $$("(x <-> (acid --> (reaction,/,base)))").toString()

@@ -19,6 +19,7 @@ import nars.link.TaskLink;
 import nars.term.Term;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -36,7 +37,7 @@ public class MatrixDeriver extends Deriver {
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 4;
+    public int premisesPerConcept = 3;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
@@ -171,50 +172,56 @@ public class MatrixDeriver extends Deriver {
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
-        /** conceptualize templates first, even if no tasklinks or termlinks */
-        Concept[] templates =  templates(concept, nar);
+
+        List<TaskLink> tasklinksFired;
+
+        if (commit(nar, tasklinks, termlinks)) {
 
 
-        //if (taskPriSum[0] > 0)
-        concept.linker().link(concept, conceptActivation.pri(), nar);
+            int[] conceptTTL = {_tasklinks * (1 + _termlinksPerTasklink)};
 
 
-        if (!commit(nar, tasklinks, termlinks)) {
-            return;
-        }
-
-        int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };
-
-
-        int nTermLinks = termlinks.size();
-        int nTaskLinks = tasklinks.size();
+            int nTermLinks = termlinks.size();
+            int nTaskLinks = tasklinks.size();
 //        final float[] taskPriSum = {0};
-        tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
-            Task task = tasklink.get(nar);
-            if (task != null) {
+            int maxTasks = Math.min(_tasklinks, nTaskLinks);
+
+            tasklinksFired = new FasterList<>(maxTasks);
+
+            tasklinks.sample(rng, maxTasks, tasklink -> {
+
+                Task task = tasklink.get(nar);
+                if (task != null) {
 
 //                taskPriSum[0] += task.priElseZero();
 
-                activate(tasklink, templates, rng);
+                    tasklinksFired.add(tasklink);
 
-                if (!termlinks.isEmpty()) {
-                    termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
-                        if (!continueHypothesizing.test(task, termlink)) {
-                            //conceptTTL[0] = 0;
-                            return false;
-                        } else {
-                            return (--conceptTTL[0] > 0);
-                        }
-                    });
-                }
-            } else {
-                tasklink.delete();
-            }
+                    if (!termlinks.isEmpty()) {
+                        termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
+                            if (!continueHypothesizing.test(task, termlink)) {
+                                //conceptTTL[0] = 0;
+                                return false;
+                            } else {
+                                return (--conceptTTL[0] > 0);
+                            }
+                        });
+                    }
+                } /*else {
+                    tasklink.delete();
+                }*/
 
-            return (--conceptTTL[0] > 0);
-        });
+                return (--conceptTTL[0] > 0);
+            });
+        } else {
+            tasklinksFired = List.of();
+        }
 
+
+
+
+        concept.linker().link(concept, conceptActivation.pri(), tasklinksFired, rng, nar);
     }
 
 

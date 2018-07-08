@@ -76,7 +76,7 @@ abstract public class BufferedExec extends UniExec {
         } else
             throw new TODO();
 
-        nar.time.drain(this::executeLater);
+        nar.time.scheduled(this::executeLater);
 
     }
 

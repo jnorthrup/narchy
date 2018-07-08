@@ -9,7 +9,7 @@ import nars.concept.TaskConcept;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
+import java.util.List;
 
 
 public class Tasklinks {
@@ -18,10 +18,10 @@ public class Tasklinks {
 
         if (overflow != null) {
             TaskLink yy = b.put(xx, overflow);
-            if (yy != xx && yy != null) {
-
-
-            }
+//            if (yy != xx && yy != null) {
+//
+//
+//            }
         } else {
             b.putAsync(xx);
         }
@@ -52,38 +52,28 @@ public class Tasklinks {
 
 
     /**
-     * propagate tasklink to templates
+     * create a batch of tasklinks, sharing common seed data
      */
-    public static void linkTask(TaskLink tasklink, float priTransferred, Concept[] targets, Random rng) {
-        int nTargets = targets.length;
-        if (nTargets <= 0)
-            return;
+    public static void linkTask(TaskLink.GeneralTaskLink tasklink, float priTransferred, List<Concept> targets, MutableFloat overflow) {
+        int nTargets = targets.size();
+        assert(nTargets > 0);
 
         float pEach = Math.max(Prioritized.EPSILON,
                 priTransferred / nTargets
-
         );
-        {
 
-            TaskLink.Tasklike tlSeed =
-                    ((TaskLink.GeneralTaskLink) tasklink).id;
+        TaskLink.Tasklike tlSeed = tasklink.id;
 
-            final float headRoom = 1f - pEach;
-            MutableFloat overflow = new MutableFloat();
+        final float headRoom = 1f - pEach;
 
+        for (Concept c : targets) {
 
-            int j = rng.nextInt(nTargets);
-            for (int i = 0; i < nTargets; i++) {
+            float change = overflow.subAtMost(headRoom);
 
-                float change = overflow.subAtMost(headRoom);
+            linkTask(
+                new TaskLink.GeneralTaskLink(tlSeed, pEach + change),
+                    c.tasklinks(), overflow);
 
-                TaskLink xx =
-                        new TaskLink.GeneralTaskLink(tlSeed, pEach + change);
-
-                linkTask(xx, targets[j++].tasklinks(), overflow);
-
-                if (j == nTargets) j = 0;
-            }
         }
     }
 

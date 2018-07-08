@@ -14,10 +14,11 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -220,74 +221,88 @@ public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
         }
     }
 
-    public static boolean conceptualizable(Term x) {
+    static boolean conceptualizable(Term x) {
         return x.op().conceptualizable;
     }
 
-    /**
-     * creates a sub-array of the conceptualizable terms and shuffles them
-     */
-    @Deprecated @Override public Concept[] concepts(NAR nar) {
-        int concepts = this.concepts;
-        if (concepts == 0)
-            return Concept.EmptyArray;
+//    /**
+//     * creates a sub-array of the conceptualizable terms and shuffles them
+//     */
+//    @Deprecated @Override public Concept[] concepts(NAR nar) {
+//        int concepts = this.concepts;
+//        if (concepts == 0)
+//            return Concept.EmptyArray;
+//
+//        Concept[] x = new Concept[concepts];
+//        int nulls = 0;
+//        for (int i = 0; i < concepts; i++) {
+//            if ((x[i] = nar.conceptualize(items[i])) == null)
+//                nulls++;
+//        }
+//        if (nulls == concepts)
+//            return Concept.EmptyArray;
+//        else if (nulls > 0) {
+//            return ArrayUtils.removeNulls(x, Concept[]::new);
+//        } else {
+//            return x;
+//        }
+//    }
 
-        Concept[] x = new Concept[concepts];
-        int nulls = 0;
-        for (int i = 0; i < concepts; i++) {
-            if ((x[i] = nar.conceptualize(items[i])) == null)
-                nulls++;
-        }
-        if (nulls == concepts)
-            return Concept.EmptyArray;
-        else if (nulls > 0) {
-            return ArrayUtils.removeNulls(x, Concept[]::new);
-        } else {
-            return x;
-        }
-    }
 
-    @Override public void link(Concept src, float pri, NAR nar) {
+    /** balance = nar.termlinkBalance */
+    @Override public void link(Concept src, float pri, List<TaskLink> fired, Random rng, NAR nar) {
 
-        int localSize = size();
 
-        int n = localSize;
+        //TODO move to param
+        int termlinkFanoutMax = 10;
+
+        int n = size();
         if (n == 0)
             return;
 
+
+        n = Math.min(n, termlinkFanoutMax);
 
         Term srcTerm = src.term();
 
         float balance = nar.termlinkBalance.floatValue();
 
-
-        //calculate exactly according to the size of the subset that are actually conceptualizable
-        float budgetedForward = concepts == 0 ? 0 :
-                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
-
         float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n);
+
+//        //calculate exactly according to the size of the subset that are actually conceptualizable
+//        float budgetedForward = concepts == 0 ? 0 :
+//                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
+
+        float budgetedForward = Math.max(Prioritized.EPSILON, pri * (1-balance) / n);
+
+        List<Concept> targets = (concepts==0 ? List.of() : new FasterList<>(concepts));
 
         Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
         MutableFloat refund = new MutableFloat(0);
-        for (int i = 0; i < n; i++) {
-            Term tgtTerm = get(i);
 
-            boolean conceptualizable = i < concepts;
+        int j = rng.nextInt(n); //random starting position
+        for (int i = 0; i < n; i++) {
+
+            if (++j == n) j = 0;
+            Term tgtTerm = get(j);
+
+            boolean conceptualizable = j < concepts;
             if (conceptualizable) {
 
+                /** TODO batch activations */
                 @Nullable Concept tgt = nar.activate(tgtTerm, budgetedForward);
 
                 if (tgt != null) {
 
 
+                    targets.add(tgt);
+
+                    tgtTerm = tgt.term();
+
                     tgt.termlinks().put(
                             new PLink<>(srcTerm, budgetedForward), refund
                     );
 
-                    /** TODO batch */
-
-
-                    tgtTerm = tgt.term();
                 }
 
             } else {
@@ -296,6 +311,16 @@ public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
 
             srcTermLinks.put(new PLink<>(tgtTerm, budgetedReverse), refund);
 
+        }
+
+        //default all to all exhausive matrix insertion
+        //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
+        if (!targets.isEmpty()) {
+
+            for (TaskLink f : fired) {
+                MutableFloat overflow = new MutableFloat(); //keep overflow specific to the tasklink
+                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, f.priElseZero(), targets, overflow);
+            }
         }
     }
 

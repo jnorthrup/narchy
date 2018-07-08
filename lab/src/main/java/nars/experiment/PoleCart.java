@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatPolarNormalized;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -83,8 +84,8 @@ public class PoleCart extends NAgentX {
     static final double poleLength = 1f; 
     static final double gravity = 9.8; 
     static final double forceMag = 100.;
-    static final double tau =
-            0.01;
+    public final FloatRange tau = new FloatRange(0.01f, 0.001f, 0.02f);
+            //0.01;
             //0.005;
             //0.0025f;
     static final double fricCart = 0.00005;
@@ -364,7 +365,8 @@ public class PoleCart extends NAgentX {
         double posDDot = common - poleMassLength * angleDDot * cosangle /
                 totalMass;
 
-        
+
+        float tau = this.tau.floatValue();
         pos += posDot * tau;
 
 
@@ -413,7 +415,8 @@ public class PoleCart extends NAgentX {
         
 
         float rewardLinear = (float) (Math.cos(angle));
-        return rewardLinear;
+        //return rewardLinear;
+        return rewardLinear*rewardLinear*rewardLinear;
 
         
         

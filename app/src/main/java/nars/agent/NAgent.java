@@ -6,7 +6,6 @@ import jcog.data.ArrayHashSet;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
-import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.*;
 import nars.$;
@@ -71,7 +70,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     final Topic<NAR> frame = new ListTopic();
 
     /** list of concepts involved in this agent */
-    private final ArrayHashSet<Concept> concepts = new ArrayHashSet();
+    public final ArrayHashSet<Concept> concepts = new ArrayHashSet();
 
 
 
@@ -89,7 +88,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     /**
      * action exploration rate; analogous to epsilon in QLearning
      */
-    @Deprecated public FloatRange curiosity;
+    public FloatRange curiosity;
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
 
@@ -114,9 +113,9 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     public List<Supplier<Task>> always = $.newArrayList();
 
     /** non-null if an independent loop process has started */
-    private volatile Loop loop = null;
+
     public int sensorDur;
-    private long last;
+
 
     protected NAgent(NAR nar) {
         this("", nar);
@@ -145,11 +144,11 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         this(id, null);
     }
 
-    @Deprecated public void alwaysWant(Iterable<Termed> x, float conf) {
-        x.forEach(xx -> alwaysWant(xx, conf));
-    }
+//    @Deprecated public void alwaysWant(Iterable<Termed> x, float conf) {
+//        x.forEach(xx -> alwaysWant(xx, conf));
+//    }
 
-    @Deprecated public Task alwaysWant(Termed x, float conf) {
+    @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
                 nar.evidence()
@@ -160,7 +159,19 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         always.add(()->t);
         return t;
     }
+    public void alwaysWant(Termed x, float conf) {
+        always.add(()-> {
+            long now = Tense.dither(this.now, nar);
+            long next = Tense.dither(this.now + nar.dur(), nar);
+            return new NALTask(x.term(), GOAL, $.t(1f, conf), now,
+                    now, next,
+                    nar.evidence()
+                    //Stamp.UNSTAMPED
 
+            );
+        });
+
+    }
     public void alwaysQuestion(Termed x, boolean stamped) {
         alwaysQuestion(x, true, stamped );
     }
@@ -170,6 +181,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
 
+        long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED; //re-used each task, preventing overlap
+
         Supplier<Task> t = () -> {
 
             long now = Tense.dither(this.now, nar);
@@ -178,7 +191,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             return new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
                     now, next,
 
-                    stamped ? nar.evidence() : Stamp.UNSTAMPED
+                    stamp
             ) {
                 @Override
                 public boolean isInput() {
@@ -346,7 +359,6 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             return;
 
         long last = this.now;
-        this.last = last;
         long now = nar.time();
         if (now <= last)
             return;

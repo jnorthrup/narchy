@@ -26,11 +26,10 @@ public class Derivers {
                     files.add("nal6.guess.nal");
                     files.add("nal6.layer2.nal");
                     files.add("nal6.to.nal3.nal");
+                    //files.add("nal6.misc.nal"); //<- suspect
 
                     files.add("induction.nal");
                     files.add("hol.nal");
-
-                    //files.add("misc.nal");
                     break;
                 case 5:
                 case 4:

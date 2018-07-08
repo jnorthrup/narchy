@@ -3,6 +3,7 @@ package nars.derive.deriver;
 import jcog.bag.Bag;
 import jcog.bag.Sampler;
 import jcog.list.FasterList;
+import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -33,8 +34,9 @@ public class SimpleDeriver extends Deriver {
 
     /**
      * iterations -> premises multiplier
+     * values less than one mean the deriver will operate with < 100% probability each potential invocation
      */
-    public final IntRange power = new IntRange(1, 1, 512);
+    public final FloatRange enable = new FloatRange(1, 0, 1);
     /**
      * controls concentration per concept
      */
@@ -85,11 +87,22 @@ public class SimpleDeriver extends Deriver {
     }
 
     @Override
+    protected int next(NAR n, int iterations) {
+        float p = enable.floatValue();
+        if (p < 1f) {
+            if (n.random().nextFloat() > p)
+                return 0;
+        }
+
+        return super.next(n, iterations);
+    }
+
+    @Override
     protected void derive(NAR n, int iterations, Derivation d) {
 
 
 
-        final int[] ii = {iterations * power.intValue()};
+        final int[] ii = {iterations };
 
 
         int deriveTTL = n.deriveBranchTTL.intValue();
@@ -101,24 +114,25 @@ public class SimpleDeriver extends Deriver {
 
             Concept concept = a.id;
 
-            Concept[] templates = templates(concept, nar);
+
 
             LinkModel model = linking.apply(concept, d);
 
-            Iterable<TaskLink> tasklinks = model.tasklinks(tasklinksPerConcept.intValue());
+            List<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue());
             Supplier<PriReference<Term>> termlinker = model.termlinks();
 
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
 //            float taskPriSum = 0;
-            for (TaskLink tasklink : tasklinks) {
+
+
+            fired.removeIf(tasklink -> {
+
 
 
                 Task task = tasklink.get(nar);
                 if (task != null) {
 
 //                    taskPriSum += task.priElseZero();
-
-                    activate(tasklink, templates, d.random);
 
                     for (int z = 0; z < termlinks; z++) {
 
@@ -134,17 +148,13 @@ public class SimpleDeriver extends Deriver {
                         }
                     }
 
+                    return false; //keep
                 }
 
-            }
+                return true; //remove from list
+            });
 
-//            if (taskPriSum > 0)
-//                concept.linker().link(concept, taskPriSum, nar);
-//            else {
-//
-//
-            concept.linker().link(concept, a.pri(), nar);
-//            }
+            concept.linker().link(concept, a.pri(), fired, nar);
 
             return ii[0]-- > 0;
         });
@@ -152,7 +162,7 @@ public class SimpleDeriver extends Deriver {
     }
 
     interface LinkModel {
-        Iterable<TaskLink> tasklinks(int max);
+        List<TaskLink> tasklinks(int max);
 
         Supplier<PriReference<Term>> termlinks();
     }
@@ -169,7 +179,7 @@ public class SimpleDeriver extends Deriver {
         }
 
         @Override
-        public Iterable<TaskLink> tasklinks(int max) {
+        public List<TaskLink> tasklinks(int max) {
             List<TaskLink> t = new FasterList<>(max);
             Bag<?, TaskLink> tl = c.tasklinks();
             tl.sample(rng, Math.min(max, tl.size()), x -> {
@@ -198,7 +208,7 @@ public class SimpleDeriver extends Deriver {
         }
 
         @Override
-        public Iterable<TaskLink> tasklinks(int max) {
+        public List<TaskLink> tasklinks(int max) {
             List<TaskLink> t = new FasterList<>(max);
             c.tasklinks().sample(rng, max, x -> {
                 if (x!=null) t.add(x);

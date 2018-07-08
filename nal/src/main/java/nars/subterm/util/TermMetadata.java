@@ -61,9 +61,10 @@ abstract public class TermMetadata implements Termlike {
         return x.recurseTerms(Termlike::hasVars, (v) -> {
             if (v instanceof Variable) {
                 if (v instanceof NormalizedVariable) {
-                    
+
+                    /** automatic disqualification if image variable is present, because this may be in a term that will be Image normalized. see CompoundNormalization */
                     if (v == Op.imInt || v == Op.imExt)
-                        return true;
+                        return false;
 
                     NormalizedVariable nv = (NormalizedVariable) v;
                     byte varID = nv.anonNum();

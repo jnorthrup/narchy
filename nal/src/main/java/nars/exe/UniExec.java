@@ -224,9 +224,13 @@ public class UniExec extends AbstractExec {
     @Override
     public void stop() {
         synchronized (this) {
-            ons.off();
-            ons = null;
-            sharing.off(cpu.what, cpu);
+            if (ons!=null) {
+                ons.off();
+                ons = null;
+            }
+            if (sharing!=null) {
+                sharing.off(cpu.what, cpu);
+            }
             super.stop();
         }
     }
@@ -240,7 +244,7 @@ public class UniExec extends AbstractExec {
 //        if (nar==null)
 //            return; //??
 
-        nar.time.drain(this::executeNow);
+        nar.time.scheduled(this::executeNow);
 
         in.removeIf(e -> {
             executeNow(e);

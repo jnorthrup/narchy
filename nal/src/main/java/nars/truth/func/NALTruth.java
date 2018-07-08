@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 /**
  * NAL Truth Functions
@@ -407,10 +408,14 @@ public enum NALTruth implements TruthFunc {
 
     @SinglePremise @AllowOverlap Curiosity() {
         @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            float conf = m.confMin.floatValue();// + m.confResolution.floatValue();
+        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
+            float conf =
+                    //m.confMin.floatValue();
+                        // + m.confResolution.floatValue();
+                    Util.lerp(Util.sqr(n.random().nextFloat()) * 0.5f, minConf, n.confDefault(GOAL));
+
             if (T==null)
-                return $.t(m.random().nextFloat(), conf);
+                return $.t(n.random().nextFloat(), conf);
             else
                 return $.t(T.freq(), conf);
         }

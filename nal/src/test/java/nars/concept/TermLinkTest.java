@@ -2,13 +2,12 @@ package nars.concept;
 
 import nars.NAR;
 import nars.NARS;
-import nars.control.Activate;
 import nars.term.Termed;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.TreeSet;
 
+import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -227,8 +226,8 @@ class TermLinkTest {
     private void testTemplates(String term, String expect) {
         
         Concept c = n.conceptualize($$(term));
-        Activate a = new Activate(c, 0.5f);
-        Collection<Termed> t = new TreeSet(c.linker());
+        //Activate a = new Activate(c, 0.5f);
+        Collection<Termed> t = c.linker().targets().collect(toList());
         assertEquals(expect, t.toString());
     }
 

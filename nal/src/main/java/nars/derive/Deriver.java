@@ -1,14 +1,12 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.bag.Bag;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
@@ -19,12 +17,10 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.Attention;
 import nars.exe.Causable;
 import nars.link.TaskLink;
-import nars.link.Tasklinks;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -100,9 +96,9 @@ abstract public class Deriver extends Causable {
     }
 
     @Override
-    protected final int next(NAR n, final int iterations) {
-        if (n == null || !(iterations > 0))
-            throw new WTF();
+    protected int next(NAR n, final int iterations) {
+//        if (n == null || !(iterations > 0))
+//            throw new WTF();
 
 
         Derivation d = derivation.get().cycle(n, this);
@@ -124,11 +120,7 @@ abstract public class Deriver extends Causable {
     abstract protected void derive(NAR n, int iterations, Derivation d);
 
 
-    /** tasklink templates */
-    protected final void activate(TaskLink tasklink, Concept[] templates, Random r) {
-        Tasklinks.linkTask(tasklink, tasklink.priElseZero(), templates, r);
-    }
-
+    /** returns false if no tasklinks are present */
     static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, @Nullable Bag<Term, PriReference<Term>> termlinks) {
         float linkForgetting = nar.forgetRate.floatValue();
         tasklinks.commit(tasklinks.forget(linkForgetting));
@@ -158,9 +150,6 @@ abstract public class Deriver extends Causable {
         }
     }
 
-    @Deprecated protected Concept[] templates(Concept concept, NAR nar) {
-        return concept.linker().concepts(nar);
-    }
 
     /** unifier TTL used for matching in premise formation */
     protected int matchTTL() {

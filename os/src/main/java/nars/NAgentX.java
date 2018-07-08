@@ -113,24 +113,33 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        new MatrixDeriver(Derivers.nal(n, 1, 8));
+        new MatrixDeriver(Derivers.nal(n, 1, 8, "motivation.nal"));
 
-        n.dtDither.set(16);
-        n.timeFocus.set(10);
+        n.dtDither.set(10);
+        n.timeFocus.set(4);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(46);
 
+        n.forgetRate.set(0.9f);
+        n.activateConceptRate.set(0.75f);
+
+
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-
         n.beliefPriDefault.set(0.2f);
-        n.goalPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.2f);
+        n.goalPriDefault.set(0.9f);
 
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
+
+        n.emotion.want(MetaGoal.Perceive, -0.001f);
+        n.emotion.want(MetaGoal.Believe, +0.02f);
+        n.emotion.want(MetaGoal.Answer, +0.05f);
+        n.emotion.want(MetaGoal.Desire, +0.10f);
+        n.emotion.want(MetaGoal.Action, +0.50f);
 
         try {
             InterNAR i = new InterNAR(n, 8, 0);
@@ -147,16 +156,11 @@ abstract public class NAgentX extends NAgent {
 
         Inperience inp = new Inperience(n, 32);
 
-        n.forgetRate.set(0.85f);
-        n.activateConceptRate.set(0.1f);
+
 
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
-        n.emotion.want(MetaGoal.Perceive, -0.0001f);
-        n.emotion.want(MetaGoal.Believe, +0.02f);
-        n.emotion.want(MetaGoal.Answer, +0.005f);
-        n.emotion.want(MetaGoal.Desire, +0.06f);
-        n.emotion.want(MetaGoal.Action, +0.10f);
+
 
         //a.motivation.set(0.75f);
 
@@ -169,11 +173,22 @@ abstract public class NAgentX extends NAgent {
             n.on(a);
 
             n.runLater(() -> {
-                SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
-                        Derivers.nal(n, 6, 6, "curiosity.nal", "motivation.nal"),
+                SimpleDeriver motivation = new SimpleDeriver(a.fire(), n::input,
+                        Derivers.nal(n, 6, 6, "motivation.nal"
+                        ),
                         SimpleDeriver.GlobalTermLinker);
 
-                a.curiosity.set(0.0f);
+                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fire(), n::input,
+                        Derivers.nal(n, 0, 0, "curiosity.nal"),
+                        SimpleDeriver.GlobalTermLinker) {
+                    @Override
+                    protected int next(NAR n, int iterations) {
+                        enable.set(a.curiosity.floatValue() / (a.concepts.size()) );
+                        return super.next(n, iterations);
+                    }
+                };
+
+                a.curiosity.set(0.1f);
 
 
                 //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);
