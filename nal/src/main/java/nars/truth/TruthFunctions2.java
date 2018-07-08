@@ -95,14 +95,14 @@ public enum TruthFunctions2 {
      * goal deduction
      */
     @Nullable
-    public static Truth goalduction(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
+    public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
         float c = and(goal.conf(), belief.conf(), belief.freq());
         //float c = and(goal.conf(), belief.conf());
 
         if (!strong) {
-            c *= TruthFunctions.w2cSafe(1.0f);
-            //c = w2cSafe(c);
+            //c *= TruthFunctions.w2cSafe(1.0f);
+            c = w2cSafe(c);
         }
 
         if (c >= minConf) {

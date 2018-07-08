@@ -152,8 +152,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     @Deprecated public Task alwaysWant(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
-                //nar.evidence()
-                Stamp.UNSTAMPED
+                nar.evidence()
+                //Stamp.UNSTAMPED
                 
         );
 

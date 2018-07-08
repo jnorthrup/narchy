@@ -14,14 +14,14 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:Goalduction)
+    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:Desire)
 
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)
             (A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (A --> C), (Punctuation:Quest)
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (C --> A), (Punctuation:Question)
             (A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (C --> A), (Punctuation:Quest)
 
-    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:GoalductionWeak)
+    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:DesireWeak)
         (A --> B), (A --> C), task("?"), neqRCom(B,C) |- (C --> B), (Punctuation:Question)
             (A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (C --> B), (Punctuation:Quest)
         (A --> B), (A --> C), task("?"), neqRCom(B,C)  |- (B --> C), (Punctuation:Question)
@@ -31,7 +31,7 @@
                     //(A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C --> B), (Punctuation:Question)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
 
-    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:GoalductionWeak)
+    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:DesireWeak)
         (A --> C), (B --> C), task("?"), neqRCom(A,B) |- (A --> B), (Punctuation:Question)
             (A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (A --> B), (Punctuation:Quest)
         (A --> C), (B --> C), task("?"), neqRCom(A,B)  |- (B --> A), (Punctuation:Question)
@@ -43,7 +43,7 @@
 
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Goal:GoalductionWeak)
+    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Goal:DesireWeak)
 
 
 
@@ -62,14 +62,14 @@
 
 //// inheritance from similarty <- todo check why this one was missing ////////////////////////////////////////////////////////////////////////////////////
     (S <-> P), P         |- (S --> P), (Belief:Identity)
-    //(S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Goal:Goalduction)
+    //(S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire)
     (P --> S), (S <-> P), task("?") |- (P --> S), (Belief:BeliefIdentity, Punctuation:Belief)
 
 
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
-    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Goalduction)
+    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Desire)
 
     //(X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
     //(X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)

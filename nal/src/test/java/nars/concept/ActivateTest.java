@@ -45,7 +45,7 @@ class ActivateTest {
         Term A = $.the("a");
 
         MatrixDeriver dummy = new MatrixDeriver(Derivers.parse(n,
-        "(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:GoalductionWeak)"));
+        "(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:DesireWeak)"));
 
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};

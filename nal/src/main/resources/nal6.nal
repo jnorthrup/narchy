@@ -13,14 +13,14 @@
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
 
-    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:GoalductionWeak, Time:TaskPlusBeliefDT)
-    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:GoalductionWeakPN, Time:TaskPlusBeliefDT)
+    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:DesireWeak, Time:TaskPlusBeliefDT)
+    B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:DesireWeakPN, Time:TaskPlusBeliefDT)
 
-    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:GoalductionWeakN, Time:TaskPlusBeliefDT)
-    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:GoalductionWeakNN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:DesireWeakN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:DesireWeakNN, Time:TaskPlusBeliefDT)
 
-    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Goalduction, Time:TaskMinusBeliefDT)
-    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:GoalductionNN, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Desire, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DesireNN, Time:TaskMinusBeliefDT)
 
 
         Y, ((&&,X,A..+) ==> Z), --is(Y,"==>") |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y), (Belief:Deduction)
@@ -33,10 +33,10 @@
 
 //            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==> (&&,A..+)),C,B), (Belief:Abduction)
 //            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==> (&&,A..+)),C,B), (Belief:AbductionN)
-        //B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:GoalductionWeak)
-        //B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:DeductionN, Goal:GoalductionWeakN)
-                //B, (--(&&,C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:Deduction, Goal:GoalductionWeak)
-                //B, (--(&&,--C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:DeductionN, Goal:GoalductionWeakN)
+        //B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:DesireWeak)
+        //B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:DeductionN, Goal:DesireWeakN)
+                //B, (--(&&,C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:Deduction, Goal:DesireWeak)
+                //B, (--(&&,--C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:DeductionN, Goal:DesireWeakN)
 //            B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:Deduction)
 //            B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:DeductionN)
 //                B, (--(&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:Deduction)
@@ -352,23 +352,20 @@
 
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN)
-    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Strong, Time:TaskImmediate)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN, Time:TaskImmediate)
+    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Desire, Time:TaskImmediate)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN, Time:TaskImmediate)
 
         //to the degree that the desired sequence includes state which is not the case, desire that case
-        C, X, eventOf(C,X)    |- X, (Goal:GoalductionWeakPN)
-        C, X, eventOfNeg(C,X) |- --X, (Goal:GoalductionWeak)
+        C, X, eventOf(C,X)    |- X, (Goal:DesireWeakPN)
+        C, X, eventOfNeg(C,X) |- --X, (Goal:DesireWeak)
 
         //to the degree that the un-desired sequence includes state which is the case, desire not that case
-        C, X, eventOf(C,X)    |- --X, (Goal:GoalductionWeakN)
-        C, X, eventOfNeg(C,X) |- X, (Goal:GoalductionWeakNN)
+        C, X, eventOf(C,X)    |- --X, (Goal:DesireWeakN)
+        C, X, eventOfNeg(C,X) |- X, (Goal:DesireWeakNN)
 
-
-        //X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
-        //X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)
-
-        //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
-        //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
+        //desire what co-occurs with satisfied goal
+        X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:DesireWeak)
+        X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:DesireWeakN)
 
     //goal contained in conjunction/impl, weakly desire the entire conj; guilt by association
 //    X, C, eventOf(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTask)

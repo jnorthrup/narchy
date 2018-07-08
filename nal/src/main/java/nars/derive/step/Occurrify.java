@@ -706,9 +706,10 @@ public class Occurrify extends TimeGraph {
                         if (delta > 0) {
                             //discount for projection
                             float e = (float) Param.evi(d.concTruth.evi(), delta, d.dur);
-                            if (w2cSafe(e) < d.confMin)
+                            float c = w2cSafe(e);
+                            if (c < d.confMin)
                                 return false;
-                            d.concTruth = $.t(d.concTruth.freq(), e); //TODO if below min, stop here
+                            d.concTruth = $.t(d.concTruth.freq(), c); //TODO if below min, stop here
                         }
 
                         System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);

@@ -381,27 +381,27 @@ public enum NALTruth implements TruthFunc {
     @Deprecated Strong() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return Goalduction.apply(T, B, m, minConf);
+            return Desire.apply(T, B, m, minConf);
         }
     },
 
-    Goalduction() {
+    Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions2.goalduction(T, B, minConf, true);
+            return TruthFunctions2.desire(T, B, minConf, true);
         }
     },
-    GoalductionWeak() {
+    DesireWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions2.goalduction(T, B, minConf, false);
+            return TruthFunctions2.desire(T, B, minConf, false);
         }
     },
 
 //    @Deprecated Weak() {
 //        @Override
 //        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return GoalductionWeak.apply(T, B, m, minConf);
+//            return DesireWeak.apply(T, B, m, minConf);
 //        }
 //    },
 
