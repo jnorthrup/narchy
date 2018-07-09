@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements Graph2D.Graph2DLayout<X> {
     final List<Graph2D.NodeVis<X>> nodes = new FasterList();
     protected final List<M> bounds = new FasterList();
-    final DequePool<M> boundsPool = new DequePool<>(128) {
+    private final DequePool<M> boundsPool = new DequePool<>(128) {
         @Override
         public M create() {
             return newContainer();
@@ -21,15 +21,15 @@ public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements
 
     abstract protected M newContainer();
 
-    protected float recenterX;
-    protected float recenterY;
-    protected float tx;
-    protected float ty;
+    float recenterX;
+    float recenterY;
+    float tx;
+    float ty;
 
     /**
      * override this to control the final position the layout specifies
      */
-    protected void apply(Graph2D.NodeVis<X> n, RectFloat2D target) {
+    private void apply(Graph2D.NodeVis<X> n, RectFloat2D target) {
         n.pos(target);
     }
 
@@ -46,7 +46,7 @@ public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements
 
     protected abstract void layoutDynamic(Graph2D<X> g);
 
-    protected boolean get(Graph2D<X> g) {
+    private boolean get(Graph2D<X> g) {
         nodes.clear();
 
         float ox = g.bounds.x;
@@ -70,7 +70,7 @@ public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements
         return n != 0;
     }
 
-    protected void put() {
+    private void put() {
         int n = bounds.size();
         for (int i = 0; i < n; i++) {
             apply(nodes.get(i), bounds.get(i).get(tx, ty));

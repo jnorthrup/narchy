@@ -193,7 +193,7 @@ public class Sample {
      * @param frame     Must be in range, else framedata is unchanged.
      * @param frameData
      */
-    public void getFrame(int frame, float[] frameData) {
+    private void getFrame(int frame, float[] frameData) {
         if (frame < 0 || frame >= nFrames) {
             return;
         }
@@ -407,7 +407,7 @@ public class Sample {
      * @param type The type (AIFF, WAVE, etc.)
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void write(String fn, AudioFileType type) throws IOException {
+    private void write(String fn, AudioFileType type) throws IOException {
         write(fn, type, new SampleAudioFormat(this.sampleRate, 16, this.nChannels));
     }
 
@@ -420,7 +420,7 @@ public class Sample {
      * @param saf  The SampleAudioFormat
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void write(String fn, AudioFileType type, SampleAudioFormat saf) throws IOException {
+    private void write(String fn, AudioFileType type, SampleAudioFormat saf) throws IOException {
         Class<? extends AudioFileWriter> theRealAudioFileWriterClass = audioFileWriterClass == null ? defaultAudioFileWriterClass : audioFileWriterClass;
         
         if (type == AudioFileType.WAV) {

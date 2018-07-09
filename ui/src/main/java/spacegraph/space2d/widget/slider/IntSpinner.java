@@ -27,18 +27,14 @@ public class IntSpinner extends Widget {
             new Splitting(
                 label = new Label(),
                 new Gridding(Gridding.HORIZONTAL,
-                    new PushButton("+", ()->{
-                        update(+1);
-                    }),
-                    new PushButton("-", ()->{
-                        update(-1);
-                    })
+                    new PushButton("+", ()-> update(+1)),
+                    new PushButton("-", ()-> update(-1))
             ), 0.2f)
         );
         update(0);
     }
 
-    public void update(int delta) {
+    private void update(int delta) {
         synchronized (i) {
             set(i.intValue() + delta);
         }

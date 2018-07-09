@@ -17,11 +17,11 @@ import net.beadsproject.beads.core.UGen;
  */
 public abstract class IIRFilter extends UGen {
 
-    public IIRFilter(AudioContext context, int ins, int outs) {
+    IIRFilter(AudioContext context, int ins, int outs) {
         super(context, ins, outs);
     }
 
-    public abstract IIRFilterAnalysis getFilterResponse(float freq);
+    protected abstract IIRFilterAnalysis getFilterResponse(float freq);
 
     /**
      * Gets the filter's amplitude response at the specified frequency.
@@ -77,16 +77,16 @@ public abstract class IIRFilter extends UGen {
      * @param samplingFreq The sampling frequency.
      * @return The IIRFilterAnalysis object.
      */
-    public static IIRFilterAnalysis calculateFilterResponse(float[] bs,
-                                                            float[] as, float freq, float samplingFreq) {
+    static IIRFilterAnalysis calculateFilterResponse(float[] bs,
+                                                     float[] as, float freq, float samplingFreq) {
 
         IIRFilterAnalysis ret = analyzeFilter(bs, as, freq, samplingFreq);
         ret.groupDelay = calculateGroupDelay(bs, as, freq, samplingFreq);
         return ret;
     }
 
-    protected static double calculateGroupDelay(float[] bs, float[] as,
-                                                float freq, float samplingFreq) {
+    private static double calculateGroupDelay(float[] bs, float[] as,
+                                              float freq, float samplingFreq) {
         IIRFilterAnalysis a = analyzeFilter(bs, as, freq - .01f, samplingFreq);
         IIRFilterAnalysis b = analyzeFilter(bs, as, freq + .01f, samplingFreq);
         return ((b.phaseResponse - a.phaseResponse) / (a.w - b.w));
@@ -97,8 +97,8 @@ public abstract class IIRFilter extends UGen {
      *
      * @param freq The frequency to analyze.
      */
-    protected static IIRFilterAnalysis analyzeFilter(float[] bs, float[] as,
-                                                     float freq, float samplingFreq) {
+    private static IIRFilterAnalysis analyzeFilter(float[] bs, float[] as,
+                                                   float freq, float samplingFreq) {
 
         double w = -2 * freq * Math.PI / samplingFreq;
 
@@ -141,8 +141,13 @@ public abstract class IIRFilter extends UGen {
      * @version 0.9.5
      */
     public static class IIRFilterAnalysis {
-        public double frReal, frImag, amplitudeResponse,
-                phaseResponse, phaseDelay, groupDelay, w;
+        double frReal;
+        double frImag;
+        double amplitudeResponse;
+        double phaseResponse;
+        double phaseDelay;
+        double groupDelay;
+        double w;
     }
 
 }

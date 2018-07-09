@@ -32,7 +32,7 @@ import spacegraph.util.math.v3;
  */
 public abstract class ConcaveShape extends CollisionShape {
 
-	protected float collisionMargin;
+	float collisionMargin;
 
 	public abstract void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax);
 

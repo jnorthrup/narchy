@@ -14,7 +14,7 @@ public abstract class Pitch {
     /**
      * The constant log(2) = 0.6931472.
      */
-    public final static float LOG2 = 0.6931472f;
+    private final static float LOG2 = 0.6931472f;
 
     /**
      * Convert frequency to MIDI note number.
@@ -22,7 +22,7 @@ public abstract class Pitch {
      * @param frequency the required frequency.
      * @return the resulting MIDI note number.
      */
-    public static float ftom(float frequency) {
+    private static float ftom(float frequency) {
         return Math.max(0f, (float) Math.log(frequency / 440.0f) / LOG2 * 12f + 69f);
     }
 
@@ -44,7 +44,7 @@ public abstract class Pitch {
      * @param notesPerOctave how many notes in your octave (12 if you're not sure).
      * @return adjusted pitch.
      */
-    public static int forceToScale(int pitch, int[] scale, int notesPerOctave) {
+    private static int forceToScale(int pitch, int[] scale, int notesPerOctave) {
         int pitchClass = pitch % notesPerOctave;
         int register = pitch / notesPerOctave;
         int newPitchClass = -1;

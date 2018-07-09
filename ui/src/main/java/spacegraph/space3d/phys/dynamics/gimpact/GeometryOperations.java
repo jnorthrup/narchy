@@ -38,10 +38,10 @@ import spacegraph.util.math.v3;
  */
 class GeometryOperations {
 
-	public static final float PLANEDIREPSILON = 0.0000001f;
+	private static final float PLANEDIREPSILON = 0.0000001f;
 	public static final float PARALELENORMALS = 0.000001f;
 	
-	public static float CLAMP(float number, float minval, float maxval) {
+	private static float CLAMP(float number, float minval, float maxval) {
 		return (number < minval? minval : (number > maxval? maxval : number));
 	}
 
@@ -61,7 +61,7 @@ class GeometryOperations {
 	/**
 	 * Finds the closest point(cp) to (v) on a segment (e1,e2).
 	 */
-	public static void closest_point_on_segment(v3 cp, v3 v, v3 e1, v3 e2) {
+	private static void closest_point_on_segment(v3 cp, v3 v, v3 e1, v3 e2) {
 		v3 n = new v3();
 		n.sub(e2, e1);
 		cp.sub(v, e1);
@@ -82,7 +82,7 @@ class GeometryOperations {
 	 * 
 	 * @return -0 if the ray never intersects, -1 if the ray collides in front, -2 if the ray collides in back
 	 */
-	public static int line_plane_collision(Vector4f plane, v3 vDir, v3 vPoint, v3 pout, float[] tparam, float tmin, float tmax) {
+	private static int line_plane_collision(Vector4f plane, v3 vDir, v3 vPoint, v3 pout, float[] tparam, float tmin, float tmax) {
 		float _dotdir = VectorUtil.dot3(vDir, plane);
 
 		if (Math.abs(_dotdir) < PLANEDIREPSILON) {

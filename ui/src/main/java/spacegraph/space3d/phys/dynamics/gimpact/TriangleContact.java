@@ -37,7 +37,7 @@ import static spacegraph.space3d.phys.BulletGlobals.SIMD_EPSILON;
  *
  * @author jezek2
  */
-public class TriangleContact {
+class TriangleContact {
 	
 	
 	

@@ -39,14 +39,12 @@ import java.util.Deque;
  */
 class BvhTree {
 
-	protected int num_nodes;
-	protected final BvhTreeNodeArray node_array = new BvhTreeNodeArray();
+	private int num_nodes;
+	private final BvhTreeNodeArray node_array = new BvhTreeNodeArray();
 	
-	protected static int _calc_splitting_axis(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
+	private static int _calc_splitting_axis(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
 		v3 means = new v3();
-		means.set(0f, 0f, 0f);
 		v3 variance = new v3();
-		variance.set(0f, 0f, 0f);
 
 		int numIndices = endIndex - startIndex;
 
@@ -56,14 +54,7 @@ class BvhTree {
 		v3 tmp1 = new v3();
 		v3 tmp2 = new v3();
 
-		for (int i=startIndex; i<endIndex; i++) {
-			primitive_boxes.getBoundMax(i, tmp1);
-			primitive_boxes.getBoundMin(i, tmp2);
-			center.add(tmp1, tmp2);
-			center.scale(0.5f);
-			means.add(center);
-		}
-		means.scale(1f / (float)numIndices);
+		mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
 
 		for (int i=startIndex; i<endIndex; i++) {
 			primitive_boxes.getBoundMax(i, tmp1);
@@ -79,7 +70,18 @@ class BvhTree {
 		return VectorUtil.maxAxis(variance);
 	}
 
-	protected static int _sort_and_calc_splitting_index(BvhDataArray primitive_boxes, int startIndex, int endIndex, int splitAxis) {
+	private static void mean(BvhDataArray primitive_boxes, int startIndex, int endIndex, v3 means, float numIndices, v3 center, v3 tmp1, v3 tmp2) {
+		for (int i = startIndex; i < endIndex; i++) {
+			primitive_boxes.getBoundMax(i, tmp1);
+			primitive_boxes.getBoundMin(i, tmp2);
+			center.add(tmp1, tmp2);
+			center.scale(0.5f);
+			means.add(center);
+		}
+		means.scale(1f / numIndices);
+	}
+
+	private static int _sort_and_calc_splitting_index(BvhDataArray primitive_boxes, int startIndex, int endIndex, int splitAxis) {
 		int splitIndex = startIndex;
 		int numIndices = endIndex - startIndex;
 
@@ -94,14 +96,7 @@ class BvhTree {
 		v3 tmp1 = new v3();
 		v3 tmp2 = new v3();
 
-		for (int i = startIndex; i < endIndex; i++) {
-			primitive_boxes.getBoundMax(i, tmp1);
-			primitive_boxes.getBoundMin(i, tmp2);
-			center.add(tmp1, tmp2);
-			center.scale(0.5f);
-			means.add(center);
-		}
-		means.scale(1f / (float) numIndices);
+		mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
 
 		splitValue = VectorUtil.coord(means, splitAxis);
 
@@ -142,7 +137,7 @@ class BvhTree {
 		return splitIndex;
 	}
 
-	protected void _build_sub_tree(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
+	private void _build_sub_tree(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
 		final Deque<_build_sub_treeFrame> stack = new ArrayDeque<>();
 		stack.push(new _build_sub_treeFrame(primitive_boxes, startIndex, endIndex));
 		while (!stack.isEmpty()) {
@@ -189,7 +184,7 @@ class BvhTree {
 		}
 	}
 
-	private static class _build_sub_treeFrame {
+	private static final class _build_sub_treeFrame {
 		private final BvhDataArray primitive_boxes;
 		private final int startIndex;
 		private final int endIndex;

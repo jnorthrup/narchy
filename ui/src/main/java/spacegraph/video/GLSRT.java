@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public class GLSRT {
 
-    public static final boolean VBO_CACHE = true; 
+    private static final boolean VBO_CACHE = true;
     
 
     /*static {
@@ -68,7 +68,7 @@ public class GLSRT {
 		} */
 	}
 	
-    ImmModeSink vboCube;
+    private ImmModeSink vboCube;
 
 	public void drawCube(GL gl, float extent) {
 		extent = extent * 0.5f;
@@ -158,12 +158,12 @@ public class GLSRT {
 	private static GLUquadric sphere;
 	
 	private static class SphereKey {
-		public float radius;
+		float radius;
 
-		public SphereKey() {
+		SphereKey() {
 		}
 
-		public SphereKey(SphereKey key) {
+		SphereKey(SphereKey key) {
 			radius = key.radius;
 		}
 
@@ -207,18 +207,18 @@ public class GLSRT {
 
 	
 	private static class CylinderKey {
-		public float radius;
-		public float halfHeight;
+		float radius;
+		float halfHeight;
 
-		public CylinderKey() {
+		CylinderKey() {
 		}
 
-		public CylinderKey(CylinderKey key) {
+		CylinderKey(CylinderKey key) {
 			radius = key.radius;
 			halfHeight = key.halfHeight;
 		}
 
-		public void set(float radius, float halfHeight) {
+		void set(float radius, float halfHeight) {
 			this.radius = radius;
 			this.halfHeight = halfHeight;
 		}

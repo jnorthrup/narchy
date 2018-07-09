@@ -1,6 +1,7 @@
 package spacegraph.space2d.phys.particle;
 
 import spacegraph.space2d.phys.common.MathUtils;
+import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.normal.MutableStack;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
@@ -16,7 +17,7 @@ public class VoronoiDiagram {
         int m_x, m_y, m_i;
         Generator m_generator;
 
-        public VoronoiDiagramTask() {
+        VoronoiDiagramTask() {
         }
 
 
@@ -26,7 +27,7 @@ public class VoronoiDiagram {
 
 
 
-        public VoronoiDiagramTask set(int x, int y, int i, Generator g) {
+        VoronoiDiagramTask set(int x, int y, int i, Generator g) {
             m_x = x;
             m_y = y;
             m_i = i;
@@ -85,7 +86,7 @@ public class VoronoiDiagram {
 
     private final Tuple2f lower = new v2();
     private final Tuple2f upper = new v2();
-    private final MutableStack<VoronoiDiagramTask> taskPool =
+    private final IDynamicStack<VoronoiDiagramTask> taskPool =
             new MutableStack<>(50) {
                 @Override
                 protected VoronoiDiagramTask newInstance() {

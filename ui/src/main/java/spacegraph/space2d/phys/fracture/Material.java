@@ -65,7 +65,7 @@ public abstract class Material {
      * Polomer kruhu, z ktoreho sa rataju fragmenty (fragmenty mimo kruhu su
      * zjednocovane do povodneho telesa)
      */
-    public float m_radius = 2.0f;
+    protected float m_radius = 2.0f;
 
 
 
@@ -92,7 +92,7 @@ public abstract class Material {
      * @param normalImpulse Intenzita kolizie
      * @return Vrati pole Polygonov, na ktore bude dany polygon rozdeleny
      */
-    protected Polygon[] split(Smasher geom, Polygon p, Tuple2f localPos, Tuple2f localVel, float normalImpulse) {
+    Polygon[] split(Smasher geom, Polygon p, Tuple2f localPos, Tuple2f localVel, float normalImpulse) {
         Tuple2f[] foceeArray = focee(localPos, localVel);
 
         

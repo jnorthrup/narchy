@@ -35,9 +35,7 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
     public void update(float alpha) {
         boolean updating = (soundSource != null);
 
-        this.removeIf(sound -> {
-            return !updating || !sound.update(soundSource, alpha);
-        });
+        this.removeIf(sound -> !updating || !sound.update(soundSource, alpha));
 
 
 

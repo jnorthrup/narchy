@@ -12,7 +12,7 @@ public class BitmapLabel extends ConsoleGUI {
 
     private final Label label;
 
-    public BitmapLabel(String text) {
+    private BitmapLabel(String text) {
         super(text.length(), 1);
         this.label = new Label(text);
 
@@ -30,15 +30,15 @@ public class BitmapLabel extends ConsoleGUI {
         return label.getText();
     }
 
-    public BitmapLabel colorText(float rr, float gg, float bb) {
+    private BitmapLabel colorText(float rr, float gg, float bb) {
         return colorText(round(rr * 255), round(gg * 255), round(bb * 255));
     }
 
-    public BitmapLabel colorBackground(float rr, float gg, float bb) {
+    private BitmapLabel colorBackground(float rr, float gg, float bb) {
         return colorBackground(round(rr * 255), round(gg * 255), round(bb * 255));
     }
 
-    public BitmapLabel colorText(int rr, int gg, int bb) {
+    private BitmapLabel colorText(int rr, int gg, int bb) {
         label.setForegroundColor(new TextColor.RGB(
                 rr,
                 gg,
@@ -46,7 +46,7 @@ public class BitmapLabel extends ConsoleGUI {
         return this;
     }
 
-    public BitmapLabel colorBackground(int rr, int gg, int bb) {
+    private BitmapLabel colorBackground(int rr, int gg, int bb) {
         label.setBackgroundColor(new TextColor.RGB(
                 rr,
                 gg,

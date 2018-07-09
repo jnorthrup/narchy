@@ -120,8 +120,8 @@ public class AuventArray extends Auvent {
     @Override
     public AuventArray clone() {
         AuventArray clone = new AuventArray();
-        for (int i = 0; i < beads.size(); i++) {
-            clone.add(beads.get(i));
+        for (Auvent bead : beads) {
+            clone.add(bead);
         }
         return clone;
     }

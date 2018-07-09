@@ -45,25 +45,25 @@ import static spacegraph.space3d.phys.collision.broad.Dbvt.*;
  */
 public class DbvtBroadphase extends Broadphase {
 
-	public static final float DBVT_BP_MARGIN = 0.05f;
+	private static final float DBVT_BP_MARGIN = 0.05f;
 
 	public static final int DYNAMIC_SET = 0; 
 	public static final int FIXED_SET   = 1; 
-	public static final int STAGECOUNT  = 2; 
+	private static final int STAGECOUNT  = 2;
 
-	public final Dbvt[] sets = new Dbvt[2];                        
-	public final DbvtProxy[] stageRoots = new DbvtProxy[STAGECOUNT + 1]; 
+	private final Dbvt[] sets = new Dbvt[2];
+	private final DbvtProxy[] stageRoots = new DbvtProxy[STAGECOUNT + 1];
 	public final OverlappingPairCache paircache;                         
-	public final float predictedframes;                                  
-	public int stageCurrent;                                       
-	public final int fupdates;                                           
-	public final int dupdates;                                           
-	public int pid;                                                
-	public int gid;                                                
-	public final boolean releasepaircache;                               
-	final DbvtAabbMm bounds = new DbvtAabbMm();
+	private final float predictedframes;
+	private int stageCurrent;
+	private final int fupdates;
+	private final int dupdates;
+	private int pid;
+	private int gid;
+	private final boolean releasepaircache;
+	private final DbvtAabbMm bounds = new DbvtAabbMm();
 
-	final OArrayList<Dbvt.Node[]> collideStack = new OArrayList<>(DOUBLE_STACKSIZE);
+	private final OArrayList<Dbvt.Node[]> collideStack = new OArrayList<>(DOUBLE_STACKSIZE);
 
 	
 	
@@ -80,7 +80,7 @@ public class DbvtBroadphase extends Broadphase {
 		this(null);
 	}
 
-	public DbvtBroadphase(OverlappingPairCache paircache) {
+	private DbvtBroadphase(OverlappingPairCache paircache) {
 		sets[0] = new Dbvt();
 		sets[1] = new Dbvt();
 
@@ -165,7 +165,7 @@ public class DbvtBroadphase extends Broadphase {
 		forEach(root, maxClusterPopulation, population, 0, each);
 	}
 
-	public static int forEach(Node node, int maxClusterPopulation, int unvisited, int level, Consumer<List<Collidable>> each) {
+	private static int forEach(Node node, int maxClusterPopulation, int unvisited, int level, Consumer<List<Collidable>> each) {
 
 
 		

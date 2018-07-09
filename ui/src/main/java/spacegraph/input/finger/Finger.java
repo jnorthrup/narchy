@@ -23,14 +23,15 @@ import java.util.function.Predicate;
 public class Finger {
 
 
-    final static int MAX_BUTTONS = 5;
+    private final static int MAX_BUTTONS = 5;
     /**
      * TODO scale this to pixel coordinates, this spatial coordinate is tricky and resolution dependent anyway
      */
-    final static float DRAG_THRESHOLD = 3f;
+    private final static float DRAG_THRESHOLD = 3f;
     public final v2 pos = new v2(), posPixel = new v2(), posScreen = new v2();
-    public final v2[] hitOnDown = new v2[MAX_BUTTONS], hitOnDownGlobal = new v2[MAX_BUTTONS];
-    public final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
+    private final v2[] hitOnDown = new v2[MAX_BUTTONS];
+    public final v2[] hitOnDownGlobal = new v2[MAX_BUTTONS];
+    private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
 
     /**
@@ -55,7 +56,7 @@ public class Finger {
     /**
      * widget above which this finger currently hovers
      */
-    public final AtomicReference<@Nullable Widget> touching = new AtomicReference<Widget>();
+    public final AtomicReference<@Nullable Widget> touching = new AtomicReference<>();
 
 
     public Finger() {
@@ -66,7 +67,7 @@ public class Finger {
         return clicked(button, clicked, null, null, null);
     }
 
-    public static Predicate<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
+    private static Predicate<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
         return clicked(button, (f) -> clicked.run(), armed, hover, becameIdle );
     }
 
@@ -105,7 +106,7 @@ public class Finger {
         return touching.get();
     }
 
-    public static v2 relative(v2 x, Surface c) {
+    private static v2 relative(v2 x, Surface c) {
         v2 y = new v2(x);
         RectFloat2D b = c.bounds;
         y.sub(b.x, b.y);
@@ -228,7 +229,7 @@ public class Finger {
         return touchedNext;
     }
 
-    public boolean dragging(int button) {
+    private boolean dragging(int button) {
         return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posPixel) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
 
@@ -270,7 +271,7 @@ public class Finger {
         return pressing(button) && !wasPressed(button);
     }
 
-    public boolean wasPressed(int button) {
+    private boolean wasPressed(int button) {
         return prevButtonDown.get(button);
     }
 
@@ -278,7 +279,7 @@ public class Finger {
         return !wasPressed(button);
     }
 
-    public boolean releasedNow(int button) {
+    private boolean releasedNow(int button) {
         return !pressing(button) && wasPressed(button);
     }
 
@@ -289,7 +290,7 @@ public class Finger {
     /**
      * additionally tests for no dragging while pressed
      */
-    public boolean clickedNow(int button) {
+    private boolean clickedNow(int button) {
         boolean clicked = releasedNow(button);
         boolean notDragging = !dragging(button);
         
@@ -355,7 +356,7 @@ public class Finger {
 
     }
 
-    final AtomicFloat[] rotation = new AtomicFloat[3];
+    private final AtomicFloat[] rotation = new AtomicFloat[3];
 
     {
         rotation[0] = new AtomicFloat();

@@ -65,7 +65,7 @@ public class QuaternionUtil {
 		return out;
 	}
 	
-	public static void mul(Quat4f q, v3 w) {
+	private static void mul(Quat4f q, v3 w) {
 		float rx = q.w * w.x + q.y * w.z - q.z * w.y;
 		float ry = q.w * w.y + q.z * w.x - q.x * w.z;
 		float rz = q.w * w.z + q.x * w.y - q.y * w.x;
@@ -91,7 +91,7 @@ public class QuaternionUtil {
 		q.z = -q.z;
 	}
 	
-	public static void inverse(Quat4f q, Quat4f src) {
+	private static void inverse(Quat4f q, Quat4f src) {
 		q.x = -src.x;
 		q.y = -src.y;
 		q.z = -src.z;

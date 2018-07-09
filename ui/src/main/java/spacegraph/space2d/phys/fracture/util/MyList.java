@@ -199,7 +199,7 @@ public class MyList<T> extends AbstractList<T> implements List<T> {
     private class MyIterator implements Iterator<T> {
         private int index;
 
-        public MyIterator() {
+        MyIterator() {
             index = 0;
         }
 

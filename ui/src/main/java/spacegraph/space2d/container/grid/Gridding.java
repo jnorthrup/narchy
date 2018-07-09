@@ -23,16 +23,16 @@ public class Gridding extends MutableContainer {
 
     public static final float HORIZONTAL = 0f;
     public static final float VERTICAL = Float.POSITIVE_INFINITY;
-    public static final float SQUARE = 0.5f;
+    private static final float SQUARE = 0.5f;
 
     protected float margin = 0.05f;
-    float gridAspect = Float.NaN;
+    private float gridAspect;
 
     public Gridding(Surface... children) {
         this(SQUARE, children);
     }
 
-    public Gridding(float margin, float aspect, Surface... children) {
+    public Gridding(float margin, float aspect, Surface/*...*/ children) {
         this(aspect);
         set(children);
         this.margin = margin;
@@ -47,7 +47,7 @@ public class Gridding extends MutableContainer {
         set(children);
     }
 
-    public Gridding(float aspect, List<Surface> children) {
+    protected Gridding(float aspect, List<Surface> children) {
         this(aspect);
         set(children);
     }
@@ -219,7 +219,7 @@ public class Gridding extends MutableContainer {
         return col(array(content));
     }
 
-    static Surface[] array(Collection<? extends Surface> content) {
+    private static Surface[] array(Collection<? extends Surface> content) {
         return content.toArray(new Surface[0]);
     }
 

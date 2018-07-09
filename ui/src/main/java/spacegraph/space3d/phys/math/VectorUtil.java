@@ -52,7 +52,7 @@ public class VectorUtil {
 		return maxIndex;
 	}
 	
-	public static int maxAxis4(Vector4f v) {
+	private static int maxAxis4(Vector4f v) {
 		int maxIndex = -1;
 		float maxVal = -1e30f;
 		if (v.x > maxVal) {

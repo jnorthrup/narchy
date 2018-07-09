@@ -50,10 +50,10 @@ public class Secure {
     /* constants for the secure layer */
     public static final int SEC_ENCRYPT = 0x0008;
     public static final int SEC_LOGON_INFO = 0x0040;
-    static final Logger logger = LoggerFactory.getLogger(Secure.class);
+    private static final Logger logger = LoggerFactory.getLogger(Secure.class);
     static final int SEC_RANDOM_SIZE = 32;
     static final int SEC_MODULUS_SIZE = 64;
-    static final int SEC_MAX_MODULUS_SIZE = 256;
+    private static final int SEC_MAX_MODULUS_SIZE = 256;
     static final int SEC_PADDING_SIZE = 8;
     static final int SEC_LICENCE_NEG = 0x0080;
     private static final int SEC_EXPONENT_SIZE = 4;
@@ -105,7 +105,7 @@ public class Secure {
     private final byte[] sec_encrypt_update_key;
     private final byte[] client_random = new byte[SEC_RANDOM_SIZE];
     private final VChannels channels;
-    boolean readCert;
+    private boolean readCert;
     
     
     boolean licenceIssued;
@@ -173,7 +173,7 @@ public class Secure {
      *
      * @param data Array as passed reversed on return
      */
-    public static void reverse(byte[] data) {
+    private static void reverse(byte[] data) {
         int i = 0, j = 0;
         byte temp = 0;
 
@@ -200,7 +200,7 @@ public class Secure {
      *
      * @param key
      */
-    public static void make40bit(byte[] key) {
+    private static void make40bit(byte[] key) {
         key[0] = (byte) 0xd1;
         key[1] = (byte) 0x26;
         key[2] = (byte) 0x9e;
@@ -233,7 +233,7 @@ public class Secure {
      * @throws CryptoException
      * @throws OrderException
      */
-    public void connect(InetAddress host, int port)
+    private void connect(InetAddress host, int port)
             throws IOException, RdesktopException,
             CryptoException, OrderException {
         if (Options.hostname.isEmpty()) {
@@ -279,7 +279,7 @@ public class Secure {
      *
      * @return Packet populated with MCS data
      */
-    public RdpPacket_Localised sendMcsData() {
+    private RdpPacket_Localised sendMcsData() {
         logger.debug("Secure.sendMcsData");
 
         RdpPacket_Localised buffer = new RdpPacket_Localised(512);
@@ -442,7 +442,7 @@ public class Secure {
         }
     }
 
-    public void establishKey() throws RdesktopException, IOException,
+    private void establishKey() throws RdesktopException, IOException,
             CryptoException {
         RdpPacket_Localised buffer;
         int flags = SEC_CLIENT_RANDOM;
@@ -470,7 +470,7 @@ public class Secure {
         this.send(buffer, flags);
     }
 
-    public void processCryptInfo(RdpPacket_Localised data)
+    private void processCryptInfo(RdpPacket_Localised data)
             throws RdesktopException, CryptoException {
         int rc4_key_size = 0;
 
@@ -654,7 +654,7 @@ public class Secure {
      * @return Encrypted data
      * @throws CryptoException
      */
-    public byte[] encrypt(byte[] data, int length) throws CryptoException {
+    private byte[] encrypt(byte[] data, int length) throws CryptoException {
         synchronized (rc4_enc_lock) {
             byte[] buffer = null;
             if (this.enc_count == 4096) {
@@ -762,7 +762,7 @@ public class Secure {
      * @return Size of RC4 key
      * @throws RdesktopException
      */
-    public int parseCryptInfo(RdpPacket_Localised data)
+    private int parseCryptInfo(RdpPacket_Localised data)
             throws RdesktopException {
         logger.debug("Secure.parseCryptInfo");
         int encryption_level = 0, random_length = 0, RSA_info_length = 0;
@@ -872,7 +872,7 @@ public class Secure {
      *
      * bIn.reset(); return cert; }
      */
-    public void generateRandom() {
+    private void generateRandom() {
 
         try {
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -884,7 +884,7 @@ public class Secure {
 
     }
 
-    public void RSAEncrypt(int length, int modulus_size)
+    private void RSAEncrypt(int length, int modulus_size)
             throws RdesktopException {
         byte[] inr = new byte[length];
         
@@ -957,7 +957,7 @@ public class Secure {
      * @return True if key successfully read
      * @throws RdesktopException
      */
-    public boolean parsePublicKey(RdpPacket_Localised data)
+    private boolean parsePublicKey(RdpPacket_Localised data)
             throws RdesktopException {
         int magic = 0, modulus_length = 0;
 
@@ -1035,7 +1035,7 @@ public class Secure {
      * @return
      * @throws CryptoException
      */
-    public byte[] update(byte[] key, byte[] update_key) throws CryptoException {
+    private byte[] update(byte[] key, byte[] update_key) throws CryptoException {
         byte[] shasig = new byte[20];
         byte[] update = new byte[this.keylength]; 
         
@@ -1131,7 +1131,7 @@ public class Secure {
      *                     128-bit)
      * @throws CryptoException
      */
-    public void generate_keys(int rc4_key_size) throws CryptoException {
+    private void generate_keys(int rc4_key_size) throws CryptoException {
         byte[] session_key = new byte[48];
         byte[] temp_hash = new byte[48];
         byte[] input = new byte[48];

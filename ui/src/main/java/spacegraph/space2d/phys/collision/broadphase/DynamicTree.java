@@ -45,7 +45,7 @@ import spacegraph.util.math.v2;
  */
 public class DynamicTree implements BroadPhaseStrategy {
 
-    public static final int NULL_NODE = -1;
+    private static final int NULL_NODE = -1;
 
     private DynamicTreeNode m_root;
     private DynamicTreeNode[] node;
@@ -311,7 +311,7 @@ public class DynamicTree implements BroadPhaseStrategy {
         return computeHeight(m_root);
     }
 
-    private final int computeHeight(DynamicTreeNode node) {
+    private int computeHeight(DynamicTreeNode node) {
         assert (0 <= node.id && node.id < m_nodeCapacity);
 
         if (node.child1 == null) {
@@ -325,7 +325,7 @@ public class DynamicTree implements BroadPhaseStrategy {
     /**
      * Validate this tree. For testing.
      */
-    public void validate() {
+    private void validate() {
         validateStructure(m_root);
         validateMetrics(m_root);
 
@@ -462,7 +462,7 @@ public class DynamicTree implements BroadPhaseStrategy {
         validate();
     }
 
-    private final DynamicTreeNode allocateNode() {
+    private DynamicTreeNode allocateNode() {
         if (m_freeList == NULL_NODE) {
             assert (m_nodeCount == m_nodeCapacity);
 
@@ -495,7 +495,7 @@ public class DynamicTree implements BroadPhaseStrategy {
     /**
      * returns a node to the pool
      */
-    private final void freeNode(DynamicTreeNode node) {
+    private void freeNode(DynamicTreeNode node) {
         assert (node != null);
         assert (0 < m_nodeCount);
         node.parent = m_freeList != NULL_NODE ? this.node[m_freeList] : null;
@@ -506,7 +506,7 @@ public class DynamicTree implements BroadPhaseStrategy {
 
     private final AABB combinedAABB = new AABB();
 
-    private final void insertLeaf(int leaf_index) {
+    private void insertLeaf(int leaf_index) {
         DynamicTreeNode leaf = node[leaf_index];
         if (m_root == null) {
             m_root = leaf;
@@ -618,7 +618,7 @@ public class DynamicTree implements BroadPhaseStrategy {
         
     }
 
-    private final void removeLeaf(DynamicTreeNode leaf) {
+    private void removeLeaf(DynamicTreeNode leaf) {
         if (leaf == m_root) {
             m_root = null;
             return;
@@ -864,7 +864,7 @@ public class DynamicTree implements BroadPhaseStrategy {
     private final Color3f color = new Color3f();
     private final Tuple2f textVec = new Vec2();
 
-    public void drawTree(DebugDraw argDraw, DynamicTreeNode node, int spot, int height) {
+    private void drawTree(DebugDraw argDraw, DynamicTreeNode node, int spot, int height) {
         node.aabb.getVertices(drawVecs);
 
         color.set(1, (height - spot) * 1f / height, (height - spot) * 1f / height);

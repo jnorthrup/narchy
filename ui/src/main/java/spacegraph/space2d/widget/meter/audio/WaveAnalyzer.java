@@ -35,7 +35,7 @@ public class WaveAnalyzer {
     private final BaseMusic_DigitalSignalSynchronizer synchronizer;
     private final float[] mFFTSpectrum_Empty;
 
-    int fps = 30;
+    private int fps = 30;
 
     public WaveAnalyzer(WaveCapture src) {
 
@@ -65,7 +65,7 @@ public class WaveAnalyzer {
 
 
 
-    void synch() {
+    private void synch() {
         
             BaseMusic_DigitalSignalSynchronizer.Synchronizer tSynchronizer = synchronizer.getInternalSynchronizer();
             if (tSynchronizer!=null) {

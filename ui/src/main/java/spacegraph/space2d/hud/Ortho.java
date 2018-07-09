@@ -22,10 +22,7 @@ import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -41,31 +38,31 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class Ortho extends Container implements SurfaceRoot, WindowListener, MouseListener, KeyListener {
 
 
-    final static float focusAngle = (float) Math.toRadians(45);
-    static final int ZOOM_STACK_MAX = 8;
+    private final static float focusAngle = (float) Math.toRadians(45);
+    private static final int ZOOM_STACK_MAX = 8;
     public final Finger finger;
     public final v3 cam;
     /**
      * current view area, in absolute world coords
      */
     public final v2 scale = new v2(1, 1);
-    public final AtomicBoolean focused = new AtomicBoolean(false);
-    final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
-    final ArrayDeque<Supplier<RectFloat2D>> zoomStack = new ArrayDeque();
+    private final AtomicBoolean focused = new AtomicBoolean(false);
+    private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
+    private final Deque<Supplier<RectFloat2D>> zoomStack = new ArrayDeque();
     private final Runnable fingerUpdate;
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
-    public Surface surface;
+    Surface surface;
     public JoglSpace window;
-    float camZmin = 20;
-    float camZmax = 64000;
-    float zoomMargin = 0.25f;
+    private float camZmin = 5;
+    private float camZmax = 640000;
+    private float zoomMargin = 0.25f;
 
 
-    public Ortho() {
+    Ortho() {
         this(new EmptySurface());
     }
 
-    public Ortho(Surface content) {
+    Ortho(Surface content) {
         super();
         this.finger = new Finger();
 
@@ -75,11 +72,12 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             float CAM_RATE = 2f;
 
             {
-                setDirect(0, 0, (camZmin + camZmax) / 2);
+                setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
             }
 
             @Override
             public boolean animate(float dt) {
+                //System.out.println(this);
                 if (super.animate(dt)) {
                     float W = bounds.w;
                     float H = bounds.h;
@@ -118,7 +116,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         //doLayout(0);
     }
 
-    public boolean focused() {
+    boolean focused() {
         return focused.get();
     }
 
@@ -150,7 +148,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     }
 
-    public boolean autoresize() {
+    boolean autoresize() {
         return false;
     }
 
@@ -175,7 +173,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         return window.onUpdate(c);
     }
 
-    public On animate(Runnable c) {
+    private On animate(Runnable c) {
         return window.onUpdate(c);
     }
 
@@ -218,7 +216,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             windowResized(null);
 
             assert (surface.parent == null);
-            Exe.invokeLater(() -> surface.start(this));
+            surface.start(this);
+            //Exe.invokeLater(() -> surface.start(this));
         }
 
     }
@@ -267,7 +266,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
 
-    float targetDepth(float viewDiameter) {
+    private float targetDepth(float viewDiameter) {
         float targetDepth = (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
 
         return targetDepth;
@@ -278,13 +277,15 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
 
-    public void zoom(float x, float y, float sx, float sy, float margin) {
+    private void zoom(float x, float y, float sx, float sy, float margin) {
         zoom(x, y, Math.max(sx, sy) * (1 + margin));
     }
 
     public void zoom(float x, float y, float viewDiameter) {
 
-        cam.set(x, y, targetDepth(viewDiameter));
+
+        float z = targetDepth(viewDiameter);
+        cam.set(x, y, z);
 
 
     }
@@ -439,7 +440,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     }
 
-    protected boolean update(boolean moved, MouseEvent e) {
+    private boolean update(boolean moved, MouseEvent e) {
         return update(moved, e, null);
     }
 
@@ -475,7 +476,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * the picked surface even in-between pick updates which are invoked
      * during the update loop.
      */
-    protected Surface finger() {
+    Surface finger() {
 
         /*if (e == null) {
             off();

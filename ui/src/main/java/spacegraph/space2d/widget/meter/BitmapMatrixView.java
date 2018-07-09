@@ -27,7 +27,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 public class BitmapMatrixView extends Surface {
 
     public final int w;
-    public final int h;
+    private final int h;
     private final ViewFunction2D view;
     private final Tex bmp;
     protected Tuple2f touchPos;
@@ -52,7 +52,7 @@ public class BitmapMatrixView extends Surface {
     }
 
 
-    public BitmapMatrixView(float[] f) {
+    BitmapMatrixView(float[] f) {
         this(f.length, 1, arrayRenderer(f));
     }
 
@@ -60,7 +60,7 @@ public class BitmapMatrixView extends Surface {
         this(f.length, f[0].length, arrayRenderer(f));
     }
 
-    public BitmapMatrixView(float[] d, int stride, ViewFunction1D view) {
+    private BitmapMatrixView(float[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
             int i = y * stride + x;
             return i < d.length ? view.update(d[i]) : 0;
@@ -102,14 +102,14 @@ public class BitmapMatrixView extends Surface {
         });
     }
 
-    public static ViewFunction2D arrayRenderer(float[] ww) {
+    private static ViewFunction2D arrayRenderer(float[] ww) {
         return (x, y) -> {
             float v = ww[x];
             return Draw.colorBipolar(v);
         };
     }
 
-    public static ViewFunction2D arrayRenderer(float[][] ww) {
+    private static ViewFunction2D arrayRenderer(float[][] ww) {
         return (x, y) -> {
             float v = ww[x][y];
             return Draw.colorBipolar(v);
@@ -163,7 +163,7 @@ public class BitmapMatrixView extends Surface {
     /**
      * the position of a cell's center
      */
-    public v2 cell(float x, float y) {
+    private v2 cell(float x, float y) {
         float W = w();
         float xx = ((x + 0.5f) / (w)) * W;
         float H = h();
@@ -205,7 +205,7 @@ public class BitmapMatrixView extends Surface {
         bmp.update(buf);
     }
 
-    public interface ViewFunction1D {
+    @FunctionalInterface  public interface ViewFunction1D {
         /**
          * updates the GL state for each visited matrix cell (ex: gl.glColor...)
          * before a rectangle is drawn at the returned z-offset

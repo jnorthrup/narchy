@@ -7,17 +7,17 @@ import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 
 public class arpeggiator_01 {
-    float frequency = 100.0f;
-    int tick = 0;
-    FuncGen arpeggiator;
-    WavePlayer square;
+    private float frequency = 100.0f;
+    private int tick = 0;
+    private FuncGen arpeggiator;
+    private WavePlayer square;
 
-    Envelope gainEnvelope;
-    Gain gain;
+    private Envelope gainEnvelope;
+    private Gain gain;
 
-    int lastKeyPressed = -1;
+    private int lastKeyPressed = -1;
 
-    Clock beatClock;
+    private Clock beatClock;
 
     public static void main(String[] args) {
         arpeggiator_01 synth = new arpeggiator_01();
@@ -25,7 +25,7 @@ public class arpeggiator_01 {
     }
 
     
-    public void setup() {
+    private void setup() {
         AudioContext ac = new AudioContext();
 
         
@@ -104,7 +104,7 @@ public class arpeggiator_01 {
         return (float) (Math.pow(2, exponent) * 440.0f);
     }
 
-    public void keyDown(int midiPitch) {
+    private void keyDown(int midiPitch) {
         if (square != null && gainEnvelope != null) {
             lastKeyPressed = midiPitch;
 

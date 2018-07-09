@@ -61,7 +61,7 @@ public class Collidable<X> {
 	/** broadphase handle */
 	public Broadphasing broadphase;
 
-	protected CollisionShape collisionShape;
+	private CollisionShape collisionShape;
 
 	public short mask, group;
 
@@ -70,34 +70,34 @@ public class Collidable<X> {
 	
 	
 
-	protected int collisionFlags;
-	protected int islandTag1;
-	protected int companionId;
-	protected int state;
-	protected float deactivationTime;
-	protected float friction;
-	protected float restitution;
+	int collisionFlags;
+	private int islandTag1;
+	private int companionId;
+	private int state;
+	float deactivationTime;
+	float friction;
+	float restitution;
 
 	
-	protected X data;
+	X data;
 
 	
 	
-	protected final CollidableType internalType;
+	private final CollidableType internalType;
 
 	
-	protected float hitFraction;
+	private float hitFraction;
 	
-	protected float ccdSweptSphereRadius;
+	private float ccdSweptSphereRadius;
 
 	
-	protected float ccdMotionThreshold;
+	private float ccdMotionThreshold;
 	
-	protected boolean checkCollideWith;
+	boolean checkCollideWith;
 
 
 
-	public Collidable(CollidableType type, Transform t) {
+	protected Collidable(CollidableType type, Transform t) {
 		this.internalType = type;
 		this.collisionFlags = CollisionFlags.STATIC_OBJECT;
 		this.islandTag1 = -1;
@@ -108,7 +108,7 @@ public class Collidable<X> {
 		this.transform = t;
 	}
 
-	public boolean checkCollideWithOverride(Collidable co) {
+	boolean checkCollideWithOverride(Collidable co) {
 		return true;
 	}
 
@@ -137,7 +137,7 @@ public class Collidable<X> {
 		return collisionShape;
 	}
 
-	public void setCollisionShape(CollisionShape collisionShape) {
+	void setCollisionShape(CollisionShape collisionShape) {
 		this.collisionShape = collisionShape;
 		
 	}
@@ -176,7 +176,7 @@ public class Collidable<X> {
 		this.state = newState;
 	}
 
-	public void activate() {
+	void activate() {
 		activate(false);
 	}
 

@@ -19,7 +19,7 @@ public class PushButton extends AbstractButton {
 
     @Nullable private Consumer<PushButton> onClick;
 
-    public PushButton() {
+    private PushButton() {
         super();
         content(new EmptySurface());
     }

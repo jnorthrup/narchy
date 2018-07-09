@@ -8,7 +8,7 @@ import jcog.list.FasterList;
 import java.util.Iterator;
 import java.util.function.Function;
 
-public class StatePath extends FasterList<Context> {
+public final class StatePath extends FasterList<Context> {
 
     public static StatePath toRoot(Context here) {
         StatePath p = new StatePath(8);
@@ -32,7 +32,7 @@ public class StatePath extends FasterList<Context> {
         return match(Context::id, innerGlob);
     }
 
-    public MatchPath match(Function<Context,String> pattern, boolean innerGlob) {
+    private MatchPath match(Function<Context, String> pattern, boolean innerGlob) {
         int s = this.size();
         MatchPath m = new MatchPath(innerGlob ? s + (s-1) : s);
         for (int i = 0; i < s; i++) {
@@ -43,7 +43,7 @@ public class StatePath extends FasterList<Context> {
         return m;
     }
 
-    public Iterator all(String key) {
+    private Iterator all(String key) {
         throw new TODO();
     }
 

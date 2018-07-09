@@ -16,9 +16,9 @@ import spacegraph.video.JoglSpace;
 public class ZoomOrtho extends Ortho {
 
     public final static short PAN_BUTTON = 0;
-    final static short MOVE_WINDOW_BUTTON = 1;
-    final HUD hud = new HUD();
-    final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
+    private final static short MOVE_WINDOW_BUTTON = 1;
+    private final HUD hud = new HUD();
+    private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
 
         float speed = 1f;
         private v3 camStart;
@@ -41,10 +41,10 @@ public class ZoomOrtho extends Ortho {
         }
 
     };
-    final Fingering fingerWindowMove = new FingerMovePixels(MOVE_WINDOW_BUTTON) {
+    private final Fingering fingerWindowMove = new FingerMovePixels(MOVE_WINDOW_BUTTON) {
 
 
-        private v2 windowStart = new v2();
+        private final v2 windowStart = new v2();
 
         @Override
         protected JoglSpace window() {
@@ -77,7 +77,7 @@ public class ZoomOrtho extends Ortho {
 
     };
     private final Surface content;
-    float zoomRate =
+    private float zoomRate =
             0.5f;
 
     public ZoomOrtho(Surface content) {
@@ -92,7 +92,7 @@ public class ZoomOrtho extends Ortho {
     @Override
     public void start(JoglSpace s) {
         super.start(s);
-        hud.parent = this;
+        hud.start(this);
         hud.add(content);
     }
 
@@ -205,17 +205,6 @@ public class ZoomOrtho extends Ortho {
         }
 
 
-        @Override
-        public Surface tryTouch(Finger finger) {
-
-
-            if (finger != null) {
-
-
-            }
-
-            return super.tryTouch(finger);
-        }
 
 
         @Override

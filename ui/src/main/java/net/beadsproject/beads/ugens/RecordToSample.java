@@ -99,13 +99,13 @@ public class RecordToSample extends UGen {
      * @param mode    the Recording Mode to use.
      * @throws Exception if sample is not writeable.
      */
-    public RecordToSample(AudioContext context, Sample sample, Mode mode) {
+    private RecordToSample(AudioContext context, Sample sample, Mode mode) {
         this(context, sample.getNumChannels());
         this.mode = mode;
         setSample(sample);
     }
 
-    public RecordToSample(AudioContext context, int numChannels) {
+    private RecordToSample(AudioContext context, int numChannels) {
         super(context, numChannels, 0);
         mode = Mode.FINITE;
         sample = null;
@@ -125,7 +125,7 @@ public class RecordToSample extends UGen {
      *
      * @param sample the new Sample.
      */
-    public void setSample(Sample sample) {
+    private void setSample(Sample sample) {
         this.sample = sample;
         framesWritten = 0;
         position = 0;

@@ -29,5 +29,5 @@
  */
 package net.propero.rdp.orders;
 
-public interface Order {
+interface Order {
 }

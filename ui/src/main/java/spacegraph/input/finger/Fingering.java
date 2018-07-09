@@ -22,7 +22,7 @@ abstract public class Fingering {
     /** whether this is allowed to continue updating the finger's currently
      * touched widget after it activates.
      */
-    protected boolean escapes() {
+    boolean escapes() {
         return false;
     }
 }

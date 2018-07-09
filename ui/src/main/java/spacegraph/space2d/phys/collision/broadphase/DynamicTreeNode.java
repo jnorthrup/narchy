@@ -33,12 +33,12 @@ public class DynamicTreeNode {
 
     public Object data;
 
-    protected DynamicTreeNode parent;
+    DynamicTreeNode parent;
 
-    protected DynamicTreeNode child1;
-    protected DynamicTreeNode child2;
-    protected final int id;
-    protected int height;
+    DynamicTreeNode child1;
+    DynamicTreeNode child2;
+    final int id;
+    int height;
 
     public Object getData() {
         return data;
@@ -48,7 +48,7 @@ public class DynamicTreeNode {
         data = argData;
     }
 
-    protected DynamicTreeNode(int id) {
+    DynamicTreeNode(int id) {
         this.id = id;
     }
 }

@@ -11,7 +11,7 @@ public class GridTex extends Surface {
 
     private final Tex tex;
 
-    final static int rr128[] = new int[128*128];
+    private final static int[] rr128 = new int[128*128];
     static {
         int w = 128;
         int h = 128;

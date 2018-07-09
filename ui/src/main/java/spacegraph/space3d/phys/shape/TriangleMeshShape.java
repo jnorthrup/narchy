@@ -38,22 +38,22 @@ import spacegraph.util.math.v3;
  */
 public abstract class TriangleMeshShape extends ConcaveShape {
 
-	protected final v3 localAabbMin = new v3();
-	protected final v3 localAabbMax = new v3();
-	protected final StridingMeshInterface meshInterface;
+	final v3 localAabbMin = new v3();
+	final v3 localAabbMax = new v3();
+	final StridingMeshInterface meshInterface;
 
 	/**
 	 * TriangleMeshShape constructor has been disabled/protected, so that users will not mistakenly use this class.
 	 * Don't use btTriangleMeshShape but use btBvhTriangleMeshShape instead!
 	 */
-	protected TriangleMeshShape(StridingMeshInterface meshInterface) {
+    TriangleMeshShape(StridingMeshInterface meshInterface) {
 		this.meshInterface = meshInterface;
 
 		
 		
 	}
 
-	public v3 localGetSupportingVertex(v3 vec, v3 out) {
+	private v3 localGetSupportingVertex(v3 vec, v3 out) {
 		v3 tmp = new v3();
 
 		v3 supportVertex = out;
@@ -79,7 +79,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 		return localGetSupportingVertex(vec, out);
 	}
 
-	public void recalcLocalAabb() {
+	void recalcLocalAabb() {
 		for (int i = 0; i < 3; i++) {
 			v3 vec = new v3();
 			vec.set(0f, 0f, 0f);
@@ -174,11 +174,11 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 	private static class SupportVertexCallback extends TriangleCallback {
 		private final v3 supportVertexLocal = new v3();
-		public final Transform worldTrans = new Transform();
-		public float maxDot = -1e30f;
-		public final v3 supportVecLocal = new v3();
+		final Transform worldTrans = new Transform();
+		float maxDot = -1e30f;
+		final v3 supportVecLocal = new v3();
 
-		public SupportVertexCallback(v3 supportVecWorld, Transform trans) {
+		SupportVertexCallback(v3 supportVecWorld, Transform trans) {
 			this.worldTrans.set(trans);
 			MatrixUtil.transposeTransform(supportVecLocal, supportVecWorld, worldTrans.basis);
 		}
@@ -200,18 +200,18 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 			return out;
 		}
 
-		public v3 getSupportVertexLocal(v3 out) {
+		v3 getSupportVertexLocal(v3 out) {
 			out.set(supportVertexLocal);
 			return out;
 		}
 	}
 
 	private static class FilteredCallback extends InternalTriangleIndexCallback {
-		public final TriangleCallback callback;
-		public final v3 aabbMin = new v3();
-		public final v3 aabbMax = new v3();
+		final TriangleCallback callback;
+		final v3 aabbMin = new v3();
+		final v3 aabbMax = new v3();
 
-		public FilteredCallback(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
+		FilteredCallback(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
 			this.callback = callback;
 			this.aabbMin.set(aabbMin);
 			this.aabbMax.set(aabbMax);

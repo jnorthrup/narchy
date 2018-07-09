@@ -47,7 +47,7 @@ public class ProtoWidget extends Widget {
         final Multimap<String,Pair<String,Supplier<Surface>>> byTag = HashMultimap.create();
 
 
-        public WidgetLibrary add(String name, Supplier<Surface> s, String... tags) {
+        WidgetLibrary add(String name, Supplier<Surface> s, String... tags) {
             byName.put(name, s);
             for (String t : tags) {
                 byTag.put(t, pair(name, s));
@@ -58,8 +58,8 @@ public class ProtoWidget extends Widget {
 
     
 
-    static final Supplier<Surface> TODO = () -> new Label("TODO");
-    static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
+    private static final Supplier<Surface> TODO = () -> new Label("TODO");
+    private static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
 
         add("Keyboard", TODO, "Hardware");
         add("Mouse", TODO, "Hardware");
@@ -106,7 +106,7 @@ public class ProtoWidget extends Widget {
         this(LIBRARY);
     }
 
-    public ProtoWidget(WidgetLibrary library) {
+    private ProtoWidget(WidgetLibrary library) {
         super();
 
         Map<String,Supplier<Surface>> categories = new HashMap<>();
@@ -152,18 +152,18 @@ public class ProtoWidget extends Widget {
     }
 
 
-    PushButton becoming(String label, Supplier<Surface> replacement) {
+    private PushButton becoming(String label, Supplier<Surface> replacement) {
         return new PushButton(label,
                 () -> ((MutableContainer) parent).replace(ProtoWidget.this,
                         replacement.get()));
     }
 
-    public static class PlotChip extends Gridding {
+    static class PlotChip extends Gridding {
         final Port in;
         private final Plot2D plot;
         double nextValue = Double.NaN;
 
-        public PlotChip() {
+        PlotChip() {
             super();
 
             this.plot = new Plot2D(256, Plot2D.Line);
@@ -179,7 +179,7 @@ public class ProtoWidget extends Widget {
 
         }
     }
-    public static class Cluster2DChip extends Gridding {
+    static class Cluster2DChip extends Gridding {
 
         private final Port in;
         private final Surface display;
@@ -187,7 +187,7 @@ public class ProtoWidget extends Widget {
         Autoencoder ae;
         NeuralGasNet g;
         class Config {
-            public final IntRange clusters = new IntRange(16, 2, 32);
+            final IntRange clusters = new IntRange(16, 2, 32);
 
             synchronized void reset(int dim) {
                 if (ae == null || ae.inputs()!=dim) {
@@ -199,7 +199,7 @@ public class ProtoWidget extends Widget {
 
         final Config config = new Config();
 
-        public Cluster2DChip() {
+        Cluster2DChip() {
             super();
 
             config.reset(2);
@@ -217,7 +217,7 @@ public class ProtoWidget extends Widget {
                     Draw.bounds(gl, bounds, this::paint);
                 }
 
-                protected void paint(GL2 gl) {
+                void paint(GL2 gl) {
                     synchronized (g) {
                         NeuralGasNet g = Cluster2DChip.this.g;
 

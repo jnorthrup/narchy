@@ -43,7 +43,7 @@ public class TrimeshPrimitiveManager extends PrimitiveManagerBase {
 	public StridingMeshInterface meshInterface;
 	public final v3 scale = new v3();
 	public int part;
-	public int lock_count;
+	private int lock_count;
 
 	private final int[] tmpIndices = new int[3];
 
@@ -110,7 +110,7 @@ public class TrimeshPrimitiveManager extends PrimitiveManagerBase {
 		return vertexData.getVertexCount();
 	}
 
-	public void get_indices(int face_index, int[] out) {
+	private void get_indices(int face_index, int[] out) {
 		out[0] = vertexData.getIndex(face_index*3+0);
 		out[1] = vertexData.getIndex(face_index*3+1);
 		out[2] = vertexData.getIndex(face_index*3+2);

@@ -24,7 +24,7 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
     /**
      * Pocet vlozenych vrcholov
      */
-    protected int count;
+    private int count;
 
     /**
      * hash & n zaruci, ze vysledny hash sa zmesti do hashovacej tabulky.

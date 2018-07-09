@@ -27,20 +27,20 @@ import java.util.List;
 public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSignalProcessorInterface {
 
     public static final BandDistribution    BAND_DISTRIBUTION_LINEAR = new LinearBandDistribution();
-    public static final BandDistribution    BAND_DISTRIBUTION_LOG    = new LogBandDistribution( 4, 20.0 );		
-    public static final BandGain            BAND_GAIN_FLAT           = new FlatBandGain( 4.0f );
+    private static final BandDistribution    BAND_DISTRIBUTION_LOG    = new LogBandDistribution( 4, 20.0 );
+    private static final BandGain            BAND_GAIN_FLAT           = new FlatBandGain( 4.0f );
     public static final BandGain            BAND_GAIN_FREQUENCY      = new FrequencyBandGain( 4.0f );
     public static final int                 DISPLAY_MODE_SCOPE             = 0;
     public static final int                 DISPLAY_MODE_SPECTRUM_ANALYSER = 1;
     public static final int                 DISPLAY_MODE_VU_METER          = 2;
-    public static final int                 DEFAULT_WIDTH  = 768;
-    public static final int                 DEFAULT_HEIGHT = 512;
-    public static final int                 DEFAULT_SCOPE_DETAIL_LEVEL = 1;
+    private static final int                 DEFAULT_WIDTH  = 768;
+    private static final int                 DEFAULT_HEIGHT = 512;
+    private static final int                 DEFAULT_SCOPE_DETAIL_LEVEL = 1;
     public static final int                 DEFAULT_SPECTRUM_ANALYSER_BAND_COUNT        = 64;
-    public static final BandDistribution    DEFAULT_SPECTRUM_ANALYSER_BAND_DISTRIBUTION = BAND_DISTRIBUTION_LOG;
-    public static final BandGain            DEFAULT_SPECTRUM_ANALYSER_BAND_GAIN         = BAND_GAIN_FLAT;
-    public static final float               DEFAULT_SPECTRUM_ANALYSER_DECAY             = 0.03f;
-    public static final float               DEFAULT_SPECTRUM_ANALYSER_GAIN              = 1.0f;
+    private static final BandDistribution    DEFAULT_SPECTRUM_ANALYSER_BAND_DISTRIBUTION = BAND_DISTRIBUTION_LOG;
+    private static final BandGain            DEFAULT_SPECTRUM_ANALYSER_BAND_GAIN         = BAND_GAIN_FLAT;
+    private static final float               DEFAULT_SPECTRUM_ANALYSER_DECAY             = 0.03f;
+    private static final float               DEFAULT_SPECTRUM_ANALYSER_GAIN              = 1.0f;
     public static final Color               DEFAULT_BACKGROUND_COLOR = new Color( 0,   0,   128 );	
     public static final Color               DEFAULT_SCOPE_COLOR      = new Color( 255, 192, 0 );
     public static final float               DEFAULT_VU_METER_DECAY   = 0.02f;
@@ -96,7 +96,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
     
     
     private void computeBandTables() {	
-        if (mSpectrumAnalyzer_BandCount > 0 && saFFTSampleSize > 0 & mBaseMusic_FastFourierTransform != null) {
+        if (mSpectrumAnalyzer_BandCount > 0 && saFFTSampleSize > 0 && mBaseMusic_FastFourierTransform != null) {
             
             mSpectrumAnalyser_BandDistributionTable = mSpectrumAnalizer_BandDistribution.create( mSpectrumAnalyzer_BandCount, mBaseMusic_FastFourierTransform, saFFTSampleRate );
             mSpectrumAnalyzer_BandCount   = mSpectrumAnalyser_BandDistributionTable.length;
@@ -128,7 +128,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
     }
 
     
-    protected void drawSpectrumAnalyser(Graphics inGraphics, float[] pSample,float pFrrh) {
+    private void drawSpectrumAnalyser(Graphics inGraphics, float[] pSample, float pFrrh) {
         float c = 16;
         float wSadfrr = (saDecay * pFrrh);
         int b, bd, i, li = 0, mi;
@@ -302,7 +302,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
     }
 
     
-    public void setSpectrumAnalyserBandCount(int pCount) {
+    private void setSpectrumAnalyserBandCount(int pCount) {
         mSpectrumAnalyzer_BandCount = pCount;
         computeBandTables();
     }
@@ -321,8 +321,8 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
     private float[] channelMerge(float[][] pChannels) {
         for (int a = 0; a < pChannels[0].length; a++) {
             float wMcd = 0;
-            for (int b = 0; b < pChannels.length; b++) {
-                wMcd += pChannels[b][a];
+            for (float[] pChannel : pChannels) {
+                wMcd += pChannel[a];
             }
             pChannels[0][a] = wMcd / (float) pChannels.length;
         }
@@ -400,7 +400,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
          * @param pSubSonicOffset Groups the first 'n' bands into the sub-sonic band group. (default: 5)
          * @param pLogScaleOffset Starting point on the log scale. (default: 20.0)
          */
-        public LogBandDistribution(int pSubSonicOffset, double pLogScaleOffset) {
+        LogBandDistribution(int pSubSonicOffset, double pLogScaleOffset) {
             sso = pSubSonicOffset;
             lso = pLogScaleOffset;
         }
@@ -414,7 +414,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
             float[] wFqt = pFFT.calculateFrequencyTable(pFFTSampleRate);
             float wLfq = wFqt[sso];
             int wLcb = 1;
-            List<Band> wBands = new ArrayList<Band>();
+            List<Band> wBands = new ArrayList<>();
             
             wBands.add(new Band(sso, 0, wLfq));
             
@@ -431,7 +431,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
             if (wBands.size() < pBandCount) {
                 wBands.add(new Band((wHss - 1) + sso, wLfq, wFqt[(wHss - 1) + sso]));
             }
-            return wBands.toArray(new Band[wBands.size()]);
+            return wBands.toArray(new Band[0]);
         }
     }
 
@@ -439,13 +439,13 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
     public static class Band {
 
-        public int distribution;
-        public float frequency;
-        public float startFrequency;
-        public float endFrequency;
-        public String description;
+        int distribution;
+        float frequency;
+        float startFrequency;
+        float endFrequency;
+        String description;
 
-        public Band(int pDistribution, float pStartFrequency, float pEndFrquency) {
+        Band(int pDistribution, float pStartFrequency, float pEndFrquency) {
             distribution = pDistribution;
             startFrequency = pStartFrequency;
             endFrequency = pEndFrquency;
@@ -489,7 +489,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
         private final float gain;
 
-        public FlatBandGain(float pGain) {
+        FlatBandGain(float pGain) {
             gain = pGain;
         }
 
@@ -511,7 +511,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
         private final float bias;
 
-        public FrequencyBandGain(float pBias) {
+        FrequencyBandGain(float pBias) {
             
             bias = pBias;
         }

@@ -18,6 +18,11 @@ public class IntRange extends MutableInteger {
         super.set(Util.clamp(value, min, max));
     }
 
+
+    public void set(float value) {
+        set(Util.clamp(Math.round(value), min, max));
+    }
+
     @Override
     public void set(Number value) {
         if ((value instanceof Float || value instanceof Double)) {

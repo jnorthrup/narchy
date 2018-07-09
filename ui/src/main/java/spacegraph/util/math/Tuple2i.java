@@ -58,7 +58,7 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
      * @param x the x coordinate
      * @param y the y coordinate
      */
-    protected Tuple2i(int x, int y) {
+    Tuple2i(int x, int y) {
 	this.x = x;
 	this.y = y;
     }
@@ -68,7 +68,7 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
      * Constructs and initializes a Tuple2i from the array of length 2.
      * @param t the array of length 2 containing x and y in order.
      */
-    protected Tuple2i(int[] t) {
+    Tuple2i(int[] t) {
 	this.x = t[0];
 	this.y = t[1];
     }
@@ -79,7 +79,7 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
      * @param t1 the Tuple2i containing the initialization x and y
      * data.
      */
-    protected Tuple2i(Tuple2i t1) {
+    Tuple2i(Tuple2i t1) {
 	this.x = t1.x;
 	this.y = t1.y;
     }
@@ -88,7 +88,7 @@ public abstract class Tuple2i implements java.io.Serializable, Cloneable {
     /**
      * Constructs and initializes a Tuple2i to (0,0).
      */
-    protected Tuple2i() {
+    Tuple2i() {
 	this.x = 0;
 	this.y = 0;
     }

@@ -24,7 +24,7 @@ public class RopeJoint extends Joint {
     private final Tuple2f localAnchorB = new v2();
     private float targetLength;
     private float length;
-    protected float m_impulse;
+    private float m_impulse;
 
     
     private int indexA;
@@ -55,7 +55,7 @@ public class RopeJoint extends Joint {
         length = 0.0f;
     }
 
-    public float targetLength() {
+    protected float targetLength() {
         return targetLength;
     }
 

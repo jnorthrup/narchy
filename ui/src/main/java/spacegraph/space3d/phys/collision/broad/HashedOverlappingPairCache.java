@@ -43,7 +43,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 
 	private final IntArrayList hashTable = new IntArrayList();
 	private final IntArrayList next = new IntArrayList();
-	protected OverlappingPairCallback ghostPairCallback;
+	private OverlappingPairCallback ghostPairCallback;
 
 	public HashedOverlappingPairCache() {
 		
@@ -172,7 +172,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 		return userData;
 	}
 
-	public boolean needsBroadphaseCollision(Broadphasing proxy0, Broadphasing proxy1) {
+	private boolean needsBroadphaseCollision(Broadphasing proxy0, Broadphasing proxy1) {
 		if (overlapFilterCallback != null) {
 			return overlapFilterCallback.needBroadphaseCollision(proxy0, proxy1);
 		}
@@ -390,7 +390,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 
 
 
-	public static int getHash(int proxyId1, int proxyId2) {
+	private static int getHash(int proxyId1, int proxyId2) {
 
 		int key = (proxyId1) | (proxyId2 << 16);
 		
@@ -437,7 +437,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 	private static class RemovePairCallback extends OverlapCallback {
 		private final Broadphasing obsoleteProxy;
 
-		public RemovePairCallback(Broadphasing obsoleteProxy) {
+		RemovePairCallback(Broadphasing obsoleteProxy) {
 			this.obsoleteProxy = obsoleteProxy;
 		}
 
@@ -453,7 +453,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 		private final OverlappingPairCache pairCache;
 		private final Intersecter intersecter;
 
-		public CleanPairCallback(Broadphasing cleanProxy, OverlappingPairCache pairCache, Intersecter intersecter) {
+		CleanPairCallback(Broadphasing cleanProxy, OverlappingPairCache pairCache, Intersecter intersecter) {
 			this.cleanProxy = cleanProxy;
 			this.pairCache = pairCache;
 			this.intersecter = intersecter;

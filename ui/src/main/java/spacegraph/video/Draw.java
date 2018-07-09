@@ -94,9 +94,9 @@ public enum Draw {
 	*/
 
     public static final GLU glu = new GLU();
-    public final static GLSRT glsrt = new GLSRT(glu);
+    private final static GLSRT glsrt = new GLSRT(glu);
     public static final GLUT glut = new GLUT();
-    public final static HGlyph[] fontMono;
+    private final static HGlyph[] fontMono;
     @Deprecated
     final static BulletStack stack = new BulletStack();
     private static final float[] glMat = new float[16];
@@ -125,7 +125,7 @@ public enum Draw {
                 lines = new String(Draw.class.getClassLoader().getResourceAsStream("spacegraph/font/hershey/" + font + ".jhf").readAllBytes()).split("\n");
                 break;
             } catch (IOException e) {
-
+                e.printStackTrace();
             }
             Util.sleep(50);
         }
@@ -135,17 +135,15 @@ public enum Draw {
 
         String scratch = "";
         HGlyph nextGlyph;
-        for (int i = 0; i < lines.length; i++) {
-            String c = lines[i];
+        for (String line : lines) {
+            String c = line;
             if (c.endsWith("\n"))
                 c = c.substring(0, c.length() - 1);
 
 
-
-            
             if (Character.isDigit(c.charAt(4))) {
                 nextGlyph = new HGlyph(c + scratch);
-                
+
                 glyphs.add(nextGlyph);
                 scratch = "";
             } else {
@@ -858,7 +856,7 @@ public enum Draw {
         gl.glColor4fv(f, 0);
     }
 
-    public static int hsb(float hue, float saturation, float brightness) {
+    private static int hsb(float hue, float saturation, float brightness) {
         float[] f = new float[4];
         hsb(f, hue, saturation, brightness, 1);
         return rgbInt(f[0], f[1], f[2]);
@@ -986,7 +984,7 @@ public enum Draw {
         colorHash(x.hashCode(), color, 1f);
     }
 
-    public static void colorHash(int hash, float[] color, float sat, float bri, float alpha) {
+    private static void colorHash(int hash, float[] color, float sat, float bri, float alpha) {
         Draw.hsb(color, (Math.abs(hash) % 500) / 500f * 360.0f, sat, bri, alpha);
     }
 
@@ -1004,7 +1002,7 @@ public enum Draw {
         colorHash(gl, hash, 0.7f, 0.7f, alpha);
     }
 
-    public static void colorHash(GL2 gl, Object o, float alpha) {
+    private static void colorHash(GL2 gl, Object o, float alpha) {
         colorHash(gl, o.hashCode(), alpha);
     }
 
@@ -1024,7 +1022,7 @@ public enum Draw {
         bounds(gl, s.x, s.y, s.w, s.h, c);
     }
 
-    public static void bounds(GL2 gl, float x1, float y1, float w, float h, Consumer<GL2> c) {
+    private static void bounds(GL2 gl, float x1, float y1, float w, float h, Consumer<GL2> c) {
         gl.glPushMatrix();
         gl.glTranslatef(x1, y1, 0);
         gl.glScalef(w, h, 1);
@@ -1081,7 +1079,7 @@ public enum Draw {
         stencilEnd(gl);
     }
 
-    public static void stencilStart(GL2 gl) {
+    public static void stencilStart(GL gl) {
         gl.glEnable(gl.GL_STENCIL_TEST);
 
         
@@ -1183,7 +1181,7 @@ public enum Draw {
 
 
 
-    public static void stencilEnd(GL2 gl) {
+    public static void stencilEnd(GL gl) {
         
         gl.glDisable(gl.GL_STENCIL_TEST);
     }
@@ -1255,7 +1253,7 @@ public enum Draw {
 
 
 
-    public static void stencilUse(GL2 gl, boolean includeOrExclude) {
+    public static void stencilUse(GL gl, boolean includeOrExclude) {
         
         gl.glColorMask(true, true, true, true);
         gl.glDepthMask(true);
@@ -1342,7 +1340,7 @@ public enum Draw {
         text(gl, c, scale, scale, x, y, z);
     }
 
-    public static void text(GL2 gl, char c, float scaleX, float scaleY, float x, float y, float z) {
+    private static void text(GL2 gl, char c, float scaleX, float scaleY, float x, float y, float z) {
 
         int ci = c - 32; 
         if (ci >= 0 && (ci < fontMono.length)) {
@@ -1394,9 +1392,9 @@ public enum Draw {
 
     private static class GlDrawcallback extends TriangleCallback {
         private final GL gl;
-        public boolean wireframe;
+        boolean wireframe;
 
-        public GlDrawcallback(GL gl) {
+        GlDrawcallback(GL gl) {
             this.gl = gl;
         }
 
@@ -1480,7 +1478,7 @@ public enum Draw {
 
         }
 
-        public void draw(GL2 gl, float x) {
+        void draw(GL2 gl, float x) {
             
 
 
@@ -1496,7 +1494,7 @@ public enum Draw {
                 gl.glTranslatef(-x, 0, 0); 
         }
 
-        public void init(GL2 gl) {
+        void init(GL2 gl) {
             id = gl.glGenLists(1);
             gl.glNewList(id, GL2.GL_COMPILE);
 
@@ -1615,8 +1613,8 @@ public enum Draw {
         static public final String standard58base64 = "AakACQBgACAEAgQGBggGAgMDBAYDBAIGBQMFBQUFBQUFBQICBAUEBQgFBQUFBQUFBQIFBQQGBQUFBQUFBAUGCAUGBQMFAwYGAwQEBAQEBAQEAgQEAgYEBAQEAwQEBAQGBAQEBAIEBQKgUgghIaUAAIiRMeiZZwwAAANgjjnvmRRKESVzzDGXoqQUvYURQCCAQCCSCAAAAAgAAABEqECleCVFkRAAiLSUWEgoJQAAiSOllEJIKVRiSymllCRFSSlCEVIAQQBBQAARAAAAEAAAACQpgeALJASiIwAQSQipE1BKRS+QSEohhRBSqES1UkopSIqSkkIiFAGwEZOwSaplZGx2VVXVSQIAgeIgSETy4RCSCEnoEONAgJCkd0I6p73QiKilk46RpCQZQoQIAFBVVVOVVFVVVUKqqiqKCACCDyKpiIoAICQJ9FAiCUE8ElUphRRCSqESUUohJSRJSUpECBEAoCrqoiqZqqqqiFRVUiIJAADKI5UQASEgSAoJpSRSCgECUlJKKYSUSiWilEJKSRKRlIgQJABAVVVEVVJVVVUhqaqqQhIACBQixEIBQFBg9AwyRhhDBEIIpGPOCyZl0kXJBJOMGMImEW9owAcbMQmrpKpKxjJiopQdFQAAAAAAAABAAAAAAAAAAIAAAOAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAQIAAAEAQAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAgAAAgCAAAAAgAA";
         static public final String standard56base64 = "AeYACQBgACAEAgQGBggHAgMDBgYDBQIFBgMGBgYGBgYGBgIDBAYEBggGBgYGBgYGBgIGBgUIBgYGBgYGBgYGCAYGBgMFAwYHAwUFBQUFAwUFAgMFAggFBQUFBAQEBQUIBQUFBAMEBQKgUgghRwoBAIAcOQ7yOZ/jAADAAXAe5/k+JwqKQlDkPM7jfFGUFEXfwghAQAAICIQUAgAAAAABAAAAQAkVqBSvJFJUEQCQaFHEBBEURQAAiDiiKIqCIIqCkjAWRVEURUQUJUURFCEFIBAAAgEBhAAAAABAAAAAAEikBIIvkFAQOQQAJBIEKU8ARVGiLyCRKAqiIAiioCJUTVEURQERRUmKgkQoAsAd40zcSambY447u5SSUnoSAYBAcRBMRNWHh4iEMAn0II4HBBAk6XuC6HmyL2gISVX0RI9DREoSQRAhAgBIKaW0lFIpKaWUIiSlpJRQhAAg+CCSFBFBACAiEdAHRUgEgfiIqIqiIAqCKAoqQlAWBVEBEZGSpBBCiAAAUgrpJaU0SkoppRBJKckkIxEAAJRHKkIEEACESEKERBERRUEAAVKiKIqCIIqKkhAURUGUREREJEVEECQAgJRSCkkplZJSSilIUkpKKUgEAAKFCHGhAIBAwdHnII5DOA4iIAiB6HGeL3CinOgFRU7gRA7hEDYR8QUJ+MEd40xcSqmkZI6LEWdsknsSAQAAAAAAAAAgAAAAAAAAAACAAACAAwAAAAAAAAAAAAAAQAAAAAAAAAADAwAAAAAABBAAAICAAAAAAIAAJQAAAAAAAAAABAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAACAAAgIAAAAAAYAAA=";
         static public final String grixelbase64 = "AnoADABgACAFAgQICAoIAgQEBgYDBQIKCQMICAgICAcICAIDBQYFBwkICAgIBwcICAYHCAcJCAgICAgICAgICggICAQKBAQHBAcHBwcHBQcHAgUHBAoHBwcHBgcGBwcKBwcHBQIFCAJAJeIjkENBAAAAQHzk4wPz5/Pz8QEAAB4ePj8+Pz6fX9AHCgoECvL58fnx+QsKiigo6C8CIAEIIAAAARwgEAoEAAAAAAAABAAAAAAAICIAAZVIUiERBQEAAIAIWlAQSkAQKCgIICCEhAQFBQUFAgFBBCgoMGwoKCgoKAghKCiioCCgEIAKQIAAAAQIgAAgEAAAAAAAABAAAAAAAICIsAUEfwlCRBCkEAAAIUhAQCQBAaCgIEAAAcoUFBQQFAgEBBGgoECpoqCgoKAAhKCgiEREQIIAAgAAAgAQIAACgEAAAAAAAABAAAAAAAAAIrIBEIgkgBBBEEEAAIIgAQGJ/ARAgoKS+AioVFBQQFAgEBBEgEICmZKCgoKCAhCCgiKioIAIBAgA4Pl4fJ7n+YRC8c7H8/F5ni8UiigU+okIAEAg4gOBA0HfhwcEguTDEwL0g/DxAwFAoFJ/PwFBv1/eHwH6CASKCgoKCvJBCAqKCAEBISAgAAAoFAqFQigUikREoVAoFISEUCgiSQgSQgAAgQgSAlEEEQQACAhSANAfUBAhCAiIj2BKBQUFBAUCQUEEKCQQKCzoJ+gHCCEoKCIKBIIAgQAAvlAg9AuhUOgREYVCoVBgEEKhiBghhIgAAAB/SITEEKQQABAgSAFAIEBBhCAgQABByBMUFBAUCAQFEaGgQKCgoICgECCEIJGIRBAEAggCAIRCgVAghEKhSEQUCoVCAUYIhSJihAgiAgAAiCQJFUMQAAgggCAFBIEEBRGCghACAkBAUFBQUCAQFESEggKBgoICkoKCEIIoIgpCCAhACAAQCoVCoRAKhUIRUSgUCgUhISSJSBISiAgAQCDiE4gTQQAgUAB89OcD4uND8PFJAAAEfkE/Pj++gF/Q5wn6BQryCfAJ8kHwQXAnCOEvACIAgM/j8XiCLxQKWUQhz8cXeDgPw52Q7yciAAAAAAIAANgAQAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAgAPg4AcAAAAAACAACAAAAAABEAAAAAAAACAAawAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4ABgAAAAABEAAAAAAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-        public static final int defaultChar = 32;
-        protected final int[] charWidth = new int[255];
+        static final int defaultChar = 32;
+        final int[] charWidth = new int[255];
         private final float[] texture;
         private final int[] ascii;
         private final int size;
@@ -1625,10 +1623,10 @@ public enum Draw {
         private final int glyphCount;
         private final boolean lazy;
         private final Glyph[] glyphs;
-        protected int characters;
-        protected int charHeight;
-        protected int[][] chars;
-        protected int lineHeight = 10;
+        int characters;
+        int charHeight;
+        int[][] chars;
+        int lineHeight = 10;
         protected int kerning;
         protected int wh;
         private int textureHeight;
@@ -1706,7 +1704,7 @@ public enum Draw {
             }
         }
 
-        static public int byteArrayToInt(byte[] b) {
+        static int byteArrayToInt(byte[] b) {
             int value = 0;
             for (int i = 0; i < 2; i++) {
                 int shift = (2 - 1 - i) * 8;
@@ -1715,7 +1713,7 @@ public enum Draw {
             return value;
         }
 
-        static public int getBit(int theByte, int theIndex) {
+        static int getBit(int theByte, int theIndex) {
             int bitmask = 1 << theIndex;
             return ((theByte & bitmask) > 0) ? 1 : 0;
         }
@@ -1807,14 +1805,14 @@ public enum Draw {
 
         static class Glyph {
 
-            public int value;
-            public int index;
-            public float[] image;
-            public int height;
-            public int width;
-            public int setWidth;
-            public int topExtent;
-            public int leftExtent;
+            int value;
+            int index;
+            float[] image;
+            int height;
+            int width;
+            int setWidth;
+            int topExtent;
+            int leftExtent;
 
             public void draw(float x, float y, float w, float h) {
                 

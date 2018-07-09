@@ -68,7 +68,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
    * @param z the z coordinate
    * @param w the w coordinate
    */
-  protected Tuple4f(float x, float y, float z, float w)
+  Tuple4f(float x, float y, float z, float w)
   {
     this.x = x;
     this.y = y;
@@ -81,7 +81,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
    * Constructs and initializes a Tuple4f from the array of length 4. 
    * @param t the array of length 4 containing xyzw in order
    */
-  protected Tuple4f(float[] t)
+  Tuple4f(float[] t)
   {
     this.x = t[0];
     this.y = t[1];
@@ -94,7 +94,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
    * Constructs and initializes a Tuple4f from the specified Tuple4f.
    * @param t1 the Tuple4f containing the initialization x y z w data
    */
-  protected Tuple4f(Tuple4f t1)
+  Tuple4f(Tuple4f t1)
   {
     this.x = t1.x;
     this.y = t1.y;
@@ -107,7 +107,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
    * Constructs and initializes a Tuple4f from the specified Tuple4d.
    * @param t1 the Tuple4d containing the initialization x y z w data
    */
-  protected Tuple4f(Tuple4d t1)
+  Tuple4f(Tuple4d t1)
   {
     this.x = (float) t1.x;
     this.y = (float) t1.y;
@@ -119,7 +119,7 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
   /**
    * Constructs and initializes a Tuple4f to (0,0,0,0).
    */
-  protected Tuple4f()   {
+  Tuple4f()   {
 
 
 

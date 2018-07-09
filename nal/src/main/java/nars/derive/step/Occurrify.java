@@ -194,15 +194,23 @@ public class Occurrify extends TimeGraph {
                 });
 
             Consumer<Term> elim = y -> {
-                if (y.op() == NEG) {
+                if (y.op() == NEG && !nn.isEmpty()) {
                     nn.remove(y.unneg()); //found
                 } else {
                     pp.remove(y);
                 }
             };
-            taskTerm.recurseTerms(all, elim);
+
+            if (taskTerm.hasAny(Op.Temporal))
+                taskTerm.recurseTerms(all, elim);
+            else
+                elim.accept(taskTerm);
+
             if (!single) {
-                beliefTerm.recurseTerms(all, elim);
+                if (beliefTerm.hasAny(Op.Temporal))
+                    beliefTerm.recurseTerms(all, elim);
+                else
+                    elim.accept(beliefTerm);
             }
 
             //pp.symmetricDifferenceInto(nn, autoNegNext);

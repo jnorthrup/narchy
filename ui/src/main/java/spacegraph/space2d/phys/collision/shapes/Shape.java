@@ -40,7 +40,7 @@ public abstract class Shape {
     public final ShapeType m_type;
     public float radius;
 
-    public Shape(ShapeType type) {
+    Shape(ShapeType type) {
         this.m_type = type;
     }
 
@@ -59,7 +59,7 @@ public abstract class Shape {
      *
      * @return
      */
-    public float getRadius() {
+    float getRadius() {
         return radius;
     }
 
@@ -69,7 +69,7 @@ public abstract class Shape {
      *
      * @param radius
      */
-    public void setRadius(float radius) {
+    void setRadius(float radius) {
         this.radius = radius;
     }
 

@@ -28,7 +28,7 @@ package spacegraph.space3d.phys.solve;
  * 
  * @author jezek2
  */
-public class SolverMode {
+class SolverMode {
 	
 	public static final int SOLVER_RANDMIZE_ORDER    = 1;
 	public static final int SOLVER_FRICTION_SEPARATE = 2;

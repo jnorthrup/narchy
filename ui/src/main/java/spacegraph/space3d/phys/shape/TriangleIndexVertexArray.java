@@ -39,7 +39,7 @@ import java.util.Collection;
  */
 public class TriangleIndexVertexArray extends StridingMeshInterface {
 
-	protected final OArrayList<IndexedMesh> indexedMeshes = new OArrayList<>();
+	private final OArrayList<IndexedMesh> indexedMeshes = new OArrayList<>();
 
 	private final ByteBufferVertexData data = new ByteBufferVertexData();
 
@@ -61,11 +61,11 @@ public class TriangleIndexVertexArray extends StridingMeshInterface {
 		addIndexedMesh(mesh);
 	}
 
-	public void addIndexedMesh(IndexedMesh mesh) {
+	private void addIndexedMesh(IndexedMesh mesh) {
 		addIndexedMesh(mesh, ScalarType.INTEGER);
 	}
 
-	public void addIndexedMesh(IndexedMesh mesh, ScalarType indexType) {
+	private void addIndexedMesh(IndexedMesh mesh, ScalarType indexType) {
 		indexedMeshes.add(mesh);
         
         indexedMeshes.get(indexedMeshes.size() - 1).indexType = indexType;

@@ -40,12 +40,12 @@ import spacegraph.util.math.v3;
  */
 public abstract class GImpactShape extends ConcaveShape {
 
-    protected BoxCollision.AABB localAABB = new BoxCollision.AABB();
-    protected boolean needs_update;
-    protected final v3 localScaling = new v3();
+    BoxCollision.AABB localAABB = new BoxCollision.AABB();
+    boolean needs_update;
+    final v3 localScaling = new v3();
     GImpactBvh box_set = new GImpactBvh(); 
 
-	protected GImpactShape() {
+	GImpactShape() {
 		localAABB.invalidate();
 		needs_update = true;
 		localScaling.set(1f, 1f, 1f);
@@ -60,7 +60,7 @@ public abstract class GImpactShape extends ConcaveShape {
 	 * 
 	 * if m_needs_update == true, then it calls calcLocalAABB();
 	 */
-	public void updateBound() {
+    void updateBound() {
 		if (!needs_update) {
 			return;
 		}
@@ -83,14 +83,14 @@ public abstract class GImpactShape extends ConcaveShape {
 	/**
 	 * Tells to this object that is needed to refit the box set.
 	 */
-	public void postUpdate() {
+    void postUpdate() {
 		needs_update = true;
 	}
 	
 	/**
 	 * Obtains the local box, which is the global calculated box of the total of subshapes.
 	 */
-	public BoxCollision.AABB getLocalBox(BoxCollision.AABB out) {
+    BoxCollision.AABB getLocalBox(BoxCollision.AABB out) {
 		out.set(localAABB);
 		return out;
 	}
@@ -192,7 +192,7 @@ public abstract class GImpactShape extends ConcaveShape {
 	/**
 	 * Use this function for perfofm refit in bounding boxes.
 	 */
-	protected void calcLocalAABB() {
+    void calcLocalAABB() {
 		lockChildShapes();
 		if (box_set.getNodeCount() == 0) {
 			box_set.buildSet();

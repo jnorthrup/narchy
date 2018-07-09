@@ -40,7 +40,7 @@ public abstract class VertexData {
 
 	public abstract <T extends Tuple3f> T getVertex(int idx, T out);
 
-	public abstract void setVertex(int idx, float x, float y, float z);
+	protected abstract void setVertex(int idx, float x, float y, float z);
 
 	public void setVertex(int idx, Tuple3f t) {
 		setVertex(idx, t.x, t.y, t.z);

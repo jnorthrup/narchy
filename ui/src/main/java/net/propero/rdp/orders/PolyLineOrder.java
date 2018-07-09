@@ -31,7 +31,7 @@ package net.propero.rdp.orders;
 
 public class PolyLineOrder implements Order {
 
-    byte[] data = new byte[256];
+    private byte[] data = new byte[256];
     private int x;
     private int y;
     private int flags;

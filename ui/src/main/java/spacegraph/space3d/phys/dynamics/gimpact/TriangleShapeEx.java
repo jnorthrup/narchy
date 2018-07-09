@@ -68,7 +68,7 @@ public class TriangleShapeEx extends TriangleShape {
 		t.transform(vertices1[2]);
 	}
 
-	public void buildTriPlane(Vector4f plane) {
+	private void buildTriPlane(Vector4f plane) {
 		v3 tmp1 = new v3();
 		v3 tmp2 = new v3();
 

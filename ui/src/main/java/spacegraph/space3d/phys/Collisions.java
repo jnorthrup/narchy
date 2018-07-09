@@ -45,7 +45,7 @@ import static spacegraph.util.math.v3.v;
  * @author jezek2
  */
 public abstract class Collisions<X> extends BulletGlobals {
-    public static final float maxAABBLength = 1e12f;
+    private static final float maxAABBLength = 1e12f;
 
 
     /**
@@ -56,15 +56,15 @@ public abstract class Collisions<X> extends BulletGlobals {
     @NotNull
     public final Intersecter intersecter;
     @NotNull
-    protected final DispatcherInfo dispatchInfo = new DispatcherInfo();
+    private final DispatcherInfo dispatchInfo = new DispatcherInfo();
     
     @NotNull
-    protected final Broadphase broadphase;
+    final Broadphase broadphase;
 
     /**
      * This constructor doesn't own the dispatcher and paircache/broadphase.
      */
-    protected Collisions(Intersecter intersecter, Broadphase broadphase) {
+    Collisions(Intersecter intersecter, Broadphase broadphase) {
         this.intersecter = intersecter;
         this.broadphase = broadphase;
     }
@@ -95,7 +95,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     
 
 
-    protected boolean on(Collidable c) {
+    boolean on(Collidable c) {
         
         
 
@@ -124,7 +124,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
 
-    protected void solveCollisions() {
+    void solveCollisions() {
         
         
 
@@ -158,13 +158,13 @@ public abstract class Collisions<X> extends BulletGlobals {
         return broadphase.getOverlappingPairCache();
     }
 
-    public DispatcherInfo getDispatchInfo() {
+    DispatcherInfo getDispatchInfo() {
         return dispatchInfo;
     }
 
 
     
-    protected void updateSingleAabb(Collidable colObj) {
+    private void updateSingleAabb(Collidable colObj) {
         v3 minAabb = new v3(), maxAabb = new v3();
         v3 tmp = new v3();
         Transform tmpTrans = new Transform();
@@ -203,7 +203,7 @@ public abstract class Collisions<X> extends BulletGlobals {
         }
     }
 
-    public void updateAabbs() {
+    private void updateAabbs() {
 
 
         collidables().forEach(this::updateAabbsIfActive);
@@ -221,7 +221,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
 
-    final static ConvexShape pointShape = (ConvexShape) new SphereShape(0f).setMargin(0);
+    private final static ConvexShape pointShape = (ConvexShape) new SphereShape(0f).setMargin(0);
 
     public static void rayTestSingle(Transform rayFromTrans, Transform rayToTrans,
                                      Collidable collidable,
@@ -333,12 +333,12 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
     private static class BridgeTriangleConvexcastCallback extends TriangleConvexcastCallback {
-        public final ConvexResultCallback resultCallback;
-        public final Collidable collidable;
-        public final ConcaveShape triangleMesh;
-        public boolean normalInWorldSpace;
+        final ConvexResultCallback resultCallback;
+        final Collidable collidable;
+        final ConcaveShape triangleMesh;
+        boolean normalInWorldSpace;
 
-        public BridgeTriangleConvexcastCallback(ConvexShape castShape, Transform from, Transform to, ConvexResultCallback resultCallback, Collidable collidable, ConcaveShape triangleMesh, Transform triangleToWorld) {
+        BridgeTriangleConvexcastCallback(ConvexShape castShape, Transform from, Transform to, ConvexResultCallback resultCallback, Collidable collidable, ConcaveShape triangleMesh, Transform triangleToWorld) {
             super(castShape, from, to, triangleToWorld, triangleMesh.getMargin());
             this.resultCallback = resultCallback;
             this.collidable = collidable;
@@ -495,21 +495,19 @@ public abstract class Collisions<X> extends BulletGlobals {
         
 
         List<Collidable> objs = collidables();
-        for (int i = 0, objsSize = objs.size(); i < objsSize; i++) {
-            Collidable collidable = objs.get(i);
-            
+        for (Collidable collidable : objs) {
             if (resultCallback.closestHitFraction == 0f) {
                 break;
             }
 
-            
+
             if (collidable != null) {
 
                 Broadphasing broadphaseHandle = collidable.broadphase;
 
-                
+
                 if (broadphaseHandle != null && resultCallback.needsCollision(broadphaseHandle)) {
-                    
+
                     CollisionShape shape = collidable.shape();
 
                     Transform worldTransform = collidable.transform;
@@ -543,7 +541,7 @@ public abstract class Collisions<X> extends BulletGlobals {
      * convexTest performs a swept convex cast on all objects in the {@link Collisions}, and calls the resultCallback
      * This allows for several queries: first hit, all hits, any hit, dependent on the value return by the callback.
      */
-    public void convexSweepTest(ConvexShape castShape, Transform convexFromWorld, Transform convexToWorld, ConvexResultCallback resultCallback) {
+    void convexSweepTest(ConvexShape castShape, Transform convexFromWorld, Transform convexToWorld, ConvexResultCallback resultCallback) {
         Transform convexFromTrans = new Transform();
         Transform convexToTrans = new Transform();
 
@@ -577,20 +575,17 @@ public abstract class Collisions<X> extends BulletGlobals {
         v3 hitNormal = new v3();
 
         List<Collidable> collidables = collidables();
-        for (int i = 0, collidablesSize = collidables.size(); i < collidablesSize; i++) {
-            Collidable collidable = collidables.get(i);
-
-            
+        for (Collidable collidable : collidables) {
             if (resultCallback.needsCollision(collidable.broadphase)) {
-                
+
                 Transform S = collidable.transform;
                 CollisionShape shape = collidable.shape();
 
                 shape.getAabb(S, collisionObjectAabbMin, collisionObjectAabbMax);
                 AabbUtil2.aabbExpand(collisionObjectAabbMin, collisionObjectAabbMax, castShapeAabbMin, castShapeAabbMax);
 
-                hitLambda[0] = 1f; 
-                hitNormal.zero(); 
+                hitLambda[0] = 1f;
+                hitNormal.zero();
 
                 if (AabbUtil2.rayAabb(convexFromWorld, convexToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, hitNormal)) {
                     objectQuerySingle(castShape, convexFromTrans, convexToTrans,
@@ -612,19 +607,19 @@ public abstract class Collisions<X> extends BulletGlobals {
      * Currently, only btTriangleMeshShape is available, so it just contains triangleIndex and subpart.
      */
     public static class LocalShapeInfo {
-        public int shapePart;
-        public int triangleIndex;
+        int shapePart;
+        int triangleIndex;
         
         
     }
 
     public static final class LocalRayResult {
         public final Collidable collidable;
-        public final LocalShapeInfo localShapeInfo;
+        final LocalShapeInfo localShapeInfo;
         public final v3 hitNormal = new v3();
         public final float hitFraction;
 
-        public LocalRayResult(Collidable collidable, LocalShapeInfo localShapeInfo, v3 hitNormal, float hitFraction) {
+        LocalRayResult(Collidable collidable, LocalShapeInfo localShapeInfo, v3 hitNormal, float hitFraction) {
             this.collidable = collidable;
             this.localShapeInfo = localShapeInfo;
             this.hitNormal.set(hitNormal);
@@ -646,10 +641,10 @@ public abstract class Collisions<X> extends BulletGlobals {
      * RayResultCallback is used to report new raycast results.
      */
     public static abstract class RayResultCallback {
-        public float closestHitFraction = 1f;
+        protected float closestHitFraction = 1f;
         public Collidable collidable;
-        public short collisionFilterGroup = CollisionFilterGroups.DEFAULT_FILTER;
-        public final short collisionFilterMask = CollisionFilterGroups.ALL_FILTER;
+        protected short collisionFilterGroup = CollisionFilterGroups.DEFAULT_FILTER;
+        final short collisionFilterMask = CollisionFilterGroups.ALL_FILTER;
 
         public boolean hasHit() {
             return (collidable != null);
@@ -666,12 +661,12 @@ public abstract class Collisions<X> extends BulletGlobals {
 
     public static class LocalConvexResult {
         public final Collidable hitCollidable;
-        public final LocalShapeInfo localShapeInfo;
+        final LocalShapeInfo localShapeInfo;
         public final v3 hitNormalLocal = new v3();
-        public final v3 hitPointLocal = new v3();
-        public final float hitFraction;
+        final v3 hitPointLocal = new v3();
+        final float hitFraction;
 
-        public LocalConvexResult(Collidable hitCollidable, LocalShapeInfo localShapeInfo, v3 hitNormalLocal, v3 hitPointLocal, float hitFraction) {
+        LocalConvexResult(Collidable hitCollidable, LocalShapeInfo localShapeInfo, v3 hitNormalLocal, v3 hitPointLocal, float hitFraction) {
             this.hitCollidable = hitCollidable;
             this.localShapeInfo = localShapeInfo;
             this.hitNormalLocal.set(hitNormalLocal);
@@ -681,11 +676,11 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
     public static abstract class ConvexResultCallback {
-        public float closestHitFraction = 1f;
-        public short collisionFilterGroup = CollisionFilterGroups.DEFAULT_FILTER;
-        public short collisionFilterMask = CollisionFilterGroups.ALL_FILTER;
+        float closestHitFraction = 1f;
+        short collisionFilterGroup = CollisionFilterGroups.DEFAULT_FILTER;
+        short collisionFilterMask = CollisionFilterGroups.ALL_FILTER;
 
-        public boolean hasHit() {
+        boolean hasHit() {
             return (closestHitFraction < 1f);
         }
 
@@ -695,15 +690,15 @@ public abstract class Collisions<X> extends BulletGlobals {
             return collides;
         }
 
-        public abstract float addSingleResult(LocalConvexResult convexResult, boolean normalInWorldSpace);
+        protected abstract float addSingleResult(LocalConvexResult convexResult, boolean normalInWorldSpace);
     }
 
     public static class ClosestConvexResultCallback extends ConvexResultCallback {
         public final v3 convexFromWorld = new v3(); 
         public final v3 convexToWorld = new v3();
-        public final v3 hitNormalWorld = new v3();
-        public final v3 hitPointWorld = new v3();
-        public Collidable hitCollidable;
+        final v3 hitNormalWorld = new v3();
+        final v3 hitPointWorld = new v3();
+        Collidable hitCollidable;
 
         public ClosestConvexResultCallback(v3 convexFromWorld, v3 convexToWorld) {
             this.convexFromWorld.set(convexFromWorld);
@@ -738,11 +733,11 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
     private static class BridgeTriangleRaycastCallback extends TriangleRaycastCallback {
-        public final RayResultCallback resultCallback;
-        public final Collidable collidable;
-        public final ConcaveShape triangleMesh;
+        final RayResultCallback resultCallback;
+        final Collidable collidable;
+        final ConcaveShape triangleMesh;
 
-        public BridgeTriangleRaycastCallback(v3 from, v3 to, RayResultCallback resultCallback, Collidable collidable, ConcaveShape triangleMesh) {
+        BridgeTriangleRaycastCallback(v3 from, v3 to, RayResultCallback resultCallback, Collidable collidable, ConcaveShape triangleMesh) {
             super(from, to);
             this.resultCallback = resultCallback;
             this.collidable = collidable;

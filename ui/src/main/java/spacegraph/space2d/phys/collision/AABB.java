@@ -217,8 +217,8 @@ public class AABB {
      * @param output
      * @param input
      */
-    public final boolean raycast(final RayCastOutput output, final RayCastInput input,
-                                 IWorldPool argPool) {
+    private boolean raycast(final RayCastOutput output, final RayCastInput input,
+                            IWorldPool argPool) {
         float tmin = -Float.MAX_VALUE;
         float tmax = Float.MAX_VALUE;
 
@@ -321,7 +321,7 @@ public class AABB {
         return true;
     }
 
-    public static final boolean testOverlap(final AABB a, final AABB b) {
+    public static boolean testOverlap(final AABB a, final AABB b) {
         if (b.lowerBound.x - a.upperBound.x > 0.0f || b.lowerBound.y - a.upperBound.y > 0.0f) {
             return false;
         }
@@ -331,7 +331,6 @@ public class AABB {
 
     @Override
     public final String toString() {
-        final String s = "AABB[" + lowerBound + " . " + upperBound + ']';
-        return s;
+        return "AABB[" + lowerBound + " . " + upperBound + ']';
     }
 }

@@ -17,7 +17,7 @@ public class SignalReporter extends UGen {
     private long interval = 44100, index = 44100, count;
     private long total;
     private float flInt;
-    protected String name = "";
+    private String name = "";
 
     /**
      * Constructor for a SignalReporter that calls {@link #notify()} at the
@@ -42,7 +42,7 @@ public class SignalReporter extends UGen {
      *
      * @param reportInterval The report interval in milliseconds.
      */
-    public void setInterval(float reportInterval) {
+    private void setInterval(float reportInterval) {
         if (reportInterval <= 0)
             reportInterval = 1000;
         flInt = reportInterval;
@@ -78,7 +78,7 @@ public class SignalReporter extends UGen {
      * @param count The current report #.
      * @param value The first value in the input signal frame.
      */
-    public void notify(long count, float value) {
+    private void notify(long count, float value) {
         System.out.println("SignalReporter " + name + ", report #" + count
                 + ": " + value);
     }

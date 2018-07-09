@@ -28,7 +28,7 @@ package spacegraph.space3d.phys.dynamics.vehicle;
  * 
  * @author jezek2
  */
-public class VehicleTuning {
+class VehicleTuning {
 
 	public float suspensionStiffness = 5.88f;
 	public float suspensionCompression = 0.83f;

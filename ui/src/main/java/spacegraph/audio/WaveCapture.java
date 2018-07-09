@@ -318,7 +318,7 @@ public class WaveCapture extends Loop {
         
     }
 
-    public final void setSource(WaveSource source) {
+    private void setSource(WaveSource source) {
         synchronized (this) {
             if (this.source != null) {
                 this.source.stop();

@@ -39,7 +39,7 @@ import spacegraph.util.math.v2;
  *
  * @author Daniel Murphy
  */
-public class PulleyJointDef extends JointDef {
+class PulleyJointDef extends JointDef {
 
     /**
      * The first ground anchor in world coordinates. This point never moves.

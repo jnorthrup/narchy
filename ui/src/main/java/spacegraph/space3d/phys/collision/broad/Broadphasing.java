@@ -51,15 +51,15 @@ public class Broadphasing {
 	public int uid; 
 
 
-	protected Broadphasing() {
+	Broadphasing() {
 
 	}
 	
-	public Broadphasing(@NotNull Collidable userPtr, short collisionFilterGroup, short collisionFilterMask) {
+	Broadphasing(@NotNull Collidable userPtr, short collisionFilterGroup, short collisionFilterMask) {
 		this(userPtr, collisionFilterGroup, collisionFilterMask, null);
 	}
 	
-	public Broadphasing(Collidable userPtr, short collisionFilterGroup, short collisionFilterMask, Object multiSapParentProxy) {
+	Broadphasing(Collidable userPtr, short collisionFilterGroup, short collisionFilterMask, Object multiSapParentProxy) {
 		this.data = userPtr;
 		this.collisionFilterGroup = collisionFilterGroup;
 		this.collisionFilterMask = collisionFilterMask;

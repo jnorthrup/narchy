@@ -40,9 +40,9 @@ import java.awt.image.IndexColorModel;
 
 public class WrappedImage {
     static final Logger logger = LoggerFactory.getLogger(WrappedImage.class);
-    final BufferedImage bi;
+    private final BufferedImage bi;
     private final Graphics gfx;
-    IndexColorModel cm;
+    private IndexColorModel cm;
 
     public WrappedImage(int arg0, int arg1, int arg2) {
         bi = new BufferedImage(arg0, arg1, arg2);

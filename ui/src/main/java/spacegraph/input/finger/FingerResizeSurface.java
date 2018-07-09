@@ -10,7 +10,7 @@ import spacegraph.util.math.v2;
  */
 public class FingerResizeSurface extends FingerResize {
 
-    protected final Surface resizing;
+    private final Surface resizing;
 
     public FingerResizeSurface(Surface target, Windo.DragEdit mode) {
         super(0, mode);

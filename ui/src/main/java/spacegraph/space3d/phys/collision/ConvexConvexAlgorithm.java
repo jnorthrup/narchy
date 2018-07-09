@@ -45,13 +45,13 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 
 	private final GjkPairDetector gjkPairDetector = new GjkPairDetector();
 
-	final VoronoiSimplexSolver voronoiSimplex = new VoronoiSimplexSolver();
+	private final VoronoiSimplexSolver voronoiSimplex = new VoronoiSimplexSolver();
 
-	public boolean ownManifold;
-	public PersistentManifold manifoldPtr;
-	public boolean lowLevelOfDetail;
+	private boolean ownManifold;
+	private PersistentManifold manifoldPtr;
+	private boolean lowLevelOfDetail;
 	
-	public void init(PersistentManifold mf, CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1, SimplexSolverInterface simplexSolver, ConvexPenetrationDepthSolver pdSolver) {
+	private void init(PersistentManifold mf, CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1, SimplexSolverInterface simplexSolver, ConvexPenetrationDepthSolver pdSolver) {
 		super.init(ci);
 		gjkPairDetector.init(null, null, simplexSolver, pdSolver);
 		this.manifoldPtr = mf;
@@ -236,8 +236,8 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 
 	public static class CreateFunc extends CollisionAlgorithmCreateFunc {
 
-		public final ConvexPenetrationDepthSolver pdSolver;
-		public final SimplexSolverInterface simplexSolver;
+		final ConvexPenetrationDepthSolver pdSolver;
+		final SimplexSolverInterface simplexSolver;
 
 		public CreateFunc(SimplexSolverInterface simplexSolver, ConvexPenetrationDepthSolver pdSolver) {
 			this.simplexSolver = simplexSolver;

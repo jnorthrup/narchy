@@ -2,7 +2,7 @@ package com.jujutsu.tsne.matrix;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 public class MatrixUtils {
@@ -25,7 +25,7 @@ public class MatrixUtils {
     public static double[][] simpleRead2DMatrix(Reader r, String columnDelimiter) throws IOException {
 
 
-        List<double[]> rows = new ArrayList<>();
+        Collection<double[]> rows = new ArrayList<>();
 
         {
             BufferedReader b = new BufferedReader(r);
@@ -53,7 +53,7 @@ public class MatrixUtils {
     }
 
     public static String[] simpleReadLines(File file) {
-        List<String> rows = new ArrayList<>();
+        Collection<String> rows = new ArrayList<>();
 
         try (FileReader fr = new FileReader(file);
              BufferedReader b = new BufferedReader(fr)) {

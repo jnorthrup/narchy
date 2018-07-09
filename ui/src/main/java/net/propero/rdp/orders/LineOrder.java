@@ -31,7 +31,7 @@ package net.propero.rdp.orders;
 
 public class LineOrder implements Order {
 
-    final Pen pen;
+    private final Pen pen;
     private int mixmode;
     private int startx;
     private int starty;

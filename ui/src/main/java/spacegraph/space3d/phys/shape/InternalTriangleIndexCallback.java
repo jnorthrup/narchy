@@ -31,7 +31,7 @@ import spacegraph.util.math.v3;
  * @see StridingMeshInterface#internalProcessAllTriangles
  * @author jezek2
  */
-public abstract class InternalTriangleIndexCallback {
+abstract class InternalTriangleIndexCallback {
 
 	public abstract void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex);
 	

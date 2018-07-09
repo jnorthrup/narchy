@@ -34,7 +34,7 @@ package spacegraph.space2d.phys.dynamics.joints;
  *
  * @author Daniel Murphy
  */
-public class GearJointDef extends JointDef {
+class GearJointDef extends JointDef {
     /**
      * The first revolute/prismatic joint attached to the gear joint.
      */

@@ -676,7 +676,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 	
 	
 	
-	public static class UsageBitfield {
+	static class UsageBitfield {
 		boolean usedVertexA;
 		boolean usedVertexB;
 		boolean usedVertexC;
@@ -696,7 +696,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		}
 	}
 	
-	public static class SubSimplexClosestResult extends UsageBitfield {
+	static class SubSimplexClosestResult extends UsageBitfield {
 		final v3 closestPointOnSimplex = new v3();
 		final float[] barycentricCoords = new float[4];
 		boolean degenerate;

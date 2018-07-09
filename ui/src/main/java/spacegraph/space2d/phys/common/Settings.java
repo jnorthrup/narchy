@@ -221,7 +221,7 @@ public class Settings {
     /**
      * The maximum distance between particles in a triad, divided by the particle radius.
      */
-    public static final int maxTriadDistance = 2;
+    private static final int maxTriadDistance = 2;
     public static final int maxTriadDistanceSquared = (maxTriadDistance * maxTriadDistance);
 
     /**

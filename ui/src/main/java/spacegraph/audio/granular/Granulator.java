@@ -1,9 +1,9 @@
 package spacegraph.audio.granular;
 
-public class Granulator {
+class Granulator {
 
 	private final float[] sourceBuffer;
-	public final float sampleRate;
+	final float sampleRate;
 	private final int grainSizeSamples;
 	private final GrainWindow window;
 
@@ -12,8 +12,8 @@ public class Granulator {
 	
 	
 
-	public Granulator(float[] sourceBuffer, float sampleRate,
-			float grainSizeSecs, float windowSizeFactor) {
+	Granulator(float[] sourceBuffer, float sampleRate,
+               float grainSizeSecs, float windowSizeFactor) {
 		this.sourceBuffer = sourceBuffer;
 		grainSizeSamples = Math.round(sampleRate * grainSizeSecs);
 
@@ -25,13 +25,13 @@ public class Granulator {
 		this.sampleRate = sampleRate;
 	}
 
-	public boolean hasMoreSamples(long[] grain, long now) {
+	boolean hasMoreSamples(long[] grain, long now) {
 		long length = grain[1];
 		long showTime = grain[2];
 		return now < showTime + length + window.getSize();
 	}
 
-	public float getSample(long[] grain, long now) {
+	float getSample(long[] grain, long now) {
 		long startIndex = grain[0];
 		
 		long showTime = grain[2];
@@ -46,13 +46,13 @@ public class Granulator {
 				
 	}
 
-	public static boolean isFading(long[] grain, long now) {
+	static boolean isFading(long[] grain, long now) {
 		long length = grain[1];
 		long showTime = grain[2];
 		return now > showTime + length;
 	}
 
-	public long[] nextGrain(long[] grain, int startIndex, float fadeInTime) {
+	long[] nextGrain(long[] grain, int startIndex, float fadeInTime) {
 		if (grain == null)
 			grain = new long[3];
 		int ws = window.getSize();

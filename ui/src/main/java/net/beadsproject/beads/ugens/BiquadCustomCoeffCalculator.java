@@ -21,7 +21,7 @@ package net.beadsproject.beads.ugens;
  * @version .9.1
  * @beads.category filter
  */
-public class BiquadCustomCoeffCalculator {
+class BiquadCustomCoeffCalculator {
     public float a0 = 1;
     public float a1;
     public float a2;
@@ -31,11 +31,11 @@ public class BiquadCustomCoeffCalculator {
     /**
      * The sampling frequency.
      */
-    protected float sampFreq;
+    private float sampFreq;
     /**
      * Two * pi / sampling frequency.
      */
-    protected float two_pi_over_sf;
+    private float two_pi_over_sf;
 
     /**
      * Constructor for a given sampling frequency.
@@ -58,7 +58,7 @@ public class BiquadCustomCoeffCalculator {
      *
      * @param sf The sampling frequency in Hertz.
      */
-    public void setSamplingFrequency(float sf) {
+    private void setSamplingFrequency(float sf) {
         sampFreq = sf;
         two_pi_over_sf = (float) (Math.PI * 2 / sf);
     }

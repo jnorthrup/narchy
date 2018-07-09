@@ -47,7 +47,7 @@ public final class RC4 {
      *
      * @see #initEncrypt
      */
-    public static final int ENCRYPT = 1;
+    private static final int ENCRYPT = 1;
 
     /**
      * The state of the cipher when it is ready to decrypt, that is, the state
@@ -143,8 +143,8 @@ public final class RC4 {
      *                  array.
      * @return the number of bytes written. reports an error.
      */
-    protected int engineUpdate(byte[] in, int inOffset, int inLen, byte[] out,
-                               int outOffset) {
+    private int engineUpdate(byte[] in, int inOffset, int inLen, byte[] out,
+                             int outOffset) {
         if (inLen < 0)
             throw new IllegalArgumentException("inLen < 0");
 
@@ -248,7 +248,7 @@ public final class RC4 {
      *
      * @return the standard cipher name (such as "DES").
      */
-    public static String getAlgorithm() {
+    private static String getAlgorithm() {
         return cipherName;
     }
 

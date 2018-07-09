@@ -28,7 +28,7 @@ public class Osm {
     public OsmBounds bounds;
 
     public final LongObjectHashMap<OsmNode> nodes;
-    public final LongObjectHashMap<OsmRelation> relations;
+    private final LongObjectHashMap<OsmRelation> relations;
     public final LongObjectHashMap<OsmWay> ways;
 
     public Osm() {
@@ -62,6 +62,7 @@ public class Osm {
         factory.setValidating(false);
         factory.setIgnoringComments(true);
         factory.setIgnoringElementContentWhitespace(true);
+
 
 
 
@@ -295,7 +296,7 @@ public class Osm {
         printOsmRelations(relations);
     }
 
-    static void printTags(Map<String, String> tags, int indent) {
+    private static void printTags(Map<String, String> tags, int indent) {
         for (Map.Entry<String, String> stringStringEntry : tags.entrySet()) {
             String v = stringStringEntry.getValue();
             printIndent(indent);
@@ -303,58 +304,58 @@ public class Osm {
         }
     }
 
-    static void printOsmNodes(Iterable<OsmNode> osmNodes) {
+    private static void printOsmNodes(Iterable<OsmNode> osmNodes) {
         printOsmNodes(osmNodes, 0);
     }
 
-    static void printOsmNodes(Iterable<OsmNode> osmNodes, int indent) {
+    private static void printOsmNodes(Iterable<OsmNode> osmNodes, int indent) {
         for (OsmNode osmNode : osmNodes) {
             printOsmNode(osmNode, indent);
         }
     }
 
-    static void printOsmNode(OsmNode osmNode, int indent) {
+    private static void printOsmNode(OsmNode osmNode, int indent) {
         GeoCoordinate geoCoordinate = osmNode.geoCoordinate;
         printIndent(indent);
         System.out.printf("<node id=%s, lat=%f, lon=%f>\n", osmNode.id, geoCoordinate.latitude, geoCoordinate.longitude);
         printTags(osmNode.tags, indent + 1);
     }
 
-    static void printOsmWays(Iterable<OsmWay> osmWays) {
+    private static void printOsmWays(Iterable<OsmWay> osmWays) {
         printOsmWays(osmWays, 0);
     }
 
-    static void printOsmWays(Iterable<OsmWay> osmWays, int indent) {
+    private static void printOsmWays(Iterable<OsmWay> osmWays, int indent) {
         for (OsmWay osmWay : osmWays) {
             printOsmWay(osmWay, indent);
         }
     }
 
-    static void printOsmWay(OsmWay osmWay, int indent) {
+    private static void printOsmWay(OsmWay osmWay, int indent) {
         printIndent(indent);
         System.out.printf("<way id=%s>\n", osmWay.id);
         printOsmNodes(osmWay.getOsmNodes(), indent + 1);
         printTags(osmWay.tags, indent + 1);
     }
 
-    static void printOsmRelations(Iterable<OsmRelation> osmRelations) {
+    private static void printOsmRelations(Iterable<OsmRelation> osmRelations) {
         printOsmRelations(osmRelations, 0);
     }
 
-    static void printOsmRelations(Iterable<OsmRelation> osmRelations, int indent) {
+    private static void printOsmRelations(Iterable<OsmRelation> osmRelations, int indent) {
         for (OsmRelation osmRelation : osmRelations) {
             printOsmRelation(osmRelation, indent);
         }
     }
 
-    static void printOsmRelation(OsmRelation osmRelation, int indent) {
+    private static void printOsmRelation(OsmRelation osmRelation, int indent) {
         printIndent(indent);
         System.out.printf("<relation id=%s>\n", osmRelation.id);
         printOsmElements(osmRelation.children(), indent + 1);
         printTags(osmRelation.tags, indent + 1);
     }
 
-    static void printOsmElements(Iterable<? extends OsmElement> osmElements, int indent) {
+    private static void printOsmElements(Iterable<? extends OsmElement> osmElements, int indent) {
         for (OsmElement osmElement : osmElements) {
             if (osmElement.getClass() == OsmNode.class) {
                 printOsmNode((OsmNode) osmElement, indent);
@@ -366,13 +367,13 @@ public class Osm {
         }
     }
 
-    static void printIndent(int indent) {
+    private static void printIndent(int indent) {
         for (int i = 0; i < indent; i++) {
             System.out.print("  ");
         }
     }
 
-    void printNode(int indent, Node node) {
+    private void printNode(int indent, Node node) {
         if (node.getNodeType() != Node.ELEMENT_NODE) {
             return;
         }

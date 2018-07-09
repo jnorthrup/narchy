@@ -19,10 +19,10 @@ public class ToggleButton extends AbstractButton {
     @Nullable
     public ObjectBooleanProcedure<ToggleButton> action;
 
-    protected ToggleButton() {
+    ToggleButton() {
         this(false);
     }
-    protected ToggleButton(boolean startingValue) {
+    private ToggleButton(boolean startingValue) {
         on.set(startingValue);
     }
 
@@ -71,7 +71,7 @@ public class ToggleButton extends AbstractButton {
         toggle();
     }
 
-    public void toggle() {
+    private void toggle() {
         set(!on.get());
     }
 }

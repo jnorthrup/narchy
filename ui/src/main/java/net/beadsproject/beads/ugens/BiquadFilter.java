@@ -42,14 +42,14 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    public final static Type LP = Type.LP;
+    private final static Type LP = Type.LP;
 
     /**
      * Indicates a high-pass filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    public final static Type HP = Type.HP;
+    private final static Type HP = Type.HP;
 
     /**
      * Indicates a band-pass filter with constant skirt gain; coefficients are
@@ -63,7 +63,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * calculated from equations given in "Cookbook formulae for audio EQ biquad
      * filter coefficients" by Robert Bristow-Johnson.
      */
-    public final static Type BP_PEAK = Type.BP_PEAK;
+    private final static Type BP_PEAK = Type.BP_PEAK;
 
     /**
      * Indicates a notch (band-reject) filter; coefficients are calculated from
@@ -71,14 +71,14 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * "Cookbook formulae for audio EQ biquad filter coefficients" by Robert
      * Bristow-Johnson.
      */
-    public final static Type NOTCH = Type.NOTCH;
+    private final static Type NOTCH = Type.NOTCH;
 
     /**
      * Indicates an all-pass filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    public final static Type AP = Type.AP;
+    private final static Type AP = Type.AP;
 
     /**
      * Indicates a peaking-EQ filter; coefficients are calculated from equations
@@ -87,21 +87,21 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * <p>
      * <em>untested!</em>
      */
-    public final static Type PEAKING_EQ = Type.PEAKING_EQ;
+    private final static Type PEAKING_EQ = Type.PEAKING_EQ;
 
     /**
      * Indicates a low-shelf filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    public final static Type LOW_SHELF = Type.LOW_SHELF;
+    private final static Type LOW_SHELF = Type.LOW_SHELF;
 
     /**
      * Indicates a high-shelf filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    public final static Type HIGH_SHELF = Type.HIGH_SHELF;
+    private final static Type HIGH_SHELF = Type.HIGH_SHELF;
 
     /**
      * Indicates a Butterworth low-pass filter; only the frequency parameter is
@@ -113,7 +113,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * Indicates a Butterworth high-pass filter; only the frequency parameter is
      * relevant.
      */
-    public final static Type BUTTERWORTH_HP = Type.BUTTERWORTH_HP;
+    private final static Type BUTTERWORTH_HP = Type.BUTTERWORTH_HP;
 
     /**
      * Indicates a Bessel low-pass filter; only frequency is relevant.
@@ -123,52 +123,68 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     /**
      * Indicates a Bessel high-pass filter; only frequency is relevant.
      */
-    public final static Type BESSEL_HP = Type.BESSEL_HP;
+    private final static Type BESSEL_HP = Type.BESSEL_HP;
 
     /**
      * Indicates a user-defined filter; see
      * {@link #setCustomType(CustomCoeffCalculator) setCustomType}. This
      * constant is not recognized by {@link #setType(int) setType}.
      */
-    public final static Type CUSTOM_FILTER = Type.CUSTOM_FILTER;
+    private final static Type CUSTOM_FILTER = Type.CUSTOM_FILTER;
 
     public enum Type {
         LP, HP, BP_PEAK, BP_SKIRT, NOTCH, AP, PEAKING_EQ, LOW_SHELF, HIGH_SHELF, BUTTERWORTH_LP, BUTTERWORTH_HP, BESSEL_LP, BESSEL_HP, CUSTOM_FILTER
     }
 
-    protected float a0 = 1;
-    protected float a1;
-    protected float a2;
-    protected float b0;
-    protected float b1;
-    protected float b2;
+    private float a0 = 1;
+    private float a1;
+    private float a2;
+    private float b0;
+    private float b1;
+    private float b2;
 
-    protected int channels = 1;
-    protected float freq = 100, q = 1, gain;
-    protected Type type;
-    protected final float samplingfreq;
-	protected final float two_pi_over_sf;
-	protected final float pi_over_sf;
-    public static final float SQRT2 = (float) Math.sqrt(2);
+    private int channels = 1;
+    private float freq = 100;
+    private float q = 1;
+    private float gain;
+    private Type type;
+    private final float samplingfreq;
+	private final float two_pi_over_sf;
+	private final float pi_over_sf;
+    private static final float SQRT2 = (float) Math.sqrt(2);
 
     
     protected double w, ampResponse, phaseResponse, phaseDelay;
     protected double frReal, frImag;
 
     
-    protected final float[] bo1m;
-	protected final float[] bo2m;
-	protected final float[] bi1m;
-	protected final float[] bi2m;
-    protected float bo1, bo2, bi1, bi2;
-    protected boolean cuedInputMemory;
-    protected boolean cuedOutputMemory;
-    protected float[] cbo1m, cbo2m, cbi1m, cbi2m;
-    protected float cbo1, cbo2, cbi1, cbi2;
+    private final float[] bo1m;
+	private final float[] bo2m;
+	private final float[] bi1m;
+	private final float[] bi2m;
+    private float bo1;
+    private float bo2;
+    private float bi1;
+    private float bi2;
+    private boolean cuedInputMemory;
+    private boolean cuedOutputMemory;
+    private float[] cbo1m;
+    private float[] cbo2m;
+    private float[] cbi1m;
+    private float[] cbi2m;
+    private float cbo1;
+    private float cbo2;
+    private float cbi1;
+    private float cbi2;
 
-    protected ValCalculator vc;
-    protected UGen freqUGen, qUGen, gainUGen;
-    protected boolean isFreqStatic, isQStatic, isGainStatic, areAllStatic;
+    private ValCalculator vc;
+    private UGen freqUGen;
+    private UGen qUGen;
+    private UGen gainUGen;
+    private boolean isFreqStatic;
+    private boolean isQStatic;
+    private boolean isGainStatic;
+    private boolean areAllStatic;
 
     /**
      * Constructor for a multi-channel low-pass biquad filter UGen with the
@@ -510,7 +526,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     /**
      * Resets the filter in case it "explodes".
      */
-    public void reset() {
+    private void reset() {
         for (int i = 0; i < channels; i++) {
             bi1m[i] = 0;
             bi2m[i] = 0;
@@ -524,7 +540,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     }
 
     protected static class ValCalculator {
-        public void calcVals() {
+        void calcVals() {
         }
     }
 
@@ -793,7 +809,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * @param paramBead The DataBead specifying parameters.
      * @return This filter instance.
      */
-    public BiquadFilter setParams(DataAuvent paramBead) {
+    private BiquadFilter setParams(DataAuvent paramBead) {
         if (paramBead != null) {
             Object o;
 
@@ -918,7 +934,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @param ntype The type of filter.
      */
-    public BiquadFilter setType(Type ntype) {
+    private BiquadFilter setType(Type ntype) {
         if (ntype != type || vc == null) {
             Type t = type;
             type = ntype;
@@ -1109,7 +1125,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @return The filter frequency.
      */
-    public float getFrequency() {
+    private float getFrequency() {
         return freq;
     }
 
@@ -1137,7 +1153,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @param freqUGen The frequency UGen.
      */
-    public BiquadFilter setFrequency(UGen freqUGen) {
+    private BiquadFilter setFrequency(UGen freqUGen) {
         if (freqUGen == null) {
             setFrequency(freq);
         } else {
@@ -1156,7 +1172,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @return The frequency UGen.
      */
-    public UGen getFrequencyUGen() {
+    private UGen getFrequencyUGen() {
         return isFreqStatic ? null : freqUGen;
     }
 
@@ -1211,7 +1227,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @param nqval The Q-value.
      */
-    public BiquadFilter setQ(float nqval) {
+    private BiquadFilter setQ(float nqval) {
         q = nqval;
         if (isQStatic) {
             qUGen.setValue(nqval);
@@ -1230,7 +1246,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * @param nqval The Q-value UGen.
      * @return This BiquadFilter instance.
      */
-    public BiquadFilter setQ(UGen nqval) {
+    private BiquadFilter setQ(UGen nqval) {
         if (nqval == null) {
             setQ(q);
         } else {
@@ -1269,7 +1285,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @param ngain The gain in decibels (0 means no gain).
      */
-    public BiquadFilter setGain(float ngain) {
+    private BiquadFilter setGain(float ngain) {
         gain = ngain;
         if (isGainStatic) {
             gainUGen.setValue(ngain);
@@ -1288,7 +1304,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @param ngain The gain UGen, specifying the gain in decibels.
      */
-    public BiquadFilter setGain(UGen ngain) {
+    private BiquadFilter setGain(UGen ngain) {
         if (ngain == null) {
             setGain(gain);
         } else {
@@ -1333,7 +1349,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         return this;
     }
 
-    public BiquadFilter loadInputMemory(float xm1, float xm2) {
+    private BiquadFilter loadInputMemory(float xm1, float xm2) {
         if (channels == 1) {
             bi1 = xm1;
             bi2 = xm2;
@@ -1347,7 +1363,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         return this;
     }
 
-    public BiquadFilter loadInputMemory(float[] xm1, float[] xm2) {
+    private BiquadFilter loadInputMemory(float[] xm1, float[] xm2) {
         int min = Math.min(xm1.length, xm2.length);
         if (channels == 1 && min > 0) {
             bi1 = xm1[0];
@@ -1363,7 +1379,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         return this;
     }
 
-    public BiquadFilter loadOutputMemory(float ym1, float ym2) {
+    private BiquadFilter loadOutputMemory(float ym1, float ym2) {
         if (channels == 1) {
             cbo1 = ym1;
             cbo2 = ym2;
@@ -1377,7 +1393,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         return this;
     }
 
-    public BiquadFilter loadOutputMemory(float[] ym1, float[] ym2) {
+    private BiquadFilter loadOutputMemory(float[] ym1, float[] ym2) {
         int min = Math.min(ym1.length, ym2.length);
         if (channels == 1 && min > 0) {
             bo1 = ym1[0];
@@ -1450,21 +1466,21 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * @author Benito Crawford
      * @version .9.1
      */
-    public static class CustomCoeffCalculator {
-        public final float a0 = 1;
-        public float a1;
-        public float a2;
-        public float b0;
-        public float b1;
-        public float b2;
+    static class CustomCoeffCalculator {
+        final float a0 = 1;
+        float a1;
+        float a2;
+        float b0;
+        float b1;
+        float b2;
         /**
          * The sampling frequency.
          */
-        protected float sampFreq;
+        float sampFreq;
         /**
          * Two * pi / sampling frequency.
          */
-        protected float two_pi_over_sf;
+        float two_pi_over_sf;
 
         /**
          * Constructor for a given sampling frequency.
@@ -1487,7 +1503,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
          *
          * @param sf The sampling frequency in Hertz.
          */
-        public void setSamplingFrequency(float sf) {
+        void setSamplingFrequency(float sf) {
             sampFreq = sf;
             two_pi_over_sf = (float) (Math.PI * 2 / sf);
         }
@@ -1500,7 +1516,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
          * @param q    The Q-value of the filter.
          * @param gain The gain of the filter.
          */
-        public void calcCoeffs(float freq, float q, float gain) {
+        void calcCoeffs(float freq, float q, float gain) {
             
         }
     }

@@ -8,7 +8,7 @@ public class SamplePlayer implements SoundProducer {
     @NotNull
     private final SoundSample sample;
     private float pos;
-    public boolean alive = true;
+    private boolean alive = true;
     private final float rate;
 
 

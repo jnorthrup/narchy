@@ -15,12 +15,10 @@ public class EdgeDirected3D extends ForceDirected3D {
 
         float a = attraction.floatValue();
 
-        for (int i = 0, objectsSize = objects.size(); i < objectsSize; i++) {
-            Collidable c = objects.get(i);
-
+        for (Collidable c : objects) {
             Spatial A = ((Spatial) c.data());
 
-            
+
             if (A instanceof SpaceWidget) {
                 ((SpaceWidget<?>) A).edges().forEach(e -> {
 

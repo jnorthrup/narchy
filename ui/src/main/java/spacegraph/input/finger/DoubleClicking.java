@@ -6,22 +6,22 @@ import java.util.function.Consumer;
 
 public class DoubleClicking {
 
-    static final float PIXEL_DISTANCE_THRESHOLD = 0.51f;
+    private static final float PIXEL_DISTANCE_THRESHOLD = 0.51f;
 
     private final int button;
 
     /** accepts the mouse point where clicked */
     private final Consumer<v2> onDoubleClick;
 
-    v2 doubleClickSpot = null;
+    private v2 doubleClickSpot = null;
 
     /** in milliseconds */
-    final long maxDoubleClickTime = 350;
+    private final long maxDoubleClickTime = 350;
 
     /** in milliseconds */
-    long doubleClickTime = Long.MIN_VALUE;
+    private long doubleClickTime = Long.MIN_VALUE;
 
-    int count = 0;
+    private int count = 0;
 
     public DoubleClicking(int button, Consumer<v2> doubleClicked) {
         this.button = button;

@@ -58,7 +58,7 @@ public class BulletGlobals {
 	private ContactAddedCallback gContactAddedCallback;
 	private ContactProcessedCallback gContactProcessedCallback;
 
-	protected float contactBreakingThreshold = 0.02f;
+	private float contactBreakingThreshold = 0.02f;
 	
 	private float deactivationTime = 2f;
 	private boolean disableDeactivation;
@@ -97,7 +97,7 @@ public class BulletGlobals {
 		contactBreakingThreshold = threshold;
 	}
 
-	public float getDeactivationTime() {
+	float getDeactivationTime() {
 		return deactivationTime;
 	}
 
@@ -105,7 +105,7 @@ public class BulletGlobals {
 		deactivationTime = time;
 	}
 
-	public boolean isDeactivationDisabled() {
+	boolean isDeactivationDisabled() {
 		return disableDeactivation;
 	}
 

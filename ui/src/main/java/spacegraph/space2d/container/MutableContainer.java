@@ -16,10 +16,8 @@ import java.util.function.Predicate;
 public class MutableContainer extends AbstractMutableContainer {
 
 
-    final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
-    static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> {
-        return i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
-    };
+    private final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
+    private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
     private final FastCoWList<Surface> children;
 
 
@@ -28,14 +26,14 @@ public class MutableContainer extends AbstractMutableContainer {
         this(false, children);
     }
 
-    public MutableContainer(boolean buffered, Surface... children) {
+    protected MutableContainer(boolean buffered, Surface... children) {
         this(buffered ? new BufferedCoWList(children.length + 1, NEW_SURFACE_ARRAY)
                 :
                 new FastCoWList(children.length + 1, NEW_SURFACE_ARRAY),
             children
         );
     }
-    public MutableContainer(FastCoWList<Surface> childrenModel, Surface... children) {
+    private MutableContainer(FastCoWList<Surface> childrenModel, Surface... children) {
         super();
 
         this.children = childrenModel;
@@ -53,7 +51,7 @@ public class MutableContainer extends AbstractMutableContainer {
     }
 
 
-    public Surface get(int index) {
+    protected Surface get(int index) {
         return children.copy[index];
     }
 
@@ -69,7 +67,7 @@ public class MutableContainer extends AbstractMutableContainer {
     /**
      * returns the existing value that was replaced
      */
-    public Surface set(int index, Surface next) {
+    protected Surface set(int index, Surface next) {
         synchronized (this) {
             SurfaceBase p = this.parent;
             if (p == null) {
@@ -199,7 +197,7 @@ public class MutableContainer extends AbstractMutableContainer {
         return children.whileEachReverse(o);
     }
 
-    public int size() {
+    protected int size() {
         return children.size();
     }
 

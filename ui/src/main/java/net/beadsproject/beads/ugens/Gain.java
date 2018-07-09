@@ -111,7 +111,7 @@ public class Gain extends UGen implements DataBeadReceiver {
      * @param gainUGen The gain UGen.
      * @return This gain instance.
      */
-    public Gain setGain(UGen gainUGen) {
+    private Gain setGain(UGen gainUGen) {
         if (gainUGen == null) {
             setGain(gain);
         } else {

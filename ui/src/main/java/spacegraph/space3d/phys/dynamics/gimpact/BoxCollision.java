@@ -40,21 +40,21 @@ import spacegraph.util.math.v3;
  */
 public class BoxCollision {
 	
-	public static final float BOX_PLANE_EPSILON = 0.000001f;
+	private static final float BOX_PLANE_EPSILON = 0.000001f;
 
-	public static boolean BT_GREATER(float x, float y) {
+	private static boolean BT_GREATER(float x, float y) {
 		return Math.abs(x) > y;
 	}
 
-	public static float BT_MAX3(float a, float b, float c) {
+	private static float BT_MAX3(float a, float b, float c) {
 		return Math.max(a, Math.max(b, c));
 	}
 
-	public static float BT_MIN3(float a, float b, float c) {
+	private static float BT_MIN3(float a, float b, float c) {
 		return Math.min(a, Math.min(b, c));
 	}
 	
-	public static boolean TEST_CROSS_EDGE_BOX_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend, int i_dir_0, int i_dir_1, int i_comp_0, int i_comp_1) {
+	private static boolean TEST_CROSS_EDGE_BOX_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend, int i_dir_0, int i_dir_1, int i_comp_0, int i_comp_1) {
 		float dir0 = -VectorUtil.coord(edge, i_dir_0);
 		float dir1 = VectorUtil.coord(edge, i_dir_1);
 		float pmin = VectorUtil.coord(pointa, i_comp_0) * dir0 + VectorUtil.coord(pointa, i_comp_1) * dir1;
@@ -71,22 +71,22 @@ public class BoxCollision {
         return !(pmin > rad || -rad > pmax);
     }
 
-	public static boolean TEST_CROSS_EDGE_BOX_X_AXIS_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend) {
+	private static boolean TEST_CROSS_EDGE_BOX_X_AXIS_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend) {
 		return TEST_CROSS_EDGE_BOX_MCR(edge, absolute_edge, pointa, pointb, _extend, 2, 1, 1, 2);
 	}
 
-	public static boolean TEST_CROSS_EDGE_BOX_Y_AXIS_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend) {
+	private static boolean TEST_CROSS_EDGE_BOX_Y_AXIS_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend) {
 		return TEST_CROSS_EDGE_BOX_MCR(edge, absolute_edge, pointa, pointb, _extend, 0, 2, 2, 0);
 	}
 
-	public static boolean TEST_CROSS_EDGE_BOX_Z_AXIS_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend) {
+	private static boolean TEST_CROSS_EDGE_BOX_Z_AXIS_MCR(v3 edge, v3 absolute_edge, v3 pointa, v3 pointb, v3 _extend) {
 		return TEST_CROSS_EDGE_BOX_MCR(edge, absolute_edge, pointa, pointb, _extend, 1, 0, 0, 1);
 	}
 	
 	/**
 	 * Returns the dot product between a vec3f and the col of a matrix.
 	 */
-	public static float bt_mat3_dot_col(Matrix3f mat, v3 vec3, int colindex) {
+	private static float bt_mat3_dot_col(Matrix3f mat, v3 vec3, int colindex) {
 		return vec3.x*mat.get(0, colindex) + vec3.y*mat.get(1, colindex) + vec3.z*mat.get(2, colindex);
 	}
 
@@ -100,15 +100,15 @@ public class BoxCollision {
 	
 
 	public static class BoxBoxTransformCache {
-		public final v3 T1to0 = new v3(); 
-		public final Matrix3f R1to0 = new Matrix3f(); 
-		public final Matrix3f AR = new Matrix3f();    
+		final v3 T1to0 = new v3();
+		final Matrix3f R1to0 = new Matrix3f();
+		final Matrix3f AR = new Matrix3f();
 		
 		public static void set(BoxBoxTransformCache cache) {
 			throw new UnsupportedOperationException();
 		}
 		
-		public void calc_absolute_matrix() {
+		void calc_absolute_matrix() {
 			
 			
 			
@@ -153,7 +153,7 @@ public class BoxCollision {
 			calc_absolute_matrix();
 		}
 		
-		public v3 transform(v3 point, v3 out) {
+		v3 transform(v3 point, v3 out) {
 			if (point == out) {
 				point = new v3(point);
 			}
@@ -233,7 +233,7 @@ public class BoxCollision {
 			max.z = other.max.z + margin;
 		}
 		
-		public void calc_from_triangle(v3 V1, v3 V2, v3 V3) {
+		void calc_from_triangle(v3 V1, v3 V2, v3 V3) {
 			min.x = BT_MIN3(V1.x, V2.x, V3.x);
 			min.y = BT_MIN3(V1.y, V2.y, V3.y);
 			min.z = BT_MIN3(V1.z, V2.z, V3.z);
@@ -290,7 +290,7 @@ public class BoxCollision {
 		/**
 		 * Apply a transform to an AABB.
 		 */
-		public void appy_transform_trans_cache(BoxBoxTransformCache trans) {
+        void appy_transform_trans_cache(BoxBoxTransformCache trans) {
 			v3 tmp = new v3();
 
 			v3 center = new v3();
@@ -350,7 +350,7 @@ public class BoxCollision {
 		/**
 		 * Gets the extend and center.
 		 */
-		public void get_center_extend(v3 center, v3 extend) {
+        void get_center_extend(v3 center, v3 extend) {
 			center.add(max, min);
 			center.scale(0.5f);
 
@@ -409,7 +409,7 @@ public class BoxCollision {
 
         }
 	
-		public void projection_interval(v3 direction, float[] vmin, float[] vmax) {
+		void projection_interval(v3 direction, float[] vmin, float[] vmax) {
 			v3 tmp = new v3();
 
 			v3 center = new v3();
@@ -513,7 +513,7 @@ public class BoxCollision {
 		/**
 		 * Simple test for planes.
 		 */
-		public boolean collide_plane(Vector4f plane) {
+        boolean collide_plane(Vector4f plane) {
 			PlaneIntersectionType classify = plane_classify(plane);
 			return (classify == PlaneIntersectionType.COLLIDE_PLANE);
 		}

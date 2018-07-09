@@ -120,7 +120,7 @@ public class CombFilter extends IIRFilter {
      * @param delay The delay in samples.
      * @return This CombFilter instance.
      */
-    public CombFilter setDelay(int delay) {
+    private CombFilter setDelay(int delay) {
         if (delay < 1) {
             this.delay = 1;
         } else if (delay >= maxDelay) {
@@ -145,7 +145,7 @@ public class CombFilter extends IIRFilter {
      * @param delay The delay UGen.
      * @return This CombFilter instance.
      */
-    public CombFilter setDelay(UGen delay) {
+    private CombFilter setDelay(UGen delay) {
         if (delay == null) {
             setDelay(this.delay);
         } else {
@@ -183,7 +183,7 @@ public class CombFilter extends IIRFilter {
      * @param g The g parameter.
      * @return This CombFilter instance.
      */
-    public CombFilter setG(float g) {
+    private CombFilter setG(float g) {
         this.g = g;
         if (isGStatic) {
             gUGen.setValue(g);
@@ -202,7 +202,7 @@ public class CombFilter extends IIRFilter {
      * @param g The g UGen.
      * @return This CombFilter instance.
      */
-    public CombFilter setG(UGen g) {
+    private CombFilter setG(UGen g) {
         if (g == null) {
             setG(this.g);
         } else {
@@ -240,7 +240,7 @@ public class CombFilter extends IIRFilter {
      * @param h The h parameter.
      * @return This CombFilter instance.
      */
-    public CombFilter setH(float h) {
+    private CombFilter setH(float h) {
         this.h = h;
         if (isHStatic) {
             hUGen.setValue(h);
@@ -259,7 +259,7 @@ public class CombFilter extends IIRFilter {
      * @param h The h UGen.
      * @return This CombFilter instance.
      */
-    public CombFilter setH(UGen h) {
+    private CombFilter setH(UGen h) {
         if (h == null) {
             setH(this.h);
         } else {
@@ -297,7 +297,7 @@ public class CombFilter extends IIRFilter {
      * @param a The 'a' parameter.
      * @return This CombFilter instance.
      */
-    public CombFilter setA(float a) {
+    private CombFilter setA(float a) {
         this.a = a;
         if (isAStatic) {
             aUGen.setValue(a);
@@ -316,7 +316,7 @@ public class CombFilter extends IIRFilter {
      * @param a The 'a' UGen.
      * @return This CombFilter instance.
      */
-    public CombFilter setA(UGen a) {
+    private CombFilter setA(UGen a) {
         if (a == null) {
             setA(this.a);
         } else {
@@ -388,7 +388,7 @@ public class CombFilter extends IIRFilter {
      *
      * @param paramBead The DataBead specifying parameters.
      */
-    public CombFilter setParams(DataAuvent paramBead) {
+    private CombFilter setParams(DataAuvent paramBead) {
         if (paramBead != null) {
             Object o;
 

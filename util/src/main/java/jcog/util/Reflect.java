@@ -1,7 +1,5 @@
 package jcog.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.Arrays;
@@ -577,12 +575,12 @@ public class Reflect {
         final InvocationHandler handler = (proxy, method, args) -> {
             String name = method.getName();
 
-            
+
             try {
                 return on(type, object).call(name, args).get();
             }
 
-            
+
             catch (ReflectException e) {
                 if (isMap) {
                     Map<String, Object> map = (Map<String, Object>) object;
@@ -617,7 +615,6 @@ public class Reflect {
         return (P) as(proxyType, handler);
     }
 
-    @NotNull
     public Object as(Class proxyType, InvocationHandler handler) {
         return Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[] { proxyType }, handler);
     }
@@ -836,42 +833,25 @@ public class Reflect {
 
     private static class NULL {}
 
-
-    /**
-     * A unchecked wrapper for any of Java's checked reflection exceptions:
-     * <p>
-     * These exceptions are
-     * <ul>
-     * <li> {@link ClassNotFoundException}</li>
-     * <li> {@link IllegalAccessException}</li>
-     * <li> {@link IllegalArgumentException}</li>
-     * <li> {@link InstantiationException}</li>
-     * <li> {@link InvocationTargetException}</li>
-     * <li> {@link NoSuchMethodException}</li>
-     * <li> {@link NoSuchFieldException}</li>
-     * <li> {@link SecurityException}</li>
-     * </ul>
-     *
-     * @author Lukas Eder
-     */
-    static class ReflectException extends RuntimeException {
-
-        /**
-         * Generated UID
-         */
-        private static final long serialVersionUID = -6213149635297151442L;
-
-        public ReflectException(String message) {
-            super(message);
-        }
-
-        public ReflectException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public ReflectException() {
-            super();
-        }
+//
+//    /**
+//     * A unchecked wrapper for any of Java's checked reflection exceptions:
+//     * <p>
+//     * These exceptions are
+//     * <ul>
+//     * <li> {@link ClassNotFoundException}</li>
+//     * <li> {@link IllegalAccessException}</li>
+//     * <li> {@link IllegalArgumentException}</li>
+//     * <li> {@link InstantiationException}</li>
+//     * <li> {@link InvocationTargetException}</li>
+//     * <li> {@link NoSuchMethodException}</li>
+//     * <li> {@link NoSuchFieldException}</li>
+//     * <li> {@link SecurityException}</li>
+//     * </ul>
+//     *
+//     * @author Lukas Eder
+//     */
+    public final static class ReflectException extends RuntimeException {
 
         public ReflectException(Throwable cause) {
             super(cause);

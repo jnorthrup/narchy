@@ -55,7 +55,7 @@ public class AWTCamera {
         return get(component, image, null);
     }
 
-    final static Map<Component,Pair<AtomicBoolean,Graphics2D>> graphicsDrawers = new WeakHashMap<>();
+    private final static Map<Component,Pair<AtomicBoolean,Graphics2D>> graphicsDrawers = new WeakHashMap<>();
 
     /*
      *  Create a BufferedImage for Swing components.
@@ -171,7 +171,7 @@ public class AWTCamera {
      * @param     region region on the screen to create image from
      * @return image the image for the given region
      */
-    public static BufferedImage get(Rectangle region)
+    private static BufferedImage get(Rectangle region)
             throws AWTException {
         return new Robot().createScreenCapture(region);
     }
@@ -209,7 +209,7 @@ public class AWTCamera {
 
 
 
-    static void layoutComponent(Component component) {
+    private static void layoutComponent(Component component) {
         component.doLayout();
 
         if (component instanceof Container) {

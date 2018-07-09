@@ -130,6 +130,7 @@ public enum ArrayUtils { ;
      * various method from {@link java.util.List}.
      */
     public static final int INDEX_NOT_FOUND = -1;
+    public static final double[][] EMPTY_DOUBLE_DOUBLE = new double[0][0];
     private static final int SMALL = 7;
     private static final int MEDIUM = 40;
 

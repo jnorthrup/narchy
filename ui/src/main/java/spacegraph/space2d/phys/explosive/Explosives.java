@@ -23,7 +23,7 @@ import static spacegraph.space2d.phys.dynamics.Dynamics2D.staticBox;
 
 public class Explosives {
 
-    final static Random rng = new XoRoShiRo128PlusRandom(1);
+    private final static Random rng = new XoRoShiRo128PlusRandom(1);
 
     /**
      * TODO bullet hard TTL in case it goes off to infinity
@@ -107,7 +107,7 @@ public class Explosives {
     public static class Projectile extends Body2D implements Consumer<GL2> {
         long start, end;
 
-        public Projectile(Dynamics2D w) {
+        Projectile(Dynamics2D w) {
             super(BodyType.DYNAMIC, w);
 
             start = System.currentTimeMillis();
@@ -155,7 +155,7 @@ public class Explosives {
         private final CircleShape shape;
         private float rad;
 
-        public Fireball(Dynamics2D w, Tuple2f center, float maxRad) {
+        Fireball(Dynamics2D w, Tuple2f center, float maxRad) {
             super(new BodyDef(
                     BodyType.KINEMATIC
                     
@@ -223,7 +223,7 @@ public class Explosives {
 
     public static class ExplosionContacts implements ContactListener {
 
-        protected void explode(Body2D b, Body2D hit) {
+        void explode(Body2D b, Body2D hit) {
 
 
 

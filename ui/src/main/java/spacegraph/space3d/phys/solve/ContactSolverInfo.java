@@ -30,14 +30,14 @@ package spacegraph.space3d.phys.solve;
  */
 public class ContactSolverInfo {
 
-	public float tau = 0.6f;
+	private float tau = 0.6f;
 	public float damping = 1f;
-	public float friction = 0.3f;
+	private float friction = 0.3f;
 	public float timeStep;
-	public float restitution;
+	private float restitution;
 	public int numIterations = 10;
-	public float maxErrorReduction = 20f;
-	public float sor = 1.3f;
+	private float maxErrorReduction = 20f;
+	private float sor = 1.3f;
 	public float erp = 0.2f; 
 	public final float erp2 = 0.1f; 
 	public boolean splitImpulse;

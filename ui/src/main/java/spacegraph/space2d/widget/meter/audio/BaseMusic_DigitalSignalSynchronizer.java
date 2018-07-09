@@ -21,6 +21,7 @@ import spacegraph.audio.AudioSource;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BaseMusic_DigitalSignalSynchronizer {
 
@@ -36,14 +37,14 @@ public class BaseMusic_DigitalSignalSynchronizer {
     private Context mContext;
     private Normalizer mNormalizer;
     private Synchronizer mSynchronizer;
-    private final ArrayList<BaseMusic_DigitalSignalProcessorInterface> dsp = new ArrayList<BaseMusic_DigitalSignalProcessorInterface>();
+    private final List<BaseMusic_DigitalSignalProcessorInterface> dsp = new ArrayList<>();
     
 
     public BaseMusic_DigitalSignalSynchronizer(int inFramesPerSecond) {
         this( inFramesPerSecond, inFramesPerSecond );
     }
 
-    public BaseMusic_DigitalSignalSynchronizer(int inFramesPerSecond, int inFrameRateRatioHintCalibration) { 
+    private BaseMusic_DigitalSignalSynchronizer(int inFramesPerSecond, int inFrameRateRatioHintCalibration) {
         mFramesPerSecond = inFramesPerSecond;
         mFrameRateRatioHintCalibration = inFrameRateRatioHintCalibration;
     }
@@ -59,7 +60,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         dsp.add(inSignalProcessor);
     }
 
-    public Normalizer getNormalizer() {
+    private Normalizer getNormalizer() {
         if (mNormalizer == null) {
             if (mNormalizer == null && mSynchronizer != null) {
                 mNormalizer = new Normalizer(src.audioFormat);
@@ -89,7 +90,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         mSynchronizer = new Synchronizer(mFramesPerSecond,mFrameRateRatioHintCalibration);
     }
 
-    protected void storeAudioData( byte[] pAudioData, int pOffset, int pLength ) {
+    private void storeAudioData(byte[] pAudioData, int pOffset, int pLength) {
         if (mAudioDataBuffer == null) {
             return;
         }
@@ -146,7 +147,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         private float  mFrameRatioHint;
 
         
-        public Context( int pLength ) {
+        Context(int pLength) {
             mSampleLength = pLength;
         }
 
@@ -189,7 +190,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         private final int  channelSize;
         private final long audioSampleSize;
 
-        public Normalizer(AudioFormat pFormat) {
+        Normalizer(AudioFormat pFormat) {
             audioFormat = pFormat;
             channels = new float[pFormat.getChannels()][];
             for (int c = 0; c < pFormat.getChannels(); c++) {
@@ -199,7 +200,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
             audioSampleSize = (1 << (audioFormat.getSampleSizeInBits() - 1));
         }
 
-        public float[][] normalize( byte[] pData, int pPosition, int pLength ) {
+        float[][] normalize(byte[] pData, int pPosition, int pLength) {
             int wChannels  = audioFormat.getChannels();
             int wSsib      = audioFormat.getSampleSizeInBits();
             int wFrameSize = audioFormat.getFrameSize();
@@ -236,7 +237,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         private final long mFramesPerSecondInNanoSeconds;
         private final long mFrameRateRatioHintCalibrationInNanoSeconds;
 
-        public Synchronizer(int inFramesPerSecond, int inFrameRateRatioHintCalibration) {
+        Synchronizer(int inFramesPerSecond, int inFrameRateRatioHintCalibration) {
             mFramesPerSecondInNanoSeconds = 1000000000L /(long)inFramesPerSecond;
             mCurrentFramesPerSecondInNanoSeconds = mFramesPerSecondInNanoSeconds;	
             mFrameRateRatioHintCalibrationInNanoSeconds = 1000000000L / inFrameRateRatioHintCalibration;
@@ -244,7 +245,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         }
 
         private int calculateSamplePosition() {
-            return (int) (src.sampleNum() * mFrameSize % (long) (mAudioDataBuffer.length));
+            return (int) (src.sampleNum() * mFrameSize % (mAudioDataBuffer.length));
         }
 
         public void synchronize() {
@@ -253,9 +254,9 @@ public class BaseMusic_DigitalSignalSynchronizer {
             
             
             mContext.mFrameRatioHint = mCurrentFramesPerSecondInNanoSeconds / (float) mFrameRateRatioHintCalibrationInNanoSeconds;
-            
-            for (int a = 0; a < dsp.size(); a++) {
-                dsp.get(a).process(mContext);
+
+            for (BaseMusic_DigitalSignalProcessorInterface aDsp : dsp) {
+                aDsp.process(mContext);
             }
         }
 

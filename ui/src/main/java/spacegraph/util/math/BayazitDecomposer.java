@@ -17,10 +17,10 @@ import java.util.Collections;
  * For more information about this algorithm, see http:
  * </summary>
  */
-public class BayazitDecomposer {
+class BayazitDecomposer {
 
-	public static final float Epsilon = 1.192092896e-07f;
-	public static final int MaxPolygonVertices = 8;
+	private static final float Epsilon = 1.192092896e-07f;
+	private static final int MaxPolygonVertices = 8;
 
 	public static v2 cross(v2 a, float s) {
 		return new v2(s * a.y, -s * a.x);
@@ -32,7 +32,7 @@ public class BayazitDecomposer {
 	}
 
 	private static FasterList<v2> copy(int i, int j, FasterList<v2> vertices) {
-		FasterList<v2> p = new FasterList<v2>();
+		FasterList<v2> p = new FasterList<>();
 		while (j < i)
 			j += vertices.size();
 		
@@ -42,7 +42,7 @@ public class BayazitDecomposer {
 		return p;
 	}
 
-	public static float getSignedArea(FasterList<v2> vect) {
+	private static float getSignedArea(FasterList<v2> vect) {
 		int i;
 		float area = 0;
 		for (i = 0; i < vect.size(); i++) {
@@ -56,7 +56,7 @@ public class BayazitDecomposer {
 		return area;
 	}
 
-	public static float getSignedArea(v2[] vect) {
+	private static float getSignedArea(v2[] vect) {
 		int i;
 		float area = 0;
 		for (i = 0; i < vect.length; i++) {
@@ -70,7 +70,7 @@ public class BayazitDecomposer {
 		return area;
 	}
 
-	public static boolean isCounterClockWise(FasterList<v2> vect) {
+	private static boolean isCounterClockWise(FasterList<v2> vect) {
 		
 		return vect.size() < 3 || getSignedArea(vect) > 0.0f;
 	}
@@ -88,7 +88,7 @@ public class BayazitDecomposer {
 	
 	
 	
-	public static FasterList<FasterList<v2>> convexPartition(FasterList<v2> vertices) {
+	private static FasterList<FasterList<v2>> convexPartition(FasterList<v2> vertices) {
 		
 		
 		if (!isCounterClockWise(vertices)) {
@@ -100,7 +100,7 @@ public class BayazitDecomposer {
 			
 			
 		}
-		FasterList<FasterList<v2>> list = new FasterList<FasterList<v2>>();
+		FasterList<FasterList<v2>> list = new FasterList<>();
 		float d, lowerDist, upperDist;
 		v2 p;
 		v2 lowerInt = new v2();
@@ -228,14 +228,14 @@ public class BayazitDecomposer {
 			}
 			v2 intersectionPoint = new v2();
 			if (lineIntersect(at(i, vertices), at(j, vertices), at(k, vertices),
-					at(k + 1, vertices), true, true, intersectionPoint)) {
+					at(k + 1, vertices), true, true)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public static v2 lineIntersect(v2 p1, v2 p2, v2 q1, v2 q2) {
+	private static v2 lineIntersect(v2 p1, v2 p2, v2 q1, v2 q2) {
 		v2 i = new v2();
 		float a1 = p2.y - p1.y;
 		float b1 = p1.x - p2.x;
@@ -282,9 +282,9 @@ public class BayazitDecomposer {
 	
 	
 	
-	public static boolean lineIntersect(v2 point1, v2 point2, v2 point3,
-			v2 point4, boolean firstIsSegment, boolean secondIsSegment, v2 point) {
-		point = new v2();
+	private static boolean lineIntersect(v2 point1, v2 point2, v2 point3,
+										 v2 point4, boolean firstIsSegment, boolean secondIsSegment) {
+		v2 point = new v2();
 		
 		
 		

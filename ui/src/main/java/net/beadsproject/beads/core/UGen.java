@@ -230,7 +230,7 @@ public abstract class UGen extends Auvent {
     /**
      * Sets the output buffers to zero.
      */
-    public void zeroOuts() {
+    private void zeroOuts() {
         for (int i = 0; i < outs; i++) {
             bufOut[i] = context.getZeroBuf();
         }
@@ -239,13 +239,13 @@ public abstract class UGen extends Auvent {
     /**
      * Sets the input buffers to zero.
      */
-    public void zeroIns() {
+    private void zeroIns() {
         for (int i = 0; i < ins; i++) {
             bufIn[i] = context.getZeroBuf();
         }
     }
 
-    protected void setOutsToPause() {
+    private void setOutsToPause() {
         switch (outputPauseRegime) {
             case ZERO:
                 for (int i = 0; i < outs; i++) {
@@ -264,7 +264,7 @@ public abstract class UGen extends Auvent {
         }
     }
 
-    protected void initializeOuts() {
+    private void initializeOuts() {
         switch (outputInitializationRegime) {
             case JUNK:
                 for (int i = 0; i < outs; i++) {
@@ -387,9 +387,9 @@ public abstract class UGen extends Auvent {
      * Prints a list of UGens connected to this UGen's inputs to System.out.
      */
     public void printInputList() {
-        for (int i = 0; i < inputsAtChannel.length; i++) {
-            System.out.print(inputsAtChannel[i].size() + " inputs: ");
-            for (BufferPointer bp : inputsAtChannel[i]) {
+        for (FasterList<BufferPointer> anInputsAtChannel : inputsAtChannel) {
+            System.out.print(anInputsAtChannel.size() + " inputs: ");
+            for (BufferPointer bp : anInputsAtChannel) {
                 System.out.print(bp.ugen + ":" + bp.index + ' ');
             }
             System.out.println();
@@ -491,7 +491,7 @@ public abstract class UGen extends Auvent {
      * @param index index of input to inspect.
      * @return number of UGen outputs connected to that input.
      */
-    public int connectedCount(int index) {
+    protected int connectedCount(int index) {
         return inputsAtChannel[index].size();
     }
 
@@ -729,7 +729,7 @@ public abstract class UGen extends Auvent {
      * into {@link #bufOut} in some way. {@link #bufIn} and {@link #bufOut} are 2D arrays of floats of the form float[numChannels][bufferSize]. The length of the buffers is given by
      * {@link #bufferSize}, and the number of channels of the input and output buffers are given by {@link #ins} and {@link #outs} respectively.
      */
-    public abstract void gen(); /* Must be implemented by subclasses.*/
+    protected abstract void gen(); /* Must be implemented by subclasses.*/
 
     /**
      * Gets a specific specified value from the output buffer, with indices i (channel)
@@ -799,7 +799,7 @@ public abstract class UGen extends Auvent {
      *
      * @return true if the UGen has been updated in the current timeStep.
      */
-    public boolean isUpdated() {
+    private boolean isUpdated() {
         return lastTimeStep == context.getTimeStep();
     }
 
@@ -833,17 +833,17 @@ public abstract class UGen extends Auvent {
     /**
      * BufferPointer is a nested class used by UGens to keep track of the output buffers of other UGens connected to their inputs.
      */
-    public static class BufferPointer {
+    static class BufferPointer {
 
         /**
          * The UGen that owns the output buffer.
          */
-        public final UGen ugen;
+        final UGen ugen;
 
         /**
          * The index of the output buffer.
          */
-        public final int index;
+        final int index;
 
         /**
          * Instantiates a new buffer pointer.

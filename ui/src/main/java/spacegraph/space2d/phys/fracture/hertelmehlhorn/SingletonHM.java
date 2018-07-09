@@ -118,7 +118,7 @@ public class SingletonHM {
             polygons[i] = a; 
         }
 
-        Diagonal[] edges = table.toArray(new Diagonal[table.size()]);
+        Diagonal[] edges = table.toArray(new Diagonal[0]);
         for (Diagonal e : edges) {
             if (e.i2 == -1) {
                 table.remove(e);

@@ -41,7 +41,7 @@ import spacegraph.util.math.Tuple2f;
  *
  * @author Daniel Murphy
  */
-public class WheelJointDef extends JointDef {
+class WheelJointDef extends JointDef {
 
     /**
      * The local anchor point relative to body1's origin.

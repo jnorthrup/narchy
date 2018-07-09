@@ -35,14 +35,14 @@ import spacegraph.util.math.Color4f;
     }
 
 
-    public void set(Color4f color) {
+    private void set(Color4f color) {
         r = (byte) (127 * color.x);
         g = (byte) (127 * color.y);
         b = (byte) (127 * color.z);
         a = (byte) (127 * color.w);
     }
 
-    public void set(Color3f color) {
+    private void set(Color3f color) {
         r = (byte) (127 * color.x);
         g = (byte) (127 * color.y);
         b = (byte) (127 * color.z);
@@ -60,7 +60,7 @@ import spacegraph.util.math.Color4f;
         return r == 0 && g == 0 && b == 0 && a == 0;
     }
 
-    public void set(byte r, byte g, byte b, byte a) {
+    private void set(byte r, byte g, byte b, byte a) {
         this.r = r;
         this.g = g;
         this.b = b;

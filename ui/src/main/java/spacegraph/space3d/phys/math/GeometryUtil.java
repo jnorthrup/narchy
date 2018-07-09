@@ -33,43 +33,40 @@ import spacegraph.util.math.v3;
  * 
  * @author jezek2
  */
-public class GeometryUtil {
+class GeometryUtil {
 
 	public static boolean isPointInsidePlanes(OArrayList<Vector4f> planeEquations, v3 point, float margin) {
 		int numbrushes = planeEquations.size();
-		for (int i = 0; i < numbrushes; i++) {
-            
-            Vector4f N1 = planeEquations.get(i);
-			float dist = VectorUtil.dot3(N1, point) + N1.w - margin;
-			if (dist > 0f) {
-				return false;
-			}
-		}
+        for (Vector4f N1 : planeEquations) {
+
+            float dist = VectorUtil.dot3(N1, point) + N1.w - margin;
+            if (dist > 0f) {
+                return false;
+            }
+        }
 		return true;
 	}
 
-	public static boolean areVerticesBehindPlane(Vector4f planeNormal, OArrayList<v3> vertices, float margin) {
+	private static boolean areVerticesBehindPlane(Vector4f planeNormal, OArrayList<v3> vertices, float margin) {
 		int numvertices = vertices.size();
-		for (int i = 0; i < numvertices; i++) {
-            
-            v3 N1 = vertices.get(i);
-			float dist = VectorUtil.dot3(planeNormal, N1) + planeNormal.w - margin;
-			if (dist > 0f) {
-				return false;
-			}
-		}
+        for (v3 N1 : vertices) {
+
+            float dist = VectorUtil.dot3(planeNormal, N1) + planeNormal.w - margin;
+            if (dist > 0f) {
+                return false;
+            }
+        }
 		return true;
 	}
 
 	private static boolean notExist(Vector4f planeEquation, OArrayList<Vector4f> planeEquations) {
 		int numbrushes = planeEquations.size();
-		for (int i = 0; i < numbrushes; i++) {
-            
-            Vector4f N1 = planeEquations.get(i);
-			if (VectorUtil.dot3(planeEquation, N1) > 0.999f) {
-				return false;
-			}
-		}
+        for (Vector4f N1 : planeEquations) {
+
+            if (VectorUtil.dot3(planeEquation, N1) > 0.999f) {
+                return false;
+            }
+        }
 		return true;
 	}
 

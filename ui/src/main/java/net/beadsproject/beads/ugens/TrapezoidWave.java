@@ -26,12 +26,22 @@ import net.beadsproject.beads.core.UGen;
  */
 public class TrapezoidWave extends UGen {
 
-    protected float index;
-    protected float a, b, c, abSlope, cdSlope;
-    protected float freq, dutyCycle = .5f, attack, decay;
-    protected float delta;
-    protected final float iSampleRate;
-    protected UGen freqUGen, dutyCycleUGen, attackUGen, decayUGen;
+    private float index;
+    private float a;
+    private float b;
+    private float c;
+    private float abSlope;
+    private float cdSlope;
+    private float freq;
+    private float dutyCycle = .5f;
+    private float attack;
+    private float decay;
+    private float delta;
+    private final float iSampleRate;
+    private UGen freqUGen;
+    private UGen dutyCycleUGen;
+    private UGen attackUGen;
+    private UGen decayUGen;
 
     /**
      * Constructor.
@@ -117,7 +127,7 @@ public class TrapezoidWave extends UGen {
 
     }
 
-    protected void calcVals() {
+    private void calcVals() {
         a = 1 - dutyCycle;
         if (a >= 1) {
             a = b = c = 1;
@@ -159,7 +169,7 @@ public class TrapezoidWave extends UGen {
      * @param freq The frequency.
      * @return This TrapezoidWave instance.
      */
-    public TrapezoidWave setFrequency(float freq) {
+    private TrapezoidWave setFrequency(float freq) {
         this.freq = freq;
         freqUGen = null;
         delta = freq * iSampleRate;
@@ -225,7 +235,7 @@ public class TrapezoidWave extends UGen {
      * @param dutyCycle The duty cycle.
      * @return This TrapezoidWave instance.
      */
-    public TrapezoidWave setDutyCycle(float dutyCycle) {
+    private TrapezoidWave setDutyCycle(float dutyCycle) {
         dutyCycleUGen = null;
         this.dutyCycle = dutyCycle;
         if (this.dutyCycle < 0) {
@@ -279,7 +289,7 @@ public class TrapezoidWave extends UGen {
      * @param attack The attack length.
      * @return This TrapezoidWave instance.
      */
-    public TrapezoidWave setAttack(float attack) {
+    private TrapezoidWave setAttack(float attack) {
         attackUGen = null;
         this.attack = attack;
         if (this.attack < 0) {
@@ -333,7 +343,7 @@ public class TrapezoidWave extends UGen {
      * @param decay The decay length value.
      * @return This TrapezoidWave instance.
      */
-    public TrapezoidWave setDecay(float decay) {
+    private TrapezoidWave setDecay(float decay) {
         decayUGen = null;
         this.decay = decay;
         if (decay < 0) {

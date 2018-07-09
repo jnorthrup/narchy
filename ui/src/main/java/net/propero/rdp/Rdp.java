@@ -58,14 +58,14 @@ public class Rdp {
     /* constants for RDP Layer */
     public static final int RDP_LOGON_NORMAL = 0x33;
     public static final int RDP_LOGON_AUTO = 0x8;
-    public static final int RDP_LOGON_BLOB = 0x100;
+    private static final int RDP_LOGON_BLOB = 0x100;
     /* RDP bitmap cache (version 2) constants */
-    public static final int BMPCACHE2_C0_CELLS = 0x78;
-    public static final int BMPCACHE2_C1_CELLS = 0x78;
-    public static final int BMPCACHE2_C2_CELLS = 0x150;
+    private static final int BMPCACHE2_C0_CELLS = 0x78;
+    private static final int BMPCACHE2_C1_CELLS = 0x78;
+    private static final int BMPCACHE2_C2_CELLS = 0x150;
     public static final int BMPCACHE2_NUM_PSTCELLS = 0x9f6;
     protected static final Logger logger = LoggerFactory.getLogger(Rdp.class);
-    static final byte[] caps_0x0d = {0x01, 0x00, 0x00, 0x00, 0x09, 0x04, 0x00, 0x00,
+    private static final byte[] caps_0x0d = {0x01, 0x00, 0x00, 0x00, 0x09, 0x04, 0x00, 0x00,
             0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -73,9 +73,9 @@ public class Rdp {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    static final byte[] caps_0x0c = {0x01, 0x00, 0x00, 0x00};
-    static final byte[] caps_0x0e = {0x01, 0x00, 0x00, 0x00};
-    static final byte[] caps_0x10 = {(byte) 0xFE, 0x00, 0x04, 0x00, (byte) 0xFE,
+    private static final byte[] caps_0x0c = {0x01, 0x00, 0x00, 0x00};
+    private static final byte[] caps_0x0e = {0x01, 0x00, 0x00, 0x00};
+    private static final byte[] caps_0x10 = {(byte) 0xFE, 0x00, 0x04, 0x00, (byte) 0xFE,
             0x00, 0x04, 0x00, (byte) 0xFE, 0x00, 0x08, 0x00, (byte) 0xFE, 0x00,
             0x08, 0x00, (byte) 0xFE, 0x00, 0x10, 0x00, (byte) 0xFE, 0x00, 0x20,
             0x00, (byte) 0xFE, 0x00, 0x40, 0x00, (byte) 0xFE, 0x00,
@@ -227,7 +227,7 @@ public class Rdp {
      *
      * @param channels Virtual channels to be used in connection
      */
-    public Rdp(VChannels channels) {
+    protected Rdp(VChannels channels) {
         this.SecureLayer = new Secure(channels);
         Common.secure = SecureLayer;
         this.orders = new Orders();
@@ -240,7 +240,7 @@ public class Rdp {
      *
      * @param data Packet containing capability set data at current read position
      */
-    static void processGeneralCaps(RdpPacket_Localised data) {
+    private static void processGeneralCaps(RdpPacket_Localised data) {
         int pad2octetsB; /* rdp5 flags? */
 
         data.incrementPosition(10); 
@@ -255,7 +255,7 @@ public class Rdp {
      *
      * @param data Packet containing capability set data at current read position
      */
-    static void processBitmapCaps(RdpPacket_Localised data) {
+    private static void processBitmapCaps(RdpPacket_Localised data) {
         int width, height, bpp;
 
         bpp = data.getLittleEndian16(); 
@@ -325,7 +325,7 @@ public class Rdp {
         }
     }
 
-    protected static void processPduLogon(RdpPacket_Localised data) {
+    private static void processPduLogon(RdpPacket_Localised data) {
         int infoType = data.getLittleEndian32();
         if (infoType == INFOTYPE_LOGON_EXTENDED_INF) {
             data.getLittleEndian16();
@@ -356,7 +356,7 @@ public class Rdp {
      * @param data Packet containing disconnect PDU at current read position
      * @return Code specifying the reason for disconnection
      */
-    protected static int processDisconnectPdu(RdpPacket_Localised data) {
+    private static int processDisconnectPdu(RdpPacket_Localised data) {
 
         return data.getLittleEndian32();
     }
@@ -1490,7 +1490,7 @@ public class Rdp {
         surface.setCursor(cache.getCursor(0));
     }
 
-    protected void process_colour_pointer_common(RdpPacket_Localised data, int bpp) throws RdesktopException {
+    private void process_colour_pointer_common(RdpPacket_Localised data, int bpp) throws RdesktopException {
         logger.debug("Rdp.RDP_POINTER_COLOR");
         int x = 0, y = 0, width = 0, height = 0, cache_idx = 0, masklen = 0, datalen = 0;
         byte[] mask = null, pixel = null;

@@ -27,12 +27,12 @@ public class Tex {
 
     public com.jogamp.opengl.util.texture.Texture texture;
 
-    public boolean mipmap;
+    private boolean mipmap;
 
     
 
 
-    final AtomicBoolean textureUpdated = new AtomicBoolean(false);
+    private final AtomicBoolean textureUpdated = new AtomicBoolean(false);
     public GLProfile profile;
     private TextureData nextData;
 
@@ -49,7 +49,7 @@ public class Tex {
         paint(gl, bounds, -1, alpha);
     }
 
-    public void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
+    void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
 
 
 
@@ -93,7 +93,7 @@ public class Tex {
         textureUpdated.set(true);
     }
 
-    protected void update(byte[] iimage, int width, int height) {
+    private void update(byte[] iimage, int width, int height) {
 
         this.src = iimage;
 
@@ -110,7 +110,7 @@ public class Tex {
         );
     }
 
-    protected void update(int[] iimage, int width, int height) {
+    void update(int[] iimage, int width, int height) {
 
         this.src = iimage;
 
@@ -170,7 +170,7 @@ public class Tex {
 
         private final Tex tex;
 
-        public TexSurface(Tex tex) {
+        TexSurface(Tex tex) {
            this.tex = tex;
         }
         @Override

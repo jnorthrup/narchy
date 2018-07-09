@@ -15,10 +15,10 @@ public class OsmElement {
     public Map<String, String> tags;
 
     /** TODO make immutable */
-    public List<? extends OsmElement> children;
+    List<? extends OsmElement> children;
 
 
-    public OsmElement(long id, List<? extends OsmElement> children, Map<String, String> tags) {
+    OsmElement(long id, List<? extends OsmElement> children, Map<String, String> tags) {
         this.id = id;
 
         this.children = children;

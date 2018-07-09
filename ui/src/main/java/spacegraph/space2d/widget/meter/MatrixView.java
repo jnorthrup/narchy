@@ -21,14 +21,14 @@ import java.util.function.Supplier;
     private final ViewFunction2D view;
 
 
-    public static ViewFunction2D arrayRenderer(float[][] ww) {
+    private static ViewFunction2D arrayRenderer(float[][] ww) {
         return (x, y, gl) -> {
             float v = ww[x][y];
             Draw.colorBipolar(gl, v);
             return 0;
         };
     }
-    public static ViewFunction2D arrayRenderer(double[][] ww) {
+    private static ViewFunction2D arrayRenderer(double[][] ww) {
         return (x, y, gl) -> {
             float v = (float) ww[x][y];
             Draw.colorBipolar(gl, v);
@@ -89,14 +89,15 @@ import java.util.function.Supplier;
     public MatrixView(int w, int h, ViewFunction2D view) {
         this.w = w;
         this.h = h;
+        //noinspection CastToIncompatibleInterface
         this.view = view != null ? view : ((ViewFunction2D) this);
     }
 
-    public static final ViewFunction1D bipolar1 = (x, gl) -> {
+    private static final ViewFunction1D bipolar1 = (x, gl) -> {
         Draw.colorBipolar(gl, x);
         return 0;
     };
-    static final ViewFunction1D unipolar1 = (x, gl) -> {
+    private static final ViewFunction1D unipolar1 = (x, gl) -> {
         Draw.colorGrays(gl, x);
         return 0;
     };

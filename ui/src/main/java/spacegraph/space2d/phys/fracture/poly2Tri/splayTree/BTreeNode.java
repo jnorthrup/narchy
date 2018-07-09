@@ -6,10 +6,10 @@ package spacegraph.space2d.phys.fracture.poly2Tri.splayTree;
  */
 public class BTreeNode {
 
-    protected SplayTreeItem _data = null;
-    protected BTreeNode _left = null;
-    protected BTreeNode _right = null;
-    protected boolean _visited = false;
+    SplayTreeItem _data = null;
+    BTreeNode _left = null;
+    BTreeNode _right = null;
+    private boolean _visited = false;
 
     public BTreeNode() {
     }

@@ -16,7 +16,7 @@ public class Triangle {
     /**
      * Ak je nastavena referencia, ukazuje na trojuholnik, ktory ma rovnaky focus (v Vec2 formate). focusCorelation.focusCorelation je vzdy null.
      */
-    public Triangle focusCorelation; 
+    private Triangle focusCorelation;
 
     /**
      * Suradnice stredu opisanej kruznice.
@@ -24,7 +24,7 @@ public class Triangle {
     public double dX, dY;
 
     int index; 
-    double r; 
+    private double r;
 
     Triangle(int index) {
         this.index = index;

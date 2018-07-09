@@ -53,6 +53,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.ObjLongConsumer;
 import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -62,24 +63,24 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Dyn2DSurface extends Wall implements Animated {
 
-    static final float SHAPE_SIZE_EPSILON = 0.0001f;
-    final static int MOUSE_JOINT_BUTTON = 0;
+    private static final float SHAPE_SIZE_EPSILON = 0.0001f;
+    private final static int MOUSE_JOINT_BUTTON = 0;
     public final Dynamics2D W = new Dynamics2D(new v2(0, 0));
     public final Random rng = new XoRoShiRo128PlusRandom(1);
     /**
      * increase for more physics precision
      */
-    final int solverIterations = 8;
+    private final int solverIterations = 8;
     /**
      * TODO use more efficient graph representation
      */
     final MapNodeGraph<Surface, Wire> links = new MapNodeGraph();
-    final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
-    final AtomicBoolean busy = new AtomicBoolean(false);
+    private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
     private final float linearDampening = 0.9f;
     private On on;
     private float scaling = 1f;
-    FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
+    private FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
 
         final Body2D ground = W.addBody(new BodyDef(BodyType.STATIC),
                 new FixtureDef(PolygonShape.box(0, 0), 0, 0).noCollide());
@@ -111,7 +112,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         }
 
 
-        public Body2D pick(Finger ff) {
+        Body2D pick(Finger ff) {
             v2 p = ff.pos.scale(scaling);
             
 
@@ -203,7 +204,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         return this;
     }
 
-    public RectFloat2D bounds() {
+    private RectFloat2D bounds() {
         return bounds;
     }
 
@@ -271,7 +272,7 @@ public class Dyn2DSurface extends Wall implements Animated {
     private void drawJoint(Joint joint, GL2 g, long now) {
         Object data = joint.data();
         if (data instanceof ObjectLongProcedure) {
-            ((ObjectLongProcedure) data).accept(g, now);
+            ((ObjLongConsumer) data).accept(g, now);
         } else {
 
             Draw.colorHash(g, joint.getClass().hashCode(), 0.5f);
@@ -393,7 +394,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         return put(content, initialBounds, true);
     }
 
-    public PhyWindow put(Surface content, RectFloat2D initialBounds, boolean collides) {
+    private PhyWindow put(Surface content, RectFloat2D initialBounds, boolean collides) {
         PhyWindow s = new PhyWindow(initialBounds, collides);
 
         add(s);
@@ -403,7 +404,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         return s;
     }
 
-    protected Snake snake(Wire wire, Runnable onRemove) {
+    private Snake snake(Wire wire, Runnable onRemove) {
         Surface source = wire.a;
         Surface target = wire.b;
 
@@ -588,7 +589,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         
     }
 
-    void doubleClick(v2 pos) {
+    private void doubleClick(v2 pos) {
         put(
                 new WizardFrame(new ProtoWidget()) {
                     @Override
@@ -620,7 +621,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         private final Fixture left;
         private final Fixture right;
 
-        public StaticBox(Supplier<RectFloat2D> bounds) {
+        StaticBox(Supplier<RectFloat2D> bounds) {
 
             float w = 1, h = 1, thick = 0.5f; 
 
@@ -652,7 +653,7 @@ public class Dyn2DSurface extends Wall implements Animated {
 
         }
 
-        protected void update(RectFloat2D bounds) {
+        void update(RectFloat2D bounds) {
 
             body.updateFixtures(f -> {
 
@@ -702,7 +703,7 @@ public class Dyn2DSurface extends Wall implements Animated {
             }
         }
 
-        public void setCollidable(boolean c) {
+        void setCollidable(boolean c) {
             W.invoke(() -> {
                 body.fixtures.filter.maskBits = (c ? 0xffff : 0);
                 body.setGravityScale(c ? 1f : 0f);
@@ -749,7 +750,7 @@ public class Dyn2DSurface extends Wall implements Animated {
          * of a proportional size with some content (ex: a port),
          * and linking it to this window via a constraint.
          */
-        public Pair<PhyWindow, Wire> sprout(Surface target, float scale, float targetAspect) {
+        Pair<PhyWindow, Wire> sprout(Surface target, float scale, float targetAspect) {
             PhyWindow sprouted = spawn(target, scale, targetAspect);
 
             return pair(sprouted, link(target));
@@ -811,7 +812,7 @@ public class Dyn2DSurface extends Wall implements Animated {
             return j;
         }
 
-        public PhyWindow spawn(Surface target, float scale, float targetAspect) {
+        PhyWindow spawn(Surface target, float scale, float targetAspect) {
             float W = w();
             float H = h();
             float sprouterRadius = radius();
@@ -837,12 +838,12 @@ public class Dyn2DSurface extends Wall implements Animated {
         /**
          * assumes the PhyWindow wraps *THE* source
          */
-        public Wire link(Surface target) {
+        Wire link(Surface target) {
             assert (children().length == 1);
             return link(get(0), target);
         }
 
-        public Wire unlink(Surface source, Surface target) {
+        Wire unlink(Surface source, Surface target) {
             synchronized (links) {
                 Wire wire = new Wire(source, target);
                 NodeGraph.Node<Surface, Wire> an = links.node(wire.a);
@@ -873,7 +874,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         /**
          * undirected link
          */
-        public Wire link(Wire wire) {
+        Wire link(Wire wire) {
 
             Surface aa = wire.a;
             Surface bb = wire.b;
@@ -960,25 +961,23 @@ public class Dyn2DSurface extends Wall implements Animated {
         }
 
 
-        public void sproutBranch(String label, float scale, float childScale, Iterable<Surface> children) {
+        void sproutBranch(String label, float scale, float childScale, Iterable<Surface> children) {
             CheckBox toggle = new CheckBox(label);
             Pair<PhyWindow, Wire> toggleWindo = sprout(toggle, scale);
             List<PhyWindow> built = new FasterList(0);
-            toggle.on((cb, enabled) -> {
-                W.invoke(() -> {
+            toggle.on((cb, enabled) -> W.invoke(() -> {
 
-                    if (enabled) {
-                        for (Surface x : children) {
-                            built.add(toggleWindo.getOne().sprout(x, childScale).getOne());
-                        }
-                    } else {
-                        
-                        built.forEach(PhyWindow::remove);
-                        built.clear();
+                if (enabled) {
+                    for (Surface x : children) {
+                        built.add(toggleWindo.getOne().sprout(x, childScale).getOne());
                     }
+                } else {
 
-                });
-            });
+                    built.forEach(PhyWindow::remove);
+                    built.clear();
+                }
+
+            }));
         }
 
         public void sproutBranch(String label, float scale, float childScale, Supplier<Surface[]> children) {
@@ -994,7 +993,7 @@ public class Dyn2DSurface extends Wall implements Animated {
 
             RectFloat2D physBounds = null;
 
-            public WallBody(float cx, float cy) {
+            WallBody(float cx, float cy) {
                 super(new BodyDef(BodyType.DYNAMIC, new v2(cx / scaling, cy / scaling)), Dyn2DSurface.this.W);
 
                 setData(this);
@@ -1017,17 +1016,10 @@ public class Dyn2DSurface extends Wall implements Animated {
 
                     if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
                             !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
-                        updateFixtures((f) -> {
-                            
-                            
-                            f.setShape(
-                                    shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
-                                    
-                            );
-                            
+                        updateFixtures((f) -> f.setShape(
+                                shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
 
-
-                        });
+                        ));
                     }
 
 

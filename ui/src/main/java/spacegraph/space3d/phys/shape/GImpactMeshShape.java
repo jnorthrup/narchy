@@ -42,7 +42,7 @@ import static spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm
  */
 public class GImpactMeshShape extends GImpactShape {
 	
-	protected OArrayList<GImpactMeshShapePart> mesh_parts = new OArrayList<>();
+	private OArrayList<GImpactMeshShapePart> mesh_parts = new OArrayList<>();
 
 	public GImpactMeshShape(StridingMeshInterface meshInterface) {
 		buildMeshParts(meshInterface);
@@ -220,7 +220,7 @@ public class GImpactMeshShape extends GImpactShape {
 		}
 	}
 	
-	protected void buildMeshParts(StridingMeshInterface meshInterface) {
+	private void buildMeshParts(StridingMeshInterface meshInterface) {
 		for (int i=0; i<meshInterface.getNumSubParts(); i++) {
 			GImpactMeshShapePart newpart = new GImpactMeshShapePart(meshInterface, i);
 			mesh_parts.add(newpart);
@@ -263,7 +263,7 @@ public class GImpactMeshShape extends GImpactShape {
             box_set.setPrimitiveManager(primitive_manager);
         }
 
-        public GImpactMeshShapePart(StridingMeshInterface meshInterface, int part) {
+        GImpactMeshShapePart(StridingMeshInterface meshInterface, int part) {
             primitive_manager.meshInterface = meshInterface;
             primitive_manager.part = part;
             box_set.setPrimitiveManager(primitive_manager);
@@ -417,7 +417,7 @@ public class GImpactMeshShape extends GImpactShape {
             return out;
         }
 
-        public int getPart() {
+        int getPart() {
             return primitive_manager.part;
         }
 

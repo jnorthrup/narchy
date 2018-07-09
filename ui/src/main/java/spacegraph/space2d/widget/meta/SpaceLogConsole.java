@@ -14,9 +14,9 @@ import java.util.function.Supplier;
 
 public class SpaceLogConsole extends Gridding implements SpaceLogger {
 
-    final int MAX_LINES = 5;
-    public final TextEdit text = new TextEdit(40, MAX_LINES);
-    public ConsoleGUI textGUI;
+    private final int MAX_LINES = 5;
+    private final TextEdit text = new TextEdit(40, MAX_LINES);
+    private ConsoleGUI textGUI;
 
     public SpaceLogConsole() {
         super();

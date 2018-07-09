@@ -14,9 +14,9 @@ public class ParticleGroup {
     ParticleGroup m_prev;
     ParticleGroup m_next;
 
-    int m_timestamp;
-    float m_mass;
-    float m_inertia;
+    private int m_timestamp;
+    private float m_mass;
+    private float m_inertia;
     final Tuple2f m_center = new v2();
     final Tuple2f m_linearVelocity = new v2();
     float m_angularVelocity;

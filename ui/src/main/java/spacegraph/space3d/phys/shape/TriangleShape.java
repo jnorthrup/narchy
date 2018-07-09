@@ -119,7 +119,7 @@ public class TriangleShape extends PolyhedralConvexShape {
 		return 1;
 	}
 
-	public void calcNormal(v3 normal) {
+	private void calcNormal(v3 normal) {
 		v3 tmp1 = new v3();
 		v3 tmp2 = new v3();
 
@@ -130,7 +130,7 @@ public class TriangleShape extends PolyhedralConvexShape {
 		normal.normalize();
 	}
 
-	public void getPlaneEquation(int i, v3 planeNormal, v3 planeSupport) {
+	private void getPlaneEquation(int i, v3 planeNormal, v3 planeSupport) {
 		calcNormal(planeNormal);
 		planeSupport.set(vertices1[0]);
 	}

@@ -7,7 +7,7 @@ import spacegraph.video.Draw;
 
 public class TogglePort extends Gridding {
 
-    public final Port port;
+    private final Port port;
 
     public TogglePort() {
         super(VERTICAL);
@@ -26,9 +26,7 @@ public class TogglePort extends Gridding {
                 Draw.rect(gl, bounds);
             }
         };
-        port.on((w, x)-> {
-            port.out(x); 
-        });
+        port.on((w, x)-> port.out(x));
 
         set(new CheckBox("", port::enable).set(true),
             port

@@ -14,8 +14,9 @@ import spacegraph.video.JoglWindow;
 public class CrosshairSurface extends Surface implements MouseListener {
 
     private final JoglWindow space;
-    int mx, my;
-    boolean mouseEnabled;
+    private int mx;
+    private int my;
+    private boolean mouseEnabled;
     private float smx, smy;
     private short[] pressed;
 

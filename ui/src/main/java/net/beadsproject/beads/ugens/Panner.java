@@ -23,11 +23,13 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  */
 public class Panner extends UGen implements DataBeadReceiver {
 
-    protected static final int rootSize = 1024;
-    public static final float[] ROOTS = buildRoots(rootSize);
-    protected float pos, p1, p2;
-    protected UGen posUGen;
-    protected boolean isPosStatic;
+    private static final int rootSize = 1024;
+    private static final float[] ROOTS = buildRoots(rootSize);
+    private float pos;
+    private float p1;
+    private float p2;
+    private UGen posUGen;
+    private boolean isPosStatic;
 
     /**
      * Constructor that sets the pan to the middle by default.
@@ -107,7 +109,7 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @param rs The size of the array minus 2.
      * @return The array.
      */
-    protected static float[] buildRoots(int rs) {
+    private static float[] buildRoots(int rs) {
         float[] roots = new float[rs + 2];
         for (int i = 0; i < rs + 1; i++) {
             roots[i] = (float) Math.sqrt((float) i / rs);
@@ -131,7 +133,7 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @param pos The pan position.
      * @return This Panner instance.
      */
-    public Panner setPos(float pos) {
+    private Panner setPos(float pos) {
         if ((this.pos = pos) >= 1) {
             p1 = 0;
             p2 = 1;
@@ -157,7 +159,7 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @param posUGen The pan UGen.
      * @return This Panner instance.
      */
-    public Panner setPos(UGen posUGen) {
+    private Panner setPos(UGen posUGen) {
         if (posUGen == null) {
             setPos(pos);
         } else {
@@ -187,7 +189,7 @@ public class Panner extends UGen implements DataBeadReceiver {
      * @param paramBead The DataBead specifying parameters.
      * @return This filter instance.
      */
-    public Panner setParams(DataAuvent paramBead) {
+    private Panner setParams(DataAuvent paramBead) {
         if (paramBead != null) {
             Object o;
 

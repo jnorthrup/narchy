@@ -43,7 +43,7 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 	private boolean ownManifold;
 	private PersistentManifold manifoldPtr;
 	
-	public void init(PersistentManifold mf, CollisionAlgorithmConstructionInfo ci, Collidable col0, Collidable col1) {
+	private void init(PersistentManifold mf, CollisionAlgorithmConstructionInfo ci, Collidable col0, Collidable col1) {
 		super.init(ci);
 		manifoldPtr = mf;
 

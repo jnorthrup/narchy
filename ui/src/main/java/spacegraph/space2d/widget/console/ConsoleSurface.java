@@ -10,25 +10,25 @@ import java.awt.*;
 /** vector font console */
 public abstract class ConsoleSurface extends AbstractConsoleSurface {
 
-    protected Color bg;
+    private Color bg;
 
-    public static final float fontThickness = 3f;
-    public static final Color TRANSLUCENT = new Color(Color.TRANSLUCENT);
+    private static final float fontThickness = 3f;
+    private static final Color TRANSLUCENT = new Color(Color.TRANSLUCENT);
 
 
     /**
      * percent of each grid cell width filled with the character
      */
-    float charScaleX = 0.85f;
+    private float charScaleX = 0.85f;
 
     /**
      * percent of each grid cell height filled with the character
      */
-    float charScaleY = 0.85f;
+    private float charScaleY = 0.85f;
 
 
     
-    float fgAlpha = 0.9f;
+    private float fgAlpha = 0.9f;
 
 
     protected ConsoleSurface(int cols, int rows) {
@@ -41,7 +41,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
         Draw.bounds(gl, bounds, this::doPaint);
     }
 
-    void doPaint(GL2 gl) {
+    private void doPaint(GL2 gl) {
 
         float charScaleX = this.charScaleX;
         float charScaleY = this.charScaleY;
@@ -142,7 +142,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
     public abstract int[] getCursorPos();
 
 
-    public static char visible(char cc) {
+    private static char visible(char cc) {
         
 
         

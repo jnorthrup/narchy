@@ -34,8 +34,8 @@ public class UnionFind2 {
 
     
 
-    protected int[][] ele = new int[0][2];
-    int numElements;
+    private int[][] ele = new int[0][2];
+    private int numElements;
 
     /**
      * This is a special operation, destroying the content of UnionFind.
@@ -167,7 +167,7 @@ public class UnionFind2 {
         valid(x, numElements);
     }
 
-    static boolean valid(int x, int numElements) {
+    private static boolean valid(int x, int numElements) {
 
         return x >= 0 && (x < numElements);
             

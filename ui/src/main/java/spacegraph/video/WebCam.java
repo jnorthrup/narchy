@@ -32,16 +32,16 @@ public class WebCam {
     public int height;
     
     
-    public com.github.sarxos.webcam.Webcam webcam;
+    private com.github.sarxos.webcam.Webcam webcam;
 
-    public final Topic<WebcamEvent> eventChange = new ListTopic();
-
-
+    private final Topic<WebcamEvent> eventChange = new ListTopic();
 
 
 
 
-    final static Logger logger = LoggerFactory.getLogger(WebCam.class);
+
+
+    private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
     public BufferedImage image;
     
 
@@ -148,7 +148,7 @@ public class WebCam {
     }
 
 
-    Ons webcamListeners = new Ons();
+    private Ons webcamListeners = new Ons();
     public void on(WebcamListener wl) {
         webcamListeners.add(new On() {
             {

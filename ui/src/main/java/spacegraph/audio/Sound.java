@@ -7,9 +7,9 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
     private static final double l10 = Math.log(10);
     
     public final S producer;
-    public final SoundSource source;
-    public float volume;
-    public float priority;
+    private final SoundSource source;
+    private float volume;
+    private float priority;
     
     private float x, y, z;
     private float score;

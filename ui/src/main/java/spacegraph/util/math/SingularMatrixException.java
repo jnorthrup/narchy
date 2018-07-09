@@ -34,7 +34,7 @@ package spacegraph.util.math;
 /**
  * Indicates that inverse of a matrix can not be computed.
  */
-public class SingularMatrixException extends RuntimeException {
+class SingularMatrixException extends RuntimeException {
 
 /**
  * Create the exception object with default values.

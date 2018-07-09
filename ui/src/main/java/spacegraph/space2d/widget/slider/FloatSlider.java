@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.slider;
 
-import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
@@ -10,7 +9,6 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.Label;
@@ -22,9 +20,8 @@ import spacegraph.space2d.widget.windo.Widget;
  */
 public class FloatSlider extends Widget {
 
-    final Label label = new Label();
-    public final FloatSliderModel model;
-    public FloatSupplier input;
+    private final Label label = new Label();
+    FloatSupplier input;
     private String labelText = "";
 
     protected final SliderModel slider;
@@ -55,10 +52,8 @@ public class FloatSlider extends Widget {
         input = f;
     }
 
-    public FloatSlider(FloatSliderModel m) {
+    private FloatSlider(FloatSliderModel m) {
         super();
-
-        this.model = m;
 
         content(new Stacking(
                 new Scale(slider = m, 0.95f),
@@ -111,7 +106,7 @@ public class FloatSlider extends Widget {
         return this;
     }
     public FloatSlider on(FloatProcedure c) {
-        return on((x,v)->c.value(v));
+        return on((ObjectFloatProcedure<SliderModel>)(SliderModel x, float v)->c.value(v));
     }
 
     abstract public static class FloatSliderModel extends SliderModel {
@@ -131,7 +126,7 @@ public class FloatSlider extends Widget {
             return false;
         }
 
-        protected void update() {
+        void update() {
             FloatSlider p = parent(FloatSlider.class);
             if (p!=null) {
                 FloatSupplier input = p.input; 
@@ -143,12 +138,6 @@ public class FloatSlider extends Widget {
         public abstract float min();
         public abstract float max();
 
-        @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-
-
-            super.paint(gl, surfaceRender);
-        }
 
         @Override
         protected void changed(float p) {
@@ -190,7 +179,7 @@ public class FloatSlider extends Widget {
         private final float min;
         private final float max;
 
-        public DefaultFloatSlider(float v, float min, float max) {
+        DefaultFloatSlider(float v, float min, float max) {
             super(v);
             this.min = min;
             this.max = max;

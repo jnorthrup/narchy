@@ -55,59 +55,31 @@ public enum SpaceGraph { ;
         Dyn2DSurface s = new Dyn2DSurface();
         s.pos(-1, -1, 1, 1);
 
-        
-        
 
-        
+        ZoomOrtho ortho = new ZoomOrtho(s) {
 
 
+            @Override
+            public boolean autoresize() {
+                return false;
+            }
+
+            @Override
+            public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
 
 
+            }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        SpaceGraphFlat g = new SpaceGraphFlat(
-                new ZoomOrtho(s) {
-
-
-                    @Override
-                    public boolean autoresize() {
-                        zoom(s);
-                        return false;
-                    }
-
-                    @Override
-                    public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
-                        
-                        
-
-
-                        
-                    }
-                }
-                
-        );
+//            @Override
+//            protected boolean tangible() {
+//                return true;
+//            }
+        };
+        SpaceGraphFlat g = new SpaceGraphFlat(ortho);
         g.show(width, height, false);
 
+        ortho.zoom(s);
 
-
-        
         return s;
     }
 }

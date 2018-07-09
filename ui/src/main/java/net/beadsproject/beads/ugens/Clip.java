@@ -38,7 +38,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @param context  The audio context.
      * @param channels The number of channels.
      */
-    public Clip(AudioContext context, int channels) {
+    private Clip(AudioContext context, int channels) {
         super(context, channels, channels);
         setRange(-1, 1);
     }
@@ -87,7 +87,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @param maximum The maximum value.
      * @return This Clip instance.
      */
-    public Clip setRange(float minimum, float maximum) {
+    private Clip setRange(float minimum, float maximum) {
         setMinimum(minimum);
         setMaximum(maximum);
         return this;
@@ -108,7 +108,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @param minimum The new minimum value.
      * @return This Clip instance.
      */
-    public Clip setMinimum(float minimum) {
+    private Clip setMinimum(float minimum) {
         this.min = minimum;
         if (isMinStatic) {
             minUGen.setValue(minimum);
@@ -125,7 +125,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @param minimumUGen The minimum value controller UGen.
      * @return This Clip instance.
      */
-    public Clip setMinimum(UGen minimumUGen) {
+    private Clip setMinimum(UGen minimumUGen) {
         if (minimumUGen == null) {
             setMinimum(min);
         } else {
@@ -161,7 +161,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @param maximum The new maximum value.
      * @return This Clip instance.
      */
-    public Clip setMaximum(float maximum) {
+    private Clip setMaximum(float maximum) {
         this.max = maximum;
 
         if (isMaxStatic) {
@@ -179,7 +179,7 @@ public class Clip extends UGen implements DataBeadReceiver {
      * @param maximumUGen The maximum value controller UGen.
      * @return This Clip instance.
      */
-    public Clip setMaximum(UGen maximumUGen) {
+    private Clip setMaximum(UGen maximumUGen) {
         if (maximumUGen == null) {
             setMaximum(max);
         } else {

@@ -53,9 +53,9 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		new v3(0f, 0f, 0f)
 	};
 	
-	protected final v3 localAabbMin = new v3(1f, 1f, 1f);
-	protected final v3 localAabbMax = new v3(-1f, -1f, -1f);
-	protected boolean isLocalAabbValid;
+	private final v3 localAabbMin = new v3(1f, 1f, 1f);
+	private final v3 localAabbMax = new v3(-1f, -1f, -1f);
+	private boolean isLocalAabbValid;
 
 
 
@@ -166,11 +166,11 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		getNonvirtualAabb(trans, aabbMin, aabbMax, getMargin());
 	}
 
-	protected final void _PolyhedralConvexShape_getAabb(Transform trans, v3 aabbMin, v3 aabbMax) {
+	final void _PolyhedralConvexShape_getAabb(Transform trans, v3 aabbMin, v3 aabbMax) {
 		getNonvirtualAabb(trans, aabbMin, aabbMax, getMargin());
 	}
 
-	public void recalcLocalAabb() {
+	protected void recalcLocalAabb() {
 		isLocalAabbValid = true;
 
 		
@@ -202,13 +202,13 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		recalcLocalAabb();
 	}
 
-	public abstract int getNumVertices();
+	protected abstract int getNumVertices();
 
 	public abstract int getNumEdges();
 
 	public abstract void getEdge(int i, v3 pa, v3 pb);
 
-	public abstract void getVertex(int i, v3 vtx);
+	protected abstract void getVertex(int i, v3 vtx);
 
 	public abstract int getNumPlanes();
 

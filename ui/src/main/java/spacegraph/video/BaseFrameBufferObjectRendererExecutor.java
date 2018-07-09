@@ -19,11 +19,12 @@ package spacegraph.video;
  **/
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
 import static com.jogamp.opengl.GL2.*;
 
-public class BaseFrameBufferObjectRendererExecutor {
+class BaseFrameBufferObjectRendererExecutor {
 
     private int mFrameBufferObjectID;
     private int mColorTextureID;
@@ -38,7 +39,7 @@ public class BaseFrameBufferObjectRendererExecutor {
 
     }
 
-    public void resize(int inTextureWidth, int inTextureHeight) {
+    private void resize(int inTextureWidth, int inTextureHeight) {
         mTextureWidth = inTextureWidth;
         mTextureHeight = inTextureHeight;
     }
@@ -194,7 +195,7 @@ public class BaseFrameBufferObjectRendererExecutor {
         }
     }
 
-    private void checkFrameBufferObjectCompleteness(GL2 inGL) {
+    private void checkFrameBufferObjectCompleteness(GL inGL) {
         
         int tError = inGL.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (tError) {
@@ -245,7 +246,7 @@ public class BaseFrameBufferObjectRendererExecutor {
      **/
 
 
-    public interface BaseFrameBufferObjectRendererInterface {
+    interface BaseFrameBufferObjectRendererInterface {
 
         void init_FBORenderer(GL2 inGL);
 

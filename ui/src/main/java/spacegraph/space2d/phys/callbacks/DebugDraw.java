@@ -60,14 +60,14 @@ public abstract class DebugDraw {
     public static final int e_wireframeDrawingBit = 1 << 7;
 
 
-    protected int m_drawFlags;
-    protected IViewportTransform viewportTransform;
+    private int m_drawFlags;
+    private IViewportTransform viewportTransform;
 
     public DebugDraw() {
         this(null);
     }
 
-    public DebugDraw(IViewportTransform viewport) {
+    private DebugDraw(IViewportTransform viewport) {
         m_drawFlags = 0;
         viewportTransform = viewport;
     }

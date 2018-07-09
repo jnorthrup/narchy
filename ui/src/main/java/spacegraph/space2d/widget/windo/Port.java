@@ -19,8 +19,8 @@ import java.util.function.Supplier;
  * */
 public class Port extends Widget implements Wiring.Wireable {
 
-    transient volatile protected Wiring beingWiredOut = null;
-    transient volatile protected Wiring beingWiredIn = null;
+    private transient volatile Wiring beingWiredOut = null;
+    private transient volatile Wiring beingWiredIn = null;
     private boolean enabled = true;
 
     /** input handler */
@@ -196,7 +196,7 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
 
-    protected boolean acceptWiring(Wiring w) {
+    private boolean acceptWiring(Wiring w) {
         return true;
     }
 
@@ -220,7 +220,7 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     /** wiring complete */
-    protected void onWired(Wiring w) {
+    void onWired(Wiring w) {
 
     }
 
@@ -263,7 +263,7 @@ public class Port extends Widget implements Wiring.Wireable {
         return false;
     }
 
-    protected final void out(Port sender, Object x) {
+    private void out(Port sender, Object x) {
         
         if (enabled) {
             NodeGraph.Node<Surface, Wire> n = this.node;

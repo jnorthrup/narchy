@@ -109,7 +109,7 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
         }
     }
 
-    static String join(String[] array) {
+    private static String join(String[] array) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < array.length; i++) {
             builder.append(array[i]);

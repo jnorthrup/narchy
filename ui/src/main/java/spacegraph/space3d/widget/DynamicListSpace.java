@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     private SpaceGraphPhys3D<X> space;
-    public List<Spatial<X>> active = List.of();
+    List<Spatial<X>> active = List.of();
 
 
     @Override

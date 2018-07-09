@@ -22,9 +22,9 @@ import net.beadsproject.beads.data.DataBeadReceiver;
 public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
     private float freq, b0, a1, y1;
     private UGen freqUGen;
-    protected final float samplingfreq;
-	protected final float two_pi_over_sf;
-    protected boolean isFreqStatic;
+    private final float samplingfreq;
+	private final float two_pi_over_sf;
+    private boolean isFreqStatic;
 
     /**
      * Constructor for cut-off frequency specified by a static float.
@@ -92,7 +92,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @return The cut-off frequency.
      */
-    public float getFrequency() {
+    private float getFrequency() {
         return freq;
     }
 
@@ -116,7 +116,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
      * @param freqUGen The cut-off frequency UGen.
      * @return This filter instance.
      */
-    public OnePoleFilter setFrequency(UGen freqUGen) {
+    private OnePoleFilter setFrequency(UGen freqUGen) {
         if (freqUGen == null) {
             setFrequency(freq);
         } else {
@@ -133,7 +133,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
      *
      * @return The cut-off frequency UGen.
      */
-    public UGen getFrequencyUGen() {
+    private UGen getFrequencyUGen() {
         return isFreqStatic ? null : freqUGen;
     }
 
@@ -192,7 +192,7 @@ public class OnePoleFilter extends IIRFilter implements DataBeadReceiver {
      * @param paramBead The DataBead specifying parameters.
      * @return This filter instance.
      */
-    public OnePoleFilter setParams(DataAuvent paramBead) {
+    private OnePoleFilter setParams(DataAuvent paramBead) {
         if (paramBead != null) {
             Object o;
 

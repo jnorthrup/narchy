@@ -66,7 +66,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param context  The audio context.
      * @param channels The number of channels.
      */
-    public Compressor(AudioContext context, int channels) {
+    private Compressor(AudioContext context, int channels) {
         this(context, channels, 0, null);
     }
 
@@ -103,8 +103,8 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param lookAheadDelay The look-ahead time in milliseconds.
      * @param sideChain      The UGen to use as the side-chain.
      */
-    public Compressor(AudioContext context, int channels, float lookAheadDelay,
-                      UGen sideChain) {
+    private Compressor(AudioContext context, int channels, float lookAheadDelay,
+                       UGen sideChain) {
         super(context, channels, channels);
         this.channels = channels;
         delay = lookAheadDelay;
@@ -220,7 +220,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param sideChain The side chain signal.
      * @return This compressor instance.
      */
-    public Compressor setSideChain(UGen sideChain) {
+    private Compressor setSideChain(UGen sideChain) {
         pf = (new BiquadFilter(context, 1, BiquadFilter.BUTTERWORTH_LP))
                 .setFrequency(31);
         if (sideChain == null) {
@@ -240,7 +240,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      *
      * @return The attack factor in decibels per millisecond.
      */
-    public float getAttack() {
+    private float getAttack() {
         return attack;
     }
 
@@ -250,7 +250,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param attack The attack factor in decibels per millisecond.
      * @return This compressor instance.
      */
-    public Compressor setAttack(float attack) {
+    private Compressor setAttack(float attack) {
         if (attack < .0001f) {
             attack = .0001f;
         }
@@ -267,7 +267,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      *
      * @return The decay factor in decibels per millisecond.
      */
-    public float getDecay() {
+    private float getDecay() {
         return decay;
     }
 
@@ -277,7 +277,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param decay The decay factor in decibels per millisecond.
      * @return This compressor instance.
      */
-    public Compressor setDecay(float decay) {
+    private Compressor setDecay(float decay) {
         if (decay < .0001f) {
             decay = .0001f;
         }
@@ -293,7 +293,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      *
      * @return The compression ratio.
      */
-    public float getRatio() {
+    private float getRatio() {
         return 1 / ratio;
     }
 
@@ -305,7 +305,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param ratio The compression ratio.
      * @return This compressor instance.
      */
-    public Compressor setRatio(float ratio) {
+    private Compressor setRatio(float ratio) {
         if (ratio <= 0)
             ratio = .01f;
         this.ratio = 1 / ratio;
@@ -318,7 +318,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      *
      * @return The threshold.
      */
-    public float getThreshold() {
+    private float getThreshold() {
         return threshold;
     }
 
@@ -328,7 +328,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param threshold The threshold.
      * @return This compressor instance.
      */
-    public Compressor setThreshold(float threshold) {
+    private Compressor setThreshold(float threshold) {
         this.threshold = threshold;
         calcVals();
         return this;
@@ -339,7 +339,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      *
      * @return The knee softness.
      */
-    public float getKnee() {
+    private float getKnee() {
         return knee - 1;
     }
 
@@ -350,7 +350,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
      * @param knee The knee softness.
      * @return This compressor instance.
      */
-    public Compressor setKnee(float knee) {
+    private Compressor setKnee(float knee) {
         this.knee = knee + 1;
         calcVals();
         return this;

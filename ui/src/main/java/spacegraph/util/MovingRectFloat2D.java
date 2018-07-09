@@ -13,7 +13,7 @@ public class MovingRectFloat2D {
     public float y;
     public float w;
     public float h;
-    float rad;
+    private float rad;
 
     public MovingRectFloat2D() {
 

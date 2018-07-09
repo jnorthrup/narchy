@@ -74,7 +74,7 @@ public class Change extends UGen {
      *
      * @param newDirection The new direction of the signal (1 or -1);
      */
-    public void directionChange(int newDirection) {
+    private void directionChange(int newDirection) {
     }
 
 }

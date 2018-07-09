@@ -29,19 +29,19 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     /**
      * JOGL default is 10ms; we dont need/want it that often
      */
-    private static final long EDT_POLL_PERIOD_MS = 20;
+    private static final long EDT_POLL_PERIOD_MS = 10;
 
 
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
-    public final Topic<JoglWindow> onUpdate = new ListTopic<>();
-    public final Logger logger;
-    final AtomicBoolean rendering = new AtomicBoolean(false);
+    final Topic<JoglWindow> onUpdate = new ListTopic<>();
+    private final Logger logger;
+    private final AtomicBoolean rendering = new AtomicBoolean(false);
 
     /**
      * update loop
      */
-    final InstrumentedLoop updater;
-    final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
+    private final InstrumentedLoop updater;
+    private final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
     public float renderFPS = 30f;
     public volatile GLWindow window;
     public GL2 gl;
@@ -49,11 +49,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * update time since last cycle (S)
      */
     public float dtS = 0;
-    protected float updateFPS = 30f;
+    private float updateFPS = 30f;
     /**
      * render loop
      */
-    protected GameAnimatorControl renderer;
+    private GameAnimatorControl renderer;
     /**
      * update time since last cycle (ms)
      */
@@ -94,7 +94,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         JarUtil.class.hashCode(); //force load my version
     }
 
-    protected JoglWindow() {
+    JoglWindow() {
         logger = LoggerFactory.getLogger(toString());
 
 
@@ -109,19 +109,20 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         };
     }
 
-    static GLWindow window() {
+    private static GLWindow window() {
         return window(config());
     }
 
 
-    static GLWindow window(GLCapabilitiesImmutable config) {
+    private static GLWindow window(GLCapabilitiesImmutable config) {
+
         GLWindow w = GLWindow.create(config);
 
 
         return w;
     }
 
-    static GLCapabilitiesImmutable config() {
+    private static GLCapabilitiesImmutable config() {
 
 
         GLCapabilities config = new GLCapabilities(
@@ -240,7 +241,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     abstract protected void render(int dtMS);
 
-    public boolean next() {
+    private boolean next() {
         if (window.isVisible()) {
             long cycleTimeNS = updater.cycleTimeNS;
             this.dtMS = cycleTimeNS / 1_000_000;
@@ -278,9 +279,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         show("", w, h, async);
     }
 
-    public void show(String title, int w, int h, int x, int y, boolean async) {
+    private void show(String title, int w, int h, int x, int y, boolean async) {
 
-        Exe.invokeLater(() -> {
+        //Exe.invokeLater(() -> {
 
             if (window != null) {
 
@@ -291,30 +292,31 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             this.window = W;
 
             window.getScreen().getDisplay().getEDTUtil().setPollPeriod(EDT_POLL_PERIOD_MS);
-
+        window.addGLEventListener(this);
+        window.addWindowListener(this);
 
             windows.add(this);
 
-            window.addGLEventListener(this);
-            window.addWindowListener(this);
-
-
-            W.setTitle(title);
-            if (x != Integer.MIN_VALUE) {
-                setPositionAndSize(x, y, w, h);
-            } else {
-                setSize(w, h);
-            }
-        });
+        W.setTitle(title);
+        if (x != Integer.MIN_VALUE) {
+            setPositionAndSize(x, y, w, h);
+        } else {
+            setSize(w, h);
+        }
+        //});
 
         if (!async) {
             Thread.yield();
-
-
             while (gl == null) {
-                Util.sleep(10);
+                Util.sleep(EDT_POLL_PERIOD_MS);
             }
         }
+
+
+
+
+
+
 
     }
 
@@ -331,7 +333,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         setPositionAndSize(x, y, nw, nh);
     }
 
-    public void setSize(int w, int h) {
+    private void setSize(int w, int h) {
         setPositionAndSize(nx, ny, w, h);
     }
 
@@ -368,6 +370,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public final void init(GLAutoDrawable drawable) {
 
         GL2 gl = drawable.getGL().getGL2();
+        this.gl = gl;
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
 
@@ -383,7 +386,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         init(gl);
 
-        this.gl = window.getGL().getGL2();
+
 
         updater.runFPS(updateFPS);
 
@@ -401,7 +404,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
-    public void show(String title, int w, int h, boolean async) {
+    private void show(String title, int w, int h, boolean async) {
         show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE, async);
     }
 
@@ -430,9 +433,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * adapter
      */
     public On onUpdate(Animated c) {
-        return onUpdate.on((JoglWindow s) -> {
-            c.animate(dtS);
-        });
+        return onUpdate.on((JoglWindow s) -> c.animate(dtS));
     }
 
     public On onUpdate(Runnable c) {
@@ -455,7 +456,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     /* from: Jake2's */
     class GameAnimatorControl extends AnimatorBase {
 
-        public final Loop loop;
+        final Loop loop;
         private volatile boolean paused = true;
 
 
@@ -586,7 +587,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
 
         @Override
-        public final boolean isStarted() {
+        public synchronized final boolean isStarted() {
             return loop.isRunning();
         }
 

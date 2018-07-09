@@ -16,7 +16,7 @@ import static spacegraph.util.math.v3.v;
 public class Maze extends CompoundSpatial {
 
 
-    boolean[][] cells;
+    private boolean[][] cells;
 
     public Maze(String id, int x, int y) {
         super(id);
@@ -152,11 +152,11 @@ public class Maze extends CompoundSpatial {
         return (float)Math.random();
     }
 
-    public static int irand(int x) {
+    private static int irand(int x) {
         return (int)(Math.random() * x);
     }
 
-        public void build(int x1, int y1, int x2, int y2) {
+        private void build(int x1, int y1, int x2, int y2) {
 
             for (int x = x1; x < x2; x++)
                 for (int y = y1; y < y2; y++)

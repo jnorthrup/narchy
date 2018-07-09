@@ -351,7 +351,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param s  the scalar value
      * @param t1 the tuple to be added
      */
-    public final void scaleAdd(double s, Tuple4d t1) {
+    private void scaleAdd(double s, Tuple4d t1) {
         this.x = s * this.x + t1.x;
         this.y = s * this.y + t1.y;
         this.z = s * this.z + t1.z;
@@ -473,7 +473,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param max the highest value in the tuple after clamping
      * @param t   the source tuple, which will not be modified
      */
-    public final void clamp(double min, double max, Tuple4d t) {
+    private void clamp(double min, double max, Tuple4d t) {
         if (t.x > max) {
             x = max;
         } else if (t.x < min) {
@@ -524,7 +524,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param min the lowest value in the tuple after clamping
      * @param t   the source tuple, which will not be modified
      */
-    public final void clampMin(double min, Tuple4d t) {
+    private void clampMin(double min, Tuple4d t) {
         x = t.x < min ? min : t.x;
 
         y = t.y < min ? min : t.y;
@@ -551,7 +551,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param max the highest value in the tuple after clamping
      * @param t   the source tuple, which will not be modified
      */
-    public final void clampMax(double max, Tuple4d t) {
+    private void clampMax(double max, Tuple4d t) {
         x = t.x > max ? max : t.x;
 
         y = t.y > max ? max : t.y;
@@ -592,7 +592,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param min the lowest value in this tuple after clamping
      * @param max the highest value in this tuple after clamping
      */
-    public final void clamp(double min, double max) {
+    private void clamp(double min, double max) {
         if (x > max) {
             x = max;
         } else if (x < min) {
@@ -633,7 +633,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      *
      * @param min the lowest value in this tuple after clamping
      */
-    public final void clampMin(double min) {
+    private void clampMin(double min) {
         if (x < min) x = min;
         if (y < min) y = min;
         if (z < min) z = min;
@@ -654,7 +654,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      *
      * @param max the highest value in the tuple after clamping
      */
-    public final void clampMax(double max) {
+    private void clampMax(double max) {
         if (x > max) x = max;
         if (y > max) y = max;
         if (z > max) z = max;
@@ -691,7 +691,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @param t2    the second tuple
      * @param alpha the alpha interpolation parameter
      */
-    public void interpolate(Tuple4d t1, Tuple4d t2, double alpha) {
+    private void interpolate(Tuple4d t1, Tuple4d t2, double alpha) {
         this.x = (1 - alpha) * t1.x + alpha * t2.x;
         this.y = (1 - alpha) * t1.y + alpha * t2.y;
         this.z = (1 - alpha) * t1.z + alpha * t2.z;

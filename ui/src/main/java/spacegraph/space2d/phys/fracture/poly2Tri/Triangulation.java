@@ -9,7 +9,7 @@ public class Triangulation {
      * Set this to TRUE to obtain file with name debugFileName with the
      * log about triangulation
      */
-    public static final boolean debug = false;
+    private static final boolean debug = false;
 
     /**
      * If debug == true file with this name will be created during triangulation.
@@ -48,7 +48,7 @@ public class Triangulation {
      * @param vertices              array of vertices, each item of array contains doubl[2] ~ {x,y}
      * @return ArrayList of ArrayLists which are triangles in form of indexes into array vertices
      */
-    public static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
+    private static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
         Polygon p = new Polygon(numContures, numVerticesInContures, vertices);
         if (debug) {
             

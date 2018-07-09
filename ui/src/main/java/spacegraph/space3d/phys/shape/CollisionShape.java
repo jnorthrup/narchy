@@ -40,7 +40,7 @@ public abstract class CollisionShape {
 
 	
 
-	protected Object userPointer;
+	private Object userPointer;
 	
 	
 	public abstract void getAabb(Transform t, v3 aabbMin, v3 aabbMax);
@@ -49,7 +49,7 @@ public abstract class CollisionShape {
 		return getBoundingSphere(null);
 	}
 
-	public float getBoundingSphere(v3 center) {
+	private float getBoundingSphere(v3 center) {
 
 		v3 aabbMin = new v3(), aabbMax = new v3();
 		getAabb(new Transform().setIdentity(), aabbMin, aabbMax);
@@ -67,7 +67,7 @@ public abstract class CollisionShape {
 	}
 
 	
-	public float getAngularMotionDisc() {
+	private float getAngularMotionDisc() {
 		v3 center = new v3();
 		return getBoundingSphere(center) + center.length();
 	}
@@ -143,10 +143,10 @@ public abstract class CollisionShape {
 
 	public abstract BroadphaseNativeType getShapeType();
 
-	public abstract void setLocalScaling(v3 scaling);
+	protected abstract void setLocalScaling(v3 scaling);
 	
 	
-	public abstract v3 getLocalScaling(v3 out);
+	protected abstract v3 getLocalScaling(v3 out);
 
 	public abstract void calculateLocalInertia(float mass, v3 inertia);
 
@@ -154,7 +154,7 @@ public abstract class CollisionShape {
 
 	public abstract String getName();
 
-	public abstract CollisionShape setMargin(float margin);
+	protected abstract CollisionShape setMargin(float margin);
 
 	public abstract float getMargin();
 	

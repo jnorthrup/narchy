@@ -52,7 +52,7 @@ public class PersistentManifold {
 
 	
 	
-	public static final int MANIFOLD_CACHE_SIZE = 4;
+	private static final int MANIFOLD_CACHE_SIZE = 4;
 	
 	private final ManifoldPoint[] pointCache = new ManifoldPoint[MANIFOLD_CACHE_SIZE];
 	public final BulletGlobals globals;
@@ -174,7 +174,7 @@ public class PersistentManifold {
 		this.body1 = body1;
 	}
 	
-	public void clearUserCache(ManifoldPoint pt) {
+	private void clearUserCache(ManifoldPoint pt) {
 		Object oldPtr = pt.userPersistentData;
 		if (oldPtr != null) {
 
@@ -253,7 +253,7 @@ public class PersistentManifold {
 		return insertIndex;
 	}
 
-	public void removeContactPoint(int index) {
+	private void removeContactPoint(int index) {
 		clearUserCache(pointCache[index]);
 
         int lastUsedIndex = cachedPoints - 1;

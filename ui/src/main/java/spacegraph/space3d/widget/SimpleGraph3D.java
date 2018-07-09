@@ -1,6 +1,5 @@
 package spacegraph.space3d.widget;
 
-import com.google.common.collect.Iterables;
 import com.google.common.graph.Graph;
 import com.google.common.graph.SuccessorsFunction;
 import jcog.data.graph.MapNodeGraph;
@@ -16,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * display a directed graph by wrapping its elements in NAR concepts (HACK)
@@ -86,14 +87,14 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         return active;
     }
 
-    final static Random rng2 = new XoRoShiRo128PlusRandom(1);
+    private final static Random rng2 = new XoRoShiRo128PlusRandom(1);
 
     public static class DefaultSpaceWidget<X> extends SpaceWidget<X> {
 
-        public final List<EDraw<SpaceWidget>> edges = new FasterList();
+        final List<EDraw<SpaceWidget>> edges = new FasterList();
 
 
-        public DefaultSpaceWidget(X x) {
+        DefaultSpaceWidget(X x) {
             super(x);
 
             float initialRadius = 10;
@@ -125,25 +126,21 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         return commit(g, List.of(start));
     }
 
-    public SimpleGraph3D<X> commit(SuccessorsFunction<X> s, Iterable<X> start) {
+    private SimpleGraph3D<X> commit(SuccessorsFunction<X> s, Iterable<X> start) {
         return commit(new MapNodeGraph<>(s, start));
     }
 
     public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
         return commit(
-                Iterables.transform(g.nodes(), x-> x.id),
-                x-> Iterables.transform(
-                    g.node(x).edges(false,true),
-                        
-                        zz -> zz.to.id 
-                ));
+                g.nodes().stream().map(x -> x.id).collect(Collectors.toList()),
+                x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to.id).collect(Collectors.toList()));
     }
 
-    public SimpleGraph3D<X> commit(Iterable<X> nodes, Function<X,Iterable<X>> edges) {
+    private SimpleGraph3D<X> commit(Iterable<X> nodes, Function<X, Iterable<X>> edges) {
         return update(nodes, edges, false);
     }
 
-    public SimpleGraph3D<X> update(Iterable<X> nodes, Function<X,Iterable<X>> edges, boolean addOrReplace ) {
+    private SimpleGraph3D<X> update(Iterable<X> nodes, Function<X, Iterable<X>> edges, boolean addOrReplace) {
         List<Spatial<X>> n2 = new FasterList();
 
         nodes.forEach((x)->{

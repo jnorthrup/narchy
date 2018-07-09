@@ -37,7 +37,7 @@ public class BU_Simplex1to4 extends PolyhedralConvexShape {
 	protected int numVertices;
 	protected v3[] vertices = new v3[4];
 
-	public BU_Simplex1to4() {
+	protected BU_Simplex1to4() {
 	}
 
 	public BU_Simplex1to4(v3 pt0) {
@@ -71,7 +71,7 @@ public class BU_Simplex1to4 extends PolyhedralConvexShape {
 		return BroadphaseNativeType.TETRAHEDRAL_SHAPE_PROXYTYPE;
 	}
 	
-	public void addVertex(v3 pt) {
+	private void addVertex(v3 pt) {
 		if (vertices[numVertices] == null) {
 			vertices[numVertices] = new v3();
 		}

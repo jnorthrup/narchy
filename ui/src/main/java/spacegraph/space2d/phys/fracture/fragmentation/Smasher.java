@@ -36,8 +36,8 @@ public class Smasher {
     private Tuple2f[] focee;
     private Polygon p;
 
-    float constant[]; 
-    float multiple[]; 
+    private float[] constant;
+    private float[] multiple;
 
     private final HashTabulka<EdgeDiagram> table = new HashTabulka<>();
 
@@ -90,8 +90,8 @@ public class Smasher {
         }
 
         AEdge[][] allEdges = new AEdge[][]{
-                diagramEdges.toArray(new AEdge[diagramEdges.size()]),
-                polygonEdges.toArray(new AEdge[polygonEdges.size()])
+                diagramEdges.toArray(new AEdge[0]),
+                polygonEdges.toArray(new AEdge[0])
         };
 
         diagramEdges.clear();
@@ -115,7 +115,7 @@ public class Smasher {
             }
         }
 
-        EVec2[] vectors = vectorList.toArray(new EVec2[vectorList.size()]);
+        EVec2[] vectors = vectorList.toArray(new EVec2[0]);
 
         Arrays.sort(vectors); 
 
@@ -281,7 +281,7 @@ public class Smasher {
             ppx.removeAt(0);
         }
 
-        Fragment[] fragmentsArray = vysledneFragmenty.toArray(new Fragment[vysledneFragmenty.size()]);
+        Fragment[] fragmentsArray = vysledneFragmenty.toArray(new Fragment[0]);
         MyList<Fragment> fragmentsBody = new MyList<>();
         for (Fragment fx : allIntersections) {
             if (!vysledneFragmenty.contains(fx)) {
@@ -296,7 +296,7 @@ public class Smasher {
         result.addToArray(fragments);
     }
 
-    static final Comparator<Vec2Intersect> c = (o1, o2) -> {
+    private static final Comparator<Vec2Intersect> c = (o1, o2) -> {
         Vec2Intersect v1 = o1;
         Vec2Intersect v2 = o2;
         return Double.compare(v1.k, v2.k);
@@ -478,7 +478,7 @@ public class Smasher {
 
         MyList<Polygon> vysledok = new MyList<>();
 
-        GraphVertex[] arr = graf.toArray(new GraphVertex[graf.size()]);
+        GraphVertex[] arr = graf.toArray(new GraphVertex[0]);
         for (GraphVertex v : arr) {
             if (v.next != null && !v.visited) {
                 Polygon p = new Polygon();

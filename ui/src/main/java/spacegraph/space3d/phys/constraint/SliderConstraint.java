@@ -47,81 +47,81 @@ import spacegraph.util.math.v3;
  */
 public class SliderConstraint extends TypedConstraint {
 
-	public static final float SLIDER_CONSTRAINT_DEF_SOFTNESS    = 1.0f;
-	public static final float SLIDER_CONSTRAINT_DEF_DAMPING     = 1.0f;
-	public static final float SLIDER_CONSTRAINT_DEF_RESTITUTION = 0.7f;
+	private static final float SLIDER_CONSTRAINT_DEF_SOFTNESS    = 1.0f;
+	private static final float SLIDER_CONSTRAINT_DEF_DAMPING     = 1.0f;
+	private static final float SLIDER_CONSTRAINT_DEF_RESTITUTION = 0.7f;
 
-	protected final Transform frameInA = new Transform();
-	protected final Transform frameInB = new Transform();
+	private final Transform frameInA = new Transform();
+	private final Transform frameInB = new Transform();
 	
-	protected boolean useLinearReferenceFrameA;
+	private boolean useLinearReferenceFrameA;
 	
-	protected float lowerLinLimit;
-	protected float upperLinLimit;
+	private float lowerLinLimit;
+	private float upperLinLimit;
 	
-	protected float lowerAngLimit;
-	protected float upperAngLimit;
-	
-	
+	private float lowerAngLimit;
+	private float upperAngLimit;
 	
 	
 	
 	
-	protected float softnessDirLin;
-	protected float restitutionDirLin;
-	protected float dampingDirLin;
-	protected float softnessDirAng;
-	protected float restitutionDirAng;
-	protected float dampingDirAng;
-	protected float softnessLimLin;
-	protected float restitutionLimLin;
-	protected float dampingLimLin;
-	protected float softnessLimAng;
-	protected float restitutionLimAng;
-	protected float dampingLimAng;
-	protected float softnessOrthoLin;
-	protected float restitutionOrthoLin;
-	protected float dampingOrthoLin;
-	protected float softnessOrthoAng;
-	protected float restitutionOrthoAng;
-	protected float dampingOrthoAng;
+	
+	
+	private float softnessDirLin;
+	private float restitutionDirLin;
+	private float dampingDirLin;
+	private float softnessDirAng;
+	private float restitutionDirAng;
+	private float dampingDirAng;
+	private float softnessLimLin;
+	private float restitutionLimLin;
+	private float dampingLimLin;
+	private float softnessLimAng;
+	private float restitutionLimAng;
+	private float dampingLimAng;
+	private float softnessOrthoLin;
+	private float restitutionOrthoLin;
+	private float dampingOrthoLin;
+	private float softnessOrthoAng;
+	private float restitutionOrthoAng;
+	private float dampingOrthoAng;
 
 	
-	protected boolean solveLinLim;
-	protected boolean solveAngLim;
+	private boolean solveLinLim;
+	private boolean solveAngLim;
 
-	protected JacobianEntry[] jacLin = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
-	protected float[] jacLinDiagABInv = new float[3];
+	private JacobianEntry[] jacLin = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
+	private float[] jacLinDiagABInv = new float[3];
 
-	protected JacobianEntry[] jacAng = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
+	private JacobianEntry[] jacAng = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
 
-	protected float timeStep;
-	protected final Transform calculatedTransformA = new Transform();
-	protected final Transform calculatedTransformB = new Transform();
+	private float timeStep;
+	private final Transform calculatedTransformA = new Transform();
+	private final Transform calculatedTransformB = new Transform();
 
-	protected final v3 sliderAxis = new v3();
-	protected final v3 realPivotAInW = new v3();
-	protected final v3 realPivotBInW = new v3();
-	protected final v3 projPivotInW = new v3();
-	protected final v3 delta = new v3();
-	protected final v3 depth = new v3();
-	protected final v3 relPosA = new v3();
-	protected final v3 relPosB = new v3();
+	private final v3 sliderAxis = new v3();
+	private final v3 realPivotAInW = new v3();
+	private final v3 realPivotBInW = new v3();
+	private final v3 projPivotInW = new v3();
+	private final v3 delta = new v3();
+	private final v3 depth = new v3();
+	private final v3 relPosA = new v3();
+	private final v3 relPosB = new v3();
 
-	protected float linPos;
+	private float linPos;
 
-	protected float angDepth;
-	protected float kAngle;
+	private float angDepth;
+	private float kAngle;
 
-	protected boolean poweredLinMotor;
-	protected float targetLinMotorVelocity;
-	protected float maxLinMotorForce;
-	protected float accumulatedLinMotorImpulse;
+	private boolean poweredLinMotor;
+	private float targetLinMotorVelocity;
+	private float maxLinMotorForce;
+	private float accumulatedLinMotorImpulse;
 
-	protected boolean poweredAngMotor;
-	protected float targetAngMotorVelocity;
-	protected float maxAngMotorForce;
-	protected float accumulatedAngMotorImpulse;
+	private boolean poweredAngMotor;
+	private float targetAngMotorVelocity;
+	private float maxAngMotorForce;
+	private float accumulatedAngMotorImpulse;
 
     public SliderConstraint() {
 		super(TypedConstraintType.SLIDER_CONSTRAINT_TYPE);
@@ -137,7 +137,7 @@ public class SliderConstraint extends TypedConstraint {
 		initParams();
 	}
 
-	protected void initParams() {
+	private void initParams() {
 		lowerLinLimit = 1f;
 		upperLinLimit = -1f;
 		lowerAngLimit = 0f;
@@ -465,7 +465,7 @@ public class SliderConstraint extends TypedConstraint {
 	
 	
 	
-	public void buildJacobianInt(Body3D rbA, Body3D rbB, Transform frameInA, Transform frameInB) {
+	private void buildJacobianInt(Body3D rbA, Body3D rbB, Transform frameInA, Transform frameInB) {
 		Transform tmpTrans = new Transform();
 		Transform tmpTrans1 = new Transform();
 		Transform tmpTrans2 = new Transform();
@@ -537,7 +537,7 @@ public class SliderConstraint extends TypedConstraint {
 		accumulatedAngMotorImpulse = 0f;
 	}
 	
-	public void solveConstraintInt(Body3D rbA, Body3D rbB) {
+	private void solveConstraintInt(Body3D rbA, Body3D rbB) {
 		v3 tmp = new v3();
 
 		
@@ -720,7 +720,7 @@ public class SliderConstraint extends TypedConstraint {
 		}
 	}
 
-	public void testLinLimits() {
+	private void testLinLimits() {
 		solveLinLim = false;
 		linPos = depth.x;
 		if (lowerLinLimit <= upperLinLimit) {
@@ -741,7 +741,7 @@ public class SliderConstraint extends TypedConstraint {
 		}
 	}
 	
-	public void testAngLimits() {
+	private void testAngLimits() {
 		angDepth = 0f;
 		solveAngLim = false;
 		if (lowerAngLimit <= upperAngLimit) {

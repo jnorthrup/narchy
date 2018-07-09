@@ -39,21 +39,21 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class PstCache {
+class PstCache {
 
-    public static final int MAX_CELL_SIZE = 0x1000; /* pixels */
-    protected static final Logger logger = LoggerFactory.getLogger(PstCache.class);
-    static final File[] g_pstcache_fd = new File[8];
+    private static final int MAX_CELL_SIZE = 0x1000; /* pixels */
+    private static final Logger logger = LoggerFactory.getLogger(PstCache.class);
+    private static final File[] g_pstcache_fd = new File[8];
     static int g_stamp;
-    static int g_pstcache_Bpp;
-    static boolean g_pstcache_enumerated;
+    private static int g_pstcache_Bpp;
+    private static boolean g_pstcache_enumerated;
 
-    protected static boolean IS_PERSISTENT(int id) {
+    static boolean IS_PERSISTENT(int id) {
         return (id < 8 && g_pstcache_fd[id] != null);
     }
 
     /* Update usage info for a bitmap */
-    protected static void touchBitmap(int cache_id, int cache_idx, int stamp) {
+    static void touchBitmap(int cache_id, int cache_idx, int stamp) {
         logger.info("PstCache.touchBitmap");
         FileOutputStream fd;
 
@@ -86,7 +86,7 @@ public class PstCache {
     }
 
     /* Load a bitmap from the persistent cache */
-    static boolean pstcache_load_bitmap(int cache_id, int cache_idx)
+    private static boolean pstcache_load_bitmap(int cache_id, int cache_idx)
             throws IOException, RdesktopException {
         logger.info("PstCache.pstcache_load_bitmap");
         byte[] celldata = null;

@@ -152,7 +152,7 @@ public class v2 extends Tuple2f {
      *
      * @param v1 the other vector
      */
-    public final float dot(Tuple2f v1) {
+    private float dot(Tuple2f v1) {
         return (this.x * v1.x + this.y * v1.y);
     }
 

@@ -37,7 +37,7 @@ import jcog.Util;
 
 public class CommunicationMonitor {
 
-    public static Object locker;
+    private static Object locker;
 
     /**
      * Identify whether or not communications are locked

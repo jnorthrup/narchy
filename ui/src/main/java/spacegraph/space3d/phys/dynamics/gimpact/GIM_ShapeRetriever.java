@@ -36,14 +36,14 @@ import spacegraph.space3d.phys.shape.GImpactShape;
  */
 class GIM_ShapeRetriever {
 
-	public GImpactShape gim_shape;
-	public TriangleShapeEx trishape = new TriangleShapeEx();
-	public TetrahedronShapeEx tetrashape = new TetrahedronShapeEx();
+	private GImpactShape gim_shape;
+	private TriangleShapeEx trishape = new TriangleShapeEx();
+	private TetrahedronShapeEx tetrashape = new TetrahedronShapeEx();
 
-	public ChildShapeRetriever child_retriever = new ChildShapeRetriever();
-	public TriangleShapeRetriever tri_retriever = new TriangleShapeRetriever();
-	public TetraShapeRetriever tetra_retriever = new TetraShapeRetriever();
-	public ChildShapeRetriever current_retriever;
+	private ChildShapeRetriever child_retriever = new ChildShapeRetriever();
+	private TriangleShapeRetriever tri_retriever = new TriangleShapeRetriever();
+	private TetraShapeRetriever tetra_retriever = new TetraShapeRetriever();
+	private ChildShapeRetriever current_retriever;
 
 	public GIM_ShapeRetriever(GImpactShape gim_shape) {
 		this.gim_shape = gim_shape;
@@ -69,9 +69,9 @@ class GIM_ShapeRetriever {
 	
 	
 	public static class ChildShapeRetriever {
-		public GIM_ShapeRetriever parent;
+		GIM_ShapeRetriever parent;
 
-		public CollisionShape getChildShape(int index) {
+		CollisionShape getChildShape(int index) {
 			return parent.gim_shape.getChildShape(index);
 		}
 	}

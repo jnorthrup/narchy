@@ -49,7 +49,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 		this(1, 1, 1);
 	}
 
-	public SimpleBoxShape(float w, float h, float d) {
+	SimpleBoxShape(float w, float h, float d) {
 		super();
 
 		implicitShapeDimensions.set(w/2, h/2, d/2);
@@ -109,7 +109,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 	}
 
 
-	public final v3 getHalfExtentsWithoutMargin(v3 out) {
+	final v3 getHalfExtentsWithoutMargin(v3 out) {
 		out.set(implicitShapeDimensions); 
 		return out;
 	}
@@ -213,7 +213,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 		AabbUtil2.transformAabb(implicitShapeDimensions, 0, t, aabbMin, aabbMax);
 	}
 
-	public final v3 getHalfExtentsWithoutMargin() {
+	private v3 getHalfExtentsWithoutMargin() {
 		return getHalfExtentsWithoutMargin(new v3());
 	}
 
@@ -271,7 +271,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 				hz * (1 - ((i & 4) >> 2)) - hz * ((i & 4) >> 2));
 	}
 	
-	public void getPlaneEquation(Vector4f plane, int i, v3 tmp) {
+	void getPlaneEquation(Vector4f plane, int i, v3 tmp) {
 		v3 halfExtents = getHalfExtentsWithoutMargin(tmp);
 
 		switch (i) {

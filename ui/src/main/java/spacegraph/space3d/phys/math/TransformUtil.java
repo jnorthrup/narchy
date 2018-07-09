@@ -35,10 +35,10 @@ import spacegraph.util.math.v3;
  */
 public class TransformUtil {
 	
-	public static final float SIMDSQRT12 = 0.7071067811865475244008443621048490f;
-	public static final float ANGULAR_MOTION_THRESHOLD = 0.5f* BulletGlobals.SIMD_HALF_PI;
+	private static final float SIMDSQRT12 = 0.7071067811865475244008443621048490f;
+	private static final float ANGULAR_MOTION_THRESHOLD = 0.5f* BulletGlobals.SIMD_HALF_PI;
 	
-	public static float recipSqrt(float x) {
+	private static float recipSqrt(float x) {
 		return (float)(1.0 / Math.sqrt(x));  /* reciprocal square root */
 	}
 
@@ -112,7 +112,7 @@ public class TransformUtil {
 		angVel.scale(angle[0] / timeStep, axis);
 	}
 
-	public static void calculateDiffAxisAngle(Transform transform0, Transform transform1, v3 axis, float[] angle) {
+	private static void calculateDiffAxisAngle(Transform transform0, Transform transform1, v3 axis, float[] angle) {
 
 
 

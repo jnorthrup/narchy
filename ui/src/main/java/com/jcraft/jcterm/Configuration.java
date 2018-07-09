@@ -31,9 +31,9 @@ package com.jcraft.jcterm;
  * @see com.jcraft.jcterm.ConfigurationRepository
  */
 public class Configuration {
-    public static final int FONT_SIZE = 18;
-    public static final String[] FG_BG = {"#000000:#ffffff", "#ffffff:#000000"};
-    public static final String[] DESTINATIONS = new String[0];
+    private static final int FONT_SIZE = 18;
+    private static final String[] FG_BG = {"#000000:#ffffff", "#ffffff:#000000"};
+    private static final String[] DESTINATIONS = new String[0];
 
     public String name = "default";
     public int font_size = FONT_SIZE;

@@ -30,7 +30,7 @@ package spacegraph.space3d.phys.math;
  * 
  * @author jezek2
  */
-public abstract class MotionState {
+abstract class MotionState {
 
 	/**
 	 * Returns world transform.

@@ -55,7 +55,7 @@ public class WizardFrame extends Splitting {
         set(1, next);
     }
 
-    public void pop() {
+    private void pop() {
         synchronized (this) {
             Surface prev = stack.removeLast();
             if (stack.isEmpty())
@@ -65,7 +65,7 @@ public class WizardFrame extends Splitting {
         }
     }
 
-    public void close() {
+    private void close() {
         synchronized (this) {
             parent(Dyn2DSurface.PhyWindow.class).remove();
         }

@@ -52,10 +52,10 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 	private boolean ignoreMargin;
 
 	
-	public int lastUsedMethod;
-	public int curIter;
-	public int degenerateSimplex;
-	public int catchDegeneracies;
+	private int lastUsedMethod;
+	private int curIter;
+	private int degenerateSimplex;
+	private int catchDegeneracies;
 
 	public void init(ConvexShape objectA, ConvexShape objectB, SimplexSolverInterface simplexSolver, ConvexPenetrationDepthSolver penetrationDepthSolver) {
 		this.cachedSeparatingAxis.set(0f, 0f, 1f);

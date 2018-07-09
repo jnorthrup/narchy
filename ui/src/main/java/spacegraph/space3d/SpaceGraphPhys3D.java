@@ -81,7 +81,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         inputs.clear();
     }
 
-    protected SpaceGraphPhys3D() {
+    private SpaceGraphPhys3D() {
         super();
 
         debug |= DebugDrawModes.NO_HELP_TEXT;
@@ -169,22 +169,20 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
     }
 
-    final Queue<Spatial> toRemove =
+    private final Queue<Spatial> toRemove =
             
             new ConcurrentLinkedQueue<>();
 
-    final List<AbstractSpace<X>> inputs = new FasterList<>(1);
+    private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
 
-    protected void update(long dtMS) {
+    private void update(long dtMS) {
 
         toRemove.forEach(x -> x.delete(dyn));
         toRemove.clear();
 
-
-        List<AbstractSpace<X>> ii = this.inputs;
-        for (int i = 0, inputs1Size = ii.size(); i < inputs1Size; i++)
-            ii.get(i).update(this, dtMS);
-
+        inputs.forEach((anIi)->{
+            anIi.update(this, dtMS);
+        });
 
 
         if (simulating) {
@@ -217,8 +215,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         }));
     }
 
-    public DynamicListSpace<X> add(Spatial<X>... s) {
-        DynamicListSpace<X> l = new DynamicListSpace<X>() {
+    private DynamicListSpace<X> add(Spatial<X>... s) {
+        DynamicListSpace<X> l = new DynamicListSpace<>() {
 
             final List<Spatial<X>> ls = new FasterList<Spatial<X>>().with(s);
 
@@ -231,7 +229,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         return l;
     }
 
-    public SpaceGraphPhys3D<X> add(AbstractSpace<X> c) {
+    private SpaceGraphPhys3D<X> add(AbstractSpace<X> c) {
         if (inputs.add(c))
             c.start(this);
         return this;
@@ -396,8 +394,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     @Override
     final public void forEach(Consumer<? super Spatial<X>> each) {
 
-        for (int i = 0, inputsSize = inputs.size(); i < inputsSize; i++) {
-            inputs.get(i).forEach(each);
+        for (AbstractSpace<X> input : inputs) {
+            input.forEach(each);
         }
     }
 
@@ -530,7 +528,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         public static final float FLT_EPSILON = 1.19209290e-07f;
         public static final float SIMD_EPSILON = FLT_EPSILON;
 
-        public static final float SIMD_2_PI = 6.283185307179586232f;
+        static final float SIMD_2_PI = 6.283185307179586232f;
         public static final float SIMD_PI = SIMD_2_PI * 0.5f;
         public static final float SIMD_HALF_PI = SIMD_2_PI * 0.25f;
 

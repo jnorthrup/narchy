@@ -14,7 +14,7 @@ public class KillTrigger extends Auvent {
     /**
      * The Bead that will be killed.
      */
-    Auvent receiver;
+    private Auvent receiver;
 
     /**
      * Instantiates a new KillTrigger which will stop the given {@link Auvent} when triggered.

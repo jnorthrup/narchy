@@ -104,7 +104,7 @@ public final class Transform extends v3 {
 		this.set(0f, 0f, 0f);
 	}
 
-	public void set(Matrix4f mat) {
+	private void set(Matrix4f mat) {
 		mat.getRotationScale(basis);
 		this.set(mat.m03, mat.m13, mat.m23);
 	}

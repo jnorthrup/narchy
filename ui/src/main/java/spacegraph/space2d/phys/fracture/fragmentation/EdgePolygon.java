@@ -3,6 +3,8 @@ package spacegraph.space2d.phys.fracture.fragmentation;
 import spacegraph.space2d.phys.fracture.util.MyList;
 import spacegraph.util.math.Tuple2f;
 
+import java.util.List;
+
 /**
  * Hrana obecneho polygonu.
  *
@@ -16,5 +18,5 @@ class EdgePolygon extends AEdge {
     /**
      * List prienikovych bodov, ktore sa nachadzaju na danej hrane.
      */
-    public final MyList<Vec2Intersect> list = new MyList<>();
+    public final List<Vec2Intersect> list = new MyList<>();
 }

@@ -40,7 +40,7 @@ import java.io.IOException;
 public class RdesktopCanvas_Localised extends RdesktopCanvas {
 
     private static final long serialVersionUID = -6806580381785981945L;
-    final BufferedImage apex_backstore;
+    private final BufferedImage apex_backstore;
     private Robot robot;
 
     RdesktopCanvas_Localised(int width, int height) {
@@ -49,7 +49,7 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
                 BufferedImage.TYPE_INT_RGB);
     }
 
-    public static void saveToFile(Image image) {
+    private static void saveToFile(Image image) {
         if (Options.server_bpp == 8)
             return;
 

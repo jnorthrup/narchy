@@ -39,28 +39,28 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		PHY_FLOAT, PHY_UCHAR, PHY_SHORT
 	}
 
-	protected v3 m_localAabbMin;
-	protected v3 m_localAabbMax;
-	protected v3 m_localOrigin;
-	protected v3 m_localScaling;
+	private v3 m_localAabbMin;
+	private v3 m_localAabbMax;
+	private v3 m_localOrigin;
+	private v3 m_localScaling;
 
 	
-	protected int m_heightStickWidth;
-	protected int m_heightStickLength;
-	protected float m_minHeight;
-	protected float m_maxHeight;
-	protected float m_width;
-	protected float m_length;
-	protected float m_heightScale;
+	private int m_heightStickWidth;
+	private int m_heightStickLength;
+	private float m_minHeight;
+	private float m_maxHeight;
+	private float m_width;
+	private float m_length;
+	private float m_heightScale;
 
-	protected byte[] m_heightFieldDataByte;
-	protected float[] m_heightFieldDataFloat;
+	private byte[] m_heightFieldDataByte;
+	private float[] m_heightFieldDataFloat;
 
-	protected PHY_ScalarType m_heightDataType;
-	protected boolean m_flipQuadEdges;
-	protected boolean m_useDiamondSubdivision;
+	private PHY_ScalarType m_heightDataType;
+	private boolean m_flipQuadEdges;
+	private boolean m_useDiamondSubdivision;
 
-	protected int m_upAxis;
+	private int m_upAxis;
 
 	
 	/**
@@ -107,7 +107,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 				PHY_ScalarType.PHY_FLOAT, flipQuadEdges);
 	}
 
-	protected float GetRawHeightFieldValue(int x, int y)
+	private float GetRawHeightFieldValue(int x, int y)
 	{
 		float val = 0f;
 		switch (m_heightDataType)
@@ -149,7 +149,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		return val;
 	}
 
-	protected void quantizeWithClamp(int[] output, v3 point, int isMax)
+	private void quantizeWithClamp(int[] output, v3 point, int isMax)
 	{
 		
 		/**
@@ -171,7 +171,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		output[2] = getQuantized(clampedPoint.z);
 	}
 
-	public static int getQuantized(float x)
+	private static int getQuantized(float x)
 	{
 		if (x < 0.0f)
 		{
@@ -180,7 +180,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		return (int) (x + 0.5);
 	}
 
-	protected void getVertex(int x, int y, v3 vertex)
+	private void getVertex(int x, int y, v3 vertex)
 	{
 		assert (x >= 0);
 		assert (y >= 0);
@@ -221,8 +221,8 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	  Handles the work of constructors so that public constructors can be
 	  backwards-compatible without a lot of copy/paste.
 	 */
-	protected void initialize(int heightStickWidth, int heightStickLength, Object heightfieldData, float heightScale,
-                              float minHeight, float maxHeight, int upAxis, PHY_ScalarType hdt, boolean flipQuadEdges)
+    private void initialize(int heightStickWidth, int heightStickLength, Object heightfieldData, float heightScale,
+                            float minHeight, float maxHeight, int upAxis, PHY_ScalarType hdt, boolean flipQuadEdges)
 	{
 		
 		assert heightStickWidth > 1 : "bad width";
@@ -344,12 +344,12 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	    - convert input aabb to a range of heightfield grid points (quantize)
 	    - iterate over all triangles in that subset of the grid
 	 */
-	
-	int[] quantizedAabbMin = new int[3];
-	int[] quantizedAabbMax = new int[3];
-	v3[] vertices = new v3[3];
 
-	public static void checkNormal(v3[] vertices1, TriangleCallback callback)
+    private int[] quantizedAabbMin = new int[3];
+	private int[] quantizedAabbMax = new int[3];
+	private v3[] vertices = new v3[3];
+
+	private static void checkNormal(v3[] vertices1, TriangleCallback callback)
 	{
 
 		v3 tmp1 = new v3();

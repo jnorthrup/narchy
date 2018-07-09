@@ -41,47 +41,47 @@ import java.util.Vector;
 
 public abstract class Input {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Input.class);
+    static final Logger logger = LoggerFactory.getLogger(Input.class);
     
     
     
     protected static final int KBD_FLAG_RIGHT = 0x0001;
-    protected static final int KBD_FLAG_EXT = 0x0100;
+    private static final int KBD_FLAG_EXT = 0x0100;
     
-    protected static final int KBD_FLAG_QUIET = 0x200;
-    protected static final int KBD_FLAG_DOWN = 0x4000;
-    protected static final int KBD_FLAG_UP = 0x8000;
-    protected static final int RDP_KEYPRESS = 0;
-    protected static final int RDP_KEYRELEASE = KBD_FLAG_DOWN | KBD_FLAG_UP;
-    protected static final int MOUSE_FLAG_MOVE = 0x0800;
-    protected static final int MOUSE_FLAG_BUTTON1 = 0x1000;
-    protected static final int MOUSE_FLAG_BUTTON2 = 0x2000;
-    protected static final int MOUSE_FLAG_BUTTON3 = 0x4000;
-    protected static final int MOUSE_FLAG_BUTTON4 = 0x0280; 
+    private static final int KBD_FLAG_QUIET = 0x200;
+    private static final int KBD_FLAG_DOWN = 0x4000;
+    private static final int KBD_FLAG_UP = 0x8000;
+    static final int RDP_KEYPRESS = 0;
+    static final int RDP_KEYRELEASE = KBD_FLAG_DOWN | KBD_FLAG_UP;
+    private static final int MOUSE_FLAG_MOVE = 0x0800;
+    private static final int MOUSE_FLAG_BUTTON1 = 0x1000;
+    private static final int MOUSE_FLAG_BUTTON2 = 0x2000;
+    private static final int MOUSE_FLAG_BUTTON3 = 0x4000;
+    static final int MOUSE_FLAG_BUTTON4 = 0x0280;
     
-    protected static final int MOUSE_FLAG_BUTTON5 = 0x0380; 
+    static final int MOUSE_FLAG_BUTTON5 = 0x0380;
     
-    protected static final int MOUSE_FLAG_DOWN = 0x8000;
+    static final int MOUSE_FLAG_DOWN = 0x8000;
     protected static final int RDP_INPUT_SYNCHRONIZE = 0;
     protected static final int RDP_INPUT_CODEPOINT = 1;
     protected static final int RDP_INPUT_VIRTKEY = 2;
-    protected static final int RDP_INPUT_SCANCODE = 4;
-    protected static final int RDP_INPUT_MOUSE = 0x8001;
-    protected static boolean capsLockOn;
-    protected static boolean numLockOn;
-    protected static boolean scrollLockOn;
-    protected static boolean serverAltDown;
-    protected static boolean altDown;
-    protected static boolean ctrlDown;
+    private static final int RDP_INPUT_SCANCODE = 4;
+    static final int RDP_INPUT_MOUSE = 0x8001;
+    static boolean capsLockOn;
+    static boolean numLockOn;
+    static boolean scrollLockOn;
+    private static boolean serverAltDown;
+    static boolean altDown;
+    static boolean ctrlDown;
     protected static long last_mousemove;
-    protected static int time;
-    protected final Vector pressedKeys;
-    protected final RdesktopCanvas canvas;
-    protected final Rdp rdp;
-    public KeyEvent lastKeyEvent;
-    public boolean modifiersValid;
+    private static int time;
+    private final Vector pressedKeys;
+    final RdesktopCanvas canvas;
+    final Rdp rdp;
+    KeyEvent lastKeyEvent;
+    private boolean modifiersValid;
     public boolean keyDownWindows;
-    KeyCode_FileBased newKeyMapper;
+    private KeyCode_FileBased newKeyMapper;
     KeyCode keys;
 
     /**
@@ -91,7 +91,7 @@ public abstract class Input {
      * @param r Rdp layer on which to send input messages
      * @param k Key map to use in handling keyboard events
      */
-    public Input(RdesktopCanvas c, Rdp r, KeyCode_FileBased k) {
+    Input(RdesktopCanvas c, Rdp r, KeyCode_FileBased k) {
         newKeyMapper = k;
         canvas = c;
         rdp = r;
@@ -108,7 +108,7 @@ public abstract class Input {
      * @param r          Rdp layer on which to send input messages
      * @param keymapFile Path to file containing keymap data
      */
-    public Input(RdesktopCanvas c, Rdp r, String keymapFile) {
+    Input(RdesktopCanvas c, Rdp r, String keymapFile) {
         try {
             newKeyMapper = new KeyCode_FileBased_Localised(keymapFile);
         } catch (KeyMapException kmEx) {
@@ -141,7 +141,7 @@ public abstract class Input {
     /**
      * Add all relevant input listeners to the canvas
      */
-    public void addInputListeners() {
+    void addInputListeners() {
         canvas.addMouseListener(new RdesktopMouseAdapter());
         canvas.addMouseMotionListener(new RdesktopMouseMotionAdapter());
         canvas.addKeyListener(new RdesktopKeyAdapter());
@@ -157,7 +157,7 @@ public abstract class Input {
      *                      the action (0 == UP, 1 == DOWN, 2 == QUIET UP, 3 == QUIET
      *                      DOWN).
      */
-    public void sendKeyPresses(String pressSequence) {
+    private void sendKeyPresses(String pressSequence) {
         try {
             String debugString = "Sending keypresses: ";
             for (int i = 0; i < pressSequence.length(); i += 2) {
@@ -224,7 +224,7 @@ public abstract class Input {
      *                 press/release/quiet/extended)
      * @param scancode Scancode value identifying the key in question
      */
-    public void sendScancode(long time, int flags, int scancode) {
+    void sendScancode(long time, int flags, int scancode) {
 
         if (scancode == 0x38) { 
             if ((flags & RDP_KEYRELEASE) != 0) {
@@ -247,7 +247,7 @@ public abstract class Input {
     /**
      * Release any modifier keys that may be depressed.
      */
-    public void clearKeys() {
+    void clearKeys() {
         if (!modifiersValid)
             return;
 
@@ -277,7 +277,7 @@ public abstract class Input {
     /**
      * Send keypress events for any modifier keys that are currently down
      */
-    public void setKeys() {
+    void setKeys() {
         if (!modifiersValid)
             return;
 
@@ -301,7 +301,7 @@ public abstract class Input {
      * @return True if a shortcut key combination was detected and acted upon,
      * false otherwise
      */
-    public boolean handleShortcutKeys(long time, KeyEvent e, boolean pressed) {
+    boolean handleShortcutKeys(long time, KeyEvent e, boolean pressed) {
         if (!e.isAltDown())
             return false;
 
@@ -448,7 +448,7 @@ public abstract class Input {
      * @param pressed True if key was pressed, false if released
      * @return
      */
-    public boolean handleSpecialKeys(long time, KeyEvent e, boolean pressed) {
+    private boolean handleSpecialKeys(long time, KeyEvent e, boolean pressed) {
         if (handleShortcutKeys(time, e, pressed))
             return true;
 
@@ -534,7 +534,7 @@ public abstract class Input {
         doLockKeys(); 
     }
 
-    protected void doLockKeys() {
+    void doLockKeys() {
     }
 
     /**
@@ -544,7 +544,7 @@ public abstract class Input {
      * @param e MouseEvent detailing circumstances under which middle button
      *          was pressed
      */
-    protected void middleButtonPressed(MouseEvent e) {
+    private void middleButtonPressed(MouseEvent e) {
         /*
          * if (Options.paste_hack && ctrlDown){ try{ canvas.setBusyCursor();
          * }catch (RdesktopException ex){ logger.warn(ex.getMessage()); } if
@@ -568,7 +568,7 @@ public abstract class Input {
      * @param e MouseEvent detailing circumstances under which middle button
      *          was released
      */
-    protected void middleButtonReleased(MouseEvent e) {
+    private void middleButtonReleased(MouseEvent e) {
         /* if (!Options.paste_hack || !ctrlDown) */
         rdp.sendInput(time, RDP_INPUT_MOUSE, MOUSE_FLAG_BUTTON3, e.getX(), e
                 .getY());
@@ -579,7 +579,7 @@ public abstract class Input {
         /**
          * Construct an RdesktopKeyAdapter based on the parent KeyAdapter class
          */
-        public RdesktopKeyAdapter() {
+        RdesktopKeyAdapter() {
         }
 
         /**
@@ -661,7 +661,7 @@ public abstract class Input {
 
     class RdesktopMouseAdapter extends MouseAdapter {
 
-        public RdesktopMouseAdapter() {
+        RdesktopMouseAdapter() {
         }
 
         @Override
@@ -705,7 +705,7 @@ public abstract class Input {
 
     class RdesktopMouseMotionAdapter extends MouseMotionAdapter {
 
-        public RdesktopMouseMotionAdapter() {
+        RdesktopMouseMotionAdapter() {
         }
 
         @Override

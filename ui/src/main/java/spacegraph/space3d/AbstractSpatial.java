@@ -71,7 +71,7 @@ public abstract class AbstractSpatial<X> extends Spatial<X> {
 
 
 
-    protected void colorshape(GL2 gl) {
+    void colorshape(GL2 gl) {
         gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
     }
 

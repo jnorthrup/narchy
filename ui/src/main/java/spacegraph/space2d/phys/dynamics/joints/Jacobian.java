@@ -26,7 +26,7 @@ package spacegraph.space2d.phys.dynamics.joints;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.Tuple2f;
 
-public class Jacobian {
+class Jacobian {
     public final Tuple2f linearA = new Vec2();
     public float angularA;
     public float angularB;

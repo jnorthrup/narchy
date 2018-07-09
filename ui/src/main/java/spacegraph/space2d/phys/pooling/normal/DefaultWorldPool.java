@@ -61,7 +61,7 @@ public class DefaultWorldPool implements IWorldPool {
 
     private final IWorldPool world = this;
 
-    private final MutableStack<Contact> pcstack =
+    private final IDynamicStack<Contact> pcstack =
             new MutableStack<>(Settings.CONTACT_STACK_INIT_SIZE) {
                 protected Contact newInstance() {
                     return new PolygonContact(world);
@@ -72,7 +72,7 @@ public class DefaultWorldPool implements IWorldPool {
                 }
             };
 
-    private final MutableStack<Contact> ccstack =
+    private final IDynamicStack<Contact> ccstack =
             new MutableStack<>(Settings.CONTACT_STACK_INIT_SIZE) {
                 protected Contact newInstance() {
                     return new CircleContact(world);
@@ -83,7 +83,7 @@ public class DefaultWorldPool implements IWorldPool {
                 }
             };
 
-    private final MutableStack<Contact> cpstack =
+    private final IDynamicStack<Contact> cpstack =
             new MutableStack<>(Settings.CONTACT_STACK_INIT_SIZE) {
                 protected Contact newInstance() {
                     return new PolygonAndCircleContact(world);
@@ -94,7 +94,7 @@ public class DefaultWorldPool implements IWorldPool {
                 }
             };
 
-    private final MutableStack<Contact> ecstack =
+    private final IDynamicStack<Contact> ecstack =
             new MutableStack<>(Settings.CONTACT_STACK_INIT_SIZE) {
                 protected Contact newInstance() {
                     return new EdgeAndCircleContact(world);
@@ -105,7 +105,7 @@ public class DefaultWorldPool implements IWorldPool {
                 }
             };
 
-    private final MutableStack<Contact> epstack =
+    private final IDynamicStack<Contact> epstack =
             new MutableStack<>(Settings.CONTACT_STACK_INIT_SIZE) {
                 protected Contact newInstance() {
                     return new EdgeAndPolygonContact(world);
@@ -116,7 +116,7 @@ public class DefaultWorldPool implements IWorldPool {
                 }
             };
 
-    private final MutableStack<Contact> chcstack =
+    private final IDynamicStack<Contact> chcstack =
             new MutableStack<>(Settings.CONTACT_STACK_INIT_SIZE) {
                 protected Contact newInstance() {
                     return new ChainAndCircleContact(world);
@@ -127,7 +127,7 @@ public class DefaultWorldPool implements IWorldPool {
                 }
             };
 
-    private final MutableStack<Contact> chpstack =
+    private final IDynamicStack<Contact> chpstack =
             new MutableStack<>(Settings.CONTACT_STACK_INIT_SIZE) {
                 protected Contact newInstance() {
                     return new ChainAndPolygonContact(world);

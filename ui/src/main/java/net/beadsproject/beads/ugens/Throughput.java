@@ -32,7 +32,7 @@ public class Throughput extends UGen {
      * @param context  The audio context.
      * @param channels The number of channels.
      */
-    public Throughput(AudioContext context, int channels) {
+    private Throughput(AudioContext context, int channels) {
         super(context, channels, channels);
         this.outputInitializationRegime = OutputInitializationRegime.RETAIN;
         bufOut = bufIn;

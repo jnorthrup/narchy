@@ -88,20 +88,20 @@ import spacegraph.util.math.v3;
  */
 public class Generic6DofConstraint extends TypedConstraint {
 
-    protected final Transform frameInA = new Transform(); 
-    protected final Transform frameInB = new Transform(); 
-    protected final JacobianEntry[] jacLinear/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()}; 
-    protected final JacobianEntry[] jacAng/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()}; 
-    protected final TranslationalLimitMotor linearLimits = new TranslationalLimitMotor();
-    protected final RotationalLimitMotor[] angularLimits/*[3]*/ = {new RotationalLimitMotor(), new RotationalLimitMotor(), new RotationalLimitMotor()};
-    protected float timeStep;
-    protected final Transform calculatedTransformA = new Transform();
-    protected final Transform calculatedTransformB = new Transform();
-    protected final v3 calculatedAxisAngleDiff = new v3();
-    protected final v3[] calculatedAxis/*[3]*/ = {new v3(), new v3(), new v3()};
-    protected final v3 anchorPos = new v3(); 
-    protected final v3 calculatedLinearDiff = new v3();
-    protected boolean useLinearReferenceFrameA;
+    private final Transform frameInA = new Transform();
+    private final Transform frameInB = new Transform();
+    private final JacobianEntry[] jacLinear/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()};
+    private final JacobianEntry[] jacAng/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()};
+    private final TranslationalLimitMotor linearLimits = new TranslationalLimitMotor();
+    private final RotationalLimitMotor[] angularLimits/*[3]*/ = {new RotationalLimitMotor(), new RotationalLimitMotor(), new RotationalLimitMotor()};
+    private float timeStep;
+    private final Transform calculatedTransformA = new Transform();
+    private final Transform calculatedTransformB = new Transform();
+    private final v3 calculatedAxisAngleDiff = new v3();
+    private final v3[] calculatedAxis/*[3]*/ = {new v3(), new v3(), new v3()};
+    private final v3 anchorPos = new v3();
+    private final v3 calculatedLinearDiff = new v3();
+    private boolean useLinearReferenceFrameA;
 
 	public Generic6DofConstraint() {
 		super(TypedConstraintType.D6_CONSTRAINT_TYPE);
@@ -124,7 +124,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 		this(rbA, rbB, frameInA, frameInB, useLinearReferenceFrameA, TypedConstraintType.D6_CONSTRAINT_TYPE);
 	}
 
-	protected Generic6DofConstraint(Body3D rbA, Body3D rbB, Transform frameInA, Transform frameInB, boolean useLinearReferenceFrameA, TypedConstraintType type) {
+	private Generic6DofConstraint(Body3D rbA, Body3D rbB, Transform frameInA, Transform frameInB, boolean useLinearReferenceFrameA, TypedConstraintType type) {
 		super(type, rbA, rbB);
 		this.frameInA.set(frameInA);
 		this.frameInB.set(frameInB);
@@ -172,7 +172,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	/**
 	 * tests linear limits
 	 */
-        void calculateLinearInfo()
+    private void calculateLinearInfo()
         {
             calculatedLinearDiff.sub(calculatedTransformB, calculatedTransformA);
 
@@ -191,7 +191,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	/**
 	 * Calcs the euler angles between the two bodies.
 	 */
-	protected void calculateAngleInfo() {
+    private void calculateAngleInfo() {
 		Matrix3f mat = new Matrix3f();
 
 		Matrix3f relative_frame = new Matrix3f();
@@ -244,7 +244,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	 * 
 	 * See also: Generic6DofConstraint.getCalculatedTransformA, Generic6DofConstraint.getCalculatedTransformB, Generic6DofConstraint.calculateAngleInfo
 	 */
-	public void calculateTransforms() {
+    private void calculateTransforms() {
 		rbA.getCenterOfMassTransform(calculatedTransformA);
 		calculatedTransformA.mul(frameInA);
 
@@ -256,7 +256,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 
 	}
 	
-	protected void buildLinearJacobian(/*JacobianEntry jacLinear*/int jacLinear_index, v3 normalWorld, v3 pivotAInW, v3 pivotBInW) {
+	private void buildLinearJacobian(/*JacobianEntry jacLinear*/int jacLinear_index, v3 normalWorld, v3 pivotAInW, v3 pivotBInW) {
 		Matrix3f mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
 		mat1.transpose();
 
@@ -283,7 +283,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 				rbB.getInvMass());
 	}
 
-	protected void buildAngularJacobian(/*JacobianEntry jacAngular*/int jacAngular_index, v3 jointAxisW) {
+	private void buildAngularJacobian(/*JacobianEntry jacAngular*/int jacAngular_index, v3 jointAxisW) {
 		Matrix3f mat1 = rbA.getCenterOfMassTransform(new Transform()).basis;
 		mat1.transpose();
 
@@ -302,7 +302,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	 * Calculates angular correction and returns true if limit needs to be corrected.
 	 * Generic6DofConstraint.buildJacobian must be called previously.
 	 */
-	public boolean testAngularLimitMotor(int axis_index) {
+    private boolean testAngularLimitMotor(int axis_index) {
 		float angle = VectorUtil.coord(calculatedAxisAngleDiff, axis_index);
 
 		
@@ -315,7 +315,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	 * Calculates linear correction and returns true if limit needs to be corrected.
 	 * Generic6DofConstraint.buildJacobian must be called previously.
 	 */
-	public boolean testLinearLimitMotor(int axis_index) {
+    private boolean testLinearLimitMotor(int axis_index) {
 		float diff = VectorUtil.coord(calculatedLinearDiff, axis_index);
 
 		
@@ -441,7 +441,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	 * Get the rotation axis in global coordinates.
 	 * Generic6DofConstraint.buildJacobian must be called previously.
 	 */
-	public v3 getAxis(int axis_index, v3 out) {
+    private v3 getAxis(int axis_index, v3 out) {
 		out.set(calculatedAxis[axis_index]);
 		return out;
 	}
@@ -545,7 +545,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	}
 	
 	
-	public void calcAnchorPos() {
+	private void calcAnchorPos() {
 		float imA = rbA.getInvMass();
 		float imB = rbB.getInvMass();
 		float weight;

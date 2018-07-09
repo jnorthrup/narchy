@@ -40,32 +40,32 @@ public class WheelInfo {
 
 	public final Transform worldTransform = new Transform();
 	
-	public final v3 chassisConnectionPointCS = new v3(); 
-	public final v3 wheelDirectionCS = new v3(); 
-	public final v3 wheelAxleCS = new v3(); 
-	public float suspensionRestLength1; 
-	public float maxSuspensionTravelCm;
-	public float maxSuspensionForce;
-	public float wheelsRadius; 
-	public float suspensionStiffness; 
-	public float wheelsDampingCompression; 
-	public float wheelsDampingRelaxation; 
-	public float frictionSlip;
-	public float steering;
-	public float rotation;
-	public float deltaRotation;
-	public float rollInfluence;
+	private final v3 chassisConnectionPointCS = new v3();
+	private final v3 wheelDirectionCS = new v3();
+	private final v3 wheelAxleCS = new v3();
+	private float suspensionRestLength1;
+	private float maxSuspensionTravelCm;
+	private float maxSuspensionForce;
+	private float wheelsRadius;
+	private float suspensionStiffness;
+	private float wheelsDampingCompression;
+	private float wheelsDampingRelaxation;
+	private float frictionSlip;
+	private float steering;
+	private float rotation;
+	private float deltaRotation;
+	private float rollInfluence;
 
-	public float engineForce;
+	private float engineForce;
 
-	public float brake;
+	private float brake;
 	
-	public boolean bIsFrontWheel;
+	private boolean bIsFrontWheel;
 	
 	public Object clientInfo; 
 
-	public float clippedInvContactDotSuspension;
-	public float suspensionRelativeVelocity;
+	private float clippedInvContactDotSuspension;
+	private float suspensionRelativeVelocity;
 	
 	public float wheelsSuspensionForce;
 	public float skidInfo;
@@ -127,13 +127,13 @@ public class WheelInfo {
 	
 	public static class RaycastInfo {
 		
-		public final v3 contactNormalWS = new v3(); 
-		public final v3 contactPointWS = new v3(); 
-		public float suspensionLength;
+		final v3 contactNormalWS = new v3();
+		final v3 contactPointWS = new v3();
+		float suspensionLength;
 		public final v3 hardPointWS = new v3(); 
-		public final v3 wheelDirectionWS = new v3(); 
+		final v3 wheelDirectionWS = new v3();
 		public final v3 wheelAxleWS = new v3(); 
-		public boolean isInContact;
+		boolean isInContact;
 		public Object groundObject; 
 	}
 	

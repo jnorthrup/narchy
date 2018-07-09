@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public class OmniBox extends Widget {
 
-    final TextEdit edit;
+    private final TextEdit edit;
 
 
     private final Gridding results;
@@ -167,7 +167,7 @@ public class OmniBox extends Widget {
                     return; 
 
                 target.clear();
-                sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(x -> new PushButton(x)).forEach(target::add);
+                sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(PushButton::new).forEach(target::add);
             });
         }
 
@@ -185,32 +185,7 @@ public class OmniBox extends Widget {
             String cmd = OmniBox.class.getName() +
                     ".popup(" + Texts.quote(text) + "," + text + ");";
 
-            js.eval(cmd).forEach(e -> {
-                logger.info("{}:\n\t{}", text, e);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            });
+            js.eval(cmd).forEach(e -> logger.info("{}:\n\t{}", text, e));
         }
 
     }

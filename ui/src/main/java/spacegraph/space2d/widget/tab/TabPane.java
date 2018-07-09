@@ -28,7 +28,7 @@ public class TabPane extends Splitting {
         this(ButtonSet.Mode.Multi, builder);
     }
 
-    public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder) {
+    private TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder) {
         this(mode, builder, CheckBox::new);
     }
 

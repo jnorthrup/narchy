@@ -48,7 +48,7 @@ public class Vec2Array {
         return map.get(argLength);
     }
 
-    protected static Tuple2f[] getInitializedArray(int argLength) {
+    private static Tuple2f[] getInitializedArray(int argLength) {
         final Tuple2f[] ray = new Tuple2f[argLength];
         for (int i = 0; i < ray.length; i++) {
             ray[i] = new Vec2();

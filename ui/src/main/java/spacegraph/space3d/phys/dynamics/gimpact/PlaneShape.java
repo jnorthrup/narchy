@@ -39,7 +39,7 @@ import spacegraph.util.math.v3;
  */
 class PlaneShape {
 
-	public static void get_plane_equation(StaticPlaneShape shape, Vector4f equation) {
+	private static void get_plane_equation(StaticPlaneShape shape, Vector4f equation) {
 		v3 tmp = new v3();
 		equation.set(shape.getPlaneNormal(tmp));
 		equation.w = shape.getPlaneConstant();

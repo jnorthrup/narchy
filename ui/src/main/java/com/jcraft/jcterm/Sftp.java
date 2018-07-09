@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class Sftp implements Runnable {
+class Sftp implements Runnable {
     private static final String[] help = {
             "      Available commands:",
             "      * means unimplemented command.",
@@ -61,9 +61,9 @@ public class Sftp implements Runnable {
             "symlink oldpath newpath       Symlink remote file",
             "version                       Show SFTP version",
             "?                             Synonym for help"};
-    final InputStream in;
-    final OutputStream out;
-    final ChannelSftp c;
+    private final InputStream in;
+    private final OutputStream out;
+    private final ChannelSftp c;
     private final byte[] lf = {0x0a, 0x0d};
     private final byte[] del = {0x08, 0x20, 0x08};
     private Thread thread = null;
@@ -244,8 +244,8 @@ public class Sftp implements Runnable {
                     if (cmd.equals("chmod")) {
                         byte[] bar = ((String) cmds.elementAt(1)).getBytes();
                         int k;
-                        for (int j = 0; j < bar.length; j++) {
-                            k = bar[j];
+                        for (byte aBar : bar) {
+                            k = aBar;
                             if (k < '0' || k > '7') {
                                 foo = -1;
                                 break;
@@ -325,8 +325,8 @@ public class Sftp implements Runnable {
                     try {
                         File d = new File(path);
                         String[] list = d.list();
-                        for (int ii = 0; ii < list.length; ii++) {
-                            out.write(list[ii].getBytes());
+                        for (String aList : list) {
+                            out.write(aList.getBytes());
                             out.write(lf);
                         }
                         out.flush();
@@ -411,9 +411,9 @@ public class Sftp implements Runnable {
                     continue;
                 }
                 if (cmd.equals("help") || cmd.equals("help")) {
-                    
-                    for (int j = 0; j < help.length; j++) {
-                        out.write((help[j]).getBytes());
+
+                    for (String aHelp : help) {
+                        out.write((aHelp).getBytes());
                         out.write(lf);
                     }
                     out.flush();
@@ -444,7 +444,7 @@ public class Sftp implements Runnable {
         }
     }
 
-    public static class MyProgressMonitor implements SftpProgressMonitor {
+    static class MyProgressMonitor implements SftpProgressMonitor {
         final OutputStream out;
         
         long count = 0;

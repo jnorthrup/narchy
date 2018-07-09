@@ -39,18 +39,19 @@ public class OsmSpace implements GLUtessellatorCallback {
 
 
 
-    final GeoCoordinate min;
-    final GeoCoordinate max;
+    private final GeoCoordinate min;
+    private final GeoCoordinate max;
     private final Osm osm;
     private final GeoCoordinate center;
 
-    float scaleLat = 1, scaleLon = 1;
+    private float scaleLat = 1;
+    private float scaleLon = 1;
 
-    boolean wireframe;
+    private boolean wireframe;
 
-    final GLUtessellator tobj = GLU.gluNewTess();
+    private final GLUtessellator tobj = GLU.gluNewTess();
 
-    Consumer<GL2> render = null;
+    private Consumer<GL2> render = null;
     private GL2 gl;
 
     public OsmSpace(Osm osm) {
@@ -77,11 +78,11 @@ public class OsmSpace implements GLUtessellatorCallback {
     }
 
 
-    void project(GeoCoordinate global, double[] target) {
+    private void project(GeoCoordinate global, double[] target) {
         project(global, target, 0);
     }
 
-    void project(GeoCoordinate global, double[] target, int offset) {
+    private void project(GeoCoordinate global, double[] target, int offset) {
 
         
         target[offset++] = (global.latitude - center.latitude);
@@ -170,7 +171,7 @@ public class OsmSpace implements GLUtessellatorCallback {
 
     public class OsmVolume extends AbstractSpatial<Osm> {
 
-        protected OsmVolume() {
+        OsmVolume() {
             super(osm);
         }
 
@@ -194,7 +195,7 @@ public class OsmSpace implements GLUtessellatorCallback {
 
     }
 
-    protected Consumer<GL2> compile(GL2 _gl, Osm osm) {
+    private Consumer<GL2> compile(GL2 _gl, Osm osm) {
         this.gl = _gl;
         List<Consumer<GL2>> draw = new FasterList();
 

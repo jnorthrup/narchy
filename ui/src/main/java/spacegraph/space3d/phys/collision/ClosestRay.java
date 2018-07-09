@@ -9,10 +9,10 @@ import spacegraph.util.math.v3;
  * Created by me on 7/22/16.
  */
 public class ClosestRay extends Collisions.RayResultCallback {
-    public final v3 rayFromWorld = new v3(); 
+    private final v3 rayFromWorld = new v3();
     public final v3 rayToWorld = new v3();
 
-    public final v3 hitNormalWorld = new v3();
+    private final v3 hitNormalWorld = new v3();
     public final v3 hitPointWorld = new v3();
 
     public ClosestRay(short group) {
@@ -23,7 +23,7 @@ public class ClosestRay extends Collisions.RayResultCallback {
         set(rayFromWorld, rayToWorld);
     }
 
-    public ClosestRay set(v3 rayFromWorld, v3 rayToWorld) {
+    private ClosestRay set(v3 rayFromWorld, v3 rayToWorld) {
         this.rayFromWorld.set(rayFromWorld);
         this.rayToWorld.set(rayToWorld);
         hitNormalWorld.zero();

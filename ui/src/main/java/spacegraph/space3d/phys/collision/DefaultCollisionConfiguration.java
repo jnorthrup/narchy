@@ -39,24 +39,24 @@ import spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm;
 public class DefaultCollisionConfiguration extends CollisionConfiguration {
 
 	
-	protected final VoronoiSimplexSolver simplexSolver;
-	protected final ConvexPenetrationDepthSolver pdSolver;
+	private final VoronoiSimplexSolver simplexSolver;
+	private final ConvexPenetrationDepthSolver pdSolver;
 
 	
-	protected final CollisionAlgorithmCreateFunc convexConvexCreateFunc;
-	protected final CollisionAlgorithmCreateFunc convexConcaveCreateFunc;
-	protected final CollisionAlgorithmCreateFunc swappedConvexConcaveCreateFunc;
-	protected final CollisionAlgorithmCreateFunc compoundCreateFunc;
-	protected final CollisionAlgorithmCreateFunc swappedCompoundCreateFunc;
-	protected final CollisionAlgorithmCreateFunc emptyCreateFunc;
-	protected final CollisionAlgorithmCreateFunc sphereSphereCF;
+	private final CollisionAlgorithmCreateFunc convexConvexCreateFunc;
+	private final CollisionAlgorithmCreateFunc convexConcaveCreateFunc;
+	private final CollisionAlgorithmCreateFunc swappedConvexConcaveCreateFunc;
+	private final CollisionAlgorithmCreateFunc compoundCreateFunc;
+	private final CollisionAlgorithmCreateFunc swappedCompoundCreateFunc;
+	private final CollisionAlgorithmCreateFunc emptyCreateFunc;
+	private final CollisionAlgorithmCreateFunc sphereSphereCF;
 	protected CollisionAlgorithmCreateFunc sphereBoxCF;
 	protected CollisionAlgorithmCreateFunc boxSphereCF;
 	protected CollisionAlgorithmCreateFunc boxBoxCF;
 	protected CollisionAlgorithmCreateFunc sphereTriangleCF;
 	protected CollisionAlgorithmCreateFunc triangleSphereCF;
-	protected final CollisionAlgorithmCreateFunc planeConvexCF;
-	protected final CollisionAlgorithmCreateFunc convexPlaneCF;
+	private final CollisionAlgorithmCreateFunc planeConvexCF;
+	private final CollisionAlgorithmCreateFunc convexPlaneCF;
 
 	public DefaultCollisionConfiguration() {
 		simplexSolver = new VoronoiSimplexSolver();

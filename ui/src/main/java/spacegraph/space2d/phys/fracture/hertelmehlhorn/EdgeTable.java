@@ -19,7 +19,7 @@ class EdgeTable extends HashTabulka<Diagonal> {
         return null;
     }
 
-    public void remove(int i1, int i2) {
+    private void remove(int i1, int i2) {
         Diagonal e = get(i1, i2);
         super.remove(e);
     }

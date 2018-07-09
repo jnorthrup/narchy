@@ -59,7 +59,7 @@ public class ContactID implements Comparable<ContactID> {
     public byte typeA;
     public byte typeB;
 
-    public int getKey() {
+    private int getKey() {
         return indexA << 24 | indexB << 16 | typeA << 8 | typeB;
     }
 

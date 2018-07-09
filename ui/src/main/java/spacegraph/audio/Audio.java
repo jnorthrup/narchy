@@ -14,7 +14,7 @@ import java.nio.ByteOrder;
 
 
 public class Audio implements Runnable {
-    final static Logger logger = LoggerFactory.getLogger(Audio.class);
+    private final static Logger logger = LoggerFactory.getLogger(Audio.class);
 
     private static Audio defaultAudio;
 
@@ -33,7 +33,7 @@ public class Audio implements Runnable {
 
 
     private final int bufferBytes;
-    public final int maxChannels;
+    private final int maxChannels;
     private final SoundSample silentSample;
     private final SourceDataLine sdl;
 
@@ -113,9 +113,9 @@ public class Audio implements Runnable {
 			System.out.println((i+1) + ") " + name + " --- " + mixerinfo[i].getDescription());
 			Mixer m = AudioSystem.getMixer(mixerinfo[i]);
 			Line.Info[] lineinfo = m.getSourceLineInfo();
-			for (int j = 0; j < lineinfo.length; j++) {
-				System.out.println("  - " + lineinfo[j]);
-			}
+            for (Line.Info aLineinfo : lineinfo) {
+                System.out.println("  - " + aLineinfo);
+            }
 		}
 	}
 
@@ -189,11 +189,11 @@ public class Audio implements Runnable {
     }
 
 
-    public void clientTick(float alpha) {
+    void clientTick(float alpha) {
         listenerMixer.update(alpha);
     }
 
-    static final int max16 = Short.MAX_VALUE;
+    private static final int max16 = Short.MAX_VALUE;
 
     void tick() {
         

@@ -41,8 +41,8 @@ import spacegraph.util.math.v3;
  */
 public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 
-	protected final v3 localScaling = new v3();
-	protected BvhTriangleMeshShape bvhTriMeshShape;
+	private final v3 localScaling = new v3();
+	private BvhTriangleMeshShape bvhTriMeshShape;
 
 	public ScaledBvhTriangleMeshShape(BvhTriangleMeshShape childShape, v3 localScaling) {
 		this.localScaling.set(localScaling);
@@ -156,7 +156,7 @@ public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 		private final v3 localScaling;
 		private final v3[] newTriangle = new v3[3];
 
-		public ScaledTriangleCallback(TriangleCallback originalCallback, v3 localScaling) {
+		ScaledTriangleCallback(TriangleCallback originalCallback, v3 localScaling) {
 			this.originalCallback = originalCallback;
 			this.localScaling = localScaling;
 			

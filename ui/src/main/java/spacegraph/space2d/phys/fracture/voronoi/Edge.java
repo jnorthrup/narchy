@@ -9,7 +9,8 @@ class Edge {
     /**
      * Referencie na hraniciace trojuholniky.
      */
-    Triangle t1, t2;
+    private Triangle t1;
+    private Triangle t2;
 
     /**
      * Alokuje instanciu.
@@ -71,7 +72,7 @@ class Edge {
      * @param i2 Index 2. vrcholu
      * @return Vrati index hrany
      */
-    final static int index(final int i1, final int i2) {
+    static int index(final int i1, final int i2) {
         if (i1 < i2) {
             return i1 << 8 | i2;
         } else {

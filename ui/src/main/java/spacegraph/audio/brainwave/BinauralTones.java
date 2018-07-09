@@ -12,7 +12,8 @@ import spacegraph.audio.SoundProducer;
 public class BinauralTones implements SoundProducer {
 
     private final float carrier;
-    float beat, x;
+    private float beat;
+    private float x;
     private boolean playing;
 
     public BinauralTones(float initialBeat, float initialCarrier) {

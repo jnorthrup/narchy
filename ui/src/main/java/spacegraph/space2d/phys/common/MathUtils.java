@@ -57,7 +57,7 @@ public class MathUtils extends PlatformMathUtils {
     public static final float PI = (float) Math.PI;
     public static final float TWOPI = (float) (Math.PI * 2);
     public static final float INV_PI = 1f / PI;
-    public static final float HALF_PI = PI / 2;
+    private static final float HALF_PI = PI / 2;
     public static final float QUARTER_PI = PI / 4;
     public static final float THREE_HALVES_PI = TWOPI - HALF_PI;
 
@@ -71,7 +71,7 @@ public class MathUtils extends PlatformMathUtils {
      */
     public static final float RAD2DEG = 180 / PI;
 
-    public static final float[] sinLUT = new float[Settings.SINCOS_LUT_LENGTH];
+    private static final float[] sinLUT = new float[Settings.SINCOS_LUT_LENGTH];
 
     static {
         for (int i = 0; i < Settings.SINCOS_LUT_LENGTH; i++) {
@@ -79,7 +79,7 @@ public class MathUtils extends PlatformMathUtils {
         }
     }
 
-    public static final float sinLUT(float x) {
+    public static float sinLUT(float x) {
         x %= TWOPI;
 
         if (x < 0) {
@@ -108,12 +108,12 @@ public class MathUtils extends PlatformMathUtils {
         }
     }
 
-    public static final int abs(int x) {
+    public static int abs(int x) {
         int y = x >> 31;
         return (x ^ y) - y;
     }
 
-    public static final int floor(final float x) {
+    public static int floor(final float x) {
         if (Settings.FAST_FLOOR) {
             return fastFloor(x);
         } else {
@@ -121,7 +121,7 @@ public class MathUtils extends PlatformMathUtils {
         }
     }
 
-    public static final int fastFloor(final float x) {
+    private static int fastFloor(final float x) {
         int y = (int) x;
         if (x < y) {
             return y - 1;
@@ -129,7 +129,7 @@ public class MathUtils extends PlatformMathUtils {
         return y;
     }
 
-    public static final int ceil(final float x) {
+    public static int ceil(final float x) {
         if (Settings.FAST_CEIL) {
             return fastCeil(x);
         } else {
@@ -137,7 +137,7 @@ public class MathUtils extends PlatformMathUtils {
         }
     }
 
-    public static final int fastCeil(final float x) {
+    private static int fastCeil(final float x) {
         int y = (int) x;
         if (x > y) {
             return y + 1;
@@ -145,7 +145,7 @@ public class MathUtils extends PlatformMathUtils {
         return y;
     }
 
-    public static final int round(final float x) {
+    private static int round(final float x) {
         if (Settings.FAST_ROUND) {
             return floor(x + .5f);
         } else {
@@ -159,7 +159,7 @@ public class MathUtils extends PlatformMathUtils {
      * @param x
      * @return power^2 value
      */
-    public static final int ceilPowerOf2(int x) {
+    public static int ceilPowerOf2(int x) {
         int pow2 = 1;
         while (pow2 < x) {
             pow2 <<= 1;
@@ -167,24 +167,24 @@ public class MathUtils extends PlatformMathUtils {
         return pow2;
     }
 
-    public final static float max(final float a, final float b) {
+    public static float max(final float a, final float b) {
         return a > b ? a : b;
     }
 
-    public final static int max(final int a, final int b) {
+    public static int max(final int a, final int b) {
         return a > b ? a : b;
     }
 
-    public final static float min(final float a, final float b) {
+    public static float min(final float a, final float b) {
         return a < b ? a : b;
     }
 
-    public final static int min(final int a, final int b) {
+    public static int min(final int a, final int b) {
         return a < b ? a : b;
     }
 
-    public final static float map(final float val, final float fromMin, final float fromMax,
-                                  final float toMin, final float toMax) {
+    public static float map(final float val, final float fromMin, final float fromMax,
+                            final float toMin, final float toMax) {
         final float mult = (val - fromMin) / (fromMax - fromMin);
         final float res = toMin + mult * (toMax - toMin);
         return res;
@@ -193,11 +193,11 @@ public class MathUtils extends PlatformMathUtils {
     /**
      * Returns the closest value to 'a' that is in between 'low' and 'high'
      */
-    public final static float clamp(final float a, final float low, final float high) {
+    public static float clamp(final float a, final float low, final float high) {
         return max(low, min(a, high));
     }
 
-    public final static Tuple2f clamp(final Tuple2f a, final Tuple2f low, final Tuple2f high) {
+    public static Tuple2f clamp(final Tuple2f a, final Tuple2f low, final Tuple2f high) {
         final Tuple2f min = new Vec2();
         min.x = a.x < high.x ? a.x : high.x;
         min.y = a.y < high.y ? a.y : high.y;
@@ -206,7 +206,7 @@ public class MathUtils extends PlatformMathUtils {
         return min;
     }
 
-    public final static void clampToOut(final Tuple2f a, final Tuple2f low, final Tuple2f high, final Tuple2f dest) {
+    public static void clampToOut(final Tuple2f a, final Tuple2f low, final Tuple2f high, final Tuple2f dest) {
         dest.x = a.x < high.x ? a.x : high.x;
         dest.y = a.y < high.y ? a.y : high.y;
         dest.x = low.x > dest.x ? low.x : dest.x;
@@ -219,7 +219,7 @@ public class MathUtils extends PlatformMathUtils {
      * process yields a bit vector with the same most significant 1 as x, but all 1's below it. Adding
      * 1 to that value yields the next largest power of 2.
      */
-    public final static int nextPowerOfTwo(int x) {
+    public static int nextPowerOfTwo(int x) {
         x |= x >> 1;
         x |= x >> 2;
         x |= x >> 4;
@@ -228,11 +228,11 @@ public class MathUtils extends PlatformMathUtils {
         return x + 1;
     }
 
-    public final static boolean isPowerOfTwo(final int x) {
+    public static boolean isPowerOfTwo(final int x) {
         return x > 0 && (x & x - 1) == 0;
     }
 
-    public static final float fastAtan2(float y, float x) {
+    public static float fastAtan2(float y, float x) {
         if (x == 0.0f) {
             if (y > 0.0f) return HALF_PI;
             if (y == 0.0f) return 0.0f;
@@ -253,7 +253,7 @@ public class MathUtils extends PlatformMathUtils {
         return atan;
     }
 
-    public static final float reduceAngle(float theta) {
+    public static float reduceAngle(float theta) {
         theta %= TWOPI;
         if (Math.abs(theta) > PI) {
             theta = theta - TWOPI;
@@ -264,21 +264,21 @@ public class MathUtils extends PlatformMathUtils {
         return theta;
     }
 
-    public static final float randomFloat(float argLow, float argHigh) {
+    public static float randomFloat(float argLow, float argHigh) {
         return (float) Math.random() * (argHigh - argLow) + argLow;
     }
 
-    public static final float randomFloat(Random r, float argLow, float argHigh) {
+    public static float randomFloat(Random r, float argLow, float argHigh) {
         return r.nextFloat() * (argHigh - argLow) + argLow;
     }
 
-    public final static float distanceSquared(Tuple2f v1, Tuple2f v2) {
+    public static float distanceSquared(Tuple2f v1, Tuple2f v2) {
         float dx = (v1.x - v2.x);
         float dy = (v1.y - v2.y);
         return dx * dx + dy * dy;
     }
 
-    public final static float distance(Tuple2f v1, Tuple2f v2) {
+    public static float distance(Tuple2f v1, Tuple2f v2) {
         return (float) Math.sqrt(distanceSquared(v1, v2));
     }
 }

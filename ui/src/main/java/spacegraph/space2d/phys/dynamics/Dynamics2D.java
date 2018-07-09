@@ -66,12 +66,12 @@ import java.util.function.Predicate;
  * @author Daniel Murphy
  */
 public class Dynamics2D {
-    public static final int WORLD_POOL_SIZE = 256;
-    public static final int WORLD_POOL_CONTAINER_SIZE = 16;
+    private static final int WORLD_POOL_SIZE = 256;
+    private static final int WORLD_POOL_CONTAINER_SIZE = 16;
 
     public static final int NEW_FIXTURE = 0x0001;
     
-    public static final int CLEAR_FORCES = 0x0004;
+    private static final int CLEAR_FORCES = 0x0004;
 
     /** set to System.currentTimeMS() at start of solver iteration */
     public long realtimeMS;
@@ -80,13 +80,13 @@ public class Dynamics2D {
 
 
 
-    protected int flags;
+    int flags;
 
-    protected final ContactManager contactManager;
+    final ContactManager contactManager;
 
-    final Set<Body2D> bodies = new ConcurrentFastIteratingHashSet<>(new Body2D[0]);
+    private final Set<Body2D> bodies = new ConcurrentFastIteratingHashSet<>(new Body2D[0]);
 
-    final Set<Joint> joints = new ConcurrentFastIteratingHashSet<>(new Joint[0]);
+    private final Set<Joint> joints = new ConcurrentFastIteratingHashSet<>(new Joint[0]);
 
     private int jointCount;
 
@@ -121,7 +121,7 @@ public class Dynamics2D {
     private final Smasher smasher = new Smasher();
 
 
-    final MultithreadConcurrentQueue<Runnable> queue = new MultithreadConcurrentQueue<>(512);
+    private final MultithreadConcurrentQueue<Runnable> queue = new MultithreadConcurrentQueue<>(512);
 
 
 
@@ -154,15 +154,15 @@ public class Dynamics2D {
      *
      * @param gravity the world gravity vector.
      */
-    public Dynamics2D(Tuple2f gravity, IWorldPool pool) {
+    private Dynamics2D(Tuple2f gravity, IWorldPool pool) {
         this(gravity, pool, new DynamicTree());
     }
 
-    public Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhaseStrategy strategy) {
+    private Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhaseStrategy strategy) {
         this(gravity, pool, new DefaultBroadPhaseBuffer(strategy));
     }
 
-    public Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhase broadPhase) {
+    private Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhase broadPhase) {
 
         this.pool = pool;
 
@@ -253,15 +253,6 @@ public class Dynamics2D {
         m_destructionListener = listener;
     }
 
-    /**
-     * Register a contact filter to provide specific control over collision. Otherwise the default
-     * filter is used (_defaultFilter). The listener is owned by you and must remain in scope.
-     *
-     * @param filter
-     */
-    public void setContactFilter(ContactFilter filter) {
-        contactManager.m_contactFilter = filter;
-    }
 
     /**
      * Register a contact event listener. The listener is owned by you and must remain in scope.
@@ -651,9 +642,7 @@ public class Dynamics2D {
 
 
 
-            smasher.fractures.forEach(f -> {
-                f.smash(smasher, dt);
-            });
+            smasher.fractures.forEach(f -> f.smash(smasher, dt));
             smasher.fractures.clear();
 
 
@@ -1468,7 +1457,7 @@ public class Dynamics2D {
      * @param Index   of the particle to destroy.
      * @param Whether to call the destruction listener just before the particle is destroyed.
      */
-    public void destroyParticle(int index, boolean callDestructionListener) {
+    private void destroyParticle(int index, boolean callDestructionListener) {
         particles.destroyParticle(index, callDestructionListener);
     }
 
@@ -1497,7 +1486,7 @@ public class Dynamics2D {
      * @return Number of particles destroyed.
      * @warning This function is locked during callbacks.
      */
-    public int destroyParticlesInShape(Shape shape, Transform xf, boolean callDestructionListener) {
+    private int destroyParticlesInShape(Shape shape, Transform xf, boolean callDestructionListener) {
 
 
 
@@ -1523,9 +1512,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void joinParticleGroups(ParticleGroup groupA, ParticleGroup groupB) {
-        invoke(()->{
-            particles.joinParticleGroups(groupA, groupB);
-        });
+        invoke(()-> particles.joinParticleGroups(groupA, groupB));
     }
 
     /**
@@ -1535,10 +1522,8 @@ public class Dynamics2D {
      * @param Whether to call the world b2DestructionListener for each particle is destroyed.
      * @warning This function is locked during callbacks.
      */
-    public void destroyParticlesInGroup(ParticleGroup group, boolean callDestructionListener) {
-        invoke(()->{
-            particles.destroyParticlesInGroup(group, callDestructionListener);
-        });
+    private void destroyParticlesInGroup(ParticleGroup group, boolean callDestructionListener) {
+        invoke(()-> particles.destroyParticlesInGroup(group, callDestructionListener));
     }
 
     /**
@@ -1549,9 +1534,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void destroyParticlesInGroup(ParticleGroup group) {
-        invoke(()-> {
-            destroyParticlesInGroup(group, false);
-        });
+        invoke(()-> destroyParticlesInGroup(group, false));
     }
 
     /**
@@ -1778,7 +1761,7 @@ public class Dynamics2D {
 
     public static class Profile {
 
-        public boolean active = false;
+        boolean active = false;
 
         private static final int LONG_AVG_NUMS = 20;
         private static final float LONG_FRACTION = 1f / LONG_AVG_NUMS;
@@ -1797,19 +1780,19 @@ public class Dynamics2D {
                 max = -Float.MAX_VALUE;
             }
 
-            public void record(FloatSupplier value) {
+            void record(FloatSupplier value) {
                 if (active)
                     record(value.asFloat());
             }
 
-            public void record(float value) {
+            void record(float value) {
                 longAvg = longAvg * (1 - LONG_FRACTION) + value * LONG_FRACTION;
                 shortAvg = shortAvg * (1 - SHORT_FRACTION) + value * SHORT_FRACTION;
                 min = MathUtils.min(value, min);
                 max = MathUtils.max(value, max);
             }
 
-            public void startAccum() {
+            void startAccum() {
                 accum = 0;
             }
 
@@ -1818,11 +1801,11 @@ public class Dynamics2D {
                     accum(value.asFloat());
             }
 
-            public void accum(float value) {
+            void accum(float value) {
                 accum += value;
             }
 
-            public void endAccum() {
+            void endAccum() {
                 record(accum);
             }
 
@@ -1832,16 +1815,16 @@ public class Dynamics2D {
             }
         }
 
-        public final ProfileEntry step = new ProfileEntry();
-        public final ProfileEntry stepInit = new ProfileEntry();
-        public final ProfileEntry collide = new ProfileEntry();
-        public final ProfileEntry solveParticleSystem = new ProfileEntry();
-        public final ProfileEntry solve = new ProfileEntry();
+        final ProfileEntry step = new ProfileEntry();
+        final ProfileEntry stepInit = new ProfileEntry();
+        final ProfileEntry collide = new ProfileEntry();
+        final ProfileEntry solveParticleSystem = new ProfileEntry();
+        final ProfileEntry solve = new ProfileEntry();
         public final ProfileEntry solveInit = new ProfileEntry();
         public final ProfileEntry solveVelocity = new ProfileEntry();
         public final ProfileEntry solvePosition = new ProfileEntry();
-        public final ProfileEntry broadphase = new ProfileEntry();
-        public final ProfileEntry solveTOI = new ProfileEntry();
+        final ProfileEntry broadphase = new ProfileEntry();
+        final ProfileEntry solveTOI = new ProfileEntry();
 
         public void toDebugStrings(List<String> strings) {
             strings.add("Profile:");

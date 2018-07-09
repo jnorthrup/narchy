@@ -13,7 +13,8 @@ import java.util.List;
 
 public class Snake {
 
-    final List<Body2D> bodies, attachments;
+    private final List<Body2D> bodies;
+    private final List<Body2D> attachments;
     final List<Joint> joints;
     private final Surface source;
     private final Surface target;
@@ -137,7 +138,7 @@ public class Snake {
         private final Body2D to;
         private final Surface target;
 
-        public MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, Body2D from, Surface source, Body2D to, Surface target) {
+        MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, Body2D from, Surface source, Body2D to, Surface target) {
             super(w, jd);
             this.from = from;
             this.source = source;

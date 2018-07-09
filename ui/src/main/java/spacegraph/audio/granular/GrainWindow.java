@@ -1,6 +1,6 @@
 package spacegraph.audio.granular;
 
-public interface GrainWindow {
+interface GrainWindow {
 
 	/** in samples */
 	int getSize();

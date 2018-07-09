@@ -11,7 +11,7 @@ public class FingerSurfaceMove extends FingerMove {
         this(moving, true, true);
     }
 
-    public FingerSurfaceMove(Surface moving, boolean xAxis, boolean yAxis) {
+    private FingerSurfaceMove(Surface moving, boolean xAxis, boolean yAxis) {
         super(0, /* LEFT BUTTON */xAxis, yAxis);
         this.moving = moving;
     }

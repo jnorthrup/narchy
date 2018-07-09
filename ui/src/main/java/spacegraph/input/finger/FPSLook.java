@@ -13,10 +13,10 @@ import static spacegraph.util.math.v3.v;
  */
 public class FPSLook extends SpaceMouse {
 
-    boolean dragging;
+    private boolean dragging;
     private int prevX, prevY;
-    float h = (float) Math.PI; 
-    float v; 
+    private float h = (float) Math.PI;
+    private float v;
 
     public FPSLook(SpaceGraphPhys3D g) {
         super(g);

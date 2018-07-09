@@ -14,20 +14,20 @@ import spacegraph.video.JoglWindow;
 import java.util.function.Consumer;
 
 
-public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
+abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
-    public final JoglSpace space;
+    final JoglSpace space;
 
     
-    RoaringBitmap queue = new RoaringBitmap();
+    private RoaringBitmap queue = new RoaringBitmap();
 
-    final IntObjectHashMap<FloatProcedure> _keyPressed = new IntObjectHashMap<>();
-    final MutableIntObjectMap<FloatProcedure> keyPressed = _keyPressed.asSynchronized();
-    final IntObjectHashMap<FloatProcedure> _keyReleased = new IntObjectHashMap();
-    final MutableIntObjectMap<FloatProcedure> keyReleased = _keyReleased.asSynchronized();
+    private final IntObjectHashMap<FloatProcedure> _keyPressed = new IntObjectHashMap<>();
+    private final MutableIntObjectMap<FloatProcedure> keyPressed = _keyPressed.asSynchronized();
+    private final IntObjectHashMap<FloatProcedure> _keyReleased = new IntObjectHashMap();
+    private final MutableIntObjectMap<FloatProcedure> keyReleased = _keyReleased.asSynchronized();
     private final On on;
 
-    protected SpaceKeys(JoglSpace g) {
+    SpaceKeys(JoglSpace g) {
         this.space = g;
 
 
@@ -52,7 +52,7 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindo
         }
     }
 
-    protected void watch(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
+    void watch(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
         if (ifPressed != null) {
             keyPressed.put(keyCode, ifPressed);
         }
@@ -73,7 +73,7 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindo
         setKey(e, true);
     }
 
-    public void setKey(KeyEvent e, boolean pressOrRelease) {
+    private void setKey(KeyEvent e, boolean pressOrRelease) {
         if (e.isConsumed())
             return;
 
@@ -82,7 +82,7 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindo
         }
     }
 
-    protected boolean setKey(int c, boolean state) {
+    private boolean setKey(int c, boolean state) {
         if ((state ? keyPressed : keyReleased).containsKey(c)) {
             synchronized (on) {
                 queue.add(state ? c : -c);

@@ -74,8 +74,8 @@ public class FZero extends NAgentX {
 
 
         initToggle();
-        initBipolar(true, 3.5f, 0.15f);
-        //initBipolar(false, 3.5f, 0.3f);
+        initBipolar(false, 3.5f, 0.15f);
+
 
 
         Signal dVelX = senseNumberDifference($.inh(id, $.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);

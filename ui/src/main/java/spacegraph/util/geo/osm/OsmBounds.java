@@ -21,7 +21,7 @@ public class OsmBounds {
             Double.parseDouble(childElement.getAttribute("maxlon")));
     }
 
-    public OsmBounds(double minLat, double minLon, double maxLat, double maxLon) {
+    private OsmBounds(double minLat, double minLon, double maxLat, double maxLon) {
         this.minLat = minLat;
         this.minLon = minLon;
         this.maxLat = maxLat;

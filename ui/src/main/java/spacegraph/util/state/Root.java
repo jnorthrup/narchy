@@ -14,7 +14,7 @@ abstract public class Root implements Contexter {
     /** the 'id' of a root node corresponds to the overall user context, which
      * the user controls to switch between global states
      */
-    String id = MatchPath.STAR;
+    private String id = MatchPath.STAR;
 
     public Root id(String mode) {
         this.id = mode;

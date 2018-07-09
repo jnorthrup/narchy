@@ -108,7 +108,7 @@ public final class JSchSession {
         return username + '@' + hostname + ':' + port;
     }
 
-    public static boolean isAuthenticationFailure(JSchException ee) {
+    private static boolean isAuthenticationFailure(JSchException ee) {
         return ee.getMessage().equals("Auth fail");
     }
 
@@ -144,7 +144,7 @@ public final class JSchSession {
         pool.remove(key);
     }
 
-    public interface SessionFactory {
+    interface SessionFactory {
         Session getSession(String username, String hostname, int port)
                 ;
     }

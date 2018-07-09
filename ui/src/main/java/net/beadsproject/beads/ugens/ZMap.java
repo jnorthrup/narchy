@@ -45,7 +45,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      * @param context  The audio context.
      * @param channels The number of channels.
      */
-    public ZMap(AudioContext context, int channels) {
+    private ZMap(AudioContext context, int channels) {
         super(context, channels, channels);
         this.channels = channels;
         clear();
@@ -179,8 +179,8 @@ public class ZMap extends UGen implements DataBeadReceiver {
      * @param targetMax The "maximum" outgoing value.
      * @return This ZMap instance.
      */
-    public ZMap setRanges(float sourceMin, float sourceMax, float targetMin,
-                          float targetMax) {
+    private ZMap setRanges(float sourceMin, float sourceMax, float targetMin,
+                           float targetMax) {
         if (sourceMin == sourceMax) {
             sourceMin = sourceMax - .0000000001f;
         }
@@ -204,7 +204,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      *
      * @return This ZMap instance.
      */
-    public ZMap clear() {
+    private ZMap clear() {
         o1 = 0;
         o2 = 1;
         n1 = 0;
@@ -223,7 +223,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      * @param shift      The value to then add to the result.
      * @return This ZMap instance.
      */
-    public ZMap multiplyThenAdd(float multiplier, float shift) {
+    private ZMap multiplyThenAdd(float multiplier, float shift) {
 
         a = multiplier;
         b = shift;
@@ -303,7 +303,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      * @param clip Whether to clip.
      * @return This ZMap instance.
      */
-    public ZMap setClipping(boolean clip) {
+    private ZMap setClipping(boolean clip) {
         this.clip = clip;
         return this;
     }
@@ -355,7 +355,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      *
      * @return The new parameter DataBead.
      */
-    public DataAuvent getStaticParams() {
+    private DataAuvent getStaticParams() {
         DataAuvent db = new DataAuvent();
         db.put("sourceMinimum", o1);
         db.put("sourceMaximum", o2);

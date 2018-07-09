@@ -78,8 +78,8 @@ public class Body3D<X> extends Collidable<X> {
 
 	private final v3 gravity = new v3();
 	public final v3 invInertiaLocal = new v3();
-	public final v3 totalForce = new v3();
-	public final v3 totalTorque = new v3();
+	private final v3 totalForce = new v3();
+	private final v3 totalTorque = new v3();
 
 
 	private float linearDamping;
@@ -109,7 +109,7 @@ public class Body3D<X> extends Collidable<X> {
 		this(mass, t, collisionShape, v());
 	}
 
-	public Body3D(float mass, Transform t, CollisionShape collisionShape, v3 localInertia) {
+	private Body3D(float mass, Transform t, CollisionShape collisionShape, v3 localInertia) {
 		super(CollidableType.RIGID_BODY, t);
 
 		linearVelocity.set(0f, 0f, 0f);
@@ -407,7 +407,7 @@ public class Body3D<X> extends Collidable<X> {
 		updateInertiaTensor();
 	}
 
-	public void force(v3 forcetoCenter) {
+	private void force(v3 forcetoCenter) {
 		totalForce.add(forcetoCenter);
 		activate();
 	}
@@ -483,7 +483,7 @@ public class Body3D<X> extends Collidable<X> {
 		totalTorque.set(0f, 0f, 0f);
 	}
 	
-	public void updateInertiaTensor() {
+	private void updateInertiaTensor() {
 		Matrix3f mat1 = new Matrix3f();
 		MatrixUtil.scale(mat1, transform.basis, invInertiaLocal);
 
@@ -641,9 +641,8 @@ public class Body3D<X> extends Collidable<X> {
 			return true;
 		}
 
-		for (int i = 0; i < constraintRefs.size(); ++i) {
-			
-			TypedConstraint c = constraintRefs.get(i);
+		for (TypedConstraint c : constraintRefs) {
+
 			if (c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb) {
 				return false;
 			}

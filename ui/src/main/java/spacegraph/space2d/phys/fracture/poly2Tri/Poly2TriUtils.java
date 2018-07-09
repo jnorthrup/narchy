@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.fracture.poly2Tri;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Poly2TriUtils {
+class Poly2TriUtils {
 
     
     public static final double PI = Math.PI;

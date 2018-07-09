@@ -375,7 +375,7 @@ public class ConsoleTerminal extends Widget {
             return !needUpdate.get();
         }
 
-        protected void redraw(int column, int row) {
+        void redraw(int column, int row) {
             redraw(term.getBufferCharacter(column, row), column, row);
         }
 

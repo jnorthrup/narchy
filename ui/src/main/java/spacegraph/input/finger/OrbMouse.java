@@ -22,21 +22,21 @@ import static spacegraph.util.math.v3.v;
  */
 public class OrbMouse extends SpaceMouse implements KeyListener {
 
-    protected final ClosestRay rayCallback = new ClosestRay(((short) (1 << 7)));
+    private final ClosestRay rayCallback = new ClosestRay(((short) (1 << 7)));
     
     private int mouseDragPrevX, mouseDragPrevY;
     private int mouseDragDX, mouseDragDY;
-    final v3 gOldPickingPos = v();
-    float gOldPickingDist;
+    private final v3 gOldPickingPos = v();
+    private float gOldPickingDist;
 
-    protected TypedConstraint pickConstraint;
+    private TypedConstraint pickConstraint;
     
-    public Body3D pickedBody; 
-    public Spatial pickedSpatial;
-    public Collidable picked;
-    public v3 hitPoint;
-    protected final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
-    public final Finger finger = new Finger();
+    private Body3D pickedBody;
+    private Spatial pickedSpatial;
+    private Collidable picked;
+    private v3 hitPoint;
+    private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
+    private final Finger finger = new Finger();
 
     public OrbMouse(SpaceGraphPhys3D g) {
 
@@ -397,7 +397,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     }
 
     @Nullable
-    ClosestRay mousePick(int x, int y) {
+    private ClosestRay mousePick(int x, int y) {
 
 
 

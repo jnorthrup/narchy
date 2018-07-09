@@ -9,10 +9,15 @@ import net.beadsproject.beads.ugens.Gain;
 import net.beadsproject.beads.ugens.WavePlayer;
 
 public class drum_machine_01 {
-    WavePlayer kick, snareNoise, snareTone;
-    Envelope kickGainEnvelope, snareGainEnvelope;
-    Gain kickGain, snareGain;
-    BiquadFilter kickFilter, snareFilter;
+    private WavePlayer kick;
+    private WavePlayer snareNoise;
+    private WavePlayer snareTone;
+    private Envelope kickGainEnvelope;
+    private Envelope snareGainEnvelope;
+    private Gain kickGain;
+    private Gain snareGain;
+    private BiquadFilter kickFilter;
+    private BiquadFilter snareFilter;
 
     public static void main(String[] args) {
         drum_machine_01 synth = new drum_machine_01();
@@ -20,7 +25,7 @@ public class drum_machine_01 {
     }
 
     
-    public void setup() {
+    private void setup() {
         AudioContext ac = new AudioContext();
 
         

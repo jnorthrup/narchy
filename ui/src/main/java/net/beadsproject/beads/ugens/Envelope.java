@@ -67,7 +67,7 @@ public class Envelope extends UGen {
     /**
      * The real output buffer.
      */
-    protected final float[] myBufOut;
+    private final float[] myBufOut;
 
     /**
      * The nested class Segment. Stores the duration, end value, curvature and trigger for the Segment.
@@ -77,22 +77,22 @@ public class Envelope extends UGen {
         /**
          * The end value.
          */
-        public final float endValue;
+        final float endValue;
 
         /**
          * The duration in samples.
          */
-        public final long duration;
+        final long duration;
 
         /**
          * The curvature.
          */
-        public final float curvature;
+        final float curvature;
 
         /**
          * The trigger.
          */
-        public final Auvent trigger;
+        final Auvent trigger;
 
         /**
          * Instantiates a new segment.
@@ -102,14 +102,14 @@ public class Envelope extends UGen {
          * @param curvature the curvature
          * @param trigger   the trigger
          */
-        public Segment(float endValue, float duration, float curvature, Auvent trigger) {
+        Segment(float endValue, float duration, float curvature, Auvent trigger) {
             this.endValue = endValue;
             this.duration = (int) context.msToSamples(duration);
             this.curvature = Math.abs(curvature);
             this.trigger = trigger;
         }
 
-        public Segment(Segment that) {
+        Segment(Segment that) {
             this.endValue = that.endValue;
             this.duration = that.duration;
             this.curvature = that.curvature;
@@ -122,7 +122,7 @@ public class Envelope extends UGen {
      *
      * @param context the AudioContext.
      */
-    public Envelope(AudioContext context) {
+    private Envelope(AudioContext context) {
         super(context, 1);
         segments = new LinkedList<>();
         currentStartValue = 0;
@@ -189,7 +189,7 @@ public class Envelope extends UGen {
      * @param curvature the exponent of the curve.
      * @param trigger   the trigger.
      */
-    public synchronized Envelope add(float endValue, float duration, float curvature, Auvent trigger) { 
+    private synchronized Envelope add(float endValue, float duration, float curvature, Auvent trigger) {
         if (!lock) {
             if (!Float.isNaN(endValue) && !Float.isInfinite(endValue)) {
                 segments.add(new Segment(endValue, duration, curvature, trigger));

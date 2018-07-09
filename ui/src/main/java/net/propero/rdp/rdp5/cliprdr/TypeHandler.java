@@ -42,11 +42,11 @@ public abstract class TypeHandler {
      */
 
     
-    public static final int CF_TEXT = 1;
+    static final int CF_TEXT = 1;
 
     public static final int CF_BITMAP = 2;
 
-    public static final int CF_METAFILEPICT = 3;
+    static final int CF_METAFILEPICT = 3;
 
     public static final int CF_SYLK = 4;
 
@@ -56,7 +56,7 @@ public abstract class TypeHandler {
 
     public static final int CF_OEMTEXT = 7;
 
-    public static final int CF_DIB = 8;
+    static final int CF_DIB = 8;
 
     public static final int CF_PALETTE = 9;
 
@@ -66,7 +66,7 @@ public abstract class TypeHandler {
 
     public static final int CF_WAVE = 12;
 
-    public static final int CF_UNICODETEXT = 13;
+    static final int CF_UNICODETEXT = 13;
 
     public static final int CF_ENHMETAFILE = 14;
 
@@ -108,8 +108,8 @@ public abstract class TypeHandler {
 
     public boolean clipboardValid(DataFlavor[] dataTypes) {
 
-        for (int i = 0; i < dataTypes.length; i++) {
-            if (mimeTypeValid(dataTypes[i].getPrimaryType()))
+        for (DataFlavor dataType : dataTypes) {
+            if (mimeTypeValid(dataType.getPrimaryType()))
                 return true;
         }
         return false;

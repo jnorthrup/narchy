@@ -35,7 +35,7 @@ import spacegraph.util.math.v3;
  */
 public abstract class StridingMeshInterface {
 
-	protected final v3 scaling = new v3(1f, 1f, 1f);
+	private final v3 scaling = new v3(1f, 1f, 1f);
 	
 	public void internalProcessAllTriangles(InternalTriangleIndexCallback callback, v3 aabbMin, v3 aabbMax) {
 		int graphicssubparts = getNumSubParts();
@@ -56,8 +56,8 @@ public abstract class StridingMeshInterface {
 	}
 
 	private static class AabbCalculationCallback extends InternalTriangleIndexCallback {
-		public final v3 aabbMin = new v3(1e30f, 1e30f, 1e30f);
-		public final v3 aabbMax = new v3(-1e30f, -1e30f, -1e30f);
+		final v3 aabbMin = new v3(1e30f, 1e30f, 1e30f);
+		final v3 aabbMax = new v3(-1e30f, -1e30f, -1e30f);
 
 		@Override
         public void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex) {

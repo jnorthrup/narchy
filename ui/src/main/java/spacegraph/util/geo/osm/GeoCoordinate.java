@@ -10,13 +10,13 @@ import static java.lang.Double.parseDouble;
 public class GeoCoordinate {
     public final double latitude;
     public final double longitude;
-    public final double altitude;
+    private final double altitude;
 
     public GeoCoordinate() {
         this(0, 0, 0);
     }
 
-    public GeoCoordinate(double latitude, double longitude, double altitude) {
+    private GeoCoordinate(double latitude, double longitude, double altitude) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.altitude = altitude;

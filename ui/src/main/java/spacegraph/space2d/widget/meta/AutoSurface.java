@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.Sets;
 import jcog.Service;
 import jcog.Services;
+import jcog.TODO;
 import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.EnumParam;
@@ -16,7 +17,6 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.tab.ButtonSet;
@@ -32,13 +32,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AutoSurface<X> extends Gridding {
 
-    final static int MAX_DEPTH = 1;
-    final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
+    private final static int MAX_DEPTH = 1;
+    private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
     /**
      * root
      */
     private final X obj;
-    Ons ons = null;
+    private Ons ons = null;
 
     public AutoSurface(X x) {
         super();
@@ -86,7 +86,7 @@ public class AutoSurface<X> extends Gridding {
         }
 
         if (x instanceof Collection) {
-            Surface cx = collectElements((Iterable<?>) x, depth + 1);
+            Surface cx = collectElements((Iterable) x, depth + 1);
             if (cx != null) {
                 target.add(new LabeledPane(yLabel, cx));
             }
@@ -112,16 +112,22 @@ public class AutoSurface<X> extends Gridding {
         }
     }
 
-    private ButtonSet newSwitch(EnumParam x) {
+    private ButtonSet newSwitch(EnumParam<?> x) {
+        EnumSet<?> s = EnumSet.allOf(x.klass);
+        System.out.println(x + " " + x.value + " " + x.klass + " " + s);
+        throw new TODO();//JDK12 compiler error
 
-        return new ButtonSet<>(ButtonSet.Mode.One, ((EnumSet<?>) EnumSet.allOf(x.klass)).stream().map(e -> {
-            CheckBox tb = new CheckBox(e.name());
-            tb.on((c, enabled) -> {
-                if (enabled)
-                    x.set(e);
-            });
-            return tb;
-        }).toArray(ToggleButton[]::new));
+//        ToggleButton[] b = ((EnumSet) EnumSet.allOf(x.klass)).stream().map(e -> {
+//            CheckBox tb = new CheckBox(e.name());
+//            tb.on((c, enabled) -> {
+//                if (enabled)
+//                    x.set(e);
+//            });
+//            return tb;
+//        }).toArray(ToggleButton[]::new);
+//
+//        ButtonSet s = new ButtonSet(ButtonSet.Mode.One, b);
+//        return s;
     }
 
     private Surface collectElements(Iterable<?> x, int depth) {
@@ -144,7 +150,7 @@ public class AutoSurface<X> extends Gridding {
         return false;
     }
 
-    void collectFields(Object x, List<Surface> target, int depth) {
+    private void collectFields(Object x, List<Surface> target, int depth) {
         Class cc = x.getClass();
         Reflect.on(cc).fields(true,false,false).forEach((s,ff)->{
             Field f = ff.get();
@@ -187,7 +193,7 @@ public class AutoSurface<X> extends Gridding {
     private static class MySlider extends FloatSlider {
         private final String k;
 
-        public MySlider(FloatRange p, String k) {
+        MySlider(FloatRange p, String k) {
             super(p);
             this.k = k;
         }
@@ -202,7 +208,7 @@ public class AutoSurface<X> extends Gridding {
     private static class MyIntSlider extends IntSlider {
         private final String k;
 
-        public MyIntSlider(IntRange p, String k) {
+        MyIntSlider(IntRange p, String k) {
             super(p);
             this.k = k;
         }
@@ -214,7 +220,7 @@ public class AutoSurface<X> extends Gridding {
     }
 
     private class AutoServices extends Widget {
-        public AutoServices(Services<?, ?> x) {
+        AutoServices(Services<?, ?> x) {
 
             List<Surface> l = new FasterList(x.size());
 
@@ -234,11 +240,9 @@ public class AutoSurface<X> extends Gridding {
 
 
                     l.add(
-                            new PushButton(IconBuilder.simpleBuilder.apply(s)).click(()->{
-                                SpaceGraph.window(
-                                        new LabeledPane(label, new AutoSurface(s)),
-                                        500, 500);
-                            })
+                            new PushButton(IconBuilder.simpleBuilder.apply(s)).click(()-> SpaceGraph.window(
+                                    new LabeledPane(label, new AutoSurface(s)),
+                                    500, 500))
                             
 
 
@@ -270,15 +274,15 @@ public class AutoSurface<X> extends Gridding {
 
             });
 
-            content(new Gridding(0.25f, l));
+            content(new Gridding(l));
         }
     }
 
-    protected boolean add(Object x) {
+    private boolean add(Object x) {
         return seen.add(x);
     }
 
-    protected boolean addService(Service<?> x) {
+    private boolean addService(Service<?> x) {
         return add(x);
     }
 

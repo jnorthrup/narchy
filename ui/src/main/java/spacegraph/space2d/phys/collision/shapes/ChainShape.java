@@ -43,12 +43,14 @@ public class ChainShape extends Shape {
 
     public Tuple2f[] m_vertices;
     public int m_count;
-    public final Tuple2f m_prevVertex = new Vec2(), m_nextVertex = new Vec2();
-    public boolean m_hasPrevVertex = false, m_hasNextVertex = false;
+    private final Tuple2f m_prevVertex = new Vec2();
+    private final Tuple2f m_nextVertex = new Vec2();
+    private boolean m_hasPrevVertex = false;
+    private boolean m_hasNextVertex = false;
 
     private final EdgeShape pool0 = new EdgeShape();
 
-    public ChainShape() {
+    private ChainShape() {
         super(ShapeType.CHAIN);
         m_vertices = null;
         radius = Settings.polygonRadius;
@@ -215,7 +217,7 @@ public class ChainShape extends Shape {
      * @param vertices an array of vertices, these are copied
      * @param count    the vertex count
      */
-    public void createChain(final Tuple2f vertices[], int count) {
+    private void createChain(final Tuple2f vertices[], int count) {
         assert (m_vertices == null && m_count == 0);
         assert (count >= 2);
         m_count = count;

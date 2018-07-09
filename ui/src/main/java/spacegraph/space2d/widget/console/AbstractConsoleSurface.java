@@ -8,7 +8,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public abstract class AbstractConsoleSurface extends Container implements Appendable {
-    protected int rows, cols;
+    int rows;
+    int cols;
 
     public void resize(int cols, int rows) {
         this.cols = cols;

@@ -17,9 +17,9 @@ abstract public class AbstractSpace<X>  {
 
 
 
-    protected final List<SpaceTransform<X>> transforms = new FasterList();
+    private final List<SpaceTransform<X>> transforms = new FasterList();
 
-    public AbstractSpace with(SpaceTransform<X>... t) {
+    protected AbstractSpace with(SpaceTransform<X>... t) {
         Collections.addAll(this.transforms, t);
         return this;
     }
@@ -62,8 +62,7 @@ abstract public class AbstractSpace<X>  {
     public void update(SpaceGraphPhys3D<X> s, long dtMS) {
 
         List<SpaceTransform<X>> ll = this.transforms;
-        for (int i1 = 0, layoutSize = ll.size(); i1 < layoutSize; i1++)
-            ll.get(i1).update(s, dtMS);
+        for (SpaceTransform<X> aLl : ll) aLl.update(s, dtMS);
 
     }
 

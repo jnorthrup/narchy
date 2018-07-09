@@ -5,16 +5,16 @@ import net.propero.rdp.RdpPacket;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
-public class IRP {
+class IRP {
 
-    public final int fileId;
+    private final int fileId;
 
-    public final int majorFunction;
+    private final int majorFunction;
 
-    public final int minorFunction;
+    private final int minorFunction;
 
-    public final DataOutputStream out;
-    public final ByteArrayOutputStream bout;
+    private final DataOutputStream out;
+    private final ByteArrayOutputStream bout;
 
     public RdpPacket data;
 

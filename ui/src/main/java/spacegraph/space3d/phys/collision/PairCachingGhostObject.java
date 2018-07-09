@@ -34,7 +34,7 @@ import spacegraph.space3d.phys.collision.broad.Intersecter;
  */
 public class PairCachingGhostObject extends GhostObject {
 	
-	final HashedOverlappingPairCache hashPairCache = new HashedOverlappingPairCache();
+	private final HashedOverlappingPairCache hashPairCache = new HashedOverlappingPairCache();
 
 	/**
 	 * This method is mainly for expert/internal use only.

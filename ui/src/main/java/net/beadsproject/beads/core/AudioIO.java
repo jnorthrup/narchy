@@ -24,7 +24,7 @@ public abstract class AudioIO {
      *
      * @return true, if successful.
      */
-    protected static boolean prepare() {
+    static boolean prepare() {
         return true;
     }
 
@@ -68,7 +68,7 @@ public abstract class AudioIO {
      *
      * @return the context.
      */
-    public AudioContext getContext() {
+    protected AudioContext getContext() {
         return context;
     }
 

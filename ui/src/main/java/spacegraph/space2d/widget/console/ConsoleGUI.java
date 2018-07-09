@@ -8,6 +8,7 @@ import com.googlecode.lanterna.graphics.Theme;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
+import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
@@ -22,20 +23,20 @@ public class ConsoleGUI extends ConsoleTerminal {
     private static final int MAX_ROWS = 80;
     private static final int MAX_COLS = 120;
 
-    MultiWindowTextGUI gui;
-    TerminalScreen screen = null;
-    On updates = null;
-    BasicWindow window = null;
+    private MultiWindowTextGUI gui;
+    private TerminalScreen screen = null;
+    private On updates = null;
+    private BasicWindow window = null;
 
-    public ConsoleGUI(int cols, int rows) {
+    ConsoleGUI(int cols, int rows) {
         this(new DefaultVirtualTerminal(new TerminalSize(cols, rows)));
     }
 
-    public ConsoleGUI(DefaultVirtualTerminal term) {
+    public ConsoleGUI(VirtualTerminal term) {
         super(term);
     }
 
-    protected void init(BasicWindow window) {
+    void init(BasicWindow window) {
 
     }
 
@@ -44,7 +45,7 @@ public class ConsoleGUI extends ConsoleTerminal {
         return this;
     }
 
-    static final Theme DARK = SimpleTheme.makeTheme(
+    private static final Theme DARK = SimpleTheme.makeTheme(
             true,
             TextColor.ANSI.WHITE, 
             new TextColor.RGB(40,40,40), 

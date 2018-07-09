@@ -8,10 +8,10 @@ import java.util.Arrays;
 /**
  * generic MIDI input interface
  */
-public class MIDI {
+class MIDI {
 
     private final MidiInReceiver receiver;
-    float volume[] = new float[128];
+    private float[] volume = new float[128];
 
     public MIDI() {
 
@@ -21,9 +21,9 @@ public class MIDI {
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 
         MidiInReceiver receiver = null;
-        for (int i = 0; i < infos.length; i++) {
+        for (MidiDevice.Info info : infos) {
             try {
-                MidiDevice.Info ii = infos[i];
+                MidiDevice.Info ii = info;
 
                 device = MidiSystem.getMidiDevice(ii);
 
@@ -43,7 +43,7 @@ public class MIDI {
                     midis.add((MidiDevice) ii);
                 }*/
             } catch (MidiUnavailableException e) {
-                
+
             }
         }
 
@@ -54,17 +54,17 @@ public class MIDI {
     }
 
 
-    public static boolean receive(MidiDevice device) {
+    private static boolean receive(MidiDevice device) {
         return device.getDeviceInfo().getName().startsWith("MPD218");
     }
 
-    public class MidiInReceiver implements Receiver {
+    class MidiInReceiver implements Receiver {
 
         
 
         private final MidiDevice device;
 
-        public MidiInReceiver(MidiDevice device) throws MidiUnavailableException {
+        MidiInReceiver(MidiDevice device) throws MidiUnavailableException {
             this.device = device;
 
             if (!device.isOpen()) {

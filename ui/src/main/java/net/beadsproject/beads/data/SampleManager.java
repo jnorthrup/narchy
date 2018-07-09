@@ -6,9 +6,9 @@ package net.beadsproject.beads.data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -16,7 +16,7 @@ import java.util.*;
  *
  * @beads.category data
  */
-public class SampleManager {
+class SampleManager {
 
     /**
      * List of all Samples, indexed by name.
@@ -71,7 +71,7 @@ public class SampleManager {
      * @param fn  the file path.
      * @return the sample.
      */
-    public static Sample sample(String ref, String fn) {
+    private static Sample sample(String ref, String fn) {
         Sample sample = samples.get(ref);
         if (sample == null) {
             try {
@@ -100,9 +100,9 @@ public class SampleManager {
         } else {
             group = groups.get(groupName);
         }
-        for (int i = 0; i < sampleList.length; i++) {
-            if (!group.contains(sampleList[i])) {
-                group.add(sampleList[i]);
+        for (Sample aSampleList : sampleList) {
+            if (!group.contains(aSampleList)) {
+                group.add(aSampleList);
             }
         }
         for (SampleGroupListener l : listeners) {
@@ -130,18 +130,14 @@ public class SampleManager {
      * @param folderName the folder address (URL or file path).
      * @param maxItems   number of items to limit to.
      */
-    public static List<Sample> group(String groupName, String folderName, int maxItems) {
+    private static List<Sample> group(String groupName, String folderName, int maxItems) {
         
         File theDirectory = null;
-        try {
-            URL url = ClassLoader.getSystemResource(folderName);
-            if (url != null) {
-                theDirectory = new File(URLDecoder.decode(url.getPath(), "UTF-8"));
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        URL url = ClassLoader.getSystemResource(folderName);
+        if (url != null) {
+            theDirectory = new File(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
         }
-        
+
         if (theDirectory == null || !theDirectory.exists()) {
             theDirectory = new File(folderName);
         }
@@ -176,7 +172,7 @@ public class SampleManager {
      * @param fileNameList the file name list.
      * @param maxItems     number of items to limit to.
      */
-    public static List<Sample> group(String groupName, String[] fileNameList, int maxItems) {
+    private static List<Sample> group(String groupName, String[] fileNameList, int maxItems) {
         ArrayList<Sample> group;
         if (!groups.keySet().contains(groupName)) {
             group = new ArrayList<>();
@@ -184,16 +180,15 @@ public class SampleManager {
         } else
             group = groups.get(groupName);
         int count = 0;
-        for (int i = 0; i < fileNameList.length; i++) {
-            String simpleName = fileNameList[i];
+        for (String simpleName : fileNameList) {
             try {
-                Sample sample = sample(simpleName, fileNameList[i]);
+                Sample sample = sample(simpleName, simpleName);
                 if (!group.contains(simpleName) && sample != null) {
                     if (count++ >= maxItems) break;
                     group.add(sample);
                 }
             } catch (Exception e) {
-                
+
             }
         }
         for (SampleGroupListener l : listeners) {
@@ -320,7 +315,7 @@ public class SampleManager {
      *
      * @param sampleName the sample name.
      */
-    public static void removeSample(String sampleName) {
+    private static void removeSample(String sampleName) {
         samples.remove(sampleName);
     }
 
@@ -329,7 +324,7 @@ public class SampleManager {
      *
      * @param sample the Sample.
      */
-    public static void removeSample(Sample sample) {
+    private static void removeSample(Sample sample) {
         for (Map.Entry<String, Sample> stringSampleEntry : samples.entrySet()) {
             if (stringSampleEntry.getValue().equals(sample)) {
                 removeSample(stringSampleEntry.getKey());
@@ -343,7 +338,7 @@ public class SampleManager {
      *
      * @param groupName the group name.
      */
-    public static void removeGroup(String groupName) {
+    private static void removeGroup(String groupName) {
         groups.remove(groupName);
         groupDirs.remove(groupName);
         for (SampleGroupListener l : listeners) {
@@ -359,8 +354,8 @@ public class SampleManager {
      */
     public static void destroyGroup(String groupName) {
         ArrayList<Sample> group = groups.get(groupName);
-        for (int i = 0; i < group.size(); i++) {
-            removeSample(group.get(i));
+        for (Sample aGroup : group) {
+            removeSample(aGroup);
         }
         removeGroup(groupName);
     }
@@ -475,7 +470,7 @@ public class SampleManager {
      *
      * @author ollie
      */
-    public interface SampleGroupListener {
+    interface SampleGroupListener {
 
         /**
          * Called when {@link SampleManager} makes changes to a group.

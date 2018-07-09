@@ -47,7 +47,7 @@ import spacegraph.util.math.v3;
  */
 public class CapsuleShape extends ConvexInternalShape {
 	
-	protected int upAxis;
+	int upAxis;
 
 	
 	CapsuleShape() {

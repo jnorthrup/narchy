@@ -17,7 +17,7 @@ package spacegraph.space2d.widget.meter.audio;
  **
  **/
 
-public class BaseMusic_FastFourierTransform {
+class BaseMusic_FastFourierTransform {
 
     private final float[] xre;
     private final float[] xim;

@@ -35,8 +35,8 @@ public abstract class TriangleRaycastCallback extends TriangleCallback {
 	
 	
 
-	public final v3 from = new v3();
-	public final v3 to = new v3();
+	private final v3 from = new v3();
+	private final v3 to = new v3();
 
 	public float hitFraction;
 
@@ -115,6 +115,6 @@ public abstract class TriangleRaycastCallback extends TriangleCallback {
         }
 	}
 
-	public abstract float reportHit(v3 hitNormalLocal, float hitFraction, int partId, int triangleIndex );
+	protected abstract float reportHit(v3 hitNormalLocal, float hitFraction, int partId, int triangleIndex);
 
 }

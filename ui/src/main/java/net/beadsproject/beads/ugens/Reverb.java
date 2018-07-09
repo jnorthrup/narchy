@@ -54,7 +54,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @param context     The audio context.
      * @param outChannels The number of output channels.
      */
-    public Reverb(AudioContext context, int outChannels) {
+    private Reverb(AudioContext context, int outChannels) {
         super(context, 1, outChannels);
 
         sampsPerMS = (float) context.msToSamples(1);
@@ -162,7 +162,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @param size The "room size".
      * @return This reverb instance.
      */
-    public Reverb setSize(float size) {
+    private Reverb setSize(float size) {
         if (size > 1)
             size = 1;
         else if (size < 0.01)
@@ -202,7 +202,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @param damping The damping factor.
      * @return This reverb instance.
      */
-    public Reverb setDamping(float damping) {
+    private Reverb setDamping(float damping) {
         if (damping < 0)
             damping = 0;
         else if (damping > 1)
@@ -233,7 +233,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @param earlyLevel The early reflections level.
      * @return This reverb instance.
      */
-    public Reverb setEarlyReflectionsLevel(float earlyLevel) {
+    private Reverb setEarlyReflectionsLevel(float earlyLevel) {
         this.earlyLevel = earlyLevel;
         earlyGain.setGain(earlyLevel);
         return this;
@@ -255,7 +255,7 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
      * @param lateLevel The late reverb level.
      * @return This reverb instance.
      */
-    public Reverb setLateReverbLevel(float lateLevel) {
+    private Reverb setLateReverbLevel(float lateLevel) {
         this.lateLevel = lateLevel;
         lateGain.setGain(lateLevel);
         return this;

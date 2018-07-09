@@ -42,7 +42,7 @@ import java.util.function.Predicate;
  */
 public final class OArrayList<T> extends AbstractList<T> implements RandomAccess, Externalizable {
 
-	public T[] array;
+	private T[] array;
 	private int size;
 
 	public OArrayList() {

@@ -174,7 +174,7 @@ public class WavePlayer extends UGen {
      * @param frequencyUGen The new frequency controller.
      * @return This WavePlayer instance.
      */
-    public WavePlayer setFrequency(UGen frequencyUGen) {
+    private WavePlayer setFrequency(UGen frequencyUGen) {
         if (frequencyUGen == null) {
             setFrequency(frequency);
         } else {
@@ -193,7 +193,7 @@ public class WavePlayer extends UGen {
      * @param frequency The new frequency value.
      * @return This WavePlayer instance.
      */
-    public WavePlayer setFrequency(float frequency) {
+    private WavePlayer setFrequency(float frequency) {
         if (isFreqStatic) {
             frequencyEnvelope.setValue(frequency);
         } else {
@@ -251,7 +251,7 @@ public class WavePlayer extends UGen {
      * @param phaseController The new phase controller.
      * @return This WavePlayer instance.
      */
-    public WavePlayer setPhase(UGen phaseController) {
+    private WavePlayer setPhase(UGen phaseController) {
         this.phaseEnvelope = phaseController;
         if (phaseController != null) {
             phase = phaseController.getValue();

@@ -15,7 +15,7 @@ package net.propero.rdp.crypto;
  * @author David Hopwood
  * @since Cryptix 2.2.2
  */
-public abstract class BlockMessageDigest {
+abstract class BlockMessageDigest {
     private static final int MAX_COUNT = (1 << 28) - 1;
     /**
      * The buffer used to store the last incomplete block.
@@ -40,7 +40,7 @@ public abstract class BlockMessageDigest {
      *
      * @param algorithm the standard name of the digest algorithm.
      */
-    protected BlockMessageDigest(String algorithm) {
+    BlockMessageDigest(String algorithm) {
         this.algorithm = algorithm;
         data_length = engineGetDataLength();
         buffer = new byte[data_length];
@@ -49,7 +49,7 @@ public abstract class BlockMessageDigest {
     /**
      * @return number of bits hashed so far?
      */
-    protected int bitcount() {
+    int bitcount() {
         return count * 8;
     }
 
@@ -58,7 +58,7 @@ public abstract class BlockMessageDigest {
      * <code>engineReset</code> should always call this implementation using
      * <code>super.engineReset()</code>.
      */
-    public void engineReset() {
+    void engineReset() {
         buffered = 0;
         count = 0;
     }
@@ -80,7 +80,7 @@ public abstract class BlockMessageDigest {
      * @param offset the start of the data in the array.
      * @param length the number of bytes of data to add.
      */
-    public void engineUpdate(byte[] data, int offset, int length)
+    private void engineUpdate(byte[] data, int offset, int length)
             throws CryptoException {
         count += length;
         if (count > MAX_COUNT)
@@ -129,7 +129,7 @@ public abstract class BlockMessageDigest {
      * @param length the length in bytes of the last block.
      * @return the digest as a byte array.
      */
-    public abstract byte[] engineDigest(byte[] data, int length);
+    protected abstract byte[] engineDigest(byte[] data, int length);
 
     /**
      * <b>SPI</b> (for BlockMessageDigests only): Performs a transformation on
@@ -143,7 +143,7 @@ public abstract class BlockMessageDigest {
      */
     protected abstract int engineGetDataLength();
 
-    protected String getAlgorithm() {
+    private String getAlgorithm() {
         return this.algorithm;
     }
 }

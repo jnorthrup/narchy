@@ -107,11 +107,11 @@ import spacegraph.util.math.v2;
 public class PrismaticJoint extends Joint {
 
     
-    protected final Tuple2f m_localAnchorA;
-    protected final Tuple2f m_localAnchorB;
-    protected final v2 m_localXAxisA;
-    protected final Tuple2f m_localYAxisA;
-    protected final float m_referenceAngle;
+    final Tuple2f m_localAnchorA;
+    final Tuple2f m_localAnchorB;
+    final v2 m_localXAxisA;
+    private final Tuple2f m_localYAxisA;
+    final float m_referenceAngle;
     private final Vec3 m_impulse;
     private float m_motorImpulse;
     private float m_lowerTranslation;
@@ -137,7 +137,7 @@ public class PrismaticJoint extends Joint {
     private final Mat33 m_K;
     private float m_motorMass; 
 
-    protected PrismaticJoint(IWorldPool argWorld, PrismaticJointDef def) {
+    PrismaticJoint(IWorldPool argWorld, PrismaticJointDef def) {
         super(argWorld, def);
         m_localAnchorA = new v2(def.localAnchorA);
         m_localAnchorB = new v2(def.localAnchorB);

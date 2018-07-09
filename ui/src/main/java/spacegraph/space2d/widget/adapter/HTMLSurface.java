@@ -19,7 +19,7 @@ public class HTMLSurface extends AWTSurface {
     }
 
 
-    public HTMLSurface(String url, int w, int h) {
+    private HTMLSurface(String url, int w, int h) {
         super(new HTMLView(url), w, h);
     }
 
@@ -28,7 +28,7 @@ public class HTMLSurface extends AWTSurface {
 
         private final JEditorPane ed;
 
-        public HTMLView(String initialURL) {
+        HTMLView(String initialURL) {
 
             JLabel lblURL = new JLabel("URL");
             final JTextField txtURL = new JTextField(initialURL, 30);
@@ -82,7 +82,7 @@ public class HTMLSurface extends AWTSurface {
 
         }
 
-        public void go(String url) {
+        void go(String url) {
             try {
 
                 ed.setPage(url);

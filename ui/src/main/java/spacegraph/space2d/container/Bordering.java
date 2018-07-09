@@ -8,25 +8,25 @@ import spacegraph.space2d.Surface;
 
  */
 public class Bordering extends MutableContainer {
-    public final static int C = 0;
-    public final static int N = 1;
-    public final static int S = 2;
+    protected final static int C = 0;
+    protected final static int N = 1;
+    protected final static int S = 2;
     public final static int E = 3;
-    public final static int W = 4;
-    public final static int NE = 5;
-    public final static int NW = 6;
-    public final static int SW = 7;
-    public final static int SE = 8;
+    protected final static int W = 4;
+    protected final static int NE = 5;
+    private final static int NW = 6;
+    private final static int SW = 7;
+    private final static int SE = 8;
 
     /**
      * in percent of the half total size of the corresponding dimension
      */
     protected float borderWest = 0.25f;
-    protected float borderEast = 0.25f;
+    private float borderEast = 0.25f;
     protected float borderSouth = 0.25f;
-    protected float borderNorth = 0.25f;
+    private float borderNorth = 0.25f;
 
-    boolean autocollapse = true;
+    private boolean autocollapse = true;
 
     public Bordering() {
         super();
@@ -40,7 +40,7 @@ public class Bordering extends MutableContainer {
     /**
      * sets all edge sizes to a value
      */
-    public Bordering edge(float size) {
+    protected Bordering edge(float size) {
         borderNorth = borderSouth = borderEast = borderWest = size;
         layout(); 
         return this;

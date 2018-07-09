@@ -29,7 +29,7 @@ package spacegraph.space2d.phys.collision.broadphase;
  * Java note: at the "creation" of each node, a random key is given to that node, and that's what we
  * sort from.
  */
-public class Pair implements Comparable<Pair> {
+class Pair implements Comparable<Pair> {
     public int proxyIdA;
     public int proxyIdB;
 

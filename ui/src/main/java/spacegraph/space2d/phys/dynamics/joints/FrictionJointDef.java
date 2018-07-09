@@ -37,7 +37,7 @@ import spacegraph.util.math.Tuple2f;
  *
  * @author Daniel Murphy
  */
-public class FrictionJointDef extends JointDef {
+class FrictionJointDef extends JointDef {
 
 
     /**

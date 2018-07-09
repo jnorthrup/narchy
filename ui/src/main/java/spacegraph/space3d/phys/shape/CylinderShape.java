@@ -38,7 +38,7 @@ import spacegraph.util.math.v3;
  */
 public class CylinderShape extends BoxShape {
 
-	protected int upAxis;
+	int upAxis;
 
 	public CylinderShape(v3 halfExtents) {
 		super(halfExtents);
@@ -46,7 +46,7 @@ public class CylinderShape extends BoxShape {
 		recalcLocalAabb();
 	}
 
-	protected CylinderShape(v3 halfExtents, boolean unused) {
+	CylinderShape(v3 halfExtents, boolean unused) {
 		super(halfExtents);
 	}
 
@@ -55,15 +55,15 @@ public class CylinderShape extends BoxShape {
 		_PolyhedralConvexShape_getAabb(t, aabbMin, aabbMax);
 	}
 
-	protected static v3 cylinderLocalSupportX(v3 halfExtents, v3 v, v3 out) {
+	static v3 cylinderLocalSupportX(v3 halfExtents, v3 v, v3 out) {
 		return cylinderLocalSupport(halfExtents, v, 0, 1, 0, 2, out);
 	}
 
-	protected static v3 cylinderLocalSupportY(v3 halfExtents, v3 v, v3 out) {
+	private static v3 cylinderLocalSupportY(v3 halfExtents, v3 v, v3 out) {
 		return cylinderLocalSupport(halfExtents, v, 1, 0, 1, 2, out);
 	}
 
-	protected static v3 cylinderLocalSupportZ(v3 halfExtents, v3 v, v3 out) {
+	static v3 cylinderLocalSupportZ(v3 halfExtents, v3 v, v3 out) {
 		return cylinderLocalSupport(halfExtents, v, 2, 0, 2, 1, out);
 	}
 	

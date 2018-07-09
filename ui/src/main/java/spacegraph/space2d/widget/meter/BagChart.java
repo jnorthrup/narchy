@@ -9,9 +9,9 @@ import java.util.function.Function;
  */
 public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart.ItemVis<X>> {
 
-    final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
-    public final Iterable<? extends X> input;
+    private final Iterable<? extends X> input;
     private final Function<X, TreeChart.ItemVis<X>> updater;
 
     public BagChart(Iterable<X> b) {
@@ -31,7 +31,7 @@ public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart
         }
     }
 
-    protected ItemVis<X> newItem(X i) {
+    private ItemVis<X> newItem(X i) {
         return new ItemVis<>(i, label(i, 50));
     }
 

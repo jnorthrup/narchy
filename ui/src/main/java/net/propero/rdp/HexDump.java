@@ -31,7 +31,7 @@
 package net.propero.rdp;
 
 
-public class HexDump {
+class HexDump {
 
     /**
      * Construct a HexDump object, sets logging level to Debug

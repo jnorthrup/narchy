@@ -45,7 +45,7 @@ public class AxisSweep3_32 extends AxisSweep3Internal {
 		this(worldAabbMin, worldAabbMax, maxHandles, null);
 	}
 	
-	public AxisSweep3_32(v3 worldAabbMin, v3 worldAabbMax, int maxHandles/* = 1500000*/, OverlappingPairCache pairCache/* = 0*/) {
+	private AxisSweep3_32(v3 worldAabbMin, v3 worldAabbMax, int maxHandles/* = 1500000*/, OverlappingPairCache pairCache/* = 0*/) {
 		super(worldAabbMin, worldAabbMax, 0xfffffffe, 0x7fffffff, maxHandles, pairCache);
 		
 		assert (maxHandles > 1 && maxHandles < 2147483647);
@@ -70,7 +70,7 @@ public class AxisSweep3_32 extends AxisSweep3Internal {
 		private final int[] pos;
 		private final int[] handle;
 
-		public EdgeArrayImpl(int size) {
+		EdgeArrayImpl(int size) {
 			pos = new int[size];
 			handle = new int[size];
 		}

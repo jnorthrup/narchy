@@ -75,7 +75,7 @@ public class PulleyJoint extends Joint {
     private float m_invIB;
     private float m_mass;
 
-    protected PulleyJoint(IWorldPool argWorldPool, PulleyJointDef def) {
+    PulleyJoint(IWorldPool argWorldPool, PulleyJointDef def) {
         super(argWorldPool, def);
         m_groundAnchorA.set(def.groundAnchorA);
         m_groundAnchorB.set(def.groundAnchorB);

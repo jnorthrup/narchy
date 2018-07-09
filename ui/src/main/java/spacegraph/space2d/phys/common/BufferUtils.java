@@ -39,7 +39,7 @@ public class BufferUtils {
     /**
      * Reallocate a buffer.
      */
-    public static float[] reallocateBuffer(float[] oldBuffer, int oldCapacity, int newCapacity) {
+    private static float[] reallocateBuffer(float[] oldBuffer, int oldCapacity, int newCapacity) {
         assert (newCapacity > oldCapacity);
         float[] newBuffer = new float[newCapacity];
         if (oldBuffer != null) {

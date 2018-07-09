@@ -25,10 +25,10 @@ public class SimpleTSne implements TSne {
 	private double[][] iY;
 	private double[][] gains;
 
-	double momentum = .5;
+	private double momentum = .5;
 	
-	double eta                 = 0.5;
-	double min_gain         = Double.MIN_NORMAL;
+	private double eta                 = 0.5;
+	private double min_gain         = Double.MIN_NORMAL;
 	private double[][] X;
 
 	private double[][] numMatrix;

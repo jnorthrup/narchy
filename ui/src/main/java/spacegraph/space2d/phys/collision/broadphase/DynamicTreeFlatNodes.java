@@ -34,16 +34,16 @@ import spacegraph.util.math.v2;
 
 public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     public static final int MAX_STACK_SIZE = 64;
-    public static final int NULL_NODE = -1;
+    private static final int NULL_NODE = -1;
     public static final int INITIAL_BUFFER_LENGTH = 16;
 
-    public int m_root;
-    public AABB[] m_aabb;
-    public Object[] m_userData;
-    protected int[] m_parent;
-    protected int[] m_child1;
-    protected int[] m_child2;
-    protected int[] m_height;
+    private int m_root;
+    private AABB[] m_aabb;
+    private Object[] m_userData;
+    private int[] m_parent;
+    private int[] m_child1;
+    private int[] m_child2;
+    private int[] m_height;
 
     private int m_nodeCount;
     private int m_nodeCapacity;
@@ -310,7 +310,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         return computeHeight(m_root);
     }
 
-    private final int computeHeight(int node) {
+    private int computeHeight(int node) {
         assert (0 <= node && node < m_nodeCapacity);
 
         if (m_child1[node] == NULL_NODE) {
@@ -457,7 +457,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     
     
 
-    private final int allocateNode() {
+    private int allocateNode() {
         if (m_freeList == NULL_NODE) {
             assert (m_nodeCount == m_nodeCapacity);
             m_nodeCapacity *= 2;
@@ -476,7 +476,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     /**
      * returns a node to the pool
      */
-    private final void freeNode(int node) {
+    private void freeNode(int node) {
         assert (node != NULL_NODE);
         assert (0 < m_nodeCount);
         m_parent[node] = m_freeList;
@@ -487,7 +487,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
 
     private final AABB combinedAABB = new AABB();
 
-    private final void insertLeaf(int leaf) {
+    private void insertLeaf(int leaf) {
         if (m_root == NULL_NODE) {
             m_root = leaf;
             m_parent[m_root] = NULL_NODE;
@@ -600,7 +600,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         
     }
 
-    private final void removeLeaf(int leaf) {
+    private void removeLeaf(int leaf) {
         if (leaf == m_root) {
             m_root = NULL_NODE;
             return;
@@ -847,7 +847,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     private final Color3f color = new Color3f();
     private final Tuple2f textVec = new Vec2();
 
-    public void drawTree(DebugDraw argDraw, int node, int spot, int height) {
+    private void drawTree(DebugDraw argDraw, int node, int spot, int height) {
         AABB a = m_aabb[node];
         a.getVertices(drawVecs);
 

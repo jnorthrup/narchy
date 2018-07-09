@@ -71,7 +71,7 @@ public class UnicodeHandler extends TypeHandler {
         return "CF_UNICODETEXT";
     }
 
-    public static byte[] fromTransferable(Transferable in) {
+    private static byte[] fromTransferable(Transferable in) {
         String s;
         if (in != null) {
             try {
@@ -90,8 +90,8 @@ public class UnicodeHandler extends TypeHandler {
             int length = sBytes.length;
             int lengthBy2 = length * 2;
             RdpPacket p = new RdpPacket_Localised(lengthBy2);
-            for (int i = 0; i < sBytes.length; i++) {
-                p.setLittleEndian16(sBytes[i]);
+            for (byte sByte : sBytes) {
+                p.setLittleEndian16(sByte);
             }
             sBytes = new byte[length * 2];
             p.copyToByteArray(sBytes, 0, 0, lengthBy2);

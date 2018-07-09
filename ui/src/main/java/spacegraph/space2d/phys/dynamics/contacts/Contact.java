@@ -50,9 +50,9 @@ public abstract class Contact {
     
     public static final int ISLAND_FLAG = 0x0001;
     
-    public static final int TOUCHING_FLAG = 0x0002;
+    private static final int TOUCHING_FLAG = 0x0002;
     
-    public static final int ENABLED_FLAG = 0x0004;
+    private static final int ENABLED_FLAG = 0x0004;
     
     public static final int FILTER_FLAG = 0x0008;
     
@@ -92,9 +92,9 @@ public abstract class Contact {
     public float m_angularVelocity_bodyB;
     public final Tuple2f m_linearVelocity_bodyB = new v2();
 
-    protected final IWorldPool pool;
+    final IWorldPool pool;
 
-    protected Contact(IWorldPool argPool) {
+    Contact(IWorldPool argPool) {
         aFixture = null;
         bFixture = null;
         m_nodeA = new ContactEdge();
@@ -230,7 +230,7 @@ public abstract class Contact {
         return m_tangentSpeed;
     }
 
-    public abstract void evaluate(Manifold manifold, Transform xfA, Transform xfB);
+    protected abstract void evaluate(Manifold manifold, Transform xfA, Transform xfB);
 
     /**
      * Flag this contact for filtering. Filtering will occur the next time step.
@@ -339,7 +339,7 @@ public abstract class Contact {
      * @param friction2
      * @return
      */
-    public static final float mixFriction(float friction1, float friction2) {
+    private static float mixFriction(float friction1, float friction2) {
         return (float) Math.sqrt(friction1 * friction2);
     }
 
@@ -351,7 +351,7 @@ public abstract class Contact {
      * @param restitution2
      * @return
      */
-    public static final float mixRestitution(float restitution1, float restitution2) {
+    private static float mixRestitution(float restitution1, float restitution2) {
         return restitution1 > restitution2 ? restitution1 : restitution2;
     }
 }

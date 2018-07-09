@@ -30,19 +30,23 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  */
 public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
 
-    protected float freq = 100;
-    protected float res = .5f;
-	protected final float _2pi_over_sr;
-	protected float cosw;
-    protected UGen freqUGen, resUGen;
+    private float freq = 100;
+    private float res = .5f;
+	private final float _2pi_over_sr;
+	private float cosw;
+    private UGen freqUGen;
+    private UGen resUGen;
 
-    protected float a1, a2, b0;
+    private float a1;
+    private float a2;
+    private float b0;
     private float y1, y2;
     private final float[] y1m;
     private final float[] y2m;
     private final int channels;
 
-    protected boolean isFreqStatic, isResStatic;
+    private boolean isFreqStatic;
+    private boolean isResStatic;
 
     /**
      * Constructor for a single-channel LPRezFilter with default values for
@@ -61,7 +65,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param con      The audio context.
      * @param channels The number of channels.
      */
-    public LPRezFilter(AudioContext con, int channels) {
+    private LPRezFilter(AudioContext con, int channels) {
         super(con, channels, channels);
         _2pi_over_sr = (float) (2 * Math.PI / con.getSampleRate());
         this.channels = getOuts();
@@ -127,7 +131,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param freq     The filter cut-off frequency.
      * @param res      The resonance.
      */
-    public LPRezFilter(AudioContext con, int channels, float freq, float res) {
+    private LPRezFilter(AudioContext con, int channels, float freq, float res) {
         this(con, channels);
         setFrequency(freq).setRes(res);
     }
@@ -141,7 +145,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param freq     The filter cut-off frequency UGen.
      * @param res      The resonance.
      */
-    public LPRezFilter(AudioContext con, int channels, UGen freq, float res) {
+    private LPRezFilter(AudioContext con, int channels, UGen freq, float res) {
         this(con, channels);
         setFrequency(freq).setRes(res);
     }
@@ -155,7 +159,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param freq     The filter cut-off frequency.
      * @param res      The resonance UGen.
      */
-    public LPRezFilter(AudioContext con, int channels, float freq, UGen res) {
+    private LPRezFilter(AudioContext con, int channels, float freq, UGen res) {
         this(con, channels);
         setFrequency(freq).setRes(res);
     }
@@ -169,12 +173,12 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param freq     The filter cut-off frequency UGen.
      * @param res      The resonance UGen.
      */
-    public LPRezFilter(AudioContext con, int channels, UGen freq, UGen res) {
+    private LPRezFilter(AudioContext con, int channels, UGen freq, UGen res) {
         this(con, channels);
         setFrequency(freq).setRes(res);
     }
 
-    protected void calcVals() {
+    private void calcVals() {
         a1 = -2 * res * cosw;
         a2 = res * res;
         b0 = 1 + a1 + a2;
@@ -336,7 +340,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
     /**
      * Resets the filter in case it "explodes".
      */
-    public void reset() {
+    private void reset() {
         y1 = 0;
         y2 = 0;
         for (int i = 0; i < channels; i++) {
@@ -361,7 +365,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param freq The cut-off frequency.
      * @return This filter instance.
      */
-    public LPRezFilter setFrequency(float freq) {
+    private LPRezFilter setFrequency(float freq) {
         this.freq = freq;
         if (isFreqStatic) {
             freqUGen.setValue(freq);
@@ -381,7 +385,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param freqUGen The frequency UGen.
      * @return This filter instance.
      */
-    public LPRezFilter setFrequency(UGen freqUGen) {
+    private LPRezFilter setFrequency(UGen freqUGen) {
         if (freqUGen == null) {
             setFrequency(freq);
         } else {
@@ -425,7 +429,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param r The resonance.
      * @return This filter instance.
      */
-    public LPRezFilter setRes(float r) {
+    private LPRezFilter setRes(float r) {
         if (r > .999999f) {
             res = .999999f;
         } else if (r < 0) {
@@ -450,7 +454,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param r The resonance UGen.
      * @return This filter instance.
      */
-    public LPRezFilter setRes(UGen r) {
+    private LPRezFilter setRes(UGen r) {
         if (r == null) {
             setRes(res);
         } else {
@@ -484,7 +488,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
      * @param paramBead The DataBead specifying parameters.
      * @return This filter instance.
      */
-    public LPRezFilter setParams(DataAuvent paramBead) {
+    private LPRezFilter setParams(DataAuvent paramBead) {
         if (paramBead != null) {
             Object o;
 

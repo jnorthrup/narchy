@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 public abstract class Spatial<X> implements Active {
 
     public final X id;
-    public final int hash;
+    private final int hash;
     public boolean preactive;
 
 
@@ -35,11 +35,11 @@ public abstract class Spatial<X> implements Active {
 
 
 
-    protected Spatial() {
+    Spatial() {
         this(null);
     }
 
-    protected Spatial(X k) {
+    Spatial(X k) {
         this.id = k!=null ? k : (X) this;
         this.hash = k!=null ? k.hashCode() : super.hashCode();
     }
@@ -95,7 +95,7 @@ public abstract class Spatial<X> implements Active {
     }
 
 
-    public boolean collidable() {
+    boolean collidable() {
         return true;
     }
 

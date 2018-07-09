@@ -31,7 +31,7 @@ package net.propero.rdp.orders;
 
 public class Text2Order implements Order {
 
-    byte[] text = new byte[256];
+    private byte[] text = new byte[256];
     private int flags;
     private int mixmode;
     private int fgcolor;

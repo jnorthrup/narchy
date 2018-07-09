@@ -14,9 +14,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Signal sampled from system sound devices (via Java Media)
  */
 public class AudioSource implements WaveSource {
-    public final FloatRange frameRate;
+    private final FloatRange frameRate;
     private TargetDataLine line;
-    public final DataLine.Info dataLineInfo;
+    private final DataLine.Info dataLineInfo;
     public final AudioFormat audioFormat;
 
     private final int bytesPerSample;
@@ -24,7 +24,7 @@ public class AudioSource implements WaveSource {
 
 
     volatile private short[] samples;
-    volatile private int sampleNum;
+    private int sampleNum;
     volatile public byte[] audioBytes;
     volatile public int audioBytesRead;
 
@@ -108,7 +108,7 @@ public class AudioSource implements WaveSource {
 
     }
 
-    final AtomicBoolean busy = new AtomicBoolean();
+    private final AtomicBoolean busy = new AtomicBoolean();
 
     @Override
     public int next(float[] buffer) {
@@ -167,7 +167,7 @@ public class AudioSource implements WaveSource {
 
     }
 
-    static final float shortRange = ((float)Short.MAX_VALUE);
+    private static final float shortRange = ((float)Short.MAX_VALUE);
 
     public long sampleNum() {
         return sampleNum;

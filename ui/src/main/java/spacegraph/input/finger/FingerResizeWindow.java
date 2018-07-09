@@ -8,8 +8,8 @@ import spacegraph.video.JoglSpace;
 
 public class FingerResizeWindow extends FingerResize {
 
-    final static int MIN_WIDTH = 32;
-    final static int MIN_HEIGHT = MIN_WIDTH;
+    private final static int MIN_WIDTH = 32;
+    private final static int MIN_HEIGHT = MIN_WIDTH;
 
     private final JoglSpace window;
 

@@ -17,7 +17,7 @@ import spacegraph.video.Draw;
 public class Widget extends MutableContainer {
 
 
-    static final float border = 0.05f;
+    private static final float border = 0.05f;
 
     /**
      * z-raise/depth: a state indicating push/pull (ex: buttons)
@@ -30,7 +30,8 @@ public class Widget extends MutableContainer {
     /**
      * if non-null, a finger which is currently hovering on this
      */
-    @Nullable Finger touchedBy;
+    @Nullable
+    private Finger touchedBy;
 
 
     /**
@@ -40,7 +41,7 @@ public class Widget extends MutableContainer {
      * zero: neutral
      * negative: disabled, hidden, irrelevant
      */
-    float temperature = 0;
+    private float temperature = 0;
 
     public Widget() {
         this(new EmptySurface());
@@ -135,7 +136,7 @@ public class Widget extends MutableContainer {
         }
     }
 
-    public boolean isTouched() {
+    protected boolean isTouched() {
         return touchedBy != null;
     }
 

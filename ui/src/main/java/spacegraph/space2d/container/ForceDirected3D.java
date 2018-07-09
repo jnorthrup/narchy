@@ -18,21 +18,19 @@ import static spacegraph.util.math.v3.v;
 public class ForceDirected3D implements spacegraph.space3d.phys.constraint.BroadConstraint {
 
     private final int iterations;
-    boolean center = true;
+    private boolean center = true;
 
-    public final FloatRange repel = new FloatRange(14f, 0, 32f);
+    private final FloatRange repel = new FloatRange(14f, 0, 32f);
     public final FloatRange attraction = new FloatRange(0.05f, 0, 3f);
 
 
 
     /** speed at which center correction is applied */
-    float centerSpeed = 0.02f;
+    private float centerSpeed = 0.02f;
 
-    final v3 boundsMin, boundsMax;
-    final float maxRepelDist;
-
-
-
+    private final v3 boundsMin;
+    private final v3 boundsMax;
+    private final float maxRepelDist;
 
 
 
@@ -51,7 +49,10 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
 
 
-    public ForceDirected3D() {
+
+
+
+    ForceDirected3D() {
         float r = 800;
         boundsMin = v(-r, -r, -r);
         boundsMax = v(+r, +r, +r);
@@ -112,7 +113,7 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
     }
 
-    protected void batch(List<Collidable> l) {
+    private void batch(List<Collidable> l) {
 
         float speed = repel.floatValue();
         for (int i = 0, lSize = l.size(); i < lSize; i++) {
@@ -124,7 +125,7 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
         }
     }
 
-    protected static void attract(Collidable x, Collidable y, float speed, float idealDist) {
+    static void attract(Collidable x, Collidable y, float speed, float idealDist) {
         SimpleSpatial xp = ((SimpleSpatial) x.data());
         SimpleSpatial yp = ((SimpleSpatial) y.data());
 

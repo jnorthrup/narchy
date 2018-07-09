@@ -58,7 +58,7 @@ public class Plug extends UGen {
      * @param context  The audio context.
      * @param channels The number of channels.
      */
-    public Plug(AudioContext context, int channels) {
+    private Plug(AudioContext context, int channels) {
         super(context, channels, channels);
         this.outputInitializationRegime = OutputInitializationRegime.RETAIN;
         bufOut = bufIn;

@@ -79,7 +79,7 @@ public class RagDoll  {
 
 
 
-    protected final BulletStack stack = BulletStack.get();
+    private final BulletStack stack = BulletStack.get();
 
     public enum BodyPart {
         BODYPART_PELVIS,

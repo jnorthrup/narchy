@@ -47,9 +47,9 @@ import java.util.Collection;
  */
 public class GhostObject extends Collidable {
 
-	protected final OArrayList<Collidable> overlappingObjects = new OArrayList<>();
+	final OArrayList<Collidable> overlappingObjects = new OArrayList<>();
 
-	public GhostObject() {
+	GhostObject() {
 		super(CollidableType.GHOST_OBJECT, new Transform());
 	}
 
@@ -106,31 +106,27 @@ public class GhostObject extends Collidable {
 
         Transform tmpTrans = new Transform();
 
-		
-		
-		for (int i=0; i<overlappingObjects.size(); i++) {
-            
-            Collidable collidable = overlappingObjects.get(i);
 
-			
+        for (Collidable collidable : overlappingObjects) {
+
             if (resultCallback.needsCollision(collidable.broadphase)) {
-				
-				v3 collisionObjectAabbMin = new v3();
-				v3 collisionObjectAabbMax = new v3();
-				collidable.shape().getAabb(collidable.getWorldTransform(tmpTrans), collisionObjectAabbMin, collisionObjectAabbMax);
-				AabbUtil2.aabbExpand(collisionObjectAabbMin, collisionObjectAabbMax, castShapeAabbMin, castShapeAabbMax);
-				float[] hitLambda = {1f}; 
-				v3 hitNormal = new v3();
-				if (AabbUtil2.rayAabb(convexFromWorld, convexToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, hitNormal)) {
-					Collisions.objectQuerySingle(castShape, convexFromTrans, convexToTrans,
+
+                v3 collisionObjectAabbMin = new v3();
+                v3 collisionObjectAabbMax = new v3();
+                collidable.shape().getAabb(collidable.getWorldTransform(tmpTrans), collisionObjectAabbMin, collisionObjectAabbMax);
+                AabbUtil2.aabbExpand(collisionObjectAabbMin, collisionObjectAabbMax, castShapeAabbMin, castShapeAabbMax);
+                float[] hitLambda = {1f};
+                v3 hitNormal = new v3();
+                if (AabbUtil2.rayAabb(convexFromWorld, convexToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, hitNormal)) {
+                    Collisions.objectQuerySingle(castShape, convexFromTrans, convexToTrans,
                             collidable,
-					                                 collidable.shape(),
-					                                 collidable.getWorldTransform(tmpTrans),
-					                                 resultCallback,
-					                                 allowedCcdPenetration);
-				}
-			}
-		}
+                            collidable.shape(),
+                            collidable.getWorldTransform(tmpTrans),
+                            resultCallback,
+                            allowedCcdPenetration);
+                }
+            }
+        }
 	}
 
 	public void rayTest(v3 rayFromWorld, v3 rayToWorld, Collisions.RayResultCallback resultCallback) {
@@ -145,20 +141,17 @@ public class GhostObject extends Collidable {
 
 		VoronoiSimplexSolver solver = new VoronoiSimplexSolver();
 
-		for (int i=0; i<overlappingObjects.size(); i++) {
-            
-            Collidable collidable = overlappingObjects.get(i);
+        for (Collidable collidable : overlappingObjects) {
 
-			
             if (resultCallback.needsCollision(collidable.broadphase)) {
-				Collisions.rayTestSingle(rayFromTrans, rayToTrans,
+                Collisions.rayTestSingle(rayFromTrans, rayToTrans,
                         collidable,
-				                             collidable.shape(),
-				                             collidable.getWorldTransform(tmpTrans),
-											 solver,
-				                             resultCallback);
-			}
-		}
+                        collidable.shape(),
+                        collidable.getWorldTransform(tmpTrans),
+                        solver,
+                        resultCallback);
+            }
+        }
 	}
 
 	public int getNumOverlappingObjects() {

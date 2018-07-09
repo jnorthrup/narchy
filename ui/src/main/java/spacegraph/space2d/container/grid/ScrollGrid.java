@@ -27,9 +27,9 @@ import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
 public class ScrollGrid<X> extends Bordering {
 
 
-    static final float MIN_DISPLAYED_CELLS = 0.25f; 
-    static final int MAX_DISPLAYED_CELLS_X = 32;    
-    static final int MAX_DISPLAYED_CELLS_Y = 32;    
+    private static final float MIN_DISPLAYED_CELLS = 0.25f;
+    private static final int MAX_DISPLAYED_CELLS_X = 32;
+    private static final int MAX_DISPLAYED_CELLS_Y = 32;
 
     private final GridModel<X> model;
     private final GridRenderer<X> render;
@@ -39,7 +39,7 @@ public class ScrollGrid<X> extends Bordering {
 
 
     /** proportional in scale to bounds */
-    static final float defaultScrollEdge = 0.12f;
+    private static final float defaultScrollEdge = 0.12f;
 
     private final FloatSlider scrollX, scrollY, scaleW, scaleH;
 
@@ -190,12 +190,12 @@ public class ScrollGrid<X> extends Bordering {
     }
 
     /** set the view window's center of focus, re-using the current width and height */
-    public final ScrollGrid<X> view(float x, float y) {
+    private ScrollGrid<X> view(float x, float y) {
         return view(x, y, view.w, view.h);
     }
 
     /** set the view window's center and size of focus, in grid coordinates */
-    public final ScrollGrid<X> view(RectFloat2D v) {
+    private ScrollGrid<X> view(RectFloat2D v) {
         return view(v.x, v.y, v.w, v.h);
     }
 
@@ -351,20 +351,20 @@ public class ScrollGrid<X> extends Bordering {
         private transient RectFloat2D view;
         private transient float dx, dy, cw, ch;
 
-        public ScrollGridContainer() {
+        ScrollGridContainer() {
             super();
         }
 
         /**
          * test if a cell is currently visible
          */
-        public boolean cellVisible(short x, short y) {
+        boolean cellVisible(short x, short y) {
             return (x >= x1 && x < x2)
                     &&
                     (y >= y1 && y < y2);
         }
 
-        public void layout(RectFloat2D view, short x1, short y1, short x2, short y2) {
+        void layout(RectFloat2D view, short x1, short y1, short x2, short y2) {
             this.view = view;
 
             this.x1 = x1;
@@ -439,7 +439,7 @@ public class ScrollGrid<X> extends Bordering {
 
 
 
-        protected void doLayout(Surface s, short sx, short sy) {
+        void doLayout(Surface s, short sx, short sy) {
             float cx = dx + (sx - view.x + 0.5f) * cw;
             float cy = dy + (sy - view.y + 0.5f) * ch;
             cellVisible(s, cw, ch, cx, cy);
@@ -447,7 +447,7 @@ public class ScrollGrid<X> extends Bordering {
 
         abstract protected X value(short sx, short sy);
 
-        protected void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
+        void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
             s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
         }
 
@@ -468,7 +468,7 @@ public class ScrollGrid<X> extends Bordering {
          * is a way to force rebuilding of a cell.)
          * returns if there was a change
          */
-        protected CellMap.CacheCell set(short x, short y, @Nullable X nextValue, boolean force) {
+        CellMap.CacheCell set(short x, short y, @Nullable X nextValue, boolean force) {
             if (!force && !cellVisible(x, y))
                 return null;
 

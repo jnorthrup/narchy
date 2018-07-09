@@ -52,22 +52,22 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
     /**
      * The first value.
      */
-    public	byte	x;
+    byte	x;
 
     /**
      * The second value.
      */
-    public	byte	y;
+    byte	y;
 
     /**
      * The third value.
      */
-    public	byte	z;
+    byte	z;
 
     /**
      * The fourth value.
      */
-    public	byte	w;
+    byte	w;
 
 
     /**
@@ -77,7 +77,7 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
      * @param b3 the third value
      * @param b4 the fourth value
      */
-    protected Tuple4b(byte b1, byte b2, byte b3, byte b4)
+    Tuple4b(byte b1, byte b2, byte b3, byte b4)
     {
 	this.x = b1;
 	this.y = b2;
@@ -90,7 +90,7 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
      * Constructs and initializes a Tuple4b from the array of length 4.
      * @param t the array of length 4 containing b1 b2 b3 b4 in order
      */
-    protected Tuple4b(byte[] t)
+    Tuple4b(byte[] t)
     {
 	this.x = t[0];
 	this.y = t[1];
@@ -103,7 +103,7 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
      * Constructs and initializes a Tuple4b from the specified Tuple4b.
      * @param t1 the Tuple4b containing the initialization x y z w data
      */
-    protected Tuple4b(Tuple4b t1)
+    Tuple4b(Tuple4b t1)
     {
 	this.x = t1.x;
 	this.y = t1.y;
@@ -115,7 +115,7 @@ public abstract class Tuple4b implements java.io.Serializable, Cloneable {
     /**
      * Constructs and initializes a Tuple4b to (0,0,0,0).
      */
-    protected Tuple4b()
+    Tuple4b()
     {
 	this.x = (byte) 0;
 	this.y = (byte) 0;

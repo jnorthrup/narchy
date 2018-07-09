@@ -92,7 +92,7 @@ public class ConstantVolumeJoint extends Joint {
                 distanceJoints[i] = (DistanceJoint) world.addJoint(djd);
             }
         } else {
-            distanceJoints = def.joints.toArray(new DistanceJoint[def.joints.size()]);
+            distanceJoints = def.joints.toArray(new DistanceJoint[0]);
         }
 
         normals = new Tuple2f[bodies.length];

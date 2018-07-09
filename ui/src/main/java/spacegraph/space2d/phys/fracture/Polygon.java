@@ -23,12 +23,12 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
     /**
      * Pole vrcholov.
      */
-    protected Tuple2f[] array;
+    Tuple2f[] array;
 
     /**
      * Pocet vrcholov.
      */
-    protected int count;
+    int count;
 
     /**
      * Vytvori prazdny polygon bez vrcholov. Polygon moze byt konvexny,
@@ -48,7 +48,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      *
      * @param va Vstupne vrcholy.
      */
-    public Polygon(Tuple2f[] va) {
+    Polygon(Tuple2f[] va) {
         array = va;
         count = va.length;
     }
@@ -60,7 +60,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @param va Vstupne vrcholy.
      * @param n  Pocet aktivnych vrcholov
      */
-    public Polygon(Tuple2f[] va, int n) {
+    private Polygon(Tuple2f[] va, int n) {
         array = va;
         count = n;
     }
@@ -149,7 +149,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
     /**
      * @return Vrati hmotnost telesa.
      */
-    public double mass() {
+    private double mass() {
         double m = 0;
         for (int i = 0, j = 1; i != count; i = j, j++) {
             Tuple2f b1 = get(i);
@@ -336,7 +336,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
     private class MyIterator implements Iterator<Tuple2f> {
         private int index;
 
-        public MyIterator() {
+        MyIterator() {
             index = 0;
         }
 

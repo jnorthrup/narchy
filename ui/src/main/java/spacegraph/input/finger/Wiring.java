@@ -18,20 +18,20 @@ public class Wiring extends FingerDragging {
 
     }
 
-    Path2D path;
+    private Path2D path;
 
     protected final Surface start;
     private SketchedPath pathVis;
     protected Surface end = null;
 
-    public Dyn2DSurface.PhyWindow source() {
+    protected Dyn2DSurface.PhyWindow source() {
         return start.parent(Dyn2DSurface.PhyWindow.class);
     }
     public Dyn2DSurface.PhyWindow target() {
         return end!=null ? end.parent(Dyn2DSurface.PhyWindow.class) : null;
     }
 
-    public Wiring(Surface start) {
+    protected Wiring(Surface start) {
         super(2);
         this.start = start;
     }

@@ -19,7 +19,7 @@ public class Simplify2D {
 		
 		int n = vertices.size();
 		if (n < 3) return vertices;
-		FasterList<v2> simplified = new FasterList<v2>();
+		FasterList<v2> simplified = new FasterList<>();
 		for (int i = 0; i < n; i++) {
 			int prevId = i - 1;
 			if (prevId < 0) prevId = n - 1;
@@ -43,7 +43,7 @@ public class Simplify2D {
 		return Math.abs(BayazitDecomposer.area(a, b, c));
 	}
 
-	public static boolean floatInRange(float value, float min, float max) {
+	private static boolean floatInRange(float value, float min, float max) {
 		return (value >= min && value <= max);
 	}
 
@@ -71,7 +71,7 @@ public class Simplify2D {
 		MetalBitSet usePt = MetalBitSet.bits(n);
 		usePt.setAll();
 		simplifySection(usePt, distanceTolerance, vertices, 0, n - 1);
-		FasterList<v2> result = new FasterList<v2>();
+		FasterList<v2> result = new FasterList<>();
 		for (int i = 0; i < n; i++)
 			if (usePt.get(i))
 				result.add(vertices.get(i));
@@ -137,7 +137,7 @@ public class Simplify2D {
 			throw new InvalidParameterException(
 					"areaTolerance: must be equal to or greater then zero.");
 		}
-		FasterList<v2> result = new FasterList<v2>();
+		FasterList<v2> result = new FasterList<>();
 		v2 v1, v2, v3;
 		float old1, old2, new1;
 		v1 = vertices.get(vertices.size() - 2);
@@ -163,7 +163,7 @@ public class Simplify2D {
 		return result;
 	}
 
-	public static Float cross(v2 a, v2 b) {
+	private static Float cross(v2 a, v2 b) {
 		return a.x * b.y - a.y * b.x;
 	}
 
@@ -209,7 +209,7 @@ public class Simplify2D {
 		if (newNVertices == vertices.size() || newNVertices == 0) return;
 		int currIndex = 0;
 		
-		FasterList<v2> oldVertices = new FasterList<v2>(vertices);
+		FasterList<v2> oldVertices = new FasterList<>(vertices);
 		vertices.clear();
 		for (int i = 0; i < oldVertices.size(); ++i) {
 			if (mergeMe[i] || newNVertices == 0 || currIndex == newNVertices) continue;
@@ -226,20 +226,17 @@ public class Simplify2D {
 	
 	
 	public static FasterList<v2> mergeIdenticalPoints(FasterList<v2> vertices) {
-		FasterList<v2> results = new FasterList<v2>();
-		for (int i = 0; i < vertices.size(); i++) {
-			v2 vOriginal = vertices.get(i);
-
-			boolean alreadyExists = false;
-			for (int j = 0; j < results.size(); j++) {
-				v2 v = results.get(j);
-				if (vOriginal.equals(v)) {
-					alreadyExists = true;
-					break;
-				}
-			}
-			if (!alreadyExists) results.add(vertices.get(i));
-		}
+		FasterList<v2> results = new FasterList<>();
+        for (v2 vOriginal : vertices) {
+            boolean alreadyExists = false;
+            for (v2 v : results) {
+                if (vOriginal.equals(v)) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+            if (!alreadyExists) results.add(vOriginal);
+        }
 		return results;
 	}
 
@@ -254,7 +251,7 @@ public class Simplify2D {
 		
 		if (vertices.size() < 3) return vertices;
 		float distSq = distance * distance;
-		FasterList<v2> simplified = new FasterList<v2>();
+		FasterList<v2> simplified = new FasterList<>();
 		for (int i = 0; i < vertices.size(); i++) {
 			v2 current = vertices.get(i);
 			int ii = i + 1;
@@ -278,7 +275,7 @@ public class Simplify2D {
 		
 		if (vertices.size() < 3) return vertices;
 		if (nth == 0) return vertices;
-		FasterList<v2> result = new FasterList<v2>(vertices.size());
+		FasterList<v2> result = new FasterList<>(vertices.size());
 		for (int i = 0; i < vertices.size(); i++) {
 			if (i % nth == 0) continue;
 			result.add(vertices.get(i));

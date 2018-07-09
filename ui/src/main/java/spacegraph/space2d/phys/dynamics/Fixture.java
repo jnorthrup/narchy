@@ -67,7 +67,7 @@ public class Fixture {
 
     public boolean isSensor;
 
-    public Object data;
+    private Object data;
 
     public Material material;
 
@@ -151,7 +151,7 @@ public class Fixture {
      * Call this if you want to establish collision that was previously disabled by
      * ContactFilter::ShouldCollide.
      */
-    public void refilter() {
+    private void refilter() {
         if (body == null) {
             return;
         }
@@ -428,8 +428,8 @@ public class Fixture {
      * @param xf1
      * @param xf2
      */
-    protected void synchronize(BroadPhase broadPhase, final Transform transform1,
-                               final Transform transform2) {
+    void synchronize(BroadPhase broadPhase, final Transform transform1,
+                     final Transform transform2) {
         if (m_proxyCount == 0) {
             return;
         }

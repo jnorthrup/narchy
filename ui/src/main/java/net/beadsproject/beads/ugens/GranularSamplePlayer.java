@@ -59,7 +59,7 @@ public class GranularSamplePlayer extends SamplePlayer {
     /**
      * The pitch, bound to the pitch envelope.
      */
-    protected float pitch;
+    private float pitch;
 
     /**
      * The list of current grains.
@@ -118,7 +118,7 @@ public class GranularSamplePlayer extends SamplePlayer {
      * @param context the AudioContext.
      * @param outs    the number of outputs.
      */
-    public GranularSamplePlayer(AudioContext context, int outs) {
+    private GranularSamplePlayer(AudioContext context, int outs) {
         super(context, outs);
         grains = new LinkedList<>();
         freeGrains = new LinkedList<>();
@@ -277,7 +277,7 @@ public class GranularSamplePlayer extends SamplePlayer {
     }
 
 
-    public void setWindow(Tensor window) {
+    private void setWindow(Tensor window) {
         this.window = window;
     }
 
@@ -348,7 +348,7 @@ public class GranularSamplePlayer extends SamplePlayer {
         this.randomPanEnvelope = randomPanEnvelope;
     }
 
-    public void setRandomPan(UGen randomPanEnvelope) {
+    private void setRandomPan(UGen randomPanEnvelope) {
         this.randomPanEnvelope = randomPanEnvelope;
     }
 

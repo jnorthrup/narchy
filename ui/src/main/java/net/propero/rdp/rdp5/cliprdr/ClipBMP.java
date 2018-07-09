@@ -41,7 +41,7 @@ import java.io.OutputStream;
 
 public class ClipBMP extends Component {
 
-    protected static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ClipBMP.class);
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ClipBMP.class);
     private static final long serialVersionUID = -756738379924520867L;
     
     private final static int BITMAPFILEHEADER_SIZE = 14;

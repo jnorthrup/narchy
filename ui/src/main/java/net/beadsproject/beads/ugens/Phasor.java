@@ -14,16 +14,16 @@ import net.beadsproject.beads.core.UGen;
 public class Phasor extends UGen {
 
     private UGen frequencyUGen;
-    protected float frequency;
-    protected double phase;
-    protected final double one_over_sr;
+    private float frequency;
+    private double phase;
+    private final double one_over_sr;
 
     /**
      * Basic constructor.
      *
      * @param con The AudioContext.
      */
-    public Phasor(AudioContext con) {
+    private Phasor(AudioContext con) {
         super(con, 0, 1);
         one_over_sr = 1d / con.getSampleRate();
     }
@@ -93,7 +93,7 @@ public class Phasor extends UGen {
      * @param frequencyUGen The new frequency controller.
      * @return This Phasor instance.
      */
-    public Phasor setFrequency(UGen frequencyUGen) {
+    private Phasor setFrequency(UGen frequencyUGen) {
         if (frequencyUGen == null) {
             setFrequency(frequency);
         } else {
@@ -110,7 +110,7 @@ public class Phasor extends UGen {
      * @param frequency The new frequency value.
      * @return This Phasor instance.
      */
-    public Phasor setFrequency(float frequency) {
+    private Phasor setFrequency(float frequency) {
         this.frequency = frequency;
         frequencyUGen = null;
         return this;

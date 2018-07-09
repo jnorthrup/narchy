@@ -37,8 +37,8 @@ import spacegraph.util.math.v3;
  */
 public class GImpactBvh {
 
-	protected BvhTree box_tree = new BvhTree();
-	protected PrimitiveManagerBase primitive_manager;
+	private BvhTree box_tree = new BvhTree();
+	private PrimitiveManagerBase primitive_manager;
 
 	/**
 	 * This constructor doesn't builder the tree. you must call buildSet.
@@ -68,7 +68,7 @@ public class GImpactBvh {
 	}
 
 	
-	protected void refit() {
+	private void refit() {
 		BoxCollision.AABB leafbox = new BoxCollision.AABB();
 		BoxCollision.AABB bound = new BoxCollision.AABB();
 		BoxCollision.AABB temp_box = new BoxCollision.AABB();
@@ -226,31 +226,31 @@ public class GImpactBvh {
 	/**
 	 * Tells if the node is a leaf.
 	 */
-	public boolean isLeafNode(int nodeindex) {
+    private boolean isLeafNode(int nodeindex) {
 		return box_tree.isLeafNode(nodeindex);
 	}
 
-	public int getNodeData(int nodeindex) {
+	private int getNodeData(int nodeindex) {
 		return box_tree.getNodeData(nodeindex);
 	}
 
-	public void getNodeBound(int nodeindex, BoxCollision.AABB bound) {
+	private void getNodeBound(int nodeindex, BoxCollision.AABB bound) {
 		box_tree.getNodeBound(nodeindex, bound);
 	}
 
-	public void setNodeBound(int nodeindex, BoxCollision.AABB bound) {
+	private void setNodeBound(int nodeindex, BoxCollision.AABB bound) {
 		box_tree.setNodeBound(nodeindex, bound);
 	}
 
-	public static int getLeftNode(int nodeindex) {
+	private static int getLeftNode(int nodeindex) {
 		return BvhTree.getLeftNode(nodeindex);
 	}
 
-	public int getRightNode(int nodeindex) {
+	private int getRightNode(int nodeindex) {
 		return box_tree.getRightNode(nodeindex);
 	}
 
-	public int getEscapeNodeIndex(int nodeindex) {
+	private int getEscapeNodeIndex(int nodeindex) {
 		return box_tree.getEscapeNodeIndex(nodeindex);
 	}
 

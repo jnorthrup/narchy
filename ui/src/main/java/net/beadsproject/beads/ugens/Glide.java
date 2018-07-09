@@ -48,7 +48,7 @@ public class Glide extends UGen {
      * @param context      the AudioContext.
      * @param currentValue the initial value.
      */
-    public Glide(AudioContext context, float currentValue) {
+    private Glide(AudioContext context, float currentValue) {
         this(context, currentValue, 100);
     }
 
@@ -94,7 +94,7 @@ public class Glide extends UGen {
      *
      * @param msTime glide time in milliseconds.
      */
-    public void setGlideTime(float msTime) {
+    private void setGlideTime(float msTime) {
         glideTime = (int) context.msToSamples(msTime);
     }
 

@@ -38,7 +38,7 @@ import java.awt.*;
 public class SendEvent extends JFrame {
 
     private static final long serialVersionUID = 6809307310347210557L;
-    Rdp rdp;
+    private Rdp rdp;
     private javax.swing.JPanel jContentPane;
     private JTextField inputTypeField;
     private JLabel jLabel;

@@ -48,20 +48,15 @@ public class Islands {
     private final FasterList<PersistentManifold> islandmanifold = new FasterList<>();
     private final FasterList<Collidable> islandBodies = new FasterList<>();
 
-    public void findUnions(Collisions colWorld) {
+    private void findUnions(Collisions colWorld) {
         FasterList<BroadphasePair> pairPtr = colWorld.pairs().getOverlappingPairArray();
         int n = pairPtr.size();
 
 
-
-
-
-        for (int i = 0; i < n; i++) {
-            
-            BroadphasePair collisionPair = pairPtr.get(i);
+        for (BroadphasePair collisionPair : pairPtr) {
 
             Collidable colObj0 = collisionPair.pProxy0.data;
-            if (colObj0!=null && ((colObj0).mergesSimulationIslands())) {
+            if (colObj0 != null && ((colObj0).mergesSimulationIslands())) {
                 Collidable colObj1 = collisionPair.pProxy1.data;
                 if (colObj1 != null && ((colObj1).mergesSimulationIslands())) {
                     find.unite((colObj0).tag(), (colObj1).tag());
@@ -91,12 +86,12 @@ public class Islands {
         
         int i = 0;
         List<Collidable> collidables = world.collidables();
-        for (int i1 = 0, collidablesSize = collidables.size(); i1 < collidablesSize; i1++) {
-            storeIslandActivationState(i++, collidables.get(i1));
+        for (Collidable collidable : collidables) {
+            storeIslandActivationState(i++, collidable);
         }
     }
 
-    final boolean storeIslandActivationState(int i, Collidable c) {
+    private boolean storeIslandActivationState(int i, Collidable c) {
         if (!c.isStaticOrKinematicObject()) {
             c.setIslandTag(find.find(i));
             c.setCompanionId(-1);
@@ -115,7 +110,7 @@ public class Islands {
         return rcolObj1.tag();
     }
 
-    public void buildIslands(Intersecter intersecter, List<Collidable> collidables) {
+    private void buildIslands(Intersecter intersecter, List<Collidable> collidables) {
 
         
 
@@ -245,7 +240,7 @@ public class Islands {
 
     }
 
-    static void islandError(Collidable colObj0) {
+    private static void islandError(Collidable colObj0) {
         System.err.println("error in island management, maybe spatial is in the display list multiple times: " + colObj0 + ' ' + colObj0.data());
     }
 

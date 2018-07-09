@@ -35,12 +35,12 @@ import spacegraph.util.math.v3;
  */
 public abstract class TriangleConvexcastCallback extends TriangleCallback {
 
-	public final ConvexShape convexShape;
-	public final Transform convexShapeFrom = new Transform();
-	public final Transform convexShapeTo = new Transform();
-	public final Transform triangleToWorld = new Transform();
+	private final ConvexShape convexShape;
+	private final Transform convexShapeFrom = new Transform();
+	private final Transform convexShapeTo = new Transform();
+	private final Transform triangleToWorld = new Transform();
 	public float hitFraction;
-	public final float triangleCollisionMargin;
+	private final float triangleCollisionMargin;
 
 	protected TriangleConvexcastCallback(ConvexShape convexShape, Transform convexShapeFrom, Transform convexShapeTo, Transform triangleToWorld, float triangleCollisionMargin) {
 		this.convexShape = convexShape;
@@ -95,6 +95,6 @@ public abstract class TriangleConvexcastCallback extends TriangleCallback {
 		}
 	}
 
-	public abstract float reportHit(v3 hitNormalLocal, v3 hitPointLocal, float hitFraction, int partId, int triangleIndex);
+	protected abstract float reportHit(v3 hitNormalLocal, v3 hitPointLocal, float hitFraction, int partId, int triangleIndex);
 	
 }

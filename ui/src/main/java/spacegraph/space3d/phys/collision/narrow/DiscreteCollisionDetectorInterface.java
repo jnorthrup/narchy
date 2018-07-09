@@ -42,7 +42,7 @@ public abstract class DiscreteCollisionDetectorInterface {
 		
 		public abstract void setShapeIdentifiers(int partId0, int index0, int partId1, int index1);
 
-		public abstract void addContactPoint(v3 normalOnBInWorld, v3 pointInWorld, float depth, float breakingThresh);
+		protected abstract void addContactPoint(v3 normalOnBInWorld, v3 pointInWorld, float depth, float breakingThresh);
 	}
 	
 	public static class ClosestPointInput {
@@ -72,6 +72,6 @@ public abstract class DiscreteCollisionDetectorInterface {
 	 * Give either closest points (distance > 0) or penetration (distance)
 	 * the normal always points from B towards A.
 	 */
-	public abstract void getClosestPoints(ClosestPointInput input, Result output, boolean swapResults);
+	protected abstract void getClosestPoints(ClosestPointInput input, Result output, boolean swapResults);
 	
 }

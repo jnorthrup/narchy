@@ -16,12 +16,12 @@ import static spacegraph.space2d.widget.windo.Windo.DragEdit.MOVE;
  */
 public class Windo extends Stacking {
 
-    final static float resizeBorder = 0.1f;
+    private final static float resizeBorder = 0.1f;
     public FingerDragging dragMode = null;
     public DragEdit potentialDragMode = null;
-    protected boolean hover;
+    private boolean hover;
 
-    public Windo() {
+    protected Windo() {
         super();
 
 
@@ -167,12 +167,12 @@ public class Windo extends Stacking {
 
     }
 
-    public boolean fingeringBounds(Finger finger) {
+    protected boolean fingeringBounds(Finger finger) {
         v2 f = finger.pos;
         return bounds.contains(f.x, f.y);
     }
 
-    public v2 windowHitPointRel(Finger finger) {
+    protected v2 windowHitPointRel(Finger finger) {
         return finger.relativePos(this);
     }
 
@@ -180,7 +180,7 @@ public class Windo extends Stacking {
 
 
 
-    protected Fingering fingering(DragEdit mode) {
+    private Fingering fingering(DragEdit mode) {
 
         switch (mode) {
             case MOVE:
@@ -200,11 +200,11 @@ public class Windo extends Stacking {
         return new FingerSurfaceMove(this);
     }
 
-    public boolean fingerable(DragEdit d) {
+    boolean fingerable(DragEdit d) {
         return true;
     }
 
-    public boolean opaque() {
+    protected boolean opaque() {
         return true;
     }
 
@@ -317,7 +317,7 @@ public class Windo extends Stacking {
 
     }
 
-    protected void paintBack(GL2 gl) {
+    private void paintBack(GL2 gl) {
         if (opaque()) {
             gl.glColor4f(0.5f,0.5f,0.5f, 0.5f);
             Draw.rect(gl, bounds);

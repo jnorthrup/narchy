@@ -21,7 +21,7 @@ public class SplayTree {
         size = 0;
     }
 
-    boolean isEmpty() {
+    private boolean isEmpty() {
         return size == 0;
     }
 
@@ -125,7 +125,7 @@ public class SplayTree {
     }
 
     
-    public static SplayTree clone(SplayTree rhs) {
+    private static SplayTree clone(SplayTree rhs) {
         SplayTree st = new SplayTree();
         st.root = SplayTree.clone(rhs.root);
         st.size = rhs.size;
@@ -175,7 +175,7 @@ public class SplayTree {
     }
 
     
-    public static int height(BTreeNode t) {
+    private static int height(BTreeNode t) {
         if (t == null) return 0;
         int lh = height(t._left);
         int rh = height(t._right);

@@ -59,7 +59,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		this(meshInterface, useQuantizedAabbCompression, true);
 	}
 
-	public BvhTriangleMeshShape(StridingMeshInterface meshInterface, boolean useQuantizedAabbCompression, boolean buildBvh) {
+	private BvhTriangleMeshShape(StridingMeshInterface meshInterface, boolean useQuantizedAabbCompression, boolean buildBvh) {
 		super(meshInterface);
 		this.bvh = null;
 		this.useQuantizedAabbCompression = useQuantizedAabbCompression;
@@ -93,7 +93,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 	/**
 	 * Optionally pass in a larger bvh aabb, used for quantization. This allows for deformations within this aabb.
 	 */
-	public BvhTriangleMeshShape(StridingMeshInterface meshInterface, boolean useQuantizedAabbCompression, v3 bvhAabbMin, v3 bvhAabbMax, boolean buildBvh) {
+    private BvhTriangleMeshShape(StridingMeshInterface meshInterface, boolean useQuantizedAabbCompression, v3 bvhAabbMin, v3 bvhAabbMax, boolean buildBvh) {
 		super(meshInterface);
 
 		this.bvh = null;
@@ -209,7 +209,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		setOptimizedBvh(bvh, scaling);
 	}
 
-	public void setOptimizedBvh(OptimizedBvh bvh, v3 scaling) {
+	private void setOptimizedBvh(OptimizedBvh bvh, v3 scaling) {
 		assert (this.bvh == null);
 		assert (!ownsBvh);
 
@@ -232,12 +232,12 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 	
 
 	protected static class MyNodeOverlapCallback extends NodeOverlapCallback {
-		public final StridingMeshInterface meshInterface;
-		public final TriangleCallback callback;
+		final StridingMeshInterface meshInterface;
+		final TriangleCallback callback;
 
 		private final v3[] triangle/*[3]*/ = { new v3(), new v3(), new v3() };
 
-		public MyNodeOverlapCallback(TriangleCallback callback, StridingMeshInterface meshInterface) {
+		MyNodeOverlapCallback(TriangleCallback callback, StridingMeshInterface meshInterface) {
 			this.meshInterface = meshInterface;
 			this.callback = callback;
 		}

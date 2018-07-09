@@ -92,7 +92,7 @@ public class DistanceJoint extends Joint {
     private float m_invIB;
     private float m_mass;
 
-    protected DistanceJoint(IWorldPool argWorld, final DistanceJointDef def) {
+    DistanceJoint(IWorldPool argWorld, final DistanceJointDef def) {
         super(argWorld, def);
         m_localAnchorA = new v2(def.localAnchorA);
         m_localAnchorB = new v2(def.localAnchorB);

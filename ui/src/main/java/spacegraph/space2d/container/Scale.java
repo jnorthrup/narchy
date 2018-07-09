@@ -4,14 +4,14 @@ import spacegraph.space2d.Surface;
 
 public class Scale extends UnitContainer {
 
-    protected float scale;
+    private float scale;
 
     public Scale(Surface the, float s) {
         super(the);
         scale(s);
     }
 
-    public Scale scale(float scale) {
+    private Scale scale(float scale) {
         this.scale = scale;
         return this;
     }

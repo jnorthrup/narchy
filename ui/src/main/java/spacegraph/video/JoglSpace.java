@@ -38,10 +38,10 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     public final v3 camPos;
     public final v3 camFwd;
     public final v3 camUp;
-    final float[] mat4f = new float[16];
+    private final float[] mat4f = new float[16];
 
-    final List<Surface> layers = new FastCoWList(Surface[]::new);
-    final Queue<Runnable> pending = new ConcurrentLinkedQueue();
+    private final List<Surface> layers = new FastCoWList(Surface[]::new);
+    private final Queue<Runnable> pending = new ConcurrentLinkedQueue();
     private final float cameraSpeed = 100f;
     private final float cameraRotateSpeed = cameraSpeed;
     public float top;
@@ -50,13 +50,13 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     public float zFar = 1200;
 
     protected int debug;
-    protected float aspect;
-    float tanFovV;
-    float left;
-    float right;
+    private float aspect;
+    private float tanFovV;
+    private float left;
+    private float right;
 
 
-    public JoglSpace() {
+    protected JoglSpace() {
         super();
 
         onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
@@ -152,10 +152,15 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         initInput();
 
-        onUpdate((Consumer) (w -> pending.removeIf((x) -> {
+        flush();
+        onUpdate((Consumer) (w -> flush()));
+    }
+
+    private void flush() {
+        pending.removeIf((x) -> {
             x.run();
             return true;
-        })));
+        });
     }
 
     protected void initDepth(GL2 gl) {
@@ -166,7 +171,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glClearDepth(1f); 
     }
 
-    protected void initBlend(GL2 gl) {
+    private void initBlend(GL gl) {
         gl.glEnable(GL2.GL_BLEND);
         gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
         gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
@@ -224,7 +229,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     }
 
-    protected void renderOrthos(int dtMS) {
+    private void renderOrthos(int dtMS) {
 
         int facialsSize = layers.size();
         if (facialsSize > 0) {
@@ -262,8 +267,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
             gl.glDisable(GL2.GL_DEPTH_TEST);
 
             SurfaceRender r = new SurfaceRender(w, h, dtMS);
-            for (int i = 0; i < facialsSize; i++) {
-                Surface l = layers.get(i);
+            for (Surface l : layers) {
                 if (l.visible()) {
                     if (l instanceof Ortho) {
                         Ortho o = (Ortho) l;
@@ -280,7 +284,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     }
 
 
-    protected void clear() {
+    private void clear() {
         clearMotionBlur(0.5f);
         
 
@@ -290,7 +294,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    protected void clearMotionBlur(float rate /* TODO */) {
+    private void clearMotionBlur(float rate /* TODO */) {
 
 
 
@@ -311,11 +315,11 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     }
 
-    protected void updateCamera(int dtMS) {
+    private void updateCamera(int dtMS) {
         perspective();
     }
 
-    public void perspective() {
+    private void perspective() {
         
 
 

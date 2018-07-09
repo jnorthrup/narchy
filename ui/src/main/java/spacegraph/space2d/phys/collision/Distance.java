@@ -37,24 +37,24 @@ import spacegraph.util.math.v2;
  * @author Daniel Murphy
  */
 public class Distance {
-    public static final int MAX_ITERS = 20;
+    private static final int MAX_ITERS = 20;
 
-    public static int GJK_CALLS = 0;
-    public static int GJK_ITERS = 0;
-    public static int GJK_MAX_ITERS = 20;
+    private static int GJK_CALLS = 0;
+    private static int GJK_ITERS = 0;
+    private static int GJK_MAX_ITERS = 20;
 
     /**
      * GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
      */
     private static class SimplexVertex {
-        public final Tuple2f wA = new v2(); 
-        public final Tuple2f wB = new v2(); 
-        public final Tuple2f w = new v2(); 
-        public float a; 
-        public int indexA; 
-        public int indexB; 
+        final Tuple2f wA = new v2();
+        final Tuple2f wB = new v2();
+        final Tuple2f w = new v2();
+        float a;
+        int indexA;
+        int indexB;
 
-        public void set(SimplexVertex sv) {
+        void set(SimplexVertex sv) {
             wA.set(sv.wA);
             wB.set(sv.wB);
             w.set(sv.w);
@@ -73,7 +73,7 @@ public class Distance {
         /**
          * length or area
          */
-        public float metric;
+        float metric;
         public int count;
         /**
          * vertices on shape A
@@ -104,14 +104,14 @@ public class Distance {
     }
 
     private static class Simplex {
-        public final SimplexVertex m_v1 = new SimplexVertex();
-        public final SimplexVertex m_v2 = new SimplexVertex();
-        public final SimplexVertex m_v3 = new SimplexVertex();
-        public final SimplexVertex vertices[] = {m_v1, m_v2, m_v3};
-        public int m_count;
+        final SimplexVertex m_v1 = new SimplexVertex();
+        final SimplexVertex m_v2 = new SimplexVertex();
+        final SimplexVertex m_v3 = new SimplexVertex();
+        final SimplexVertex[] vertices = {m_v1, m_v2, m_v3};
+        int m_count;
 
-        public void readCache(SimplexCache cache, DistanceProxy proxyA, Transform transformA,
-                              DistanceProxy proxyB, Transform transformB) {
+        void readCache(SimplexCache cache, DistanceProxy proxyA, Transform transformA,
+                       DistanceProxy proxyB, Transform transformB) {
             assert (cache.count <= 3);
 
             
@@ -154,7 +154,7 @@ public class Distance {
             }
         }
 
-        public void writeCache(SimplexCache cache) {
+        void writeCache(SimplexCache cache) {
             cache.metric = getMetric();
             cache.count = m_count;
 
@@ -167,7 +167,7 @@ public class Distance {
 
         private final Tuple2f e12 = new v2();
 
-        public final void getSearchDirection(final Tuple2f out) {
+        final void getSearchDirection(final Tuple2f out) {
             switch (m_count) {
                 case 1:
                     out.set(m_v1.w).negated();
@@ -202,7 +202,7 @@ public class Distance {
          *
          * @return
          */
-        public void getClosestPoint(final Tuple2f out) {
+        void getClosestPoint(final Tuple2f out) {
             switch (m_count) {
                 case 0:
                     assert (false);
@@ -229,7 +229,7 @@ public class Distance {
         private final Tuple2f case3 = new v2();
         private final Tuple2f case33 = new v2();
 
-        public void getWitnessPoints(Vec2 pA, Tuple2f pB) {
+        void getWitnessPoints(Vec2 pA, Tuple2f pB) {
             switch (m_count) {
                 case 0:
                     assert (false);
@@ -267,7 +267,7 @@ public class Distance {
         }
 
         
-        public float getMetric() {
+        float getMetric() {
             switch (m_count) {
                 case 0:
                     assert (false);
@@ -296,7 +296,7 @@ public class Distance {
         /**
          * Solve a line segment using barycentric coordinates.
          */
-        public void solve2() {
+        void solve2() {
             
             
             
@@ -365,7 +365,7 @@ public class Distance {
          * - edge points[1]-points[2]<br/>
          * - inside the triangle
          */
-        public void solve3() {
+        void solve3() {
             w1.set(m_v1.w);
             w2.set(m_v2.w);
             w3.set(m_v3.w);
@@ -475,10 +475,10 @@ public class Distance {
      * @author daniel
      */
     public static class DistanceProxy {
-        public final Tuple2f[] m_vertices;
-        public int m_count;
+        final Tuple2f[] m_vertices;
+        int m_count;
         public float m_radius;
-        public final Tuple2f[] m_buffer;
+        final Tuple2f[] m_buffer;
 
         public DistanceProxy() {
             m_vertices = new Tuple2f[Settings.maxPolygonVertices];

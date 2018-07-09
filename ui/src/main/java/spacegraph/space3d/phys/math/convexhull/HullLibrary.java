@@ -42,7 +42,7 @@ import spacegraph.util.math.v3;
  */
 public class HullLibrary {
 
-	public final IntArrayList vertexIndexMapping = new IntArrayList();
+	private final IntArrayList vertexIndexMapping = new IntArrayList();
 
 	private final FasterList<Tri> tris = new FasterList<>();
 
@@ -250,14 +250,14 @@ public class HullLibrary {
 
 	private Tri extrudable(float epsilon) {
 		Tri t = null;
-		for (int i=0; i<tris.size(); i++) {
-			
-			
-			if (t == null || (tris.get(i) != null && t.rise < tris.get(i).rise)) {
-				
-				t = tris.get(i);
-			}
-		}
+        for (Tri tri : tris) {
+
+
+            if (t == null || (tri != null && t.rise < tri.rise)) {
+
+                t = tri;
+            }
+        }
 		return (t.rise > epsilon) ? t : null;
 	}
 
@@ -267,17 +267,17 @@ public class HullLibrary {
 
 		IntArrayList ts = new IntArrayList();
 
-		for (int i=0; i<tris.size(); i++) {
-			
-			if (tris.get(i) != null) {
-				for (int j = 0; j < 3; j++) {
-					
-					ts.add((tris.get(i)).getCoord(j));
-				}
-				
-				deAllocateTriangle(tris.get(i));
-			}
-		}
+        for (Tri tri : tris) {
+
+            if (tri != null) {
+                for (int j = 0; j < 3; j++) {
+
+                    ts.add(tri.getCoord(j));
+                }
+
+                deAllocateTriangle(tri);
+            }
+        }
 		tris_count[0] = ts.size() / 3;
 		MiscUtil.resize(tris_out, ts.size(), 0);
 
@@ -354,21 +354,19 @@ public class HullLibrary {
 
 		v3 n = new v3();
 
-		for (int j=0; j<tris.size(); j++) {
-			
-			Tri t = tris.get(j);
-			assert (t != null);
-			assert (t.vmax < 0);
-			
-			
-			
-			triNormal(verts.get(t.getCoord(0)), verts.get(t.getCoord(1)), verts.get(t.getCoord(2)), n);
-			t.vmax = maxdirsterid(verts, verts_count, n, allow);
-			
-			
-			tmp.sub(verts.get(t.vmax), verts.get(t.getCoord(0)));
-			t.rise = n.dot(tmp);
-		}
+        for (Tri t : tris) {
+
+            assert (t != null);
+            assert (t.vmax < 0);
+
+
+            triNormal(verts.get(t.getCoord(0)), verts.get(t.getCoord(1)), verts.get(t.getCoord(2)), n);
+            t.vmax = maxdirsterid(verts, verts_count, n, allow);
+
+
+            tmp.sub(verts.get(t.vmax), verts.get(t.getCoord(0)));
+            t.rise = n.dot(tmp);
+        }
 		Tri te;
 		vlimit -= 4;
 		while (vlimit > 0 && ((te = extrudable(epsilon)) != null)) {

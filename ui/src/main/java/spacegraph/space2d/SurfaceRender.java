@@ -10,8 +10,8 @@ public class SurfaceRender {
 
 
     /** viewable pixel resolution */
-    public final float pw;
-    public final float ph;
+    private final float pw;
+    private final float ph;
 
     /** ms since last update */
     public final int dtMS;
@@ -44,10 +44,7 @@ public class SurfaceRender {
     public boolean visible(RectFloat2D r) {
         if (r.right() < x1 || r.left() > x2)
             return false;
-        if (r.bottom() < y1 || r.top() > y2)
-            return false;
-
-        return true;
+        return !(r.bottom() < y1) && !(r.top() > y2);
     }
 
     public v2 visP(RectFloat2D bounds) {

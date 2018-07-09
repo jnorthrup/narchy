@@ -34,8 +34,8 @@ public class BvhSubtreeInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	public final /*unsigned*/ short[] quantizedAabbMin = new short[3];
-	public final /*unsigned*/ short[] quantizedAabbMax = new short[3];
+	private final /*unsigned*/ short[] quantizedAabbMin = new short[3];
+	private final /*unsigned*/ short[] quantizedAabbMax = new short[3];
 	
 	public int rootNodeIndex;
 	public int subtreeSize;

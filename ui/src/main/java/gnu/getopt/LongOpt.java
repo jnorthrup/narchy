@@ -39,7 +39,7 @@ public class LongOpt  {
      * Constant value used for the "has_arg" constructor argument.  This
      * value indicates that the option takes an argument that is optional.
      */
-    public static final int OPTIONAL_ARGUMENT = 2;
+    private static final int OPTIONAL_ARGUMENT = 2;
 
 /**************************************************************************/
 
@@ -50,26 +50,26 @@ public class LongOpt  {
     /**
      * The name of the long option
      */
-    protected String name;
+    String name;
 
     /**
      * Indicates whether the option has no argument, a required argument, or
      * an optional argument.
      */
-    protected int has_arg;
+    int has_arg;
 
     /**
      * If this variable is not null, then the value stored in "val" is stored
      * here when this long option is encountered.  If this is null, the value
      * stored in "val" is treated as the name of an equivalent short option.
      */
-    protected StringBuffer flag;
+    StringBuffer flag;
 
     /**
      * The value to store in "flag" if flag is not null, otherwise the
      * equivalent short option character for this long option.
      */
-    protected int val;
+    int val;
 
     /**
      * Localized strings for error messages

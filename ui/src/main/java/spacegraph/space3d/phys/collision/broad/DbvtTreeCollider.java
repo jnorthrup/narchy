@@ -29,9 +29,9 @@ package spacegraph.space3d.phys.collision.broad;
  *
  * @author jezek2
  */
-public class DbvtTreeCollider extends Dbvt.ICollide {
+class DbvtTreeCollider extends Dbvt.ICollide {
 
-	public final DbvtBroadphase pbp;
+	private final DbvtBroadphase pbp;
 
 	public DbvtTreeCollider(DbvtBroadphase p) {
 		this.pbp = p;

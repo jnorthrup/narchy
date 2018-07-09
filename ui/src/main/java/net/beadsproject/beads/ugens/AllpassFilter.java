@@ -21,15 +21,17 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  */
 public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
 
-    protected float g;
-    protected int maxDelay = 1;
-	protected int delay = 1;
-	protected int ind;
-	protected final int bufLen;
-    protected UGen delayUGen, gUGen;
-    protected boolean isDelayStatic, isGStatic;
-    protected final float[] xn;
-	protected final float[] yn;
+    private float g;
+    private int maxDelay = 1;
+	private int delay = 1;
+	private int ind;
+	private final int bufLen;
+    private UGen delayUGen;
+    private UGen gUGen;
+    private boolean isDelayStatic;
+    private boolean isGStatic;
+    private final float[] xn;
+	private final float[] yn;
 
     /**
      * Constructor with delay and g specified by floats.
@@ -146,7 +148,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
      * @param g The g parameter.
      * @return This filter instance.
      */
-    public AllpassFilter setG(float g) {
+    private AllpassFilter setG(float g) {
         this.g = g;
         if (isGStatic) {
             gUGen.setValue(g);
@@ -163,7 +165,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
      * @param g The g UGen.
      * @return This filter instance.
      */
-    public AllpassFilter setG(UGen g) {
+    private AllpassFilter setG(UGen g) {
         if (g == null) {
             setG(this.g);
         } else {
@@ -224,7 +226,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
      * @param del The delay UGen.
      * @return This filter instance.
      */
-    public AllpassFilter setDelay(UGen del) {
+    private AllpassFilter setDelay(UGen del) {
         if (del == null) {
             setDelay(delay);
         } else {
@@ -262,7 +264,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
      * @param paramBead The DataBead specifying parameters.
      * @return This filter instance.
      */
-    public AllpassFilter setParams(DataAuvent paramBead) {
+    private AllpassFilter setParams(DataAuvent paramBead) {
         if (paramBead != null) {
             Object o;
 

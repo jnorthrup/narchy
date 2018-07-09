@@ -97,8 +97,8 @@ public class Collision {
      * @param manifold1
      * @param manifold2
      */
-    public static final void getPointStates(final PointState[] state1, final PointState[] state2,
-                                            final Manifold manifold1, final Manifold manifold2) {
+    public static void getPointStates(final PointState[] state1, final PointState[] state2,
+                                      final Manifold manifold1, final Manifold manifold2) {
 
         for (int i = 0; i < Settings.maxManifoldPoints; i++) {
             state1[i] = PointState.NULL_STATE;
@@ -143,8 +143,8 @@ public class Collision {
      * @param offset
      * @return
      */
-    public static final int clipSegmentToLine(final ClipVertex[] vOut, final ClipVertex[] vIn,
-                                              final Tuple2f normal, float offset, int vertexIndexA) {
+    private static int clipSegmentToLine(final ClipVertex[] vOut, final ClipVertex[] vIn,
+                                         final Tuple2f normal, float offset, int vertexIndexA) {
 
         
         int numOut = 0;
@@ -353,45 +353,11 @@ public class Collision {
         
 
         if (u1 <= 0f) {
-            
-            final float dx = cLocalx - v1.x;
-            final float dy = cLocaly - v1.y;
-            if (dx * dx + dy * dy > radius * radius) {
-                return;
-            }
 
-            manifold.pointCount = 1;
-            manifold.type = ManifoldType.FACE_A;
-            
-            
-            
-            manifold.localNormal.x = cLocalx - v1.x;
-            manifold.localNormal.y = cLocaly - v1.y;
-            
-            manifold.localNormal.normalize();
-            manifold.localPoint.set(v1);
-            manifold.points[0].localPoint.set(circlep);
-            manifold.points[0].id.zero();
+            updateManifold(manifold, circlep, cLocalx, cLocaly, radius, v1);
         } else if (u2 <= 0.0f) {
-            
-            final float dx = cLocalx - v2.x;
-            final float dy = cLocaly - v2.y;
-            if (dx * dx + dy * dy > radius * radius) {
-                return;
-            }
 
-            manifold.pointCount = 1;
-            manifold.type = ManifoldType.FACE_A;
-            
-            
-            
-            manifold.localNormal.x = cLocalx - v2.x;
-            manifold.localNormal.y = cLocaly - v2.y;
-            
-            manifold.localNormal.normalize();
-            manifold.localPoint.set(v2);
-            manifold.points[0].localPoint.set(circlep);
-            manifold.points[0].id.zero();
+            updateManifold(manifold, circlep, cLocalx, cLocaly, radius, v2);
         } else {
             
             
@@ -426,7 +392,27 @@ public class Collision {
         }
     }
 
-    
+    public static void updateManifold(Manifold manifold, Tuple2f circlep, float cLocalx, float cLocaly, float radius, Tuple2f v1) {
+        final float dx = cLocalx - v1.x;
+        final float dy = cLocaly - v1.y;
+        if (dx * dx + dy * dy > radius * radius) {
+            return;
+        }
+
+        manifold.pointCount = 1;
+        manifold.type = ManifoldType.FACE_A;
+
+
+        manifold.localNormal.x = cLocalx - v1.x;
+        manifold.localNormal.y = cLocaly - v1.y;
+
+        manifold.localNormal.normalize();
+        manifold.localPoint.set(v1);
+        manifold.points[0].localPoint.set(circlep);
+        manifold.points[0].id.zero();
+    }
+
+
     private final Tuple2f temp = new v2();
     private final Transform xf = new Transform();
     private final v2 n = new v2();
@@ -442,8 +428,8 @@ public class Collision {
      * @param xf2
      * @return
      */
-    public final void findMaxSeparation(EdgeResults results, final PolygonShape poly1,
-                                        final Transform xf1, final PolygonShape poly2, final Transform xf2) {
+    private void findMaxSeparation(EdgeResults results, final PolygonShape poly1,
+                                   final Transform xf1, final PolygonShape poly2, final Transform xf2) {
         int count1 = poly1.vertices;
         int count2 = poly2.vertices;
         Tuple2f[] n1s = poly1.normals;
@@ -480,8 +466,8 @@ public class Collision {
         results.separation = maxSeparation;
     }
 
-    public static void findIncidentEdge(final ClipVertex[] c, final PolygonShape poly1,
-                                        final Transform xf1, int edge1, final PolygonShape poly2, final Transform xf2) {
+    private static void findIncidentEdge(final ClipVertex[] c, final PolygonShape poly1,
+                                         final Transform xf1, int edge1, final PolygonShape poly2, final Transform xf2) {
         int count1 = poly1.vertices;
         final Tuple2f[] normals1 = poly1.normals;
 
@@ -857,23 +843,23 @@ public class Collision {
      * Java-specific class for returning edge results
      */
     private static class EdgeResults {
-        public float separation;
-        public int edgeIndex;
+        float separation;
+        int edgeIndex;
     }
 
     /**
      * Used for computing contact manifolds.
      */
-    public static class ClipVertex {
-        public final Tuple2f v;
-        public final ContactID id;
+    static class ClipVertex {
+        final Tuple2f v;
+        final ContactID id;
 
-        public ClipVertex() {
+        ClipVertex() {
             v = new v2();
             id = new ContactID();
         }
 
-        public void set(final ClipVertex cv) {
+        void set(final ClipVertex cv) {
             Tuple2f v1 = cv.v;
             v.x = v1.x;
             v.y = v1.y;
@@ -930,7 +916,7 @@ public class Collision {
         final Tuple2f[] normals = new Tuple2f[Settings.maxPolygonVertices];
         int count;
 
-        public TempPolygon() {
+        TempPolygon() {
             for (int i = 0; i < vertices.length; i++) {
                 vertices[i] = new v2();
                 normals[i] = new v2();
@@ -982,7 +968,7 @@ public class Collision {
         float m_radius;
         boolean m_front;
 
-        public EPCollider() {
+        EPCollider() {
             for (int i = 0; i < 2; i++) {
                 ie[i] = new ClipVertex();
                 clipPoints1[i] = new ClipVertex();
@@ -1001,8 +987,8 @@ public class Collision {
         private final EPAxis edgeAxis = new EPAxis();
         private final EPAxis polygonAxis = new EPAxis();
 
-        public void collide(Manifold manifold, final EdgeShape edgeA, final Transform xfA,
-                            final PolygonShape polygonB, final Transform xfB) {
+        void collide(Manifold manifold, final EdgeShape edgeA, final Transform xfA,
+                     final PolygonShape polygonB, final Transform xfB) {
 
             Transform.mulTransToOutUnsafe(xfA, xfB, m_xf);
             Transform.mulToOutUnsafe(m_xf, polygonB.centroid, m_centroidB);
@@ -1044,144 +1030,32 @@ public class Collision {
             if (hasVertex0 && hasVertex3) {
                 if (convex1 && convex2) {
                     m_front = offset0 >= 0.0f || offset1 >= 0.0f || offset2 >= 0.0f;
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = m_normal0.x;
-                        m_lowerLimit.y = m_normal0.y;
-                        m_upperLimit.x = m_normal2.x;
-                        m_upperLimit.y = m_normal2.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = -m_normal1.x;
-                        m_lowerLimit.y = -m_normal1.y;
-                        m_upperLimit.x = -m_normal1.x;
-                        m_upperLimit.y = -m_normal1.y;
-                    }
+                    limit(m_normal0, m_normal2, m_normal1, m_normal1);
                 } else if (convex1) {
                     m_front = offset0 >= 0.0f || (offset1 >= 0.0f && offset2 >= 0.0f);
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = m_normal0.x;
-                        m_lowerLimit.y = m_normal0.y;
-                        m_upperLimit.x = m_normal1.x;
-                        m_upperLimit.y = m_normal1.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = -m_normal2.x;
-                        m_lowerLimit.y = -m_normal2.y;
-                        m_upperLimit.x = -m_normal1.x;
-                        m_upperLimit.y = -m_normal1.y;
-                    }
+                    limit(m_normal0, m_normal1, m_normal2, m_normal1);
                 } else if (convex2) {
                     m_front = offset2 >= 0.0f || (offset0 >= 0.0f && offset1 >= 0.0f);
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = m_normal1.x;
-                        m_lowerLimit.y = m_normal1.y;
-                        m_upperLimit.x = m_normal2.x;
-                        m_upperLimit.y = m_normal2.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = -m_normal1.x;
-                        m_lowerLimit.y = -m_normal1.y;
-                        m_upperLimit.x = -m_normal0.x;
-                        m_upperLimit.y = -m_normal0.y;
-                    }
+                    limit(m_normal1, m_normal2, m_normal1, m_normal0);
                 } else {
                     m_front = offset0 >= 0.0f && offset1 >= 0.0f && offset2 >= 0.0f;
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = m_normal1.x;
-                        m_lowerLimit.y = m_normal1.y;
-                        m_upperLimit.x = m_normal1.x;
-                        m_upperLimit.y = m_normal1.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = -m_normal2.x;
-                        m_lowerLimit.y = -m_normal2.y;
-                        m_upperLimit.x = -m_normal0.x;
-                        m_upperLimit.y = -m_normal0.y;
-                    }
+                    limit(m_normal1, m_normal1.x, m_normal1.y, -m_normal2.x, -m_normal2.y, m_normal0);
                 }
             } else if (hasVertex0) {
                 if (convex1) {
                     m_front = offset0 >= 0.0f || offset1 >= 0.0f;
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = m_normal0.x;
-                        m_lowerLimit.y = m_normal0.y;
-                        m_upperLimit.x = -m_normal1.x;
-                        m_upperLimit.y = -m_normal1.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = m_normal1.x;
-                        m_lowerLimit.y = m_normal1.y;
-                        m_upperLimit.x = -m_normal1.x;
-                        m_upperLimit.y = -m_normal1.y;
-                    }
+                    limit(m_normal0, -m_normal1.x, -m_normal1.y, m_normal1.x, m_normal1.y, m_normal1);
                 } else {
                     m_front = offset0 >= 0.0f && offset1 >= 0.0f;
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = m_normal1.x;
-                        m_lowerLimit.y = m_normal1.y;
-                        m_upperLimit.x = -m_normal1.x;
-                        m_upperLimit.y = -m_normal1.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = m_normal1.x;
-                        m_lowerLimit.y = m_normal1.y;
-                        m_upperLimit.x = -m_normal0.x;
-                        m_upperLimit.y = -m_normal0.y;
-                    }
+                    limit(m_normal1, -m_normal1.x, -m_normal1.y, m_normal1.x, m_normal1.y, m_normal0);
                 }
             } else if (hasVertex3) {
                 if (convex2) {
                     m_front = offset1 >= 0.0f || offset2 >= 0.0f;
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = -m_normal1.x;
-                        m_lowerLimit.y = -m_normal1.y;
-                        m_upperLimit.x = m_normal2.x;
-                        m_upperLimit.y = m_normal2.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = -m_normal1.x;
-                        m_lowerLimit.y = -m_normal1.y;
-                        m_upperLimit.x = m_normal1.x;
-                        m_upperLimit.y = m_normal1.y;
-                    }
+                    limit(m_normal2, m_normal1);
                 } else {
                     m_front = offset1 >= 0.0f && offset2 >= 0.0f;
-                    if (m_front) {
-                        m_normal.x = m_normal1.x;
-                        m_normal.y = m_normal1.y;
-                        m_lowerLimit.x = -m_normal1.x;
-                        m_lowerLimit.y = -m_normal1.y;
-                        m_upperLimit.x = m_normal1.x;
-                        m_upperLimit.y = m_normal1.y;
-                    } else {
-                        m_normal.x = -m_normal1.x;
-                        m_normal.y = -m_normal1.y;
-                        m_lowerLimit.x = -m_normal2.x;
-                        m_lowerLimit.y = -m_normal2.y;
-                        m_upperLimit.x = m_normal1.x;
-                        m_upperLimit.y = m_normal1.y;
-                    }
+                    limit(m_normal1, m_normal2);
                 }
             } else {
                 m_front = offset1 >= 0.0f;
@@ -1368,8 +1242,62 @@ public class Collision {
             manifold.pointCount = pointCount;
         }
 
+        public void limit(Tuple2f m_normal2, Tuple2f m_normal1) {
+            if (m_front) {
+                m_normal.x = m_normal1.x;
+                m_normal.y = m_normal1.y;
+                m_lowerLimit.x = -m_normal1.x;
+                m_lowerLimit.y = -m_normal1.y;
+                m_upperLimit.x = m_normal2.x;
+                m_upperLimit.y = m_normal2.y;
+            } else {
+                m_normal.x = -m_normal1.x;
+                m_normal.y = -m_normal1.y;
+                m_lowerLimit.x = -m_normal1.x;
+                m_lowerLimit.y = -m_normal1.y;
+                m_upperLimit.x = m_normal1.x;
+                m_upperLimit.y = m_normal1.y;
+            }
+        }
 
-        public void computeEdgeSeparation(EPAxis axis) {
+        public void limit(Tuple2f m_normal0, float v, float v2, float x, float y, Tuple2f m_normal1) {
+            if (m_front) {
+                m_normal.x = m_normal1.x;
+                m_normal.y = m_normal1.y;
+                m_lowerLimit.x = m_normal0.x;
+                m_lowerLimit.y = m_normal0.y;
+                m_upperLimit.x = v;
+                m_upperLimit.y = v2;
+            } else {
+                m_normal.x = -m_normal1.x;
+                m_normal.y = -m_normal1.y;
+                m_lowerLimit.x = x;
+                m_lowerLimit.y = y;
+                m_upperLimit.x = -m_normal1.x;
+                m_upperLimit.y = -m_normal1.y;
+            }
+        }
+
+        public void limit(Tuple2f m_normal0, Tuple2f m_normal2, Tuple2f m_normal1, Tuple2f m_normal12) {
+            if (m_front) {
+                m_normal.x = m_normal1.x;
+                m_normal.y = m_normal1.y;
+                m_lowerLimit.x = m_normal0.x;
+                m_lowerLimit.y = m_normal0.y;
+                m_upperLimit.x = m_normal2.x;
+                m_upperLimit.y = m_normal2.y;
+            } else {
+                m_normal.x = -m_normal1.x;
+                m_normal.y = -m_normal1.y;
+                m_lowerLimit.x = -m_normal1.x;
+                m_lowerLimit.y = -m_normal1.y;
+                m_upperLimit.x = -m_normal12.x;
+                m_upperLimit.y = -m_normal12.y;
+            }
+        }
+
+
+        void computeEdgeSeparation(EPAxis axis) {
             axis.type = EPAxis.Type.EDGE_A;
             axis.index = m_front ? 0 : 1;
             axis.separation = Float.MAX_VALUE;
@@ -1390,7 +1318,7 @@ public class Collision {
         private final Tuple2f perp = new v2();
         private final Tuple2f n = new v2();
 
-        public void computePolygonSeparation(EPAxis axis) {
+        void computePolygonSeparation(EPAxis axis) {
             axis.type = EPAxis.Type.UNKNOWN;
             axis.index = -1;
             axis.separation = -Float.MAX_VALUE;

@@ -57,7 +57,7 @@ public abstract class StackList<T> extends FasterList<T>  {
 	
 	private int pos;
 	
-	protected StackList() {
+	StackList() {
 		returnObj = create();
 	}
 	

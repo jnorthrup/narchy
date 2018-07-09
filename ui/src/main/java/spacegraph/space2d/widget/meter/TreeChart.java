@@ -41,7 +41,7 @@ public class TreeChart<X> extends Surface {
 
     private LayoutOrient layoutOrient = LayoutOrient.HORIZONTAL;
 
-    final Flip<CircularArrayList<ItemVis<X>>> phase = new Flip(
+    private final Flip<CircularArrayList<ItemVis<X>>> phase = new Flip(
             ()->new CircularArrayList<>(512));
 
 
@@ -55,7 +55,7 @@ public class TreeChart<X> extends Surface {
     }
 
 
-    protected void paint(GL2 gl) {
+    private void paint(GL2 gl) {
 
 
         CircularArrayList<ItemVis<X>> read = phase.read();
@@ -74,7 +74,7 @@ public class TreeChart<X> extends Surface {
         return cached(i -> new ItemVis<>(i, i.toString()));
     }
 
-    public static <X> Function<X, ItemVis<X>> cached(Function<X, ItemVis<X>> vis) {
+    static <X> Function<X, ItemVis<X>> cached(Function<X, ItemVis<X>> vis) {
         return new Function<>() {
             final Map<X, ItemVis<X>> cache
                     = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 256);
@@ -130,10 +130,7 @@ public class TreeChart<X> extends Surface {
             layoutOrient = width > height ? LayoutOrient.VERTICAL : LayoutOrient.HORIZONTAL;
 
             float areaNormalization = (width * height) / weight[0];
-            display.forEach(c -> {
-                c.area = c.requestedArea() * areaNormalization;
-                
-            });
+            display.forEach(c -> c.area = c.requestedArea() * areaNormalization);
 
             squarify(display, new CircularArrayList(size), minimumSide());
 
@@ -325,15 +322,16 @@ public class TreeChart<X> extends Surface {
      */
     public static class ItemVis<X> implements Comparable<ItemVis> {
 
-        public final String label;
-        public final X item;
+        final String label;
+        final X item;
         private final static AtomicInteger serial = new AtomicInteger(0);
         private final int id;
-        public float left;
-        public float top;
-        public float width;
-        public float height;
-        public float area, weight;
+        float left;
+        float top;
+        float width;
+        float height;
+        float area;
+        float weight;
         private float r;
         private float g;
         private float b;
@@ -389,7 +387,7 @@ public class TreeChart<X> extends Surface {
             
         }
 
-        public void paint(GL2 gl, float percent) {
+        void paint(GL2 gl, float percent) {
             float i = 0.25f + 0.75f * percent;
 
             if (r < 0) {

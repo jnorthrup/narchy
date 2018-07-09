@@ -32,8 +32,8 @@ import spacegraph.util.math.v3;
  */
 class SimpleBroadphasing extends Broadphasing {
 
-	protected final v3 min = new v3();
-	protected final v3 max = new v3();
+	final v3 min = new v3();
+	final v3 max = new v3();
 	
 
 	public SimpleBroadphasing(v3 minpt, v3 maxpt, BroadphaseNativeType shapeType, Collidable userPtr, short collisionFilterGroup, short collisionFilterMask, Object multiSapProxy) {

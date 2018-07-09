@@ -13,18 +13,11 @@ import java.util.function.Predicate;
 public abstract class AbstractButton extends Widget {
 
 
-
-    final Predicate<Finger> pressable = Finger.clicked(0, (f)->{
+    private final Predicate<Finger> pressable = Finger.clicked(0, (f) -> {
         dz = 0;
-        Exe.invokeLater(()->
-            onClick(f));
-    }, ()-> {
-        dz = 0.5f;
-    }, () -> {
-        dz = 0f;
-    }, () -> {
-        dz = 0f;
-    });
+        Exe.invoke/*Later*/(() ->
+                onClick(f));
+    }, () -> dz = 0.5f, () -> dz = 0f, () -> dz = 0f);
 
     @Override
     public void onFinger(@Nullable Finger finger) {
@@ -33,11 +26,6 @@ public abstract class AbstractButton extends Widget {
     }
 
     protected abstract void onClick(Finger f);
-
-
-
-
-
 
 
 }

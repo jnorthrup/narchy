@@ -110,7 +110,7 @@ public class Mult extends UGen {
      * @param multiplier The new multiplier value.
      * @return This Mult instance.
      */
-    public Mult setMultiplier(float multiplier) {
+    private Mult setMultiplier(float multiplier) {
         this.multiplier = multiplier;
         multiplierUGen = null;
         return this;
@@ -122,7 +122,7 @@ public class Mult extends UGen {
      * @param multiplierUGen The multiplier UGen.
      * @return This Mult instance.
      */
-    public Mult setMultiplier(UGen multiplierUGen) {
+    private Mult setMultiplier(UGen multiplierUGen) {
         if (multiplierUGen == null) {
             setMultiplier(multiplier);
         } else {

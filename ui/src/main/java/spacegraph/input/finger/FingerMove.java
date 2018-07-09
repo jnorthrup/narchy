@@ -4,15 +4,16 @@ import spacegraph.util.math.v2;
 
 public abstract class FingerMove extends FingerDragging {
 
-    protected final float xSpeed, ySpeed;
-    protected v2 startPos;
+    private final float xSpeed;
+    private final float ySpeed;
+    private v2 startPos;
 
     public FingerMove(int button) {
         this(button, true, true);
     }
 
     /** for locking specific axes */
-    public FingerMove(int button, boolean xAxis, boolean yAxis) {
+    FingerMove(int button, boolean xAxis, boolean yAxis) {
         this(button, xAxis ? 1 : 0, yAxis ? 1 : 0);
         assert(xAxis || yAxis);
     }
@@ -24,9 +25,10 @@ public abstract class FingerMove extends FingerDragging {
     }
 
 
-    public abstract void move(float tx, float ty);
+    protected abstract void move(float tx, float ty);
 
-    @Override public boolean drag(Finger finger) {
+    @Override
+    protected boolean drag(Finger finger) {
 
         v2 current = pos(finger);
         if (current!=null) {
@@ -46,7 +48,7 @@ public abstract class FingerMove extends FingerDragging {
         return super.startDrag(f);
     }
 
-    protected v2 pos(Finger finger) {
+    v2 pos(Finger finger) {
         return finger.pos.clone();
     }
 

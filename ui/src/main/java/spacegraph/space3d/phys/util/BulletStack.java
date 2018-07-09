@@ -48,7 +48,7 @@ public class BulletStack {
 	
 	public final VectorStackList vectors = new VectorStackList();
 	public final TransformStackList transforms = new TransformStackList();
-	public final MatrixStackList matrices = new MatrixStackList();
+	private final MatrixStackList matrices = new MatrixStackList();
 	
 	
 	

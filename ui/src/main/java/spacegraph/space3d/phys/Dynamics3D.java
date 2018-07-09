@@ -59,25 +59,26 @@ import static spacegraph.util.math.v3.v;
  */
 public class Dynamics3D<X> extends Collisions<X> {
 
-    final Constrainer constrainer;
-    final Islands islands;
-    final List<TypedConstraint> constraints = new FasterList();
-    @Nullable protected v3 gravity;
+    private final Constrainer constrainer;
+    private final Islands islands;
+    private final List<TypedConstraint> constraints = new FasterList();
+    @Nullable
+    private v3 gravity;
 
 
-    final Flip<List<Collidable>> coll = new Flip(FasterList::new);
+    private final Flip<List<Collidable>> coll = new Flip(FasterList::new);
     private List<Collidable> collidable = coll.read();
 
     public final FasterList<BroadConstraint> broadConstraints = new FasterList<>(0);
-    final FasterList<TypedConstraint> sortedConstraints = new FasterList<>(0);
-    final InplaceSolverIslandCallback solverCallback = new InplaceSolverIslandCallback();
+    private final FasterList<TypedConstraint> sortedConstraints = new FasterList<>(0);
+    private final InplaceSolverIslandCallback solverCallback = new InplaceSolverIslandCallback();
 
-    final ContactSolverInfo solverInfo = new ContactSolverInfo();
+    private final ContactSolverInfo solverInfo = new ContactSolverInfo();
 
     
     @Deprecated protected float localTime = 1f / 60f;
-    protected boolean ownsIslandManager;
-    protected boolean ownsConstrainer;
+    private boolean ownsIslandManager;
+    private boolean ownsConstrainer;
 
 
 
@@ -88,7 +89,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         this(intersecter, broadphase, spatials, null);
     }
 
-    public Dynamics3D(Intersecter intersecter, Broadphase broadphase, Iterable<Spatial<X>> spatials, Constrainer constrainer) {
+    private Dynamics3D(Intersecter intersecter, Broadphase broadphase, Iterable<Spatial<X>> spatials, Constrainer constrainer) {
         super(intersecter, broadphase);
         this.spatials = spatials;
         islands = new Islands();
@@ -120,33 +121,14 @@ public class Dynamics3D<X> extends Collisions<X> {
         return update(dt, maxSubSteps, dt);
     }
 
-    protected void synchronizeMotionStates(boolean clear) {
+    private void synchronizeMotionStates(boolean clear) {
 
 
-
-
-
-
-        
-        for (int i = 0, collidableSize = collidable.size(); i < collidableSize; i++) {
-            Collidable ccc = collidable.get(i);
-
+        for (Collidable ccc : collidable) {
             Body3D body = ifDynamic(ccc);
             if (body == null) {
                 continue;
             }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             if (clear) {
@@ -216,7 +198,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
 
 
-    final void updateObjects(float dt) {
+    private void updateObjects(float dt) {
 
         List<Collidable> nextCollidables = coll.write();
         nextCollidables.clear();
@@ -393,7 +375,7 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
 
-    void updateActivationState(float timeStep) {
+    private void updateActivationState(float timeStep) {
 
         
 		float deactivationTime = isDeactivationDisabled() ? 0 : getDeactivationTime();
@@ -477,7 +459,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         broadConstraints.add(b);
     }
 
-    protected final void solveBroadConstraints(float timeStep) {
+    private void solveBroadConstraints(float timeStep) {
         for (BroadConstraint b : broadConstraints) {
             b.solve(broadphase, collidable, timeStep);
         }
@@ -501,7 +483,7 @@ public class Dynamics3D<X> extends Collisions<X> {
     /**
      * solve contact and other joint constraints
      */
-    protected void solveConstraints(float timeStep, ContactSolverInfo solverInfo) {
+    private void solveConstraints(float timeStep, ContactSolverInfo solverInfo) {
 
         calculateSimulationIslands();
 
@@ -530,7 +512,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         constrainer.allSolved(solverInfo /*, m_stackAlloc*/);
     }
 
-    protected void calculateSimulationIslands() {
+    private void calculateSimulationIslands() {
 
         islands.updateActivationState(this);
 
@@ -551,18 +533,17 @@ public class Dynamics3D<X> extends Collisions<X> {
         islands.storeIslandActivationState(this);
     }
 
-    public void forEachConstraint(Consumer<TypedConstraint> e) {
+    private void forEachConstraint(Consumer<TypedConstraint> e) {
         constraints.forEach(e);
     }
 
-    protected void integrateTransforms(float timeStep) {
+    private void integrateTransforms(float timeStep) {
 
         v3 tmp = new v3();
         Transform predictedTrans = new Transform();
         SphereShape tmpSphere = new SphereShape(1);
 
-        for (int i = 0, collidableSize = collidable.size(); i < collidableSize; i++) {
-            Collidable colObj = collidable.get(i);
+        for (Collidable colObj : collidable) {
             Body3D body = ifDynamic(colObj);
             if (body != null) {
                 body.setHitFraction(1f);
@@ -583,22 +564,21 @@ public class Dynamics3D<X> extends Collisions<X> {
                             BulletStats.gNumClampedCcdMotions++;
 
                             ClosestNotMeConvexResultCallback sweepResults = new ClosestNotMeConvexResultCallback(body, BW, predictedTrans, broadphase.getOverlappingPairCache(), intersecter);
-                            
 
 
-                            tmpSphere.setRadius(body.getCcdSweptSphereRadius()); 
+                            tmpSphere.setRadius(body.getCcdSweptSphereRadius());
 
                             Broadphasing bph = body.broadphase;
                             sweepResults.collisionFilterGroup = bph.collisionFilterGroup;
                             sweepResults.collisionFilterMask = bph.collisionFilterMask;
 
                             convexSweepTest(tmpSphere, BW, predictedTrans, sweepResults);
-                            
+
                             if (sweepResults.hasHit() && (sweepResults.closestHitFraction > 0.0001f)) {
                                 body.setHitFraction(sweepResults.closestHitFraction);
                                 body.predictIntegratedTransform(timeStep * body.getHitFraction(), predictedTrans);
                                 body.setHitFraction(0f);
-                                
+
                             }
                         }
 
@@ -610,7 +590,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         }
     }
 
-    protected void predictUnconstraintMotion(float timeStep) {
+    private void predictUnconstraintMotion(float timeStep) {
 
         collidables().forEach((colObj) -> {
             Body3D body = ifDynamic(colObj);
@@ -887,14 +867,14 @@ public class Dynamics3D<X> extends Collisions<X> {
     }
 
     private static class InplaceSolverIslandCallback extends Islands.IslandCallback {
-        public ContactSolverInfo solverInfo;
-        public Constrainer solver;
-        public FasterList<TypedConstraint> sortedConstraints;
-        public int numConstraints;
+        ContactSolverInfo solverInfo;
+        Constrainer solver;
+        FasterList<TypedConstraint> sortedConstraints;
+        int numConstraints;
         
-        public Intersecter intersecter;
+        Intersecter intersecter;
 
-        public void init(ContactSolverInfo solverInfo, Constrainer solver, FasterList<TypedConstraint> sortedConstraints, int numConstraints, Intersecter intersecter) {
+        void init(ContactSolverInfo solverInfo, Constrainer solver, FasterList<TypedConstraint> sortedConstraints, int numConstraints, Intersecter intersecter) {
             this.solverInfo = solverInfo;
             this.solver = solver;
             this.sortedConstraints = sortedConstraints;
@@ -949,7 +929,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         private final OverlappingPairCache pairCache;
         private final Intersecter intersecter;
 
-        public ClosestNotMeConvexResultCallback(Collidable me, v3 fromA, v3 toA, OverlappingPairCache pairCache, Intersecter intersecter) {
+        ClosestNotMeConvexResultCallback(Collidable me, v3 fromA, v3 toA, OverlappingPairCache pairCache, Intersecter intersecter) {
             super(fromA, toA);
             this.me = me;
             this.pairCache = pairCache;
@@ -999,8 +979,8 @@ public class Dynamics3D<X> extends Collisions<X> {
                         
                         OArrayList<PersistentManifold> manifoldArray = new OArrayList<>();
                         collisionPair.algorithm.getAllContactManifolds(manifoldArray);
-                        for (int j = 0; j < manifoldArray.size(); j++) {
-                            if (manifoldArray.get(j).numContacts() > 0) {
+                        for (PersistentManifold aManifoldArray : manifoldArray) {
+                            if (aManifoldArray.numContacts() > 0) {
                                 return false;
                             }
                         }

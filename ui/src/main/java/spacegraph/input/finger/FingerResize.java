@@ -5,18 +5,18 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 
 public abstract class FingerResize extends FingerDragging {
-    protected final static float aspectRatioRatioLimit = 0.1f;
-    protected final Windo.DragEdit mode;
+    private final static float aspectRatioRatioLimit = 0.1f;
+    private final Windo.DragEdit mode;
     private final boolean invY;
     private RectFloat2D before;
 
     private v2 posStart;
 
-    public FingerResize(int button, Windo.DragEdit mode) {
+    FingerResize(int button, Windo.DragEdit mode) {
         this(button, mode, false);
     }
 
-    public FingerResize(int button, Windo.DragEdit mode, boolean invertY) {
+    FingerResize(int button, Windo.DragEdit mode, boolean invertY) {
         super(button);
         this.mode = mode;
         this.invY = invertY;

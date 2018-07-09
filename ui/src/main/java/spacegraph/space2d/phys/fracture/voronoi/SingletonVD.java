@@ -55,26 +55,26 @@ public class SingletonVD {
      * Delaunay triangulacia - triangles su trojuholniky triangulacie. Rozmedzie
      * platnych trojuholnikov: (0, triangC - 1). Nenastavovat hodnotam null value.
      */
-    public final Triangle[] triangles = new Triangle[0x300];
+    private final Triangle[] triangles = new Triangle[0x300];
 
     /**
      * Vstupne pole ohnisk.
      */
-    public Tuple2f[] ar;
+    private Tuple2f[] ar;
 
     /**
      * Pocet trojuholnikov triangulacie.
      */
-    public int triangC = 0;
+    private int triangC = 0;
 
     /**
      * Obojsmerny spojovy zoznam prvkov konvexneho obalu.
      */
-    public Hull hull;
+    private Hull hull;
 
-    final Random rng = new XoRoShiRo128PlusRandom(1);
+    private final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    private final double RND() { return rng.nextDouble() + 0.5; }
+    private double RND() { return rng.nextDouble() + 0.5; }
 
 
     private final Edge[] edges = new Edge[0x10000]; 
@@ -312,7 +312,7 @@ public class SingletonVD {
      *
      * @param ar Pole ohnisk
      */
-    void calculateDelaunay(Tuple2f[] ar) {
+    private void calculateDelaunay(Tuple2f[] ar) {
         this.ar = ar;
         triangC = 0;
         hull = null;
@@ -472,6 +472,7 @@ public class SingletonVD {
         double vy = v.y;
         double g = (bx - ax) * (vy - by);
         double h = (vx - bx) * (by - ay);
+        //noinspection UseCompareMethod
         return g > h ? 1 : g == h ? 0 : -1;
 
     }

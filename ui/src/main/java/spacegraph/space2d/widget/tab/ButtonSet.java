@@ -11,13 +11,13 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
 
     /** uses both set and list (for ordering) aspects of the ArrayHashSet */
-    final ArrayHashSet<T> buttons = new ArrayHashSet<>();
+    private final ArrayHashSet<T> buttons = new ArrayHashSet<>();
 
 
     /** TODO */
     private final Mode mode;
 
-    public ObjectBooleanProcedure<T> action = null;
+    private ObjectBooleanProcedure<T> action = null;
 
     public enum Mode {
         /**  all disabled */

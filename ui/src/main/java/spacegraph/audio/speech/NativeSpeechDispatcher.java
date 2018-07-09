@@ -9,7 +9,7 @@ import java.io.IOException;
 /** 'speechd' speech dispatcher - executes via command line */
 public class NativeSpeechDispatcher {
 
-    static final Logger logger = LoggerFactory.getLogger(NativeSpeechDispatcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(NativeSpeechDispatcher.class);
 
     
     
@@ -18,14 +18,14 @@ public class NativeSpeechDispatcher {
     public NativeSpeechDispatcher() {
     }
 
-    public String[] command(String s) {
+    private String[] command(String s) {
         return new String[]{
             
             "/usr/bin/espeak-ng", '"' + s + '"' 
         };
     }
 
-    public String stringify(Object x) {
+    private String stringify(Object x) {
         if (x instanceof Object[]) {
             return Joiner.on(" ").join((Object[])x);
         } else {
@@ -44,11 +44,7 @@ public class NativeSpeechDispatcher {
                     Process p = new ProcessBuilder()
                             .command(command(s))
                             .start();
-                    p.onExit().handle((z, y) -> {
-                        
-                        
-                        return null;
-                    }).exceptionally(t->{
+                    p.onExit().handle((z, y) -> null).exceptionally(t->{
                         logger.warn("speech error: {} {}", s, t);
                         
                         return null;

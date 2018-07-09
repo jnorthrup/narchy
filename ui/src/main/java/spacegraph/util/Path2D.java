@@ -25,7 +25,7 @@ public class Path2D extends FloatArrayList {
         addAll(x, y);
     }
 
-    public void add(Tuple2f p) {
+    private void add(Tuple2f p) {
         addAll(p.x, p.y);
     }
 
@@ -72,7 +72,7 @@ public class Path2D extends FloatArrayList {
 
     }
 
-    void collinearSimplifyNext() {
+    private void collinearSimplifyNext() {
         int n = points();
         int worst = -1;
         float minC = Float.POSITIVE_INFINITY;
@@ -142,7 +142,7 @@ public class Path2D extends FloatArrayList {
         return point(0);
     }
 
-    public v2 point(int i) {
+    private v2 point(int i) {
         float[] ii = items;
         return new v2(ii[i*2], ii[i*2+1]);
     }
@@ -155,7 +155,7 @@ public class Path2D extends FloatArrayList {
     }
 
 
-    public void forEach(FloatFloatProcedure each) {
+    private void forEach(FloatFloatProcedure each) {
         int s = size;
         for (int i = 0; i < s; ) {
             each.value(items[i++], items[i++]);

@@ -7,11 +7,11 @@ public interface Contexter extends Context {
         private final String id;
         private Contexter parent = null;
 
-        public ContextBranch(String id) {
+        ContextBranch(String id) {
             this.id = id;
         }
 
-        public ContextBranch start(Contexter parent) {
+        ContextBranch start(Contexter parent) {
             synchronized (this) {
                 Contexter prevParent = this.parent;
                 if (prevParent!=parent) {
@@ -25,7 +25,7 @@ public interface Contexter extends Context {
             return this;
         }
 
-        protected void stop() {
+        void stop() {
 
         }
 

@@ -28,8 +28,8 @@ package spacegraph.space2d.phys.common;
 import spacegraph.util.math.Tuple2f;
 
 public class RaycastResult {
-    public float lambda = 0.0f;
-    public final Tuple2f normal = new Vec2();
+    private float lambda = 0.0f;
+    private final Tuple2f normal = new Vec2();
 
     public RaycastResult set(RaycastResult argOther) {
         lambda = argOther.lambda;

@@ -31,7 +31,7 @@ package net.propero.rdp.rdp5.cliprdr;
 
 import java.awt.datatransfer.Transferable;
 
-public interface ClipInterface {
+interface ClipInterface {
 
     void copyToClipboard(Transferable t);
 

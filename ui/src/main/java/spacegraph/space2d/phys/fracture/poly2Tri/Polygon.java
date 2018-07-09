@@ -6,29 +6,31 @@ import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.BTreeNode;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTree;
+import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTreeAction;
 import spacegraph.util.math.Tuple2f;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
 /**
  * Merged with BDMFile (Boundary Mesh File)
  */
-public class Polygon {
+class Polygon {
 
     /**
      * Was unsigned int!
      * Number of contours.
      */
-    protected int _ncontours = 0;
+    private int _ncontours = 0;
 
     /**
      * vector<unsigned int>    _nVertices;   
      */
-    protected int[] _nVertices = null;
+    private int[] _nVertices = null;
 
     /**
      * typedef map<unsigned int, Pointbase*>           PointbaseMap;
@@ -36,7 +38,7 @@ public class Polygon {
      * map in C++ code probably because od adding into map
      * ... see _pointsKeys
      */
-    protected final IntObjectHashMap _points = new IntObjectHashMap();
+    private final IntObjectHashMap _points = new IntObjectHashMap();
 
     /**
      * Initialized in initialize() method ... number of points
@@ -44,13 +46,13 @@ public class Polygon {
      * code are done from smaller to bigger ... HashMap.keySet().iterator()
      * isn't returning keys in natural order.
      */
-    protected int[] _pointsKeys = null;
+    private int[] _pointsKeys = null;
 
     /**
      * typedef map<unsigned int, Linebase*>            LineMap;
      * all edges
      */
-    protected final IntObjectHashMap<Linebase> _edges = new IntObjectHashMap<>(0);
+    private final IntObjectHashMap<Linebase> _edges = new IntObjectHashMap<>(0);
 
     /**
      * See _pointsKeys ... same for _edges.
@@ -59,7 +61,7 @@ public class Polygon {
      * Right now I'm not sure wether number of edges can't change...
      * ... better call initializeEdgesKeys() all the time ;)
      */
-    protected int[] _edgesKeys = null;
+    private int[] _edgesKeys = null;
 
     /**
      * typedef priority_queue<Pointbase> PQueue; ... use PointbaseComparatorCoordinatesReverse! (Jakub Gemrot)
@@ -78,7 +80,7 @@ public class Polygon {
      * typedef list<unsigned int>      Monopoly;
      * all monotone polygon piece list;
      */
-    private final ArrayList _mpolys = new ArrayList();
+    private final List _mpolys = new ArrayList();
 
     /**
      * all triangle list;
@@ -114,7 +116,7 @@ public class Polygon {
     /**
      * This is used to change key of all items in SplayTree.
      */
-    private final UpdateKey updateKey = new UpdateKey();
+    private final SplayTreeAction updateKey = new UpdateKey();
 
     /**
      * If _debug == true, file with this name will be used to log the messages.
@@ -209,19 +211,19 @@ public class Polygon {
         }
     }
 
-    public Pointbase getPoint(int index) {
+    private Pointbase getPoint(int index) {
         return (Pointbase) _points.get(index);
     }
 
-    public Linebase getEdge(int index) {
+    private Linebase getEdge(int index) {
         return _edges.get(index);
     }
 
-    public Pointbase qpointsTop() {
+    private Pointbase qpointsTop() {
         return (Pointbase) _qpoints.peek();
     }
 
-    public Pointbase qpointsPop() {
+    private Pointbase qpointsPop() {
         return (Pointbase) _qpoints.poll();
     }
 
@@ -594,7 +596,7 @@ public class Polygon {
      *
      * @return success
      */
-    public boolean partition2Monotone() {
+    private boolean partition2Monotone() {
         if (qpointsTop().type != Poly2TriUtils.START) {
             System.out.println("Please check your input polygon:\n1)orientations?\n2)duplicated points?\n");
             System.out.println("poly2tri stopped.\n");
@@ -756,7 +758,7 @@ public class Polygon {
      *
      * @return success
      */
-    public boolean searchMonotones() {
+    private boolean searchMonotones() {
         int loop = 0;
 
         IntObjectHashMap<Linebase> edges = new IntObjectHashMap(_edges);

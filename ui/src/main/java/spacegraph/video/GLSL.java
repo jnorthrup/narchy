@@ -37,7 +37,7 @@ public class GLSL extends Surface {
     private final int iterations = 1;
 
 
-    boolean init = false;
+    private boolean init = false;
 
 
     private String[] loadShaderSrc(String name) {
@@ -138,7 +138,7 @@ public class GLSL extends Surface {
         Draw.bounds(gl, this, this::doPaint);
     }
 
-    public void doPaint(GL2 gl) {
+    private void doPaint(GL2 gl) {
         if (!gl.hasGLSL()) {
             return;
         }

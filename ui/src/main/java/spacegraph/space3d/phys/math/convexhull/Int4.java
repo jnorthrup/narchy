@@ -29,7 +29,10 @@ package spacegraph.space3d.phys.math.convexhull;
  */
 class Int4 {
 
-	public int x, y, z, w;
+	public int x;
+    private int y;
+    private int z;
+    private int w;
 
 	public Int4() {
 	}

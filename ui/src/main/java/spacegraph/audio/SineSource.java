@@ -11,7 +11,7 @@ public class SineSource implements WaveSource {
     private final float SAMPLE_RATE = 44100;
 
     private final double freq;
-    int samples;
+    private int samples;
     private float t;
 
     public SineSource(double freq) {

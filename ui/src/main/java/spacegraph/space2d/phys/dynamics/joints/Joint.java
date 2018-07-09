@@ -39,7 +39,7 @@ import spacegraph.util.math.Tuple2f;
  */
 public abstract class Joint {
 
-    final int id = Body2D.serial.incrementAndGet();
+    private final int id = Body2D.serial.incrementAndGet();
 
     @Override
     public int hashCode() {
@@ -91,22 +91,22 @@ public abstract class Joint {
     private final JointType type;
     public JointEdge edgeA;
     public JointEdge edgeB;
-    protected Body2D A;
-    protected Body2D B;
+    Body2D A;
+    Body2D B;
 
     public boolean islandFlag;
     private final boolean collideConnected;
 
-    public Object data;
+    private Object data;
 
-    protected IWorldPool pool;
+    IWorldPool pool;
 
     
     
     
     
 
-    protected Joint(IWorldPool worldPool, JointDef def) {
+    Joint(IWorldPool worldPool, JointDef def) {
         assert (def.bodyA != def.bodyB);
 
         pool = worldPool;
@@ -239,7 +239,7 @@ public abstract class Joint {
     /**
      * Override to handle destruction of joint
      */
-    public void destructor() {
+    void destructor() {
     }
 
 

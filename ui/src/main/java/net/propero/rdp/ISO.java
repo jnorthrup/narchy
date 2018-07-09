@@ -37,8 +37,8 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public abstract class ISO {
-    static final Logger logger = LoggerFactory.getLogger(ISO.class);
+abstract class ISO {
+    private static final Logger logger = LoggerFactory.getLogger(ISO.class);
     /* this for the ISO Layer */
     private static final int CONNECTION_REQUEST = 0xE0;
     private static final int CONNECTION_CONFIRM = 0xD0;
@@ -49,14 +49,14 @@ public abstract class ISO {
     private static final int EOT = 0x80;
     private static int g_packetno;
     private final HexDump dump;
-    protected Socket rdpsock;
+    Socket rdpsock;
     private DataInputStream in;
     private DataOutputStream out;
 
     /**
      * Construct ISO object, initialises hex dump
      */
-    public ISO() {
+    ISO() {
         dump = new HexDump();
     }
 
@@ -84,7 +84,7 @@ public abstract class ISO {
      * @param port Port on which to connect socket
      * @throws IOException
      */
-    protected void doSocketConnect(InetAddress host, int port)
+    void doSocketConnect(InetAddress host, int port)
             throws IOException {
         this.rdpsock = new Socket(host, port);
     }
@@ -356,7 +356,7 @@ public abstract class ISO {
      *
      * @throws IOException
      */
-    void send_connection_request() throws IOException {
+    private void send_connection_request() throws IOException {
 
         String uname = Options.username;
 

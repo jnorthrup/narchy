@@ -42,17 +42,17 @@ public abstract class RdesktopFrame extends Frame {
 
     public final RdesktopCanvas canvas;
 
-    public Rdp rdp;
+    private Rdp rdp;
 
-    public RdpMenu menu;
-    protected boolean inFullscreen;
+    private RdpMenu menu;
+    boolean inFullscreen;
     private boolean menuVisible;
 
     /**
      * Create a new RdesktopFrame. Size defined by Options.width and
      * Options.height Creates RdesktopCanvas occupying entire frame
      */
-    public RdesktopFrame() {
+    RdesktopFrame() {
         
         String java_version = System.getProperty("java.specification.version");
         if (java_version.compareTo("1.6") == 0) {
@@ -98,7 +98,7 @@ public abstract class RdesktopFrame extends Frame {
      *
      * @param f Window to be centred
      */
-    public static void centreWindow(Window f) {
+    private static void centreWindow(Window f) {
         Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension window_size = f.getSize();
         int x = (screen_size.width - window_size.width) / 2;
@@ -247,7 +247,7 @@ public abstract class RdesktopFrame extends Frame {
     /**
      * Centre this window
      */
-    public void centreWindow() {
+    private void centreWindow() {
         centreWindow(this);
     }
 
@@ -331,7 +331,7 @@ public abstract class RdesktopFrame extends Frame {
 
         boolean retry;
 
-        public YesNoDialog(Frame parent, String title, String[] message) {
+        YesNoDialog(Frame parent, String title, String[] message) {
             super(parent, title, true);
             
             
@@ -339,8 +339,7 @@ public abstract class RdesktopFrame extends Frame {
             
             Panel msg = new Panel();
             msg.setLayout(new GridLayout(message.length, 1));
-            for (int i = 0; i < message.length; i++)
-                msg.add(new Label(message[i], Label.CENTER));
+            for (String aMessage : message) msg.add(new Label(aMessage, Label.CENTER));
             this.add("Center", msg);
 
             Panel p = new Panel();
@@ -370,7 +369,7 @@ public abstract class RdesktopFrame extends Frame {
     static class OKDialog extends Dialog implements ActionListener {
         private static final long serialVersionUID = 100978821816327378L;
 
-        public OKDialog(Frame parent, String title, String[] message) {
+        OKDialog(Frame parent, String title, String[] message) {
 
             super(parent, title, true);
             
@@ -380,8 +379,7 @@ public abstract class RdesktopFrame extends Frame {
 
             Panel msg = new Panel();
             msg.setLayout(new GridLayout(message.length, 1));
-            for (int i = 0; i < message.length; i++)
-                msg.add(new Label(message[i], Label.CENTER));
+            for (String aMessage : message) msg.add(new Label(aMessage, Label.CENTER));
             this.add("Center", msg);
 
             Panel p = new Panel();

@@ -38,7 +38,7 @@ import java.io.IOException;
 
 
 public class Orders {
-    static final Logger logger = LoggerFactory.getLogger(Orders.class);
+    private static final Logger logger = LoggerFactory.getLogger(Orders.class);
     /* RDP_BMPCACHE2_ORDER */
     private static final int ID_MASK = 0x0007;
     private static final int MODE_MASK = 0x0038;

@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public abstract class LicenceStore {
+abstract class LicenceStore {
 
-    static final Logger logger = LoggerFactory.getLogger(LicenceStore.class);
+    private static final Logger logger = LoggerFactory.getLogger(LicenceStore.class);
 
     /**
      * Load a licence from a file

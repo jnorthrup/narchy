@@ -48,25 +48,25 @@ public class ClipChannel extends VChannel implements ClipInterface,
         ClipboardOwner, FocusListener {
 
     
-    public static final int CLIPRDR_CONNECT = 1;
-    public static final int CLIPRDR_FORMAT_ANNOUNCE = 2;
-    public static final int CLIPRDR_FORMAT_ACK = 3;
-    public static final int CLIPRDR_DATA_REQUEST = 4;
+    private static final int CLIPRDR_CONNECT = 1;
+    private static final int CLIPRDR_FORMAT_ANNOUNCE = 2;
+    private static final int CLIPRDR_FORMAT_ACK = 3;
+    private static final int CLIPRDR_DATA_REQUEST = 4;
     public static final int CLIPRDR_DATA_RESPONSE = 5;
     
-    public static final int CLIPRDR_REQUEST = 0;
-    public static final int CLIPRDR_RESPONSE = 1;
+    private static final int CLIPRDR_REQUEST = 0;
+    private static final int CLIPRDR_RESPONSE = 1;
     public static final int CLIPRDR_ERROR = 2;
-    protected static final Logger logger = LoggerFactory.getLogger(ClipChannel.class);
-    final Clipboard clipboard;
+    private static final Logger logger = LoggerFactory.getLogger(ClipChannel.class);
+    private final Clipboard clipboard;
     
-    final TypeHandlerList allHandlers;
+    private final TypeHandlerList allHandlers;
     String[] types = {"unused", "CF_TEXT", "CF_BITMAP", "CF_METAFILEPICT",
             "CF_SYLK", "CF_DIF", "CF_TIFF", "CF_OEMTEXT", "CF_DIB",
             "CF_PALETTE", "CF_PENDATA", "CF_RIFF", "CF_WAVE", "CF_UNICODETEXT",
             "CF_ENHMETAFILE", "CF_HDROP", "CF_LOCALE", "CF_MAX"};
     
-    TypeHandler currentHandler;
+    private TypeHandler currentHandler;
     byte[] localClipData;
 
     public ClipChannel() {
@@ -169,7 +169,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
         }
     }
 
-    void send_format_announce() {
+    private void send_format_announce() {
 
 
 
@@ -217,7 +217,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
             request_clipboard_data(currentHandler.preferredFormat());
     }
 
-    void handle_data_request(RdpPacket data) {
+    private void handle_data_request(RdpPacket data) {
         int format = data.getLittleEndian32();
         Transferable clipData = clipboard.getContents(this);
 
@@ -235,7 +235,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
         
     }
 
-    void handle_data_response(RdpPacket data, int length) {
+    private void handle_data_response(RdpPacket data, int length) {
         
         
         
@@ -245,7 +245,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
         currentHandler = null;
     }
 
-    void request_clipboard_data(int formatcode) throws RdesktopException,
+    private void request_clipboard_data(int formatcode) throws RdesktopException,
             IOException, CryptoException {
 
         RdpPacket_Localised s = Common.secure.init(

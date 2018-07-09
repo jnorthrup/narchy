@@ -54,7 +54,7 @@ public class MatrixUtil {
 		dest.m12 = mat.m12 * sz;
 		dest.m22 = mat.m22 * sz;
 	}
-	public static void scale(Matrix3f dest, v3 s) {
+	private static void scale(Matrix3f dest, v3 s) {
 
 		float matm00 = dest.m00;
 		float matm01 = dest.m01;
@@ -235,7 +235,7 @@ public class MatrixUtil {
 		
 	}
 
-	public static void setQuat(Quaternion q, int i, float v) {
+	private static void setQuat(Quaternion q, int i, float v) {
 		switch (i) {
 			case 0: q.setX(v); break;
 			case 1: q.setY(v); break;

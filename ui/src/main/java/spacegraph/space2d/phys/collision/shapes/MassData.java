@@ -81,7 +81,7 @@ public class MassData {
      *
      * @param md mass data to copy from
      */
-    public MassData(MassData md) {
+    private MassData(MassData md) {
         mass = md.mass;
         I = md.I;
         center = md.center.clone();

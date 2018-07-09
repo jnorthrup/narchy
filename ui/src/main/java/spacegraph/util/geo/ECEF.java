@@ -2,7 +2,7 @@ package spacegraph.util.geo;
 
 import jcog.Util;
 
-public class ECEF {
+class ECEF {
     /*
      *
      *  ECEF - Earth Centered Earth Fixed

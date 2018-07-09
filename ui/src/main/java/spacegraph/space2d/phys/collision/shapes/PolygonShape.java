@@ -241,7 +241,7 @@ public class PolygonShape extends Shape {
 
 
 
-    public final static spacegraph.space2d.phys.collision.shapes.PolygonShape regular(int n, float r) {
+    public static spacegraph.space2d.phys.collision.shapes.PolygonShape regular(int n, float r) {
         PolygonShape p = new PolygonShape(n);
         p.vertices = n;
         for (int i = 0; i < n; i++) {
@@ -284,7 +284,7 @@ public class PolygonShape extends Shape {
         }
         return this;
     }
-    public final PolygonShape setAsBox(float x1, float y1, float x2, float y2) {
+    private PolygonShape setAsBox(float x1, float y1, float x2, float y2) {
         vertices = 4;
         vertex[0].set(x1, y1);
         vertex[1].set(x2, y1);
@@ -530,7 +530,7 @@ public class PolygonShape extends Shape {
         return false;
     }
 
-    public final void computeCentroidToOut(final Tuple2f[] vs, final int count, final Vec2 out) {
+    private void computeCentroidToOut(final Tuple2f[] vs, final int count, final Vec2 out) {
         assert (count >= 3);
 
         out.set(0.0f, 0.0f);

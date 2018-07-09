@@ -9,8 +9,8 @@ import spacegraph.space2d.Surface;
  */
 public class Splitting<X extends Surface, Y extends Surface> extends MutableContainer {
 
-    public float split; 
-    boolean vertical;
+    private float split;
+    private boolean vertical;
 
     public Splitting() {
         this(new EmptySurface(), new EmptySurface(), 0.5f, true);
@@ -24,7 +24,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableCont
         this(top, bottom, split, vertical);
     }
 
-    protected Splitting(Surface top, Surface bottom, float split, boolean vertical) {
+    private Splitting(Surface top, Surface bottom, float split, boolean vertical) {
         super(top,bottom);
         this.vertical = vertical;
         split(split);
@@ -106,10 +106,10 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableCont
         set(1, s);
         return this;
     }
-    public final X T() {
+    private X T() {
         return (X) get(0);
     }
-    public final Y B() {
+    private Y B() {
         return (Y) get(1);
     }
     public final X L() {

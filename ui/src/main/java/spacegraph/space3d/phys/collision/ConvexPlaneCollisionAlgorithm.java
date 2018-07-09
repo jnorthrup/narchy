@@ -45,7 +45,7 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 	private PersistentManifold manifoldPtr;
 	private boolean isSwapped;
 	
-	public void init(PersistentManifold mf, CollisionAlgorithmConstructionInfo ci, Collidable col0, Collidable col1, boolean isSwapped) {
+	private void init(PersistentManifold mf, CollisionAlgorithmConstructionInfo ci, Collidable col0, Collidable col1, boolean isSwapped) {
 		super.init(ci);
 		this.ownManifold = false;
 		this.manifoldPtr = mf;

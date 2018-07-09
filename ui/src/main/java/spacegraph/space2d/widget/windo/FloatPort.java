@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 public class FloatPort extends /*Source*/Port {
 
-    static final float EPSILON = 0.001f;
+    private static final float EPSILON = 0.001f;
 
     private float curValue = Float.NaN;
     private final FloatRange f;
@@ -20,7 +20,7 @@ public class FloatPort extends /*Source*/Port {
         this(new FloatRange(val, min, max));
     }
 
-    public FloatPort(FloatRange f/*, Consumer<Runnable> updater*/) {
+    private FloatPort(FloatRange f/*, Consumer<Runnable> updater*/) {
         this.f = f;
 
         FloatSlider s = new FloatSlider(f);
@@ -40,7 +40,7 @@ public class FloatPort extends /*Source*/Port {
         super.prePaint(dtMS);
     }
 
-    public void out() {
+    private void out() {
         out(curValue);
     }
 

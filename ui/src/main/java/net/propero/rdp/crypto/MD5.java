@@ -50,7 +50,7 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
     /**
      * The public constructor.
      */
-    public MD5() {
+    private MD5() {
         super("MD5");
         java_init();
         engineReset();
@@ -73,41 +73,41 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
         return HASH_LENGTH;
     }
 
-    static protected int F(int x, int y, int z) {
+    private static int F(int x, int y, int z) {
         return (z ^ (x & (y ^ z)));
     }
 
-    static protected int G(int x, int y, int z) {
+    private static int G(int x, int y, int z) {
         return (y ^ (z & (x ^ y)));
     }
 
-    static protected int H(int x, int y, int z) {
+    private static int H(int x, int y, int z) {
         return (x ^ y ^ z);
     }
 
-    static protected int I(int x, int y, int z) {
+    private static int I(int x, int y, int z) {
         return (y ^ (x | ~z));
     }
 
-    static protected int FF(int a, int b, int c, int d, int k, int s, int t) {
+    private static int FF(int a, int b, int c, int d, int k, int s, int t) {
         a += k + t + F(b, c, d);
         a = (a << s | a >>> -s);
         return a + b;
     }
 
-    static protected int GG(int a, int b, int c, int d, int k, int s, int t) {
+    private static int GG(int a, int b, int c, int d, int k, int s, int t) {
         a += k + t + G(b, c, d);
         a = (a << s | a >>> -s);
         return a + b;
     }
 
-    static protected int HH(int a, int b, int c, int d, int k, int s, int t) {
+    private static int HH(int a, int b, int c, int d, int k, int s, int t) {
         a += k + t + H(b, c, d);
         a = (a << s | a >>> -s);
         return a + b;
     }
 
-    static protected int II(int a, int b, int c, int d, int k, int s, int t) {
+    private static int II(int a, int b, int c, int d, int k, int s, int t) {
         a += k + t + I(b, c, d);
         a = (a << s | a >>> -s);
         return a + b;
@@ -237,7 +237,7 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
         return buf;
     }
 
-    protected void transform(int M[]) {
+    private void transform(int M[]) {
         int a, b, c, d;
 
         a = digest[0];

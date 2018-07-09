@@ -110,7 +110,7 @@ public class Add extends UGen {
      * @param adder The new adder value.
      * @return This Add instance.
      */
-    public Add setAdder(float adder) {
+    private Add setAdder(float adder) {
         this.adder = adder;
         adderUGen = null;
         return this;
@@ -122,7 +122,7 @@ public class Add extends UGen {
      * @param adderUGen The adder UGen controller.
      * @return This Add instance.
      */
-    public Add setAdder(UGen adderUGen) {
+    private Add setAdder(UGen adderUGen) {
         if (adderUGen == null) {
             setAdder(adder);
         } else {

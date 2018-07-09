@@ -13,8 +13,8 @@ import static spacegraph.util.math.v3.v;
  */
 public class DistanceConstraint extends TypedConstraint {
 
-    public float dist;
-    public float speed;
+    private float dist;
+    private float speed;
 
     private final JacobianEntry jac = new JacobianEntry();
 
@@ -24,16 +24,16 @@ public class DistanceConstraint extends TypedConstraint {
     /**
      * strength
      */
-    public float tau = 0.3f;
+    private float tau = 0.3f;
 
-    public float damping = 1f;
-    public float impulseClamp;
+    private float damping = 1f;
+    private float impulseClamp;
     private float error;
 
     public DistanceConstraint(Body3D rbA, Body3D rbB, float dist, float speed, float impulseClamp, float tau) {
         this(rbA, rbB, v(), v(), dist, speed, impulseClamp, tau);
     }
-    public DistanceConstraint(Body3D rbA, Body3D rbB, v3 pivotInA, v3 pivotInB, float dist, float speed, float impulseClamp, float tau) {
+    private DistanceConstraint(Body3D rbA, Body3D rbB, v3 pivotInA, v3 pivotInB, float dist, float speed, float impulseClamp, float tau) {
         super(TypedConstraintType.POINT2POINT_CONSTRAINT_TYPE, rbA, rbB);
         this.pivotInA.set(pivotInA);
         this.pivotInB.set(pivotInB);

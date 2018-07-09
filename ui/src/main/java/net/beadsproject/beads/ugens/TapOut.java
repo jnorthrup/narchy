@@ -30,7 +30,7 @@ public class TapOut extends UGen {
     /**
      * The delayed signal will not be interpolated from the memory buffer.
      */
-    public static final InterpolationType NO_INTERP = InterpolationType.NO_INTERP;
+    private static final InterpolationType NO_INTERP = InterpolationType.NO_INTERP;
 
     /**
      * The delayed signal will be derived using linear interpolation.
@@ -46,7 +46,7 @@ public class TapOut extends UGen {
         NO_INTERP, LINEAR, ALLPASS
     }
 
-    protected TapOut(AudioContext ac, TapIn ti) {
+    private TapOut(AudioContext ac, TapIn ti) {
         super(ac, 0, 1);
         sampsPerMS = (float) ac.msToSamples(1);
         this.ti = ti;
@@ -180,7 +180,7 @@ public class TapOut extends UGen {
      * @param delayUGen The delay UGen.
      * @return This object instance.
      */
-    public TapOut setDelay(UGen delayUGen) {
+    private TapOut setDelay(UGen delayUGen) {
         if (delayUGen == null) {
             setDelay(delay);
         } else {
@@ -213,7 +213,7 @@ public class TapOut extends UGen {
      * @param mode The delay mode.
      * @return This object instance.
      */
-    public TapOut setMode(InterpolationType mode) {
+    private TapOut setMode(InterpolationType mode) {
         switch (mode) {
             case NO_INTERP:
                 this.mode = mode;

@@ -16,8 +16,9 @@ public class Label extends EmptyContainer {
 
     private String text = "(null)";
 
-    public float textScaleX = 1f, textScaleY = 1f;
-    public final Color4f textColor = new Color4f(1f, 1f, 1f, 1f);
+    private float textScaleX = 1f;
+    private float textScaleY = 1f;
+    private final Color4f textColor = new Color4f(1f, 1f, 1f, 1f);
 
     private transient float textThickness;
 
@@ -91,7 +92,7 @@ public class Label extends EmptyContainer {
         return super.prePaint(r);
     }
 
-    void paintUnit(GL2 gl) {
+    private void paintUnit(GL2 gl) {
 
 
         textColor.apply(gl);
@@ -108,7 +109,7 @@ public class Label extends EmptyContainer {
         return this;
     }
 
-    public String text() {
+    private String text() {
         return text;
     }
 

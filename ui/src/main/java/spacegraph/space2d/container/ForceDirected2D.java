@@ -13,20 +13,20 @@ import static spacegraph.util.math.v3.v;
 
 public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
-    int iterations = 1;
+    private int iterations = 1;
 
     @Override
     protected MovingRectFloat2D newContainer() {
         return new MovingRectFloat2D();
     }
 
-    public final FloatRange repelSpeed =new FloatRange(0.1f, 0, 0.2f);
+    private final FloatRange repelSpeed =new FloatRange(0.1f, 0, 0.2f);
 
     /** attractspeed << 0.5 */
-    public final FloatRange attractSpeed =new FloatRange(0.02f, 0, 0.1f);
-    float maxRepelDist;
+    private final FloatRange attractSpeed =new FloatRange(0.02f, 0, 0.1f);
+    private float maxRepelDist;
 
-    float minAttractDistRelativeToRadii;
+    private float minAttractDistRelativeToRadii;
 
 
     @Override protected void layoutDynamic(Graph2D<X> g) {
@@ -49,8 +49,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             }
 
 
-            for (int x = 0; x < n; x++) {
-                bounds.get(x).moveTo(0, 0, 0.01f);
+            for (MovingRectFloat2D bound : bounds) {
+                bound.moveTo(0, 0, 0.01f);
             }
 
 
@@ -58,8 +58,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
 
         v2 center = new v2();
-        for (int x = 0; x < n; x++) {
-            MovingRectFloat2D bx = bounds.get(x);
+        for (MovingRectFloat2D bx : bounds) {
             center.add(bx.cx(), bx.cy());
         }
         center.scaled(1f/n); 
@@ -78,9 +77,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         List<Graph2D.EdgeVis<X>> read = from.edgeOut.read();
 
         v2 total = new v2();
-        for (int i = 0, readSize = read.size(); i < readSize; i++) {
-
-            Graph2D.EdgeVis<X> edge = read.get(i);
+        for (Graph2D.EdgeVis<X> edge : read) {
 
             Graph2D.NodeVis<X> to = edge.to;
 
@@ -105,7 +102,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         b.move(total.x, total.y);
     }
 
-    protected float weightToVelocity(float weight) {
+    private float weightToVelocity(float weight) {
         return weight*weight; 
     }
 

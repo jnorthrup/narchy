@@ -40,7 +40,7 @@ public abstract class DelayEvent extends UGen {
      * @param delay    The delay time in milliseconds.
      * @param receiver The receiver.
      */
-    public DelayEvent(AudioContext context, double delay) {
+    DelayEvent(AudioContext context, double delay) {
         this(context, delay, false);
     }
 
@@ -56,7 +56,7 @@ public abstract class DelayEvent extends UGen {
      * @param triggerAfter Whether the object fires just before or just after the delay
      *                     time expires.
      */
-    public DelayEvent(AudioContext context, double delay, boolean triggerAfter) {
+    private DelayEvent(AudioContext context, double delay, boolean triggerAfter) {
         super(context, 0, 0);
         
         
@@ -68,7 +68,7 @@ public abstract class DelayEvent extends UGen {
     /**
      * Reset timer to zero.
      */
-    public void reset() {
+    private void reset() {
         count = 0;
     }
 
@@ -85,7 +85,7 @@ public abstract class DelayEvent extends UGen {
      * Called when the delay time has elapsed. Implement this method with code
      * to be executed after the delay.
      */
-    public abstract void trigger();
+    protected abstract void trigger();
 
     /**
      * Gets the sample delay.
@@ -136,7 +136,7 @@ public abstract class DelayEvent extends UGen {
      * @param f Whether to fire after the frame when the delay time expires.
      * @return This DelayEvent instance.
      */
-    public DelayEvent triggeredAfter(boolean f) {
+    private DelayEvent triggeredAfter(boolean f) {
         triggerAfter = f;
         threshold = f ? 0 : bufferSize;
         return this;

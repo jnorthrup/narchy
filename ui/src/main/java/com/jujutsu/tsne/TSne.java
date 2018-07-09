@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 * for the visualization of high-dimensional datasets
 *
 */
-public interface TSne {
+interface TSne {
 
 	Logger logger = LoggerFactory.getLogger(TSne.class);
 

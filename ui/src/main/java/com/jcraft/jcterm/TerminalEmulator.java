@@ -25,25 +25,25 @@ package com.jcraft.jcterm;
 import java.io.IOException;
 import java.io.InputStream;
 
-public abstract class TerminalEmulator {
-    protected final int tab = 8;
+abstract class TerminalEmulator {
+    private final int tab = 8;
     final Terminal term;
-    final InputStream in;
-    final byte[] buf = new byte[1024];
+    private final InputStream in;
+    private final byte[] buf = new byte[1024];
     private final byte[] b2 = new byte[2];
     private final byte[] b1 = new byte[1];
-    protected int term_width = 80;
-    protected int term_height = 24;
-    protected int x = 0;
-    protected int y = 0;
-    protected int char_width;
-    protected int char_height;
-    int bufs = 0;
-    int buflen = 0;
+    private int term_width = 80;
+    private int term_height = 24;
+    int x = 0;
+    int y = 0;
+    private int char_width;
+    int char_height;
+    private int bufs = 0;
+    private int buflen = 0;
     private int region_y2;
     private int region_y1;
 
-    public TerminalEmulator(Terminal term, InputStream in) {
+    TerminalEmulator(Terminal term, InputStream in) {
         this.term = term;
         this.in = in;
     }
@@ -102,7 +102,7 @@ public abstract class TerminalEmulator {
         return buf[bufs++];
     }
 
-    void fillBuf() throws IOException {
+    private void fillBuf() throws IOException {
         buflen = bufs = 0;
         buflen = in.read(buf, bufs, buf.length - bufs);
     /*
@@ -125,7 +125,7 @@ public abstract class TerminalEmulator {
         buf[--bufs] = foo;
     }
 
-    int getASCII(int len) throws IOException {
+    private int getASCII(int len) throws IOException {
         
         if (buflen == 0) {
             fillBuf();
@@ -149,7 +149,7 @@ public abstract class TerminalEmulator {
     }
 
     
-    protected void scroll_reverse() {
+    void scroll_reverse() {
         term.draw_cursor();
         term.scroll_area(0, (region_y1 - 1) * char_height, term_width * char_width,
                 (region_y2 - region_y1) * char_height, 0, char_height);
@@ -161,7 +161,7 @@ public abstract class TerminalEmulator {
     }
 
     
-    protected void scroll_forward() {
+    void scroll_forward() {
         term.draw_cursor();
         term.scroll_area(0, (region_y1 - 1) * char_height, term_width * char_width,
                 (region_y2 - region_y1 + 1) * char_height, 0, -char_height);
@@ -174,64 +174,64 @@ public abstract class TerminalEmulator {
     }
 
     
-    protected void save_cursor() {
+    void save_cursor() {
         
         
     }
 
     
-    protected void ena_acs() {
+    void ena_acs() {
         
         
     }
 
-    protected void exit_alt_charset_mode() {
+    void exit_alt_charset_mode() {
         
         
     }
 
-    protected void enter_alt_charset_mode() {
+    void enter_alt_charset_mode() {
         
         
     }
 
-    protected void reset_2string() {
+    void reset_2string() {
         
         
     }
 
-    protected void exit_attribute_mode() {
+    void exit_attribute_mode() {
         
         
         term.resetAllAttributes();
     }
 
-    protected void exit_standout_mode() {
+    void exit_standout_mode() {
         term.resetAllAttributes();
     }
 
-    protected void exit_underline_mode() {
+    void exit_underline_mode() {
         
     }
 
-    protected void enter_bold_mode() {
+    void enter_bold_mode() {
         term.setBold();
     }
 
-    protected void enter_underline_mode() {
+    void enter_underline_mode() {
         term.setUnderline();
     }
 
-    protected void enter_reverse_mode() {
+    void enter_reverse_mode() {
         term.setReverse();
     }
 
-    protected void change_scroll_region(int y1, int y2) {
+    void change_scroll_region(int y1, int y2) {
         region_y1 = y1;
         region_y2 = y2;
     }
 
-    protected void cursor_address(int r, int c) {
+    void cursor_address(int r, int c) {
         term.draw_cursor();
         x = (c - 1) * char_width;
         y = r * char_height;
@@ -240,42 +240,42 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
     }
 
-    protected void parm_down_cursor(int lines) {
+    void parm_down_cursor(int lines) {
         term.draw_cursor();
         y += (lines) * char_height;
         term.setCursor(x, y);
         term.draw_cursor();
     }
 
-    protected void parm_left_cursor(int chars) {
+    void parm_left_cursor(int chars) {
         term.draw_cursor();
         x -= (chars) * char_width;
         term.setCursor(x, y);
         term.draw_cursor();
     }
 
-    protected void parm_right_cursor(int chars) {
+    void parm_right_cursor(int chars) {
         term.draw_cursor();
         x += (chars) * char_width;
         term.setCursor(x, y);
         term.draw_cursor();
     }
 
-    protected void clr_eol() {
+    void clr_eol() {
         term.draw_cursor();
         term.clear_area(x, y - char_height, term_width * char_width, y);
         term.redraw(x, y - char_height, (term_width) * char_width - x, char_height);
         term.draw_cursor();
     }
 
-    protected void clr_bol() {
+    void clr_bol() {
         term.draw_cursor();
         term.clear_area(0, y - char_height, x, y);
         term.redraw(0, y - char_height, x, char_height);
         term.draw_cursor();
     }
 
-    protected void clr_eos() {
+    void clr_eos() {
         term.draw_cursor();
         term.clear_area(x, y - char_height, term_width * char_width, term_height
                 * char_height);
@@ -284,7 +284,7 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
     }
 
-    protected void parm_up_cursor(int lines) {
+    void parm_up_cursor(int lines) {
         term.draw_cursor();
         
         
@@ -293,11 +293,11 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
     }
 
-    protected void bell() {
+    void bell() {
         term.beep();
     }
 
-    protected void tab() {
+    void tab() {
         term.draw_cursor();
         x = (((x / char_width) / tab + 1) * tab * char_width);
         if (x >= term_width * char_width) {
@@ -308,14 +308,14 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
     }
 
-    protected void carriage_return() {
+    void carriage_return() {
         term.draw_cursor();
         x = 0;
         term.setCursor(x, y);
         term.draw_cursor();
     }
 
-    protected void cursor_left() {
+    void cursor_left() {
         term.draw_cursor();
         x -= char_width;
         if (x < 0) {
@@ -326,7 +326,7 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
     }
 
-    protected void cursor_down() {
+    void cursor_down() {
         term.draw_cursor();
         y += char_height;
         term.setCursor(x, y);
@@ -335,7 +335,7 @@ public abstract class TerminalEmulator {
         check_region();
     }
 
-    protected void draw_text() throws IOException {
+    void draw_text() throws IOException {
 
         int rx;
         int ry;

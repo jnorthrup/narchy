@@ -39,8 +39,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-public class RDPClientChooser {
-    static final Logger logger = LoggerFactory.getLogger(RDPClientChooser.class);
+class RDPClientChooser {
+    private static final Logger logger = LoggerFactory.getLogger(RDPClientChooser.class);
 
     /**
      * Initialise a client chooser, set logging level to DEBUG
@@ -141,7 +141,7 @@ public class RDPClientChooser {
         String server = null;
 
         if (g.getOptind() < args.length) {
-            int colonat = args[args.length - 1].indexOf(':', 0);
+            int colonat = args[args.length - 1].indexOf(':');
             if (colonat == -1) {
                 server = args[args.length - 1];
             } else {

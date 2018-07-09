@@ -43,10 +43,10 @@ public abstract class ConvexShape extends CollisionShape {
 	public abstract v3 localGetSupportingVertexWithoutMargin(v3 vec, v3 out);
 
 	
-	public abstract void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors);
+	protected abstract void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors);
 	
 	
-	public abstract void getAabbSlow(Transform t, v3 aabbMin, v3 aabbMax);
+	protected abstract void getAabbSlow(Transform t, v3 aabbMin, v3 aabbMax);
 
 
 	public abstract int getNumPreferredPenetrationDirections();

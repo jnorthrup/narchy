@@ -98,7 +98,7 @@ public class DbvtAabbMm {
 		return mx;
 	}
 	
-	public static DbvtAabbMm FromCE(v3 c, v3 e, DbvtAabbMm out) {
+	private static DbvtAabbMm FromCE(v3 c, v3 e, DbvtAabbMm out) {
 		DbvtAabbMm box = out;
 		box.mi.sub(c, e);
 		box.mx.add(c, e);

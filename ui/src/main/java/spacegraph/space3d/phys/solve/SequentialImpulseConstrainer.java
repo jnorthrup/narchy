@@ -76,11 +76,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
     private final IntArrayList orderTmpConstraintPool = new IntArrayList();
     private final IntArrayList orderFrictionConstraintPool = new IntArrayList();
 
-    protected final ContactSolverFunc[][] contactDispatch = new ContactSolverFunc[MAX_CONTACT_SOLVER_TYPES][MAX_CONTACT_SOLVER_TYPES];
-    protected final ContactSolverFunc[][] frictionDispatch = new ContactSolverFunc[MAX_CONTACT_SOLVER_TYPES][MAX_CONTACT_SOLVER_TYPES];
+    private final ContactSolverFunc[][] contactDispatch = new ContactSolverFunc[MAX_CONTACT_SOLVER_TYPES][MAX_CONTACT_SOLVER_TYPES];
+    private final ContactSolverFunc[][] frictionDispatch = new ContactSolverFunc[MAX_CONTACT_SOLVER_TYPES][MAX_CONTACT_SOLVER_TYPES];
 
     
-    protected long btSeed2;
+    private long btSeed2;
 
     public SequentialImpulseConstrainer() {
 
@@ -106,13 +106,13 @@ public class SequentialImpulseConstrainer implements Constrainer {
         }
     }
 
-    long rand2() {
+    private long rand2() {
         btSeed2 = (1664525L * btSeed2 + 1013904223L) & 0xffffffff;
         return btSeed2;
     }
 
     
-    int randInt2(int n) {
+    private int randInt2(int n) {
         
         long un = n;
         long r = rand2();
@@ -334,7 +334,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
     }
 
 
-    protected void addFrictionConstraint(v3 normalAxis, int solverBodyIdA, int solverBodyIdB, int frictionIndex, ManifoldPoint cp, v3 rel_pos1, v3 rel_pos2, Collidable colObj0, Collidable colObj1, float relaxation) {
+    private void addFrictionConstraint(v3 normalAxis, int solverBodyIdA, int solverBodyIdB, int frictionIndex, ManifoldPoint cp, v3 rel_pos1, v3 rel_pos2, Collidable colObj0, Collidable colObj1, float relaxation) {
         Body3D body0 = Body3D.ifDynamic(colObj0);
         Body3D body1 = Body3D.ifDynamic(colObj1);
 
@@ -396,7 +396,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         solverConstraint.jacDiagABInv = denom;
     }
 
-    public float solveGroupCacheFriendlySetup(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
+    private float solveGroupCacheFriendlySetup(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
 
             if ((numConstraints + numManifolds) == 0) {
                 
@@ -752,7 +752,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             return 0f;
     }
 
-    float solveGroupCacheFriendlyIterations(Collection<Collidable> bodies, int numBodies, Collection<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
+    private float solveGroupCacheFriendlyIterations(Collection<Collidable> bodies, int numBodies, Collection<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
             int numConstraintPool = tmpSolverConstraintPool.size();
             int numFrictionPool = tmpSolverFrictionConstraintPool.size();
 
@@ -851,7 +851,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             return 0f;
     }
 
-    void orderPool(int j, IntArrayList pool) {
+    private void orderPool(int j, IntArrayList pool) {
         int tmp = pool.get(j);
         int swapi = randInt2(j + 1);
 
@@ -859,36 +859,35 @@ public class SequentialImpulseConstrainer implements Constrainer {
         pool.set(swapi, tmp);
     }
 
-    float solveGroupCacheFriendly(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
+    private float solveGroupCacheFriendly(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
         solveGroupCacheFriendlySetup(bodies, numBodies, manifoldPtr, manifold_offset, numManifolds, constraints, constraints_offset, numConstraints, infoGlobal/*, stackAlloc*/);
         solveGroupCacheFriendlyIterations(bodies, numBodies, manifoldPtr, manifold_offset, numManifolds, constraints, constraints_offset, numConstraints, infoGlobal/*, stackAlloc*/);
 
         int numPoolConstraints = tmpSolverConstraintPool.size();
-        for (int j = 0; j < numPoolConstraints; j++) {
+        for (SolverConstraint solveManifold : tmpSolverConstraintPool) {
 
-            
-            SolverConstraint solveManifold = tmpSolverConstraintPool.get(j);
+
             ManifoldPoint pt = (ManifoldPoint) solveManifold.originalContactPoint;
             assert (pt != null);
             pt.appliedImpulse = solveManifold.appliedImpulse;
 
-            
+
             pt.appliedImpulseLateral1 = tmpSolverFrictionConstraintPool.get(solveManifold.frictionIndex).appliedImpulse;
-            
+
             pt.appliedImpulseLateral1 = tmpSolverFrictionConstraintPool.get(solveManifold.frictionIndex + 1).appliedImpulse;
 
-            
+
         }
 
         if (infoGlobal.splitImpulse) {
-            for (int i = 0; i < tmpSolverBodyPool.size(); i++) {
-                
-                tmpSolverBodyPool.get(i).writebackVelocity(infoGlobal.timeStep);
+            for (SolverBody aTmpSolverBodyPool : tmpSolverBodyPool) {
+
+                aTmpSolverBodyPool.writebackVelocity(infoGlobal.timeStep);
             }
         } else {
-            for (int i = 0; i < tmpSolverBodyPool.size(); i++) {
-                
-                tmpSolverBodyPool.get(i).writebackVelocity();
+            for (SolverBody aTmpSolverBodyPool : tmpSolverBodyPool) {
+
+                aTmpSolverBodyPool.writebackVelocity();
             }
         }
 
@@ -997,7 +996,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             return 0f;
     }
 
-    protected void prepareConstraints(PersistentManifold manifoldPtr, ContactSolverInfo info) {
+    private void prepareConstraints(PersistentManifold manifoldPtr, ContactSolverInfo info) {
         Body3D body0 = (Body3D) manifoldPtr.getBody0();
         Body3D body1 = (Body3D) manifoldPtr.getBody1();
 
@@ -1202,7 +1201,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         return maxImpulse;
     }
 
-    protected static float solve(Body3D body0, Body3D body1, ManifoldPoint cp, ContactSolverInfo info, int iter) {
+    private static float solve(Body3D body0, Body3D body1, ManifoldPoint cp, ContactSolverInfo info, int iter) {
         float maxImpulse = 0f;
 
         if (cp.distance1 <= 0f) {
@@ -1217,7 +1216,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         return maxImpulse;
     }
 
-    protected static float solveFriction(Body3D body0, Body3D body1, ManifoldPoint cp, ContactSolverInfo info, int iter) {
+    private static float solveFriction(Body3D body0, Body3D body1, ManifoldPoint cp, ContactSolverInfo info, int iter) {
         if (cp.distance1 <= 0f) {
             ConstraintPersistentData cpd = (ConstraintPersistentData) cp.userPersistentData;
             cpd.frictionSolverFunc.resolveContact(body0, body1, cp, info);
@@ -1257,8 +1256,8 @@ public class SequentialImpulseConstrainer implements Constrainer {
     
 
     private static class OrderIndex {
-        public int manifoldIndex;
-        public int pointIndex;
+        int manifoldIndex;
+        int pointIndex;
     }
 
     /**

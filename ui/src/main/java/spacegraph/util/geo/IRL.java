@@ -24,11 +24,11 @@ public class IRL {
         this.user = u;
     }
 
-    static final Logger logger = LoggerFactory.getLogger(IRL.class);
+    private static final Logger logger = LoggerFactory.getLogger(IRL.class);
 
     public void load(double lonMin, double latMin, double lonMax, double latMax) {
         try {
-            URL u = Osm.url("http://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
+            URL u = Osm.url("https://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
             user.get(u.toString(), () -> {
                 try {
                     logger.info("reading {}", u);

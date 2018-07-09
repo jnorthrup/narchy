@@ -1,8 +1,9 @@
 package com.jujutsu.tsne.matrix;
 
 import jcog.Texts;
+import org.apache.commons.lang3.ArrayUtils;
+import org.ejml.data.DMatrix;
 import org.ejml.data.DMatrixRBlock;
-import org.ejml.data.DMatrixRMaj;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
@@ -1087,7 +1088,7 @@ public enum MatrixOps { ;
 	}
 	
 	
-	public static double [][] sMultiply(double [][] v1,double [][] v2) {
+	private static double [][] sMultiply(double[][] v1, double[][] v2) {
 		if( v1.length != v2.length || v1[0].length != v2[0].length ) {
 			throw new IllegalArgumentException("a and b has to be of equal dimensions");
 		}
@@ -1371,7 +1372,7 @@ public enum MatrixOps { ;
 	
 	
 	public static double[][] times(double a[][], double b[][]){
-		if(a.length == 0) return new double[0][0];
+		if(a.length == 0) return ArrayUtils.EMPTY_DOUBLE_DOUBLE;
 		if(a[0].length != b.length) return null; 
 
 		int n = a[0].length;
@@ -1488,7 +1489,7 @@ public enum MatrixOps { ;
 		return res;
 	}
 
-	public static double [][] extractDoubleArray(DMatrixRMaj p) {
+	public static double [][] extractDoubleArray(DMatrix p) {
 		int rows = p.getNumRows();
 		int cols = p.getNumCols();
 		double [][] result = new double[rows][cols];

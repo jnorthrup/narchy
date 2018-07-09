@@ -65,7 +65,7 @@ public class FrictionJoint extends Joint {
     private final Mat22 m_linearMass = new Mat22();
     private float m_angularMass;
 
-    protected FrictionJoint(IWorldPool argWorldPool, FrictionJointDef def) {
+    FrictionJoint(IWorldPool argWorldPool, FrictionJointDef def) {
         super(argWorldPool, def);
         m_localAnchorA = new Vec2(def.localAnchorA);
         m_localAnchorB = new Vec2(def.localAnchorB);

@@ -53,12 +53,12 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	 */
 	
 	public ConvexHullShape(OArrayList<v3> points) {
-		
-		
-		for (int i=0; i<points.size(); i++) {
-            
-            this.points.add(new v3(points.get(i)));
-		}
+
+
+        for (v3 point : points) {
+
+            this.points.add(new v3(point));
+        }
 		
 		recalcLocalAabb();
 	}
@@ -102,16 +102,16 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 
 		v3 vtx = new v3();
-		for (int i = 0; i < points.size(); i++) {
-            
-            VectorUtil.mul(vtx, points.get(i), localScaling);
+        for (v3 point : points) {
 
-			newDot = vec.dot(vtx);
-			if (newDot > maxDot) {
-				maxDot = newDot;
-				supVec.set(vtx);
-			}
-		}
+            VectorUtil.mul(vtx, point, localScaling);
+
+            newDot = vec.dot(vtx);
+            if (newDot > maxDot) {
+                maxDot = newDot;
+                supVec.set(vtx);
+            }
+        }
 		return out;
 	}
 
@@ -129,23 +129,23 @@ public class ConvexHullShape extends PolyhedralConvexShape {
             wcoords[i] = BulletGlobals.SIMD_EPSILON /*-1e30f*/;
         }
 		v3 vtx = new v3();
-		for (int i = 0; i < points.size(); i++) {
-            
-            VectorUtil.mul(vtx, points.get(i), localScaling);
+        for (v3 point : points) {
 
-			for (int j = 0; j < numVectors; j++) {
-				v3 vec = vectors[j];
+            VectorUtil.mul(vtx, point, localScaling);
 
-				newDot = vec.dot(vtx);
-				
-				if (newDot > wcoords[j]) {
-					
-					supportVerticesOut[j].set(vtx);
-					
-					wcoords[j] = newDot;
-				}
-			}
-		}
+            for (int j = 0; j < numVectors; j++) {
+                v3 vec = vectors[j];
+
+                newDot = vec.dot(vtx);
+
+                if (newDot > wcoords[j]) {
+
+                    supportVerticesOut[j].set(vtx);
+
+                    wcoords[j] = newDot;
+                }
+            }
+        }
 	}
 
 	@Override

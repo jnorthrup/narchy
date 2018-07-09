@@ -66,7 +66,7 @@ public class Rot  {
         return this;
     }
 
-    public void setIdentity() {
+    void setIdentity() {
         s = 0;
         c = 1;
     }
@@ -91,13 +91,13 @@ public class Rot  {
         return copy;
     }
 
-    public static final void mul(Rot q, Rot r, Rot out) {
+    static void mul(Rot q, Rot r, Rot out) {
         float tempc = q.c * r.c - q.s * r.s;
         out.s = q.s * r.c + q.c * r.s;
         out.c = tempc;
     }
 
-    public static final void mulUnsafe(Rot q, Rot r, Rot out) {
+    static void mulUnsafe(Rot q, Rot r, Rot out) {
         assert (r != out);
         assert (q != out);
         
@@ -108,13 +108,13 @@ public class Rot  {
         out.c = q.c * r.c - q.s * r.s;
     }
 
-    public static final void mulTrans(Rot q, Rot r, Rot out) {
+    public static void mulTrans(Rot q, Rot r, Rot out) {
         final float tempc = q.c * r.c + q.s * r.s;
         out.s = q.c * r.s - q.s * r.c;
         out.c = tempc;
     }
 
-    public static final void mulTransUnsafe(Rot q, Rot r, Rot out) {
+    static void mulTransUnsafe(Rot q, Rot r, Rot out) {
         
         
         
@@ -123,24 +123,24 @@ public class Rot  {
         out.c = q.c * r.c + q.s * r.s;
     }
 
-    public static final void mulToOut(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulToOut(Rot q, Tuple2f v, Tuple2f out) {
         float tempy = q.s * v.x + q.c * v.y;
         out.x = q.c * v.x - q.s * v.y;
         out.y = tempy;
     }
 
-    public static final void mulToOutUnsafe(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulToOutUnsafe(Rot q, Tuple2f v, Tuple2f out) {
         out.x = q.c * v.x - q.s * v.y;
         out.y = q.s * v.x + q.c * v.y;
     }
 
-    public static final void mulTrans(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulTrans(Rot q, Tuple2f v, Tuple2f out) {
         final float tempy = -q.s * v.x + q.c * v.y;
         out.x = q.c * v.x + q.s * v.y;
         out.y = tempy;
     }
 
-    public static final void mulTransUnsafe(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulTransUnsafe(Rot q, Tuple2f v, Tuple2f out) {
         out.x = q.c * v.x + q.s * v.y;
         out.y = -q.s * v.x + q.c * v.y;
     }

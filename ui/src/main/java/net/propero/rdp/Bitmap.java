@@ -95,7 +95,7 @@ public class Bitmap {
         return colour;
     }
 
-    public static int convert15to24(int colour16) {
+    private static int convert15to24(int colour16) {
         int r24 = (colour16 >> 7) & 0xF8;
         int g24 = (colour16 >> 2) & 0xF8;
         int b24 = (colour16 << 3) & 0xFF;
@@ -107,7 +107,7 @@ public class Bitmap {
         return (r24 << 16) | (g24 << 8) | b24;
     }
 
-    public static int convert16to24(int colour16) {
+    private static int convert16to24(int colour16) {
         int r24 = (colour16 >> 8) & 0xF8;
         int g24 = (colour16 >> 3) & 0xFC;
         int b24 = (colour16 << 3) & 0xFF;
@@ -127,7 +127,7 @@ public class Bitmap {
      * @param Bpp    Number of bytes to read
      * @return
      */
-    static int cvalx(byte[] data, int offset, int Bpp) {
+    private static int cvalx(byte[] data, int offset, int Bpp) {
         int rv = 0;
         switch (Options.server_bpp) {
             case 15: {
@@ -175,7 +175,7 @@ public class Bitmap {
      * @param Bpp
      * @return
      */
-    static int getli(byte[] input, int startOffset, int offset, int Bpp) {
+    private static int getli(byte[] input, int startOffset, int offset, int Bpp) {
         int rv = 0;
 
         int rOffset = startOffset + (offset * Bpp);
@@ -193,8 +193,8 @@ public class Bitmap {
      * @param value
      * @param Bpp
      */
-    static void setli(byte[] input, int startlocation, int offset, int value,
-                      int Bpp) {
+    private static void setli(byte[] input, int startlocation, int offset, int value,
+                              int Bpp) {
         int location = startlocation + offset * Bpp;
 
         input[location] = (byte) (value & 0xFF);

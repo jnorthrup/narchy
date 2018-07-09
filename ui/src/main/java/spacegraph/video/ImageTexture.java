@@ -26,7 +26,7 @@ public class ImageTexture extends Tex {
 
     private static final String fa_prefix = "fontawesome://";
 
-    static ImmutableMap<String, byte[]> fontAwesomeIcons;
+    private static ImmutableMap<String, byte[]> fontAwesomeIcons;
     static  {
         synchronized (fa_prefix) {
             MutableMap<String, byte[]> fontAwesomeIcons = new UnifiedMap(1024);
@@ -46,7 +46,7 @@ public class ImageTexture extends Tex {
     }
 
     /** pair(gl context, texture name) */
-    static final Memoize<LongObjectPair<String>, Texture> textureCache = new SoftMemoize<>((cu) -> {
+    private static final Memoize<LongObjectPair<String>, Texture> textureCache = new SoftMemoize<>((cu) -> {
         try {
             String u = cu.getTwo();
             if (u.startsWith(fa_prefix)) {
@@ -69,13 +69,13 @@ public class ImageTexture extends Tex {
 
 
 
-    final String u;
+    private final String u;
 
 
 
 
 
-    public ImageTexture(URL path) {
+    private ImageTexture(URL path) {
         this(path.toString());
     }
 

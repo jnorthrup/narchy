@@ -244,7 +244,7 @@ public class AudioContext {
     /**
      * callback from AudioIO.
      */
-    protected void update() {
+    void update() {
         try {
             bufStoreIndex = 0;
             Arrays.fill(zeroBuf, 0f);
@@ -313,7 +313,7 @@ public class AudioContext {
      * Starts the AudioContext running in non-realtime. This occurs in the
      * current Thread.
      */
-    public void runNonRealTime() {
+    private void runNonRealTime() {
         if (stopped) {
             stopped = false;
             reset();
@@ -409,7 +409,7 @@ public class AudioContext {
      * @param numChannels the number of channels to use.
      * @return the generated AudioFormat.
      */
-    public static IOAudioFormat defaultAudioFormat(int inputs, int outputs) {
+    private static IOAudioFormat defaultAudioFormat(int inputs, int outputs) {
         return new IOAudioFormat(44100, 16, inputs, outputs, true, true);
     }
 
@@ -432,7 +432,7 @@ public class AudioContext {
      * @param current UGen to start from.
      * @param depth   depth by which to indent.
      */
-    public static void printCallChain(UGen current, int depth) {
+    private static void printCallChain(UGen current, int depth) {
         Set<UGen> children = current.getConnectedInputs();
         for (int i = 0; i < depth; i++) {
             System.out.print("  ");
@@ -558,7 +558,7 @@ public class AudioContext {
     /**
      * Simply resets the timeStep to zero.
      */
-    public void reset() {
+    private void reset() {
         timeStep = 0;
     }
 

@@ -7,7 +7,7 @@ import spacegraph.space3d.Spatial;
 import java.util.Map;
 import java.util.function.Function;
 
-public class SpatialCache<X, Y extends Spatial<X>> {
+class SpatialCache<X, Y extends Spatial<X>> {
 
     private final MRUCache<X, Y> cache;
     private final SpaceGraphPhys3D<X> space;

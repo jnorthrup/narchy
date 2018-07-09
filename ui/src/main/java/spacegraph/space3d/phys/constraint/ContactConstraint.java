@@ -142,11 +142,11 @@ public class ContactConstraint {
 	/**
 	 * Response between two dynamic objects with friction.
 	 */
-	public static float resolveSingleCollision(
-			Body3D body1,
-			Body3D body2,
-			ManifoldPoint contactPoint,
-			ContactSolverInfo solverInfo) {
+	private static float resolveSingleCollision(
+            Body3D body1,
+            Body3D body2,
+            ManifoldPoint contactPoint,
+            ContactSolverInfo solverInfo) {
 
 		v3 tmpVec = new v3();
 
@@ -212,11 +212,11 @@ public class ContactConstraint {
 		return normalImpulse;
 	}
 
-	public static float resolveSingleFriction(
-			Body3D body1,
-			Body3D body2,
-			ManifoldPoint contactPoint,
-			ContactSolverInfo solverInfo) {
+	private static float resolveSingleFriction(
+            Body3D body1,
+            Body3D body2,
+            ManifoldPoint contactPoint,
+            ContactSolverInfo solverInfo) {
 
 		v3 tmpVec = new v3();
 

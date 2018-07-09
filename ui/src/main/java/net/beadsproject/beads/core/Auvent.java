@@ -56,7 +56,7 @@ public abstract class Auvent<M extends Auvent> {
      *
      * @return the name.
      */
-    public String getName() {
+    protected String getName() {
         return name;
     }
 

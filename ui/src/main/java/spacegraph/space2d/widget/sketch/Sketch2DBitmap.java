@@ -24,14 +24,15 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 /** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
 public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
 
-    final Tex bmp = new Tex();
+    private final Tex bmp = new Tex();
     public final int[] pix;
     private final BufferedImage buf;
     private final int pw, ph;
 
-    public float brushWidth = 0.2f, brushAlpha = 0.5f;
+    private float brushWidth = 0.2f;
+    private float brushAlpha = 0.5f;
 
-    final MersenneTwister rng = new MersenneTwister();
+    private final MersenneTwister rng = new MersenneTwister();
 
 
     public Sketch2DBitmap(int w, int h) {
@@ -45,7 +46,7 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
     /**
      * must call this to re-generate texture so it will display
      */
-    public void update() {
+    private void update() {
         bmp.update(buf);
     }
 
@@ -128,7 +129,7 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
     /**
      * set paint (foreground) color
      */
-    public void color(float r, float g, float b) {
+    private void color(float r, float g, float b) {
         this.paintR = r;
         this.paintG = g;
         this.paintB = b;

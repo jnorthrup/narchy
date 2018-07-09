@@ -51,7 +51,7 @@ public class PrimitiveTriangle {
 	}
 	
 	public final v3[] vertices = new v3[3];
-	public final Vector4f plane = new Vector4f();
+	private final Vector4f plane = new Vector4f();
 	public float margin = 0.01f;
 
 	public PrimitiveTriangle() {
@@ -106,7 +106,7 @@ public class PrimitiveTriangle {
 	 * Calcs the plane which is paralele to the edge and perpendicular to the triangle plane.
 	 * This triangle must have its plane calculated.
 	 */
-	public void get_edge_plane(int edge_index, Vector4f plane) {
+    private void get_edge_plane(int edge_index, Vector4f plane) {
 		v3 e0 = vertices[edge_index];
 		v3 e1 = vertices[(edge_index + 1) % 3];
 
@@ -128,7 +128,7 @@ public class PrimitiveTriangle {
 	 * @param clipped_points must have MAX_TRI_CLIPPING size, and this triangle must have its plane calculated.
 	 * @return the number of clipped points
 	 */
-	public int clip_triangle(PrimitiveTriangle other, OArrayList<v3> clipped_points) {
+    private int clip_triangle(PrimitiveTriangle other, OArrayList<v3> clipped_points) {
 		
 		OArrayList<v3> temp_points = tmpVecList1;
 

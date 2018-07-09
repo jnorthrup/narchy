@@ -38,7 +38,7 @@ import spacegraph.space2d.phys.dynamics.Fixture;
  * this class if you want finer control over contact creation.
  * @author Daniel Murphy
  */
-public class ContactFilter {
+public enum ContactFilter { ;
 
     /**
      * Return true if contact calculations should be performed between these two shapes.

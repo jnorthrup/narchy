@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  */
 public class Switching extends Container {
 
-    protected volatile int switched = -1;
+    private volatile int switched = -1;
     private Surface current;
     private Supplier<Surface>[] states;
 
@@ -31,7 +31,7 @@ public class Switching extends Container {
     /**
      * sets the available states
      */
-    public Switching states(Supplier<Surface>... states) {
+    private Switching states(Supplier<Surface>... states) {
 
         switched = -1;
         this.states = states;
@@ -44,7 +44,7 @@ public class Switching extends Container {
     /**
      * selects the active state
      */
-    public Switching state(int next) {
+    private Switching state(int next) {
         
             if (switched == next)
                 return this;

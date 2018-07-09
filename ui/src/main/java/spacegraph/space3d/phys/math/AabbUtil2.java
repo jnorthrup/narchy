@@ -41,7 +41,7 @@ public class AabbUtil2 {
 		aabbMax.add(expansionMax);
 	}
 
-	public static int outcode(v3 p, v3 halfExtent) {
+	private static int outcode(v3 p, v3 halfExtent) {
 		float hx = halfExtent.x;
 		float px = p.x;
 		float py = p.y;

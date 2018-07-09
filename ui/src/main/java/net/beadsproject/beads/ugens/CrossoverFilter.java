@@ -37,7 +37,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
     
     private float k;
     
-    public static final float SQRT2 = (float) Math.sqrt(2);
+    private static final float SQRT2 = (float) Math.sqrt(2);
     private float sr = 41000;
     private float freq = 120;
     private final float pi_sr;
@@ -89,7 +89,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      * @param channels The number of channels.
      * @param freq     The initial cutoff frequency.
      */
-    public CrossoverFilter(AudioContext context, int channels, float freq) {
+    private CrossoverFilter(AudioContext context, int channels, float freq) {
         super(context, channels, channels * 2);
         this.channels = channels;
         if (channels > 1) {
@@ -225,7 +225,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      *
      * @return The cutoff frequency.
      */
-    public float getFrequency() {
+    private float getFrequency() {
         return freq;
     }
 
@@ -235,7 +235,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      * @param freq The cutoff frequency in Hertz.
      * @return This filter instance.
      */
-    public CrossoverFilter setFrequency(float freq) {
+    private CrossoverFilter setFrequency(float freq) {
         this.freq = freq;
         freqUGen = null;
         calcVals();
@@ -249,7 +249,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      * @param freqUGen The UGen to control the cutoff frequency.
      * @return This filter instance.
      */
-    public CrossoverFilter setFrequency(UGen freqUGen) {
+    private CrossoverFilter setFrequency(UGen freqUGen) {
         if (freqUGen == null) {
             setFrequency(freq);
         } else {
@@ -266,7 +266,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
      *
      * @return The UGen controlling the cutoff frequency.
      */
-    public UGen getFrequencyUGen() {
+    private UGen getFrequencyUGen() {
         return freqUGen;
     }
 

@@ -37,13 +37,13 @@ import spacegraph.util.math.v2;
  * @author daniel
  */
 public class TimeOfImpact {
-    public static final int MAX_ITERATIONS = 3;
+    private static final int MAX_ITERATIONS = 3;
 
-    public static int toiCalls = 0;
-    public static int toiIters = 0;
-    public static int toiMaxIters = 0;
-    public static int toiRootIters = 0;
-    public static int toiMaxRootIters = 0;
+    private static int toiCalls = 0;
+    private static int toiIters = 0;
+    private static int toiMaxIters = 0;
+    private static int toiRootIters = 0;
+    private static int toiMaxRootIters = 0;
 
     /**
      * Input parameters for TOI
@@ -304,13 +304,13 @@ enum Type {
 
 class SeparationFunction {
 
-    public DistanceProxy m_proxyA;
-    public DistanceProxy m_proxyB;
-    public Type m_type;
-    public final Tuple2f m_localPoint = new v2();
-    public final v2 m_axis = new v2();
-    public Sweep m_sweepA;
-    public Sweep m_sweepB;
+    private DistanceProxy m_proxyA;
+    private DistanceProxy m_proxyB;
+    private Type m_type;
+    private final Tuple2f m_localPoint = new v2();
+    private final v2 m_axis = new v2();
+    private Sweep m_sweepA;
+    private Sweep m_sweepB;
 
     
     private final Tuple2f localPointA = new v2();

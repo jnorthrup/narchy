@@ -37,9 +37,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
-public class Licence {
-    static final Logger logger = LoggerFactory.getLogger(Licence.class);
+class Licence {
+    private static final Logger logger = LoggerFactory.getLogger(Licence.class);
     /* constants for the licence negotiation */
     private static final int LICENCE_TOKEN_SIZE = 10;
     private static final int LICENCE_HWID_SIZE = 20;
@@ -80,7 +81,7 @@ public class Licence {
      *
      * @return Raw byte data for stored licence
      */
-    static byte[] load_licence() {
+    private static byte[] load_licence() {
         logger.debug("load_licence");
         
 
@@ -93,7 +94,7 @@ public class Licence {
      * @param data   Packet containing licence data
      * @param length Length of licence
      */
-    static void save_licence(RdpPacket_Localised data, int length) {
+    private static void save_licence(RdpPacket_Localised data, int length) {
         logger.debug("save_licence");
         int len;
         int startpos = data.getPosition();
@@ -138,10 +139,10 @@ public class Licence {
          */
     }
 
-    public static byte[] generate_hwid() throws UnsupportedEncodingException {
+    private static byte[] generate_hwid() throws UnsupportedEncodingException {
         byte[] hwid = new byte[LICENCE_HWID_SIZE];
         Secure.setLittleEndian32(hwid, 2);
-        byte[] name = Options.hostname.getBytes("US-ASCII");
+        byte[] name = Options.hostname.getBytes(StandardCharsets.US_ASCII);
 
         if (name.length > LICENCE_HWID_SIZE - 4) {
             System.arraycopy(name, 0, hwid, 4, LICENCE_HWID_SIZE - 4);
@@ -202,13 +203,13 @@ public class Licence {
      * @throws IOException
      * @throws CryptoException
      */
-    public void process_demand(RdpPacket_Localised data)
+    private void process_demand(RdpPacket_Localised data)
             throws RdesktopException,
             IOException, CryptoException {
         byte[] null_data = new byte[Secure.SEC_MODULUS_SIZE];
         byte[] server_random = new byte[Secure.SEC_RANDOM_SIZE];
-        byte[] host = Options.hostname.getBytes("US-ASCII");
-        byte[] user = Options.username.getBytes("US-ASCII");
+        byte[] host = Options.hostname.getBytes(StandardCharsets.US_ASCII);
+        byte[] user = Options.username.getBytes(StandardCharsets.US_ASCII);
 
         /* retrieve the server random */
         data.copyToByteArray(server_random, 0, data.getPosition(),
@@ -253,7 +254,7 @@ public class Licence {
      * @return True if signature is read successfully
      * @throws RdesktopException
      */
-    public boolean parse_authreq(RdpPacket_Localised data)
+    private boolean parse_authreq(RdpPacket_Localised data)
             throws RdesktopException {
 
         int tokenlen = 0;
@@ -287,7 +288,7 @@ public class Licence {
      * @throws IOException
      * @throws CryptoException
      */
-    public void send_authresp(byte[] token, byte[] crypt_hwid, byte[] signature)
+    private void send_authresp(byte[] token, byte[] crypt_hwid, byte[] signature)
             throws RdesktopException, IOException, CryptoException {
         int sec_flags = Secure.SEC_LICENCE_NEG;
         int length = 58;
@@ -332,8 +333,8 @@ public class Licence {
      * @throws IOException
      * @throws CryptoException
      */
-    public void present(byte[] client_random, byte[] rsa_data,
-                        byte[] licence_data, int licence_size, byte[] hwid, byte[] signature)
+    private void present(byte[] client_random, byte[] rsa_data,
+                         byte[] licence_data, int licence_size, byte[] hwid, byte[] signature)
             throws RdesktopException, IOException, CryptoException {
         int sec_flags = Secure.SEC_LICENCE_NEG;
         int length = /* rdesktop is 16 not 20, but this must be wrong?! */
@@ -388,7 +389,7 @@ public class Licence {
      * @throws IOException
      * @throws CryptoException
      */
-    public void process_authreq(RdpPacket_Localised data)
+    private void process_authreq(RdpPacket_Localised data)
             throws RdesktopException,
             IOException, CryptoException {
 
@@ -449,7 +450,7 @@ public class Licence {
      * @param data Packet containing issued licence
      * @throws CryptoException
      */
-    public void process_issue(RdpPacket_Localised data) throws CryptoException {
+    private void process_issue(RdpPacket_Localised data) throws CryptoException {
         int length = 0;
         int check = 0;
         RC4 rc4_licence = new RC4();
@@ -500,8 +501,8 @@ public class Licence {
      * @throws IOException
      * @throws CryptoException
      */
-    public void send_request(byte[] client_random, byte[] rsa_data,
-                             byte[] username, byte[] hostname) throws RdesktopException,
+    private void send_request(byte[] client_random, byte[] rsa_data,
+                              byte[] username, byte[] hostname) throws RdesktopException,
             IOException, CryptoException {
         int sec_flags = Secure.SEC_LICENCE_NEG;
         int userlen = (username.length == 0 ? 0 : username.length + 1);
@@ -575,8 +576,8 @@ public class Licence {
      * @param client_rsa Array in which to store RSA data
      * @throws CryptoException
      */
-    public void generate_keys(byte[] client_key, byte[] server_key,
-                              byte[] client_rsa) {
+    private void generate_keys(byte[] client_key, byte[] server_key,
+                               byte[] client_rsa) {
         byte[] session_key = new byte[48];
         byte[] temp_hash = new byte[48];
 

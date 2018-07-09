@@ -49,7 +49,7 @@ public class WorldManifold {
     /**
      * A negative value indicates overlap, in meters.
      */
-    public final float[] separations;
+    private final float[] separations;
 
     public WorldManifold() {
         normal = new v2();

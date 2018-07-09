@@ -14,11 +14,11 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	private float playTime;
 
     /** this actually represents the target amplitude which the current amplitude will continuously interpolate towards */
-    public final MutableFloat amplitude = new MutableFloat(1.0f);
-	public final MutableFloat stretchFactor = new MutableFloat(1.0f);
-	public final MutableFloat pitchFactor = new MutableFloat(1.0f);
+    private final MutableFloat amplitude = new MutableFloat(1.0f);
+	private final MutableFloat stretchFactor = new MutableFloat(1.0f);
+	private final MutableFloat pitchFactor = new MutableFloat(1.0f);
 
-    protected float currentAmplitude = amplitude.floatValue();
+    private float currentAmplitude = amplitude.floatValue();
 
 
     /** grains are represented as a triple of long integers (see Granulator.createGrain() which constructs these) */
@@ -32,7 +32,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
         this(s.buf, s.rate, grainSizeSecs, windowSizeFactor, rng);
     }
 
-	public Granulize(float[] buffer, float sampleRate, float grainSizeSecs, float windowSizeFactor, Random rng) {
+	private Granulize(float[] buffer, float sampleRate, float grainSizeSecs, float windowSizeFactor, Random rng) {
 		super(buffer, sampleRate, grainSizeSecs, windowSizeFactor);
 
 		sourceBuffer = buffer;
@@ -47,7 +47,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 		return this;
 	}
 
-	public void process(float[] output, int readRate) {
+	private void process(float[] output, int readRate) {
 		if (currentGrain == null && isPlaying) {
 			currentGrain = nextGrain(null);
 		}
@@ -108,7 +108,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
     }
 
 
-    public void play() {
+    private void play() {
     	if (!isPlaying) {
 			playOffset = Math.abs(rng.nextInt());
 			playTime = now;

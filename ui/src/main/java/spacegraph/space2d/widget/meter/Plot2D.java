@@ -52,9 +52,10 @@ public class Plot2D extends Widget {
          */
         private final int capacity;
 
-        protected transient float maxValue, minValue;
+        transient float maxValue;
+        transient float minValue;
 
-        public float[] color = {1, 1, 1, 0.75f};
+        float[] color = {1, 1, 1, 0.75f};
 
         @Override
         public float[] toArray() {
@@ -75,7 +76,7 @@ public class Plot2D extends Widget {
             capacity = data.length;
         }
 
-        public void setName(String name) {
+        void setName(String name) {
             this.name = name;
             Draw.colorHash(name, color);
         }
@@ -90,7 +91,7 @@ public class Plot2D extends Widget {
 
         }
 
-        protected void autorange() {
+        void autorange() {
             minValue = Float.POSITIVE_INFINITY;
             maxValue = Float.NEGATIVE_INFINITY;
             forEach(v -> {
@@ -105,13 +106,13 @@ public class Plot2D extends Widget {
             maxValue = max;
         }
 
-        protected void limit() {
+        void limit() {
             int over = size() - (this.capacity - 1);
             for (int i = 0; i < over; i++)
                 removeAtIndex(0);
         }
 
-        public float[] array() {
+        float[] array() {
             return items;
         }
 
@@ -122,7 +123,7 @@ public class Plot2D extends Widget {
     private final int maxHistory;
 
 
-    public PlotVis plotVis;
+    private PlotVis plotVis;
     
 
     public Plot2D(int history, PlotVis vis) {
@@ -182,7 +183,7 @@ public class Plot2D extends Widget {
         Draw.bounds(gl, bounds, this::paintUnit);
     }
 
-    protected void paintUnit(GL2 gl) {
+    private void paintUnit(GL2 gl) {
 
         List<Series> series = this.series;
 
@@ -239,12 +240,10 @@ public class Plot2D extends Widget {
         if (minValue != maxValue) {
 
             float w = 1.0f; 
-            float h = 1.0f; 
+            float h = 1.0f;
 
 
-            for (int z = 0, seriesSize = series.size(); z < seriesSize; z++) {
-                Series s = series.get(z);
-
+            for (Series s : series) {
                 int histSize = s.size();
 
                 float dx = (w / histSize);
@@ -277,7 +276,7 @@ public class Plot2D extends Widget {
 
 
 
-    public float[] backgroundColor = {0, 0, 0, 0.75f};
+    private float[] backgroundColor = {0, 0, 0, 0.75f};
 
     public static final PlotVis Line = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
         if (minValue == maxValue) {
@@ -299,9 +298,7 @@ public class Plot2D extends Widget {
         Draw.text(gl, n2(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
 
-        for (int si = 0, seriesSize = series.size(); si < seriesSize; si++) {
-
-            Series s = series.get(si);
+        for (Series s : series) {
 
             float mid = ypos(minValue, maxValue, (s.minValue + s.maxValue) / 2f);
 
@@ -312,34 +309,29 @@ public class Plot2D extends Widget {
 
             int histSize = ss;
 
-            
 
             gl.glLineWidth(3);
             gl.glColor3fv(s.color, 0);
 
             gl.glBegin(
                     GL.GL_LINE_STRIP
-                    
-                    
-                    
+
+
             );
             float range = maxValue - minValue;
             float yy = Float.NaN;
             float x = 0;
             float dx = (W / histSize);
-            
-            
+
+
             for (int i = 0; i < ss; i++) {
 
                 float v = ssh[i];
                 float ny = (v == v) ? ypos(minValue, range, v) : mid /*HACK for NaN*/;
 
 
-
-
-
                 gl.glVertex2f(x, yy = ny);
-                
+
 
                 x += dx;
             }

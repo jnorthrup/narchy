@@ -32,7 +32,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
  */
 public class JointDef {
 
-    public JointDef(JointType type) {
+    JointDef(JointType type) {
         this.type = type;
         userData = null;
         bodyA = null;

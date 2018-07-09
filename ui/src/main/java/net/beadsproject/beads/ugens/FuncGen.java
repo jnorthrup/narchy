@@ -25,7 +25,7 @@ public abstract class FuncGen extends UGen implements FloatFunction<float[]> {
      * An array representing the current values from the array of input UGens.
      * TODO use ArrayTensor
      */
-    protected final float[] x;
+    private final float[] x;
 
     /**
      * The inputs.
@@ -49,8 +49,8 @@ public abstract class FuncGen extends UGen implements FloatFunction<float[]> {
      */
     @Override
     public final void gen() {
-        for (int i = 0; i < inputs.length; i++) {
-            inputs[i].update();
+        for (UGen input : inputs) {
+            input.update();
         }
         for (int i = 0; i < bufferSize; i++) {
             for (int j = 0; j < inputs.length; j++) {

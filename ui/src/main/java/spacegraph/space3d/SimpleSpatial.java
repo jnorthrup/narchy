@@ -37,7 +37,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
     public final float[] shapeColor;
     public final Transform transform = new Transform().setIdentity();
-    public boolean active;
+    private boolean active;
 
     public SimpleSpatial(X x) {
         super(x);
@@ -140,7 +140,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         move(p.x, p.y, p.z);
     }
 
-    public SimpleSpatial move(float x, float y, float z) {
+    protected SimpleSpatial move(float x, float y, float z) {
 
 
 
@@ -164,7 +164,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
 
 
-    public void rotate(Quaternion target, float speed) {
+    private void rotate(Quaternion target, float speed) {
 
         rotate(target, speed, new Quaternion());
     }
@@ -187,7 +187,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
 
-    void reactivate() {
+    private void reactivate() {
         if (body!=null)
             body.activate(collidable());
     }
@@ -197,7 +197,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         moveDelta(v.x, v.y, v.z, speed);
     }
 
-    public void moveDelta(float dx, float dy, float dz, float speed) {
+    private void moveDelta(float dx, float dy, float dz, float speed) {
         move(
                 x() + dx,
                 y() + dy,
@@ -305,7 +305,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
     public float x() {  return transform().x;        }
     public float y() {  return transform().y;        }
-    public float z() {  return transform().z;        }
+    protected float z() {  return transform().z;        }
 
 
 

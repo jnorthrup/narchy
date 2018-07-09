@@ -84,7 +84,7 @@ public class DefaultIntersecter extends Intersecter {
 		return nearCallback;
 	}
 
-	public void setNearCallback(NearCallback nearCallback) {
+	private void setNearCallback(NearCallback nearCallback) {
 		this.nearCallback = nearCallback;
 	}
 
@@ -201,7 +201,7 @@ public class DefaultIntersecter extends Intersecter {
 		private DefaultIntersecter dispatcher;
 		private NearCallback cb;
 
-		public void init(DispatcherInfo dispatchInfo, DefaultIntersecter dispatcher) {
+		void init(DispatcherInfo dispatchInfo, DefaultIntersecter dispatcher) {
 			this.dispatchInfo = dispatchInfo;
 			this.dispatcher = dispatcher;
 			this.cb = dispatcher.nearCallback;

@@ -33,7 +33,7 @@ public class ADSR extends UGen {
      * @param inouts  the number of channels.
      * @param adsr    the adsr parameters.
      */
-    public ADSR(AudioContext context, int inouts, float... adsr) {
+    private ADSR(AudioContext context, int inouts, float... adsr) {
         super(context, inouts, inouts);
         env = new Envelope(context, 0);
         gain = new Gain(context, inouts, env);

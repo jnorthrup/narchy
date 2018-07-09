@@ -46,7 +46,7 @@ public class NonrealtimeIO extends AudioIO {
          * @param context the context
          * @param outs    the outs
          */
-        public ThisIsNotAnInput(AudioContext context, int outs) {
+        ThisIsNotAnInput(AudioContext context, int outs) {
             super(context, outs);
             outputInitializationRegime = OutputInitializationRegime.ZERO;
             pause(true);

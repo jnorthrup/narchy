@@ -1,6 +1,7 @@
 package com.jujutsu.tsne.matrix;
 
 
+import org.ejml.data.DMatrix;
 import org.ejml.data.DMatrixRMaj;
 
 import static org.ejml.dense.row.CommonOps_DDRM.divide;
@@ -8,7 +9,7 @@ import static org.ejml.dense.row.CommonOps_DDRM.sumCols;
 
 public class EjmlOps {
 
-	public static void maximize(DMatrixRMaj p, double minval) {
+	public static void maximize(DMatrix p, double minval) {
 		int rows = p.getNumRows();
 		int cols = p.getNumCols();
 		for (int i = 0; i < rows; i++) {
@@ -152,7 +153,7 @@ public class EjmlOps {
 		return colmean;
 	}
 
-	public static void addRowVector(DMatrixRMaj matrix, DMatrixRMaj rowvector) {
+	public static void addRowVector(DMatrixRMaj matrix, DMatrix rowvector) {
 		for (int i = 0; i < matrix.numRows; i++) {
 			for (int j = 0; j < matrix.numCols; j++) {
 				matrix.set(i,j,matrix.get(i,j) + rowvector.get(0,j));
@@ -160,13 +161,13 @@ public class EjmlOps {
 		}
 	}
 
-	public static void assignAtIndex(DMatrixRMaj num, int[] range, int[] range1, double value) {
+	public static void assignAtIndex(DMatrix num, int[] range, int[] range1, double value) {
 		for (int j = 0; j < range.length; j++) {
 			num.set(range[j], range1[j], value);
 		}
 	}
 
-	public static double [][] extractDoubleArray(DMatrixRMaj p) {
+	public static double [][] extractDoubleArray(DMatrix p) {
 		int rows = p.getNumRows();
 		int cols = p.getNumCols();
 		double [][] result = new double[rows][cols];

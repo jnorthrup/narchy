@@ -25,8 +25,8 @@ import net.beadsproject.beads.data.Sample;
  */
 public class SamplePlayer extends UGen {
 
-    public static final float ADAPTIVE_INTERP_LOW_THRESH = 0.5f;
-    public static final float ADAPTIVE_INTERP_HIGH_THRESH = 2.5f;
+    static final float ADAPTIVE_INTERP_LOW_THRESH = 0.5f;
+    static final float ADAPTIVE_INTERP_HIGH_THRESH = 2.5f;
 
     /**
      * Used to determine what kind of interpolation is used when access samples.
@@ -111,57 +111,57 @@ public class SamplePlayer extends UGen {
     /**
      * The Sample.
      */
-    protected Sample sample;
+    Sample sample;
 
     /**
      * The position in milliseconds.
      */
-    protected double position;
+    double position;
 
     /**
      * The position envelope.
      */
-    protected UGen positionEnvelope;
+    UGen positionEnvelope;
 
     /**
      * The rate envelope.
      */
-    protected UGen rateEnvelope;
+    UGen rateEnvelope;
 
     /**
      * The millisecond position increment per sample. Calculated from the ratio
      * of the {@link AudioContext}'s sample rate and the {@link Sample}'s sample
      * rate.
      */
-    protected final double positionIncrement;
+    final double positionIncrement;
 
     /**
      * Flag for alternating loop mode to determine if playback is in forward or
      * reverse phase.
      */
-    protected boolean forwards;
+    boolean forwards;
 
-    protected EnvelopeType envelopeType;
+    private EnvelopeType envelopeType;
 
     /**
      * The interpolation type.
      */
-    protected InterpolationType interpolationType;
+    InterpolationType interpolationType;
 
     /**
      * The loop start envelope.
      */
-    protected UGen loopStartEnvelope;
+    UGen loopStartEnvelope;
 
     /**
      * The loop end envelope.
      */
-    protected UGen loopEndEnvelope;
+    UGen loopEndEnvelope;
 
     /**
      * The loop type.
      */
-    protected LoopType loopType;
+    LoopType loopType;
 
     /**
      * The loop cross fade in milliseconds.
@@ -178,28 +178,28 @@ public class SamplePlayer extends UGen {
      * Flag to determine whether the SamplePlayer should kill itself when it
      * gets to the end of the Sample.
      */
-    protected boolean killOnEnd;
+    private boolean killOnEnd;
 
     /**
      * The rate. Calculated and used internally from the rate envelope.
      */
-    protected float rate;
+    float rate;
 
     /**
      * The loop start. Calculated and used internally from the loop start
      * envelope.
      */
-    protected float loopStart;
+    float loopStart;
 
     /**
      * The loop end. Calculated and used internally from the loop end envelope.
      */
-    protected float loopEnd;
+    float loopEnd;
 
     /**
      * Array for temp storage.
      */
-    protected float[] frame;
+    float[] frame;
 
     /**
      * Bead responding to sample at end (only applies when not in loop mode).
@@ -212,7 +212,7 @@ public class SamplePlayer extends UGen {
      * @param context the AudioContext.
      * @param outs    the number of outputs.
      */
-    public SamplePlayer(AudioContext context, int outs) {
+    SamplePlayer(AudioContext context, int outs) {
         super(context, outs);
         rateEnvelope = new Static(context, 1.0f);
         positionEnvelope = null;
@@ -242,7 +242,7 @@ public class SamplePlayer extends UGen {
     /**
      * Sets the Sample.
      */
-    public void setSample(Sample sample) {
+    void setSample(Sample sample) {
         this.sample = sample;
         
         frame = new float[sample.getNumChannels()];
@@ -309,7 +309,7 @@ public class SamplePlayer extends UGen {
     /**
      * Resets the position to the start of the Sample.
      */
-    public void reset() {
+    void reset() {
         position = 0f;
         forwards = true;
     }
@@ -859,7 +859,7 @@ public class SamplePlayer extends UGen {
      *
      * @param i the index within the buffer loop.
      */
-    protected void calculateNextPosition(int i) {
+    void calculateNextPosition(int i) {
         if (positionEnvelope != null) {
             position = positionEnvelope.getValueDouble(0, i);
         } else {

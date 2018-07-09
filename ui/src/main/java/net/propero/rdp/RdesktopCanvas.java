@@ -44,7 +44,7 @@ import java.awt.image.MemoryImageSource;
 
 
 public abstract class RdesktopCanvas extends Canvas {
-    public static final int ROP2_COPY = 0xc;
+    private static final int ROP2_COPY = 0xc;
     static final Logger logger = LoggerFactory.getLogger(RdesktopCanvas.class);
     private static final int ROP2_XOR = 0x6;
 
@@ -58,14 +58,14 @@ public abstract class RdesktopCanvas extends Canvas {
     private static final int MIX_OPAQUE = 1;
     private static final int TEXT2_VERTICAL = 0x04;
     private static final int TEXT2_IMPLICIT_X = 0x20;
-    public final int width;
-    public final int height;
+    private final int width;
+    private final int height;
     private final RasterOp rop;
     public KeyCode keys;
-    public KeyCode_FileBased fbKeys;
+    private KeyCode_FileBased fbKeys;
     public String sKeys;
-    public Rdp rdp;
-    protected IndexColorModel colormap;
+    private Rdp rdp;
+    private IndexColorModel colormap;
     public WrappedImage backstore;
 
     
@@ -89,7 +89,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param width  Desired width of canvas
      * @param height Desired height of canvas
      */
-    public RdesktopCanvas(int width, int height) {
+    RdesktopCanvas(int width, int height) {
         rop = new RasterOp();
         this.width = width;
         this.height = height;
@@ -110,7 +110,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param offset
      * @return
      */
-    static int parse_delta(byte[] buffer, int[] offset) {
+    private static int parse_delta(byte[] buffer, int[] offset) {
         int value = buffer[offset[0]++] & 0xff;
         int two_byte = value & 0x80;
 
@@ -337,7 +337,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param cy    Height of rectangle
      * @param color Colour of rectangle
      */
-    public void fillRectangle(int x, int y, int cx, int cy, int color) {
+    private void fillRectangle(int x, int y, int cx, int cy, int color) {
         
         if (x > this.right || y > this.bottom)
             return; 
@@ -392,7 +392,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param opcode Operation code defining operation to perform on pixels within
      *               the line
      */
-    public void drawLine(int x1, int y1, int x2, int y2, int color, int opcode) {
+    private void drawLine(int x1, int y1, int x2, int y2, int color, int opcode) {
         
         color = Bitmap.convertTo24(color);
 
@@ -473,8 +473,8 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param opcode Operation code defining operation to perform on pixels within
      *               the line
      */
-    public void drawLineVerticalHorizontal(int x1, int y1, int x2, int y2,
-                                           int color, int opcode) {
+    private void drawLineVerticalHorizontal(int x1, int y1, int x2, int y2,
+                                            int color, int opcode) {
         int pbackstore;
         int i;
         
@@ -690,8 +690,8 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param bgcolor Background colour for pattern
      * @param brush   Brush object defining pattern to be drawn
      */
-    public void patBltOrder(int opcode, int x, int y, int cx, int cy,
-                            int fgcolor, int bgcolor, Brush brush) {
+    private void patBltOrder(int opcode, int x, int y, int cx, int cy,
+                             int fgcolor, int bgcolor, Brush brush) {
 
         
         fgcolor = Bitmap.convertTo24(fgcolor);
@@ -926,7 +926,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param y      y coordinate of pixel
      * @param color  Colour value to be used in operation
      */
-    public void setPixel(int opcode, int x, int y, int color) {
+    private void setPixel(int opcode, int x, int y, int color) {
         int Bpp = Options.Bpp;
 
         
@@ -1200,8 +1200,8 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param cache_idx
      * @return Generated Cursor object
      */
-    protected Cursor createCustomCursor(Image wincursor, Point p, String s,
-                                        int cache_idx) {
+    Cursor createCustomCursor(Image wincursor, Point p, String s,
+                              int cache_idx) {
         if (cache_idx == 1)
             return Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
         return Cursor.getDefaultCursor();

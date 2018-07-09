@@ -6,7 +6,7 @@ import spacegraph.space3d.phys.shape.CollisionShape;
 import static spacegraph.util.math.v3.v;
 
 /** dynamic which allows no z-movement or rotation */
-public class FlatDynamic extends Body3D {
+class FlatDynamic extends Body3D {
     public FlatDynamic(float mass, CollisionShape shape, Transform transform, short group, short mask) {
         super(mass, transform, shape);
         this.group = group;

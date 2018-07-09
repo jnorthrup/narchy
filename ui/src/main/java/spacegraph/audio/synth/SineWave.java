@@ -9,7 +9,8 @@ import spacegraph.audio.SoundProducer;
 public class SineWave implements SoundProducer, SoundProducer.Amplifiable {
 
     private final float freq;
-    float beat, x;
+    float beat;
+    private float x;
     private boolean playing;
     private float amp;
 

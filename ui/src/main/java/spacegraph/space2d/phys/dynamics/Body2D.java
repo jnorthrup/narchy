@@ -51,11 +51,11 @@ import java.util.function.Consumer;
  */
 public class Body2D extends Transform {
     public static final int e_islandFlag = 0x0001;
-    public static final int e_awakeFlag = 0x0002;
+    private static final int e_awakeFlag = 0x0002;
     public static final int e_autoSleepFlag = 0x0004;
-    public static final int e_bulletFlag = 0x0008;
-    public static final int e_fixedRotationFlag = 0x0010;
-    public static final int e_activeFlag = 0x0020;
+    private static final int e_bulletFlag = 0x0008;
+    private static final int e_fixedRotationFlag = 0x0010;
+    private static final int e_activeFlag = 0x0020;
     public static final int e_toiFlag = 0x0040;
 
     public BodyType type;
@@ -98,11 +98,14 @@ public class Body2D extends Transform {
     public JointEdge joints;
     public ContactEdge contacts;
 
-    public float mass, m_invMass, m_massArea;
+    private float mass;
+    public float m_invMass;
+    public float m_massArea;
     public boolean m_fractureTransformUpdate = false;
 
     
-    public float m_I, m_invI;
+    private float m_I;
+    public float m_invI;
 
     public float m_linearDamping;
     public float m_angularDamping;
@@ -110,10 +113,10 @@ public class Body2D extends Transform {
 
     public float m_sleepTime;
 
-    public Object data;
+    private Object data;
 
     public final static AtomicInteger serial = new AtomicInteger();
-    final int id = serial.incrementAndGet();
+    private final int id = serial.incrementAndGet();
 
     public Body2D(final BodyType t, Dynamics2D world) {
         this(new BodyDef(t), world);
@@ -401,7 +404,7 @@ public class Body2D extends Transform {
      * @param position the world position of the body's local origin.
      * @param angle    the world rotation in radians.
      */
-    public final boolean setTransform(Tuple2f position, float angle, float epsilon) {
+    protected final boolean setTransform(Tuple2f position, float angle, float epsilon) {
 
         if (getPosition().equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
             return false; 
@@ -540,7 +543,7 @@ public class Body2D extends Transform {
             return;
         }
 
-        if (isAwake() == false) {
+        if (!isAwake()) {
             setAwake(true);
         }
 
@@ -565,7 +568,7 @@ public class Body2D extends Transform {
             return;
         }
 
-        if (isAwake() == false) {
+        if (!isAwake()) {
             setAwake(true);
         }
 
@@ -584,7 +587,7 @@ public class Body2D extends Transform {
             return;
         }
 
-        if (isAwake() == false) {
+        if (!isAwake()) {
             setAwake(true);
         }
 
@@ -631,7 +634,7 @@ public class Body2D extends Transform {
             return;
         }
 
-        if (isAwake() == false) {
+        if (!isAwake()) {
             setAwake(true);
         }
         velAngular += m_invI * impulse;
@@ -738,7 +741,7 @@ public class Body2D extends Transform {
      * normally does not need to be called unless you called setMassData to override the mass and you
      * later want to reset the mass.
      */
-    public final void resetMassData() {
+    private void resetMassData() {
         
         mass = 0.0f;
         m_massArea = 0.0f;
@@ -909,7 +912,7 @@ public class Body2D extends Transform {
         return out;
     }
 
-    public final void getLinearVelocityFromWorldPointToOut(Tuple2f worldPoint, Tuple2f out) {
+    private void getLinearVelocityFromWorldPointToOut(Tuple2f worldPoint, Tuple2f out) {
         final float tempX = worldPoint.x - sweep.c.x;
         final float tempY = worldPoint.y - sweep.c.y;
         out.x = -velAngular * tempY + vel.x;
@@ -928,7 +931,7 @@ public class Body2D extends Transform {
         return out;
     }
 
-    public final void getLinearVelocityFromLocalPointToOut(Tuple2f localPoint, Tuple2f out) {
+    private void getLinearVelocityFromLocalPointToOut(Tuple2f localPoint, Tuple2f out) {
         getWorldPointToOut(localPoint, out);
         getLinearVelocityFromWorldPointToOut(out, out);
     }
@@ -1208,7 +1211,7 @@ public class Body2D extends Transform {
     /**
      * Set the user data. Use this to store your application specific data.
      */
-    public final void setData(Object data) {
+    protected final void setData(Object data) {
         this.data = data;
     }
 
@@ -1274,7 +1277,7 @@ public class Body2D extends Transform {
         return true;
     }
 
-    protected final void advance(float t) {
+    final void advance(float t) {
         
         sweep.advance(t);
         sweep.c.set(sweep.c0);

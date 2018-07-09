@@ -45,17 +45,17 @@ public class RotationalLimitMotor {
 
 	public float loLimit; 
 	public float hiLimit; 
-	public float targetVelocity; 
-	public float maxMotorForce; 
-	public float maxLimitForce; 
-	public float damping; 
-	public float limitSoftness; 
-	public float ERP; 
-	public float bounce; 
-	public boolean enableMotor;
+	private float targetVelocity;
+	private float maxMotorForce;
+	private float maxLimitForce;
+	private float damping;
+	private float limitSoftness;
+	private float ERP;
+	private float bounce;
+	private boolean enableMotor;
 	
-	public float currentLimitError;
-	public int currentLimit;
+	private float currentLimitError;
+	private int currentLimit;
 	public float accumulatedImpulse;
 
 	public RotationalLimitMotor() {

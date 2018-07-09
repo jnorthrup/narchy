@@ -19,12 +19,12 @@ public class OscillatorBank extends UGen {
     /**
      * The array of frequencies of individual oscillators.
      */
-    public final Tensor frequency;
+    private final Tensor frequency;
 
     /**
      * The array of gains of individual oscillators.
      */
-    public final Tensor gain;
+    private final Tensor gain;
 
     /**
      * The array of current positions of individual oscillators.

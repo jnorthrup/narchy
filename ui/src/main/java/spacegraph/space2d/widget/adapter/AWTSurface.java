@@ -25,7 +25,7 @@ import static java.awt.event.MouseEvent.NOBUTTON;
 
 public class AWTSurface extends Widget {
 
-    static Method processKeyEvent;
+    private static Method processKeyEvent;
 
     static {
         try {
@@ -40,11 +40,12 @@ public class AWTSurface extends Widget {
 
 
 
-    Component component;
+    private Component component;
     private final Tex tex = new Tex();
     private final Dimension psize;
-    BufferedImage buffer = null;
-    int lpx = -1, lpy = -1;
+    private BufferedImage buffer = null;
+    private int lpx = -1;
+    private int lpy = -1;
     private On ons;
     private volatile Component myFocus;
 
@@ -52,7 +53,7 @@ public class AWTSurface extends Widget {
         this(component, component.getWidth(), component.getHeight());
     }
 
-    public AWTSurface(Component component, int pw, int ph) {
+    AWTSurface(Component component, int pw, int ph) {
 
         this.component = component;
         this.psize = new Dimension(pw, ph);
@@ -297,7 +298,7 @@ public class AWTSurface extends Widget {
         
     }
 
-    public void handle(AWTEvent e) {
+    private void handle(AWTEvent e) {
 
 
 
@@ -310,7 +311,7 @@ public class AWTSurface extends Widget {
 
 
     private static class MyFrame extends Window {
-        public MyFrame() throws HeadlessException {
+        MyFrame() throws HeadlessException {
             super(null);
         }
 

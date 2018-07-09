@@ -84,12 +84,12 @@ public class UnionFind {
 		return (x == elements.get(x).id);
 	}
 
-	public Element get(int index) {
+	private Element get(int index) {
 		return elements.get(index);
 		
 	}
 
-	public void allocate(int N) {
+	private void allocate(int N) {
 		MiscUtil.resize(elements, N, Element.class);
 	}
 
@@ -126,7 +126,7 @@ public class UnionFind {
 		
 	}
 
-	public int find(int x) {
+	private int find(int x) {
 		
 		
 
@@ -159,8 +159,8 @@ public class UnionFind {
 	
 
 	public static class Element {
-		public int id;
-		public int sz;
+		int id;
+		int sz;
 	}
 
 	private static final Comparator<Element> elementComparator = Comparator.comparingInt(o -> o.id);

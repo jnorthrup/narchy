@@ -43,12 +43,12 @@ import spacegraph.util.math.v3;
  */
 public class ShapeHull {
 
-	protected final FasterList<v3> vertices = new FasterList<>();
-	protected final IntArrayList indices = new IntArrayList();
-	protected int numIndices;
-	protected ConvexShape shape;
+	private final FasterList<v3> vertices = new FasterList<>();
+	private final IntArrayList indices = new IntArrayList();
+	private int numIndices;
+	private ConvexShape shape;
 
-	protected final FasterList<v3> unitSpherePoints = new FasterList<>();
+	private final FasterList<v3> unitSpherePoints = new FasterList<>();
 
 	public ShapeHull(ConvexShape shape) {
 		this.shape = shape;

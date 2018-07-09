@@ -24,10 +24,10 @@ import java.util.function.Function;
  */
 public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnable {
 
-    public final Logger logger;
+    private final Logger logger;
     private final String device;
 
-    final AtomicBoolean running = new AtomicBoolean();
+    private final AtomicBoolean running = new AtomicBoolean();
     private final Consumer<GameInputEvent> each;
 
 
@@ -36,7 +36,7 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
     }
 
 
-    public GamePad(String device /* ex: js0 */, Consumer<GameInputEvent> each) {
+    private GamePad(String device /* ex: js0 */, Consumer<GameInputEvent> each) {
         super();
 
         this.logger = LoggerFactory.getLogger(GamePad.class + ":" + device);
@@ -45,7 +45,7 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
 
     }
 
-    public synchronized Thread start() {
+    private synchronized Thread start() {
         if (running.get()) {
             logger.warn("already started {}", this);
             return null;
@@ -61,7 +61,7 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
         final long when; 
         final int value;
 
-        public GameInputEvent(int axis, int value, long when) {
+        GameInputEvent(int axis, int value, long when) {
             this.axis = axis;
             this.when = when;
             this.value = value;
@@ -110,7 +110,7 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
 
     }
 
-    public synchronized void stop() {
+    private synchronized void stop() {
         if (!running.get()) {
             logger.warn("already stopped {}", this);
         } else {

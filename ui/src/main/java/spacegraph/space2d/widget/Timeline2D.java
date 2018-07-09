@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
@@ -19,6 +18,7 @@ import spacegraph.space2d.widget.windo.Widget;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Timeline2D<E> extends Graph2D<E> {
 
@@ -26,7 +26,7 @@ public class Timeline2D<E> extends Graph2D<E> {
     protected double tStart = 0;
     protected double tEnd = 1;
 
-    final TimelineModel<E> model;
+    private final TimelineModel<E> model;
 
 
     public Timeline2D(TimelineModel<E> model, Consumer<NodeVis<E>> view) {
@@ -134,10 +134,10 @@ public class Timeline2D<E> extends Graph2D<E> {
         return b;
     }
 
-    public Timeline2D<E> viewShift(double dt) {
+    private Timeline2D<E> viewShift(double dt) {
         return view(tStart+dt, tEnd+dt);
     }
-    public Timeline2D<E> viewScale(double dPct) {
+    private Timeline2D<E> viewScale(double dPct) {
         double range = (tEnd - tStart) * dPct;
         double tCenter = (tEnd + tStart)/2;
         return view(tCenter - range/2, tCenter + range/2);
@@ -157,7 +157,7 @@ public class Timeline2D<E> extends Graph2D<E> {
         return update();
     }
 
-    public float x(double t) {
+    private float x(double t) {
         double s = tStart;
         double e = tEnd;
         float X = x();
@@ -165,7 +165,7 @@ public class Timeline2D<E> extends Graph2D<E> {
         return (float)((t - s) / (e - s) * W + X);
     }
 
-    public Timeline2D<E> update() {
+    private Timeline2D<E> update() {
         set(model.events((long)Math.floor(tStart), (long)Math.ceil(tEnd-1)));
         return this;
     }
@@ -197,7 +197,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
 
 
-    public interface TimelineModel<X> {
+    interface TimelineModel<X> {
         /** any events intersecting with the provided range */
         Iterable<X> events(long start, long end);
         long[] range(X event);
@@ -248,7 +248,8 @@ public class Timeline2D<E> extends Graph2D<E> {
 
     public static class SimpleEvent implements Comparable<SimpleEvent> {
         public final String name;
-        public final long start, end;
+        final long start;
+        public final long end;
 
         public SimpleEvent(String name, long start, long end) {
             this.name = name;
@@ -283,7 +284,7 @@ public class Timeline2D<E> extends Graph2D<E> {
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
             
-            return Iterables.filter(this, x-> intersects(x, start, end));
+            return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
         }
 
         @Override
@@ -319,7 +320,7 @@ public class Timeline2D<E> extends Graph2D<E> {
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
             
-            return Iterables.filter(this, x-> intersects(x, start, end));
+            return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
         }
 
         @Override

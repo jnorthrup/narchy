@@ -29,6 +29,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         Terminal {
@@ -47,10 +48,10 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
     private final Object[] colors = {Color.black, Color.red, Color.green,
             Color.yellow, Color.blue, Color.magenta, Color.cyan, Color.white};
-    OutputStream out;
-    InputStream in;
-    TerminalEmulator emulator = null;
-    Connection connection = null;
+    private OutputStream out;
+    private InputStream in;
+    private TerminalEmulator emulator = null;
+    private Connection connection = null;
     private BufferedImage img;
     private BufferedImage background;
     private Graphics2D cursor_graphics;
@@ -437,7 +438,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         antialiasing = foo;
         Object mode = foo ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON
                 : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
-        RenderingHints hints = new RenderingHints(
+        Map<Object, Object> hints = new RenderingHints(
                 RenderingHints.KEY_TEXT_ANTIALIASING, mode);
         graphics.setRenderingHints(hints);
     }

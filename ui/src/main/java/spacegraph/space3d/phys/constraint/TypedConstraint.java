@@ -50,17 +50,17 @@ public abstract class TypedConstraint {
 	private int userConstraintType = -1;
 	private int userConstraintId = -1;
 
-	public final TypedConstraintType type;
+	private final TypedConstraintType type;
 	
 	protected final Body3D rbA;
 	protected final Body3D rbB;
-	protected float appliedImpulse;
+	float appliedImpulse;
 
 	protected TypedConstraint(TypedConstraintType type) {
 		this(type, getFixed(), getFixed());
 	}
 	
-	protected TypedConstraint(TypedConstraintType type, Body3D rbA) {
+	TypedConstraint(TypedConstraintType type, Body3D rbA) {
 		this(type, rbA, getFixed());
 	}
 	

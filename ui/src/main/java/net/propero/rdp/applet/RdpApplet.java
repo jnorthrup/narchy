@@ -47,11 +47,11 @@ public class RdpApplet extends Applet {
 
     private static final long serialVersionUID = 583386592743649642L;
 
-    TextArea aTextArea;
+    private TextArea aTextArea;
 
-    PrintStream aPrintStream;
-    boolean redirectOutput;
-    RdpThread rThread;
+    private PrintStream aPrintStream;
+    private boolean redirectOutput;
+    private RdpThread rThread;
 
     @Override
     public void paint(Graphics g) {
@@ -177,7 +177,7 @@ public class RdpApplet extends Applet {
     }
 
     class FilteredStream extends FilterOutputStream {
-        public FilteredStream(OutputStream aStream) {
+        FilteredStream(OutputStream aStream) {
             super(aStream);
         }
 
@@ -198,11 +198,11 @@ public class RdpApplet extends Applet {
 
 class RdpThread extends Thread {
 
-    final String[] args;
+    private final String[] args;
 
-    final String redirect;
+    private final String redirect;
 
-    final Applet parentApplet;
+    private final Applet parentApplet;
 
     public RdpThread(String[] args, String redirect, Applet a) {
         parentApplet = a;

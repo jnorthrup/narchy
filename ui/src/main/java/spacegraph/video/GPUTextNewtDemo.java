@@ -63,12 +63,12 @@ public class GPUTextNewtDemo {
      * at com.jogamp.opengl.DebugGL4bc.glFramebufferRenderbuffer(DebugGL4bc.java:33077)
      * at jogamp.graph.curve.opengl.VBORegion2PGL3.initFBOTexture(VBORegion2PGL3.java:295)
      */
-    static final boolean DEBUG = false;
-    static final boolean TRACE = false;
+    private static final boolean DEBUG = false;
+    private static final boolean TRACE = false;
 
-    static int SceneMSAASamples = 0;
-    static int GraphVBAASamples = 1;
-    static int GraphMSAASamples = 0;
+    private static int SceneMSAASamples = 0;
+    private static int GraphVBAASamples = 1;
+    private static int GraphMSAASamples = 0;
 
     public static void main(final String[] args) {
         int width = 800, height = 400;
@@ -171,7 +171,7 @@ public class GPUTextNewtDemo {
 
     }
 
-    public static int atoi(final String str, final int def) {
+    private static int atoi(final String str, final int def) {
         try {
             return Integer.parseInt(str);
         } catch (final Exception ex) {
@@ -186,7 +186,7 @@ public class GPUTextNewtDemo {
             super(RenderState.createRenderState(SVertex.factory()), Region.VBAA_RENDERING_BIT, 4, true, false, false);
         }
 
-        public GPUTextGLListener0A(final RenderState rs, final int renderModes, final int sampleCount, final boolean blending, final boolean debug, final boolean trace) {
+        GPUTextGLListener0A(final RenderState rs, final int renderModes, final int sampleCount, final boolean blending, final boolean debug, final boolean trace) {
             super(rs, renderModes, sampleCount, blending, debug, trace);
         }
 
@@ -232,10 +232,10 @@ public class GPUTextNewtDemo {
      * - space: toggle font (ubuntu/java)
      * - i: live input text input (CR ends it, backspace supported)
      */
-    public abstract static class GPUTextRendererListenerBase01 implements GLEventListener {
-        public TextRegionUtil textRegionUtil;
+    abstract static class GPUTextRendererListenerBase01 implements GLEventListener {
+        TextRegionUtil textRegionUtil;
     
-    protected RegionRenderer renderer;
+    RegionRenderer renderer;
         private final int renderModes;
         private final GLRegion regionBottom;
         int fontSet = FontFactory.JAVA;
@@ -281,7 +281,7 @@ public class GPUTextNewtDemo {
         StringBuilder userString = new StringBuilder();
         boolean userInput = false;
 
-        public GPUTextRendererListenerBase01(final RenderState rs, final int renderModes, final int sampleCount, final boolean blending, final boolean debug, final boolean trace) {
+        GPUTextRendererListenerBase01(final RenderState rs, final int renderModes, final int sampleCount, final boolean blending, final boolean debug, final boolean trace) {
             
             this.renderModes = renderModes;
             this.renderer = RegionRenderer.create(rs,
@@ -405,7 +405,7 @@ public class GPUTextNewtDemo {
         public void display(final GLAutoDrawable drawable) {
         }
 
-        public void render(GL2 gl, float x, float y, float sx, float sy) {
+        void render(GL2 gl, float x, float y, float sx, float sy) {
             
             
 
@@ -530,19 +530,19 @@ public class GPUTextNewtDemo {
 
         final boolean bottomTextUseFrustum = true;
 
-        public void fontBottomIncr(final int v) {
+        void fontBottomIncr(final int v) {
             fontSizeBottom = Math.abs((fontSizeBottom + v) % fontSizeModulo) ;
             
         }
 
-        public void fontHeadIncr(final int v) {
+        void fontHeadIncr(final int v) {
             fontSizeHead = Math.abs((fontSizeHead + v) % fontSizeModulo) ;
             if(null != headtext) {
                 headbox = font.getMetricBounds(headtext, font.getPixelSize(fontSizeHead, dpiH));
             }
         }
 
-        public boolean nextFontSet() {
+        boolean nextFontSet() {
             try {
                 final int set = ( fontSet == FontFactory.UBUNTU ) ? FontFactory.JAVA : FontFactory.UBUNTU ;
                 final Font _font = FontFactory.get(set).getDefault();
@@ -613,7 +613,7 @@ public class GPUTextNewtDemo {
 
         float fontHeadScale = 1f;
 
-        public class KeyAction implements KeyListener {
+        class KeyAction implements KeyListener {
             @Override
             public void keyPressed(final KeyEvent e) {
                 if(userInput) {

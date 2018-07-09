@@ -7,7 +7,7 @@ public class HexDump {
         return dumpHexString(array, 0, array.length);
     }
 
-    public static String dumpHexString(byte[] array, int offset, int length) {
+    private static String dumpHexString(byte[] array, int offset, int length) {
         StringBuilder result = new StringBuilder();
 
         byte[] line = new byte[16];
@@ -64,11 +64,11 @@ public class HexDump {
         return toHexString(toByteArray(b));
     }
 
-    public static String toHexString(byte[] array) {
+    private static String toHexString(byte[] array) {
         return toHexString(array, 0, array.length);
     }
 
-    public static String toHexString(byte[] array, int offset, int length) {
+    private static String toHexString(byte[] array, int offset, int length) {
         char[] buf = new char[length * 2];
 
         int bufIndex = 0;
@@ -81,17 +81,17 @@ public class HexDump {
         return new String(buf);
     }
 
-    public static String toHexString(int i) {
+    private static String toHexString(int i) {
         return toHexString(toByteArray(i));
     }
 
-    public static byte[] toByteArray(byte b) {
+    private static byte[] toByteArray(byte b) {
         byte[] array = new byte[1];
         array[0] = b;
         return array;
     }
 
-    public static byte[] toByteArray(int i) {
+    private static byte[] toByteArray(int i) {
         byte[] array = new byte[4];
 
         array[3] = (byte) (i & 0xFF);

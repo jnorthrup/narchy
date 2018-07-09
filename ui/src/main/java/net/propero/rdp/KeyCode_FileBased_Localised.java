@@ -36,7 +36,7 @@ import java.awt.event.KeyEvent;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class KeyCode_FileBased_Localised extends KeyCode_FileBased {
+class KeyCode_FileBased_Localised extends KeyCode_FileBased {
 
     private final HashMap keysCurrentlyDown = new HashMap();
 

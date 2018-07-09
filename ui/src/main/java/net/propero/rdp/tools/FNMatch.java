@@ -2,7 +2,7 @@ package net.propero.rdp.tools;
 
 import java.io.File;
 
-public class FNMatch {
+class FNMatch {
 
     
 
@@ -10,44 +10,44 @@ public class FNMatch {
      * No wildcard can ever match `/'. A constant for bits set in the FLAGS
      * argument to fnmatch().
      */
-    public static final int FNM_PATHNAME = 1 << 0;
+    private static final int FNM_PATHNAME = 1 << 0;
 
     
     /**
      * Backslashes don't quote special chars. A constant for bits set in the
      * FLAGS argument to fnmatch().
      */
-    public static final int FNM_NOESCAPE = 1 << 1;
+    private static final int FNM_NOESCAPE = 1 << 1;
 
     
     /**
      * Leading `.' is matched only explicitly. A constant for bits set in the
      * FLAGS argument to fnmatch().
      */
-    public static final int FNM_PERIOD = 1 << 2;
+    private static final int FNM_PERIOD = 1 << 2;
     /**
      * Preferred GNU name. A constant for bits set in the FLAGS argument to
      * fnmatch().
      */
-    public static final int FNM_FILE_NAME = FNM_PATHNAME;
+    private static final int FNM_FILE_NAME = FNM_PATHNAME;
     /**
      * Ignore `/...' after a match. A constant for bits set in the FLAGS
      * argument to fnmatch().
      */
-    public static final int FNM_LEADING_DIR = 1 << 3;
+    private static final int FNM_LEADING_DIR = 1 << 3;
     /**
      * Compare without regard to case. A constant for bits set in the FLAGS
      * argument to fnmatch().
      */
-    public static final int FNM_CASEFOLD = 1 << 4;
+    private static final int FNM_CASEFOLD = 1 << 4;
     /**
      * Value returned by fnmatch() if STRING does not match PATTERN.
      */
-    public static final boolean FNM_NOMATCH = false;
+    private static final boolean FNM_NOMATCH = false;
     /**
      * Value returned by fnmatch() if STRING matches PATTERN.
      */
-    public static final boolean FNM_MATCH = true;
+    private static final boolean FNM_MATCH = true;
 
     /**
      * Match STRING against the filename pattern PATTERN, returning FNM_MATCH if
@@ -58,8 +58,8 @@ public class FNMatch {
      * @param flags   Behavior modifiers.
      * @return Constant int value FNM_MATCH or FNM_NOMATCH.
      */
-    public static boolean fnmatch(final String pattern, final String string,
-                                  int flags) {
+    private static boolean fnmatch(final String pattern, final String string,
+                                   int flags) {
         char c;
 
         int len = pattern.length();
@@ -233,7 +233,7 @@ public class FNMatch {
      * @param flags Bits, set or not, to modify behavior.
      * @return A `folded' character.
      */
-    protected static char fold(char c, int flags) {
+    private static char fold(char c, int flags) {
         return (flags & FNM_CASEFOLD) != 0 ? Character.toLowerCase(c) : c;
     }
 

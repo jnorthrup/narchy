@@ -30,7 +30,7 @@ import spacegraph.util.math.v3;
  * 
  * @author jezek2
  */
-public class VehicleRaycasterResult {
+class VehicleRaycasterResult {
 	
 	public final v3 hitPointInWorld  = new v3();
 	public final v3 hitNormalInWorld  = new v3();

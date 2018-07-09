@@ -44,17 +44,17 @@ public abstract class Tuple3i implements java.io.Serializable, Cloneable {
     /**
      * The x coordinate.
      */
-    public int x;
+    private int x;
 
     /**
      * The y coordinate.
      */
-    public int y;
+    private int y;
 
     /**
      * The z coordinate.
      */
-    public int z;
+    private int z;
 
 
     /**
@@ -64,7 +64,7 @@ public abstract class Tuple3i implements java.io.Serializable, Cloneable {
      * @param y the y coordinate
      * @param z the z coordinate
      */
-    protected Tuple3i(int x, int y, int z) {
+    Tuple3i(int x, int y, int z) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
@@ -75,7 +75,7 @@ public abstract class Tuple3i implements java.io.Serializable, Cloneable {
      * Constructs and initializes a Tuple3i from the array of length 3.
      * @param t the array of length 3 containing x, y, and z in order.
      */
-    protected Tuple3i(int[] t) {
+    Tuple3i(int[] t) {
 	this.x = t[0];
 	this.y = t[1];
 	this.z = t[2];
@@ -87,7 +87,7 @@ public abstract class Tuple3i implements java.io.Serializable, Cloneable {
      * @param t1 the Tuple3i containing the initialization x, y, and z
      * data.
      */
-    protected Tuple3i(Tuple3i t1) {
+    Tuple3i(Tuple3i t1) {
 	this.x = t1.x;
 	this.y = t1.y;
 	this.z = t1.z;
@@ -97,7 +97,7 @@ public abstract class Tuple3i implements java.io.Serializable, Cloneable {
     /**
      * Constructs and initializes a Tuple3i to (0,0,0).
      */
-    protected Tuple3i() {
+    Tuple3i() {
 	this.x = 0;
 	this.y = 0;
 	this.z = 0;

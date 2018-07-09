@@ -28,7 +28,7 @@ import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.Tuple2f;
 
-public class ContactPositionConstraint {
+class ContactPositionConstraint {
     final Tuple2f[] localPoints = new Tuple2f[Settings.maxManifoldPoints];
     final Tuple2f localNormal = new Vec2();
     final Tuple2f localPoint = new Vec2();

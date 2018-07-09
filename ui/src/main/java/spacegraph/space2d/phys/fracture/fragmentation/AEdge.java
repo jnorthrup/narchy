@@ -23,7 +23,7 @@ abstract class AEdge {
      * @param p1
      * @param p2
      */
-    protected AEdge(Tuple2f p1, Tuple2f p2) {
+    AEdge(Tuple2f p1, Tuple2f p2) {
         this.p1 = p1;
         this.p2 = p2;
     }
@@ -33,7 +33,7 @@ abstract class AEdge {
      * @param b
      * @return Vektorovy sucin
      */
-    public static double dCross(Tuple2f a, Tuple2f b) {
+    private static double dCross(Tuple2f a, Tuple2f b) {
         double ax = a.x;
         double ay = a.y;
         double bx = b.x;

@@ -30,7 +30,7 @@ import spacegraph.space2d.phys.common.Vec2;
  *
  * @author Daniel
  */
-public class DistanceOutput {
+class DistanceOutput {
     /**
      * Closest point on shapeA
      */

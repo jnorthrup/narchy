@@ -127,7 +127,7 @@ abstract public class Surface implements SurfaceBase {
     /**
      * finds the most immediate parent matching the predicate
      */
-    public SurfaceBase parent(Predicate<SurfaceBase> test) {
+    private SurfaceBase parent(Predicate<SurfaceBase> test) {
 
         SurfaceBase p = this.parent;
 
@@ -143,14 +143,11 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
-        if (_parent.getAndSet(this, parent)==null) { 
-            return true;
-        }
-        return false;
+        return _parent.getAndSet(this, parent) == null;
     }
 
 
-    final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> _parent =
+    private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> _parent =
             AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
 
     public boolean stop() {

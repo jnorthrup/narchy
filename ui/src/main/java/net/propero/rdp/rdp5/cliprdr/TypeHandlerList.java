@@ -37,7 +37,7 @@ import java.util.Iterator;
 
 public class TypeHandlerList {
 
-    final ArrayList handlers = new ArrayList();
+    private final ArrayList handlers = new ArrayList();
 
     private int count;
 
@@ -54,8 +54,8 @@ public class TypeHandlerList {
 
     public TypeHandler getHandlerForFormat(int format) {
         TypeHandler handler = null;
-        for (Iterator i = handlers.iterator(); i.hasNext(); ) {
-            handler = (TypeHandler) i.next();
+        for (Object handler1 : handlers) {
+            handler = (TypeHandler) handler1;
             if ((handler != null) && handler.formatValid(format))
                 return handler;
         }
@@ -66,8 +66,8 @@ public class TypeHandlerList {
         TypeHandlerList outList = new TypeHandlerList();
 
         TypeHandler handler = null;
-        for (Iterator i = handlers.iterator(); i.hasNext(); ) {
-            handler = (TypeHandler) i.next();
+        for (Object handler1 : handlers) {
+            handler = (TypeHandler) handler1;
             if (handler.mimeTypeValid(mimeType))
                 outList.add(handler);
         }
@@ -78,8 +78,8 @@ public class TypeHandlerList {
         TypeHandlerList outList = new TypeHandlerList();
 
         TypeHandler handler = null;
-        for (Iterator i = handlers.iterator(); i.hasNext(); ) {
-            handler = (TypeHandler) i.next();
+        for (Object handler1 : handlers) {
+            handler = (TypeHandler) handler1;
             if (handler.clipboardValid(dataTypes))
                 outList.add(handler);
         }
@@ -88,8 +88,8 @@ public class TypeHandlerList {
 
     public void writeTypeDefinitions(RdpPacket data) {
         TypeHandler handler = null;
-        for (Iterator i = handlers.iterator(); i.hasNext(); ) {
-            handler = (TypeHandler) i.next();
+        for (Object handler1 : handlers) {
+            handler = (TypeHandler) handler1;
             data.setLittleEndian32(handler.preferredFormat());
             data.incrementPosition(32);
         }

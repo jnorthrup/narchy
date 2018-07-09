@@ -34,13 +34,13 @@ import net.propero.rdp.RdpPacket;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 
-public class BMPToImageThread extends Thread {
+class BMPToImageThread extends Thread {
 
-    final RdpPacket data;
+    private final RdpPacket data;
 
-    final int length;
+    private final int length;
 
-    final ClipInterface c;
+    private final ClipInterface c;
 
     public BMPToImageThread(RdpPacket data, int length, ClipInterface c) {
         this.data = data;

@@ -93,7 +93,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         return cellMap.compute(key, builder);
     }
 
-    public CellMap.CacheCell put(K key, V nextValue, BiFunction<K,V, Surface> renderer) {
+    CellMap.CacheCell put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
 
         CellMap.CacheCell entry = cellMap.cache.computeIfAbsent(key, k-> cellMap.cellPool.get());
         return cellMap.update(key, entry, ((SurfaceCacheCell)entry).update(key, nextValue, renderer));
@@ -114,7 +114,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         return cellMap.remove(key, invalidate);
     }
 
-    public void invalidate() {
+    void invalidate() {
         cellMap.cache.invalidate();
     }
 
@@ -141,9 +141,9 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
     public static class SurfaceCacheCell<K,V> extends CellMap.CacheCell<K,V> {
 
-        public transient Surface surface = null;
+        transient Surface surface = null;
 
-        protected SurfaceCacheCell() {
+        SurfaceCacheCell() {
             super();
         }
 
@@ -171,7 +171,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         /**
          * return true to keep or false to remove from the map
          */
-        public boolean update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer) {
+        boolean update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer) {
 
             this.key = nextKey;
 

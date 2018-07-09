@@ -378,7 +378,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 		setLimit(_swingSpan1, _swingSpan2, _twistSpan, 0.8f, 0.3f, 1.0f);
 	}
 
-	public void setLimit(float _swingSpan1, float _swingSpan2, float _twistSpan, float _softness, float _biasFactor, float _relaxationFactor) {
+	private void setLimit(float _swingSpan1, float _swingSpan2, float _twistSpan, float _softness, float _biasFactor, float _relaxationFactor) {
 		swingSpan1 = _swingSpan1;
 		swingSpan2 = _swingSpan2;
 		twistSpan = _twistSpan;

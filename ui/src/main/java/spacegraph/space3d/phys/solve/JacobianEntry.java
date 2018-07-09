@@ -45,10 +45,10 @@ public class JacobianEntry {
 	
 	
 	public final v3 linearJointAxis = new v3();
-	public final v3 aJ = new v3();
-	public final v3 bJ = new v3();
-	public final v3 m_0MinvJt = new v3();
-	public final v3 m_1MinvJt = new v3();
+	private final v3 aJ = new v3();
+	private final v3 bJ = new v3();
+	private final v3 m_0MinvJt = new v3();
+	private final v3 m_1MinvJt = new v3();
 	
 	public float Adiag;
 

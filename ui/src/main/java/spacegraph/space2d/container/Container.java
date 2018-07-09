@@ -18,7 +18,7 @@ import java.util.function.Predicate;
  */
 abstract public class Container extends Surface {
 
-    volatile boolean mustLayout = true;
+    private volatile boolean mustLayout = true;
 
 
 
@@ -85,9 +85,7 @@ abstract public class Container extends Surface {
 
         paintIt(gl);
 
-        forEach(c -> {
-            c.render(gl, r);
-        }); 
+        forEach(c -> c.render(gl, r));
 
         paintAbove(gl, r);
     }
@@ -167,9 +165,9 @@ abstract public class Container extends Surface {
         return tangible() ? this : null;
     }
 
-    abstract public int childrenCount();
+    protected abstract int childrenCount();
 
-    public boolean tangible() {
+    protected boolean tangible() {
         return false;
     }
 
@@ -200,9 +198,9 @@ abstract public class Container extends Surface {
 
     abstract public void forEach(Consumer<Surface> o);
 
-    abstract public boolean whileEach(Predicate<Surface> o);
+    protected abstract boolean whileEach(Predicate<Surface> o);
 
-    abstract public boolean whileEachReverse(Predicate<Surface> o);
+    protected abstract boolean whileEachReverse(Predicate<Surface> o);
 
 
 }

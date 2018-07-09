@@ -6,11 +6,11 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 
 public class AnimFloat extends MutableFloat implements Animated {
 
-    float target;
-    final MutableFloat speed;
+    private float target;
+    private final MutableFloat speed;
     private boolean running = true;
 
-    public AnimFloat(float current, float speed) {
+    AnimFloat(float current, float speed) {
         super(Float.NaN);
         set(current);
         target = current;
@@ -40,7 +40,7 @@ public class AnimFloat extends MutableFloat implements Animated {
         return running;
     }
 
-    public void interpLERP(float dt) {
+    private void interpLERP(float dt) {
         float rate = speed.floatValue() * dt;
         
         super.set(

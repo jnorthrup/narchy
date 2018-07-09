@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CheckBox extends ToggleButton {
 
-    public String text;
-    protected final Label label;
+    private String text;
+    private final Label label;
 
     public CheckBox(String text) {
         this.text = text;
@@ -23,7 +23,7 @@ public class CheckBox extends ToggleButton {
     }
 
     public CheckBox(String text, Runnable r) {
-        this(text, (b) -> { if (b) r.run(); } );
+        this(text, (boolean b) -> { if (b) r.run(); } );
     }
 
     public CheckBox(String text, BooleanProcedure b) {

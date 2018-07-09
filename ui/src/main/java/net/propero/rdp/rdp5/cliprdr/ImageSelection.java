@@ -36,7 +36,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
-public class ImageSelection implements Transferable {
+class ImageSelection implements Transferable {
     
     private final Image image;
 

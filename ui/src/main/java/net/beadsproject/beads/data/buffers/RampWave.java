@@ -23,7 +23,7 @@ public class RampWave extends WaveFactory {
         return b;
     }
 
-    protected static float ramp(float x) {
+    private static float ramp(float x) {
         return 2 * x;
     }
 

@@ -111,7 +111,7 @@ public class FixtureDef {
      * The shape, this must be set. The shape will be cloned, so you can create the shape on the
      * stack.
      */
-    public void setShape(Shape shape) {
+    private void setShape(Shape shape) {
         this.shape = shape;
     }
 
@@ -139,7 +139,7 @@ public class FixtureDef {
     /**
      * The friction coefficient, usually in the range [0,1].
      */
-    public void setFriction(float friction) {
+    private void setFriction(float friction) {
         this.friction = friction;
     }
 
@@ -167,7 +167,7 @@ public class FixtureDef {
     /**
      * The density, usually in kg/m^2
      */
-    public void setDensity(float density) {
+    private void setDensity(float density) {
         this.density = density;
     }
 

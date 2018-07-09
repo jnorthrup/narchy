@@ -34,7 +34,7 @@ public class Drain extends UGen {
     /**
      * The grains.
      */
-    final LinkedList<Grain> grains;
+    private final LinkedList<Grain> grains;
 
     /**
      * Instantiates a new Drain.

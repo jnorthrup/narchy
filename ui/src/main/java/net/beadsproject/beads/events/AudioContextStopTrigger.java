@@ -23,7 +23,7 @@ public class AudioContextStopTrigger extends Auvent {
     /**
      * The AudioContext.
      */
-	final AudioContext ac;
+	private final AudioContext ac;
 
     /**
      * Creates a new audio context stop trigger.

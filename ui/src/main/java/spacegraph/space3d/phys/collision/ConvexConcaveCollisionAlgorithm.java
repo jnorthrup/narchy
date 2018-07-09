@@ -51,7 +51,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 	private boolean isSwapped;
 	private ConvexTriangleCallback btConvexTriangleCallback;
 
-	public void init(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1, boolean isSwapped) {
+	private void init(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1, boolean isSwapped) {
 		super.init(ci);
 		this.isSwapped = isSwapped;
 		this.btConvexTriangleCallback = new ConvexTriangleCallback(intersecter, body0, body1, isSwapped);
@@ -173,16 +173,16 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 	
 
 	private static class LocalTriangleSphereCastCallback extends TriangleCallback {
-		public final Transform ccdSphereFromTrans = new Transform();
-		public final Transform ccdSphereToTrans = new Transform();
+		final Transform ccdSphereFromTrans = new Transform();
+		final Transform ccdSphereToTrans = new Transform();
 		public final Transform meshTransform = new Transform();
 
-		public final float ccdSphereRadius;
-		public float hitFraction;
+		final float ccdSphereRadius;
+		float hitFraction;
 
 		private final Transform ident = new Transform();
 
-		public LocalTriangleSphereCastCallback(Transform from, Transform to, float ccdSphereRadius, float hitFraction) {
+		LocalTriangleSphereCastCallback(Transform from, Transform to, float ccdSphereRadius, float hitFraction) {
 			this.ccdSphereFromTrans.set(from);
 			this.ccdSphereToTrans.set(to);
 			this.ccdSphereRadius = ccdSphereRadius;

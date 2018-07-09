@@ -34,7 +34,7 @@ public class TextEdit extends DefaultVirtualTerminal {
     }
 
 
-    public TextEdit(String initialContent, boolean multiline) {
+    private TextEdit(String initialContent, boolean multiline) {
         this(-1, -1, initialContent, multiline);
     }
 
@@ -43,7 +43,7 @@ public class TextEdit extends DefaultVirtualTerminal {
         this(c, r, initialContent, r > 1);
     }
 
-    public TextEdit(int c, int r, String initialContent, boolean multiline) {
+    private TextEdit(int c, int r, String initialContent, boolean multiline) {
         super();
 
 
@@ -166,9 +166,7 @@ public class TextEdit extends DefaultVirtualTerminal {
             @Override
             public Surface tryTouch(Finger finger) {
                 /** middle mouse button paste */
-                Finger.clicked(2, () -> {
-                    paste();
-                });
+                Finger.clicked(2, () -> paste());
                 return super.tryTouch(finger);
             }
 
@@ -179,8 +177,8 @@ public class TextEdit extends DefaultVirtualTerminal {
     }
 
 
-    static Clipboard _clipboard = null;
-    static DataFlavor _clipboardEnc;
+    private static Clipboard _clipboard = null;
+    private static DataFlavor _clipboardEnc;
 
     private synchronized Clipboard clipboard() {
         if (_clipboard == null) {
@@ -217,7 +215,7 @@ public class TextEdit extends DefaultVirtualTerminal {
     /**
      * paste clipboard contents in at cursor location
      */
-    public synchronized void paste() {
+    private synchronized void paste() {
         
         try {
 

@@ -56,7 +56,7 @@ public abstract class ConvexCast {
 		
 		public IDebugDraw debugDrawer;
 		
-		public void debugDraw(float fraction) {}
+		void debugDraw(float fraction) {}
 		public void	drawCoordSystem(Transform trans) {}
 	}
 	

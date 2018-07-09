@@ -50,7 +50,7 @@ public class SimpleBroadphase extends Broadphase {
         this(maxProxies, null);
     }
 
-    public SimpleBroadphase(int maxProxies, OverlappingPairCache overlappingPairCache) {
+    private SimpleBroadphase(int maxProxies, OverlappingPairCache overlappingPairCache) {
 
 
         if (overlappingPairCache == null) {
@@ -130,9 +130,8 @@ public class SimpleBroadphase extends Broadphase {
         for (int i = 0; i < handles.size(); i++) {
             
             SimpleBroadphasing proxy0 = handles.get(i);
-            for (int j = 0; j < handles.size(); j++) {
-                
-                SimpleBroadphasing proxy1 = handles.get(j);
+            for (SimpleBroadphasing proxy1 : handles) {
+
                 if (proxy0 == proxy1) continue;
 
                 if (aabbOverlap(proxy0, proxy1)) {
@@ -140,7 +139,7 @@ public class SimpleBroadphase extends Broadphase {
                         pairCache.addOverlappingPair(proxy0, proxy1);
                     }
                 } else {
-                    
+
 
                     if (!pairCache.hasDeferredRemoval()) {
                         if (pairCache.findPair(proxy0, proxy1) != null) {

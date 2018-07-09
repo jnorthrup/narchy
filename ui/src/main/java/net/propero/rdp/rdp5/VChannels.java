@@ -57,12 +57,12 @@ public class VChannels {
     public static final int STATUS_INVALID_PARAMETER = 0xc000000d;
     public static final int STATUS_INVALID_DEVICE_REQUEST = 0xc0000010;
     public static final int STATUS_ACCESS_DENIED = 0xc0000022;
-    public static final int MAX_CHANNELS = 4;
+    private static final int MAX_CHANNELS = 4;
     public static final int CHANNEL_CHUNK_LENGTH = 1600;
     public static final int CHANNEL_FLAG_FIRST = 0x01;
     public static final int CHANNEL_FLAG_LAST = 0x02;
     public static final int CHANNEL_FLAG_SHOW_PROTOCOL = 0x10;
-    protected static final Logger logger = LoggerFactory.getLogger(VChannels.class);
+    private static final Logger logger = LoggerFactory.getLogger(VChannels.class);
     private VChannel channels[] = new VChannel[MAX_CHANNELS];
 
     private int num_channels;
@@ -92,7 +92,7 @@ public class VChannels {
      * @param amount Number of elements to add to the array
      * @return Expanded array
      */
-    static Object arrayExpand(Object a, int amount) {
+    private static Object arrayExpand(Object a, int amount) {
         Class cl = a.getClass();
         if (!cl.isArray())
             return null;
@@ -112,7 +112,7 @@ public class VChannels {
      * @param source Appended to target array
      * @return Concatenation of arrays, target+source
      */
-    static byte[] append(byte[] target, byte[] source) {
+    private static byte[] append(byte[] target, byte[] source) {
         if (target == null || target.length <= 0)
             return source;
         else if (source == null || source.length <= 0)

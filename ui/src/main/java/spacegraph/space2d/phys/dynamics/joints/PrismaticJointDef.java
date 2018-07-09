@@ -38,7 +38,7 @@ import spacegraph.util.math.v2;
  * @author Daniel
  * @warning at least one body should by dynamic with a non-fixed rotation.
  */
-public class PrismaticJointDef extends JointDef {
+class PrismaticJointDef extends JointDef {
 
 
     /**

@@ -147,7 +147,7 @@ public class Vector4f extends Tuple4f {
    * Returns the length of this vector.
    * @return the length of this vector as a float
    */
-  public final float length()
+ private float length()
   {
     return
       (float) Math.sqrt(this.x*this.x + this.y*this.y +
@@ -169,7 +169,7 @@ public class Vector4f extends Tuple4f {
    * @param v1 the other vector
    * @return the dot product of this vector and v1
    */
-  public final float dot(Vector4f v1)
+  private float dot(Vector4f v1)
     {
       return (this.x*v1.x + this.y*v1.y + this.z*v1.z + this.w*v1.w);
     }

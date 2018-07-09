@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.slider;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 
-public class AllOrNothingSlider {
+class AllOrNothingSlider {
     public static Gridding AllOrNothingSlider(FloatSlider f) {
         PushButton zeroButton = new PushButton("-").click((cb)->f.valueRelative(0f));
         PushButton oneButton = new PushButton("+").click((cb)->f.valueRelative(1f));

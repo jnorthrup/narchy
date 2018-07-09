@@ -22,7 +22,7 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
     private ScrollGrid grid;
 
     
-    final List<Service> services = new CopyOnWriteArrayList();
+    private final List<Service> services = new CopyOnWriteArrayList();
 
     public ServicesTable(Services<?,?> s) {
         super();
@@ -61,7 +61,7 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
         this.grid = null;
     }
 
-    protected void update() {
+    private void update() {
         synchronized (this) {
             services.clear();
             context.stream().collect(Collectors.toCollection(()-> services));

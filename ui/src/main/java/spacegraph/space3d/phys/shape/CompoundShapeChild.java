@@ -30,7 +30,7 @@ import spacegraph.space3d.phys.math.Transform;
  * 
  * @author jezek2
  */
-public final class CompoundShapeChild {
+final class CompoundShapeChild {
 	
 	public final Transform transform = new Transform();
 	public final CollisionShape childShape;

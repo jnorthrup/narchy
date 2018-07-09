@@ -20,7 +20,8 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
     private final Supplier spacer;
 
-    int width = 600, height = 300;
+    private int width = 600;
+    private int height = 300;
 
     private volatile JoglSpace space;
 
@@ -40,7 +41,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
     }
 
 
-    final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     @Override
     protected void onClick(Finger f) {
@@ -58,8 +59,8 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
                     GLWindow w = s.window;
                     
                         w.addWindowListener(this);
-                        int nx = Math.round(f.posPixel.x - width / 2);
-                        int ny = Math.round(f.posPixel.y - height / 2);
+                        int nx = Math.round(f.posPixel.x - width / 2f);
+                        int ny = Math.round(f.posPixel.y - height / 2f);
                         s.setPosition(nx, ny);
                     
                     

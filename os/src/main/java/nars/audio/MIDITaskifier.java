@@ -1,7 +1,6 @@
 package nars.audio;
 
 import jcog.exe.Loop;
-import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NARS;

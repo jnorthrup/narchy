@@ -40,8 +40,8 @@ import java.net.InetAddress;
 
 public class MCS {
     public static final int MCS_GLOBAL_CHANNEL = 1003;
-    public static final int MCS_USERCHANNEL_BASE = 1001;
-    static final Logger logger = LoggerFactory.getLogger(MCS.class);
+    private static final int MCS_USERCHANNEL_BASE = 1001;
+    private static final Logger logger = LoggerFactory.getLogger(MCS.class);
     /* this for the MCS Layer */
     private static final int CONNECT_INITIAL = 0x7f65;
 
@@ -84,7 +84,7 @@ public class MCS {
      * @param buffer Packet in which to store encoded value
      * @param value  Integer value to store
      */
-    public static void sendBerInteger(RdpPacket_Localised buffer, int value) {
+    private static void sendBerInteger(RdpPacket_Localised buffer, int value) {
 
 
 
@@ -133,7 +133,7 @@ public class MCS {
      * @param tagval Data type for header
      * @param length Length of data header precedes
      */
-    public static void sendBerHeader(RdpPacket_Localised buffer, int tagval, int length) {
+    private static void sendBerHeader(RdpPacket_Localised buffer, int tagval, int length) {
         if (tagval > 0xff) {
             buffer.setBigEndian16(tagval);
         } else {
@@ -187,7 +187,7 @@ public class MCS {
      * @return Length of following data
      * @throws RdesktopException
      */
-    public static int berParseHeader(RdpPacket_Localised data, int tagval)
+    private static int berParseHeader(RdpPacket_Localised data, int tagval)
             throws RdesktopException {
         int tag = 0;
         int length = 0;
@@ -371,8 +371,8 @@ public class MCS {
      * @param max_tokens   Maximum number of tokens
      * @param max_pdusize  Maximum size for an MCS PDU
      */
-    public static void sendDomainParams(RdpPacket_Localised buffer, int max_channels,
-                                        int max_users, int max_tokens, int max_pdusize) {
+    private static void sendDomainParams(RdpPacket_Localised buffer, int max_channels,
+                                         int max_users, int max_tokens, int max_pdusize) {
 
 
 
@@ -398,7 +398,7 @@ public class MCS {
      * @throws IOException
      * @throws RdesktopException
      */
-    public void sendConnectInitial(RdpPacket_Localised data)
+    private void sendConnectInitial(RdpPacket_Localised data)
             throws IOException, RdesktopException {
         logger.debug("MCS.sendConnectInitial");
 
@@ -443,7 +443,7 @@ public class MCS {
      * @throws OrderException
      * @throws CryptoException
      */
-    public void receiveConnectResponse(RdpPacket_Localised data)
+    private void receiveConnectResponse(RdpPacket_Localised data)
             throws IOException, RdesktopException, OrderException,
             CryptoException {
 
@@ -493,7 +493,7 @@ public class MCS {
      * @throws IOException
      * @throws RdesktopException
      */
-    public void send_edrq() throws IOException, RdesktopException {
+    private void send_edrq() throws IOException, RdesktopException {
         logger.debug("send_edrq");
         RdpPacket_Localised buffer = ISO.init(5);
         buffer.set8(EDRQ << 2);
@@ -510,7 +510,7 @@ public class MCS {
      * @throws IOException
      * @throws RdesktopException
      */
-    public void send_cjrq(int channelid) throws IOException, RdesktopException {
+    private void send_cjrq(int channelid) throws IOException, RdesktopException {
         RdpPacket_Localised buffer = ISO.init(5);
         buffer.set8(CJRQ << 2);
         buffer.setBigEndian16(this.McsUserID); 
@@ -540,7 +540,7 @@ public class MCS {
      * @throws IOException
      * @throws RdesktopException
      */
-    public void send_aurq() throws IOException, RdesktopException {
+    private void send_aurq() throws IOException, RdesktopException {
         RdpPacket_Localised buffer = ISO.init(1);
 
         buffer.set8(AURQ << 2);
@@ -554,7 +554,7 @@ public class MCS {
      * @throws IOException
      * @throws RdesktopException
      */
-    public void receive_cjcf() throws IOException, RdesktopException,
+    private void receive_cjcf() throws IOException, RdesktopException,
             OrderException, CryptoException {
         logger.debug("receive_cjcf");
         int opcode = 0, result = 0;
@@ -590,7 +590,7 @@ public class MCS {
      * @throws OrderException
      * @throws CryptoException
      */
-    public int receive_aucf() throws IOException, RdesktopException,
+    private int receive_aucf() throws IOException, RdesktopException,
             OrderException, CryptoException {
         logger.debug("receive_aucf");
         int opcode = 0, result = 0, UserID = 0;
@@ -622,7 +622,7 @@ public class MCS {
      * @param data Packet containing domain parameters at current read position
      * @throws RdesktopException
      */
-    public static void parseDomainParams(RdpPacket_Localised data)
+    private static void parseDomainParams(RdpPacket_Localised data)
             throws RdesktopException {
         int length;
 

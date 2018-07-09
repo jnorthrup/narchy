@@ -28,7 +28,7 @@ package spacegraph.space3d.phys.shape;
  * 
  * @author jezek2
  */
-public class ConeShapeX extends ConeShape {
+class ConeShapeX extends ConeShape {
 
 	public ConeShapeX(float radius, float height) {
 		super(radius, height);

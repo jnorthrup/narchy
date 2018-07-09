@@ -97,7 +97,7 @@ public class WheelJoint extends Joint {
     private float m_bias;
     private float m_gamma;
 
-    protected WheelJoint(IWorldPool argPool, WheelJointDef def) {
+    WheelJoint(IWorldPool argPool, WheelJointDef def) {
         super(argPool, def);
         m_localAnchorA.set(def.localAnchorA);
         m_localAnchorB.set(def.localAnchorB);

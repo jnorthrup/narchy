@@ -31,22 +31,27 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  * @beads.category synth
  */
 public class RandomPWM extends UGen implements DataBeadReceiver {
-    public final static Mode ALTERNATING = Mode.ALTERNATING;
+    private final static Mode ALTERNATING = Mode.ALTERNATING;
     public final static Mode NOISE = Mode.NOISE;
-    public final static Mode PULSING = Mode.PULSING;
-    public final static Mode SAW = Mode.SAW;
+    private final static Mode PULSING = Mode.PULSING;
+    private final static Mode SAW = Mode.SAW;
     public final static Mode RAMPED_NOISE = Mode.RAMPED_NOISE;
-    public final static Mode NOISE_ENVELOPE = Mode.NOISE_ENVELOPE;
+    private final static Mode NOISE_ENVELOPE = Mode.NOISE_ENVELOPE;
 
     public enum Mode {
         ALTERNATING, NOISE, PULSING, SAW, RAMPED_NOISE, NOISE_ENVELOPE
     }
 
-    protected Mode mode = ALTERNATING;
-    protected float targetVal, baseVal, valDiff;
-    protected float count, pulseLen;
-    protected float minLength = 10, maxLength = 100, lengthExponent = 1;
-    protected float lengthDiff;
+    private Mode mode = ALTERNATING;
+    private float targetVal;
+    private float baseVal;
+    private float valDiff;
+    private float count;
+    private float pulseLen;
+    private float minLength = 10;
+    private float maxLength = 100;
+    private float lengthExponent = 1;
+    private float lengthDiff;
 
     /**
      * Constructor specifying mode, and minumum and maximum pulse lengths.
@@ -144,7 +149,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
 
     }
 
-    protected void calcVals() {
+    private void calcVals() {
         float d = (float) Math.pow(Math.random(), lengthExponent) * lengthDiff
                 + minLength;
         count += d;
@@ -161,7 +166,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
      * @param maxl The maximum pulse length.
      * @param lexp The pulse length exponent.
      */
-    public RandomPWM setParams(Mode mode, float minl, float maxl, float lexp) {
+    private RandomPWM setParams(Mode mode, float minl, float maxl, float lexp) {
         setParams(minl, maxl, lexp);
         setMode(mode);
         return this;
@@ -175,7 +180,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
      * @param maxl The maximum pulse length.
      * @param lexp The pulse length exponent.
      */
-    public RandomPWM setParams(float minl, float maxl, float lexp) {
+    private RandomPWM setParams(float minl, float maxl, float lexp) {
         setLengthExponent(lexp);
         minLength = Math.max(minl, 1);
         maxLength = Math.max(minLength, maxl);
@@ -229,7 +234,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
      *
      * @param lexp The pulse length exponent.
      */
-    public RandomPWM setLengthExponent(float lexp) {
+    private RandomPWM setLengthExponent(float lexp) {
         if ((lengthExponent = lexp) < .001f) {
             lengthExponent = .001f;
         }
@@ -260,7 +265,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
      *
      * @param mode The pulse mode.
      */
-    public RandomPWM setMode(Mode mode) {
+    private RandomPWM setMode(Mode mode) {
         this.mode = mode;
         return this;
     }

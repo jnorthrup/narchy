@@ -43,7 +43,7 @@ public class ConeShape extends ConvexInternalShape {
 	private final float height;
 	private final int[] coneIndices = new int[3];
 
-	public ConeShape(float radius, float height) {
+	ConeShape(float radius, float height) {
 		this.radius = radius;
 		this.height = height;
 		setConeUpIndex(1);
@@ -153,7 +153,7 @@ public class ConeShape extends ConvexInternalShape {
 	}
 
 	
-	protected void setConeUpIndex(int upIndex) {
+	void setConeUpIndex(int upIndex) {
 		switch (upIndex) {
 			case 0:
 				coneIndices[0] = 1;

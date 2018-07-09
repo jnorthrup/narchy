@@ -29,7 +29,7 @@ public class ScalingMixer extends UGen {
      * @param context the AudioContext.
      * @param inouts  the number of inputs (= the number of outputs).
      */
-    public ScalingMixer(AudioContext context, int inouts) {
+    private ScalingMixer(AudioContext context, int inouts) {
         super(context, inouts, inouts);
     }
 

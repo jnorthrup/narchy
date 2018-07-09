@@ -103,17 +103,17 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * The first element of the fourth row.
      */
-    public float m30;
+    private float m30;
 
     /**
      * The second element of the fourth row.
      */
-    public float m31;
+    private float m31;
 
     /**
      * The third element of the fourth row.
      */
-    public float m32;
+    private float m32;
 
     /**
      * The fourth element of the fourth row.
@@ -1364,7 +1364,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Sets the value of this matrix to its transpose in place.
      */
-    public final void transpose() {
+    private void transpose() {
 
         float temp = this.m10;
         this.m10 = this.m01;
@@ -1735,7 +1735,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * Also note that since this routine is slow anyway, we won't worry
      * about allocating a little bit of garbage.
      */
-    final void invertGeneral(Matrix4f m1) {
+    private void invertGeneral(Matrix4f m1) {
         double temp[] = new double[16];
         int r, c;
 
@@ -1821,8 +1821,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     
     
     
-    static boolean luDecomposition(double[] matrix0,
-                                   int[] row_perm) {
+    private static boolean luDecomposition(double[] matrix0,
+                                           int[] row_perm) {
 
         double row_scale[] = new double[4];
 
@@ -1966,9 +1966,9 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     
     
     
-    static void luBacksubstitution(double[] matrix1,
-                                   int[] row_perm,
-                                   double[] matrix2) {
+    private static void luBacksubstitution(double[] matrix1,
+                                           int[] row_perm,
+                                           double[] matrix2) {
 
         int ii, ip, j, k;
         int rv;

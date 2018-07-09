@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by unkei on 2017/04/26.
  */
-public class OsmRelation extends OsmElement {
+class OsmRelation extends OsmElement {
 
     public boolean isMultipolygon;
 

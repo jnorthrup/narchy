@@ -16,25 +16,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 
-    protected final Tex tex = new Tex();
-    protected final AtomicBoolean needUpdate = new AtomicBoolean(true);
-    protected BufferedImage backbuffer;
-    protected Font font;
-    protected Graphics2D backbufferGraphics;
-    Color cursorColor = new Color(255, 200, 0, 127);
-    boolean antialias = true;
-    boolean quality = false;
-    protected int cursorCol;
-    protected int cursorRow;
-    protected int fontWidth;
-    protected int fontHeight;
-    protected float charAspect;
+    private final Tex tex = new Tex();
+    final AtomicBoolean needUpdate = new AtomicBoolean(true);
+    private BufferedImage backbuffer;
+    private Font font;
+    private Graphics2D backbufferGraphics;
+    private Color cursorColor = new Color(255, 200, 0, 127);
+    private boolean antialias = true;
+    private boolean quality = false;
+    int cursorCol;
+    int cursorRow;
+    private int fontWidth;
+    int fontHeight;
+    private float charAspect;
     int scale = 16;
     private float alpha = 1f;
     private boolean fillTextBackground = true;
 
 
-    protected BitmapConsoleSurface() {
+    BitmapConsoleSurface() {
 
 
 
@@ -90,7 +90,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         this.alpha = alpha;
         return this;
     }
-    protected void render() {
+    private void render() {
         if (needUpdate.compareAndSet(true, false)) {
             if (ensureBufferSize()) {
                 updateBackBuffer();
@@ -144,28 +144,28 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     }
 
 
-    protected int pixelWidth() {
+    private int pixelWidth() {
         return fontWidth * cols;
     }
 
-    protected int pixelHeight() {
+    int pixelHeight() {
         return fontHeight * rows;
     }
 
     protected abstract boolean updateBackBuffer();
 
 
-    protected void redraw(VirtualTerminal.BufferLine bufferLine, int column, int row) {
+    void redraw(VirtualTerminal.BufferLine bufferLine, int column, int row) {
         redraw(bufferLine.getCharacterAt(column), column, row);
     }
 
-    protected void redraw(TextCharacter textCharacter, int column, int row) {
+    void redraw(TextCharacter textCharacter, int column, int row) {
         redraw(backbufferGraphics, textCharacter, column, row,
                 fontWidth, fontHeight, fontWidth
         );
     }
 
-    protected void redraw(Graphics g, TextCharacter character, int columnIndex, int rowIndex, int fontWidth, int fontHeight, int characterWidth) {
+    private void redraw(Graphics g, TextCharacter character, int columnIndex, int rowIndex, int fontWidth, int fontHeight, int characterWidth) {
         int x = columnIndex * fontWidth;
         int y = rowIndex * fontHeight;
 

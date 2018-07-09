@@ -51,8 +51,8 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
      * @param insPerChannel  The number of inputs per channel UGen.
      * @param outsPerChannel The number of outputs per channel UGen.
      */
-    public MultiWrapper(AudioContext context, int channels, int insPerChannel,
-                        int outsPerChannel) {
+    private MultiWrapper(AudioContext context, int channels, int insPerChannel,
+                         int outsPerChannel) {
         this(context, channels * insPerChannel, channels * outsPerChannel);
 
         this.insPerChannel = insPerChannel;
@@ -125,7 +125,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
      * @param channelIndex The index of the channel for which the UGen is being created.
      * @return The new channel UGen.
      */
-    public UGen buildUGens(int channelIndex) {
+    private UGen buildUGens(int channelIndex) {
         
         
         

@@ -6,7 +6,7 @@ import spacegraph.SpaceGraph;
 
 public class FileBrowser extends ConsoleGUI {
 
-    public FileBrowser(int cols, int rows) {
+    private FileBrowser(int cols, int rows) {
         super(cols, rows);
     }
 

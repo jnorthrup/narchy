@@ -18,7 +18,7 @@ package spacegraph.space2d.widget.meter.audio;
 
 import javax.sound.sampled.AudioFormat;
 
-public interface BaseMusic_DigitalSignalProcessorInterface {
+interface BaseMusic_DigitalSignalProcessorInterface {
 
     void initialize(int pSampleSize, AudioFormat format);
     void process(BaseMusic_DigitalSignalSynchronizer.Context pDssContext);

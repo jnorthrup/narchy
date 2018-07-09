@@ -17,7 +17,7 @@ public class UGenChain extends UGen {
     private final UGen chainIn;
     private final UGen chainOut;
 
-    public UGenChain(AudioContext context, int ins, int outs) {
+    protected UGenChain(AudioContext context, int ins, int outs) {
         super(context, ins, outs);
 
         
@@ -47,7 +47,7 @@ public class UGenChain extends UGen {
      *
      * @param targetUGen The target UGen.
      */
-    public void drawFromChainInput(UGen targetUGen) {
+    protected void drawFromChainInput(UGen targetUGen) {
         targetUGen.in(chainIn);
     }
 
@@ -90,7 +90,7 @@ public class UGenChain extends UGen {
      * @param chainOutputIndex The Chain output.
      * @param sourceUGen       The source UGen.
      */
-    public void addToChainOutput(int chainOutputIndex, UGen sourceUGen) {
+    protected void addToChainOutput(int chainOutputIndex, UGen sourceUGen) {
         for (int i = 0; i < sourceUGen.outs; i++) {
             addToChainOutput(chainOutputIndex, sourceUGen, i);
         }
@@ -126,7 +126,7 @@ public class UGenChain extends UGen {
      * Called after the signal chain is updated for this Chain. Does nothing by
      * default; can be implemented with code as needed.
      */
-    protected void postFrame() {
+    private void postFrame() {
     }
 
 }

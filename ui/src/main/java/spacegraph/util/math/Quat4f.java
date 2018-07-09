@@ -42,8 +42,8 @@ public class Quat4f extends Tuple4f {
     
     static final long serialVersionUID = 2675933778405442383L;
 
-    final static float EPS = 0.000001f;
-    final static float EPS2 = Float.MIN_NORMAL;
+    private final static float EPS = 0.000001f;
+    private final static float EPS2 = Float.MIN_NORMAL;
     final static float PIO2 = 1.57079632679f;
 
     /**
@@ -252,7 +252,7 @@ public class Quat4f extends Tuple4f {
     /**
      * Sets the value of this quaternion to the quaternion inverse of itself.
      */
-    public final void inverse() {
+    private void inverse() {
 
         float norm = 1.0f / (this.w * this.w + this.x * this.x + this.y * this.y + this.z * this.z);
         this.w *= norm;

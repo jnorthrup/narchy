@@ -46,7 +46,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 	private final OArrayList<CollisionAlgorithm> childCollisionAlgorithms = new OArrayList<>();
 	private boolean isSwapped;
 	
-	public void init(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1, boolean isSwapped) {
+	private void init(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1, boolean isSwapped) {
 		super.init(ci);
 
 		this.isSwapped = isSwapped;
@@ -72,11 +72,11 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 	@Override
 	public void destroy() {
 		int numChildren = childCollisionAlgorithms.size();
-		for (int i=0; i<numChildren; i++) {
-			
-            
-            Intersecter.freeCollisionAlgorithm(childCollisionAlgorithms.get(i));
-		}
+        for (CollisionAlgorithm childCollisionAlgorithm : childCollisionAlgorithms) {
+
+
+            Intersecter.freeCollisionAlgorithm(childCollisionAlgorithm);
+        }
 		childCollisionAlgorithms.clear();
 	}
 
@@ -180,10 +180,10 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public void getAllContactManifolds(OArrayList<PersistentManifold> manifoldArray) {
-		for (int i=0; i<childCollisionAlgorithms.size(); i++) {
-            
-            childCollisionAlgorithms.get(i).getAllContactManifolds(manifoldArray);
-		}
+        for (CollisionAlgorithm childCollisionAlgorithm : childCollisionAlgorithms) {
+
+            childCollisionAlgorithm.getAllContactManifolds(manifoldArray);
+        }
 	}
 
 	

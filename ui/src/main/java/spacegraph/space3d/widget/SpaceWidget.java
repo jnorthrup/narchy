@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 /** a spatial holding a Surface, implementing an interface between 3d and 2d UI dynamics */
 abstract public class SpaceWidget<T> extends Cuboid<T> {
 
-    boolean touched = false;
+    private boolean touched = false;
 
     public SpaceWidget(T x) {
         super(x, 1, 1);
@@ -65,7 +65,7 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
     }
 
 
-    static void render(GL2 gl, SimpleSpatial src, float twist, Iterable<? extends EDraw> ee) {
+    private static void render(GL2 gl, SimpleSpatial src, float twist, Iterable<? extends EDraw> ee) {
 
 
         Quat4f tmpQ = new Quat4f();

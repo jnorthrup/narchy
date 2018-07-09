@@ -6,7 +6,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 
 import java.io.PrintStream;
 
-public class HotKeyMap extends KeyAdapter {
+class HotKeyMap extends KeyAdapter {
 
     static final class Reaction {
         final String name;
@@ -26,9 +26,9 @@ public class HotKeyMap extends KeyAdapter {
         }
     }
 
-    public final ShortObjectHashMap<Reaction> onPressed = new ShortObjectHashMap<>();
+    private final ShortObjectHashMap<Reaction> onPressed = new ShortObjectHashMap<>();
 
-    public void add(short code, String s, Runnable r) {
+    void add(short code, String s, Runnable r) {
         onPressed.put(code, new Reaction(code, s, r));
         onPressed.compact();
     }
@@ -42,8 +42,8 @@ public class HotKeyMap extends KeyAdapter {
         }
     }
 
-    public void print(PrintStream out) {
-        onPressed.forEach(r  -> out.println(r));
+    void print(PrintStream out) {
+        onPressed.forEach(out::println);
     }
 
 }

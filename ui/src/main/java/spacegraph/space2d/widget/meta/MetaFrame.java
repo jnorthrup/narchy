@@ -24,10 +24,7 @@ public class MetaFrame extends Bordering {
                 PushButton.awesome("sitemap") 
         );
 
-        Runnable zoomer = () -> {
-            
-            surface.root().zoom(surface);
-        };
+//        Runnable zoomer = () -> surface.root().zoom(surface);
 
 
         Surface n =
@@ -54,7 +51,7 @@ public class MetaFrame extends Bordering {
 
     }
 
-    protected String name(Surface widget) {
+    private String name(Surface widget) {
         return widget.toString();
     }
 

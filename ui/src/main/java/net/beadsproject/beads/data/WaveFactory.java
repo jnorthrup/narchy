@@ -20,12 +20,12 @@ public abstract class WaveFactory {
     /**
      * A static storage area for common buffers, such as a sine wave. Used by {@link WaveFactory} to keep track of common buffers.
      */
-    public static final Map<String, ArrayTensor> staticBufs = new ConcurrentHashMap<String,ArrayTensor>();
+    public static final Map<String, ArrayTensor> staticBufs = new ConcurrentHashMap<>();
 
     /**
      * The Constant DEFAULT_BUFFER_SIZE.
      */
-    public static final int DEFAULT_BUFFER_SIZE = 8192;
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
     
     public static final Tensor SINE = new SineWave().getDefault();
     public static final Tensor SAW = new SawWave().getDefault();
@@ -39,14 +39,14 @@ public abstract class WaveFactory {
      * @param bufferSize the buffer size.
      * @return the buffer.
      */
-    public abstract ArrayTensor get(int bufferSize);
+    protected abstract ArrayTensor get(int bufferSize);
 
     /**
      * Subclasses should override this method to generate a name. A default name should always be available for the case where {@link #getDefault()} is called.
      *
      * @return the name of the buffer.
      */
-    public abstract String getName();
+    protected abstract String getName();
 
     /**
      * Generates a buffer using {@link #DEFAULT_BUFFER_SIZE} and the BufferFactory's default name.

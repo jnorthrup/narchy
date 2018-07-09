@@ -30,8 +30,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
     
-    protected final AtomicBoolean busy = new AtomicBoolean(false);
-    final List<Graph2DLayer<X>> layers = new FasterList<>();
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+    private final List<Graph2DLayer<X>> layers = new FasterList<>();
 
     private final DequePool<NodeVis<X>> nodePool = new DequePool<>(1 * 256) {
         @Override
@@ -49,16 +49,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     /** hard limit on # nodes */
     protected int nodesMax = 2048;
 
-    volatile Graph2DLayout<X> layout = (c, d) -> {
+    private volatile Graph2DLayout<X> layout = (c, d) -> {
     };
 
     private final transient Set<CellMap.CacheCell<X, Graph2D.NodeVis<X>>> dontRemain = new LinkedHashSet();
 
-    final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> {
-        x.set(
-                new Scale(new PushButton(x.id.toString()), 0.75f)
-        );
-    };
+    private final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> x.set(
+            new Scale(new PushButton(x.id.toString()), 0.75f)
+    );
     private transient Consumer<NodeVis<X>> nodeBuilder = DEFAULT_NODE_BUILDER;
 
     public Graph2D() {
@@ -116,7 +114,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         return this;
     }
 
-    public Graph2D<X> add(Iterator<X> nodes) {
+    private Graph2D<X> add(Iterator<X> nodes) {
         return update(nodes, true);
     }
 
@@ -128,7 +126,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     
 
-    public Graph2D<X> set(Iterator<X> nodes) {
+    private Graph2D<X> set(Iterator<X> nodes) {
         return update(nodes, false);
     }
 
@@ -138,7 +136,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         set(List.of());
     }
 
-    protected Graph2D<X> update(Iterator<X> nodes, boolean addOrReplace) {
+    private Graph2D<X> update(Iterator<X> nodes, boolean addOrReplace) {
 
         if (!busy.compareAndSet(false, true)) {
             
@@ -212,13 +210,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             }
         });
 
-        cellMap.forEachValue((NodeVis<X> nv) -> {
-            layers.forEach(layer -> layer.node(nv, builder));
-        });
+        cellMap.forEachValue((NodeVis<X> nv) -> layers.forEach(layer -> layer.node(nv, builder)));
 
-        cellMap.forEachValue((NodeVis<X> nv) -> {
-            nv.edgeOut.commit();
-        });
+        cellMap.forEachValue((NodeVis<X> nv) -> nv.edgeOut.commit());
     }
 
     /** wraps all graph construction procedure in this interface for which layers construct graph with */
@@ -226,7 +220,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         private final Graph2D<X> graph;
 
-        public GraphBuilder(Graph2D<X> g) {
+        GraphBuilder(Graph2D<X> g) {
             this.graph = g;
         }
 
@@ -252,7 +246,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     }
 
-    final GraphBuilder builder = new GraphBuilder(this);
+    private final GraphBuilder builder = new GraphBuilder(this);
 
 
     public interface Graph2DLayout<X> {
@@ -334,7 +328,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(FasterList::new);
         private float r, g, b;
 
-        protected void reset(X id) {
+        void reset(X id) {
             this.id = id;
             edgeOut.write().clear();
             edgeOut.commit();
@@ -351,7 +345,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             return false;
         }
 
-        protected void paintEdges(GL2 gl) {
+        void paintEdges(GL2 gl) {
             edgeOut.read().forEach(x -> x.draw(gl, this));
         }
 
@@ -376,9 +370,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public static class EdgeVis<X> {
         public NodeVis<X> to;
-        public float r = 0.5f,
-                g = 0.5f,
-                b = 0.5f;
+        float r = 0.5f;
+        float g = 0.5f;
+        float b = 0.5f;
         public float weight = 1f;
 
 
@@ -394,7 +388,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             return this;
         }
 
-        public void draw(GL2 gl, NodeVis<X> from) {
+        void draw(GL2 gl, NodeVis<X> from) {
             gl.glColor3f(r, g, b);
             float x = from.cx();
             float y = from.cy();

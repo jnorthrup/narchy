@@ -51,7 +51,7 @@ public class OptimizedBvh implements Serializable {
 	private static int maxIterations;
 	
 	
-	public static final int MAX_SUBTREE_SIZE_IN_BYTES = 2048;
+	private static final int MAX_SUBTREE_SIZE_IN_BYTES = 2048;
 
 	
 	
@@ -73,14 +73,14 @@ public class OptimizedBvh implements Serializable {
 	private final v3 bvhAabbMax = new v3();
 	private final v3 bvhQuantization = new v3();
 	
-	protected final TraversalMode traversalMode = TraversalMode.STACKLESS;
-	protected final FasterList<BvhSubtreeInfo> SubtreeHeaders = new FasterList<>();
+	private final TraversalMode traversalMode = TraversalMode.STACKLESS;
+	private final FasterList<BvhSubtreeInfo> SubtreeHeaders = new FasterList<>();
 	
-	protected int subtreeHeaderCount;
+	private int subtreeHeaderCount;
 
 	
 	
-	public void setInternalNodeAabbMin(int nodeIndex, v3 aabbMin) {
+	private void setInternalNodeAabbMin(int nodeIndex, v3 aabbMin) {
 		if (useQuantization) {
 			quantizedContiguousNodes.setQuantizedAabbMin(nodeIndex, quantizeWithClamp(aabbMin));
 		}
@@ -90,7 +90,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	public void setInternalNodeAabbMax(int nodeIndex, v3 aabbMax) {
+	private void setInternalNodeAabbMax(int nodeIndex, v3 aabbMax) {
 		if (useQuantization) {
 			quantizedContiguousNodes.setQuantizedAabbMax(nodeIndex, quantizeWithClamp(aabbMax));
 		}
@@ -100,7 +100,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	public v3 getAabbMin(int nodeIndex) {
+	private v3 getAabbMin(int nodeIndex) {
 		if (useQuantization) {
 			v3 tmp = new v3();
 			unQuantize(tmp, quantizedLeafNodes.getQuantizedAabbMin(nodeIndex));
@@ -112,7 +112,7 @@ public class OptimizedBvh implements Serializable {
 		return leafNodes.get(nodeIndex).aabbMinOrg;
 	}
 
-	public v3 getAabbMax(int nodeIndex) {
+	private v3 getAabbMax(int nodeIndex) {
 		if (useQuantization) {
 			v3 tmp = new v3();
 			unQuantize(tmp, quantizedLeafNodes.getQuantizedAabbMax(nodeIndex));
@@ -124,11 +124,11 @@ public class OptimizedBvh implements Serializable {
 		return leafNodes.get(nodeIndex).aabbMaxOrg;
 	}
 
-	public void setQuantizationValues(v3 aabbMin, v3 aabbMax) {
+	private void setQuantizationValues(v3 aabbMin, v3 aabbMax) {
 		setQuantizationValues(aabbMin, aabbMax, 1f);
 	}
 
-	public void setQuantizationValues(v3 aabbMin, v3 aabbMax, float quantizationMargin) {
+	private void setQuantizationValues(v3 aabbMin, v3 aabbMax, float quantizationMargin) {
 		
 		v3 clampValue = new v3();
 		clampValue.set(quantizationMargin,quantizationMargin,quantizationMargin);
@@ -140,7 +140,7 @@ public class OptimizedBvh implements Serializable {
 		VectorUtil.div(bvhQuantization, bvhQuantization, aabbSize);
 	}
 
-	public void setInternalNodeEscapeIndex(int nodeIndex, int escapeIndex) {
+	private void setInternalNodeEscapeIndex(int nodeIndex, int escapeIndex) {
 		if (useQuantization) {
 			quantizedContiguousNodes.setEscapeIndexOrTriangleIndex(nodeIndex, -escapeIndex);
 		}
@@ -150,7 +150,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	public void mergeInternalNodeAabb(int nodeIndex, v3 newAabbMin, v3 newAabbMax) {
+	private void mergeInternalNodeAabb(int nodeIndex, v3 newAabbMin, v3 newAabbMax) {
 		if (useQuantization) {
 
 			long quantizedAabbMin = quantizeWithClamp(newAabbMin);
@@ -177,7 +177,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	public void swapLeafNodes(int i, int splitIndex) {
+	private void swapLeafNodes(int i, int splitIndex) {
 		if (useQuantization) {
 			quantizedLeafNodes.swap(i, splitIndex);
 		}
@@ -191,7 +191,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	public void assignInternalNodeFromLeafNode(int internalNode, int leafNodeIndex) {
+	private void assignInternalNodeFromLeafNode(int internalNode, int leafNodeIndex) {
 		if (useQuantization) {
 			quantizedContiguousNodes.set(internalNode, quantizedLeafNodes, leafNodeIndex);
 		}
@@ -203,9 +203,9 @@ public class OptimizedBvh implements Serializable {
 	}
 
 	private static class NodeTriangleCallback extends InternalTriangleIndexCallback {
-		public final FasterList<OptimizedBvhNode> triangleNodes;
+		final FasterList<OptimizedBvhNode> triangleNodes;
 
-		public NodeTriangleCallback(FasterList<OptimizedBvhNode> triangleNodes) {
+		NodeTriangleCallback(FasterList<OptimizedBvhNode> triangleNodes) {
 			this.triangleNodes = triangleNodes;
 		}
 
@@ -239,10 +239,10 @@ public class OptimizedBvh implements Serializable {
 	private static class QuantizedNodeTriangleCallback extends InternalTriangleIndexCallback {
 		
 
-		public final QuantizedBvhNodes triangleNodes;
-		public final OptimizedBvh optimizedTree; 
+		final QuantizedBvhNodes triangleNodes;
+		final OptimizedBvh optimizedTree;
 
-		public QuantizedNodeTriangleCallback(QuantizedBvhNodes triangleNodes, OptimizedBvh tree) {
+		QuantizedNodeTriangleCallback(QuantizedBvhNodes triangleNodes, OptimizedBvh tree) {
 			this.triangleNodes = triangleNodes;
 			this.optimizedTree = tree;
 		}
@@ -413,7 +413,7 @@ public class OptimizedBvh implements Serializable {
 
 	}
 
-	public void updateBvhNodes(StridingMeshInterface meshInterface, int firstNode, int endNode, int index) {
+	private void updateBvhNodes(StridingMeshInterface meshInterface, int firstNode, int endNode, int index) {
 		assert (useQuantization);
 
 		int curNodeSubPart = -1;
@@ -481,7 +481,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	protected void buildTree(int startIndex, int endIndex) {
+	private void buildTree(int startIndex, int endIndex) {
 		
 		if (DEBUG_TREE_BUILDING) {
 			gStackDepth++;
@@ -561,7 +561,7 @@ public class OptimizedBvh implements Serializable {
 		setInternalNodeEscapeIndex(internalNodeIndex, escapeIndex);
 	}
 
-	protected static boolean testQuantizedAabbAgainstQuantizedAabb(long aabbMin1, long aabbMax1, long aabbMin2, long aabbMax2) {
+	private static boolean testQuantizedAabbAgainstQuantizedAabb(long aabbMin1, long aabbMax1, long aabbMin2, long aabbMax2) {
 		int aabbMin1_0 = QuantizedBvhNodes.getCoord(aabbMin1, 0);
 		int aabbMin1_1 = QuantizedBvhNodes.getCoord(aabbMin1, 1);
 		int aabbMin1_2 = QuantizedBvhNodes.getCoord(aabbMin1, 2);
@@ -585,7 +585,7 @@ public class OptimizedBvh implements Serializable {
 		return overlap;
 	}
 
-	protected void updateSubtreeHeaders(int leftChildNodexIndex, int rightChildNodexIndex) {
+	private void updateSubtreeHeaders(int leftChildNodexIndex, int rightChildNodexIndex) {
 		assert (useQuantization);
 
 		
@@ -618,7 +618,7 @@ public class OptimizedBvh implements Serializable {
 		subtreeHeaderCount = SubtreeHeaders.size();
 	}
 
-	protected int sortAndCalcSplittingIndex(int startIndex, int endIndex, int splitAxis) {
+	private int sortAndCalcSplittingIndex(int startIndex, int endIndex, int splitAxis) {
 		int i;
 		int splitIndex = startIndex;
 		int numIndices = endIndex - startIndex;
@@ -671,7 +671,7 @@ public class OptimizedBvh implements Serializable {
 		return splitIndex;
 	}
 
-	protected int calcSplittingAxis(int startIndex, int endIndex) {
+	private int calcSplittingAxis(int startIndex, int endIndex) {
 		int i;
 
 		v3 means = new v3();
@@ -735,7 +735,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	protected void walkStacklessTree(NodeOverlapCallback nodeCallback, v3 aabbMin, v3 aabbMax) {
+	private void walkStacklessTree(NodeOverlapCallback nodeCallback, v3 aabbMin, v3 aabbMax) {
 		assert (!useQuantization);
 
 		
@@ -785,7 +785,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	protected void walkRecursiveQuantizedTreeAgainstQueryAabb(QuantizedBvhNodes currentNodes, int currentNodeId, NodeOverlapCallback nodeCallback, long quantizedQueryAabbMin, long quantizedQueryAabbMax) {
+	private void walkRecursiveQuantizedTreeAgainstQueryAabb(QuantizedBvhNodes currentNodes, int currentNodeId, NodeOverlapCallback nodeCallback, long quantizedQueryAabbMin, long quantizedQueryAabbMax) {
 		assert (useQuantization);
 
 		boolean isLeafNode;
@@ -809,7 +809,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	protected void walkStacklessQuantizedTreeAgainstRay(NodeOverlapCallback nodeCallback, v3 raySource, v3 rayTarget, v3 aabbMin, v3 aabbMax, int startNodeIndex, int endNodeIndex) {
+	private void walkStacklessQuantizedTreeAgainstRay(NodeOverlapCallback nodeCallback, v3 raySource, v3 rayTarget, v3 aabbMin, v3 aabbMax, int startNodeIndex, int endNodeIndex) {
 		assert (useQuantization);
 
 		v3 tmp = new v3();
@@ -930,7 +930,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 
-	protected void walkStacklessQuantizedTree(NodeOverlapCallback nodeCallback, long quantizedQueryAabbMin, long quantizedQueryAabbMax, int startNodeIndex, int endNodeIndex) {
+	private void walkStacklessQuantizedTree(NodeOverlapCallback nodeCallback, long quantizedQueryAabbMin, long quantizedQueryAabbMax, int startNodeIndex, int endNodeIndex) {
 		assert (useQuantization);
 
 		int curIndex = startNodeIndex;
@@ -1023,7 +1023,7 @@ public class OptimizedBvh implements Serializable {
 		}
 	}
 	
-	public long quantizeWithClamp(v3 point) {
+	private long quantizeWithClamp(v3 point) {
 		assert (useQuantization);
 
 		v3 clampedPoint = new v3(point);
@@ -1041,7 +1041,7 @@ public class OptimizedBvh implements Serializable {
 		return ((long)out0) | (((long)out1) << 16) | (((long)out2) << 32);
 	}
 	
-	public void unQuantize(v3 vecOut, long vecIn) {
+	private void unQuantize(v3 vecOut, long vecIn) {
 		int vecIn0 = (int)((vecIn & 0x00000000FFFFL));
 		int vecIn1 = (int)((vecIn & 0x0000FFFF0000L) >>> 16);
 		int vecIn2 = (int)((vecIn & 0xFFFF00000000L) >>> 32);

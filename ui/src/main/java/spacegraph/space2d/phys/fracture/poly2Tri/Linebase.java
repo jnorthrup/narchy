@@ -12,29 +12,29 @@ public class Linebase implements SplayTreeItem {
      * Was unsigned int!
      * id of a line segment;
      */
-    protected int _id = -1;
+    private int _id = -1;
 
     /**
      * two end points;
      */
-    protected final Pointbase[] _endp = {null, null};
+    private final Pointbase[] _endp = {null, null};
 
     /**
      * type of a line segement, input/insert
      * Type...
      */
-    protected int _type = Poly2TriUtils.UNKNOWN;
+    private int _type = Poly2TriUtils.UNKNOWN;
 
     /**
      * key of a line segment for splay tree searching
      */
-    protected double _key = 0;
+    private double _key = 0;
 
     /**
      * Was unsigned int!
      * helper of a line segemnt
      */
-    protected int _helper = -1;
+    private int _helper = -1;
 
     public Linebase() {
         for (int i = 0; i < 2; i++) _endp[i] = null;

@@ -17,9 +17,7 @@ public class WindowKeyControls extends HotKeyMap {
             print(System.out);
         });
 
-        add(KeyEvent.VK_F2, "Window Decoration Toggle", ()->{
-            window.window.setUndecorated(!window.window.isUndecorated());
-        });
+        add(KeyEvent.VK_F2, "Window Decoration Toggle", ()-> window.window.setUndecorated(!window.window.isUndecorated()));
 
         add(KeyEvent.VK_F3, "Window Full-Screen Toggle", ()->{
             GLWindow w = window.window;

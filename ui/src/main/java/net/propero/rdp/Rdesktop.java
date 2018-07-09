@@ -52,29 +52,29 @@ import java.net.UnknownHostException;
 public class Rdesktop {
 
     /* RDP5 disconnect PDU */
-    public static final int exDiscReasonNoInfo = 0x0000;
-    public static final int exDiscReasonAPIInitiatedDisconnect = 0x0001;
-    public static final int exDiscReasonAPIInitiatedLogoff = 0x0002;
-    public static final int exDiscReasonServerIdleTimeout = 0x0003;
-    public static final int exDiscReasonServerLogonTimeout = 0x0004;
-    public static final int exDiscReasonReplacedByOtherConnection = 0x0005;
-    public static final int exDiscReasonOutOfMemory = 0x0006;
-    public static final int exDiscReasonServerDeniedConnection = 0x0007;
-    public static final int exDiscReasonServerDeniedConnectionFips = 0x0008;
-    public static final int exDiscReasonLicenseInternal = 0x0100;
-    public static final int exDiscReasonLicenseNoLicenseServer = 0x0101;
-    public static final int exDiscReasonLicenseNoLicense = 0x0102;
-    public static final int exDiscReasonLicenseErrClientMsg = 0x0103;
-    public static final int exDiscReasonLicenseHwidDoesntMatchLicense = 0x0104;
-    public static final int exDiscReasonLicenseErrClientLicense = 0x0105;
-    public static final int exDiscReasonLicenseCantFinishProtocol = 0x0106;
-    public static final int exDiscReasonLicenseClientEndedProtocol = 0x0107;
-    public static final int exDiscReasonLicenseErrClientEncryption = 0x0108;
-    public static final int exDiscReasonLicenseCantUpgradeLicense = 0x0109;
-    public static final int exDiscReasonLicenseNoRemoteConnections = 0x010a;
-    static final Logger logger = LoggerFactory.getLogger("net.propero.rdp");
-    static final String keyMapPath = "keymaps/";
-    static boolean keep_running;
+    private static final int exDiscReasonNoInfo = 0x0000;
+    private static final int exDiscReasonAPIInitiatedDisconnect = 0x0001;
+    private static final int exDiscReasonAPIInitiatedLogoff = 0x0002;
+    private static final int exDiscReasonServerIdleTimeout = 0x0003;
+    private static final int exDiscReasonServerLogonTimeout = 0x0004;
+    private static final int exDiscReasonReplacedByOtherConnection = 0x0005;
+    private static final int exDiscReasonOutOfMemory = 0x0006;
+    private static final int exDiscReasonServerDeniedConnection = 0x0007;
+    private static final int exDiscReasonServerDeniedConnectionFips = 0x0008;
+    private static final int exDiscReasonLicenseInternal = 0x0100;
+    private static final int exDiscReasonLicenseNoLicenseServer = 0x0101;
+    private static final int exDiscReasonLicenseNoLicense = 0x0102;
+    private static final int exDiscReasonLicenseErrClientMsg = 0x0103;
+    private static final int exDiscReasonLicenseHwidDoesntMatchLicense = 0x0104;
+    private static final int exDiscReasonLicenseErrClientLicense = 0x0105;
+    private static final int exDiscReasonLicenseCantFinishProtocol = 0x0106;
+    private static final int exDiscReasonLicenseClientEndedProtocol = 0x0107;
+    private static final int exDiscReasonLicenseErrClientEncryption = 0x0108;
+    private static final int exDiscReasonLicenseCantUpgradeLicense = 0x0109;
+    private static final int exDiscReasonLicenseNoRemoteConnections = 0x010a;
+    private static final Logger logger = LoggerFactory.getLogger("net.propero.rdp");
+    private static final String keyMapPath = "keymaps/";
+    private static boolean keep_running;
 
     static boolean loggedon;
 
@@ -82,10 +82,10 @@ public class Rdesktop {
 
     static boolean readytosend;
 
-    static boolean showTools;
-    static String mapFile = "en-us";
-    static String keyMapLocation = "";
-    static SendEvent toolFrame;
+    private static boolean showTools;
+    private static String mapFile = "en-us";
+    private static String keyMapLocation = "";
+    private static SendEvent toolFrame;
 
     /**
      * Translate a disconnect code into a textual description of the reason for
@@ -94,7 +94,7 @@ public class Rdesktop {
      * @param reason Integer disconnect code received from server
      * @return Text description of the reason for disconnection
      */
-    static String textDisconnectReason(int reason) {
+    private static String textDisconnectReason(int reason) {
         String text;
 
         switch (reason) {
@@ -191,7 +191,7 @@ public class Rdesktop {
     /**
      * Outputs version and usage information via System.err
      */
-    public static void usage() {
+    private static void usage() {
         System.err.println("properJavaRDP version " + Version.version);
         System.err
                 .println("Usage: java net.propero.rdp.Rdesktop [options] server[:port]");
@@ -404,7 +404,7 @@ public class Rdesktop {
                     break;
                 case 'g':
                     arg = g.getOptarg();
-                    int cut = arg.indexOf('x', 0);
+                    int cut = arg.indexOf('x');
                     if (cut == -1) {
                         System.err.println(progname + ": Invalid geometry: " + arg);
                         usage();
@@ -497,7 +497,7 @@ public class Rdesktop {
         final String[] server = {null};
 
         if (g.getOptind() < args.length) {
-            int colonat = args[args.length - 1].indexOf(':', 0);
+            int colonat = args[args.length - 1].indexOf(':');
             if (colonat == -1) {
                 server[0] = args[args.length - 1];
             } else {

@@ -65,7 +65,7 @@ public class QuantizedBvhNodes implements Serializable {
 		return size;
 	}
 	
-	public int capacity() {
+	private int capacity() {
 		return buf.length / STRIDE;
 	}
 	
@@ -173,7 +173,7 @@ public class QuantizedBvhNodes implements Serializable {
 		}
 	}
 	
-	public int getEscapeIndexOrTriangleIndex(int nodeId) {
+	private int getEscapeIndexOrTriangleIndex(int nodeId) {
 		return buf[nodeId*STRIDE+3];
 	}
 	

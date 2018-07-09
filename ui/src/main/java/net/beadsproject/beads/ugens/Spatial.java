@@ -212,7 +212,7 @@ public class Spatial extends UGen {
      * @param dimensions     the number of dimensions, between 1 and 3.
      * @param sphereDiameter the sphere diameter.
      */
-    public Spatial(AudioContext context, int dimensions, float sphereDiameter) {
+    private Spatial(AudioContext context, int dimensions, float sphereDiameter) {
         super(context, (int) Math.pow(2, dimensions));
         this.dimensions = dimensions;
         switch (dimensions) {
@@ -272,7 +272,7 @@ public class Spatial extends UGen {
      * @param locations      the locations
      * @param sphereDiameter the sphere diameter
      */
-    public Spatial(AudioContext context, int dimensions, float[][] locations, float sphereDiameter) {
+    private Spatial(AudioContext context, int dimensions, float[][] locations, float sphereDiameter) {
         super(context, locations.length);
         this.dimensions = dimensions;
         setSpeakerPositions(locations);
@@ -295,7 +295,7 @@ public class Spatial extends UGen {
      *
      * @param sd the new sphere diameter.
      */
-    public void setSphereDiameter(float sd) {
+    private void setSphereDiameter(float sd) {
         sphereDiameter = sd;
     }
 
@@ -338,7 +338,7 @@ public class Spatial extends UGen {
      *
      * @param locations the new speaker positions.
      */
-    public void setSpeakerPositions(float[][] locations) {
+    private void setSpeakerPositions(float[][] locations) {
         if (locations.length > 0 && locations[0].length != dimensions) {
             new IllegalArgumentException(
                     "Error, location data does not correspond to dimensions: " + dimensions + '!'
@@ -358,7 +358,7 @@ public class Spatial extends UGen {
      * @param b the b
      * @return the float
      */
-    public static float distance(float[] a, float[] b) {
+    private static float distance(float[] a, float[] b) {
         float distance = 0;
         for (int i = 0; i < a.length; i++) {
             distance += (a[i] - b[i]) * (a[i] - b[i]);
@@ -428,7 +428,7 @@ public class Spatial extends UGen {
      *
      * @param source the source
      */
-    public void removeSource(UGen source) {
+    private void removeSource(UGen source) {
         synchronized (sources) {
             sources.remove(source);
         }
@@ -487,7 +487,7 @@ public class Spatial extends UGen {
     }
 
     @Override
-    public synchronized int connectedCount(int index) {
+    public int connectedCount(int index) {
         return sources.size();
     }
 

@@ -34,14 +34,22 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  */
 public class WaveShaper extends UGen implements DataBeadReceiver {
 
-    protected float preGain = 2, postGain = 1, limit = 1, wetMix = 1;
-    protected UGen preGainUGen, postGainUGen, limitUGen, wetMixUGen;
-    protected boolean isPreGainStatic, isPostGainStatic,
-            isLimitStatic, isWetMixStatic;
+    private float preGain = 2;
+    private float postGain = 1;
+    private float limit = 1;
+    private float wetMix = 1;
+    private UGen preGainUGen;
+    private UGen postGainUGen;
+    private UGen limitUGen;
+    private UGen wetMixUGen;
+    private boolean isPreGainStatic;
+    private boolean isPostGainStatic;
+    private boolean isLimitStatic;
+    private boolean isWetMixStatic;
 
-    protected float[] shape;
-    protected int shapeLen;
-    protected int channels = 1;
+    private float[] shape;
+    private int shapeLen;
+    private int channels = 1;
 
     /**
      * Constructor for a mono-channel wave shaper that uses a default
@@ -49,7 +57,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      *
      * @param context The audio context.
      */
-    public WaveShaper(AudioContext context) {
+    private WaveShaper(AudioContext context) {
         this(context, 1);
     }
 
@@ -60,7 +68,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param context  The audio context.
      * @param channels The number of channels.
      */
-    public WaveShaper(AudioContext context, int channels) {
+    private WaveShaper(AudioContext context, int channels) {
         super(context, channels, channels);
         this.channels = channels;
         setPreGain(2).setPostGain(1).setLimit(1).setWetMix(1);
@@ -124,7 +132,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param length The length of the array.
      * @return The generated array.
      */
-    public static float[] generateCosineShape(int length) {
+    private static float[] generateCosineShape(int length) {
         float[] ret = new float[length];
         int l = length - 1;
         for (int i = 1; i < length - 1; i++) {
@@ -269,7 +277,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param preGain The pre-gain.
      * @return This object instance.
      */
-    public WaveShaper setPreGain(float preGain) {
+    private WaveShaper setPreGain(float preGain) {
         this.preGain = preGain;
         if (isPreGainStatic) {
             preGainUGen.setValue(preGain);
@@ -286,7 +294,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param preGainUGen The pre-gain UGen.
      * @return This object instance.
      */
-    public WaveShaper setPreGain(UGen preGainUGen) {
+    private WaveShaper setPreGain(UGen preGainUGen) {
         if (preGainUGen == null) {
             setPreGain(preGain);
         } else {
@@ -322,7 +330,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param postGain The post-gain.
      * @return This object instance.
      */
-    public WaveShaper setPostGain(float postGain) {
+    private WaveShaper setPostGain(float postGain) {
         this.postGain = postGain;
         if (isPostGainStatic) {
             postGainUGen.setValue(postGain);
@@ -339,7 +347,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param postGainUGen The post-gain UGen.
      * @return This object instance.
      */
-    public WaveShaper setPostGain(UGen postGainUGen) {
+    private WaveShaper setPostGain(UGen postGainUGen) {
         if (postGainUGen == null) {
             setPostGain(postGain);
         } else {
@@ -375,7 +383,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param limit The limit.
      * @return This object instance.
      */
-    public WaveShaper setLimit(float limit) {
+    private WaveShaper setLimit(float limit) {
         if (limit < 0)
             limit = 0;
         this.limit = limit;
@@ -394,7 +402,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param limitUGen The limit UGen.
      * @return This object instance.
      */
-    public WaveShaper setLimit(UGen limitUGen) {
+    private WaveShaper setLimit(UGen limitUGen) {
         if (limitUGen == null) {
             setLimit(limit);
         } else {
@@ -430,7 +438,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param wetMix The wetMix.
      * @return This object instance.
      */
-    public WaveShaper setWetMix(float wetMix) {
+    private WaveShaper setWetMix(float wetMix) {
         this.wetMix = wetMix;
         if (isWetMixStatic) {
             wetMixUGen.setValue(wetMix);
@@ -447,7 +455,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param wetMixUGen The wet-mix UGen.
      * @return This object instance.
      */
-    public WaveShaper setWetMix(UGen wetMixUGen) {
+    private WaveShaper setWetMix(UGen wetMixUGen) {
         if (wetMixUGen == null) {
             setWetMix(wetMix);
         } else {
@@ -483,7 +491,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
      * @param shape The array of floats.
      * @return This object instance.
      */
-    public WaveShaper setShape(float[] shape) {
+    private WaveShaper setShape(float[] shape) {
         if (shape != null && shape.length > 1) {
             this.shape = shape;
             shapeLen = shape.length - 1;

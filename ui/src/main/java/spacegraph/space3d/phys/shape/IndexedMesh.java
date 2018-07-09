@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
  * 
  * @author jezek2
  */
-public class IndexedMesh {
+class IndexedMesh {
 	
 	public int numTriangles;
 	public ByteBuffer triangleIndexBase;

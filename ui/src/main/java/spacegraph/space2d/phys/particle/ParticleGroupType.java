@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.particle;
 
-public class ParticleGroupType {
+class ParticleGroupType {
     /**
      * resists penetration
      */

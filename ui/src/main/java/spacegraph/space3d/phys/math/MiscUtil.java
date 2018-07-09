@@ -45,7 +45,7 @@ public class MiscUtil {
 		return getListCapacityForHash(list.size());
 	}
 	
-	public static int getListCapacityForHash(int size) {
+	private static int getListCapacityForHash(int size) {
 		int n = 2;
 		while (n < size) {
 			n <<= 1;

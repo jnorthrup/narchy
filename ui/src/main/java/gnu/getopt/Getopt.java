@@ -397,7 +397,7 @@ public class Getopt  {
      * gnu.posixly_correct, or using `+' as the first character
      * of the list of option characters.
      */
-    protected static final int REQUIRE_ORDER = 1;
+    private static final int REQUIRE_ORDER = 1;
 
     /**
      * PERMUTE is the default.  We permute the contents of ARGV as we scan,
@@ -405,7 +405,7 @@ public class Getopt  {
      * to be given in any order, even with programs that were not written to
      * expect this.
      */
-    protected static final int PERMUTE = 2;
+    private static final int PERMUTE = 2;
 
     /**
      * RETURN_IN_ORDER is an option available to programs that were written
@@ -415,7 +415,7 @@ public class Getopt  {
      * Using `-' as the first character of the list of option characters
      * selects this mode of operation.
      */
-    protected static final int RETURN_IN_ORDER = 3;
+    private static final int RETURN_IN_ORDER = 3;
 
 /**************************************************************************/
 
@@ -430,7 +430,7 @@ public class Getopt  {
      * Also, when `ordering' is RETURN_IN_ORDER,
      * each non-option ARGV-element is returned here.
      */
-    protected String optarg;
+    private String optarg;
 
     /**
      * Index in ARGV of the next element to be scanned.
@@ -445,19 +445,19 @@ public class Getopt  {
      * Otherwise, `optind' communicates from one call to the next
      * how much of ARGV has been scanned so far.
      */
-    protected int optind;
+    private int optind;
 
     /**
      * Callers store false here to inhibit the error message
      * for unrecognized options.
      */
-    protected boolean opterr = true;
+    private boolean opterr = true;
 
     /**
      * When an unrecognized option is encountered, getopt will return a '?'
      * and store the value of the invalid option here.
      */
-    protected int optopt = '?';
+    private int optopt = '?';
 
     /**
      * The next char to be scanned in the option-element
@@ -467,49 +467,49 @@ public class Getopt  {
      * If this is zero, or a null string, it means resume the scan
      * by advancing to the next ARGV-element.
      */
-    protected String nextchar;
+    private String nextchar;
 
     /**
      * This is the string describing the valid short options.
      */
-    protected String optstring;
+    private String optstring;
 
     /**
      * This is an array of LongOpt objects which describ the valid long
      * options.
      */
-    protected final LongOpt[] long_options;
+    private final LongOpt[] long_options;
 
     /**
      * This flag determines whether or not we are parsing only long args
      */
-    protected final boolean long_only;
+    private final boolean long_only;
 
     /**
      * Stores the index into the long_options array of the long option found
      */
-    protected int longind;
+    private int longind;
 
     /**
      * The flag determines whether or not we operate in strict POSIX compliance
      */
-    protected final boolean posixly_correct;
+    private final boolean posixly_correct;
 
     /**
      * A flag which communicates whether or not checkLongOption() did all
      * necessary processing for the current option
      */
-    protected boolean longopt_handled;
+    private boolean longopt_handled;
 
     /**
      * The index of the first non-option in argv[]
      */
-    protected int first_nonopt = 1;
+    private int first_nonopt = 1;
 
     /**
      * The index of the last non-option in argv[]
      */
-    protected int last_nonopt = 1;
+    private int last_nonopt = 1;
 
     /**
      * Flag to tell getopt to immediately return -1 the next time it is
@@ -520,18 +520,18 @@ public class Getopt  {
     /**
      * Saved argument list passed to the program
      */
-    protected String[] argv;
+    private String[] argv;
 
     /**
      * Determines whether we permute arguments or not
      */
-    protected final int ordering;
+    private final int ordering;
 
     /**
      * Name to print as the program name in error messages.  This is necessary
      * since Java does not place the program name in argv[0]
      */
-    protected final String progname;
+    private final String progname;
 
     /**
      * The localized strings are kept in a separate file
@@ -592,8 +592,8 @@ public class Getopt  {
      * @param long_options An array of LongOpt objects that describes the valid long args for this program
      * @param long_only    true if long options that do not conflict with short options can start with a '-' as well as '--'
      */
-    public Getopt(String progname, String[] argv, String optstring,
-                  LongOpt[] long_options, boolean long_only) {
+    private Getopt(String progname, String[] argv, String optstring,
+                   LongOpt[] long_options, boolean long_only) {
         if (optstring.isEmpty())
             optstring = " ";
 
@@ -762,7 +762,7 @@ public class Getopt  {
      * but it consists of two parts that need to be swapped next.
      * This method is used by getopt() for argument permutation.
      */
-    protected void
+    private void
     exchange(String[] argv) {
         int bottom = first_nonopt;
         int middle = last_nonopt;
@@ -813,7 +813,7 @@ public class Getopt  {
      * @param longind A buffer in which to store the 'val' field of found LongOpt
      * @return Various things depending on circumstances
      */
-    protected int
+    private int
     checkLongOption() {
 
         longopt_handled = true;

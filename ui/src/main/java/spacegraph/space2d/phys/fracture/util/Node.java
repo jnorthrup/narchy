@@ -16,7 +16,8 @@ public class Node<T> {
     /**
      * Susedne prvky spojoveho zoznamu.
      */
-    public Node<T> next, prev;
+    public Node<T> next;
+    private Node<T> prev;
 
     /**
      * Inicializuje uzol.

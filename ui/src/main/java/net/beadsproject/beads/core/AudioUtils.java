@@ -9,6 +9,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 /**
@@ -69,7 +70,7 @@ public final class AudioUtils {
      * @param inlength  Number of floats to copy
      * @param bigEndian Format
      */
-    static public void floatToByte(byte[] out, int outstart, float[] in, int instart, int inlength, boolean bigEndian) {
+    private static void floatToByte(byte[] out, int outstart, float[] in, int instart, int inlength, boolean bigEndian) {
         int bufsz = Math.min(inlength, in.length);
         int ib = outstart;
         if (bigEndian) {
@@ -107,7 +108,7 @@ public final class AudioUtils {
      * @param bigEndian true for big endian byte order, false otherwise.
      * @param numFloats number of elements to copy into out
      */
-    static public void byteToFloat(float[] out, byte[] in, boolean bigEndian, int numFloats) {
+    private static void byteToFloat(float[] out, byte[] in, boolean bigEndian, int numFloats) {
         byteToFloat(out, in, bigEndian, 0, numFloats);
     }
 
@@ -120,7 +121,7 @@ public final class AudioUtils {
      * @param startIndexInByteArray where to start copying from
      * @param numFloats             number of elements to copy into out
      */
-    static public void byteToFloat(float[] out, byte[] in, boolean bigEndian, int startIndexInByteArray, int numFloats) {
+    private static void byteToFloat(float[] out, byte[] in, boolean bigEndian, int startIndexInByteArray, int numFloats) {
         byteToFloat(out, in, bigEndian, startIndexInByteArray, 0, numFloats);
     }
 
@@ -134,7 +135,7 @@ public final class AudioUtils {
      * @param startIndexInFloatArray where to start copying to
      * @param numFloats              number of elements to copy into out
      */
-    static public void byteToFloat(float[] out, byte[] in, boolean bigEndian, int startIndexInByteArray, int startIndexInFloatArray, int numFloats) {
+    private static void byteToFloat(float[] out, byte[] in, boolean bigEndian, int startIndexInByteArray, int startIndexInFloatArray, int numFloats) {
         if (bigEndian) {
             int ib = startIndexInByteArray;
             int min = Math.min(out.length, startIndexInFloatArray + numFloats);
@@ -364,7 +365,7 @@ public final class AudioUtils {
      * @param s String to interpret as System Resource, URL or file path.
      * @return a URL if successful, null otherwise.
      */
-    public static URL urlFromString(String s) {
+    private static URL urlFromString(String s) {
         URL url = null;
         url = ClassLoader.getSystemResource(s);
         if (url != null) {
@@ -389,10 +390,10 @@ public final class AudioUtils {
      * @param url to get File from.
      * @return a File if successful, null otherwise.
      */
-    public static File fileFromURL(URL url) {
+    private static File fileFromURL(URL url) {
         File theDirectory = null;
         try {
-            theDirectory = new File(URLDecoder.decode(url.getPath(), "UTF-8"));
+            theDirectory = new File(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -8,7 +8,7 @@ import net.beadsproject.beads.core.UGen;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,14 +20,14 @@ import java.util.Set;
  * @version 0.9.6
  */
 public class DataAuvent extends Auvent implements Map<String, Object> {
-    public final Map<String, Object> properties;
+    private final Map<String, Object> properties;
 
     /**
      * Creates a DataBead instance with no defined properties. Properties may be
      * added with {@link #put(String, Object) put()}.
      */
     public DataAuvent() {
-        properties = new Hashtable<>();
+        properties = new HashMap<>();
     }
 
     /**
@@ -39,7 +39,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @param val The property value.
      */
     public DataAuvent(String key, Object val) {
-        properties = new Hashtable<>();
+        properties = new HashMap<>();
         if (key != null)
             properties.put(key, val);
     }
@@ -53,7 +53,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @param valarr  The array of Object values.
      */
     public DataAuvent(String[] proparr, Object[] valarr) {
-        properties = new Hashtable<>();
+        properties = new HashMap<>();
         if (proparr != null && valarr != null) {
             int s = Math.min(proparr.length, valarr.length);
             for (int i = 0; i < s; i++) {
@@ -72,7 +72,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @param ht The input Map.
      */
     public DataAuvent(Map<String, Object> ht) {
-        properties = ht == null ? new Hashtable<>() : ht;
+        properties = ht == null ? new HashMap<>() : ht;
     }
 
     /**
@@ -82,7 +82,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * @param objects interleaved series of key-value pairs.
      */
     public DataAuvent(Object... objects) {
-        properties = new Hashtable<>();
+        properties = new HashMap<>();
         putAll(objects);
     }
 
@@ -102,7 +102,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      *
      * @param db The input DataBead.
      */
-    public void putAll(DataAuvent db) {
+    private void putAll(DataAuvent db) {
         putAll(db.properties);
     }
 
@@ -112,7 +112,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      *
      * @param objects an interleaved series of key-value pairs.
      */
-    public void putAll(Object... objects) {
+    private void putAll(Object... objects) {
         for (int i = 0; i < objects.length; i += 2) {
             put((String) objects[i], objects[i + 1]);
         }
@@ -187,7 +187,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
      * representation of the property.
      */
 
-    public Float getFloatObject(String key) {
+    private Float getFloatObject(String key) {
         Object o = get(key);
         if (o instanceof Number) {
             return ((Number) o).floatValue();

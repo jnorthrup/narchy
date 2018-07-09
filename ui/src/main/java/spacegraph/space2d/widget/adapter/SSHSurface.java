@@ -12,7 +12,7 @@ import javax.swing.*;
  */
 public class SSHSurface extends AWTSurface {
 
-    public SSHSurface() {
+    private SSHSurface() {
         super(new JCTermSwingFrame(), 800, 600);
     }
 

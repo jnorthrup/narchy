@@ -31,7 +31,7 @@ package net.propero.rdp.orders;
 
 public class RectangleOrder implements Order {
 
-    public int color;
+    private int color;
     private int x;
     private int y;
     private int cx;

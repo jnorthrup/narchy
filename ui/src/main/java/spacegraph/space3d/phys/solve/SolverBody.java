@@ -34,7 +34,7 @@ import spacegraph.util.math.v3;
  * 
  * @author jezek2
  */
-public class SolverBody {
+class SolverBody {
 	
 	
 
@@ -46,7 +46,7 @@ public class SolverBody {
 	public final v3 linearVelocity = new v3();
 	public final v3 centerOfMassPosition = new v3();
 
-	final Transform newTransform = new Transform();
+	private final Transform newTransform = new Transform();
 	public final v3 pushVelocity = new v3();
 	public final v3 turnVelocity = new v3();
 	

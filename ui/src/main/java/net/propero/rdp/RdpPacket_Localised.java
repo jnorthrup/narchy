@@ -34,7 +34,7 @@ import java.nio.ByteOrder;
 
 public class RdpPacket_Localised extends RdpPacket {
 
-    protected ByteBuffer bb;
+    ByteBuffer bb;
 
     private int size;
 

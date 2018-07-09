@@ -39,7 +39,7 @@ public class RdpMenu extends MenuBar {
 
     private static final long serialVersionUID = 4400808258398800489L;
 
-    final RdesktopFrame parent;
+    private final RdesktopFrame parent;
 
     /**
      * Initialise the properJavaRDP menu bar and attach to an RdesktopFrame

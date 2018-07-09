@@ -50,7 +50,7 @@ public class CompoundShape extends CollisionShape {
 	private final OptimizedBvh aabbTree = new OptimizedBvh();
 
 	private float collisionMargin;
-	protected final v3 localScaling = new v3(1f, 1f, 1f);
+	private final v3 localScaling = new v3(1f, 1f, 1f);
 
 	public void addChildShape(Transform localTransform, CollisionShape shape) {
 		
@@ -165,7 +165,7 @@ public class CompoundShape extends CollisionShape {
 	 * Re-calculate the local Aabb. Is called at the end of removeChildShapes.
 	 * Use this yourself if you modify the children or their transforms.
 	 */
-	public void recalculateLocalAabb() {
+    private void recalculateLocalAabb() {
 		
 		
 		localAabbMin.set(1e30f, 1e30f, 1e30f);
@@ -174,21 +174,21 @@ public class CompoundShape extends CollisionShape {
 		v3 tmpLocalAabbMin = new v3();
 		v3 tmpLocalAabbMax = new v3();
 
-		
-		for (int j = 0; j < children.size(); j++) {
-			
-			
-			children.get(j).childShape.getAabb(children.get(j).transform, tmpLocalAabbMin, tmpLocalAabbMax);
-			
-			for (int i = 0; i < 3; i++) {
-				if (VectorUtil.coord(localAabbMin, i) > VectorUtil.coord(tmpLocalAabbMin, i)) {
-					VectorUtil.setCoord(localAabbMin, i, VectorUtil.coord(tmpLocalAabbMin, i));
-				}
-				if (VectorUtil.coord(localAabbMax, i) < VectorUtil.coord(tmpLocalAabbMax, i)) {
-					VectorUtil.setCoord(localAabbMax, i, VectorUtil.coord(tmpLocalAabbMax, i));
-				}
-			}
-		}
+
+        for (CompoundShapeChild aChildren : children) {
+
+
+            aChildren.childShape.getAabb(aChildren.transform, tmpLocalAabbMin, tmpLocalAabbMax);
+
+            for (int i = 0; i < 3; i++) {
+                if (VectorUtil.coord(localAabbMin, i) > VectorUtil.coord(tmpLocalAabbMin, i)) {
+                    VectorUtil.setCoord(localAabbMin, i, VectorUtil.coord(tmpLocalAabbMin, i));
+                }
+                if (VectorUtil.coord(localAabbMax, i) < VectorUtil.coord(tmpLocalAabbMax, i)) {
+                    VectorUtil.setCoord(localAabbMax, i, VectorUtil.coord(tmpLocalAabbMax, i));
+                }
+            }
+        }
 	}
 	
 	@Override

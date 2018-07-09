@@ -17,7 +17,7 @@ public class Static extends UGen {
     /**
      * The stored value.
      */
-    public float x;
+    private float x;
 
     /**
      * Instantiates a new Static with the given value.

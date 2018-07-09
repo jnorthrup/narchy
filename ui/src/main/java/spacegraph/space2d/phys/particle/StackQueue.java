@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.particle;
 
 
-public class StackQueue<T> {
+class StackQueue<T> {
 
     private T[] m_buffer;
     private int m_front;

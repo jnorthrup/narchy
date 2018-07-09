@@ -9,7 +9,7 @@ import spacegraph.util.math.Tuple2f;
  *
  * @author dmurph
  */
-public class MotorJointDef extends JointDef {
+class MotorJointDef extends JointDef {
     /**
      * Position of bodyB minus the position of bodyA, in bodyA's frame, in meters.
      */

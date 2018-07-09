@@ -38,7 +38,7 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
 
     }
 
-    protected void next(Dynamics3D world) {
+    private void next(Dynamics3D world) {
 
     }
 
@@ -57,7 +57,7 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
     }
 
 
-    public void add(Collidable c) {
+    void add(Collidable c) {
         bodies.add(c);
     }
 

@@ -10,15 +10,15 @@ import spacegraph.util.math.v2;
  */
 public class AnimVector2f extends v2 implements Animated {
 
-    public final v2 target = new v2();
-    final MutableFloat speed;
+    private final v2 target = new v2();
+    private final MutableFloat speed;
     private boolean running = true;
 
     public AnimVector2f(float speed) {
         this(Float.NaN, Float.NaN, speed);
     }
 
-    public AnimVector2f(float x, float y, float speed) {
+    private AnimVector2f(float x, float y, float speed) {
         super(x, y);
         target.set(this);
         this.speed = new MutableFloat(speed);
@@ -54,7 +54,7 @@ public class AnimVector2f extends v2 implements Animated {
         return target.y;
     }
 
-    public void interpLERP(float dt) {
+    private void interpLERP(float dt) {
         float rate = Util.unitize(speed.floatValue() * dt);
         super.set(
                 Util.lerp(rate, x, target.x),

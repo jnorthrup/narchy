@@ -115,7 +115,7 @@ public class Vector2d extends Tuple2d {
    * Computes the dot product of the this vector and vector v1.
    * @param v1 the other vector
    */
-  public final double dot(Vector2d v1)
+  private double dot(Vector2d v1)
     {
       return (this.x*v1.x + this.y*v1.y);
     }
@@ -124,8 +124,8 @@ public class Vector2d extends Tuple2d {
     /**  
      * Returns the length of this vector.
      * @return the length of this vector
-     */  
-    public final double length()
+     */
+    private double length()
     {
         return Math.sqrt(this.x*this.x + this.y*this.y);
     }

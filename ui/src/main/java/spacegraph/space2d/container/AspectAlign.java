@@ -9,24 +9,25 @@ public class AspectAlign extends UnitContainer {
     /**
      * not used unless aspect ratio is set to non-NaN value
      */
-    protected Align align = Align.Center;
+    private Align align = Align.Center;
 
     /**
      * height/width target aspect ratio; if aspect is NaN, no adjustment applied
      */
-    protected float aspect;
+    private float aspect;
 
     /**
      * relative size adjustment uniformly applied to x,y
      * after the 100% aspect size has been calculated
      */
-    protected float scaleX, scaleY;
+    private float scaleX;
+    private float scaleY;
 
     protected AspectAlign() {
         this(1f);
     }
 
-    protected AspectAlign(float scale) {
+    private AspectAlign(float scale) {
         this(null, 1f, Center, scale);
     }
 
@@ -43,7 +44,7 @@ public class AspectAlign extends UnitContainer {
         this(the, aspect, Align.Center);
     }
 
-    public AspectAlign(Surface the, float aspect, Align a) {
+    private AspectAlign(Surface the, float aspect, Align a) {
         this(the, aspect, a, 1);
     }
 
@@ -51,14 +52,14 @@ public class AspectAlign extends UnitContainer {
         this(the, aspect, a, scale, scale);
     }
 
-    public AspectAlign(Surface the, float aspect, Align a, float scaleX, float scaleY) {
+    private AspectAlign(Surface the, float aspect, Align a, float scaleX, float scaleY) {
         super(the);
         this.aspect = aspect;
         this.align = a;
         scale(scaleX, scaleY);
     }
 
-    public AspectAlign scale(float sx, float sy) {
+    private AspectAlign scale(float sx, float sy) {
         this.scaleX = sx;
         this.scaleY = sy;
         layout(); 
@@ -185,7 +186,7 @@ public class AspectAlign extends UnitContainer {
         doLayout(tx, ty, tw, th);
     }
 
-    protected void doLayout(float tx, float ty, float tw, float th) {
+    private void doLayout(float tx, float ty, float tw, float th) {
         the.pos(tx, ty, tx+tw, ty+th);
     }
 

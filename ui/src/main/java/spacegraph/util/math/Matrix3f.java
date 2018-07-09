@@ -1174,8 +1174,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     
     
     
-    static boolean luDecomposition(double[] matrix0,
-                                   int[] row_perm) {
+    private static boolean luDecomposition(double[] matrix0,
+                                           int[] row_perm) {
 
         double row_scale[] = new double[3];
 
@@ -1320,9 +1320,9 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     
     
     
-    static void luBacksubstitution(double[] matrix1,
-                                   int[] row_perm,
-                                   double[] matrix2) {
+    private static void luBacksubstitution(double[] matrix1,
+                                           int[] row_perm,
+                                           double[] matrix2) {
 
         int ii, ip, j, k;
         int rv;

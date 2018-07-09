@@ -24,7 +24,7 @@ public class TriangularWindow extends WaveFactory {
         return b;
     }
 
-    protected static float tri(float x) {
+    private static float tri(float x) {
         return x < .5 ? 4 * x : 4 * (1 - x);
     }
 

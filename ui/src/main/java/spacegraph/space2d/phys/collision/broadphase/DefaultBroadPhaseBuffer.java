@@ -210,7 +210,7 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
         return m_tree.getAreaRatio();
     }
 
-    protected final void bufferMove(int proxyId) {
+    private void bufferMove(int proxyId) {
         if (m_moveCount == m_moveCapacity) {
             int[] old = m_moveBuffer;
             m_moveCapacity *= 2;
@@ -222,7 +222,7 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
         ++m_moveCount;
     }
 
-    protected final void unbufferMove(int proxyId) {
+    private void unbufferMove(int proxyId) {
         for (int i = 0; i < m_moveCount; i++) {
             if (m_moveBuffer[i] == proxyId) {
                 m_moveBuffer[i] = NULL_PROXY;

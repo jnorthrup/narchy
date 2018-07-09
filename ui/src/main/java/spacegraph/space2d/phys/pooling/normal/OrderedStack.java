@@ -31,7 +31,7 @@ package spacegraph.space2d.phys.pooling.normal;
 /**
  * @author Daniel Murphy
  */
-public abstract class OrderedStack<E> {
+abstract class OrderedStack<E> {
 
     private final Object[] pool;
     private int index;

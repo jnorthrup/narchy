@@ -44,17 +44,17 @@ public abstract class RdpPacket {
     public static final int RDP_HEADER = 3;
     public static final int CHANNEL_HEADER = 4;
     static final Logger logger = LoggerFactory.getLogger(RdpPacket.class);
-    protected int mcs = -1;
+    private int mcs = -1;
 
-    protected int secure = -1;
+    private int secure = -1;
 
-    protected int rdp = -1;
+    private int rdp = -1;
 
-    protected int channel = -1;
+    private int channel = -1;
 
-    protected int start = -1;
+    int start = -1;
 
-    protected int end = -1;
+    int end = -1;
 
     /**
      * Read an 8-bit integer value from the packet (at current read/write
@@ -238,8 +238,8 @@ public abstract class RdpPacket {
      * @param mem_offset   Offset into packet for start of data
      * @param len          Length of data to be copied
      */
-    public abstract void copyFromByteArray(byte[] array, int array_offset,
-                                           int mem_offset, int len);
+    protected abstract void copyFromByteArray(byte[] array, int array_offset,
+                                              int mem_offset, int len);
 
     /**
      * Copy data from this packet to another packet
@@ -303,7 +303,7 @@ public abstract class RdpPacket {
      *
      * @return Packet capacity (in bytes)
      */
-    public abstract int capacity();
+    protected abstract int capacity();
 
     /**
      * Mark specified position as end of packet

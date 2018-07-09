@@ -26,7 +26,7 @@ public class BmpFont {
 
     private GL2 gl;
 
-    public static BmpFont the(GL2 g) {
+    private static BmpFont the(GL2 g) {
         BmpFont f = fonts.get();
         if (!f.init)
             f.init(g);
@@ -35,7 +35,7 @@ public class BmpFont {
 
 
 
-    void loadGLTextures() {
+    private void loadGLTextures() {
 
         String tileNames[] =
                 {"font2.png"/*, "bumps.png"*/};
@@ -105,7 +105,7 @@ public class BmpFont {
     }
 
     
-    public void write(int x, int y, String string, int set) {
+    private void write(int x, int y, String string, int set) {
 
         if (set > 1) {
             set = 1;
@@ -142,9 +142,9 @@ public class BmpFont {
         gl.glDisable(textures[0]);
     }
 
-    boolean init;
+    private boolean init;
 
-    public synchronized void init(GL2 gl) {
+    private synchronized void init(GL2 gl) {
 
         if (this.init)
             return; 
@@ -177,7 +177,7 @@ public class BmpFont {
     public static void main(String[] args) {
         SpaceGraph.window(new Surface() {
 
-            public BmpFont f;
+            BmpFont f;
             private float cnt1;    
             private float cnt2;    
 

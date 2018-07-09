@@ -86,7 +86,7 @@ public class Clock extends UGen implements IntegerBead {
      * @param context the AudioContext.
      * @param env     the interval envelope.
      */
-    public Clock(AudioContext context, UGen env) {
+    private Clock(AudioContext context, UGen env) {
         super(context, 0, 0);
         intervalEnvelope = env;
         listeners = new AuventArray();
@@ -276,7 +276,7 @@ public class Clock extends UGen implements IntegerBead {
      *
      * @return the current beat count.
      */
-    public int getBeatCount() {
+    private int getBeatCount() {
         return (int) (getCount() / ticksPerBeat);
     }
 

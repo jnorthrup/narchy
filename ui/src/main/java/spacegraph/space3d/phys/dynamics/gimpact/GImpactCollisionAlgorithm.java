@@ -54,18 +54,18 @@ import spacegraph.util.math.v3;
  */
 public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
-	protected CollisionAlgorithm convex_algorithm;
-    protected PersistentManifold manifoldPtr;
-	protected ManifoldResult resultOut;
-	protected DispatcherInfo dispatchInfo;
-	protected int triface0;
-	protected int part0;
-	protected int triface1;
-	protected int part1;
+	private CollisionAlgorithm convex_algorithm;
+    private PersistentManifold manifoldPtr;
+	private ManifoldResult resultOut;
+	private DispatcherInfo dispatchInfo;
+	private int triface0;
+	private int part0;
+	private int triface1;
+	private int part1;
 
 	private final PairSet tmpPairset = new PairSet();
 	
-	public void init(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
+	private void init(CollisionAlgorithmConstructionInfo ci, Collidable body0, Collidable body1) {
 		super.init(ci);
 		manifoldPtr = null;
 		convex_algorithm = null;
@@ -109,7 +109,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 	
-	public void gimpact_vs_gimpact(Collidable body0, Collidable body1, GImpactShape shape0, GImpactShape shape1) {
+	private void gimpact_vs_gimpact(Collidable body0, Collidable body1, GImpactShape shape0, GImpactShape shape1) {
 		if (shape0.getGImpactShapeType() == ShapeType.TRIMESH_SHAPE) {
 			GImpactMeshShape meshshape0 = (GImpactMeshShape) shape0;
 
@@ -304,7 +304,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		shape0.unlockChildShapes();
 	}
 	
-	public void gimpact_vs_compoundshape(Collidable body0, Collidable body1, GImpactShape shape0, CompoundShape shape1, boolean swapped) {
+	private void gimpact_vs_compoundshape(Collidable body0, Collidable body1, GImpactShape shape0, CompoundShape shape1, boolean swapped) {
 		Transform orgtrans1 = body1.getWorldTransform(new Transform());
 		Transform childtrans1 = new Transform();
 		Transform tmpTrans = new Transform();
@@ -325,7 +325,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 	
-	public void gimpact_vs_concave(Collidable body0, Collidable body1, GImpactShape shape0, ConcaveShape shape1, boolean swapped) {
+	private void gimpact_vs_concave(Collidable body0, Collidable body1, GImpactShape shape0, ConcaveShape shape1, boolean swapped) {
 		
 		GImpactTriangleCallback tricallback = new GImpactTriangleCallback();
 		tricallback.algorithm = this;
@@ -351,12 +351,12 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	/**
 	 * Creates a new contact point.
 	 */
-	protected PersistentManifold newContactManifold(Collidable body0, Collidable body1) {
+    private PersistentManifold newContactManifold(Collidable body0, Collidable body1) {
 		manifoldPtr = intersecter.getNewManifold(body0, body1);
 		return manifoldPtr;
 	}
 
-	protected void destroyConvexAlgorithm() {
+	private void destroyConvexAlgorithm() {
 		if (convex_algorithm != null) {
 			
 			Intersecter.freeCollisionAlgorithm(convex_algorithm);
@@ -364,13 +364,13 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 
-	protected void destroyContactManifolds() {
+	private void destroyContactManifolds() {
 		if (manifoldPtr == null) return;
 		intersecter.releaseManifold(manifoldPtr);
 		manifoldPtr = null;
 	}
 
-	protected void clearCache() {
+	private void clearCache() {
 		destroyContactManifolds();
 		destroyConvexAlgorithm();
 
@@ -387,7 +387,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	/**
 	 * Call before process collision.
 	 */
-	protected void checkManifold(Collidable body0, Collidable body1) {
+    private void checkManifold(Collidable body0, Collidable body1) {
         if (manifoldPtr == null) {
 			newContactManifold(body0, body1);
 		}
@@ -398,7 +398,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	/**
 	 * Call before process collision.
 	 */
-	protected CollisionAlgorithm newAlgorithm(Collidable body0, Collidable body1) {
+    private CollisionAlgorithm newAlgorithm(Collidable body0, Collidable body1) {
 		checkManifold(body0, body1);
 
         CollisionAlgorithm convex_algorithm = intersecter.findAlgorithm(body0, body1, manifoldPtr);
@@ -408,12 +408,12 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	/**
 	 * Call before process collision.
 	 */
-	protected void checkConvexAlgorithm(Collidable body0, Collidable body1) {
+    private void checkConvexAlgorithm(Collidable body0, Collidable body1) {
 		if (convex_algorithm != null) return;
 		convex_algorithm = newAlgorithm(body0, body1);
 	}
 
-	protected void addContactPoint(Collidable body0, Collidable body1, v3 point, v3 normal, float distance, float breakingThresh) {
+	private void addContactPoint(Collidable body0, Collidable body1, v3 point, v3 normal, float distance, float breakingThresh) {
 		resultOut.setShapeIdentifiers(part0, triface0, part1, triface1);
 		checkManifold(body0, body1);
 		resultOut.addContactPoint(normal, point, distance, breakingThresh);
@@ -424,7 +424,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 	*/
 	
-	void collide_sat_triangles(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, GImpactMeshShape.GImpactMeshShapePart shape1, PairSet pairs, int pair_count) {
+	private void collide_sat_triangles(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, GImpactMeshShape.GImpactMeshShapePart shape1, PairSet pairs, int pair_count) {
 		v3 tmp = new v3();
 
 		Transform orgtrans0 = body0.transform;
@@ -489,7 +489,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		shape1.unlockChildShapes();
 	}
 
-	protected void shape_vs_shape_collision(Collidable body0, Collidable body1, CollisionShape shape0, CollisionShape shape1) {
+	private void shape_vs_shape_collision(Collidable body0, Collidable body1, CollisionShape shape0, CollisionShape shape1) {
 		CollisionShape tmpShape0 = body0.shape();
 		CollisionShape tmpShape1 = body1.shape();
 
@@ -510,7 +510,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		body1.internalSetTemporaryCollisionShape(tmpShape1);
 	}
 	
-	protected void convex_vs_convex_collision(Collidable body0, Collidable body1, CollisionShape shape0, CollisionShape shape1) {
+	private void convex_vs_convex_collision(Collidable body0, Collidable body1, CollisionShape shape0, CollisionShape shape1) {
 		CollisionShape tmpShape0 = body0.shape();
 		CollisionShape tmpShape1 = body1.shape();
 
@@ -526,7 +526,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		body1.internalSetTemporaryCollisionShape(tmpShape1);
 	}
 
-	static void gimpact_vs_gimpact_find_pairs(Transform trans0, Transform trans1, GImpactShape shape0, GImpactShape shape1, PairSet pairset) {
+	private static void gimpact_vs_gimpact_find_pairs(Transform trans0, Transform trans1, GImpactShape shape0, GImpactShape shape1, PairSet pairset) {
 		if (shape0.hasBoxSet() && shape1.hasBoxSet()) {
 			GImpactBvh.find_collision(shape0.getBoxSet(), trans0, shape1.getBoxSet(), trans1, pairset);
 		}
@@ -550,7 +550,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 
-	protected static void gimpact_vs_shape_find_pairs(Transform trans0, Transform trans1, GImpactShape shape0, CollisionShape shape1, IntArrayList collided_primitives) {
+	private static void gimpact_vs_shape_find_pairs(Transform trans0, Transform trans1, GImpactShape shape0, CollisionShape shape1, IntArrayList collided_primitives) {
 		BoxCollision.AABB boxshape = new BoxCollision.AABB();
 
 		if (shape0.hasBoxSet()) {
@@ -578,7 +578,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 	
-	protected void gimpacttrimeshpart_vs_plane_collision(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, StaticPlaneShape shape1, boolean swapped) {
+	private void gimpacttrimeshpart_vs_plane_collision(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, StaticPlaneShape shape1, boolean swapped) {
 		Transform orgtrans0 = body0.transform;
 		Transform orgtrans1 = body1.transform;
 

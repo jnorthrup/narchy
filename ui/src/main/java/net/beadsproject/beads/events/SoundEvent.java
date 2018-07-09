@@ -16,7 +16,7 @@ import java.util.Map;
  * It should also return the {@link UGen} which is its root, so that callers of the
  * SoundEvent can keep track of which SoundEvents are still alive.
  */
-public interface SoundEvent {
+interface SoundEvent {
 
     /**
      * Cause a SoundEvent to play. The SoundEvent is responsible for connecting itself

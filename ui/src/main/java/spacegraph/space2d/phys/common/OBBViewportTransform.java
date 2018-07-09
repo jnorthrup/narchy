@@ -32,13 +32,13 @@ import spacegraph.util.math.Tuple2f;
  */
 public class OBBViewportTransform implements IViewportTransform {
 
-    public static class OBB {
-        public final Mat22 R = new Mat22();
-        public final Tuple2f center = new Vec2();
-        public final Tuple2f extents = new Vec2();
+    protected static class OBB {
+        final Mat22 R = new Mat22();
+        final Tuple2f center = new Vec2();
+        final Tuple2f extents = new Vec2();
     }
 
-    protected final OBB box = new OBB();
+    private final OBB box = new OBB();
     private boolean yFlip = false;
     private final Mat22 yFlipMat = new Mat22(1, 0, 0, -1);
 

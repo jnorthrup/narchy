@@ -107,7 +107,7 @@ public class GearJoint extends Joint {
     private float m_JwA, m_JwB, m_JwC, m_JwD;
     private float m_mass;
 
-    protected GearJoint(IWorldPool argWorldPool, GearJointDef def) {
+    GearJoint(IWorldPool argWorldPool, GearJointDef def) {
         super(argWorldPool, def);
 
         m_joint1 = def.joint1;

@@ -25,7 +25,7 @@ public enum SampleLoader
     /**
      * Loads a sample from an url
      */
-    public static SoundSample load(InputStream isis) throws UnsupportedAudioFileException, IOException
+    private static SoundSample load(InputStream isis) throws UnsupportedAudioFileException, IOException
     {
         
         byte[] d = rip(isis);

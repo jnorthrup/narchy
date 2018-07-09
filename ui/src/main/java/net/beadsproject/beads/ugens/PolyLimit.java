@@ -66,9 +66,8 @@ public class PolyLimit extends UGen {
                 existingInputs.add(sourceUGen);
                 super.in(sourceUGen);
             } else {
-                
-                Collection<UGen> copy = new LinkedList<>();
-                copy.addAll(existingInputs);
+
+                Collection<UGen> copy = new LinkedList<>(existingInputs);
                 for (UGen ug : copy) {
                     if (ug.isDeleted()) existingInputs.remove(ug);
                 }
@@ -105,7 +104,7 @@ public class PolyLimit extends UGen {
      *
      * @param maxInputs the new max inputs
      */
-    public void setMaxInputs(int maxInputs) {
+    private void setMaxInputs(int maxInputs) {
         this.maxInputs = maxInputs;
     }
 

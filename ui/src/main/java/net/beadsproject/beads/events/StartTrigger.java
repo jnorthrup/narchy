@@ -13,7 +13,7 @@ public class StartTrigger extends Auvent {
     /**
      * The Bead that will be started.
      */
-	final Auvent receiver;
+	private final Auvent receiver;
 
     /**
      * Instantiates a new StartTrigger which will start the given {@link Auvent} when triggered.

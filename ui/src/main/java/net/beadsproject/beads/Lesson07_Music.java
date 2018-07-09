@@ -7,7 +7,7 @@ import net.beadsproject.beads.data.Pitch;
 import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 
-public class Lesson07_Music {
+class Lesson07_Music {
 
     public static class Music1 {
         public static void main(String[] args) {
@@ -82,7 +82,7 @@ public class Lesson07_Music {
         }
     }
 
-    public static float random(double x) {
+    private static float random(double x) {
         return (float) (Math.random() * x);
     }
 }

@@ -29,7 +29,7 @@ import spacegraph.util.math.v3;
  * 
  * @author jezek2
  */
-public class WheelInfoConstructionInfo {
+class WheelInfoConstructionInfo {
 
 	public final v3 chassisConnectionCS = new v3();
 	public final v3 wheelDirectionCS = new v3();

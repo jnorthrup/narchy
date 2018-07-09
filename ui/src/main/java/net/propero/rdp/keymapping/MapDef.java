@@ -260,7 +260,7 @@ public class MapDef {
         return ((characterDef) && (this.keyChar == e.getKeyChar()));
     }
 
-    protected boolean appliesToTyped(KeyEvent e, boolean capslock) {
+    boolean appliesToTyped(KeyEvent e, boolean capslock) {
 
         if (Constants.OS == Constants.MAC) {
             
@@ -285,7 +285,7 @@ public class MapDef {
      * @param e KeyEvent to check definition against
      * @return
      */
-    protected boolean appliesToPressed(KeyEvent e) {
+    boolean appliesToPressed(KeyEvent e) {
         
         if (!characterDef) {
             if (!(!ctrlDown || e.isControlDown()))

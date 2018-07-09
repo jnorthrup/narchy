@@ -195,7 +195,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
         /**
          * Set up JavaSound. Requires that JavaSound has been set up in AudioContext.
          */
-        public void initJavaSound() {
+        void initJavaSound() {
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
             try {
                 int inputBufferSize = 5000;

@@ -34,7 +34,7 @@ package net.propero.rdp;
 import java.awt.datatransfer.DataFlavor;
 import java.util.StringTokenizer;
 
-public class Utilities {
+class Utilities {
 
     public static DataFlavor imageFlavor = new DataFlavor(java.awt.Image.class,
             "image/x-java-image");

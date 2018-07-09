@@ -70,7 +70,7 @@ public class Wire {
         return false;
     }
 
-    public final Surface other(Surface x) {
+    private Surface other(Surface x) {
         if (x == a) {
             return b;
         } else if (x == b) {

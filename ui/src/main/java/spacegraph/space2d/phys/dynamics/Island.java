@@ -159,24 +159,24 @@ import spacegraph.util.math.Tuple2f;
  *
  * @author Daniel Murphy
  */
-public class Island {
+class Island {
 
-    public ContactListener m_listener;
+    private ContactListener m_listener;
 
     public Body2D[] bodies;
-    public Contact[] contacts;
-    public Joint[] joints;
+    private Contact[] contacts;
+    private Joint[] joints;
 
-    public Position[] positions;
-    public Velocity[] velocities;
+    private Position[] positions;
+    private Velocity[] velocities;
 
     public int m_bodyCount;
-    public int m_jointCount;
+    private int m_jointCount;
     public int m_contactCount;
 
     public int m_bodyCapacity;
     public int m_contactCapacity;
-    public int m_jointCapacity;
+    private int m_jointCapacity;
 
     private final Dynamics2D m_world;
 
@@ -582,7 +582,7 @@ public class Island {
     }
 
 
-    void report(ContactVelocityConstraint[] constraints) {
+    private void report(ContactVelocityConstraint[] constraints) {
         for (int i = 0; i < m_contactCount; ++i) {
             Contact c = contacts[i];
 

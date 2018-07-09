@@ -24,7 +24,8 @@ public class SliderModel extends Surface {
 
     
 
-    @Nullable ObjectFloatProcedure<SliderModel> change;
+    @Nullable
+    private ObjectFloatProcedure<SliderModel> change;
 
     private float p;
 
@@ -40,10 +41,10 @@ public class SliderModel extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        Draw.bounds(gl, bounds, (g)-> ui.draw(this.p, g));
+        Draw.bounds(gl, bounds, (GL2 g)-> ui.draw(this.p, g));
     }
 
-    SliderUI ui = SolidLeft;
+    private SliderUI ui = SolidLeft;
 
     public interface SliderUI {
         void draw(float p, GL2 gl);
@@ -76,11 +77,11 @@ public class SliderModel extends Surface {
     }
 
 
-    void _set(float p) {
+    private void _set(float p) {
         changed(p);
     }
 
-    protected void changed(float p) {
+    void changed(float p) {
         if (this.p == this.p && Util.equals(this.p, p, Float.MIN_NORMAL))
             return;
 
@@ -99,18 +100,18 @@ public class SliderModel extends Surface {
     }
 
     /** normalize: gets the output value given the proportion (0..1.0) */
-    protected float v(float p) {
+    float v(float p) {
         return p;
     }
 
     /**
      * unnormalize: gets proportion from external value
      */
-    protected float p(float v) {
+    float p(float v) {
         return v;
     }
 
-    static float pHorizontal(v2 hitPoint) {
+    private static float pHorizontal(v2 hitPoint) {
         float x = hitPoint.x;
         if (x <= margin)
             return 0;
@@ -119,7 +120,7 @@ public class SliderModel extends Surface {
         else
             return x;
     }
-    static float pVertical(v2 hitPoint) {
+    private static float pVertical(v2 hitPoint) {
         float y = hitPoint.y;
         if (y <= margin)
             return 0;
@@ -129,7 +130,7 @@ public class SliderModel extends Surface {
             return y;
     }
 
-    static final SliderUI SolidLeft = new SliderUI() {
+    private static final SliderUI SolidLeft = new SliderUI() {
         @Override
         public void draw(float p, GL2 gl) {
             float W = 1; 

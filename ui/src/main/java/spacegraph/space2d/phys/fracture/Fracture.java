@@ -24,7 +24,7 @@ import static spacegraph.space2d.phys.fracture.Material.CIRCLEVERTICES;
  *
  * @author Marek Benovic
  */
-public class Fracture {
+public final class Fracture {
     /**
      * Normal Impulse, ktory vyvolal frakturu
      */

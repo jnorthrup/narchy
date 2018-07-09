@@ -32,30 +32,24 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     @Nullable
     public Surface front;
-    static final float zOffset = 0.1f; 
+    private static final float zOffset = 0.1f;
 
     @Nullable
-    public Finger finger;
+    private Finger finger;
     private v3 mousePick;
     
 
-    public Cuboid(X x, float w, float h) {
+    Cuboid(X x, float w, float h) {
         this(x, null, w, h);
     }
 
-    public Cuboid(Surface front, float w, float h) {
-        this((X) front, front, w, h);
-    }
 
-    public Cuboid(X x, Surface front, float w, float h) {
+
+    private Cuboid(X x, Surface front, float w, float h) {
         this(x, front, w, h, (Math.min(w, h) / 2f));
     }
 
-    public Cuboid(Surface front, float w, float h, float d) {
-        this((X) front, front, w, h, d);
-    }
-
-    public Cuboid(X x, Surface front, float w, float h, float d) {
+    private Cuboid(X x, Surface front, float w, float h, float d) {
         super(x);
 
         scale(w, h, d);
@@ -65,7 +59,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     }
 
-    public void setFront(Surface front) {
+    void setFront(Surface front) {
         synchronized (this) {
             this.front = front;
             this.finger = null; 

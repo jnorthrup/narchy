@@ -44,7 +44,6 @@ public class ContactManager implements PairCallback {
     public final BroadPhase broadPhase;
     public Contact m_contactList;
     public int m_contactCount;
-    public ContactFilter m_contactFilter;
     public ContactListener contactListener;
     public FractureListener m_fractureListener;
 
@@ -56,7 +55,6 @@ public class ContactManager implements PairCallback {
     public ContactManager(Dynamics2D dyn, BroadPhase broadPhase) {
         m_contactList = null;
         m_contactCount = 0;
-        m_contactFilter = new ContactFilter();
         contactListener = null;
         this.broadPhase = broadPhase;
         this.dyn = dyn;
@@ -143,7 +141,7 @@ public class ContactManager implements PairCallback {
         }
 
         
-        if (m_contactFilter != null && !ContactFilter.shouldCollide(fixtureA, fixtureB)) {
+        if (!ContactFilter.shouldCollide(fixtureA, fixtureB)) {
             return;
         }
 
@@ -292,7 +290,7 @@ public class ContactManager implements PairCallback {
                 }
 
                 
-                if (m_contactFilter != null && !ContactFilter.shouldCollide(fixtureA, fixtureB)) {
+                if (!ContactFilter.shouldCollide(fixtureA, fixtureB)) {
                     Contact cNuke = c;
                     c = cNuke.next();
                     destroy(cNuke);
@@ -330,7 +328,7 @@ public class ContactManager implements PairCallback {
         }
     }
 
-    public Contact popContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
+    private Contact popContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
         final ShapeType type1 = fixtureA.type();
         final ShapeType type2 = fixtureB.type();
 

@@ -44,17 +44,17 @@ public abstract class KeyCode_FileBased {
     public static final int UP = 0;
     public static final int QUIETUP = 2;
     public static final int QUIETDOWN = 3;
-    protected static final Logger logger = LoggerFactory.getLogger(KeyCode_FileBased.class);
-    final Vector keyMap = new Vector();
+    private static final Logger logger = LoggerFactory.getLogger(KeyCode_FileBased.class);
+    private final Vector keyMap = new Vector();
     private final Hashtable keysCurrentlyDown = new Hashtable();
     public boolean useLockingKeyState = true;
-    public boolean capsLockDown;
+    protected boolean capsLockDown;
     private KeyEvent lastKeyEvent;
     private boolean lastEventMatched;
     private int mapCode = -1;
     private boolean altQuiet;
 
-    public KeyCode_FileBased(InputStream fstream) throws KeyMapException {
+    protected KeyCode_FileBased(InputStream fstream) throws KeyMapException {
         readMapFile(fstream);
     }
 
@@ -64,7 +64,7 @@ public abstract class KeyCode_FileBased {
      *
      * @param keyMapFile File containing keymap data
      */
-    public KeyCode_FileBased(String keyMapFile) throws KeyMapException {
+    protected KeyCode_FileBased(String keyMapFile) throws KeyMapException {
         
 
         FileInputStream fstream;
@@ -104,7 +104,7 @@ public abstract class KeyCode_FileBased {
      * @param fstream Stream connected to keymap file
      * @throws KeyMapException
      */
-    public void readMapFile(InputStream fstream) throws KeyMapException {
+    private void readMapFile(InputStream fstream) throws KeyMapException {
         
         int lineNum = 0; 
         String line = ""; 
@@ -207,7 +207,7 @@ public abstract class KeyCode_FileBased {
      * @param e      Key event received by Java (defining current state)
      * @param theDef Key mapping to define desired keypress on server end
      */
-    public String stateChanges(KeyEvent e, MapDef theDef) {
+    private String stateChanges(KeyEvent e, MapDef theDef) {
 
         String changes = "";
 
@@ -334,7 +334,7 @@ public abstract class KeyCode_FileBased {
      * @param mod List of modifiers to be updated by method
      * @return Scancode of supplied key
      */
-    public boolean hasScancode(char c) {
+    private boolean hasScancode(char c) {
         if (c == KeyEvent.CHAR_UNDEFINED)
             return false;
 
@@ -392,7 +392,7 @@ public abstract class KeyCode_FileBased {
      * @param e Key event to retrieve a definition for
      * @return Mapping definition for supplied keypress
      */
-    public MapDef getDef(KeyEvent e) {
+    private MapDef getDef(KeyEvent e) {
 
         if (e.getID() == KeyEvent.KEY_RELEASED) {
             MapDef def = (MapDef) keysCurrentlyDown.get(e

@@ -37,7 +37,7 @@ import spacegraph.util.math.v3;
 public abstract class ConvexInternalShape extends ConvexShape {
 
 	
-	public final v3 localScaling = new v3(1f, 1f, 1f);
+	final v3 localScaling = new v3(1f, 1f, 1f);
 	public final v3 implicitShapeDimensions = new v3();
 	protected float collisionMargin = BulletGlobals.CONVEX_DISTANCE_MARGIN;
 

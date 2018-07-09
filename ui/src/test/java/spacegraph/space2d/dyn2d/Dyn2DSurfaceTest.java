@@ -69,7 +69,8 @@ public class Dyn2DSurfaceTest {
     }
 
     public static void demo(Dyn2DSurface s) {
-        Dyn2DSurface.PhyWindow w = s.put(WidgetTest.widgetDemo(), 1f, 1f);
+        Dyn2DSurface.PhyWindow w = s.put(WidgetTest.widgetDemo(), 100f, 100f);
+        w.move(50,50);
 
         w.sprout(
                 new Gridding(0.1f, 1f, new TextEdit(16, 3, "wtf").surface()),
@@ -187,6 +188,7 @@ public class Dyn2DSurfaceTest {
         public static void main(String[] args) {
             Dyn2DSurface s = SpaceGraph.wall(800, 800);
 
+            //s.size(100,100);
 
 
             Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,

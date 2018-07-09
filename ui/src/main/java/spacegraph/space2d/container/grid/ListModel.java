@@ -8,7 +8,7 @@ import java.util.List;
 abstract public class ListModel<X> implements GridModel<X> {
 
     /** orientation, dynamically changeable. true=vertical, false=horizontal. default=vertical */
-    public boolean vertical = true;
+    private boolean vertical = true;
 
     private ScrollGrid<X> surface;
 
@@ -56,11 +56,11 @@ abstract public class ListModel<X> implements GridModel<X> {
         this.vertical = vertical;
     }
 
-    abstract public X get(int index);
-    abstract public int size();
+    protected abstract X get(int index);
+    protected abstract int size();
 
     /** thickenss of the table, one by default */
-    protected int depth() {
+    private int depth() {
         return 1;
     }
 
