@@ -332,11 +332,11 @@ public class Spider extends Causable {
                     if (ss != s) {
                         int eteCap = ((DefaultBeliefTable) tt).eternal.capacity(); /* dont affect eternal */
                         //"squeeze" temporarily causing compression
-                        tt.setCapacity(
+                        tt.capacity(
                                 eteCap,
                                 ss);
                         //release, restore capacity
-                        tt.setCapacity(
+                        tt.capacity(
                                 eteCap,
                                 s);
                     }

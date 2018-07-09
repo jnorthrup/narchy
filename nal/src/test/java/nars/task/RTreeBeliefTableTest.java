@@ -46,7 +46,7 @@ class RTreeBeliefTableTest {
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
         @NotNull BeliefTable cb = true ? c.beliefs() : c.goals();
-        cb.setCapacity(0, cap);
+        cb.capacity(0, cap);
 
 
         

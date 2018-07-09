@@ -351,7 +351,7 @@ class RevectionTest {
 
         Task at = n.believe(a, Tense.Present, 1f);
         n.believe(b, Tense.Present);
-        n.concept(a).beliefs().setCapacity(1, 1);
+        n.concept(a).beliefs().capacity(1, 1);
         n.input(at); 
 
 

@@ -30,7 +30,7 @@ public class NAL6ToNAL3BridgeTest extends NALTest {
         test.input("((A-->X) - (A-->Y))!").mustGoal(4, "(A-->(X-Y))", 1.0f, CONF);
     }
     @Test public void test6() {
-        test.input("((X-->A) - (Y-->A))!").mustGoal(4, "((X-Y)-->A)", 1.0f, CONF);
+        test.input("((X-->A) - (Y-->A))!").mustGoal(4, "((X~Y)-->A)", 1.0f, CONF);
     }
 
 

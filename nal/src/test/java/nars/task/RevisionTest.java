@@ -4,8 +4,6 @@ import jcog.bag.Bag;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.concept.util.ConceptAllocator;
-import nars.concept.util.DefaultConceptBuilder;
 import nars.link.TaskLink;
 import nars.term.Compound;
 import nars.term.Term;
@@ -27,16 +25,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RevisionTest {
 
     static NAR newNAR(int fixedNumBeliefs) {
+        //TODO
+//
+//        ConceptAllocator cb = new ConceptAllocator(fixedNumBeliefs, fixedNumBeliefs, 1);
+//        cb.beliefsMaxEte = (fixedNumBeliefs);
+//        cb.beliefsMaxTemp = (fixedNumBeliefs);
+//        cb.beliefsMinTemp = (fixedNumBeliefs);
+//        cb.goalsMaxEte = (fixedNumBeliefs);
+//        cb.goalsMaxTemp = (fixedNumBeliefs);
+//        cb.goalsMinTemp = (fixedNumBeliefs);
 
-        ConceptAllocator cb = new ConceptAllocator(fixedNumBeliefs, fixedNumBeliefs, 1);
-        cb.beliefsMaxEte = (fixedNumBeliefs);
-        cb.beliefsMaxTemp = (fixedNumBeliefs);
-        cb.beliefsMinTemp = (fixedNumBeliefs);
-        cb.goalsMaxEte = (fixedNumBeliefs);
-        cb.goalsMaxTemp = (fixedNumBeliefs);
-        cb.goalsMinTemp = (fixedNumBeliefs);
-
-        return new NARS().concepts(new DefaultConceptBuilder(cb)).get();
+        return new NARS()/*.concepts(new DefaultConceptBuilder(cb))*/.get();
 
     }
 

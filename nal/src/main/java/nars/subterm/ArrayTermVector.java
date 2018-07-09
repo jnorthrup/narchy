@@ -121,7 +121,8 @@ public class ArrayTermVector extends TermVector {
 
     @Override
     public final Term[] arrayShared() {
-        return Param.TERM_ARRAY_SHARE ? terms : terms.clone();
+        //return Param.TERM_ARRAY_SHARE ? terms : terms.clone();
+        return terms;
     }
 
     @Override

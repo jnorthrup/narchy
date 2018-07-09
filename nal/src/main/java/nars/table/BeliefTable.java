@@ -30,7 +30,8 @@ public interface BeliefTable extends TaskTable {
         return eternalTaskValue(eternal) * eternal.originality();
     }
 
-    void setCapacity(int eternals, int temporals);
+    /** set the capacity */
+    void capacity(int eternals, int temporals);
 
     /**
      * minT and maxT inclusive
@@ -113,7 +114,7 @@ public interface BeliefTable extends TaskTable {
         }
 
         @Override
-        public void setCapacity(int eternals, int temporals) {
+        public void capacity(int eternals, int temporals) {
         }
 
         @Override

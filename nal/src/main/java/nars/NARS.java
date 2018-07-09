@@ -1,7 +1,6 @@
 package nars;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.data.map.MRUCache;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -34,6 +33,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static jcog.Util.curve;
 
 /**
  * NAR builder
@@ -98,6 +99,44 @@ public class NARS {
                 new MatrixDeriver(Derivers.nal(n, minLevel, maxLevel))
         );
     }
+    /**
+     * generic defaults
+     */
+    @Deprecated
+    public static class DefaultNAR extends NARS {
+
+
+        public DefaultNAR(int nal, boolean threadSafe) {
+
+            if (nal > 0)
+                withNAL(1, nal);
+
+            if (threadSafe)
+                index = () -> new CaffeineIndex(64 * 1024);
+
+            if (nal >= 7) {
+                then((nn)->new STMLinkage(nn, 1, false));
+            }
+
+            then((nar)->{
+
+                nar.freqResolution.set(0.01f);
+                nar.confResolution.set(0.01f);
+
+                nar.termlinkBalance.set(0.5f);
+                nar.termVolumeMax.set(26);
+
+
+                nar.forgetRate.set(0.5f);
+
+                nar.beliefPriDefault.set(0.5f);
+                nar.goalPriDefault.set(0.5f);
+                nar.questionPriDefault.set(0.5f);
+                nar.questPriDefault.set(0.5f);
+            });
+        }
+
+    }
 
     /**
      * defaults
@@ -132,60 +171,54 @@ public class NARS {
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
-                                16, 16,
-                                64, 4,
-                                Short.MAX_VALUE, 1
-                        ),
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
+                        //beliefs ete
+                        curve(Concept::volume,
+                        1, 8,
                                 16, 4,
-                                Short.MAX_VALUE, 1
+                                32, 2
                         ),
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
-                                16, 4,
-                                Short.MAX_VALUE, 1
+                        //beliefs tmp
+                        curve(Concept::volume,
+                                1, 96,
+                                6,64,
+                                16, 16
                         ),
-
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
-                                16, 4,
-                                Short.MAX_VALUE, 1
+                        //goals ete
+                        curve(Concept::volume,
+                                1, 6,
+                                16, 3,
+                                32, 2
                         ),
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
-                                16, 4,
-                                Short.MAX_VALUE, 1
+                        //goals tmp
+                        curve(Concept::volume,
+                                1, 96,
+                                6,64,
+                                16, 16
                         ),
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
-                                16, 4,
-                                Short.MAX_VALUE, 1
+                        //questions
+                        curve(Concept::volume,
+                          1, 12,
+                                12, 4
                         ),
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
-                                16, 4,
-                                Short.MAX_VALUE, 1
+                        //quests
+                        curve(Concept::volume,
+                                1, 12,
+                                12, 4
                         ),
-                        //beliefs
-                        Util.curve(Concept::volume,
-                                1, 48,
-                                16, 4,
-                                Short.MAX_VALUE, 1
+                        //termlinks
+                        curve(Concept::volume,
+                                1, 64,
+                                24,16
+                        ),
+                        //tasklinks
+                        curve(Concept::volume,
+                                1, 64,
+                                24,16
                         ))
         );
 
 
-        attention(()->new Attention(96));
+        attention(()->new Attention(128));
     }
 
     /**
@@ -277,40 +310,5 @@ public class NARS {
     }
 
 
-    /**
-     * generic defaults
-     */
-    @Deprecated
-    public static class DefaultNAR extends NARS {
-
-
-        public DefaultNAR(int nal, boolean threadSafe) {
-
-            if (nal > 0)
-                withNAL(1, nal);
-
-            if (threadSafe)
-                index = () -> new CaffeineIndex(64 * 1024);
-
-            if (nal >= 7) {
-                then((nn)->new STMLinkage(nn, 1, false));
-            }
-
-            then((nar)->{
-
-                nar.termlinkBalance.set(0.5f);
-                nar.termVolumeMax.set(26);
-
-
-                nar.forgetRate.set(0.5f);
-
-                nar.beliefPriDefault.set(0.5f);
-                nar.goalPriDefault.set(0.5f);
-                nar.questionPriDefault.set(0.5f);
-                nar.questPriDefault.set(0.5f);
-            });
-        }
-
-    }
 
 }

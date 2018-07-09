@@ -71,7 +71,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
         this.tasklinksCapacity = taskLinksCapacity;
     }
 
-    @Override public void accept(Concept c) {
+    @Override public final void accept(Concept c) {
         apply(c);
 
         if (c instanceof TaskConcept) {
@@ -79,28 +79,21 @@ public final class ConceptAllocator implements Consumer<Concept> {
         }
     }
 
-    protected void apply(Concept c) {
+    protected final void apply(Concept c) {
         c.termlinks().setCapacity(linkCap(c, true));
         c.tasklinks().setCapacity(linkCap(c, false));
     }
 
 
-    protected void apply(TaskConcept c) {
-
-        int be = beliefCap(c, true, true);
-        int bt = beliefCap(c, true, false);
-
-        int ge = beliefCap(c, false, true);
-        int gt = beliefCap(c, false, false);
-
-        c.beliefs().setCapacity(be, bt);
-        c.goals().setCapacity(ge, gt);
+    protected final void apply(TaskConcept c) {
+        c.beliefs().capacity(beliefCap(c, true, true), beliefCap(c, true, false));
+        c.goals().capacity(beliefCap(c, false, true), beliefCap(c, false, false));
         c.questions().capacity(questionCap(c, true));
         c.quests().capacity(questionCap(c, false));
     }
 
 
-    public final int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
+    protected final int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
         return (beliefOrGoal ?
                 (eternalOrTemporal ?
                         beliefsEteCapacity : beliefsTempCapacity) :
@@ -108,11 +101,11 @@ public final class ConceptAllocator implements Consumer<Concept> {
                         goalsEteCapacity : goalsTempCapacity)).applyAsInt(concept);
     }
 
-    public final int linkCap(Concept concept, boolean termOrTask) {
+    protected final int linkCap(Concept concept, boolean termOrTask) {
         return (termOrTask ?  termlinksCapacity : tasklinksCapacity).applyAsInt(concept);
     }
 
-    public final int questionCap(TaskConcept concept, boolean questionOrQuest) {
+    protected final int questionCap(TaskConcept concept, boolean questionOrQuest) {
         return (questionOrQuest ? questionsCapacity : questsCapacity).applyAsInt(concept);
     }
 

@@ -127,7 +127,7 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
     @Override
-    public final void setCapacity(int eternals, int temporals) {
+    public final void capacity(int eternals, int temporals) {
         temporal.setCapacity(temporals);
         eternal.setCapacity(eternals);
     }

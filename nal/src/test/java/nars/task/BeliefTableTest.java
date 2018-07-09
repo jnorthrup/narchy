@@ -253,7 +253,7 @@ class BeliefTableTest {
 
             
 
-            cc.beliefs().setCapacity(1, 1); 
+            cc.beliefs().capacity(1, 1);
 
             cc.print();
 

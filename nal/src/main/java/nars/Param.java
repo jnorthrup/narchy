@@ -22,10 +22,6 @@ import static nars.time.Tense.XTERNAL;
  */
 public abstract class Param {
 
-    /**
-     * allow leaking of internal Term[] arrays for read-only purposes
-     */
-    public static final boolean TERM_ARRAY_SHARE = true;
 
 
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
@@ -68,6 +64,7 @@ public abstract class Param {
             
 
     public static final PriMerge termlinkMerge =
+            //PriMerge.max;
             PriMerge.plus;
             //PriMerge.or;
 
@@ -88,10 +85,10 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             (t,b)->
-                    Util.aveAri(t, b);
+                    //il.aveAri(t, b);
                     //Util.aveGeo(t, b);
                     //Util.and(t, b);
-                    //Util.or(t, b);
+                    Util.or(t, b);
                     //(t+b);
 
     /**
@@ -167,7 +164,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 5;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
 
