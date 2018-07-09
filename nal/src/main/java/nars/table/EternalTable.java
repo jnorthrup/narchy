@@ -120,6 +120,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     public void setCapacity(int c) {
+        assert( c>= 0);
+
         int wasCapacity = this.capacity();
         if (wasCapacity != c) {
 
@@ -129,7 +131,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 wasCapacity = capacity();
 
                 int s = size;
-                if (s > c) {
+                if (s > 0 && (s > c)) {
 
 
                     trash = new FasterList(s - c);

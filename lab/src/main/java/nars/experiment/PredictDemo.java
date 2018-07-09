@@ -32,9 +32,7 @@ public class PredictDemo {
 
 
         float[] xf = new float[1];
-        @Nullable Signal X = new Signal($.the("x"), ()->{
-            return xf[0];
-        }, n);
+        @Nullable Signal X = new Signal($.the("x"), ()-> xf[0], n);
         n.on(X);
         
 

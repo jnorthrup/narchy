@@ -21,6 +21,8 @@ import jcog.math.NumberException;
 import jcog.math.OneDHaar;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.Frequency;
 import org.eclipse.collections.api.block.function.primitive.DoubleToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -2252,4 +2254,47 @@ public enum Util {
         return x;
     }
 
+    /** fits a polynomial curve to the specified points and compiles an evaluator for it */
+    public static <X> ToIntFunction<X> curve(ToIntFunction<X> toInt, int... pairs) {
+        if (pairs.length % 2 != 0)
+            throw new RuntimeException("must be even # of arguments");
+
+        int points = pairs.length/2;
+        if (points < 2) {
+            //TODO return constant function
+            throw new RuntimeException("must provide at least 2 points");
+        }
+
+        //https://commons.apache.org/proper/commons-math/userguide/fitting.html
+        final List<WeightedObservedPoint> obs = new FasterList(points);
+        int yMin = Integer.MAX_VALUE, yMax = Integer.MIN_VALUE;
+        for (int i = 0; i < pairs.length; ) {
+            int y;
+            obs.add(new WeightedObservedPoint(1f, pairs[i++], y = pairs[i++]));
+            if (y < yMin) yMin = y;
+            if (y > yMax) yMax = y;
+        }
+        //TODO if yMin==yMax return constant function
+
+        int degree =
+                points - 1;
+                //points;
+
+        float coefficients[] = Util.toFloat( PolynomialCurveFitter.create(degree).fit(obs) );
+
+        /* adapted from: PolynomialFunction
+           https://en.wikipedia.org/wiki/Horner%27s_method
+           */
+        int YMin = yMin;
+        int YMax = yMax;
+        return (X) -> {
+            int n = coefficients.length;
+            float x = toInt.applyAsInt(X);
+            float y = coefficients[n - 1];
+            for (int j = n - 2; j >= 0; j--) {
+                y = x * y + coefficients[j];
+            }
+            return Util.clamp(Math.round(y), YMin, YMax);
+        };
+    }
 }

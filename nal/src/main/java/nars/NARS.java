@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.map.MRUCache;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -9,7 +10,6 @@ import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
-import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.Attention;
@@ -24,7 +24,6 @@ import nars.term.Termed;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
-import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -42,41 +40,30 @@ import java.util.function.Supplier;
  */
 public class NARS {
 
-    public NAR get() {
-        NAR n = new NAR(index.get(), exe.get(), attn.get(), time, rng.get(), concepts.get());
-        init(n);
-        derivers.forEach(d -> d.apply(n));
-//        n.synch();
-        postInit.forEach(x -> x.accept(n));
+    public final NAR get() {
+        NAR n = new NAR(index.get(), exec.get(), attn.get(), time, rng.get(), conceptBuilder.get());
+        step.forEach(x -> x.accept(n));
         n.synch();
         return n;
-    }
-
-    /**
-     * subclasses may override this to configure newly constructed NAR's
-     */
-    protected void init(NAR n) {
-
     }
 
     protected Supplier<ConceptIndex> index;
 
     protected Time time;
 
-    protected Supplier<Exec> exe;
+    protected Supplier<Exec> exec;
 
     protected Supplier<Random> rng;
 
     protected Supplier<Attention> attn;
 
-    protected Supplier<ConceptBuilder> concepts;
+    protected Supplier<ConceptBuilder> conceptBuilder;
 
-    protected List<Function<TimeAware, Deriver>> derivers;
 
     /**
      * applied in sequence as final step before returning the NAR
      */
-    protected final List<Consumer<NAR>> postInit = new FasterList(0);
+    protected final List<Consumer<NAR>> step = new FasterList<>(8);
 
 
     public NARS index(@NotNull ConceptIndex concepts) {
@@ -89,13 +76,13 @@ public class NARS {
         return this;
     }
 
-    public NARS exe(Exec exe) {
-        this.exe = () -> exe;
+    public NARS exe(@NotNull Exec exe) {
+        this.exec = () -> exe;
         return this;
     }
 
     public NARS concepts(ConceptBuilder cb) {
-        this.concepts = () -> cb;
+        this.conceptBuilder = () -> cb;
         return this;
     }
 
@@ -107,10 +94,9 @@ public class NARS {
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
     @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
-        postInit.add((n)->
+        return then((n)->
                 new MatrixDeriver(Derivers.nal(n, minLevel, maxLevel))
         );
-        return this;
     }
 
     /**
@@ -139,17 +125,67 @@ public class NARS {
 
         time = new CycleTime();
 
-        exe = () -> new UniExec();
-
+        exec = () -> new UniExec();
 
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        concepts = ()->new DefaultConceptBuilder(new ConceptAllocator(48, 32, 6));
+        conceptBuilder = ()->new DefaultConceptBuilder(
+                new ConceptAllocator(
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 16,
+                                64, 4,
+                                Short.MAX_VALUE, 1
+                        ),
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 4,
+                                Short.MAX_VALUE, 1
+                        ),
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 4,
+                                Short.MAX_VALUE, 1
+                        ),
 
-        derivers = new FasterList<>();
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 4,
+                                Short.MAX_VALUE, 1
+                        ),
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 4,
+                                Short.MAX_VALUE, 1
+                        ),
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 4,
+                                Short.MAX_VALUE, 1
+                        ),
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 4,
+                                Short.MAX_VALUE, 1
+                        ),
+                        //beliefs
+                        Util.curve(Concept::volume,
+                                1, 48,
+                                16, 4,
+                                Short.MAX_VALUE, 1
+                        ))
+        );
 
-        attention(()->new Attention(256));
+
+        attention(()->new Attention(96));
     }
 
     /**
@@ -236,7 +272,7 @@ public class NARS {
      * adds a post-processing step before ready NAR is returned
      */
     public NARS then(Consumer<NAR> n) {
-        postInit.add(n);
+        step.add(n);
         return this;
     }
 
@@ -259,24 +295,22 @@ public class NARS {
             if (nal >= 7) {
                 then((nn)->new STMLinkage(nn, 1, false));
             }
+
+            then((nar)->{
+
+                nar.termlinkBalance.set(0.5f);
+                nar.termVolumeMax.set(26);
+
+
+                nar.forgetRate.set(0.5f);
+
+                nar.beliefPriDefault.set(0.5f);
+                nar.goalPriDefault.set(0.5f);
+                nar.questionPriDefault.set(0.5f);
+                nar.questPriDefault.set(0.5f);
+            });
         }
 
-        @Override
-        protected void init(NAR nar) {
-
-            nar.termlinkBalance.set(0.5f);
-            nar.termVolumeMax.set(26);
-
-
-            nar.forgetRate.set(0.5f);
-
-            nar.beliefPriDefault.set(0.5f);
-            nar.goalPriDefault.set(0.5f);
-            nar.questionPriDefault.set(0.5f);
-            nar.questPriDefault.set(0.5f);
-
-
-        }
     }
 
 }
