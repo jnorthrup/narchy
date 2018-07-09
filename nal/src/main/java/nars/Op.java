@@ -391,7 +391,13 @@ public enum Op {
     public static final int DiffBits = Op.DIFFe.bit | Op.DIFFi.bit;
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
+
+    /** events are defined as the non-conjunction sub-components of conjunctions, or the term itself if it is not a conj */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
+
+    /** condition is defined as being either an event, or a pre/post condition of an implication */
+    public static final int Conditional = or(Op.CONJ, Op.IMPL);
+
 
     public static final Atom BELIEF_TERM = (Atom) Atomic.the(String.valueOf((char) BELIEF));
     public static final Atom GOAL_TERM = (Atom) Atomic.the(String.valueOf((char) GOAL));

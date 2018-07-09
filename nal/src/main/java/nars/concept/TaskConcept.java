@@ -96,31 +96,8 @@ public class TaskConcept extends NodeConcept implements Concept {
         return goals;
     }
 
-    protected void beliefCapacity(int be, int bt, int ge, int gt) {
-
-        beliefs.setCapacity(be, bt);
-        goals.setCapacity(ge, gt);
-
-    }
 
 
-    @Override
-    protected void stateChanged() {
-        super.stateChanged();
-        int be = state.beliefCap(this, true, true);
-        int bt = state.beliefCap(this, true, false);
-
-        int ge = state.beliefCap(this, false, true);
-        int gt = state.beliefCap(this, false, false);
-
-        beliefCapacity(be, bt, ge, gt);
-
-        if (questions != null)
-            questions.capacity(state.questionCap(this, true));
-        if (quests != null)
-            quests.capacity(state.questionCap(this, false));
-
-    }
 
     /**
      * Directly process a new task, if belief tables agree to store it.

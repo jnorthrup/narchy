@@ -27,7 +27,6 @@ import jcog.pri.PriReference;
 import jcog.pri.Priority;
 import nars.NAR;
 import nars.Task;
-import nars.concept.util.ConceptState;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
@@ -50,23 +49,28 @@ import static nars.Op.*;
 public interface Concept extends Termed, MetaMap, Iterable<Concept> {
     Concept[] EmptyArray = new Concept[0];
 
-    /*@NotNull*/ Bag<?,TaskLink> tasklinks();
+    Bag<?,TaskLink> tasklinks();
 
-    /*@NotNull*/ Bag<Term,PriReference<Term>> termlinks();
+    Bag<Term,PriReference<Term>> termlinks();
 
-    /*@NotNull*/ BeliefTable beliefs();
+    BeliefTable beliefs();
 
-    /*@NotNull*/ BeliefTable goals();
+    BeliefTable goals();
 
-    /*@NotNull*/ QuestionTable questions();
+    QuestionTable questions();
 
-    /*@NotNull*/ QuestionTable quests();
+    QuestionTable quests();
 
     void delete(NAR nar);
 
+    /** meta-table key, if present, signifies concept has been deleted */
+    String DELETED = "-";
+
     default boolean isDeleted() {
-        return state() == ConceptState.Deleted;
+        return meta(DELETED)==DELETED;
     }
+
+
 
 
     default void print() {
@@ -212,18 +216,6 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
 
     }
 
-
-
-
-
-
-
-    /*@NotNull*/ ConceptState state();
-
-    /**
-     * returns the previous state
-     */
-    ConceptState state(ConceptState c);
 
     TermLinker linker();
 

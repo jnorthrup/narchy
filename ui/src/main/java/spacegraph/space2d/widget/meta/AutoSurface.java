@@ -3,7 +3,6 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.Sets;
 import jcog.Service;
 import jcog.Services;
-import jcog.TODO;
 import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.EnumParam;
@@ -17,6 +16,7 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.tab.ButtonSet;
@@ -112,11 +112,23 @@ public class AutoSurface<X> extends Gridding {
         }
     }
 
-    private ButtonSet newSwitch(EnumParam<?> x) {
-        EnumSet<?> s = EnumSet.allOf(x.klass);
-        System.out.println(x + " " + x.value + " " + x.klass + " " + s);
-        throw new TODO();//JDK12 compiler error
+    private <C extends Enum<C>> ButtonSet newSwitch(EnumParam x) {
+        EnumSet<C> s = EnumSet.allOf(x.klass);
+        //System.out.println(x + " " + x.value + " " + x.klass + " " + s);
 
+
+        ToggleButton[] b = new ToggleButton[s.size()];
+        int i = 0;
+        for (C xx : s) {
+            CheckBox tb = new CheckBox(((Enum)xx).name());
+            tb.on((c, enabled) -> {
+                if (enabled)
+                    x.set(xx);
+            });
+            b[i++] = tb;
+        }
+
+//JDK12 compiler error has trouble with this:
 //        ToggleButton[] b = ((EnumSet) EnumSet.allOf(x.klass)).stream().map(e -> {
 //            CheckBox tb = new CheckBox(e.name());
 //            tb.on((c, enabled) -> {
@@ -126,8 +138,7 @@ public class AutoSurface<X> extends Gridding {
 //            return tb;
 //        }).toArray(ToggleButton[]::new);
 //
-//        ButtonSet s = new ButtonSet(ButtonSet.Mode.One, b);
-//        return s;
+        return new ButtonSet(ButtonSet.Mode.One, b);
     }
 
     private Surface collectElements(Iterable<?> x, int depth) {

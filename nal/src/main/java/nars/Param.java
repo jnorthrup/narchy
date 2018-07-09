@@ -88,8 +88,11 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             (t,b)->
+                    Util.aveAri(t, b);
+                    //Util.aveGeo(t, b);
+                    //Util.and(t, b);
                     //Util.or(t, b);
-                    (t+b);
+                    //(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget
@@ -164,7 +167,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 5;
 
 
 

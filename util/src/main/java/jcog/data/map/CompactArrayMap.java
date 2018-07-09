@@ -113,10 +113,11 @@ public class CompactArrayMap<K, V>  {
     }
 
     public void clearPut(K key, V value) {
-        
-            clear();
-            if (value!=null)
-                put(key, value);
+
+        items = new Object[] { key, value };
+//            clear();
+//            if (value!=null)
+//                put(key, value);
         
     }
 }

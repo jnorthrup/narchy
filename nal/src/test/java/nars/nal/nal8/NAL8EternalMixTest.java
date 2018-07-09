@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.LongPredicate;
+
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
@@ -19,6 +21,7 @@ import static nars.time.Tense.ETERNAL;
  */
 class NAL8EternalMixTest extends NALTest {
 
+    public static final LongPredicate WHEN_REALIZED = t -> t > 0;
     private final int cycles = 50;
 
     @BeforeEach
@@ -529,7 +532,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .goal("(R)")
                 .input("((--,a:b) ==>+0 (R)). :|:")
-                .mustGoal(cycles, "a:b", 0.0f, 0.43f, 0);
+                .mustGoal(cycles, "a:b", 0.0f, 0.43f, WHEN_REALIZED);
     }
 
     @Test
@@ -539,7 +542,7 @@ class NAL8EternalMixTest extends NALTest {
 
                 .input("(R)! :|:")
                 .input("((S) ==>+0 --(R)).") 
-                .mustGoal(cycles, "(S)", 0.0f, 0.81f, 0);
+                .mustGoal(cycles, "(S)", 0.0f, 0.81f, WHEN_REALIZED);
     }
 
     @Test
@@ -548,7 +551,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("(R)! :|:")
                 .input("((--,a:b) ==>+0 (R)).")
-                .mustGoal(cycles, "a:b", 0.0f, 0.81f, 0);
+                .mustGoal(cycles, "a:b", 0.0f, 0.81f, WHEN_REALIZED);
 
     }
 
@@ -558,7 +561,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("(R). :|:")
                 .input("((--,a:b) &&+0 (R))!")
-                .mustGoal(cycles, "a:b", 0.0f, 0.81f, 0);
+                .mustGoal(cycles, "a:b", 0.0f, 0.81f, WHEN_REALIZED);
     }
 
 

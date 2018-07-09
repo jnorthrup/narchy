@@ -183,13 +183,9 @@ class TemporalTermTest {
         String c = "(&&,((--,((#1)-->$2)) ==>+- (isRow(#1,(0,false),true)&&((#1)-->$2))),(--,checkScore(#1)),#1)";
         assertEquals(c, t.concept().toString());
         assertEquals(c, t.concept().concept().toString());
-        Concept x = new DefaultConceptBuilder().build(t);
+        Termed x = new DefaultConceptBuilder((z)-> { }).apply(t);
         assertTrue(x instanceof TaskConcept);
     }
-
-
-
-
 
 
 

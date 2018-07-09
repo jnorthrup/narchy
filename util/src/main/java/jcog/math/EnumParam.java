@@ -1,8 +1,8 @@
 package jcog.math;
 
-public class EnumParam<C extends Enum> {
+public class EnumParam<C extends Enum<C>> {
 
-    public final Class<Enum> klass;
+    public final Class<Enum<C>> klass;
     public C value;
 
     public EnumParam(C value, Class klass) {

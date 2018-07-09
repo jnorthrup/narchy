@@ -69,10 +69,6 @@ public final class AliasConcept extends TaskConcept {
         return abbr.quests();
     }
 
-    @Override
-    protected void beliefCapacity(int be, int bt, int ge, int gt) {
-
-    }
 
     public static class AliasAtom extends Atom {
 

@@ -8,6 +8,7 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
@@ -29,8 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
@@ -173,49 +173,28 @@ public class Occurrify extends TimeGraph {
 
 
 
-        nextPos.clear();
-        nextNeg.clear();
+
         autoNegNext.clear();
         if (task.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
-//            if (pattern.containsRecursively(taskTerm.neg()) && (!single || pattern.containsRecursively(beliefTerm))) {
-//                //dont need to autoNeg, these will be easy to find
-//                //autoNeg = null;
-//            } else {
+
+            assert(nextPos.isEmpty() && nextNeg.isEmpty());
 
             UnifiedSet<Term> pp = nextPos;
             UnifiedSet<Term> nn = nextNeg;
 
-            Predicate<Term> all = y -> true;
-            pattern.recurseTerms(all, y -> {
-                    if (y.op() == NEG)
-                        nn.add(y.unneg());
-                    else
-                        pp.add(y);
-                });
-
-            Consumer<Term> elim = y -> {
-                if (y.op() == NEG && !nn.isEmpty()) {
-                    nn.remove(y.unneg()); //found
-                } else {
-                    pp.remove(y);
-                }
+            BiConsumer<Term, Compound> gather = (sub, sup) -> {
+                if (sub.op()==NEG) nn.add(sub.unneg());
+                else if (sup==null || sup.op()!=NEG) pp.add(sub); //dont add the inner positive unneg'd term of a negation
             };
+            pattern.recurseTerms(gather);
+            taskTerm.recurseTerms(gather);
+            if (!single)
+                beliefTerm.recurseTerms(gather);
 
-            if (taskTerm.hasAny(Op.Temporal))
-                taskTerm.recurseTerms(all, elim);
-            else
-                elim.accept(taskTerm);
+            pp.intersectInto(nn, autoNegNext);
 
-            if (!single) {
-                if (beliefTerm.hasAny(Op.Temporal))
-                    beliefTerm.recurseTerms(all, elim);
-                else
-                    elim.accept(beliefTerm);
-            }
-
-            //pp.symmetricDifferenceInto(nn, autoNegNext);
-            autoNegNext.addAll(pp);
-            autoNegNext.addAll(nn);
+            pp.clear();
+            nn.clear();
         }
 
         if (!single) {

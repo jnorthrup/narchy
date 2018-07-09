@@ -17,12 +17,10 @@ public interface Table<K,V> extends Iterable<V> {
 
     int size();
 
-
-
-
-
+    /** clear first then set cap to zero. otherwise setCapacity might trigger compression. HACK */
     default void delete() {
-
+        clear();
+        setCapacity(0);
     }
 
     /** iterates in sorted order */
@@ -31,8 +29,6 @@ public interface Table<K,V> extends Iterable<V> {
     int capacity();
 
     void setCapacity(int i);
-
-
 
     default boolean isFull() {
         return size() >= capacity();

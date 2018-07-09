@@ -4,7 +4,8 @@ import jcog.bag.Bag;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.concept.util.DefaultConceptState;
+import nars.concept.util.ConceptAllocator;
+import nars.concept.util.DefaultConceptBuilder;
 import nars.link.TaskLink;
 import nars.term.Compound;
 import nars.term.Term;
@@ -26,28 +27,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RevisionTest {
 
     static NAR newNAR(int fixedNumBeliefs) {
-        
-        NAR d = NARS.tmp();
 
-        /*
-        @Override
-        public BeliefTable.RankBuilder getConceptRanking() {
-            if (rb == null)
-                return super.getConceptRanking();
-            else
-                return rb;
-        }
-        */
-
-        
-        DefaultConceptState cb = (DefaultConceptState) d.conceptBuilder.awake();
+        ConceptAllocator cb = new ConceptAllocator(fixedNumBeliefs, fixedNumBeliefs, 1);
         cb.beliefsMaxEte = (fixedNumBeliefs);
         cb.beliefsMaxTemp = (fixedNumBeliefs);
         cb.beliefsMinTemp = (fixedNumBeliefs);
         cb.goalsMaxEte = (fixedNumBeliefs);
         cb.goalsMaxTemp = (fixedNumBeliefs);
         cb.goalsMinTemp = (fixedNumBeliefs);
-        return d;
+
+        return new NARS().concepts(new DefaultConceptBuilder(cb)).get();
+
     }
 
     @Test

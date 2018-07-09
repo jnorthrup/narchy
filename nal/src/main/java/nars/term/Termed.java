@@ -2,6 +2,7 @@ package nars.term;
 
 import nars.Op;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -31,6 +32,12 @@ public interface Termed extends Termlike {
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return term().containsRecursively(t, root, inSubtermsOf);
     }
+
+    @Override
+    default void recurseTerms(Consumer<Term> v) {
+        term().recurseTerms(v);
+    }
+
     //
 //    default boolean isNormalized() {
 //        return term().isNormalized();

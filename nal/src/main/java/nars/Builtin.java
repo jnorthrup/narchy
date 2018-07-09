@@ -271,7 +271,7 @@ public class Builtin {
 
 
     private static void registerFunctors(NAR nar) {
-        for (Concept t : Builtin.statik) {
+        for (Functor t : Builtin.statik) {
             nar.on(t);
         }
 

@@ -6,6 +6,7 @@ import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Deriver;
@@ -144,7 +145,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        concepts = DefaultConceptBuilder::new;
+        concepts = ()->new DefaultConceptBuilder(new ConceptAllocator(48, 32, 6));
 
         derivers = new FasterList<>();
 

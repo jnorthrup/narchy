@@ -56,10 +56,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -169,17 +166,41 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * whileTrue must remain true after vistiing each subterm otherwise the entire
      * iteration terminates
      */
-    default boolean recurseTerms(Predicate<Term> descendFilter, Predicate<Term> whileTrue, Term parent) {
+    default boolean recurseTerms(Predicate<Term> descendFilter, Predicate<Term> whileTrue, @Nullable Term /* Compound? */superterm) {
         return whileTrue.test(this);
     }
 
-    /** convenience method */
+    /** whileTrue = BiPredicate<SubTerm,SuperTerm> */
+    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
+        return whileTrue.test(this, superterm);
+    }
+
+    /** convenience method  do not override */
     default boolean recurseTerms(Predicate<Term> descendFilter, Consumer<Term> each) {
         return recurseTerms(descendFilter, (x) -> {
             each.accept(x);
             return true;
         }, null);
     }
+
+    /** convenience, do not override */
+    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term,Compound> whileTrue) {
+        return recurseTerms(descendFilter, whileTrue, null);
+    }
+
+    /** convenience, do not override */
+    default boolean recurseTerms(BiPredicate<Term,Compound> whileTrue) {
+        return recurseTerms(x -> true, whileTrue, null);
+    }
+
+    /** convenience, do not override */
+    default void recurseTerms(BiConsumer<Term,Compound> each) {
+        recurseTerms(x -> true, (sub,sup)-> {
+            each.accept(sub,sup);
+            return true;
+        }, null);
+    }
+
 
     default boolean hasXternal() {
         return (dt() == XTERNAL) || Termed.super.hasXternal();
@@ -533,7 +554,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return eventList(0, 1);
     }
 
-    /* final */
+    /* final */ /** conj events */
     default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {
         return eventsWhile(whileEachEvent, dt, true, false, false, 0);
     }
@@ -543,6 +564,35 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return whileEachEvent.accept(dt, this);
     }
 
+    /** recursively visits all conj and impl sub-conditions */
+    default boolean conditionsWhile(Predicate<Term> each) {
+
+        if (hasAny(Op.Conditional))
+            return each.test(this);  //short-cut, just this
+
+        return eventsWhile((w, what) -> {
+            if (!each.test(what))
+                return false;
+
+            what = what.unneg();
+
+            if (what.op()==IMPL) {
+                if (!each.test(what.sub(0)))
+                    return false;
+                if (!each.test(what.sub(1)))
+                    return false;
+            }
+
+            return true;
+        }, 0,true, true, true, 0);
+    }
+
+    default void conditionsEach(Consumer<Term> each) {
+        conditionsWhile((e)->{
+            each.accept(e);
+            return true;
+        });
+    }
 
     default void printRecursive() {
         printRecursive(System.out);

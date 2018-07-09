@@ -15,6 +15,7 @@ import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFuncti
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -258,7 +259,11 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term parent) {
+    public boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term superterm) {
+        return (!aSuperCompoundMust.test(this)) || (sub().recurseTerms(aSuperCompoundMust, whileTrue, this));
+    }
+    @Override
+    public boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
         return (!aSuperCompoundMust.test(this)) || (sub().recurseTerms(aSuperCompoundMust, whileTrue, this));
     }
 

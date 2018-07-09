@@ -22,7 +22,6 @@ import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.concept.util.ConceptState;
 import nars.control.Activate;
 import nars.control.Cause;
 import nars.control.MetaGoal;
@@ -219,7 +218,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Histogram tasklinkCount = new Histogram(1, 1024, 3);
 
         HashBag clazz = new HashBag();
-        HashBag policy = new HashBag();
         HashBag rootOp = new HashBag();
 
         Histogram volume = new Histogram(1, Param.COMPOUND_VOLUME_MAX, 3);
@@ -236,9 +234,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 volume.recordValue(ct.volume());
                 rootOp.add(ct.op());
                 clazz.add(ct.getClass().toString());
-
-                ConceptState p = c.state();
-                policy.add(p != null ? p.toString() : "null");
 
 
                 termlinkCount.recordValue(c.termlinks().size());
@@ -273,15 +268,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         x.put("termlink total", ((double) termlinkCount.getTotalCount()));
 
-
-        Util.toMap(policy, "concept state", x::put);
-
         Util.toMap(rootOp, "concept op", x::put);
 
         Texts.histogramDecode(volume, "concept volume", 4, x::put);
 
         Util.toMap(clazz, "concept class", x::put);
-
 
         emotion.getter(() -> x).run();
 
@@ -1108,12 +1099,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * activate/"turn-ON"/install a concept in the index and activates it, used for setup of custom concept implementations
      * implementations should apply active concept capacity policy
      */
-    public final Concept on(Concept c) {
-
-        if (c instanceof Conceptor) {
-            conceptBuilder.on((Conceptor) c);
-            //return c;
-        }
+    public final Concept on(PermanentConcept c) {
 
         Concept existing = concept(c);
         if ((existing != null)) {
@@ -1125,8 +1111,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             }
         }
 
-        c.state(conceptBuilder.awake());
         concepts.set(c);
+
+        conceptBuilder.start(c);
+
+        if (c instanceof Conceptor) {
+            conceptBuilder.on((Conceptor) c);
+        }
 
         return c;
     }

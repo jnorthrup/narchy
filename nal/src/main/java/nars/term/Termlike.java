@@ -71,11 +71,8 @@ public interface Termlike {
         return x;
     }
 
-    default void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            sub(i).recurseTerms(v);
-    }
+    void recurseTerms(/*@NotNull*/ Consumer<Term> v);
+
 
     default boolean hasXternal() {
         return hasAny(Op.Temporal) && OR(Term::hasXternal);

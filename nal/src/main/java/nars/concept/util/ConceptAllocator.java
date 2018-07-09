@@ -7,12 +7,12 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 
+import java.util.function.Consumer;
+
 import static jcog.Util.clamp;
 
-/**
- * Created by me on 5/11/16.
- */
-public final class DefaultConceptState extends ConceptState {
+/** sets capacities for the various Concept features */
+public final class ConceptAllocator implements Consumer<Concept> {
 
     public int beliefsMaxEte;
     public int goalsMaxEte;
@@ -20,7 +20,7 @@ public final class DefaultConceptState extends ConceptState {
     private final int goalsMinEte;
     private final MutableInteger questionsMax;
 
-    
+
     private final IntToIntFunction termlinksCapacity, tasklinksCapacity;
 
     public int beliefsMaxTemp;
@@ -31,45 +31,35 @@ public final class DefaultConceptState extends ConceptState {
     /**
      * minimum of 3 beliefs per belief table. for eternal, this allows revision between two goals to produce a third
      */
-    public DefaultConceptState(String id, int beliefsCapTotal, int goalsCapTotal, int questionsMax) {
-        this(id,
-                new MutableInteger(clamp(beliefsCapTotal / 4, 1, 6)), 
-                new MutableInteger(clamp(goalsCapTotal / 4, 1, 6)),   
-                new MutableInteger(Math.max(3, beliefsCapTotal)), 
-                new MutableInteger(Math.max(3, goalsCapTotal)), 
+    public ConceptAllocator(int beliefsCapTotal, int goalsCapTotal, int questionsMax) {
+        this(
+                new MutableInteger(clamp(beliefsCapTotal / 4, 1, 6)),
+                new MutableInteger(clamp(goalsCapTotal / 4, 1, 6)),
+                new MutableInteger(Math.max(3, beliefsCapTotal)),
+                new MutableInteger(Math.max(3, goalsCapTotal)),
                 new MutableInteger(questionsMax),
-                (vol) -> { 
+                (vol) -> {
 
-                    
-                    
 
                     int maxLinks = 48;
-                    return Math.round((maxLinks) / (1f+((float)Math.sqrt(vol))/2f));
+                    return Math.round((maxLinks) / (1f + ((float) Math.sqrt(vol)) / 2f));
 
-                    
-                    
-                    
+
                 },
-                (vol) -> { 
+                (vol) -> {
 
-                    
+
                     int maxLinks = 24;
-                    return Math.round((maxLinks) / (1f+((float)Math.sqrt(vol))/2f));
-
-
-
-
-
+                    return Math.round((maxLinks) / (1f + ((float) Math.sqrt(vol)) / 2f));
 
 
                 }
         );
     }
 
-    DefaultConceptState(String id, MutableInteger beliefsMaxEte, MutableInteger goalsMaxEte,
-                        MutableInteger beliefsMaxTemp, MutableInteger goalsMaxTemp,
-                        MutableInteger questionsMax, IntToIntFunction termlinksCapacity, IntToIntFunction taskLinksCapacity) {
-        super("___" + id);
+    ConceptAllocator(MutableInteger beliefsMaxEte, MutableInteger goalsMaxEte,
+                     MutableInteger beliefsMaxTemp, MutableInteger goalsMaxTemp,
+                     MutableInteger questionsMax, IntToIntFunction termlinksCapacity, IntToIntFunction taskLinksCapacity) {
         this.beliefsMaxEte = beliefsMaxEte.intValue();
         this.beliefsMinEte = 2;
         this.beliefsMaxTemp = beliefsMaxTemp.intValue();
@@ -84,8 +74,35 @@ public final class DefaultConceptState extends ConceptState {
         this.tasklinksCapacity = taskLinksCapacity;
     }
 
+    @Override public void accept(Concept c) {
+        apply(c);
 
-    @Override
+        if (c instanceof TaskConcept) {
+            apply((TaskConcept)c);
+        }
+    }
+
+    protected void apply(Concept c) {
+        c.termlinks().setCapacity(linkCap(c, true));
+        c.tasklinks().setCapacity(linkCap(c, false));
+    }
+
+
+    protected void apply(TaskConcept c) {
+
+        int be = beliefCap(c, true, true);
+        int bt = beliefCap(c, true, false);
+
+        int ge = beliefCap(c, false, true);
+        int gt = beliefCap(c, false, false);
+
+        c.beliefs().setCapacity(be, bt);
+        c.goals().setCapacity(ge, gt);
+        c.questions().capacity(questionCap(c, true));
+        c.quests().capacity(questionCap(c, false));
+    }
+
+
     public int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
         int max, min;
 
@@ -103,17 +120,16 @@ public final class DefaultConceptState extends ConceptState {
             if (!eternalOrTemporal) {
                 c *= 2;
             } else {
-//                if (concept instanceof ActionConcept) {
-//                    c = 0;
-//                }
+                //                if (concept instanceof ActionConcept) {
+                //                    c = 0;
+                //                }
             }
         }
 
         return c;
-        
+
     }
 
-    @Override
     public int linkCap(Concept concept, boolean termOrTask) {
         if (termOrTask) {
 
@@ -130,19 +146,15 @@ public final class DefaultConceptState extends ConceptState {
         int max = _max.intValue();
 
         float v = c.complexity();
-        float complexityFactor = ((v - 1) / 32); 
-        complexityFactor = Util.sqr(Util.unitize(complexityFactor)); 
+        float complexityFactor = ((v - 1) / 32);
+        complexityFactor = Util.sqr(Util.unitize(complexityFactor));
 
-        return Util.lerp(complexityFactor, max, min); 
+        return Util.lerp(complexityFactor, max, min);
     }
 
-    @Override
     public final int questionCap(TaskConcept concept, boolean questionOrQuest) {
-        return Util.lerp( 1f - Math.min(1f,(((float)concept.volume()) / 32)), 1, questionsMax.intValue());
+        return Util.lerp(1f - Math.min(1f, (((float) concept.volume()) / 32)), 1, questionsMax.intValue());
     }
-
-
-
 
 
 }

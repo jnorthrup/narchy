@@ -1,23 +1,27 @@
 package nars.concept.util;
 
+import jcog.TODO;
 import jcog.bag.Bag;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
+import nars.concept.Operator;
+import nars.concept.TaskConcept;
+import nars.concept.dynamic.DynamicTruthBeliefTable;
 import nars.concept.dynamic.DynamicTruthModel;
-import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
+import nars.table.EternalTable;
 import nars.table.QuestionTable;
 import nars.table.TemporalBeliefTable;
-import nars.term.Compound;
-import nars.term.Conceptor;
-import nars.term.Term;
-import nars.term.Termed;
+import nars.term.*;
 import nars.term.compound.util.Image;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -26,13 +30,65 @@ import static nars.Op.*;
 /**
  * Created by me on 3/23/16.
  */
-public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
+public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed> {
 
-    Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
+    protected final Map<Term, Conceptor> conceptors = new ConcurrentHashMap<>();
+
+    public abstract QuestionTable questionTable(Term term, boolean questionOrQuest);
+
+    public abstract BeliefTable newTable(Term t, boolean beliefOrGoal);
+
+    public abstract EternalTable newEternalTable(Term c);
+
+    public abstract TemporalBeliefTable newTemporalTable(Term c);
+
+    public abstract Bag[] newLinkBags(Term term);
+
+    public Concept taskConcept(final Term t) {
+        DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
+        if (dmt != null) {
+
+            return new TaskConcept(t,
+
+                    //belief table
+                    new DynamicTruthBeliefTable(t, newEternalTable(t), newTemporalTable(t), dmt, true),
+
+                    //goal table
+                    goalable(t) ?
+                            new DynamicTruthBeliefTable(t, newEternalTable(t), newTemporalTable(t), dmt, false) :
+                            BeliefTable.Empty,
+
+                    this);
+
+        } else {
+            Term conceptor = Functor.func(t);
+            if (conceptor != Op.Null) {
+                @Nullable Conceptor cc = conceptors.get(conceptor);
+                if (cc instanceof Conceptor) {
+
+                    Concept x = cc.apply(conceptor, Operator.args(t));
+                    if (x != null)
+                        return (TaskConcept) x;
+                }
+            }
+
+            return new TaskConcept(t, this);
+        }
+    }
+
+    public abstract NodeConcept nodeConcept(final Term t);
+
+    public void on(Conceptor c) {
+        conceptors.put(c.term, c);
+    }
+
+
+    public static final Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
+
     /**
      * passes through terms without creating any concept anything
      */
-    ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
+    public static final ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
 
         @Override
         public void on(Conceptor c) {
@@ -40,28 +96,18 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         }
 
         @Override
-        public Concept build(Term term) {
-            return null;
+        public NodeConcept nodeConcept(Term t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public TaskConcept taskConcept(Term t) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public TermLinker termlinker(Term term) {
             return TermLinker.Empty;
-        }
-
-        @Override
-        public ConceptState init() {
-            return ConceptState.Deleted;
-        }
-
-        @Override
-        public ConceptState awake() {
-            return ConceptState.Deleted;
-        }
-
-        @Override
-        public ConceptState sleep() {
-            return ConceptState.Deleted;
         }
 
         @Override
@@ -75,6 +121,11 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         }
 
         @Override
+        public EternalTable newEternalTable(Term c) {
+            return EternalTable.EMPTY;
+        }
+
+        @Override
         public QuestionTable questionTable(Term term, boolean questionOrQuest) {
             return QuestionTable.Empty;
         }
@@ -85,7 +136,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         }
     };
 
-    static boolean validDynamicSubterms(Subterms subterms) {
+    public static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);
     }
 
@@ -93,7 +144,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
      * returns the builder for the term, or null if the term is not dynamically truthable
      */
     @Nullable
-    static DynamicTruthModel dynamicModel(Term t) {
+    public static DynamicTruthModel dynamicModel(Term t) {
 
         if (t.hasAny(Op.VAR_QUERY.bit))
             return null; //TODO maybe this can answer query questions by index query
@@ -139,7 +190,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         return null;
     }
 
-    static DynamicTruthModel dynamicInh(Term t) {
+    public static DynamicTruthModel dynamicInh(Term t) {
 
         //quick pre-test
         Subterms tt = t.subterms();
@@ -215,60 +266,35 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         return null;
     }
 
-    ConceptState init();
-
-    ConceptState awake();
-
-    ConceptState sleep();
-
-    QuestionTable questionTable(Term term, boolean questionOrQuest);
-
-    BeliefTable newTable(Term t, boolean beliefOrGoal);
-
-    TemporalBeliefTable newTemporalTable(Term c);
-
-    Bag[] newLinkBags(Term term);
-
-    Concept build(Term term);
-
     @Override
-    default Termed apply(Term x, Termed prev) {
+    public final Termed apply(Term x, Termed prev) {
         if (prev != null) {
-
             Concept c = ((Concept) prev);
             if (!c.isDeleted())
                 return c;
-
         }
 
         return apply(x);
     }
 
-    @Nullable
-    default Termed apply(Term x) {
+    public final Termed apply(Term x) {
 
         x = x.the();
         if (x == null)
-            return null;
+            throw new TODO(x + " is not a The");
 
-        Concept c = build(x);
-        if (c == null) {
-            return null;
-        }
+        Concept c = Task.validTaskTerm(x) ? taskConcept(x) : nodeConcept(x);
+        assert(c!=null);
 
-        ConceptState s = c.state();
-
-        if (s == ConceptState.New || s == ConceptState.Deleted) {
-            c.state(init());
-        }
+        start(c);
 
         return c;
     }
 
-    /** register a Conceptor */
-    void on(Conceptor c);
+    /** called after constructing a new concept, or after a permanent concept has been installed */
+    public void start(Concept c) {
 
-    default TermLinker termlinker(Term term) {
-        return TemplateTermLinker.of(term);
     }
+
+    abstract public TermLinker termlinker(Term term);
 }

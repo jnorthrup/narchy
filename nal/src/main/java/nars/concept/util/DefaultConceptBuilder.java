@@ -5,87 +5,42 @@ import jcog.bag.impl.CurveBag;
 import jcog.pri.PriReference;
 import nars.Op;
 import nars.Param;
-import nars.Task;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
-import nars.concept.Operator;
-import nars.concept.TaskConcept;
-import nars.concept.dynamic.DynamicTruthBeliefTable;
-import nars.concept.dynamic.DynamicTruthModel;
 import nars.link.TaskLink;
 import nars.link.TaskLinkCurveBag;
+import nars.link.TemplateTermLinker;
+import nars.link.TermLinker;
 import nars.table.*;
-import nars.term.Conceptor;
-import nars.term.Functor;
 import nars.term.Term;
-import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static nars.Op.goalable;
 
-public class DefaultConceptBuilder implements ConceptBuilder {
+public class DefaultConceptBuilder extends ConceptBuilder {
 
-    private final ConceptState init;
-    private final ConceptState awake;
-    private final ConceptState sleep;
 
-    final Map<Term, Conceptor> conceptors = new ConcurrentHashMap();
+    private final Consumer<Concept> alloc;
 
-    public DefaultConceptBuilder() {
-        this(
-                new DefaultConceptState("sleep", 16, 12, 3),
-                new DefaultConceptState("awake", 48, 32, 6)
-        );
+    public DefaultConceptBuilder(Consumer<Concept> allocator) {
+        this.alloc = allocator;
     }
-    public DefaultConceptBuilder(ConceptState sleep, ConceptState awake) {
-        this.sleep = sleep;
-        this.init = awake;
-        this.awake = awake;
+
+
+    @Override public TermLinker termlinker(Term term) {
+        return TemplateTermLinker.of(term);
     }
+
 
     @Override
-    public Concept build(Term t) {
-        return Task.validTaskTerm(t) ? taskConcept(t) : nodeConcept(t);
-    }
-
-    @Override
-    public void on(Conceptor c) {
-        conceptors.put(c.term, c);
-    }
-
-    private Concept nodeConcept(Term t) {
+    public NodeConcept nodeConcept(Term t) {
         return new NodeConcept(t, this);
     }
 
 
-    private TaskConcept taskConcept(final Term t) {
-        DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
-        if (dmt != null) {
-            return new TaskConcept(t,
-                    new DynamicTruthBeliefTable(t, newEternalTable(), newTemporalTable(t), dmt, true),
-                    goalable(t) ?
-                            new DynamicTruthBeliefTable(t, newEternalTable(), newTemporalTable(t), dmt, false) :
-                            BeliefTable.Empty,
-                    this);
-
-        } else {
-            Term conceptor = Functor.func(t);
-            if (conceptor!=Op.Null) {
-                @Nullable Conceptor conceptorc = conceptors.get(conceptor);
-                if (conceptorc instanceof Conceptor) {
-
-                Concept x = conceptorc.apply(conceptor, Operator.args(t));
-                if (x!=null)
-                    return (TaskConcept) x;
-                }
-            }
-
-            return new TaskConcept(t, this);
-        }
-    }
 
     protected Map newBagMap(int volume) {
 
@@ -107,6 +62,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
         Bag<Term, PriReference<Term>> termbag =
                 new CurveBag<>(Param.termlinkMerge, newBagMap(v), 0);
+
         CurveBag<TaskLink> taskbag =
                 new TaskLinkCurveBag(Param.tasklinkMerge, newBagMap(v), 0);
 
@@ -118,53 +74,33 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
     @Override
     public BeliefTable newTable(Term c, boolean beliefOrGoal) {
-
-
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || goalable(c))) {
-            return new DefaultBeliefTable(newEternalTable(), newTemporalTable(c));
+            return new DefaultBeliefTable(newEternalTable(c), newTemporalTable(c));
         } else {
             return BeliefTable.Empty;
         }
     }
 
-    public EternalTable newEternalTable() {
+    @Override public EternalTable newEternalTable(Term c) {
         return new EternalTable(0);
     }
 
     @Override
-    public TemporalBeliefTable newTemporalTable(Term c) {
-
-        return RTreeBeliefTable.build(c);
-
-
-    }
+    public TemporalBeliefTable newTemporalTable(Term c) { return RTreeBeliefTable.build(c);     }
 
     @Override
     public QuestionTable questionTable(Term term, boolean questionOrQuest) {
         Op o = term.op();
         if (questionOrQuest ? o.beliefable : o.goalable) {
             return new QuestionTable.HijackQuestionTable(0, 3);
-
         } else {
             return QuestionTable.Empty;
         }
     }
 
-
     @Override
-    public ConceptState init() {
-        return init;
+    public void start(Concept c) {
+        alloc.accept(c);
     }
-
-    @Override
-    public ConceptState awake() {
-        return awake;
-    }
-
-    @Override
-    public ConceptState sleep() {
-        return sleep;
-    }
-
 
 }

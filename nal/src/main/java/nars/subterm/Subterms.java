@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -741,9 +742,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
+    default void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
+        forEach(x -> x.recurseTerms(v));
+    }
+
 
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
         return AND(s -> whileTrue.test(s) && s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
+    }
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, Compound parent) {
+        return AND(s -> whileTrue.test(s, parent) && s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
 
     default Subterms reversed() {

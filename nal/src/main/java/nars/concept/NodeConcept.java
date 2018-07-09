@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
-import nars.concept.util.ConceptState;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
@@ -18,7 +17,7 @@ import nars.term.Termed;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static nars.concept.util.ConceptState.New;
+
 
 /** a 'blank' concept which does not store any tasks */
 public class NodeConcept implements Concept {
@@ -26,9 +25,10 @@ public class NodeConcept implements Concept {
     public final Term term;
     public final Bag<?, TaskLink> taskLinks;
     public final Bag<Term, PriReference<Term>> termLinks;
-    public transient ConceptState state = New;
+
     private final TermLinker linker;
 
+    /** cached here, == term.hashCode() */
     private final int hash;
 
     protected final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
@@ -108,32 +108,12 @@ public class NodeConcept implements Concept {
         return Stream.empty();
     }
 
-    @Override
-    public final ConceptState state() {
-        return state;
-    }
 
-    @Override
-    public ConceptState state(ConceptState state) {
-        ConceptState current = this.state;
-        if (current != state) {
-            this.state = state;
-            stateChanged();
-        }
-        return state;
-    }
-
-    protected void stateChanged() {
-        termLinks.setCapacity(state.linkCap(this, true));
-        taskLinks.setCapacity(state.linkCap(this, false));
-    }
 
 
     @Override
     public final boolean equals(Object obj) {
-        
         return this == obj || (obj instanceof Termed && term.equals(((Termed) obj).term()));
-        
     }
 
     @Override
@@ -146,63 +126,13 @@ public class NodeConcept implements Concept {
         return term.toString();
     }
 
-//    @Override
-//    public int subs() {
-//        return term.subs();
-//    }
-//
-//    @Override
-//    public int varIndep() {
-//        return term.varIndep();
-//    }
-//
-//    @Override
-//    public int varDep() {
-//        return term.varDep();
-//    }
-//
-//    @Override
-//    public int varQuery() {
-//        return term.varQuery();
-//    }
-//
-//    @Deprecated
-//    @Override
-//    public int varPattern() {
-//        return term.varPattern();
-//    }
-//
-//    @Deprecated
-//    @Override
-//    public int complexity() {
-//        return term.complexity();
-//    }
-//
-//    @Deprecated
-//    @Override
-//    public int structure() {
-//        return term.structure();
-//    }
-//
-//    @Override
-//    public int volume() {
-//        return term.volume();
-//    }
-//
-//
-//    @Override
-//    public boolean isNormalized() {
-//        return term.isNormalized();
-//    }
 
     @Override
     public void delete( NAR nar) {
+        meta.clearPut(DELETED, DELETED);
         termLinks.delete();
         taskLinks.delete();
-        meta.clear();
-        state(ConceptState.Deleted);
     }
-
 
     @Override
     public <X> X meta(String key, Function<String,Object> valueIfAbsent) {

@@ -98,15 +98,13 @@ class LinkageTest extends NALTest {
 
 
         @Nullable Concept p1 = nar.concept(premise1);
-        assertNotNull(p1.state());
 
 
         
 
         Concept p2 = nar.concept(premise2);
         assertNotNull(p2);
-        assertNotNull(p2.state());
-        
+
 
         AdjGraph<Term, Float> g = TermGraph.termlink(nar);
 

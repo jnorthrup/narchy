@@ -5,7 +5,6 @@ import jcog.learn.LivePredictor;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.Concept;
 import nars.concept.signal.Signal;
 import nars.gui.NARui;
 import nars.time.clock.RealTime;
@@ -33,7 +32,7 @@ public class PredictDemo {
 
 
         float[] xf = new float[1];
-        @Nullable Concept X = new Signal($.the("x"), ()->{
+        @Nullable Signal X = new Signal($.the("x"), ()->{
             return xf[0];
         }, n);
         n.on(X);
@@ -48,7 +47,7 @@ public class PredictDemo {
             xf[0] = (float) (0.5f + 0.5f * Math.sin(t / 6f));
             
 
-            ((Signal) X).update(truther, n);
+            X.update(truther, n);
 
             
         }).runFPS(15f);
