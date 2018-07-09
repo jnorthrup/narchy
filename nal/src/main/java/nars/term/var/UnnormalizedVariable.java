@@ -13,7 +13,7 @@ import nars.term.atom.AtomicConst;
  */
 public class UnnormalizedVariable extends AtomicConst implements Variable, The {
 
-    public final Op type;
+    private final Op type;
 
     @Override public int opX() { return Term.opX(op(), 10);    }
 

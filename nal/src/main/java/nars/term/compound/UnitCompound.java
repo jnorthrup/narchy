@@ -27,7 +27,7 @@ public abstract class UnitCompound implements Compound {
     @Override
     abstract public Op op();
 
-    abstract public Term sub();
+    protected abstract Term sub();
 
 
     @Override

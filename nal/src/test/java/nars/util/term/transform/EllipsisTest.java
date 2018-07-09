@@ -62,7 +62,7 @@ public class EllipsisTest {
 
             Term r = /*index.patternify*/( getResult() );
 
-            Term x = index.patternify(index.rule( getPattern() ));
+            Term x = PremisePatternIndex.patternify(index.rule( getPattern() ));
 
 
             

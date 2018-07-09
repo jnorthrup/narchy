@@ -44,10 +44,10 @@ public enum ListFunc {
                 return null;
             } else if (l == 1) {
                 e.replace(
-                        e.subst(
+                        Evaluation.subst(
                                 x, Op.EmptyProduct,
                                 y, xy),
-                        e.subst(
+                        Evaluation.subst(
                                 x, xy,
                                 y, Op.EmptyProduct)
 
@@ -57,7 +57,7 @@ public enum ListFunc {
                 Subterms xys = xy.subterms();
                 e.replace(
                         Util.map(-1, l, finalI ->
-                                        e.subst(
+                                        Evaluation.subst(
                                                 x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
                                                 y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
                                 ,

@@ -45,10 +45,10 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         return null;
     }
 
-    final static Atomic UnifyIf = Atomic.the("unifyIf");
+    private final static Atomic UnifyIf = Atomic.the("unifyIf");
     public final Variable x;
 
-    protected MatchConstraint(Term x, Term id) {
+    MatchConstraint(Term x, Term id) {
         super(id);
         this.x = (Variable) x;
     }

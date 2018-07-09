@@ -39,7 +39,8 @@ public class Scalar extends Sensor {
     static class ScalarBeliefTable extends DynamicBeliefTable {
 
         private final LongToFloatFunction value;
-        long stampSeed, stampStart;
+        final long stampSeed;
+        final long stampStart;
 
         protected ScalarBeliefTable(Term term, boolean beliefOrGoal, LongToFloatFunction value, NAR n) {
             super(term, beliefOrGoal, EternalTable.EMPTY,

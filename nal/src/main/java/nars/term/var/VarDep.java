@@ -15,7 +15,7 @@ public class VarDep extends NormalizedVariable {
         super(VAR_DEP, id);
     }
 
-    final static int RANK = Term.opX(VAR_DEP, (short)0);
+    private final static int RANK = Term.opX(VAR_DEP, (short)0);
     @Override public int opX() { return RANK;    }
 
     @NotNull

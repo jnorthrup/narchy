@@ -40,7 +40,7 @@ public enum Image { ;
         return p.hasAny(Op.VAR_DEP) && p.OR(x -> (x == Op.imInt || x == Op.imExt));
     }
 
-    public static Term imageInt(Term t, Term x) {
+    private static Term imageInt(Term t, Term x) {
         
         
         if (t.op()==INH) {

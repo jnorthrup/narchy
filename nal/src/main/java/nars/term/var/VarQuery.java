@@ -15,7 +15,7 @@ public final class VarQuery extends NormalizedVariable {
         super(VAR_QUERY, id);
     }
 
-    final static int RANK = Term.opX(VAR_QUERY, 0);
+    private final static int RANK = Term.opX(VAR_QUERY, 0);
     @Override public int opX() { return RANK;    }
 
     @NotNull

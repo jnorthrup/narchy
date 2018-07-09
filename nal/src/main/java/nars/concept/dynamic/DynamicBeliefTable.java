@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 
 public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
-    protected final boolean beliefOrGoal;
+    final boolean beliefOrGoal;
 
     protected final Term term;
 
@@ -104,12 +104,12 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
 
 
-    public final byte punc() {
+    protected final byte punc() {
         return beliefOrGoal ? Op.BELIEF : Op.GOAL;
     }
 
 
-    protected final Truth truthStored(long start, long end, Term template, NAR nar) {
+    private Truth truthStored(long start, long end, Term template, NAR nar) {
         return super.truth(start, end, template, nar);
     }
 
@@ -119,7 +119,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     /** default implementation */
-    public void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar) {
+    void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar) {
         Task x = taskDynamic(start, end, term, nar);
         if (x != null)
             n.accept(x);
@@ -161,7 +161,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
      * a dynamic match, if exist, to totally override any possible
      * otherwise stored temporal or eternal tasks.
      */
-    protected boolean dynamicOverrides() {
+    boolean dynamicOverrides() {
         return false;
     }
 

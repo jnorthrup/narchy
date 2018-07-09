@@ -20,7 +20,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public class TruthletTask extends SignalTask {
 
-    public volatile Truthlet truthlet;
+    private volatile Truthlet truthlet;
 
     public TruthletTask(Term t, byte punct, Truthlet truth, NAR n) {
         this(t, punct, truth, n.time(), n.time.nextStamp());
@@ -36,14 +36,9 @@ public class TruthletTask extends SignalTask {
     /**
      * should be called only from the stretch procedure
      */
-    void updateTime(Concept c, long nextStart, long nextEnd) {
-        if (nextStart == start() && nextEnd == end())
-            return; 
-        else
-            update(c, t-> {
-                Truthlet u = t.truthlet.stretch(nextStart, nextEnd);
-                t.truthlet = u;
-            });
+    private void updateTime(Concept c, long nextStart, long nextEnd) {
+        if (!(nextStart == start() && nextEnd == end()))
+            update(c, t-> t.truthlet = t.truthlet.stretch(nextStart, nextEnd));
     }
 
     public void update(NAR n, Consumer<TruthletTask> t) {
@@ -55,7 +50,7 @@ public class TruthletTask extends SignalTask {
         }
     }
 
-    public void update(Concept c, Consumer<TruthletTask> t) {
+    private void update(Concept c, Consumer<TruthletTask> t) {
         ((DefaultBeliefTable)c.table(punc)).temporal.update(this, ()-> t.accept(TruthletTask.this));
     }
 

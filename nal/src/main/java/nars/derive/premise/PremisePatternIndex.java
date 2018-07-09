@@ -91,48 +91,10 @@ public class PremisePatternIndex extends MapConceptIndex {
         }
     }
 
-    public Term patternify(Term x) {
+    public static Term patternify(Term x) {
         if (x instanceof Compound)
-            return patternify((Compound) x);
+            return Ellipsify.transformCompound((Compound) x);
         return x;
-    }
-
-    /*@NotNull*/
-    private Term patternify(/*@NotNull*/ Compound x) {
-
-        return Ellipsify.transformCompound(x);
-
-//        if (x.op() == NEG)
-//            return patternify(x.unneg()).neg();
-//
-//        Subterms s = x.subterms();
-//        int ss = s.subs();
-//        Term[] bb = new Term[ss];
-//        boolean changed = false;
-//        for (int i = 0; i < ss; i++) {
-//            Term a = s.sub(i);
-//            Term b = patternify(a);
-//            if (a != b) {
-//                changed = true;
-//            }
-//            bb[i] = b;
-//        }
-//
-//        if (!changed)
-//            return x;
-//
-//
-//        //Pattern V
-//        //Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
-//        Subterms v = HeapTermBuilder.the.subtermsInstance(bb); //dont intern
-//
-//        Term y = Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x);
-//
-//        Ellipsis e = Ellipsis.firstEllipsis(bb);
-//        return e != null ?
-//                ellipsis(x, v, e) :
-//                HeapTermBuilder.the.theCompound(x.op(), x.dt(), v);
-
     }
 
 

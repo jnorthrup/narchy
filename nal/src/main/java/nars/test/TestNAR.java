@@ -177,7 +177,7 @@ public class TestNAR {
         return this;
     }
 
-    private void assertSuccess(boolean success) {
+    private static void assertSuccess(boolean success) {
 
         /** if success is false, the test will end here, throwing the appropriate JUnit exception */
         assertTrue(success);

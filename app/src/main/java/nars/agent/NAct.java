@@ -8,7 +8,6 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.ActionConcept;
-import nars.concept.action.BeliefActionConcept;
 import nars.concept.action.GoalActionAsyncConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.control.channel.CauseChannel;
@@ -25,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
@@ -165,7 +163,7 @@ public interface NAct {
     @Nullable
     default GoalActionConcept actionTriStateContinuous(@NotNull Term s, @NotNull IntPredicate i) {
 
-        GoalActionConcept m = new GoalActionConcept(s, nar(), curiosity(), (b, d) -> {
+        GoalActionConcept m = new GoalActionConcept(s, nar(), (b, d) -> {
 
 
             int ii;
@@ -210,7 +208,7 @@ public interface NAct {
 
     @Nullable
     default ActionConcept actionTriStatePWM(@NotNull Term s, @NotNull IntConsumer i) {
-        ActionConcept m = new GoalActionConcept(s, nar(), curiosity(), (b, d) -> {
+        ActionConcept m = new GoalActionConcept(s, nar(), (b, d) -> {
 
 
             int ii;
@@ -407,12 +405,12 @@ public interface NAct {
 
 
     default GoalActionConcept action(@NotNull Term s, @NotNull GoalActionConcept.MotorFunction update) {
-        return addAction(new GoalActionConcept(s, nar(), curiosity(), update));
+        return addAction(new GoalActionConcept(s, nar(), update));
     }
 
-    default BeliefActionConcept react(@NotNull Term s, @NotNull Consumer<Truth> update) {
-        return addAction(new BeliefActionConcept(s, nar(), update));
-    }
+//    default BeliefActionConcept react(@NotNull Term s, @NotNull Consumer<Truth> update) {
+//        return addAction(new BeliefActionConcept(s, nar(), update));
+//    }
 
     default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
         return actionBipolar(s, false, update);

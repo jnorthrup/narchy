@@ -15,17 +15,17 @@ import java.util.function.Predicate;
  */
 abstract public class DurService extends NARService implements Consumer<NAR> {
 
-    static final Logger logger = LoggerFactory.getLogger(DurService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DurService.class);
 
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
      */
-    public final MutableFloat durations = new MutableFloat(1f);
+    private final MutableFloat durations = new MutableFloat(1f);
 
     /** when the last cycle ended */
     private volatile long lastStarted = Long.MIN_VALUE;
 
-    protected final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected DurService(NAR n, float durs) {
         super((NAR)null);
@@ -95,9 +95,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     @Override
     protected void starting(NAR nar) {
         lastStarted = nar.time();
-        nar.runLater(()->{
-            spawn(nar, durCycles(nar));
-        });
+        nar.runLater(()-> spawn(nar, durCycles(nar)));
 
     }
 
@@ -133,11 +131,11 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         }
     }
 
-    protected void spawn(NAR nar, long when) {
+    private void spawn(NAR nar, long when) {
         nar.runAt(when, this);
     }
 
-    public int durCycles(NAR nar) {
+    private int durCycles(NAR nar) {
         return Math.round(durations.floatValue() * nar.dur());
     }
 

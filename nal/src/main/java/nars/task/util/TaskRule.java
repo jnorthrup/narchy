@@ -21,10 +21,10 @@ import static nars.term.Terms.compoundOrNull;
  */
 public class TaskRule extends TaskMatch {
 
-    static final Logger logger = LoggerFactory.getLogger(TaskRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaskRule.class);
 
     /** the output pattern */
-    public final Compound output;
+    private final Compound output;
 
     /** version of output with the original GenericVariable's, for display or reference purposes */
     private final Compound outputRaw;
@@ -65,7 +65,7 @@ public class TaskRule extends TaskMatch {
 
         private final Task x;
 
-        public MySubUnify(Task x) {
+        MySubUnify(Task x) {
             super(Op.VAR_PATTERN, TaskRule.this.nar.random(), Param.UnificationStackMax, nar.deriveBranchTTL.intValue());
             this.x = x;
         }

@@ -1,6 +1,5 @@
 package nars.concept.action;
 
-import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -26,16 +25,13 @@ public class GoalActionConcept extends ActionConcept {
     
     private final SignalBeliefTable feedback;
 
-    private final FloatRange curiosity;
-
     private final MotorFunction motor;
 
 
 
-    public GoalActionConcept(@NotNull Term c, @NotNull NAR n, @NotNull FloatRange curiosity, @NotNull MotorFunction motor) {
+    public GoalActionConcept(@NotNull Term c, @NotNull NAR n, @NotNull MotorFunction motor) {
         super(c, n);
 
-        this.curiosity = curiosity;
 
 
         
@@ -66,7 +62,7 @@ public class GoalActionConcept extends ActionConcept {
 
 
 
-        float cur = curiosity.floatValue();
+        @Deprecated float cur = 0;
 
 
         Truth goal;
@@ -78,6 +74,7 @@ public class GoalActionConcept extends ActionConcept {
 //        if (goal == null) {
 //            //HACK expand radius - this should be done by the truthpolation impl
             gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
+            //gStart = pNow; gEnd = pNow + dur;
             goal = this.goals().truth(gStart, gEnd, nar);
 //        }
 

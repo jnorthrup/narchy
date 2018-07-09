@@ -338,7 +338,7 @@ public class Narsese {
         @VisibleForTesting
         MatcherContext<V> createRootContext(
                 final InputBuffer inputBuffer, final MatchHandler matchHandler) {
-            return new DefaultMatcherContext<V>(inputBuffer, valueStack,
+            return new DefaultMatcherContext<>(inputBuffer, valueStack,
                     matchHandler, rootMatcher);
         }
 

@@ -56,7 +56,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
     /*@Stable*/
     private final byte[] bytes;
 
-    protected NormalizedVariable(/*@NotNull*/ Op type, byte num) {
+    NormalizedVariable(/*@NotNull*/ Op type, byte num) {
         assert num > 0;
 
         id = AnonID.termToId(type, num);

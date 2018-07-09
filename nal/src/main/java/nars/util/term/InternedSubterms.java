@@ -13,12 +13,12 @@ import java.util.Arrays;
 public final class InternedSubterms extends UnitPri implements PriProxy<InternedSubterms, Subterms> {
     private final int hash;
 
-    public final byte[] subs;
+    private final byte[] subs;
 
-    public transient Term[] rawSubs;
+    private transient Term[] rawSubs;
 
     
-    public Subterms y = null;
+    private Subterms y = null;
 
     public InternedSubterms(Term... subs) {
         this.rawSubs = subs;
@@ -57,6 +57,6 @@ public final class InternedSubterms extends UnitPri implements PriProxy<Interned
     public Subterms compute() {
         Term[] rawSubs = this.rawSubs;
         this.rawSubs = null;
-        return Op.terms.subtermsInstance(rawSubs);
+        return Op.terms.theSubterms(rawSubs);
     }
 }

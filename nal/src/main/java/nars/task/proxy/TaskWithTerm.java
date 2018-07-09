@@ -11,7 +11,7 @@ import static nars.Op.NEG;
   */
 public class TaskWithTerm extends TaskProxy {
 
-    public final Term term;
+    private final Term term;
 
 
     public TaskWithTerm(Term term, Task task) {

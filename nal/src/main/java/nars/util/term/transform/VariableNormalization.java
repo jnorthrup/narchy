@@ -51,7 +51,7 @@ public class VariableNormalization extends VariableTransform {
         return atomic;
     }
 
-    static boolean normalizable(Term atomic) {
+    private static boolean normalizable(Term atomic) {
         return atomic instanceof Variable && !(atomic == Op.imExt || atomic == Op.imInt);
     }
 
@@ -73,7 +73,7 @@ public class VariableNormalization extends VariableTransform {
     }
 
 
-    public VariableNormalization() {
+    protected VariableNormalization() {
         this(new HashMap<>(4, 0.9f), 0);
     }
 
@@ -85,7 +85,7 @@ public class VariableNormalization extends VariableTransform {
         this(r, 0);
     }
 
-    public VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r, int offset) {
+    private VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r, int offset) {
         this.offset = offset;
         this.map = r;
 

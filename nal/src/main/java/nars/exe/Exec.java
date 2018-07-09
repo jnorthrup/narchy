@@ -16,9 +16,9 @@ import java.util.stream.Stream;
  */
 abstract public class Exec implements Executor {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Exec.class);
+    static final Logger logger = LoggerFactory.getLogger(Exec.class);
 
-    protected NAR nar;
+    NAR nar;
 
 
 
@@ -40,7 +40,7 @@ abstract public class Exec implements Executor {
 
 
     /** inline, synchronous */
-    protected final void executeNow(Object t) {
+    final void executeNow(Object t) {
         //try {
             if (t instanceof ITask) {
                 executeNow((ITask) t);
@@ -55,7 +55,7 @@ abstract public class Exec implements Executor {
 
     }
 
-    protected final void executeNow(ITask t) {
+    final void executeNow(ITask t) {
         t.run(nar);
     }
 

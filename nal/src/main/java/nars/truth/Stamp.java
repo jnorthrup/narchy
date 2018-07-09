@@ -474,11 +474,9 @@ public interface Stamp {
             Stamp si = s.get(i);
             long[] x = si.stamp();
             if (x == UNSTAMPED_OVERLAPPING)
-                continue; 
-            int xl = x.length;
-            int r = xl;
-            totalEvidence += r;
-            ptr[i] = (byte) r;
+                continue;
+            totalEvidence += x.length;
+            ptr[i] = (byte) x.length;
         }
         if (totalEvidence == 0) {
             return pair(Stamp.UNSTAMPED_OVERLAPPING, 1f);
@@ -486,11 +484,10 @@ public interface Stamp {
 
         List<long[]> stamps = Lists.transform(s, Stamp::stamp);
 
-        int limit = maxLen;
-        int size = 0; 
+        int size = 0;
         boolean halted = false;
         main:
-        while (done < S && size < limit) {
+        while (done < S && size < maxLen) {
             done = 0;
             for (int i = 0; i < S; i++) {
                 long[] x = stamps.get(i);
@@ -506,7 +503,7 @@ public interface Stamp {
                     size++;
                 }
 
-                if (size >= limit) {
+                if (size >= maxLen) {
                     halted = true;
                     break main;
                 }
@@ -528,7 +525,7 @@ public interface Stamp {
         }
 
 
-        assert (size <= limit);
+        assert (size <= maxLen);
 
 
 

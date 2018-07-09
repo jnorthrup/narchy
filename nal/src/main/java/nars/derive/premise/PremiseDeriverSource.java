@@ -103,13 +103,13 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         Term[] postcon = ref.sub(1).arrayShared();
 
 
-        this.taskPattern = INDEX.patternify(precon[0]);
-        this.beliefPattern = INDEX.patternify(precon[1]);
+        this.taskPattern = PremisePatternIndex.patternify(precon[0]);
+        this.beliefPattern = PremisePatternIndex.patternify(precon[1]);
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        this.concPattern = INDEX.patternify(postcon[0]);
+        this.concPattern = PremisePatternIndex.patternify(postcon[0]);
 
 
 
@@ -443,7 +443,6 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
                 Subterms args = Operator.args(finalConcPattern);
                 Term x = args.sub(1);
                 Term y = args.sub(2);
-                ;
                 boolean isStrict = args.contains(Subst.STRICT);
 
                 //some structure exists that can be used to prefilter
@@ -940,7 +939,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         return taskOrBelief ? TaskTerm : BeliefTerm;
     }
 
-    final static Function<PreDerivation,Term> TaskTerm = new Function<PreDerivation,Term>() {
+    final static Function<PreDerivation,Term> TaskTerm = new Function<>() {
 
         @Override
         public String toString() {
@@ -953,7 +952,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         }
     };
 
-    final static Function<PreDerivation,Term> BeliefTerm = new Function<PreDerivation,Term>() {
+    final static Function<PreDerivation,Term> BeliefTerm = new Function<>() {
 
         @Override
         public String toString() {

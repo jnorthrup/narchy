@@ -6,14 +6,9 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
-import nars.concept.Concept;
-import nars.concept.Scalar;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
-import nars.subterm.Subterms;
-import nars.term.Conceptor;
 import nars.term.Term;
-import nars.term.atom.Int;
 import nars.util.TimeAware;
 
 import java.util.Arrays;

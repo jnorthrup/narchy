@@ -30,7 +30,7 @@ public abstract class ConceptIndex {
     @Nullable
     public abstract Termed get(/*@NotNull*/ Term key, boolean createIfMissing);
 
-    public CompletableFuture<Termed> getAsync(Term key, boolean createIfMissing) {
+    private CompletableFuture<Termed> getAsync(Term key, boolean createIfMissing) {
         return CompletableFuture.completedFuture(get(key, createIfMissing));
     }
 
@@ -110,7 +110,7 @@ public abstract class ConceptIndex {
      * this can be undesirable if the concept index has an eviction mechanism
      * which counts lookup frequency, which would be skewed if elision is enabled.
      */
-    protected boolean elideConceptGets() {
+    boolean elideConceptGets() {
         return true;
     }
 
@@ -142,7 +142,7 @@ public abstract class ConceptIndex {
         });
     }
 
-    protected final void onRemove(Termed value) {
+    final void onRemove(Termed value) {
         if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
 
@@ -159,7 +159,7 @@ public abstract class ConceptIndex {
         }
     }
 
-    protected void forget(TaskConcept tc) {
+    private void forget(TaskConcept tc) {
         tc.tasks().forEach(Priority::delete);
     }
 

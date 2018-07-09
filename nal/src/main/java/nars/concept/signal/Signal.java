@@ -8,7 +8,6 @@ import nars.concept.Sensor;
 import nars.concept.dynamic.SignalBeliefTable;
 import nars.concept.util.ConceptBuilder;
 import nars.control.DurService;
-import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -41,7 +40,7 @@ public class Signal extends Sensor implements FloatFunction<Term>, FloatSupplier
      */
     public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> DIFF = (conf) ->
             ((p, n) -> (n == n) ? ((p == p) ? $.t((n - p) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
-    public FloatSupplier signal;
+    public final FloatSupplier signal;
 
     private volatile float currentValue = Float.NaN;
 
@@ -119,11 +118,10 @@ public class Signal extends Sensor implements FloatFunction<Term>, FloatSupplier
         if (nextValue == nextValue /* not NaN */) {
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
-                SignalTask x = ((SignalBeliefTable) beliefs()).add(nextTruth,
+
+
+                return ((SignalBeliefTable) beliefs()).add(nextTruth,
                         start, end, dur, this, n);
-
-
-                return x;
             }
         }
         return null;

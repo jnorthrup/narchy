@@ -35,15 +35,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
     public static final EternalTable EMPTY = new EternalTable(0) {
 
-        @Override
-        public Task strongest() {
-            return null;
-        }
-
-        @Override
-        public Task weakest() {
-            return null;
-        }
 
         @Override
         public boolean removeTask(Task x) {
@@ -185,12 +176,12 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
     }
 
-    public Task strongest() {
+    private Task strongest() {
         Object[] l = this.list;
         return (l.length == 0) ? null : (Task) l[0];
     }
 
-    public Task weakest() {
+    private Task weakest() {
         int s = size;
         if (s == 0) return null;
         Object[] l = this.list;
@@ -429,7 +420,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     /**
      * TODO batch eternalize multiple removed tasks together as one attempted task
      */
-    protected Task eternalize(Task x, int tableCap, long tableDur, NAR nar) {
+    Task eternalize(Task x, int tableCap, long tableDur, NAR nar) {
 
         assert (!x.isDeleted());
         float factor = Math.max((1f/tableCap), (float)Util.unitize((((double)x.range())/(1+tableDur))));

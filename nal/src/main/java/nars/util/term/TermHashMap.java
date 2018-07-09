@@ -123,11 +123,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     private ShortObjectHashMap<X> ensureIDMap() {
         ShortObjectHashMap<X> o = this.id;
-        if (o == null) {
-            return this.id = newIDMap();
-        } else {
-            return o;
-        }
+        return o == null ? (this.id = newIDMap()) : o;
     }
 
     private Map<Term, X> ensureOtherMap() {

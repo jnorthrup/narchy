@@ -32,7 +32,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
     /**
      * passes through terms without creating any concept anything
      */
-    ConceptBuilder Null = new ConceptBuilder() {
+    ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
 
         @Override
         public void on(Conceptor c) {
@@ -164,12 +164,12 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
                 //TODO move this to impl-specific test function
                 Subterms subjsubs = subj.subterms();
                 int s = subjsubs.subs();
-                Term[] x = new Term[s];
+//                Term[] x = new Term[s];
                 for (int i = 0; i < s; i++) {
                     Term y;
                     if (!validDynamicSubterm.test(y = INH.the(subjsubs.sub(i), pred)))
                         return null;
-                    x[i] = y;
+//                    x[i] = y;
                 }
 
                 switch (so) {
@@ -190,12 +190,12 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
                 Compound cpred = (Compound) pred;
                 int s = cpred.subs();
-                Term[] x = new Term[s];
+//                Term[] x = new Term[s];
                 for (int i = 0; i < s; i++) {
                     Term y;
                     if (!validDynamicSubterm.test(y = INH.the(subj, cpred.sub(i))))
                         return null;
-                    x[i] = y;
+//                    x[i] = y;
                 }
 
                 switch (po) {

@@ -16,7 +16,7 @@ abstract public class Truthlet implements Truth {
     abstract public long start();
     abstract public long end();
 
-    public long mid() { return (start() + end())/2L; }
+    long mid() { return (start() + end())/2L; }
     public long range() {
         long e = end();
         long s = start();
@@ -82,10 +82,10 @@ abstract public class Truthlet implements Truth {
         }
     }
 
-    public float freq(long when) {
+    private float freq(long when) {
         return truth(when)[0];
     }
-    public float evi(long when) {
+    private float evi(long when) {
         return truth(when)[1];
     }
 
@@ -97,7 +97,7 @@ abstract public class Truthlet implements Truth {
         return start <= end() && end >= start();
     }
 
-    public final boolean during(long when) {
+    final boolean during(long when) {
         if (when == ETERNAL)
             return true;
         long s = start();
@@ -112,10 +112,10 @@ abstract public class Truthlet implements Truth {
         return fe;
     }
 
-    abstract public void truth(long when, float[] freqEvi);
+    protected abstract void truth(long when, float[] freqEvi);
 
     /** sets a FreqEvi vector as unknown */
-    protected static void unknown(float[] freqEvi) {
+    static void unknown(float[] freqEvi) {
         freqEvi[0] = Float.NaN;
         freqEvi[1] = 0;
     }
@@ -137,7 +137,7 @@ abstract public class Truthlet implements Truth {
         );
     }
 
-    public static Truthlet flat(long start, long end, float freq, float evi) {
+    private static Truthlet flat(long start, long end, float freq, float evi) {
         return new FlatTruthlet(start, end, freq, evi);
     }
 

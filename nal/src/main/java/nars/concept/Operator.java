@@ -4,7 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.task.NALTask;

@@ -13,9 +13,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
+class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
 
-    protected final ShortObjectHashMap<X> id = new ShortObjectHashMap<>();
+    private final ShortObjectHashMap<X> id = new ShortObjectHashMap<>();
 
     public NormalizedVariableMap() {
         super();
@@ -114,7 +114,7 @@ public class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
     static class AnonMapEntrySet<X> extends AbstractSet<Entry<Variable, X>> {
         private final ShortObjectHashMap<X> id;
 
-        public AnonMapEntrySet(ShortObjectHashMap<X> id) {
+        AnonMapEntrySet(ShortObjectHashMap<X> id) {
             this.id = id;
         }
 

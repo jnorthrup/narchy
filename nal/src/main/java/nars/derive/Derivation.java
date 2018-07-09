@@ -51,7 +51,7 @@ public class Derivation extends PreDerivation {
 
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
-    final static int ANON_INITIAL_CAPACITY = 16;
+    private final static int ANON_INITIAL_CAPACITY = 16;
     private final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
         if (pp instanceof NALTask)
@@ -119,7 +119,7 @@ public class Derivation extends PreDerivation {
                 replaced = anon.put(replaced);
             }
 
-            Term y = super.apply(xx, input, replaced, replacement);
+            Term y = apply(xx, input, replaced, replacement);
 
             use(TTL_UNIFY); //substitute actually
 
@@ -180,7 +180,7 @@ public class Derivation extends PreDerivation {
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
     public boolean temporal;
-    public boolean eternal;
+    private boolean eternal;
     /**
      * original non-anonymized tasks
      */
@@ -190,7 +190,7 @@ public class Derivation extends PreDerivation {
     /**
      * precise time that the task and belief truth are sampled
      */
-    public long taskAt, beliefAt;
+    public long taskStart, beliefStart;
     public boolean taskBeliefTimeIntersects;
     //private ImmutableMap<Term, Termed> staticFunctors;
     private ImmutableMap<Term, Termed> derivationFunctors;
@@ -371,7 +371,7 @@ public class Derivation extends PreDerivation {
         if (tAt == TIMELESS)
             throw new RuntimeException();
 
-        this.taskAt = tAt;
+        this.taskStart = tAt;
         this.taskPunc = _task.punc();
 
         if ((taskPunc == BELIEF || taskPunc == GOAL)) {
@@ -399,13 +399,13 @@ public class Derivation extends PreDerivation {
 
             beliefTerm = anon.put(this._beliefTerm = _belief.term());
             this.belief = new TaskWithTerm(beliefTerm, _belief);
-            this.beliefAt = _belief.start();
+            this.beliefStart = _belief.start();
         } else {
 
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
             if (beliefTerm.op() == NEG)
                 throw new RuntimeException("should not be NEG: " + beliefTerm);
-            this.beliefAt = TIMELESS;
+            this.beliefStart = TIMELESS;
             this.belief = null;
             this.beliefTruth = this.beliefTruthDuringTask = null;
         }

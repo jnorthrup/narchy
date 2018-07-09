@@ -12,9 +12,9 @@ import static nars.truth.TruthFunctions.c2wSafe;
  */
 public class DiscreteTruth implements Truth {
 
-    public final int hash;
+    private final int hash;
 
-    public DiscreteTruth(Truth t) {
+    DiscreteTruth(Truth t) {
         this(t.freq(), t.conf());
     }
 
@@ -29,14 +29,14 @@ public class DiscreteTruth implements Truth {
         this(f, c, res, res);
     }
 
-    public DiscreteTruth(float f, float c, float freqRes, float confRes) {
+    private DiscreteTruth(float f, float c, float freqRes, float confRes) {
         this(
             Truth.freq(f, freqRes),
             Truth.conf(c, confRes)
         );
     }
 
-    protected DiscreteTruth(int hash) {
+    DiscreteTruth(int hash) {
         this.hash = hash;
     }
 

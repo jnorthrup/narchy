@@ -25,11 +25,11 @@ public class LightDTCompound implements SeparateSubtermsCompound {
     /**
      * numeric (term or "dt" temporal relation)
      */
-    public final int dt;
+    private final int dt;
     private final int hashDT;
     private final Compound ref;
 
-    public LightDTCompound(Compound base, int dt) {
+    private LightDTCompound(Compound base, int dt) {
 
         Op op = base.op();
 
@@ -161,7 +161,7 @@ public class LightDTCompound implements SeparateSubtermsCompound {
             return (dt == cthat.dt);
 
         } else {
-            return Compound.equals(this, (Term) that);
+            return Compound.equals(this, that);
         }
 
     }

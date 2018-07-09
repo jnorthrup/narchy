@@ -11,7 +11,7 @@ public final class MapSubst implements Subst {
 
 
 
-    public final Map<? extends Term, Term> xy;
+    private final Map<? extends Term, Term> xy;
 
     public MapSubst(Map<? extends Term, Term> xy) {
         this.xy = xy;

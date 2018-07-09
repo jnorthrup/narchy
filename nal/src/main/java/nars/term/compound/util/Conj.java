@@ -163,7 +163,7 @@ public class Conj extends AnonMap {
         return from(t, t.dt() == DTERNAL ? ETERNAL : 0);
     }
 
-    public static Conj from(Term t, long rootTime) {
+    private static Conj from(Term t, long rootTime) {
         Conj x = new Conj();
         x.add(rootTime, t);
         return x;
@@ -257,7 +257,7 @@ public class Conj extends AnonMap {
         return c.term();
     }
 
-    static int indexOfZeroTerminated(byte[] b, byte val) {
+    private static int indexOfZeroTerminated(byte[] b, byte val) {
         for (int i = 0; i < b.length; i++) {
             byte bi = b[i];
             if (val == bi)
@@ -268,7 +268,7 @@ public class Conj extends AnonMap {
         return -1;
     }
 
-    public static Term conjSeq(FasterList<LongObjectPair<Term>> events) {
+    private static Term conjSeq(FasterList<LongObjectPair<Term>> events) {
         return conjSeq(events, 0, events.size());
     }
 
@@ -276,7 +276,7 @@ public class Conj extends AnonMap {
      * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
      * assumes that all of the event terms have distinct occurrence times
      */
-    public static Term conjSeq(List<LongObjectPair<Term>> events, int start, int end) {
+    private static Term conjSeq(List<LongObjectPair<Term>> events, int start, int end) {
 
         LongObjectPair<Term> first = events.get(start);
         int ee = end - start;
@@ -491,7 +491,7 @@ public class Conj extends AnonMap {
         }
     }
 
-    protected boolean addIfValid(long at, byte id) {
+    private boolean addIfValid(long at, byte id) {
 
         Object what = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
         if (what instanceof byte[]) {
@@ -531,7 +531,7 @@ public class Conj extends AnonMap {
     /**
      * @return non-zero byte value
      */
-    public byte add(Term t) {
+    private byte add(Term t) {
         assert (t != null && !(t instanceof Bool));
         return termToId.getIfAbsentPutWithKey(t.unneg(), tt -> {
             //int s = termToId.size();
@@ -548,7 +548,7 @@ public class Conj extends AnonMap {
         return termToId.getIfAbsent(t.unneg(), (byte) -1);
     }
 
-    public byte get(Term x) {
+    private byte get(Term x) {
         boolean neg;
         if (neg = (x.op() == NEG))
             x = x.unneg();
@@ -641,7 +641,7 @@ public class Conj extends AnonMap {
         }
     }
 
-    boolean removeEventsByTerm(Term t, boolean pos, boolean neg) {
+    private boolean removeEventsByTerm(Term t, boolean pos, boolean neg) {
 
         boolean negateInput;
         if (t.op() == NEG) {
@@ -983,7 +983,7 @@ public class Conj extends AnonMap {
 //            t.addAll(csa);
 //    }
 
-    private void factorDisj(TreeSet<Term> t) {
+    private static void factorDisj(TreeSet<Term> t) {
 
         List<Term> d;
         boolean stable;
@@ -1068,11 +1068,9 @@ public class Conj extends AnonMap {
             t.addAll(csa);
     }
 
-    @Nullable private List<Term> disjComponents(TreeSet<Term> t) {
+    @Nullable private static List<Term> disjComponents(TreeSet<Term> t) {
         List<Term> d = null;
-        Iterator<Term> oo = t.iterator();
-        while (oo.hasNext()) {
-            Term x = oo.next();
+        for (Term x : t) {
             if (x.hasAll(NEG.bit | CONJ.bit)) {
                 if (x.op() == NEG) {
                     Term disj = x.unneg();
@@ -1171,8 +1169,7 @@ public class Conj extends AnonMap {
                     if (bt == ETERNAL) {
                         temporalDistance = (at) -> at == ETERNAL ? 0 : 1;
                     } else {
-                        long finalBt = bt;
-                        temporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE;
+                        temporalDistance = (at) -> at != ETERNAL ? Math.abs(bt - at) : Long.MAX_VALUE;
                     }
                     long[] whensArray = whens.toArray();
                     ArrayUtils.sort(whensArray, temporalDistance);
@@ -1187,7 +1184,7 @@ public class Conj extends AnonMap {
 
         }
 
-        long merge(long x, long y) {
+        static long merge(long x, long y) {
             if (x == y) return x;
             if (x == ETERNAL || y == ETERNAL)
                 return ETERNAL;

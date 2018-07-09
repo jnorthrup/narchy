@@ -77,7 +77,7 @@ public class MIDITaskifier {
 
 
 
-            GoalActionConcept c = new GoalActionConcept(keyTerm, nar, new FloatRange(0, 0f, 1f), (b, d) -> {
+            GoalActionConcept c = new GoalActionConcept(keyTerm, nar, (b, d) -> {
 
 
 

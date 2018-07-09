@@ -31,13 +31,13 @@ import static nars.time.Tense.XTERNAL;
  *  this implementation stores the conceptualizable terms in the lower part of a list
  *  so that they can be accessed quickly as separate from non-conceptualizables.
  *  */
-public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
+public final class TemplateTermLinker extends FasterList<Term> implements TermLinker {
 
 
     /**
      * index of the last concept template; any others beyond this index are non-conceptualizable
      */
-    protected byte concepts;
+    private byte concepts;
 
 
     @Override
@@ -163,7 +163,7 @@ public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
     /**
      * includes the host as layer 0, so if this returns 1 it will only include the host
      */
-    static int layers(Term x) {
+    private static int layers(Term x) {
         switch (x.op()) {
 
             case PROD:
@@ -221,7 +221,7 @@ public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
         }
     }
 
-    static boolean conceptualizable(Term x) {
+    private static boolean conceptualizable(Term x) {
         return x.op().conceptualizable;
     }
 

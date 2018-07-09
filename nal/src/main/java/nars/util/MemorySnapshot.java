@@ -10,7 +10,7 @@ import nars.term.Termed;
 /** a snapshot of a set of concepts */
 public class MemorySnapshot {
 
-    public final Multimap<Term,Concept> byAnon = MultimapBuilder.ListMultimapBuilder.hashKeys().arrayListValues().build();
+    public final Multimap<Term,Concept> byAnon = MultimapBuilder.hashKeys().arrayListValues().build();
 
     public MemorySnapshot() {
 

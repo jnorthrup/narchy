@@ -1,6 +1,5 @@
 package nars.concept.signal;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.util.AtomicFloat;
@@ -15,6 +14,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.stream.StreamSupport;
 
 import static nars.Op.BELIEF;
 
@@ -77,7 +77,8 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
         if (input!=null)
             value.set(input.asFloat());
 
-        in.input(Iterables.transform(this, x -> x.update(start, end, truther, dur, n)));
+        in.input(StreamSupport.stream(this.spliterator(), false)
+                .map(x -> x.update(start, end, truther, dur, n)));
     }
 
     public void pri(FloatSupplier p) {

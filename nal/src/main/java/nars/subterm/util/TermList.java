@@ -12,7 +12,7 @@ import java.util.List;
 public class TermList extends FasterList<Term> implements Subterms {
 
 
-    public TermList() { super(); }
+    protected TermList() { super(); }
 
     public TermList(int initialCapacity) {
         super(0, new Term[initialCapacity]);
@@ -22,7 +22,7 @@ public class TermList extends FasterList<Term> implements Subterms {
         super(direct.length, direct);
     }
 
-    public TermList(Collection<Term> copied) {
+    private TermList(Collection<Term> copied) {
         this(copied.toArray(Op.EmptyTermArray));
     }
 

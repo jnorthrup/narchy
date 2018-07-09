@@ -57,7 +57,7 @@ public class TermBytes extends HashCachedBytes {
     }
 
 
-    protected TermBytes(int len) {
+    private TermBytes(int len) {
         super(len);
     }
 
@@ -100,7 +100,7 @@ public class TermBytes extends HashCachedBytes {
         throw new UnsupportedOperationException();
     }
 
-    static void writeTermSeq(DataOutput out, Term term, boolean includeTemporal) throws IOException {
+    private static void writeTermSeq(DataOutput out, Term term, boolean includeTemporal) throws IOException {
 
 
         if (term instanceof Atomic) {
@@ -117,13 +117,13 @@ public class TermBytes extends HashCachedBytes {
         }
     }
 
-    static final Charset utf8 = Charsets.UTF_8;
+    private static final Charset utf8 = Charsets.UTF_8;
 
-    public static byte[] bytes(String s) {
+    private static byte[] bytes(String s) {
         return s.getBytes(utf8); 
     }
 
-    static void writeStringBytes(DataOutput out, Object o) throws IOException {
+    private static void writeStringBytes(DataOutput out, Object o) throws IOException {
         out.write(bytes(o.toString()));
     }
 
@@ -132,7 +132,7 @@ public class TermBytes extends HashCachedBytes {
 
 
 
-    static void writeCompoundSeq(DataOutput out, Compound c, boolean includeTemporal) throws IOException {
+    private static void writeCompoundSeq(DataOutput out, Compound c, boolean includeTemporal) throws IOException {
 
         out.writeByte('(');
         writeTermContainerSeq(out, c.subterms(), includeTemporal);
@@ -147,7 +147,7 @@ public class TermBytes extends HashCachedBytes {
     }
 
 
-    static void writeTermContainerSeq(DataOutput out, Subterms c, boolean includeTemporal) throws IOException {
+    private static void writeTermContainerSeq(DataOutput out, Subterms c, boolean includeTemporal) throws IOException {
 
         int siz = c.subs();
         for (int i = 0; i < siz; i++) {

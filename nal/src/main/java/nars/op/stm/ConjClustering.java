@@ -35,8 +35,8 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
 
-    protected final BagClustering<Task> bag;
-    final BagClustering.Dimensionalize<Task> ConjClusterModel;
+    private final BagClustering<Task> bag;
+    private final BagClustering.Dimensionalize<Task> ConjClusterModel;
     private final BufferedCauseChannel in;
     private final byte punc;
     private final float termVolumeMaxFactor = 0.9f;
@@ -250,16 +250,12 @@ public class ConjClustering extends Causable {
 
                                 m.cause = Cause.sample(Param.causeCapacity.intValue(), uu);
 
-                                float p =
-
-                                        priMin;
-
 
                                 int v = cp.getOne().volume();
                                 float cmplFactor =
                                         ((float) v) / (v + maxVolume);
 
-                                m.priSet(Priority.fund(p * cmplFactor, true, uu));
+                                m.priSet(Priority.fund(priMin * cmplFactor, true, uu));
 
                                 if (in.inputUntilBlocked(m)) {
                                     centroidGen++;
@@ -287,7 +283,7 @@ public class ConjClustering extends Causable {
 
     public static class STMClusterTask extends NALTask {
 
-        public STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
+        STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
             super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
         }
 

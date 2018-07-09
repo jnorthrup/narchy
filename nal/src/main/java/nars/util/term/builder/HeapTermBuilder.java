@@ -10,7 +10,7 @@ public class HeapTermBuilder extends TermBuilder {
 
     public final static HeapTermBuilder the = new HeapTermBuilder();
 
-    protected HeapTermBuilder() {
+    HeapTermBuilder() {
     }
 
     @Override
@@ -20,6 +20,6 @@ public class HeapTermBuilder extends TermBuilder {
 
     @Override
     public Subterms subterms(Op inOp, Term... s) {
-        return subtermsInstance(s);
+        return theSubterms(s);
     }
 }

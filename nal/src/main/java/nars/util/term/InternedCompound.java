@@ -19,7 +19,7 @@ public final class InternedCompound extends ByteKey  {
     public final int dt;
     public transient Supplier<Term[]> rawSubs;
 
-    public InternedCompound(DynBytes key, Op o, int dt, Supplier<Term[]> rawSubs) {
+    private InternedCompound(DynBytes key, Op o, int dt, Supplier<Term[]> rawSubs) {
         super(key);
         this.op = o.id; this. dt = dt; this.rawSubs = rawSubs;
     }

@@ -22,8 +22,8 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     private final PLinkHijackBag<Termed> table;
     
 
-    int forgetEveryDurs = 32;
-    float forgetTemperature = 0.5f;
+    private int forgetEveryDurs = 32;
+    private float forgetTemperature = 0.5f;
 
     /**
      * how many items to visit during update
@@ -99,7 +99,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         return false;
     }
 
-    public void commit() {
+    private void commit() {
         table.commit(table.forget(forgetTemperature));
     }
 
@@ -133,7 +133,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         return null;
     }
 
-    protected void boost(PLink<Termed> x, float boost) {
+    private void boost(PLink<Termed> x, float boost) {
         x.priAdd(boost);
         table.pressurize(boost);
     }

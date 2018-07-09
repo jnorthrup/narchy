@@ -240,7 +240,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
 
 
-        int edt = eventTerm.dt(), eventDT = edt;
+        int edt = eventTerm.dt();
 
 
         switch (eventTerm.op()) {
@@ -272,7 +272,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
                 Term pred = eventTerm.sub(1);
                 Event pe = know(pred);
-                if (eventDT == DTERNAL) {
+                if (edt == DTERNAL) {
 
                     link(se, ETERNAL, pe);
 
@@ -286,20 +286,20 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         return true;
                     }, 0, true, true, false, 0);
 
-                } else if (eventDT != XTERNAL) {
+                } else if (edt != XTERNAL) {
 
                     int st = subj.dtRange();
 
 
-                    link(se, (eventDT + st), pe);
+                    link(se, (edt + st), pe);
 
                     subj.eventsWhile((w, y) -> {
-                        link(know(y), eventDT + st - w, pe);
+                        link(know(y), edt + st - w, pe);
                         return true;
                     }, 0, true, true, false, 0);
 
                     pred.eventsWhile((w, y) -> {
-                        link(se, eventDT + st + w, know(y));
+                        link(se, edt + st + w, know(y));
                         return true;
                     }, 0, true, true, false, 0);
 
@@ -346,7 +346,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 long eventStart = event.start();
                 long eventEnd = event.end();
 
-                switch (eventDT) {
+                switch (edt) {
                     case XTERNAL:
                         break;
 
@@ -367,12 +367,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         
                         boolean timed = eventStart != ETERNAL;
                         for (Term s : eventTerm.subterms()) {
-                            Event t = eventDT == 0 ?
+                            Event t = edt == 0 ?
                                     knowComponent(eventStart, eventEnd, 0, s) : 
                                     (timed ? know(s, eventStart, eventEnd) :  
                                             know(s));
                             if (t != null) {
-                                link(event, (eventDT == 0 || timed) ? 0 : ETERNAL,
+                                link(event, (edt == 0 || timed) ? 0 : ETERNAL,
                                         t 
                                 );
                             } else {
@@ -1391,7 +1391,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     /**
      * computes the length of time spanned from start to the end of the given path
      */
-    long pathTime(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path, boolean eternalAsZero) {
+    static long pathTime(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path, boolean eternalAsZero) {
 
         long t = 0;
         

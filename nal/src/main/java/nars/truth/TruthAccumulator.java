@@ -32,7 +32,7 @@ public class TruthAccumulator extends AtomicReference<double[]> {
     }
 
     @Nullable
-    protected static Truth truth(double[] fc, boolean sumOrAverage) {
+    private static Truth truth(double[] fc, boolean sumOrAverage) {
 
         double e = fc[1];
         if (e <= 0)

@@ -30,7 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeSet;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
@@ -139,7 +142,7 @@ public class Builtin {
                     if (indices == null)
                         return Null;
                     else {
-                        return SETe.the((Collection) indices);
+                        return SETe.the(indices);
 
                     }
                 }
@@ -167,7 +170,7 @@ public class Builtin {
                                 return indices.first();
                             default:
 
-                                return SETe.the((Collection) indices);
+                                return SETe.the(indices);
                         }
                     }
                 }
@@ -267,7 +270,7 @@ public class Builtin {
     }
 
 
-    public static void registerFunctors(NAR nar) {
+    private static void registerFunctors(NAR nar) {
         for (Concept t : Builtin.statik) {
             nar.on(t);
         }
@@ -615,7 +618,7 @@ public class Builtin {
         }));
     }
 
-    static void registerOperators(NAR nar) {
+    private static void registerOperators(NAR nar) {
 
 
         nar.onOp(Op.BELIEF_TERM, (x, nn) -> Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> new NALTask(term, BELIEF, truth,
@@ -649,7 +652,7 @@ public class Builtin {
         initMemoryOps(nar);
     }
 
-    static void initMemoryOps(NAR nar) {
+    private static void initMemoryOps(NAR nar) {
         nar.onOp1("load", (id, nn) -> {
             Runnable r = nn.memory.copy(id, nn.self());
             if (r != null)

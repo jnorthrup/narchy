@@ -24,7 +24,7 @@ abstract public class Conceptor extends NodeConcept implements PermanentConcept,
     }
 
     protected Conceptor(@NotNull Atom atom) {
-        super(atom, ConceptBuilder.Null);
+        super(atom, ConceptBuilder.NullConceptBuilder);
     }
 
     /** names the concept with this conceptor and params */

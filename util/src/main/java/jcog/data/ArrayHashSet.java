@@ -94,7 +94,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     };
 
     public final List<X> list;
-    private Set<X> set = emptySet();
+    protected Set<X> set = emptySet();
 
 
     public ArrayHashSet() {

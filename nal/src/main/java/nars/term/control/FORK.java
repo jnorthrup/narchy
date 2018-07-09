@@ -59,7 +59,7 @@ public class FORK<X> extends AbstractPred<X> {
     }
 
     @Nullable
-    public static <X> PREDICATE<X> fork(PREDICATE<X>[] n, Function<PREDICATE<X>[], PREDICATE<X>> builder) {
+    private static <X> PREDICATE<X> fork(PREDICATE<X>[] n, Function<PREDICATE<X>[], PREDICATE<X>> builder) {
         switch (n.length) {
             case 0:
                 return null;

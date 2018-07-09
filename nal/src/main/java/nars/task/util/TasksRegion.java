@@ -14,10 +14,13 @@ import java.util.Arrays;
 public final class TasksRegion implements TaskRegion {
 
 
-    public final long start;
-    public final long end;
+    private final long start;
+    private final long end;
 
-    public final float freqMin, freqMax, confMin, confMax;
+    private final float freqMin;
+    private final float freqMax;
+    private final float confMin;
+    private final float confMax;
 
 
     public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {

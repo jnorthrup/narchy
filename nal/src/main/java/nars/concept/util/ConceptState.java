@@ -23,11 +23,6 @@ public abstract class ConceptState  {
 
     public abstract int questionCap(TaskConcept concept, boolean questionOrQuest);
 
-
-    public static final ConceptState New = new EmptyConceptState("new");
-    public static final ConceptState Deleted = new EmptyConceptState("deleted");
-
-
     private static class EmptyConceptState extends ConceptState {
 
 
@@ -50,4 +45,10 @@ public abstract class ConceptState  {
             return 0;
         }
     }
+
+    public static final ConceptState New = new EmptyConceptState("new");
+    public static final ConceptState Deleted = new EmptyConceptState("deleted");
+
+
+
 }

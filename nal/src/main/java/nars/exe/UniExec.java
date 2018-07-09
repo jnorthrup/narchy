@@ -9,7 +9,7 @@ import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
-import jcog.pri.Pri;
+import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.control.DurService;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -133,7 +133,7 @@ public class UniExec extends AbstractExec {
                     });
 
                     double valRange = valMax[0] - valMin[0];
-                    if (Math.abs(valRange) > Pri.EPSILON) {
+                    if (Math.abs(valRange) > Prioritized.EPSILON) {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY};
                         final double[] valRateMax = {Double.NEGATIVE_INFINITY};
@@ -178,7 +178,7 @@ public class UniExec extends AbstractExec {
                             }
                         });
                         double valRateRange = valRateMax[0] - valRateMin[0];
-                        if (valRateRange > Pri.EPSILON * can.size()) {
+                        if (valRateRange > Prioritized.EPSILON * can.size()) {
                             forEach((InstrumentedWork s) -> {
                                 //s.need((float) s.valueNormalized); //abs
 

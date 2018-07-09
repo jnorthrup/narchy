@@ -32,9 +32,9 @@ import static nars.task.Revision.dtDiff;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
-    public final long start;
-    public final long end;
-    public int dur;
+    final long start;
+    final long end;
+    int dur;
 
     /**
      * content term, either equal in all the tasks, or the result is
@@ -42,7 +42,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      */
     public Term term = null;
 
-    protected TruthPolation(long start, long end, int dur) {
+    TruthPolation(long start, long end, int dur) {
         this.start = start;
         this.end = end;
 
@@ -70,12 +70,12 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
     @Nullable
-    protected final TaskComponent update(int i) {
+    final TaskComponent update(int i) {
         return update(get(i));
     }
 
     @Nullable
-    protected final TaskComponent update(TaskComponent tc) {
+    private TaskComponent update(TaskComponent tc) {
         if (!tc.isComputed()) {
 
             Task task = tc.task;
@@ -150,7 +150,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return this;
     }
 
-    public final TruthPolation add(Iterable<? extends Tasked> tasks) {
+    private TruthPolation add(Iterable<? extends Tasked> tasks) {
         tasks.forEach(this::add);
         return this;
     }
@@ -165,7 +165,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return this;
     }
 
-    public float intermpolate(NAR nar) {
+    float intermpolate(NAR nar) {
         int thisSize = this.size();
         if (thisSize == 0) return 0;
         if (thisSize == 1) {
@@ -296,14 +296,14 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
 
-    public static class TaskComponent {
-        public final Task task;
+    protected static class TaskComponent {
+        final Task task;
 
         /**
          * NaN if not yet computed
          */
-        public float evi = NaN;
-        public float freq = NaN;
+        float evi = NaN;
+        float freq = NaN;
 
         TaskComponent(Task task) {
             this.task = task;
@@ -314,7 +314,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             return evi + "," + freq + '=' + task;
         }
 
-        public boolean isComputed() {
+        boolean isComputed() {
             float f = freq;
             return f == f;
         }

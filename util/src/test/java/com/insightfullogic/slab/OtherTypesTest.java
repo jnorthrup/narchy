@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class OtherTypesTest {
+public class OtherTypesTest {
 	
-	interface OtherTypes extends Cursor {
+	public interface OtherTypes extends Cursor {
 		byte getByte();
 		void setByte(byte value);
 		

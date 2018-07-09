@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class InvalidTaskException extends SoftException {
 
-    public final Termed task;
+    private final Termed task;
 
 
     public InvalidTaskException(Termed t, String message) {

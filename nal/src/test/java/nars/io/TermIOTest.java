@@ -361,11 +361,7 @@ class TermIOTest {
     private String map(Term x) throws IOException {
         byte[] xb = IO.termToBytes(x);
         StringBuilder sb = new StringBuilder();
-        IO.mapSubTerms(xb, (o, depth, i) -> {
-            String msg = "(" + depth + "," + i + ")=" + o + " ";
-            
-            sb.append(msg);
-        });
+        IO.mapSubTerms(xb, (o, depth, i) -> sb.append("(" + depth + "," + i + ")=" + o + " "));
         return sb.toString();
     }
 

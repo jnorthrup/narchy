@@ -13,9 +13,9 @@ public class TermContainerToOpMap<X>
         extends AtomicReferenceArray<X>
         implements Comparable<TermContainerToOpMap> {
 
-    public final Subterms id;
+    private final Subterms id;
 
-    public final static int CAPACITY = Op.VAR_DEP.id; 
+    private final static int CAPACITY = Op.VAR_DEP.id;
 
     public TermContainerToOpMap(Subterms id) {
         super(CAPACITY);

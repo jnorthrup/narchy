@@ -36,17 +36,17 @@ public class Evaluation {
 
     private List<Predicate<VersionMap<Term, Term>>[]> proc = null;
 
-    Versioning v;
+    private Versioning v;
 
-    VersionMap<Term, Term> subst;
+    private VersionMap<Term, Term> subst;
 
-    boolean wrapBool = false;
+    private boolean wrapBool = false;
 
-    public Evaluation() {
+    private Evaluation() {
 
     }
 
-    protected void ensureReady() {
+    private void ensureReady() {
         if (v == null) {
              v = new Versioning<>(16, 128);
              subst = new VersionMap<>(v);
@@ -55,11 +55,11 @@ public class Evaluation {
     }
 
 
-    public static Evaluation start(boolean wrapBool) {
+    private static Evaluation start(boolean wrapBool) {
         return new Evaluation().wrapBool(wrapBool);
     }
 
-    public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, NAR nar) {
+    private static ArrayHashSet<Term> solveAll(Evaluation e, Term x, NAR nar) {
         return solveAll(e, x, nar::functor, true);
     }
 
@@ -67,7 +67,7 @@ public class Evaluation {
         return solveAll(null, x, nar);
     }
 
-    static final TermTransform trueUnwrapper = new TermTransform.NegObliviousTermTransform() {
+    private static final TermTransform trueUnwrapper = new TermTransform.NegObliviousTermTransform() {
         @Override
         public @Nullable Term transformCompoundUnneg(Compound x) {
             if (Functor.func(x).equals(TRUE)) {
@@ -81,7 +81,7 @@ public class Evaluation {
             return false;
         }
     };
-    public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term,Functor> resolver, boolean wrapBool) {
+    private static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term, Functor> resolver, boolean wrapBool) {
         ArrayHashSet<Term> all = new ArrayHashSet<>(1);
         Evaluation.solve(e, x, wrapBool, resolver, (y) -> {
             y = (wrapBool && possiblyNeedsEval(y)) ? trueUnwrapper.transform(y) : y;
@@ -130,11 +130,11 @@ public class Evaluation {
         return results.get(random);
     }
 
-    protected Term eval(Term x) {
+    private Term eval(Term x) {
         return boolWrap(x, _eval(x));
     }
 
-    protected Term boolWrap(Term x, Term y) {
+    private Term boolWrap(Term x, Term y) {
         if (!(y instanceof Bool) || !wrapBool) {
             return y; //no change
         }
@@ -156,7 +156,7 @@ public class Evaluation {
         }
     }
 
-    protected Term _eval(Term c) {
+    private Term _eval(Term c) {
         Op o = c.op();
         if (o == NEG) {
             Term xu = c.unneg();
@@ -176,7 +176,7 @@ public class Evaluation {
 
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
-        boolean evalConjOrImpl = wrapBool ? false : o == CONJ || o == IMPL;
+        boolean evalConjOrImpl = !wrapBool && (o == CONJ || o == IMPL);
         int polarity = 0;
 
         for (int i = 0, n = uu.subs(); i < n; i++) {
@@ -269,7 +269,7 @@ public class Evaluation {
         return u;
     }
 
-    public Evaluation wrapBool(boolean wrapBool) {
+    private Evaluation wrapBool(boolean wrapBool) {
         this.wrapBool = wrapBool;
         return this;
     }
@@ -283,7 +283,7 @@ public class Evaluation {
         return this;
     }
 
-    public boolean get(Term _x, Predicate<Term> each) {
+    private boolean get(Term _x, Predicate<Term> each) {
 
         Term x = eval(_x);
 
@@ -341,7 +341,7 @@ public class Evaluation {
         return true;
     }
 
-    public int procs() {
+    private int procs() {
         List<Predicate<VersionMap<Term, Term>>[]> p = this.proc;
         return p!=null ? p.size() : 0;
     }
@@ -380,7 +380,7 @@ public class Evaluation {
     private static final class MyFunctorResolver implements DirectTermTransform {
 
         private final Function<Term, Functor> resolver;
-        public boolean hasFunctor;
+        boolean hasFunctor;
 
         MyFunctorResolver(Function<Term,Functor> resolver) {
             this.resolver = resolver;

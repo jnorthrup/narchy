@@ -118,7 +118,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
                                     final List<? extends BasicValue> values)
             throws AnalyzerException {
         return createNode(insn, super.naryOperation(insn, null),
-                (BasicValue[]) values.toArray(new BasicValue[values.size()]));
+                (BasicValue[]) values.toArray(new BasicValue[0]));
     }
 
     @Override

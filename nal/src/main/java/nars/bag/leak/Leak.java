@@ -6,18 +6,18 @@ import org.jetbrains.annotations.NotNull;
 /**
  * drains items from a Bag at
  */
-public class Leak<X, Y> {
+class Leak<X, Y> {
 
     
 
     @NotNull
-    public final Bag<X, Y> bag;
+    final Bag<X, Y> bag;
 
 
     /**
      * rate = max successful leaks per duration
      */
-    public Leak(@NotNull Bag<X, Y> bag) {
+    Leak(@NotNull Bag<X, Y> bag) {
         this.bag = bag;
     }
 

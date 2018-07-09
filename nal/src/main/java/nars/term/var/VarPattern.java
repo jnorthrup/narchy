@@ -15,7 +15,7 @@ public class VarPattern extends NormalizedVariable {
         super(VAR_PATTERN, id);
     }
 
-    final static int RANK = Term.opX(VAR_PATTERN, 0);
+    private final static int RANK = Term.opX(VAR_PATTERN, 0);
     @Override public int opX() { return RANK;    }
 
 

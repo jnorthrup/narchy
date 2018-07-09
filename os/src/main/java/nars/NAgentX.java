@@ -12,7 +12,7 @@ import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -104,8 +104,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        //new CaffeineIndex(600 * 1024, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(96 * 1024, 4)
+                        new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        //new HijackConceptIndex(96 * 1024, 4)
 
 
                 )
@@ -115,14 +115,14 @@ abstract public class NAgentX extends NAgent {
 
         new MatrixDeriver(Derivers.nal(n, 1, 8, "motivation.nal"));
 
-        n.dtDither.set(10);
-        n.timeFocus.set(4);
+        n.dtDither.set(20);
+        n.timeFocus.set(20);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(46);
 
-        n.forgetRate.set(0.9f);
+        n.forgetRate.set(0.8f);
         n.activateConceptRate.set(0.75f);
 
 
@@ -178,13 +178,13 @@ abstract public class NAgentX extends NAgent {
                         ),
                         SimpleDeriver.GlobalTermLinker);
 
-                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fire(), n::input,
+                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(), n::input,
                         Derivers.nal(n, 0, 0, "curiosity.nal"),
                         SimpleDeriver.GlobalTermLinker) {
                     @Override
                     protected int next(NAR n, int iterations) {
-                        enable.set(a.curiosity.floatValue() / (a.concepts.size()) );
-                        return super.next(n, iterations);
+                        //enable.set(a.curiosity.floatValue() / (a.concepts.size()) );
+                        return super.next(n, Math.round(a.curiosity.floatValue() * iterations));
                     }
                 };
 
@@ -199,7 +199,7 @@ abstract public class NAgentX extends NAgent {
 
                 //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
 
-                System.gc();
+                //System.gc();
             });
         });
 

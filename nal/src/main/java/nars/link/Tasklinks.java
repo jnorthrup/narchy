@@ -34,18 +34,11 @@ public class Tasklinks {
     public static TaskLink.GeneralTaskLink linkTask(Task t, final float pri, /*Task*/Concept src, NAR nar) {
 
 
-        float taskLinkPri = pri;
-
-        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, taskLinkPri);
+        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, pri);
 
         linkTask(link, src.tasklinks(), null);
 
-
-        ((TaskConcept) src).value(t, taskLinkPri, nar);
-
-
-
-        //nar.eventTask.emit(t);
+        ((TaskConcept) src).value(t, pri, nar);
 
         return link;
     }

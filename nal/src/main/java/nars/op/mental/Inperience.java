@@ -36,14 +36,14 @@ import static nars.time.Tense.ETERNAL;
 public class Inperience extends LeakBack {
 
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
-    public static final Atomic believe = the("believe");
-    public static final Atomic want = the("want");
+    private static final Atomic believe = the("believe");
+    private static final Atomic want = the("want");
 
 
-    public static final Atomic wonder = the("wonder");
-    public static final Atomic evaluate = the("plan");
-    public static final Atomic reflect = the("reflect");
-    public static final ImmutableSet<Atomic> operators = Sets.immutable.of(
+    private static final Atomic wonder = the("wonder");
+    private static final Atomic evaluate = the("plan");
+    private static final Atomic reflect = the("reflect");
+    private static final ImmutableSet<Atomic> operators = Sets.immutable.of(
             believe, want, wonder, evaluate, reflect);
 
 
@@ -52,7 +52,7 @@ public class Inperience extends LeakBack {
      * use the < 0.5 value here, ex: 0.1 means that 0..0.1 and 0.9..1.0 will be accepted
      */
     @NotNull
-    public final FloatRange freqMax = new FloatRange(0.1f, 0f, 1f);
+    private final FloatRange freqMax = new FloatRange(0.1f, 0f, 1f);
     /**
      * multiplier for he sensory task priority to determine inperienced task priority
      * should be < 1.0 to avoid feedback overload
@@ -72,7 +72,7 @@ public class Inperience extends LeakBack {
      * at some point after the task was created so we get a more
      * updated result.
      */
-    static Term reify(Task t, NAR nar) {
+    private static Term reify(Task t, NAR nar) {
         byte punc = t.punc();
         Term tt = t.term().eval(nar, true);
         if (punc == QUEST || punc == QUESTION) {

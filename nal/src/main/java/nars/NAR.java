@@ -693,9 +693,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                     if (s >= now - dur / 2) {
                         if (s > now + dur / 2) {
                             //delayed
-                            nar.runAt(s, () -> {
-                                nar.input(exe.apply(task, nar));
-                            });
+                            nar.runAt(s, () -> nar.input(exe.apply(task, nar)));
                         } else {
                             return exe.apply(task, nar);
                         }

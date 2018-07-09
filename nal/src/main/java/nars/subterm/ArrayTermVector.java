@@ -136,16 +136,14 @@ public class ArrayTermVector extends TermVector {
 
     @Override
     public final void forEach(Consumer<? super Term> action, int start, int stop) {
-        Term[] t = this.terms;
         for (int i = start; i < stop; i++) {
-            action.accept(t[i]);
+            action.accept(this.terms[i]);
         }
     }
 
     @Override
     public final boolean OR(Predicate<Term> p) {
-        Term[] t = this.terms;
-        for (Term i : t)
+        for (Term i : this.terms)
             if (p.test(i))
                 return true;
         return false;
@@ -153,8 +151,7 @@ public class ArrayTermVector extends TermVector {
 
     @Override
     public final boolean AND(Predicate<Term> p) {
-        Term[] t = this.terms;
-        for (Term i : t)
+        for (Term i : this.terms)
             if (!p.test(i))
                 return false;
         return true;

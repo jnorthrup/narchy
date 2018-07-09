@@ -11,9 +11,9 @@ import java.util.function.Predicate;
 
 /** mutable, use with caution; hashCode is dynamically computed */
 public class LighterCompound extends TermList implements AbstractLightCompound {
-    protected final byte op;
+    private final byte op;
 
-    public LighterCompound(byte op) {
+    private LighterCompound(byte op) {
         super();
         this.op = op;
     }

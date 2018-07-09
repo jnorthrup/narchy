@@ -30,8 +30,8 @@ import static nars.term.Terms.sorted;
  */
 public class Int implements Intlike, The {
 
-    protected static final Int[] pos = new Int[Param.MAX_INTERNED_INTS];
-    protected static final Int[] neg = new Int[Param.MAX_INTERNED_INTS];
+    static final Int[] pos = new Int[Param.MAX_INTERNED_INTS];
+    private static final Int[] neg = new Int[Param.MAX_INTERNED_INTS];
     static {
         for (int i = 0; i < Param.MAX_INTERNED_INTS; i++) {
             pos[i] = new Int(i);
@@ -43,8 +43,8 @@ public class Int implements Intlike, The {
     public static final Term ONE = Int.the(1);
     public static final Term TWO = Int.the(2);
     public static final Term NEG_ONE = Int.the(-1);
-    final static int INT_ATOM = Term.opX(INT, 0);
-    final static int INT_RANGE = Term.opX(INT, 1);
+    private final static int INT_ATOM = Term.opX(INT, 0);
+    private final static int INT_RANGE = Term.opX(INT, 1);
 
 
     public final int id;
@@ -55,7 +55,7 @@ public class Int implements Intlike, The {
         this.id = id;
         this.bytesCached = bytes;
     }
-    protected Int(int i) {
+    private Int(int i) {
         this.id = i;
         this.bytesCached = Util.bytePlusIntToBytes(
                 IO.opAndSubType(op(), (byte) (((opX() & 0xffff) & 0b111) >> 5)),
@@ -348,7 +348,7 @@ public class Int implements Intlike, The {
 
     }
 
-    public static RangeSet<Integer> ranges(Iterator<Integer> ints) {
+    private static RangeSet<Integer> ranges(Iterator<Integer> ints) {
         TreeRangeSet<Integer> r = TreeRangeSet.create();
         while (ints.hasNext()) {
             int ii = ints.next();
@@ -524,16 +524,16 @@ public class Int implements Intlike, The {
         }
 
 
-        public boolean intersects(Int y) {
+        boolean intersects(Int y) {
             int i = y.id;
             return (min <= i && max >= i);
         }
 
-        public boolean connects(IntRange y) {
+        boolean connects(IntRange y) {
             return Longerval.intersectLength(min, max, y.min, y.max) >= 0;
         }
 
-        public boolean contains(IntRange y) {
+        boolean contains(IntRange y) {
             return (y.min >= min) && (y.max <= max);
         }
 

@@ -74,7 +74,7 @@ public class IO {
         return count;
     }
 
-    static boolean hasTruth(byte punc) {
+    private static boolean hasTruth(byte punc) {
         return punc == Op.BELIEF || punc == Op.GOAL;
     }
 
@@ -106,7 +106,7 @@ public class IO {
         }
     }
 
-    public static long[] readEvidence(DataInput in) throws IOException {
+    private static long[] readEvidence(DataInput in) throws IOException {
         int eviLength = in.readByte();
         long[] evi = new long[eviLength];
         for (int i = 0; i < eviLength; i++) {
@@ -115,7 +115,7 @@ public class IO {
         return evi;
     }
 
-    public static Truth readTruth(DataInput in) throws IOException {
+    private static Truth readTruth(DataInput in) throws IOException {
 
         return Truth.read(in);
     }
@@ -124,7 +124,7 @@ public class IO {
     /**
      * with Term first
      */
-    public static void bytes(DataOutput out, Task t) throws IOException {
+    private static void bytes(DataOutput out, Task t) throws IOException {
 
 
         byte p = t.punc();
@@ -151,11 +151,11 @@ public class IO {
     }
 
 
-    public static void writePriority(DataOutput out, Prioritized t) throws IOException {
+    private static void writePriority(DataOutput out, Prioritized t) throws IOException {
         out.writeFloat(t.priElseZero());
     }
 
-    public static void writeBudget(DataOutput out, Prioritized t) throws IOException {
+    private static void writeBudget(DataOutput out, Prioritized t) throws IOException {
         writePriority(out, t);
     }
 
@@ -167,7 +167,7 @@ public class IO {
     }
 
 
-    public static Atomic readVariable(DataInput in, /*@NotNull*/ Op o) throws IOException {
+    private static Atomic readVariable(DataInput in, /*@NotNull*/ Op o) throws IOException {
         return $.v(o, in.readByte());
     }
 
@@ -175,7 +175,7 @@ public class IO {
     /**
      * called by readTerm after determining the op type
      */
-    static Term readTerm(DataInput in) throws IOException {
+    private static Term readTerm(DataInput in) throws IOException {
 
         byte opByte = in.readByte();
         if (opByte != SPECIAL_OP) {
@@ -231,15 +231,15 @@ public class IO {
         return opAndSubType(op.id, subtype);
     }
 
-    public static byte opAndSubType(byte op, byte subtype) {
+    private static byte opAndSubType(byte op, byte subtype) {
         return (byte) (op | (subtype << 5));
     }
 
-    static byte subType(byte opByte) {
+    private static byte subType(byte opByte) {
         return (byte) ((opByte & 0b11100000) >> 5);
     }
 
-    static Term readSpecialTerm(DataInput in) throws IOException {
+    private static Term readSpecialTerm(DataInput in) throws IOException {
         try {
             return Narsese.term(in.readUTF(), false);
         } catch (Narsese.NarseseException e) {
@@ -258,7 +258,7 @@ public class IO {
     }
 
 
-    public static Term[] readTermContainer(DataInput in) throws IOException {
+    private static Term[] readTermContainer(DataInput in) throws IOException {
         int siz = in.readByte();
 
         assert (siz < Param.COMPOUND_SUBTERMS_MAX);
@@ -273,7 +273,7 @@ public class IO {
         return s;
     }
 
-    static Term readNegated(DataInput in) throws IOException {
+    private static Term readNegated(DataInput in) throws IOException {
         return readTerm(in).neg();
     }
 
@@ -281,7 +281,7 @@ public class IO {
      * called by readTerm after determining the op type
      * TODO make a version which reads directlyinto TermIndex
      */
-    static Term readCompound(DataInput in, /*@NotNull*/ Op o) throws IOException {
+    private static Term readCompound(DataInput in, /*@NotNull*/ Op o) throws IOException {
 
         Term[] v = readTermContainer(in);
 
@@ -358,7 +358,7 @@ public class IO {
         }*/
     }
 
-    static DataInput input(byte[] b) {
+    private static DataInput input(byte[] b) {
         return new BytesInput(b);
     }
 
@@ -398,7 +398,7 @@ public class IO {
 
             }
 
-            pop:
+            //pop:
             while (level > 0) {
                 byte[] ll = levels[level - 1];
                 byte subtermsRemain = ll[1];
@@ -408,7 +408,7 @@ public class IO {
                     if (ol.temporal)
                         i += 4;
                     level--;
-                    continue pop;
+                    continue;// pop;
                 } else {
                     ll[1] = (byte) (subtermsRemain - 1);
                     break;

@@ -47,8 +47,6 @@ public class BagClustering<X> {
 
     }
 
-    /** HACK */
-    @Deprecated final static int maxSortRetries = 4;
 
     public final Bag<X, VLink<X>> bag;
     public final NeuralGasNet net;
@@ -194,19 +192,8 @@ public class BagClustering<X> {
         bag.forEach(x::add);
 
 
-        for (int sortRetry = 0; sortRetry < maxSortRetries; sortRetry++) {
 
-            
-            try {
-                x.sortThisByInt(xx -> xx.centroid);
-                break;
-            } catch (IllegalArgumentException e) {
-                
-                
-
-                
-            }
-        }
+        x.sortThisByInt(xx -> xx.centroid);
 
         
         

@@ -36,11 +36,11 @@ public class Taskify extends AbstractPred<Derivation> {
         this.channel = channel;
     }
 
-    public static boolean valid(Term x, byte punc) {
+    static boolean valid(Term x, byte punc) {
         return x != null &&
                 x.unneg().op().conceptualizable &&
                 !x.hasAny(Op.VAR_PATTERN) &&
-                ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && x.varQuery() <= 0));
+                ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && !x.hasVarQuery()));
     }
 
     protected static boolean spam(Derivation p, int cost) {

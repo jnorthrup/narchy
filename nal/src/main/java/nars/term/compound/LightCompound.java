@@ -9,15 +9,15 @@ import nars.term.Term;
 /** use with extreme caution when op is not PROD */
 public class LightCompound implements SeparateSubtermsCompound, AbstractLightCompound {
 
-    final Subterms subs;
+    private final Subterms subs;
     private final int hash;
-    protected final byte op;
+    private final byte op;
 
 
     public LightCompound(Op o, Term... s) {
         this(o, $.vFast(s));
     }
-    public LightCompound(byte o, Term... s) {
+    protected LightCompound(byte o, Term... s) {
         this(o, $.vFast(s));
     }
 
@@ -25,7 +25,7 @@ public class LightCompound implements SeparateSubtermsCompound, AbstractLightCom
         this(o.id, s);
     }
 
-    public LightCompound(byte o, Subterms s) {
+    private LightCompound(byte o, Subterms s) {
         this.op = o;
         this.subs = s;
         this.hash = s.hashWith(o);

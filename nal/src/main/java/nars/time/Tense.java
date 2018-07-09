@@ -35,7 +35,7 @@ public enum Tense {
     public static final int XTERNAL = Integer.MAX_VALUE;
 
 
-    public final String symbol;
+    private final String symbol;
 
     Tense(String string) {
         symbol = string;
@@ -69,7 +69,7 @@ public enum Tense {
     }
 
 
-    public static long getRelativeOccurrence(long creationTime, Tense tense, int duration) {
+    private static long getRelativeOccurrence(long creationTime, Tense tense, int duration) {
         switch (tense) {
             case Present:
                 return creationTime;

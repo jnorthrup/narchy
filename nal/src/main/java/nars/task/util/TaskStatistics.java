@@ -13,17 +13,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by me on 10/31/16.
  */
 public class TaskStatistics {
-    final AtomicInteger i = new AtomicInteger(0);
+    private final AtomicInteger i = new AtomicInteger(0);
 
-    final Frequency clazz = new Frequency();
-    final Frequency volume = new Frequency();
-    final Frequency rootOp = new Frequency();
-    final Frequency punc = new Frequency();
-    final Frequency eviLength = new Frequency();
+    private final Frequency clazz = new Frequency();
+    private final Frequency volume = new Frequency();
+    private final Frequency rootOp = new Frequency();
+    private final Frequency punc = new Frequency();
+    private final Frequency eviLength = new Frequency();
 
-    final Frequency freq = new Frequency();
-    final Frequency conf = new Frequency();
-    final Frequency pri = new Frequency();
+    private final Frequency freq = new Frequency();
+    private final Frequency conf = new Frequency();
+    private final Frequency pri = new Frequency();
 
     public TaskStatistics add(NAR nar) {
         nar.tasks().forEach(this::add);
@@ -40,7 +40,7 @@ public class TaskStatistics {
         return this;
     }
 
-    public void add(Task t) {
+    private void add(Task t) {
 
         if (t.isDeleted())
             return;
@@ -61,7 +61,7 @@ public class TaskStatistics {
 
     }
 
-    public void print(PrintStream out) {
+    private void print(PrintStream out) {
         out.println("-------------------------------------------------");
         out.println("Total Tasks:\n" + i.get());
 

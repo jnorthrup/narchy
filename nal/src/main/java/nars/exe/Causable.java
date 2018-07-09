@@ -41,7 +41,7 @@ abstract public class Causable extends NARService {
         this(null, id);
     }
 
-    protected Causable(NAR nar, Term id) {
+    private Causable(NAR nar, Term id) {
         super(id);
         can = new Can(term().toString());
         if (nar != null)
@@ -59,7 +59,7 @@ abstract public class Causable extends NARService {
      * if false, allows multiple threads to execute this instance
      * otherwise it is like being synchronized
      */
-    public boolean singleton() {
+    protected boolean singleton() {
         return true;
     }
 
@@ -73,9 +73,7 @@ abstract public class Causable extends NARService {
 
     @Deprecated public void run(NAR n, int workRequested, Consumer<NLink<Runnable>> buffer) {
         assert(workRequested> 0);
-        buffer.accept(new NLink<>(()->{
-            next(n, workRequested);
-        }, workRequested));
+        buffer.accept(new NLink<>(()-> next(n, workRequested), workRequested));
     }
 
 

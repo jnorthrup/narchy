@@ -14,12 +14,12 @@ public class UnifySubst extends Unify {
 
 
     /*@NotNull*/
-    public final TimeAware timeAware;
+    private final TimeAware timeAware;
 
 
-    final Predicate<Term> target;
+    private final Predicate<Term> target;
     private Term a;
-    int matches = 0;
+    private int matches = 0;
 
     public UnifySubst(Op varType, /*@NotNull*/ TimeAware n, Predicate<Term> target, int ttl) {
         super(varType, n.random(), Param.UnificationStackMax, ttl);

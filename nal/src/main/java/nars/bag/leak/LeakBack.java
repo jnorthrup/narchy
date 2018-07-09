@@ -13,9 +13,9 @@ import nars.task.ITask;
 @Skill({"Queing_theory","Feedback"})
 abstract public class LeakBack extends TaskLeak {
 
-    final static float INITIAL_RATE = 1f;
+    private final static float INITIAL_RATE = 1f;
 
-    public final BufferedCauseChannel in;
+    protected final BufferedCauseChannel in;
 
 
     protected LeakBack(int capacity, NAR nar) {
@@ -38,7 +38,7 @@ abstract public class LeakBack extends TaskLeak {
         return i;
     }
 
-    public void input(ITask x) {
+    protected void input(ITask x) {
         in.input(x);
     }
 

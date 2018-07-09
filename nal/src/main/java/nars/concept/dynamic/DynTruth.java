@@ -18,6 +18,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.TimeAware;
@@ -70,7 +71,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
             for (TaskRegion d : this) {
                 float p = DynTruth.pri(d);
-                float e = ((Task) d).conf() /*evi()*/ * d.range();
+                float e = ((Truthed) d).conf() /*evi()*/ * d.range();
                 total += p * e;
                 totalEvi += e;
             }
@@ -241,7 +242,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         super.add(newItem);
 
         if (newItem != null) {
-            long[] stamp = ((Task) newItem).stamp();
+            long[] stamp = ((Stamp) newItem).stamp();
 
             if (evi == null)
                 evi = new LongHashSet(stamp.length * 2 /* estimate */);

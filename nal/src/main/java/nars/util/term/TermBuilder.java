@@ -43,7 +43,7 @@ public abstract class TermBuilder {
 
     abstract public Term compound(Op o, int dt, Term... u);
 
-    abstract public Subterms subterms(@Nullable Op inOp, Term... s);
+    protected abstract Subterms subterms(@Nullable Op inOp, Term... s);
 
     public final Term compound(Op o, Term... u) {
         return compound(o, DTERNAL, u);
@@ -63,7 +63,7 @@ public abstract class TermBuilder {
         return subterms(s.toArray(Op.EmptyTermArray));
     }
 
-    public Subterms subtermsInstance(Term... t) {
+    public Subterms theSubterms(Term... t) {
         final int tLength = t.length;
         if (tLength == 0)
             return Op.EmptySubterms;

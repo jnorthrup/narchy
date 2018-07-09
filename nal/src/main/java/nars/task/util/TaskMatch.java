@@ -88,9 +88,7 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
     }
 
     @Override
-    public void accept(@NotNull Task _x) {
-
-        Task x = _x;
+    public void accept( Task x) {
 
         test(x);
 

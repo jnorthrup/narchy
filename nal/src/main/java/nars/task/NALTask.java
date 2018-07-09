@@ -27,10 +27,10 @@ import static nars.Op.GOAL;
  */
 public class NALTask extends UnitPri implements Task {
 
-    public final Term term;
-    public final Truth truth;
+    private final Term term;
+    private final Truth truth;
     public final byte punc;
-    final int hash;
+    private final int hash;
     private final long creation, start, end;
     /*@Stable*/ private final long[] stamp;
     public volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
@@ -205,7 +205,7 @@ public class NALTask extends UnitPri implements Task {
 
         private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
-        public NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
+        NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
             super(term, punc, truth, creation, start, end, stamp);
         }
 

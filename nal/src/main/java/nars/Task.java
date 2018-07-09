@@ -80,7 +80,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (at == null) {
             if (bt != null) return false;
         } else {
-            if (bt == null || !at.equals(bt)) return false;
+            if (!at.equals(bt)) return false;
         }
 
         if ((a.start() != b.start()) || (a.end() != b.end()))

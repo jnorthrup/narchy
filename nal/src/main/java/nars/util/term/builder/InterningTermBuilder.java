@@ -27,7 +27,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private final HijackTermCache statements;
     private final HijackTermCache conj;
-    final HijackTermCache normalize, concept, root;
+    private final HijackTermCache normalize;
+    private final HijackTermCache concept;
+    private final HijackTermCache root;
 
 
     public InterningTermBuilder() {
@@ -65,7 +67,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected Term compoundInterned(InternedCompound x) {
+    private Term compoundInterned(InternedCompound x) {
         return compoundInstance(Op.ops[x.op], x.dt, x.rawSubs.get());
     }
 
@@ -140,10 +142,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private boolean internable(Term[] subterms) {
 
-        for (int i = 0, subtermsLength = subterms.length; i < subtermsLength; i++) {
-            Term x = subterms[i];
-            Term y = x.the();
-            if (y == null)
+        for (Term x : subterms) {
+            if (x.the() == null)
                 return false;
         }
 
@@ -169,7 +169,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         //return summary(terms, conj, statements, normalize, concept, root);
     }
 
-    static String summary(HijackTermCache[] termCache, HijackTermCache transforms) {
+    private static String summary(HijackTermCache[] termCache, HijackTermCache transforms) {
         return Arrays.toString(Util.map(0, termCache.length, x -> termCache[x]!=null ?
                 (Op.ops[x] + ": " + termCache[x].summary() + "\n")
                 : "", String[]::new)) + "\ntransforms=" + transforms.summary();
@@ -193,7 +193,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
 
-    protected Term _normalize(InternedCompound i) {
+    private Term _normalize(InternedCompound i) {
         return super.normalize((Compound) i.rawSubs.get()[0], (byte)0);
     }
     @Override
@@ -203,7 +203,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             return super.concept(x);
         return concept.apply(InternedCompound.get(PROD, xx));
     }
-    public Term _concept(InternedCompound i) {
+    private Term _concept(InternedCompound i) {
         return super.concept((Compound) i.rawSubs.get()[0]);
     }
     @Override
@@ -213,7 +213,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             return super.root(x);
         return root.apply(InternedCompound.get(PROD, xx));
     }
-    public Term _root(InternedCompound i) {
+    private Term _root(InternedCompound i) {
         return super.root((Compound) i.rawSubs.get()[0]);
     }
     @Override

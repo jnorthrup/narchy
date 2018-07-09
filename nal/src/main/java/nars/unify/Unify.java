@@ -43,7 +43,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     protected final static Logger logger = LoggerFactory.getLogger(Unify.class);
     @Nullable
-    public final Op type;
+    private final Op type;
     public final Set<Termutator> termutes = new LinkedHashSet(8);
     public final VersionMap<Variable, Term> xy;
     public Random random;
@@ -56,7 +56,7 @@ public abstract class Unify extends Versioning implements Subst {
      * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)
      */
     public boolean symmetric = true;
-    public final int typeBits;
+    private final int typeBits;
 
 
     /**
@@ -147,7 +147,7 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-    void tryMatches() {
+    private void tryMatches() {
         int ts = termutes.size();
         if (ts > 0) {
 
@@ -245,7 +245,7 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     private class ConstrainedVersionMap extends VersionMap<Variable, Term> {
-        public ConstrainedVersionMap(Versioning versioning, Map<Variable, Versioned<Term>> termMap) {
+        ConstrainedVersionMap(Versioning versioning, Map<Variable, Versioned<Term>> termMap) {
             super(versioning,
 
                     termMap,

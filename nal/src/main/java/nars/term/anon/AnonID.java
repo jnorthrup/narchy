@@ -108,12 +108,12 @@ public interface AnonID extends Term, The {
         return i & 0xff00;
     }
 
-    public static boolean isAnonPosOrNeg(Term t0) {
+    static boolean isAnonPosOrNeg(Term t0) {
         return t0 instanceof AnonID || t0.unneg() instanceof AnonID;
     }
 
     /** returns 0 if the term is not anon ID */
-    public static short id(Term t) {
+    static short id(Term t) {
         if (t instanceof AnonID) {
             return ((AnonID)t).anonID();
         }

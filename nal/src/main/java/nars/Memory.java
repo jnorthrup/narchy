@@ -148,7 +148,6 @@ public class Memory {
                     }
                 });
             } catch (ArithmeticException f) {
-                return;
             } catch (IOException e) {
                 e.printStackTrace();
             }

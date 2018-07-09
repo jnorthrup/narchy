@@ -96,7 +96,7 @@ public enum TermGraph {
                         continue;
 
                     Concept tc = nar.concept(t);
-                    if (tc == null || !(tc instanceof TaskConcept))
+                    if (!(tc instanceof TaskConcept))
                         return; 
 
                     recurseTerm(nar, g, (impl) -> {

@@ -30,14 +30,14 @@ public class TruthWave {
     /**
      * start and stop interval (in cycles)
      */
-    long start;
-    long end;
+    private long start;
+    private long end;
 
     /**
      * sequence of triples (freq, conf, start, end) for each task; NaN for eternal
      */
-    float[] truth;
-    int size;
+    private float[] truth;
+    private int size;
     @Nullable
     public Truth current;
 
@@ -46,7 +46,7 @@ public class TruthWave {
         clear();
     }
 
-    public void clear() {
+    private void clear() {
         size = 0;
         start = end = Tense.ETERNAL;
     }
@@ -100,7 +100,7 @@ public class TruthWave {
         this.end = en[0];
     }
 
-    static void load(float[] array, int index, long absStart, long absEnd, long start, long end, @Nullable Truthed truth) {
+    private static void load(float[] array, int index, long absStart, long absEnd, long start, long end, @Nullable Truthed truth) {
 
         long range = absEnd - absStart;
         array[index++] = start == Tense.ETERNAL ? Float.NaN : ((float)(start-absStart))/range;
@@ -114,7 +114,7 @@ public class TruthWave {
         }
     }
 
-    protected void size(int s) {
+    private void size(int s) {
 
         int c = capacity();
 

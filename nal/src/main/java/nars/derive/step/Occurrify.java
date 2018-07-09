@@ -29,12 +29,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
-import static nars.truth.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -74,7 +74,7 @@ public class Occurrify extends TimeGraph {
 
 
     /** re-used */
-    private final transient MutableSet<Term> nextNeg = new UnifiedSet<>(8, 0.99f);
+    private final transient UnifiedSet<Term> nextNeg = new UnifiedSet<>(8, 0.99f), nextPos = new UnifiedSet(8, 0.99f);
     private final transient MutableSet<Term> autoNegNext = new UnifiedSet<>(8, 0.99f);
 
     /**
@@ -88,7 +88,6 @@ public class Occurrify extends TimeGraph {
 
 
     private Task curTask;
-    private long curTaskAt = XTERNAL, curBeliefAt = XTERNAL;
     private Termed curBelief;
     private Map<Term, Term> prevUntransform = Map.of();
     private boolean curSingle;
@@ -141,17 +140,17 @@ public class Occurrify extends TimeGraph {
         return d.random;
     }
 
-    public Event know(Task t, long when) {
-        assert (when != TIMELESS);
+    public Event know(Termed t, long start, long end) {
+        assert (start != TIMELESS);
 
 
         Term tt = t.term();
 
-        long range;
-        if (when == ETERNAL || t.isEternal() || (range = t.range() - 1) == 0) {
-            return event(tt, when, true);
+
+        if (end==start) {
+            return event(tt, start, true);
         } else {
-            return event(tt, when, when + range, true);
+            return event(tt, start, end, true);
         }
     }
 
@@ -166,62 +165,60 @@ public class Occurrify extends TimeGraph {
         Term taskTerm = task.term();
         final boolean single = d.concSingle;
         Task belief = !single ? d.belief : null;
-        long beliefAt = single ? TIMELESS : d.beliefAt;
-        long taskAt = d.taskAt;
         Termed bb = !single ? belief : d.beliefTerm;
         Term beliefTerm = bb.term();
 
+        long taskStart = d.taskStart, taskEnd = d.task.end();
+        long beliefStart = single ? TIMELESS : d.beliefStart, beliefEnd = single ? TIMELESS : d.belief.end();
 
-        Set<Term> nextNeg = this.nextNeg;
+
+
+        nextPos.clear();
         nextNeg.clear();
         autoNegNext.clear();
-        if (pattern.hasAny(NEG)) {
+        if (task.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
 //            if (pattern.containsRecursively(taskTerm.neg()) && (!single || pattern.containsRecursively(beliefTerm))) {
 //                //dont need to autoNeg, these will be easy to find
 //                //autoNeg = null;
 //            } else {
-            {
-                nextNeg.clear();
 
-                Predicate<Term> hasNeg = x -> x.hasAny(NEG);
+            UnifiedSet<Term> pp = nextPos;
+            UnifiedSet<Term> nn = nextNeg;
 
-                Set<Term> nn = nextNeg;
-                pattern.recurseTerms(hasNeg, y -> {
-                    if (y.op()==NEG)
-                        nn.add(y);
+            Predicate<Term> all = y -> true;
+            pattern.recurseTerms(all, y -> {
+                    if (y.op() == NEG)
+                        nn.add(y.unneg());
+                    else
+                        pp.add(y);
                 });
 
-
-                Predicate<Term> eliminate = y-> y.op() != NEG || (!nn.remove(y) || !nn.isEmpty());
-                taskTerm.recurseTerms(hasNeg,eliminate, null);
-                if (nextNeg.isEmpty()) {
-                    nextNeg = null; //all eliminated
+            Consumer<Term> elim = y -> {
+                if (y.op() == NEG) {
+                    nn.remove(y.unneg()); //found
                 } else {
-                    beliefTerm.recurseTerms(hasNeg, eliminate, null);
-                    if (nextNeg.isEmpty()) {
-                        nextNeg = null; //all eliminated
-                    } else {
-                        //TODO more cases that eliminate the need for autoNeg
-                        this.nextNeg.collect(Term::unneg, autoNegNext);
-//                        autoNeg.forEach(t -> {
-//
-//                        });
-                    }
+                    pp.remove(y);
                 }
+            };
+            taskTerm.recurseTerms(all, elim);
+            if (!single) {
+                beliefTerm.recurseTerms(all, elim);
             }
-        } else {
-            nextNeg = null;
+
+            //pp.symmetricDifferenceInto(nn, autoNegNext);
+            autoNegNext.addAll(pp);
+            autoNegNext.addAll(nn);
         }
-
-
 
         if (!single) {
             boolean taskEte = task.isEternal();
             boolean beliefEte = belief.isEternal();
             if (taskEte && !beliefEte) {
-                taskAt = beliefAt; //use belief time for eternal task
+                taskStart = beliefStart; //use belief time for eternal task
+                taskEnd = beliefEnd;
             } else if (beliefEte && !taskEte) {
-                beliefAt = taskAt; //use task time for eternal belief
+                beliefStart = taskStart; //use task time for eternal belief
+                beliefEnd = taskEnd;
             }
         }
 
@@ -229,8 +226,6 @@ public class Occurrify extends TimeGraph {
         boolean reUse =
                 Objects.equals(autoNeg, autoNegNext) &&
                 this.curSingle == single &&
-                this.curBeliefAt == beliefAt &&
-                this.curTaskAt == taskAt &&
                 Objects.equals(d.task, curTask) &&
                 Objects.equals(bb, curBelief);
 
@@ -256,23 +251,22 @@ public class Occurrify extends TimeGraph {
             autoNeg.clear();
             autoNeg.addAll(autoNegNext);
 
-            this.curBeliefAt = beliefAt;
-            this.curTaskAt = taskAt;
             this.curSingle = single;
 
             if (single) {
-                Event s = know(task, taskAt);
+                Event s = know(task, taskStart, taskEnd);
                 if (taskTerm.op()==IMPL) {
                     /* HACK since impl absolute time are not linked,
                        link here to reify the implication subj as its own event in the single case
                        this will in turn link the predicate if it is temporally calculable.
                      */
                     Term t0 = taskTerm.sub(0);
-                    know(t0, taskAt);
-                    if (taskAt!=ETERNAL && taskAt!=XTERNAL) {
+                    know(t0, taskStart, taskEnd);
+                    if (taskStart!=ETERNAL && taskStart!=XTERNAL) {
                         int tdt = taskTerm.dt();
                         if (tdt != DTERNAL && tdt != XTERNAL) {
-                            know(taskTerm.sub(1), taskAt + tdt + t0.dtRange());
+                            long predStart = taskStart + tdt + t0.dtRange();
+                            know(taskTerm.sub(1), predStart, predStart + (taskEnd - taskStart)); //TODO check this for reverse (neg dt) impl
                         }
                     }
                 }
@@ -283,10 +277,10 @@ public class Occurrify extends TimeGraph {
 //                    know(beliefTerm);
 //                }
             } else {
-                know(task, taskAt);
+                know(task, taskStart, taskEnd);
 
-                if (!belief.equals(task) || (taskAt!=beliefAt)) {
-                    know(belief, beliefAt);
+                if (!belief.equals(task) || (taskStart!=beliefStart)) {
+                    know(belief, beliefStart, beliefEnd);
                 }
             }
             if (!nextUntransform.isEmpty()) {
@@ -407,7 +401,7 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    private static final PREDICATE<Derivation> intersectFilter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
+    private static final PREDICATE<Derivation> intersectFilter = new AbstractPred<>(Atomic.the("TimeIntersects")) {
         @Override
         public boolean test(Derivation d) {
             return d.concSingle || d.taskBeliefTimeIntersects;
@@ -490,7 +484,7 @@ public class Occurrify extends TimeGraph {
                 if (p != null) {
 
                     //immediate future, dont interfere with present
-                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur*1);
+                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur);
 
                     System.arraycopy(when, 0, p.getTwo(), 0, 2);
                 }
@@ -560,8 +554,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                Pair<Term, long[]> p = solveDT(d, x, d.occ(x));
-                return p;
+                return solveDT(d, x, d.occ(x));
             }
 
             @Override
@@ -776,14 +769,14 @@ public class Occurrify extends TimeGraph {
             return p == null ? solveAuto(d, x) : p;
         }
 
-        protected Pair<Term, long[]> solveOccDTWithGoalOverride(Derivation d, Term x) {
-
-            if (d.concPunc == GOAL) {
-                return Task.solve(d, x);
-            }
-
-            return solveOccDT(d, x, d.occ(x));
-        }
+//        protected Pair<Term, long[]> solveOccDTWithGoalOverride(Derivation d, Term x) {
+//
+//            if (d.concPunc == GOAL) {
+//                return Task.solve(d, x);
+//            }
+//
+//            return solveOccDT(d, x, d.occ(x));
+//        }
 
         /**
          * gets the optional premise pre-filter for this consequence.
@@ -819,8 +812,7 @@ public class Occurrify extends TimeGraph {
             s = task.start();
             e = task.end();
         } else*/
-            boolean taskEvent =
-
+            boolean taskConj =
                     !(task.term().op() == CONJ);
 
             if (task.isEternal()) {
@@ -828,7 +820,7 @@ public class Occurrify extends TimeGraph {
 
                     s = e = ETERNAL;
                 } else {
-                    if (taskEvent) {
+                    if (taskConj) {
                         s = belief.start();
                         e = belief.end();
                     } else {

@@ -18,7 +18,6 @@ import nars.table.*;
 import nars.term.Conceptor;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Termed;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
@@ -74,11 +73,11 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
         } else {
             Term conceptor = Functor.func(t);
-            if (conceptor!=Null) {
-                @Nullable Termed conceptorc = conceptors.get(conceptor);
+            if (conceptor!=Op.Null) {
+                @Nullable Conceptor conceptorc = conceptors.get(conceptor);
                 if (conceptorc instanceof Conceptor) {
 
-                Concept x = ((Conceptor) conceptorc).apply(conceptor, Operator.args(t));
+                Concept x = conceptorc.apply(conceptor, Operator.args(t));
                 if (x!=null)
                     return (TaskConcept) x;
                 }

@@ -9,9 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Random;
 
-public abstract class VarIntroduction {
+abstract class VarIntroduction {
 
-    public Pair<Term, Map<Term, Term>> apply(final Term x, Random r) {
+    Pair<Term, Map<Term, Term>> apply(final Term x, Random r) {
 
         if (x.complexity() < 2) 
             return null;

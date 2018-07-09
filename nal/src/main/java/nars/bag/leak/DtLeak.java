@@ -21,12 +21,12 @@ import static nars.time.Tense.ETERNAL;
  */
 public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
-    public final MutableFloat rate /* base rate items per dt */;
-    float RATE_THRESH = 1f;
+    private final MutableFloat rate /* base rate items per dt */;
+    private float RATE_THRESH = 1f;
     private volatile long lastLeak = ETERNAL;
     private volatile float lastBudget;
 
-    protected DtLeak(@NotNull Bag<X, Y> bag, @NotNull MutableFloat rate) {
+    DtLeak(@NotNull Bag<X, Y> bag, @NotNull MutableFloat rate) {
         super(bag);
         this.rate = rate;
     }
@@ -63,11 +63,11 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
     }
 
     /** override to implement backpressure stop switch */
-    protected boolean full() {
+    boolean full() {
         return false;
     }
 
-    protected float commit(float nextBudget) {
+    private float commit(float nextBudget) {
 
         final float[] budget = {nextBudget};
 

@@ -10,9 +10,9 @@ import static nars.time.Tense.ETERNAL;
  */
 public class LinearTruthlet extends RangeTruthlet {
 
-    public final float freqStart;
-    public final float freqEnd;
-    public final float evi;
+    private final float freqStart;
+    private final float freqEnd;
+    private final float evi;
 
     public LinearTruthlet(long start, float freqStart, long end, float freqEnd, float evi) {
         super(start, end);

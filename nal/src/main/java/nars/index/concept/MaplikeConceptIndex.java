@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 public abstract class MaplikeConceptIndex extends ConceptIndex {
 
 
-    public static final BiFunction<? super Termed, ? super Termed, ? extends Termed> setOrReplaceNonPermanent = (prev, next) -> {
+    static final BiFunction<? super Termed, ? super Termed, ? extends Termed> setOrReplaceNonPermanent = (prev, next) -> {
         if (prev instanceof PermanentConcept && !(next instanceof PermanentConcept))
             return prev;
         return next;

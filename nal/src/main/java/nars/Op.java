@@ -426,7 +426,7 @@ public enum Op {
             //HeapTermBuilder.the;
             new InterningTermBuilder();
 
-    public static int AtomicConstants = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
+    public static final int AtomicConstants = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 
     static {
         for (Op o : Op.values()) {

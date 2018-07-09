@@ -23,7 +23,7 @@ import static nars.time.Tense.TIMELESS;
  */
 public final class Termify extends AbstractPred<Derivation> {
 
-    public final Term pattern;
+    private final Term pattern;
 
     
     private final Occurrify.TaskTimeMerge time;
@@ -95,9 +95,8 @@ public final class Termify extends AbstractPred<Derivation> {
             }
             Pair<Term, long[]> timing = time.solve(d, c1);
             if (timing == null) {
-                d.nar.emotion.deriveFailTemporal.increment(/*() ->
-                        rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
-                */);
+                d.nar.emotion.deriveFailTemporal.increment();
+                //temporary: time.solve(d, c1);
                 return false;
             }
 

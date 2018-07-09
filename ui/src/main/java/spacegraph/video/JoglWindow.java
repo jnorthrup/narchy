@@ -62,6 +62,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private volatile int nx, ny, nw, nh;
     private final Consumer<JoglWindow> windowUpdater = (s) -> {
         GLWindow w = window;
+        if (w == null)
+            return;
 
         int nw = this.nw;
         int nh = this.nh;

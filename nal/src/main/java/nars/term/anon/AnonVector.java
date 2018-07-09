@@ -125,14 +125,14 @@ public class AnonVector extends TermVector implements FullyInternable {
             TermList t = new TermList(n);
             short[] a = this.subterms;
             if (fid > 0) {
-                for (int i = 0, aLength = n; i < aLength; i++) { //replace positive or negative, with original polarity
+                for (int i = 0; i < n; i++) { //replace positive or negative, with original polarity
                     short x = a[i];
                     if (x == fid) t.add(to);
                     else if (-x == fid) t.add(to.neg());
                     else t.addWithoutResizeCheck(idToTerm(x));
                 }
             } else {
-                for (int i = 0, aLength = n; i < aLength; i++) { //replace negative only
+                for (int i = 0; i < n; i++) { //replace negative only
                     short x = a[i];
                     if (a[i] == fid) t.add(to);
                     else t.addWithoutResizeCheck(idToTerm(x));

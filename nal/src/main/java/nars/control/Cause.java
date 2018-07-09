@@ -54,7 +54,7 @@ public class Cause implements Comparable<Cause> {
     /**
      * 0..+2
      */
-    public float gain() {
+    private float gain() {
         return Util.tanhFast(value) + 1f;
     }
 
@@ -73,7 +73,7 @@ public class Cause implements Comparable<Cause> {
 
     public final Object name;
 
-    public Cause(short id) {
+    protected Cause(short id) {
         this(id, null);
     }
 

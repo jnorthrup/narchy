@@ -23,10 +23,10 @@ class PremisePatternCompoundTest {
     }
 
     @Test public void testPatternTermConjHasXTERNAL() {
-        Term p = i.patternify($$("(x && y)"));
+        Term p = PremisePatternIndex.patternify($$("(x && y)"));
         assertEquals("(x &&+- y)", p.toString());
 
-        Term r = i.patternify($$("(x || y)"));
+        Term r = PremisePatternIndex.patternify($$("(x || y)"));
         assertEquals(
                 "(--,((--,x) &&+- (--,y)))",
                 //"(x ||+- y)", //TODO

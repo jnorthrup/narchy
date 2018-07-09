@@ -46,10 +46,7 @@ public class FZero extends NAgentX {
 
         NAgentX.runRT((n) -> {
 
-            FZero a = null;
-
-
-            a = new FZero(n);
+            FZero a = new FZero(n);
 
             a.trace = true;
 
@@ -73,11 +70,11 @@ public class FZero extends NAgentX {
 
         )/*.blur()*/)
                 //.diff()
-                .resolution(0.05f);
+                .resolution(0.02f);
 
 
         initToggle();
-        initBipolar(true, 3.5f, 0.3f);
+        initBipolar(true, 3.5f, 0.15f);
         //initBipolar(false, 3.5f, 0.3f);
 
 
@@ -85,9 +82,9 @@ public class FZero extends NAgentX {
         Signal dVelY = senseNumberDifference($.inh(id, $.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
         Signal dAccel = senseNumberDifference($.inh(id, "accel"), () -> (float) fz.vehicleMetrics[0][6]);
         Signal dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);
-        DemultiplexedScalar ang = senseNumber(angle -> $.prop($.the("ang"), /*$.the(id ),*/ $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+        DemultiplexedScalar ang = senseNumber(angle -> $.inst( /*$.the(id ),*/ $.the(angle), $.the("ang")) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                5,
+                8,
                 DigitizedScalar.FuzzyNeedle
         );
 

@@ -42,7 +42,7 @@ abstract public class Deriver extends Causable {
 
     @Deprecated private static final AtomicInteger serial = new AtomicInteger();
 
-    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
+    private static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
     public final PremiseDeriver rules;
 
@@ -57,30 +57,30 @@ abstract public class Deriver extends Causable {
             new DefaultDeriverBudgeting();
             
 
-    public Deriver(NAR nar, String... rules) {
+    private Deriver(NAR nar, String... rules) {
         this(new PremiseDeriverRuleSet(nar, rules));
     }
 
-    public Deriver(PremiseDeriverRuleSet rules) {
+    private Deriver(PremiseDeriverRuleSet rules) {
         this(rules.nar.attn, rules, rules.nar);
     }
 
 
-    public Deriver(Attention attn, Set<PremiseDeriverProto> rules, NAR nar) {
+    protected Deriver(Attention attn, Set<PremiseDeriverProto> rules, NAR nar) {
         this(attn::fire, nar::input, rules, nar);
     }
 
-    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules) {
+    protected Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules) {
         this(source, target, rules, rules.nar);
     }
 
-    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
+    protected Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
         this(source, target, PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
 
-    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriver rules, NAR nar) {
+    private Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriver rules, NAR nar) {
         super(
             $.func("deriver", $.the(serial.getAndIncrement())) 
         );

@@ -90,7 +90,7 @@ public enum MathFunc { ;
 
     abstract static class ArithmeticCommutiveBinaryBidiFunctor extends Functor.InlineCommutiveBinaryBidiFunctor implements The /* THE */ {
 
-        public ArithmeticCommutiveBinaryBidiFunctor(String name) {
+        ArithmeticCommutiveBinaryBidiFunctor(String name) {
             super(name);
         }
 
@@ -153,8 +153,7 @@ public enum MathFunc { ;
         }
 
         /** return non-null value to return a specific result */
-        @Nullable
-        protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
+        @Nullable Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
             return null;
         }
 

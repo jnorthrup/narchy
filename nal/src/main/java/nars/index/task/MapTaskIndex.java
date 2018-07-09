@@ -16,16 +16,16 @@ import java.util.function.Consumer;
  */
 public final class MapTaskIndex implements TaskIndex {
 
-    final static Logger logger = LoggerFactory.getLogger(MapTaskIndex.class);
+    private final static Logger logger = LoggerFactory.getLogger(MapTaskIndex.class);
 
     @NotNull
-    protected final Map<Task, Task> tasks;
+    private final Map<Task, Task> tasks;
 
-    public MapTaskIndex(boolean concurrent) {
+    private MapTaskIndex(boolean concurrent) {
         this(concurrent, 1);
     }
 
-    public MapTaskIndex(boolean concurrent, int initialCapacity) {
+    private MapTaskIndex(boolean concurrent, int initialCapacity) {
         this.tasks =
                 concurrent ?
                     new ConcurrentHashMap<>(initialCapacity/* estimate TODO */):

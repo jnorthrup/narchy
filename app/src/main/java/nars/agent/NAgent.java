@@ -181,23 +181,22 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
 
-        long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED; //re-used each task, preventing overlap
-
         Supplier<Task> t = () -> {
 
             long now = Tense.dither(this.now, nar);
             long next = Tense.dither(this.now + nar.dur(), nar);
 
+            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
+
             return new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
                     now, next,
-
                     stamp
-            ) {
+            )/* {
                 @Override
                 public boolean isInput() {
                     return false;
                 }
-            };
+            }*/;
         };
 
         always.add(t);
@@ -313,7 +312,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         init(nar);
 
         alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
-        alwaysWant(happy.filter[1].term, nar.confDefault(GOAL) * 0.5f); //chronic
+        alwaysWant(happy.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
         alwaysWant(happy.filter[2].term, nar.confMin.floatValue()); //acute
 
         actions.keySet().forEach(a -> {
@@ -428,7 +427,37 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             } while (a==null || p.test(a));
         };
     }
+    /** creates an activator specific to this agent context */
+    public Consumer<Predicate<Activate>> fireActions() {
 
+        Concept[] ac = this.actions.keySet().toArray(Concept.EmptyArray);
+        return p -> {
+            Activate a;
+
+            final int numConcepts = ac.length;
+            int remainMissing = numConcepts;
+            if (remainMissing == 0) return;
+
+
+            Random rng = nar.random();
+            do {
+                Concept cc = ac[rng.nextInt(numConcepts)];
+                //Concept cc = nar.conceptualize(cc);
+                if (cc!=null) {
+                    a = new Activate(cc, 0f);
+                    //nar.activate(cc, 1f);
+                    ///a = new Activate(cc, 0);
+                    //a.delete();
+                } else {
+                    a = null;
+                    if (remainMissing-- <= 0)
+                        break;
+                    else
+                        continue;
+                }
+            } while (a==null || p.test(a));
+        };
+    }
 
     /** default rate = 1 dur/ 1 frame */
     @Deprecated public void runSynch(int frames) {
