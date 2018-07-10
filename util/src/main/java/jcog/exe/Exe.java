@@ -23,8 +23,8 @@ public enum Exe { ;
 
     /** global timer */
     private static volatile HashedWheelTimer timer =  new HashedWheelTimer(
-            new AdmissionQueueWheelModel(4,
-                    TimeUnit.MICROSECONDS.toNanos(500)
+            new AdmissionQueueWheelModel(16,
+                    TimeUnit.MICROSECONDS.toNanos(1000)
             ),
             HashedWheelTimer.WaitStrategy.SleepWait,
             Exe::invoke);

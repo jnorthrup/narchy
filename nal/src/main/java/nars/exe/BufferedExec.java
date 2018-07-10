@@ -5,8 +5,10 @@ import jcog.Util;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
+import jcog.exe.realtime.FixedRateTimedFuture;
 import jcog.list.FasterList;
 import nars.NAR;
+import nars.NARLoop;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
@@ -21,7 +23,7 @@ abstract public class BufferedExec extends UniExec {
 
     private final static int CAN_ITER_MAX = 4096;
 
-    protected long idleTimePerCycle;
+    protected volatile long idleTimePerCycle;
 
     @Override
     public void execute(Object x) {
@@ -42,11 +44,11 @@ abstract public class BufferedExec extends UniExec {
 
     @Override
     public final void execute(Runnable r) {
-//        if (r instanceof FixedRateTimedFuture && ((((FixedRateTimedFuture)r).run instanceof NARLoop))) {
-//            r.run(); //high-priority
-//        } else {
+        if (r instanceof FixedRateTimedFuture && ((((FixedRateTimedFuture)r).run instanceof NARLoop))) {
+            r.run(); //high-priority
+        } else {
             executeLater(r);
-//        }
+        }
     }
 
     @Override

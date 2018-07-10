@@ -27,10 +27,11 @@ public class SliderModel extends Surface {
     @Nullable
     private ObjectFloatProcedure<SliderModel> change;
 
-    private float p;
+    private volatile float p;
 
     public SliderModel(float p) {
-        this.p = p;
+
+        set(p);
     }
 
 
@@ -54,6 +55,10 @@ public class SliderModel extends Surface {
 
     }
 
+    public void update() {
+
+    }
+
     public SliderModel type(SliderUI draw) {
         this.ui = draw;
         return this;
@@ -67,7 +72,7 @@ public class SliderModel extends Surface {
             if (finger.tryFingering(new FingerDragging(0) {
                 @Override protected boolean drag(Finger f) {
                     v2 hitPoint = finger.relativePos(SliderModel.this);
-                    _set(ui.p(hitPoint));
+                    set(ui.p(hitPoint));
                     return true;
                 }
             }))
@@ -77,11 +82,8 @@ public class SliderModel extends Surface {
     }
 
 
-    private void _set(float p) {
-        changed(p);
-    }
 
-    void changed(float p) {
+    void set(float p) {
         if (this.p == this.p && Util.equals(this.p, p, Float.MIN_NORMAL))
             return;
 
@@ -95,7 +97,7 @@ public class SliderModel extends Surface {
         return v(p);
     }
 
-    public void value(float v) {
+    public final void value(float v) {
         this.p = p(v);
     }
 

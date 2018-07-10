@@ -7,8 +7,8 @@ import jcog.math.FloatSupplier;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.Label;
@@ -29,9 +29,6 @@ public class FloatSlider extends Widget {
     public FloatSlider(float v, float min, float max) {
         this(new FloatRange(v, min, max));
     }
-
-
-
 
     public FloatSlider(String label, float v, float min, float max) {
         this(v, min, max);
@@ -68,14 +65,6 @@ public class FloatSlider extends Widget {
         return this;
     }
 
-    @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
-            updateText();
-            return true;
-        }
-        return false;
-    }
 
     private void updateText() {
         this.label.text(text());
@@ -90,15 +79,27 @@ public class FloatSlider extends Widget {
         return this;
     }
 
-    public double value() {
-        return slider.value();
-    }
-    public void value(float v) {
-        slider.value(v);
+    float lastValue = Float.NaN;
+
+    @Override
+    public boolean prePaint(SurfaceRender r) {
+
+        slider.update();
+        float nextValue = value();
+        if (lastValue != nextValue) {
+            updateText();
+        }
+        lastValue = nextValue;
+
+        return super.prePaint(r);
     }
 
-    public void valueRelative(float p) {
-        this.slider.changed(p);
+    public float value() {
+        return slider.value();
+    }
+
+    public void value(float v) {
+        slider.value(v);
     }
 
     public FloatSlider on(ObjectFloatProcedure<SliderModel> c) {
@@ -126,12 +127,13 @@ public class FloatSlider extends Widget {
             return false;
         }
 
-        void update() {
+
+        public void update() {
             FloatSlider p = parent(FloatSlider.class);
             if (p!=null) {
                 FloatSupplier input = p.input; 
                 if (input != null)
-                    super.value(input.asFloat());
+                    value(input.asFloat());
             }
         }
 
@@ -139,15 +141,13 @@ public class FloatSlider extends Widget {
         public abstract float max();
 
 
+
         @Override
-        protected void changed(float p) {
-            super.changed(p);
+        protected void set(float p) {
+            super.set(p);
 
             FloatSlider parent = parent(FloatSlider.class);
             if (parent!=null) {
-
-                parent.updateText();
-
                 
                 FloatSupplier input = parent.input; 
                 if (input instanceof MutableFloat) {
@@ -195,4 +195,5 @@ public class FloatSlider extends Widget {
             return max;
         }
     }
+
 }

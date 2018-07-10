@@ -4,17 +4,17 @@ import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.Task;
 import nars.concept.signal.DemultiplexedScalar;
 import nars.concept.signal.DigitizedScalar;
 import nars.concept.signal.Signal;
 import nars.concept.signal.SwitchAction;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DConcepts;
+import nars.term.Term;
 import nars.time.Tense;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
-import org.jetbrains.annotations.NotNull;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.SpaceGraph;
 
 import javax.swing.*;
@@ -23,6 +23,8 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import static com.google.common.collect.Iterables.concat;
+import static jcog.Util.lerp;
+import static jcog.Util.sqr;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static spacegraph.SpaceGraph.window;
@@ -39,7 +41,6 @@ public class FZero extends NAgentX {
     static float fps = 30f;
 
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
-    final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
     public static void main(String[] args) {
 
@@ -62,31 +63,49 @@ public class FZero extends NAgentX {
 
         this.fz = new FZeroGame();
 
-        Bitmap2DConcepts<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
+        Term cam = $.the("cam");
+        Bitmap2DConcepts<Scale> c = senseCamera(cam, new Scale(() -> fz.image,
 
-                //24, 24
-                16, 16
+                24, 24
+                //16, 16
 
 
         )/*.blur()*/)
                 //.diff()
-                .resolution(0.02f);
+                //.resolution(0.02f);
+        ;
 
 
-        initToggle();
-        initBipolar(false, 3.5f, 0.15f);
+        //initToggle();
 
 
+        initUnipolarLinear(5.5f);
+
+        //initBipolarRotateRelative(fair, rotFactor);
+        initBipolarRotateDirect(true, 0.25f);
+        //initBipolarRotateAbsolute(fair);
+
+        //eyelid
+        actionUnipolar($.inh(cam, $.the("aware")), (camAware)->{
+            c.pixelPri.set(lerp(camAware, 0, 0.1f));
+            c.resolution(lerp(camAware, 0.1f, 0.02f));
+           return camAware;
+        }).resolution(0.1f);
+
+        actionUnipolar($.inh(id, $.the("curious")), (cur)->{
+            curiosity.set(lerp(sqr(cur), 0.001f, 0.02f));
+            return cur;
+        }).resolution(0.1f);
 
         Signal dVelX = senseNumberDifference($.inh(id, $.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
         Signal dVelY = senseNumberDifference($.inh(id, $.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
         Signal dAccel = senseNumberDifference($.inh(id, "accel"), () -> (float) fz.vehicleMetrics[0][6]);
-        Signal dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);
-        DemultiplexedScalar ang = senseNumber(angle -> $.inst( /*$.the(id ),*/ $.the(angle), $.the("ang")) /*SETe.the($.the(angle)))*/, () ->
+        Signal dAngVel = senseNumberDifference($.func("ang", $.the("vel")), () -> (float) fz.playerAngle);
+        DemultiplexedScalar ang = senseNumber(angle -> $.func( "ang",  $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                8,
+                6,
                 DigitizedScalar.FuzzyNeedle
-        );
+        ).resolution(0.05f);
 
 
         SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
@@ -212,21 +231,9 @@ public class FZero extends NAgentX {
 
     }
 
-    public void initBipolar(boolean fair, float fwdFactor, float rotFactor) {
-
-
-        final float[] _a = {0}, _r = {0};
-        actionUnipolar(/*$.inh(id,*/ $$( "linear"), true, (x) -> 0f, (a0) -> {
-            float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
-            if (a > 0.5f) {
-                float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);
-                fz.vehicleMetrics[0][6] = thrust;
-            } else
-                fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f)));
-            return a0;
-        });
-
-
+    public void initBipolarRotateRelative(boolean fair, float rotFactor) {
+        final float[] _r = {0};
+        final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
         actionBipolarFrequencyDifferential($.p(/*id, */$.the("turn")), fair, true, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
@@ -237,16 +244,61 @@ public class FZero extends NAgentX {
                             rotSpeed * rotFactor;
             return r0;
         });
+    }
+    public void initBipolarRotateDirect(boolean fair, float rotFactor) {
 
+        final float[] heading = {0};
+        final MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f);
+
+        float curve =
+                1;
+                //3; //curve exponent
+
+        FloatToFloatFunction d = (dHeading) -> {
+
+            //heading[0] += Math.pow((dHeading-0.5f) * 2, curve) * rotFactor; //unipolar
+            heading[0] += Math.pow((dHeading), curve) * rotFactor; //bipolar
+
+            fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
+
+            return dHeading;
+        };
+        actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, true, d);
+        //actionUnipolar($.the("heading"), d);
+    }
+
+    public void initBipolarRotateAbsolute(boolean fair) {
+
+        final MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f); //LP filter
+        FloatToFloatFunction x = (heading) -> {
+
+            fz.playerAngle = (float) rotFilter.out(fz.playerAngle, heading * Math.PI * 2);
+
+            return heading;
+        };
+        actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, true, x);
 
     }
 
-    protected boolean polarized(@NotNull Task task) {
-        if (task.isQuestionOrQuest())
-            return true;
-        float f = task.freq();
-        return f <= 0.2f || f >= 0.8f;
+    public void initUnipolarLinear(float fwdFactor) {
+        final float[] _a = {0};
+        actionUnipolar(/*$.inh(id,*/ $$( "linear"), true, (x) -> 0.5f, (a0) -> {
+            float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
+            if (a >= 0.5f) {
+                float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);
+                fz.vehicleMetrics[0][6] = thrust;
+            } else
+                fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f)));
+            return a0;
+        });
     }
+
+//    protected boolean polarized(@NotNull Task task) {
+//        if (task.isQuestionOrQuest())
+//            return true;
+//        float f = task.freq();
+//        return f <= 0.2f || f >= 0.8f;
+//    }
 
     double lastDistance;
 

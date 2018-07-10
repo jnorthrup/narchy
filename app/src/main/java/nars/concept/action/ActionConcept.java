@@ -59,6 +59,10 @@ public abstract class ActionConcept extends Sensor {
         }
     }
 
+    public ActionConcept resolution(float v) {
+        resolution.set(v);
+        return this;
+    }
 
 
     /**
