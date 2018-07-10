@@ -22,8 +22,13 @@ import java.util.function.Consumer;
 abstract public class BufferedExec extends UniExec {
 
     private final static int CAN_ITER_MAX = 4096;
+    private final int totalConcurrency;
 
     protected volatile long idleTimePerCycle;
+
+    public BufferedExec(int concurrency) {
+        this.totalConcurrency = concurrency;
+    }
 
     @Override
     public void execute(Object x) {
@@ -87,7 +92,7 @@ abstract public class BufferedExec extends UniExec {
 
     }
 
-    /** work and play execution */
+    /** work and play execution. concurrency is the local conconcurrency being executed, typically 1  */
     protected void onCycle(List b, int concurrency) {
 
 
@@ -97,7 +102,10 @@ abstract public class BufferedExec extends UniExec {
 
 
         //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
-        in.clear(b::add, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
+        int incoming = in.size();
+        if (incoming > 0) {
+            in.clear(b::add, (int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1)))));
+        }
 
 
         long dutyTimeStart = System.nanoTime();
@@ -199,15 +207,21 @@ abstract public class BufferedExec extends UniExec {
     public static class WorkerExec extends BufferedExec {
 
         public final int threads;
+        final boolean affinity;
+
         final AffinityExecutor exe = new AffinityExecutor();
 
 
 
 
         public WorkerExec(int threads) {
+            this(threads, false);
+        }
+
+        public WorkerExec(int threads, boolean affinity) {
+            super(threads);
             this.threads = threads;
-
-
+            this.affinity = affinity;
         }
 
         @Override
@@ -219,7 +233,7 @@ abstract public class BufferedExec extends UniExec {
                 super.start(n);
 
 
-                exe.execute(MyRunnable::new, threads);
+                exe.execute(MyRunnable::new, threads, affinity);
 
                 /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
                 Exe.setExecutor(this);
@@ -255,7 +269,11 @@ abstract public class BufferedExec extends UniExec {
                 while (running) {
                     WorkerExec.super.onCycle(buffer, 1);
 
-                    Util.sleepNS(idleTimePerCycle);
+                    if (idleTimePerCycle > 0) {
+                        Util.sleepNSWhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
+                                in.size() == 0
+                        );
+                    }
                 }
             }
 

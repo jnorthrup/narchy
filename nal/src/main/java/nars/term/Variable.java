@@ -56,9 +56,13 @@ public interface Variable extends Atomic {
         if (equals(_y))
             return true;
 
-        Term y = u.resolve(_y);
-        if (y!=_y && equals(y))
-            return true;
+        Term y;
+        if (_y instanceof Variable) {
+            if (equals(y = u.resolve(_y)))
+                return true;
+        } else
+            y = _y;
+
 
         Term x = u.resolve(this);
 

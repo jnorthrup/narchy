@@ -245,8 +245,8 @@ public class PremisePatternIndex extends MapConceptIndex {
                     if (x instanceof Ellipsis) {
                         int available = ysize - j;
 
-                        Term eMatched = u.xy(x);
-                        if (eMatched == null) {
+                        Term eMatched = u.resolve(x);
+                        if (eMatched != x) {
 
 
                             if (i == xsize) {
@@ -347,8 +347,8 @@ public class PremisePatternIndex extends MapConceptIndex {
                     Term x = ss.sub(k);
 
                     if (x.equals(ellipsis)) {
-                        Term v = u.xy(x);
-                        if (v != null) {
+                        Term v = u.resolve(x);
+                        if (v != x) {
                             if (v instanceof EllipsisMatch) {
                                 if (!((EllipsisMatch) v).rematch(y, yFree))
                                     return false;

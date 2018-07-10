@@ -34,6 +34,7 @@ import static spacegraph.SpaceGraph.window;
  */
 public class FZero extends NAgentX {
 
+    public static final double DRAG = 0.98;
     private final FZeroGame fz;
 
     float fwdSpeed = 7;
@@ -608,7 +609,7 @@ public class FZero extends NAgentX {
                 }
 
                 if (playing) {
-
+                    // compute computer-controlled-vehicles velocities
                     for (int i = 1; i < 10; i++) {
                         if ((i < 4 && vehicleMetrics[i][6] < 20.5)
                                 || vehicleMetrics[i][6] < 10) {
@@ -635,7 +636,7 @@ public class FZero extends NAgentX {
                                 = vehicleMetrics[i][2] + vehicleMetrics[i][6] * vz / mag;
                     }
 
-
+                    // player on power bar?
                     onPowerBar = false;
                     if (raceTrack[0x1FF & (((int) vehicleMetrics[0][1]) >> 5)]
                             [0x1FF & (((int) vehicleMetrics[0][0]) >> 5)] == 2) {
@@ -656,10 +657,10 @@ public class FZero extends NAgentX {
                     vehicleMetrics[0][8] = vehicleMetrics[0][3]
                             + vehicleMetrics[0][6] * cos;
 
-
+                    // vehicle hitting something?
                     for (int j = 0; j < 10; j++) {
 
-
+                        // vehicle hitting another vehicle?
                         for (int i = 0; i < 10; i++) {
                             if (i != j) {
                                 double normalX = (vehicleMetrics[j][0]
@@ -671,14 +672,17 @@ public class FZero extends NAgentX {
                                     double dotProduct = normalX * vehicleMetrics[0][7]
                                             + normalZ * vehicleMetrics[0][8];
                                     if (dotProduct < 0) {
-                                        double ratio = 2.0 * dotProduct / dist2;
+
+
+                                        double ratio = 2 * dotProduct / dist2;
                                         vehicleMetrics[j][7] = vehicleMetrics[j][2]
                                                 = vehicleMetrics[0][7] - normalX * ratio;
                                         vehicleMetrics[j][8] = vehicleMetrics[j][3]
                                                 = vehicleMetrics[0][8] - normalZ * ratio;
 
-                                        vehicleMetrics[i][2] = -vehicleMetrics[j][2];
-                                        vehicleMetrics[i][3] = -vehicleMetrics[j][3];
+                                        double restitution = 0.5;
+                                        vehicleMetrics[i][2] = -vehicleMetrics[j][2] * restitution;
+                                        vehicleMetrics[i][3] = -vehicleMetrics[j][3] * restitution;
                                         if (i == 0) {
                                             power -= 10;
                                             if (power < 0) {
@@ -691,7 +695,7 @@ public class FZero extends NAgentX {
                             }
                         }
 
-
+                        // vehicle hitting a wall?
                         int vehicleX = ((int) vehicleMetrics[j][0]) >> 5;
                         int vehicleZ = ((int) vehicleMetrics[j][1]) >> 5;
                         for (int z = -2; z <= 2; z++) {
@@ -737,8 +741,8 @@ public class FZero extends NAgentX {
 
                         vehicleMetrics[j][0] += vehicleMetrics[j][7];
                         vehicleMetrics[j][1] += vehicleMetrics[j][8];
-                        vehicleMetrics[j][2] *= 0.98;
-                        vehicleMetrics[j][3] *= 0.98;
+                        vehicleMetrics[j][2] *= DRAG;
+                        vehicleMetrics[j][3] *= DRAG;
                     }
                 }
             } else {

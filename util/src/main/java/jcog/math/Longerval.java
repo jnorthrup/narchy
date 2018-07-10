@@ -146,6 +146,11 @@ public class Longerval implements LongInterval {
 		long b = min(y1, y2);
 		return a <= b ? b - a : -1;
 	}
+	public static boolean intersects(long x1, long y1, long x2, long y2) {
+		long a = max(x1, x2);
+		long b = min(y1, y2);
+		return a <= b;
+	}
 
 
 	@Nullable public static Longerval intersect(long x1, long x2, long y1, long y2) {

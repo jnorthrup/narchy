@@ -31,6 +31,9 @@ public abstract class Param {
      */
     public static final boolean STRONG_COMPOSITION = false;
 
+
+    public static final boolean SHUFFLE_TERMUTES = false;
+
     /** warning: can interfere with expected test results */
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 

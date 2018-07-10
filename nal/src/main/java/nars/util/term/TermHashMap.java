@@ -43,6 +43,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
 
         if (other != null) other.clear();
+        //other = null;
     }
 
     private int compactThreshold() {

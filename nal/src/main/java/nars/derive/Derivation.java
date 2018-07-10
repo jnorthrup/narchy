@@ -23,12 +23,12 @@ import nars.term.control.PREDICATE;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
-import nars.util.TimeAware;
 import nars.util.term.TermHashMap;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -62,12 +62,12 @@ public class Derivation extends PreDerivation {
         }
         return pp;
     };
-    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
+//    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     public final ArrayHashSet<Premise> premiseBuffer =
             new ArrayHashSet<>(256) {
                 @Override
                 public Set<Premise> newSet() {
-                    return new HashSet<>(256);
+                    return new UnifiedSet<>(256, 0.99f);
                 }
             };
 
@@ -94,7 +94,7 @@ public class Derivation extends PreDerivation {
         }
     };
     public NAR nar;
-    private final Functor.LambdaFunctor termlinkRandomProxy;
+//    private final Functor.LambdaFunctor termlinkRandomProxy;
     /**
      * temporary un-transform map
      */
@@ -237,16 +237,16 @@ public class Derivation extends PreDerivation {
 //
 //        };
 
-        this.termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
-            x = anon.get(x);
-            if (x == null)
-                return Null;
-
-            Term y = $.func(_tlRandom, x).eval(nar, false);
-            if (y != null && y.op().conceptualizable)
-                return anon.put(y);
-            return Null;
-        });
+//        this.termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
+//            x = anon.get(x);
+//            if (x == null)
+//                return Null;
+//
+//            Term y = $.func(_tlRandom, x).eval(nar, false);
+//            if (y != null && y.op().conceptualizable)
+//                return anon.put(y);
+//            return Null;
+//        });
     }
 
     @Override
@@ -272,7 +272,7 @@ public class Derivation extends PreDerivation {
                     mySubIfUnify,
                     mySubst,
                     polarizeFunc,
-                    termlinkRandomProxy,
+//                    termlinkRandomProxy,
                     Image.imageExt,
                     Image.imageInt,
                     Image.imageNormalize,
@@ -312,12 +312,6 @@ public class Derivation extends PreDerivation {
 
     }
 
-    @Override
-    public Term resolve(Term x) {
-        return x instanceof Variable ?
-                super.resolve(x) :
-                x;
-    }
 
     /**
      * setup for a new derivation.
@@ -367,9 +361,7 @@ public class Derivation extends PreDerivation {
 
         long tAt = _task.start();
 
-
-        if (tAt == TIMELESS)
-            throw new RuntimeException();
+        assert(tAt != TIMELESS);
 
         this.taskStart = tAt;
         this.taskPunc = _task.punc();
@@ -403,8 +395,8 @@ public class Derivation extends PreDerivation {
         } else {
 
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
-            if (beliefTerm.op() == NEG)
-                throw new RuntimeException("should not be NEG: " + beliefTerm);
+            assert(beliefTerm.op()!=NEG);
+
             this.beliefStart = TIMELESS;
             this.belief = null;
             this.beliefTruth = this.beliefTruthDuringTask = null;
@@ -514,13 +506,10 @@ public class Derivation extends PreDerivation {
 
 
         if (atomic instanceof Variable) {
-            Term y = xy(atomic);
+            Term y = resolve(atomic);
             if (y != null)
                 return y;
         }
-
-        if (atomic instanceof Functor)
-            return atomic;
 
         if (atomic instanceof Atom) {
             Termed f = derivationFunctors.get(atomic);
@@ -533,10 +522,7 @@ public class Derivation extends PreDerivation {
     }
 
     public Derivation cycle(NAR nar, Deriver deri) {
-        if (nar == null)
-            return null;
-
-        TimeAware pnar = this.nar;
+        NAR pnar = this.nar;
 
         if (pnar != nar) {
             init(nar);

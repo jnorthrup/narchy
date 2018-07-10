@@ -25,17 +25,18 @@ public interface Subst extends TermTransform {
 
     @Override @Nullable
     default Term transformAtomic(Atomic atomic) {
-        Term y = resolve(atomic);
-        return y != null ? y : atomic;
+//        Term y = xy(atomic);
+//        return y != null ? y : atomic;
+        return resolve(atomic);
     }
 
     @Override @Nullable
     default Term transformCompound(Compound x) {
         Term y = xy(x);
-        if (y!=null) {
-            return transform(y);
-        } else {
+        if (y==null || y==x) {
             return TermTransform.super.transformCompound((Compound) x);
+        } else {
+            return transform(y);
         }
     }
 

@@ -64,7 +64,11 @@ public class ConceptGraph2D extends Graph2D<Concept> {
            nn.set(
                new Scale(
                    new PushButton(nn.id.toString())
-                       .click(()-> NARui.conceptWindow(nn.id, nar)),
+                       .click(()-> {
+                           Concept t = nn.id;
+                           if (t!=null)
+                            NARui.conceptWindow(t, nar);
+                       }),
                 0.8f
                )
            );

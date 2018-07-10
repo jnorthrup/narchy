@@ -81,7 +81,7 @@ abstract public class NAgentX extends NAgent {
                 .attention(()->new Attention(256))
 
                 //.exe(new UniExec() {
-                .exe(new BufferedExec.WorkerExec(Util.concurrency()))
+                .exe(new BufferedExec.WorkerExec(Util.concurrency(), false /* true */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,

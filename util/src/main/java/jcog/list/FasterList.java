@@ -4,6 +4,7 @@ import jcog.Util;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.list.mutable.FastList;
@@ -696,6 +697,25 @@ public class FasterList<X> extends FastList<X> {
             }
             this.lastIndex = -1;
         }
+    }
+
+    public <P> boolean anySatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter)    {
+        int s = size;
+        X[] items = this.items;
+        for (int i = 0; i < s; i++) {
+            if (predicate2.accept(items[i], parameter))
+                return true;
+        }
+        return false;
+    }
+    public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter)    {
+        int s = size;
+        X[] items = this.items;
+        for (int i = 0; i < s; i++) {
+            if (!predicate2.accept(items[i], parameter))
+                return false;
+        }
+        return true;
     }
 
 }

@@ -43,30 +43,37 @@ public class AffinityExecutor implements Executor {
 
     protected final class AffinityThread extends Thread {
 
-        Runnable cmd;
+        private final boolean tryPin;
+        final Runnable cmd;
 
         public AffinityThread(String name, Runnable cmd) {
+            this(name, cmd, true);
+        }
+
+        public AffinityThread(String name, Runnable cmd, boolean tryPin) {
             super(name);
 
             this.cmd = cmd;
+            this.tryPin = tryPin;
         }
 
         @Override
         public void run() {
 
-
-            try (AffinityLock lock = AffinityLock.acquireCore()) {
-                cmd.run(); 
-            } catch (Exception e) {
-                logger.warn("Could not acquire affinity lock; executing normally: {} ", e.getMessage());
-
-                
-                
-
-                cmd.run();
+            try {
+                if (tryPin) {
+                    try (AffinityLock lock = AffinityLock.acquireCore()) {
+                        cmd.run();
+                    } catch (Exception e) {
+                        logger.warn("Could not acquire affinity lock; executing normally: {} ", e.getMessage());
+                        cmd.run();
+                    }
+                } else {
+                    cmd.run();
+                }
+            } finally {
+                threads.remove(this);
             }
-
-            threads.remove(this);
 
         }
     }
@@ -91,13 +98,18 @@ public class AffinityExecutor implements Executor {
     }
 
     public final void execute(Supplier<Runnable> worker, int count) {
+        execute(worker, count, true);
+    }
+
+    public final void execute(Supplier<Runnable> worker, int count, boolean tryPin) {
 
 
 
         for (int i = 0; i < count; i++) {
             AffinityThread at = new AffinityThread(
                     id + "_" + serial.getAndIncrement(),
-                    worker.get());
+                    worker.get(),
+                    tryPin);
             add(at);
 
             at.start();

@@ -1,6 +1,7 @@
 package nars.task.util;
 
 import jcog.math.LongInterval;
+import jcog.math.Longerval;
 import jcog.tree.rtree.HyperRegion;
 
 /**
@@ -26,14 +27,13 @@ public class TimeRange implements HyperRegion {
     @Override
     public boolean intersects(HyperRegion x) {
         LongInterval t = (LongInterval)x;
-        return t.intersects(start, end);
+        return Longerval.intersects(start, end, t.start(), t.end());
     }
 
 
     @Override
     public boolean contains(HyperRegion x) {
-        LongInterval t = (LongInterval)x;
-        return t.contains(start, end);
+        return ((LongInterval)x).containedBy(start, end);
     }
 
     @Override

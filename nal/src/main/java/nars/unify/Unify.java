@@ -14,6 +14,7 @@ import nars.unify.constraint.MatchConstraint;
 import nars.unify.mutate.Termutator;
 import nars.util.term.TermHashMap;
 import nars.util.term.transform.Subst;
+import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public abstract class Unify extends Versioning implements Subst {
     protected final static Logger logger = LoggerFactory.getLogger(Unify.class);
     @Nullable
     private final Op type;
-    public final Set<Termutator> termutes = new LinkedHashSet(8);
+    public final Set<Termutator> termutes = new LinkedHashSet(4, 0.99f);
     public final VersionMap<Variable, Term> xy;
     public Random random;
     /**
@@ -117,14 +118,19 @@ public abstract class Unify extends Versioning implements Subst {
      */
     @Nullable
     @Override
-    public final Term xy(/*Variable*/Term x0) {
-        if (!(x0 instanceof Variable))
-            return null;
-        return xy.get(x0);
-
-
+    public final Term xy(/*Variable*/Term x) {
+        return !(x instanceof Variable) ? null : xy.get(x);
     }
 
+    /** completely dereferences a term (usually a variable)*/
+    public final Term resolve(final Term x) {
+        Term /*Variable*/ z = x, y;
+        while (z instanceof Variable && (y = xy.get(z))!=null) {
+            //assert(y!=z && y!=x);
+            z = y;
+        }
+        return z;
+    }
 
     /**
      * unifies the next component, which can either be at the start (true, false), middle (false, false), or end (false, true)
@@ -156,9 +162,9 @@ public abstract class Unify extends Versioning implements Subst {
 
             termutes.clear();
 
-
-            if (ts > 1)
+            if (ts > 1 && Param.SHUFFLE_TERMUTES) {
                 Util.shuffle(t, random);
+            }
 
             tryMutate(t, -1);
 
@@ -261,7 +267,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
-    final class ConstrainedVersionedTerm extends Versioned<Term> {
+    final class ConstrainedVersionedTerm extends Versioned<Term> implements Predicate2<MatchConstraint, Term> {
 
         /**
          * lazily constructed
@@ -280,13 +286,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         private boolean valid(Term x) {
             Versioned<MatchConstraint> c = this.constraints;
-            if (c != null) {
-//                int s = c.size();
-                for (MatchConstraint aC: c)
-                    if (aC.invalid(x, Unify.this))
-                        return false;
-            }
-            return true;
+            return c == null || !c.anySatisfyWith(this, x);
         }
 
         void constrain(MatchConstraint... mm) {
@@ -302,6 +302,10 @@ public abstract class Unify extends Versioning implements Subst {
 
         }
 
+        @Override
+        public boolean accept(MatchConstraint c, Term x) {
+            return c.invalid(x, Unify.this);
+        }
     }
 
 }

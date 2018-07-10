@@ -183,14 +183,11 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     @Override
     public Y get(/*X*/Object key) {
-        Versioned<Y> v = getVersioned(key);
+        Versioned<Y> v = map.get(key);
         return v != null ? v.get() : null;
     }
 
-    public Versioned<Y> getVersioned(/*X*/Object key) {
-        return map.get(key);
-    }
-
+    /** TODO test */
     public boolean compute(/*X*/X key, Function<Y,Y> f) {
         final boolean[] result = {false};
         map.compute(key, (k, v)->{
@@ -212,16 +209,6 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         });
         return result[0];
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1483,12 +1483,37 @@ public enum Util {
 
     public static boolean sleepNS(long periodNS) {
         if (periodNS <= 0) return false;
-
-
-        LockSupport.parkNanos(periodNS);
-
-
+        if (periodNS <= 10000 /** 10uS = 0.01ms */ ) {
+            long start = System.nanoTime();
+            long end = start + periodNS;
+            do {
+                Thread.onSpinWait();
+            } while (System.nanoTime() < end);
+        } else if (periodNS <= 500000 /** 100uS = 0.5ms */ ) {
+            long start = System.nanoTime();
+            long end = start + periodNS;
+            do {
+                Thread.yield();
+            } while (System.nanoTime() < end);
+        } else {
+            LockSupport.parkNanos(periodNS);
+        }
+//            try {
+//                TimeUnit.NANOSECONDS.sleep(periodNS);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return true;
+    }
+
+    public static void sleepNSWhile(long periodNS, long napTimeNS, BooleanSupplier wakeEarly) {
+        long start = System.nanoTime();
+        long end = start + periodNS;
+        long now = start;
+        do {
+            sleepNS(Math.min(napTimeNS, end-now));
+        } while (((now = System.nanoTime()) < end) && !wakeEarly.getAsBoolean());
     }
 
     public static int largestPowerOf2NoGreaterThan(int i) {
