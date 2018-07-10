@@ -49,7 +49,7 @@ public class ProxyConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public Stream<? extends Termed> stream() {
+    public Stream<Termed> stream() {
         return ref.stream();
     }
 }

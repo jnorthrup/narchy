@@ -304,7 +304,7 @@ public final class TruthFunctions {
      * @return The corresponding confidence, in [0, 1)
      */
     public static float w2c(float w) {
-        if (!((Float.isFinite(w) && w > 0)))
+        if (!((Float.isFinite(w) && w >= Param.TRUTH_MIN_EVI)))
             throw new RuntimeException("invalid evidence");
 
         return w2cSafe(w);

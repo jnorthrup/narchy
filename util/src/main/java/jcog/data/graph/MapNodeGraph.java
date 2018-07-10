@@ -171,7 +171,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return s.toString();
     }
 
-    public boolean containsNode(N x) {
+    public boolean containsNode(Object x) {
         return nodes.containsKey(x);
     }
 

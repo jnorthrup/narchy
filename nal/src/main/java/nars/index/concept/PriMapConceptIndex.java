@@ -227,8 +227,8 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public Stream<? extends Termed> stream() {
-        return concepts.values().stream();
+    public Stream<Termed> stream() {
+        return concepts.values().stream().map(x -> (Termed)x); //HACK
     }
 
     @Nullable

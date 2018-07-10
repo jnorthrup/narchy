@@ -40,7 +40,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
     private LongHashSet evi = null;
 
-    DynTruth(int initialCap) {
+    public DynTruth(int initialCap) {
         super(initialCap);
     }
 

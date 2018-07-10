@@ -176,7 +176,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         
     }
     @Override
-    public Stream<? extends Termed> stream() {
+    public Stream<Termed> stream() {
         return table.stream().map(Supplier::get);
     }
 

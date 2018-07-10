@@ -4,7 +4,7 @@ import com.google.common.primitives.Ints;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
-import nars.term.compound.util.AnonMap;
+import nars.term.compound.util.ByteAnonMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ import static nars.time.Tense.DTERNAL;
  * when executed construct the term
  * */
 public class LazyCompound {
-    private AnonMap sub = null;
+    private ByteAnonMap sub = null;
     private DynBytes code = null;
 
     final int INITIAL_CODE_SIZE = 16;
@@ -79,15 +79,15 @@ public class LazyCompound {
     }
     public LazyCompound addAll(Term... subs) {
         DynBytes c = code();
-        AnonMap s = sub();
+        ByteAnonMap s = sub();
         for (Term x : subs)
             c.writeByte( MAX_CONTROL_CODES + s.intern(x) );
         return this;
     }
 
-    private AnonMap sub() {
-        AnonMap code = this.sub;
-        return code == null ? (this.sub = new AnonMap(INITIAL_ANON_SIZE)) : code;
+    private ByteAnonMap sub() {
+        ByteAnonMap code = this.sub;
+        return code == null ? (this.sub = new ByteAnonMap(INITIAL_ANON_SIZE)) : code;
     }
 
     private DynBytes code() {

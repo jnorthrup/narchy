@@ -9,9 +9,11 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.atom.Bool;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -19,7 +21,7 @@ import java.util.stream.Stream;
 /**
  *
  */
-public abstract class ConceptIndex {
+public abstract class ConceptIndex implements Iterable<Termed> {
 
 
     public NAR nar;
@@ -69,7 +71,12 @@ public abstract class ConceptIndex {
         out.println();
     }
 
-    abstract public Stream<? extends Termed> stream();
+    abstract public Stream<Termed> stream();
+
+    @Override
+    public Iterator<Termed> iterator() {
+        return stream().iterator();
+    }
 
     /**
      * default impl

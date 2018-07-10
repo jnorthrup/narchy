@@ -4,7 +4,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.compound.util.AnonMap;
+import nars.term.compound.util.ByteAnonMap;
 import nars.term.var.UnnormalizedVariable;
 import nars.util.term.transform.TermTransform;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * term anonymization context, for canonicalization and generification of compounds
  */
-public class Anon extends AnonMap {
+public class Anon extends ByteAnonMap {
 
     private final TermTransform PUT, GET;
 

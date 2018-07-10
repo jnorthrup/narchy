@@ -4,7 +4,8 @@ import jcog.list.FasterList;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
-public class AnonMap {
+/** this assumes < 127 unique elements */
+public class ByteAnonMap {
 
     /** term -> id */
     protected final ObjectByteHashMap<Term> termToId;
@@ -12,7 +13,7 @@ public class AnonMap {
     /** id -> term */
     protected final FasterList<Term> idToTerm;
 
-    public AnonMap(int estSize) {
+    public ByteAnonMap(int estSize) {
         termToId = new ObjectByteHashMap<>(estSize);
         idToTerm = new FasterList(estSize);
     }

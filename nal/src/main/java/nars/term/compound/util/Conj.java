@@ -32,7 +32,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * representation of conjoined (eternal, parallel, or sequential) events specified in one or more conjunctions,
  * for use while constructing, merging, and/or analyzing
  */
-public class Conj extends AnonMap {
+public class Conj extends ByteAnonMap {
 
 
     public static final int ROARING_UPGRADE_THRESH = 8;

@@ -295,13 +295,12 @@ public abstract class Param {
 
     /**
      * Evidential Horizon, the amount of future evidence to be considered
-     * Must be >=1.0
      */
     public static final float HORIZON = 1f;
 
 
 
-    public static final int MAX_INTERNED_VARS = 16;
+    public static final int MAX_INTERNED_VARS = 32;
 
     /**
      * how many INT terms are canonically interned/cached. [0..n)

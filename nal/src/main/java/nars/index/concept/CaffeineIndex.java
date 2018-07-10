@@ -61,8 +61,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
 
     @Override
     public Stream<Termed> stream() {
-        return concepts.asMap().values().stream().filter(Objects::nonNull)
-                ;
+        return concepts.asMap().values().stream().filter(Objects::nonNull);
     }
 
 
