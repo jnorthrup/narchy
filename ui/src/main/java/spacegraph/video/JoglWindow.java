@@ -466,6 +466,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             setIgnoreExceptions(false);
             setPrintExceptions(true);
 
+
             this.loop = new Loop() {
 
 
@@ -483,6 +484,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 public boolean next() {
 
 
+
                     if (window != null) {
 
                         if (!paused) {
@@ -498,10 +500,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                                     return true;
                                 });
 
-                                if (!drawables.isEmpty()) {
-                                    drawables.get(0).display();
-                                    //drawables.forEach(GLAutoDrawable::display);
-                                }
+                                display();
+
+//                                if (!drawables.isEmpty()) {
+//                                    drawables.get(0).display();
+//                                    //drawables.forEach(GLAutoDrawable::display);
+//                                }
 
 
                                 //}
