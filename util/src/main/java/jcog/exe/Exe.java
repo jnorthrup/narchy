@@ -1,6 +1,5 @@
 package jcog.exe;
 
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,6 +7,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jcog.exe.realtime.AdmissionQueueWheelModel;
 import jcog.exe.realtime.HashedWheelTimer;
+import jcog.list.MetalConcurrentQueue;
 import jcog.net.UDPeer;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
@@ -97,7 +97,7 @@ public enum Exe { ;
         final UDPeer p = new UDPeer();
 
         final AtomicBoolean busy = new AtomicBoolean();
-        final MultithreadConcurrentQueue<JsonNode> out = new MultithreadConcurrentQueue(2048);
+        final MetalConcurrentQueue<JsonNode> out = new MetalConcurrentQueue<>(2048);
 
         public UDPeerProfiler() throws IOException {
             p.runFPS(10f);

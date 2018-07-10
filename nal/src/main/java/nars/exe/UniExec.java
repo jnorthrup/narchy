@@ -1,6 +1,5 @@
 package nars.exe;
 
-import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.Service;
 import jcog.WTF;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
@@ -9,12 +8,12 @@ import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
+import jcog.list.MetalConcurrentQueue;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.control.DurService;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.function.Consumer;
 
 /**
@@ -31,9 +30,9 @@ public class UniExec extends AbstractExec {
 
     final ConcurrentFastIteratingHashMap<Causable,MyAbstractWork> can = new ConcurrentFastIteratingHashMap<>(new MyAbstractWork[0]);
 
-    final BlockingQueue in =
+    final MetalConcurrentQueue in =
             //new ArrayBlockingQueue(8192);
-            new DisruptorBlockingQueue(32*1024);
+            new MetalConcurrentQueue(32*1024);
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
@@ -246,10 +245,7 @@ public class UniExec extends AbstractExec {
 
         nar.time.scheduled(this::executeNow);
 
-        in.removeIf(e -> {
-            executeNow(e);
-            return true;
-        });
+        in.clear(this::executeNow);
 
         can.forEachValue(c->
             c.c.next(nar, WORK_PER_CYCLE)

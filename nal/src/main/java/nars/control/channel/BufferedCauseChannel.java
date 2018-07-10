@@ -1,7 +1,7 @@
 package nars.control.channel;
 
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.google.common.collect.AbstractIterator;
+import jcog.list.MetalConcurrentQueue;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class BufferedCauseChannel implements Consumer {
 
-    final MultithreadConcurrentQueue buffer;
+    final MetalConcurrentQueue buffer;
     private final CauseChannel target;
 
     public BufferedCauseChannel(CauseChannel c) {
@@ -19,7 +19,7 @@ public class BufferedCauseChannel implements Consumer {
     }
     public BufferedCauseChannel(CauseChannel c, int capacity) {
         target = c;
-        buffer = new MultithreadConcurrentQueue<>(capacity);
+        buffer = new MetalConcurrentQueue(capacity);
     }
 
 

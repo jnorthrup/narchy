@@ -3,6 +3,7 @@ package jcog.exe.valve;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.TODO;
 import jcog.exe.util.RunnableForkJoin;
+import jcog.list.MetalConcurrentQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
     public final AtomicLong cycleTimeNS = new AtomicLong(/* 10hz default: = 100ms = */ 100 * 1000 * 1000);
 
     final MultithreadConcurrentQueue<InstrumentedWork> work;
-    public final MultithreadConcurrentQueue<Runnable> async;
+    public final MetalConcurrentQueue<Runnable> async;
 
 
     private final Semaphore concurrency;
@@ -40,7 +41,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
         this.concurrency = new Semaphore(concurrency, false);
         this.exe = exe;
         this.work = new MultithreadConcurrentQueue<>(workQueueCapacity);
-        this.async = new MultithreadConcurrentQueue<>(workQueueCapacity);
+        this.async = new MetalConcurrentQueue<>(workQueueCapacity);
     }
 
 

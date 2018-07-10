@@ -30,8 +30,8 @@ abstract public class InstrumentedLoop extends Loop {
 
     @Override
     protected void afterNext() {
-        long lastIteration = this.last;
         long afterIteration = System.nanoTime();
+        long lastIteration = this.last;
         this.last = afterIteration;
 
         cycleTimeNS = afterIteration - lastIteration;

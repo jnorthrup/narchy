@@ -12,7 +12,7 @@ import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -67,8 +67,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
-        float clockFPS =
-                narFPS;
+        float clockFPS = narFPS;
 
         RealTime clock =
                 new RealTime.MS();
@@ -79,7 +78,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(()->new Attention(512))
+                .attention(()->new Attention(256))
 
                 //.exe(new UniExec() {
                 .exe(new BufferedExec.WorkerExec(Util.concurrency()))
@@ -104,8 +103,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        //new HijackConceptIndex(96 * 1024, 4)
+                        //new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(32 * 1024, 4)
 
 
                 )
@@ -113,33 +112,33 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        new MatrixDeriver(Derivers.nal(n, 1, 8, "motivation.nal"));
+        new MatrixDeriver(Derivers.nal(n, 1, 8, /*"curiosity.nal",*/ "motivation.nal"));
 
-        n.dtDither.set(20);
-        n.timeFocus.set(20);
+        n.dtDither.set(10);
+        n.timeFocus.set(5);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(46);
 
-        n.forgetRate.set(0.8f);
-        n.activateConceptRate.set(0.75f);
+        n.forgetRate.set(0.9f);
+        n.activateConceptRate.set(0.9f);
 
 
-        n.beliefConfDefault.set(0.9f);
-        n.goalConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.99f);
+        n.goalConfDefault.set(0.99f);
 
-        n.beliefPriDefault.set(0.2f);
-        n.goalPriDefault.set(0.9f);
+        n.beliefPriDefault.set(0.3f);
+        n.goalPriDefault.set(0.7f);
 
         n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
+        n.questPriDefault.set(0.08f);
 
         n.emotion.want(MetaGoal.Perceive, -0.001f);
         n.emotion.want(MetaGoal.Believe, +0.02f);
         n.emotion.want(MetaGoal.Answer, +0.05f);
         n.emotion.want(MetaGoal.Desire, +0.10f);
-        n.emotion.want(MetaGoal.Action, +0.50f);
+        n.emotion.want(MetaGoal.Action, +0.75f);
 
         try {
             InterNAR i = new InterNAR(n, 8, 0);
@@ -154,15 +153,11 @@ abstract public class NAgentX extends NAgent {
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
-        Inperience inp = new Inperience(n, 32);
+        Inperience inp = new Inperience(n, 64);
 
 
 
-        //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
-
-
-
-        //a.motivation.set(0.75f);
+//        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
 
         n.runLater(() -> {
@@ -188,7 +183,7 @@ abstract public class NAgentX extends NAgent {
                     }
                 };
 
-                a.curiosity.set(0.1f);
+                a.curiosity.set(0.05f);
 
 
                 //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);

@@ -1,6 +1,6 @@
 package jcog.net.http;
 
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import jcog.list.MetalConcurrentQueue;
 import org.java_websocket.*;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.framing.CloseFrame;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class WebSocketSelector extends WebSocketAdapter {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger("jcog/net/http");
-    private final MultithreadConcurrentQueue<NewChannel> newChannels = new MultithreadConcurrentQueue(1024);
+    private final MetalConcurrentQueue<NewChannel> newChannels = new MetalConcurrentQueue(1024);
     private final HttpModel listener;
     private final Set<WebSocket> connections = new LinkedHashSet<>();
     private final Selector selector = Selector.open();;

@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
 
-    private final Runnable run;
+    public final Runnable run;
 
     protected AbstractTimedRunnable(int rounds, Runnable run) {
         super(rounds);
@@ -38,7 +38,7 @@ abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
     }
 
     @Override
-    public void run() {
+    public final void run() {
         run.run();
     }
 

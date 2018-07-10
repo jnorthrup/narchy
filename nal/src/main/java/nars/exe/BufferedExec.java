@@ -35,13 +35,18 @@ abstract public class BufferedExec extends UniExec {
 
         if (!in.offer(x)) {
             logger.warn("{} blocked queue on: {}", this, x);
-            in.add(x);
+            //in.add(x);
+            executeNow(x);
         }
     }
 
     @Override
     public final void execute(Runnable r) {
-        executeLater(r);
+//        if (r instanceof FixedRateTimedFuture && ((((FixedRateTimedFuture)r).run instanceof NARLoop))) {
+//            r.run(); //high-priority
+//        } else {
+            executeLater(r);
+//        }
     }
 
     @Override
@@ -89,7 +94,8 @@ abstract public class BufferedExec extends UniExec {
 
 
 
-        in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
+        //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
+        in.clear(b::add, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
 
 
         long dutyTimeStart = System.nanoTime();
@@ -228,10 +234,7 @@ abstract public class BufferedExec extends UniExec {
                 exe.shutdownNow();
 
 
-                in.removeIf(e -> {
-                    executeNow(e);
-                    return true;
-                });
+                in.clear(this::executeNow);
 
                 super.stop();
             }

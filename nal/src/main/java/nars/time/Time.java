@@ -1,7 +1,7 @@
 package nars.time;
 
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.netflix.servo.util.Clock;
+import jcog.list.MetalConcurrentQueue;
 import nars.NAR;
 import nars.task.NativeTask.SchedTask;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +21,8 @@ public abstract class Time implements Clock, Serializable {
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
 
     final static int MAX_INCOMING = 4 * 1024;
-    final MultithreadConcurrentQueue<SchedTask> incoming =
-            new MultithreadConcurrentQueue<>(MAX_INCOMING);
+    final MetalConcurrentQueue<SchedTask> incoming =
+            new MetalConcurrentQueue<>(MAX_INCOMING);
 
 
     final PriorityQueue<SchedTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);

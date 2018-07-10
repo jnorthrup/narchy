@@ -1,33 +1,27 @@
 package jcog.exe.realtime;
 
-import com.conversantmedia.util.concurrent.ConcurrentQueue;
-import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.TODO;
+import jcog.list.MetalConcurrentQueue;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * uses central concurrent admission queue which is drained each cycle.
  * the wheel queues are (hopefully fast) ArrayDeque's safely accessed from one thread only
  */
 public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
-    /**
-     * for fast test for incoming items
-     */
-    final AtomicInteger incomingCount = new AtomicInteger();
 
     /** capacity of incoming admission queue (not the entire wheel) */
     final static int ADMISSION_CAPACITY = 4096;
 
-    final ConcurrentQueue<TimedFuture<?>> incoming = new DisruptorBlockingQueue<>(ADMISSION_CAPACITY);
+    final MetalConcurrentQueue<TimedFuture<?>> incoming = new MetalConcurrentQueue<>(ADMISSION_CAPACITY);
 
     final Queue<TimedFuture<?>>[] wheel;
 
-    final TimedFuture[] buffer = new TimedFuture[ADMISSION_CAPACITY];
+//    /** where incoming temporarily drains to */
+//    final TimedFuture[] coming = new TimedFuture[ADMISSION_CAPACITY];
 
     public AdmissionQueueWheelModel(int wheels, long resolution) {
         super(wheels, resolution);
@@ -40,22 +34,9 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     @Override
     public int run(int c, HashedWheelTimer timer) {
+        if (incoming.clear(x -> schedule(x, c, timer)) > 0)
+            timer.assertRunning();
 
-        if (incomingCount.get() > 0) {
-            int count = incoming.remove(buffer);
-            if (count > 0) {
-                for (int i = 0; i < count; i++) {
-                    TimedFuture b = buffer[i];
-                    buffer[i] = null;
-                    schedule(b, c, timer);
-                }
-                Arrays.fill(buffer, 0, count, null);
-                timer.assertRunning();
-                incomingCount.addAndGet(-count);
-            }
-        }
-
-        
         Queue<TimedFuture<?>> q = wheel[c];
         final int n = q.size();
         switch (n) {
@@ -68,8 +49,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                         q.poll();
                         break;
                     case READY:
-                        q.poll();
-                        r.execute(timer);
+                        q.poll().execute(timer);
                         break;
                     case PENDING:
                         break; 
@@ -100,15 +80,14 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                 }
             }
         }
+
+
         return n;
-
-
-
     }
 
     @Override
     public boolean canExit() {
-        return incomingCount.get() == 0;
+        return incoming.isEmpty();
     }
 
     @Override
@@ -123,8 +102,6 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
     @Override public void schedule(TimedFuture<?> r) {
         if (r.state()==TimedFuture.Status.CANCELLED)
             throw new RuntimeException("scheduling an already cancelled task");
-
-        incomingCount.incrementAndGet();
 
         boolean added = incoming.offer(r);
         if (!added)

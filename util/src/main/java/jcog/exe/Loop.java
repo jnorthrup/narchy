@@ -97,7 +97,7 @@ abstract public class Loop implements Runnable {
                         .scheduleAtFixedRate(this, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                         
                 }
-            } else if (prevPeriodMS >= 0 && nextPeriodMS <= 0) {
+            } else if (/*prevPeriodMS >= 0 && */nextPeriodMS < 0) {
 
                 logger.info("stop");
 
@@ -174,9 +174,9 @@ abstract public class Loop implements Runnable {
             return; 
 
         try {
-            if (periodMS.intValue()<0) {
-                return; 
-            }
+//            if (periodMS.intValue()<0) {
+//                return;
+//            }
 
             beforeNext();
             try {

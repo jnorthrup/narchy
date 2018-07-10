@@ -36,7 +36,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
-    static float fps = 60f;
+    static float fps = 30f;
 
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
     final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
@@ -267,7 +267,7 @@ public class FZero extends NAgentX {
 //                        //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
 //                        deltaDistance / (fps*2)), -1f, +1f) - 0.5f;
 
-        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 4)) : 0; //-1f;
+        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 1)) : -1f;
 
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 

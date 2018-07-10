@@ -23,9 +23,9 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics;
 
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.list.FasterList;
+import jcog.list.MetalConcurrentQueue;
 import jcog.math.FloatSupplier;
 import spacegraph.space2d.phys.callbacks.*;
 import spacegraph.space2d.phys.collision.AABB;
@@ -121,7 +121,7 @@ public class Dynamics2D {
     private final Smasher smasher = new Smasher();
 
 
-    private final MultithreadConcurrentQueue<Runnable> queue = new MultithreadConcurrentQueue<>(512);
+    private final MetalConcurrentQueue<Runnable> queue = new MetalConcurrentQueue<>(512);
 
 
 

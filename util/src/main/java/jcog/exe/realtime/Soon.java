@@ -9,7 +9,7 @@ abstract public class Soon extends AbstractTimedFuture<Object> {
         super(rounds);
     }
 
-    /** wont need rescheduled */
+    /** wont need rescheduled, executes immediately */
     @Override
     public int getOffset(long resolution) {
         return -1;

@@ -55,14 +55,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         abstract public void reschedule(int wheel, TimedFuture r);
 
-        public final void schedule(TimedFuture r, int c) {
-            reschedule(idx(c + r.getOffset(resolution) + 1), r);
-        }
-
         public final void schedule(TimedFuture r, int c, HashedWheelTimer timer) {
             int offset = r.getOffset(resolution);
             if (offset>-1 || r.isPeriodic()) {
-                reschedule(idx(c + offset + 1), r);
+                reschedule(idx(c + offset + 1 ), r);
             } else {
                 timer.execute(r); 
             }
@@ -227,12 +223,17 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         assertRunning();
         return r;
     }
-    protected void _schedule(TimedFuture<?> r) {
+    protected final void _schedule(TimedFuture<?> r) {
         int c = cursor.get();
         if (c >= 0) {
-            model.schedule(r, c);
+            model.reschedule(idx(c + r.getOffset(model.resolution) + 1), r);
             assertRunning();
         }
+    }
+
+    /** equivalent to model.idx() since its wheels is equal */
+    public final int idx(int cursor) {
+        return cursor % wheels;
     }
 
     @Override
