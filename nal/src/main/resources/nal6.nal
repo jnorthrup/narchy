@@ -343,12 +343,12 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong, Time:TaskImmediate)
-    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN, Time:TaskImmediate)
-    //X, C, eventOf(C,X) |- conjEarliestIfLatest(C,X), (Goal:Strong, Time:TaskImmediate)
-    //X, C, eventOfNeg(C,X) |- conjEarliestIfLatest(C,--X), (Goal:StrongN, Time:TaskImmediate)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire, Time:TaskImmediate)
+    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN, Time:TaskImmediate)
+    //X, C, eventOf(C,X) |- conjEarliestIfLatest(C,X), (Goal:Desire, Time:TaskImmediate)
+    //X, C, eventOfNeg(C,X) |- conjEarliestIfLatest(C,--X), (Goal:DesireN, Time:TaskImmediate)
 
-            //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
+            //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
 
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN)
@@ -396,8 +396,8 @@
         //((&&,X,A..+) && (--,%Z)), Z |- (X && (--,%Z)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //((--,%Z) && (&&,X,A..+)), Z |- ((--,%Z) && X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-//     (&&,X,A..+), B, task("!") |- subIfUnifiesAny((&&,A..+),X,B), (Goal:Strong)
-//        (&&,(--,%X),A..+), B,  task("!") |- subIfUnifiesAny((&&,A..+),X,B), (Goal:StrongPN)
+//     (&&,X,A..+), B, task("!") |- subIfUnifiesAny((&&,A..+),X,B), (Goal:Desire)
+//        (&&,(--,%X),A..+), B,  task("!") |- subIfUnifiesAny((&&,A..+),X,B), (Goal:DesirePN)
 
      //X, (&&,X,A..+),            task("?@") |- (&&,A..+), ()
      //   X, (&&,(--,%X),A..+),   task("?@") |- (&&,A..+), ()

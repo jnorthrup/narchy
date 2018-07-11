@@ -223,25 +223,25 @@ public final class TruthFunctions {
         return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
 
-//
-//    /**
-//     * {(--, (&&, A, B)), B} |- (--, A)
-//     *
-//     * @return Truth value of the conclusion
-//     */
-//    @Nullable
-//    public static Truth reduceConjunction(Truth v1, Truth v2, float minConf) {
-//
-//        Truth i12 = intersection(v1.neg(), v2, minConf);
-//        if (i12 == null) return null;
-//
-//        Truth v11 = deductionR(i12, 1.0f, minConf);
-//        if (v11 == null) return null;
-//
-//        return v11.neg();
-//
-//
-//    }
+
+    /**
+     * {(--, (&&, A, B)), B} |- (--, A)
+     *
+     * @return Truth value of the conclusion
+     */
+    @Nullable
+    public static Truth reduceConjunction(Truth v1, Truth v2, float minConf) {
+
+        Truth i12 = intersection(v1.neg(), v2, minConf);
+        if (i12 == null) return null;
+
+        Truth v11 = deductionR(i12, 1.0f, minConf);
+        if (v11 == null) return null;
+
+        return v11.neg();
+
+
+    }
 
 
     /**

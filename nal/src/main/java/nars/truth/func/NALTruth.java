@@ -268,12 +268,13 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions2.analogy(T, B, minConf);
         }
     },
-//    ReduceConjunction() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return TruthFunctions.reduceConjunction(T, B, minConf);
-//        }
-//    },
+
+    ReduceConjunction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.reduceConjunction(T, B, minConf);
+        }
+    },
 
 
     AnonymousAnalogy() {
@@ -378,13 +379,6 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @Deprecated Strong() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return Desire.apply(T, B, m, minConf);
-        }
-    },
-
     Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -397,13 +391,6 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions2.desire(T, B, minConf, false);
         }
     },
-
-//    @Deprecated Weak() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return DesireWeak.apply(T, B, m, minConf);
-//        }
-//    },
 
     @SinglePremise /*@AllowOverlap*/ Curiosity() {
         @Override

@@ -244,8 +244,8 @@ public class NAL1Test extends NALTest {
 
     }
 
-    @Test
-    void inheritanceToSimilarity2() {
+    /** ReduceConjunction */
+    @Test void inheritanceToSimilarity2() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>");
