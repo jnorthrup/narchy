@@ -1,10 +1,11 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.bag.impl.PriArrayBag;
 import jcog.data.ArrayHashSet;
-import jcog.list.FasterList;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Prioritized;
+import jcog.pri.op.PriMerge;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
@@ -13,6 +14,8 @@ import nars.link.LinkActivations;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
+import nars.task.AbstractTask;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.proxy.TaskWithTerm;
 import nars.term.*;
@@ -26,6 +29,7 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 import nars.util.term.TermHashMap;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
@@ -33,7 +37,11 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
@@ -53,7 +61,7 @@ public class Derivation extends PreDerivation {
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
     private final static int ANON_INITIAL_CAPACITY = 16;
-    private final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
+    private final static BiFunction<Task, Task, Task> DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
         if (pp instanceof NALTask)
             ((NALTask) pp).causeMerge(tt);
@@ -63,7 +71,8 @@ public class Derivation extends PreDerivation {
         }
         return pp;
     };
-//    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
+
+    //    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     public final ArrayHashSet<Premise> premiseBuffer =
             new ArrayHashSet<>(256) {
                 @Override
@@ -73,12 +82,63 @@ public class Derivation extends PreDerivation {
             };
 
     public final Anon anon;
+
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
-    private final Map<Task, Task> derivedTasks = new LinkedHashMap<>(4096,0.9f);
+    final PriArrayBag<Task> derivedTasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
 
-    //TODO ArrayBag<Task> inputTasks -> tasks waiting to be input, drained concurrently
+
+        @Override
+        public nars.Task put(nars.Task incoming, @Nullable MutableFloat overflow) {
+            //fast merge intercept: avoids synchronization in normal insert procedure
+            Task existing = map.get(incoming);
+            if (existing!=null) {
+                DERIVATION_MERGE.apply(existing, incoming);
+                return existing;
+            }
+
+            return super.put(incoming, overflow);
+        }
+
+        /** returning null elides lookup which was already performed on the intercept */
+        @Override protected nars.Task getExisting(nars.Task key) {
+            return null;
+        }
+
+        @Override
+        protected float merge(nars.Task existing, nars.Task incoming) {
+            throw new UnsupportedOperationException("should not reach here");
+        }
+
+        @Override
+        protected void removed(nars.Task task) {
+            //dont do anything, leave the task alone
+        }
+    };
+
+
+    final ITask derivedTasksDrainer = new AbstractTask() {
+
+        @Override
+        public ITask next(NAR nar) {
+            int s = derivedTasks.size();
+            int n =
+                    //Param.DerivedTaskBagDrainRate
+                    Util.clamp((int)(Math.ceil(s * Param.DerivedTaskBagDrainRate)), 1, s);
+
+
+            derivedTasks.pop(null, n, nar::input);
+
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return "drainDerivations(" + Derivation.this + ")";
+        }
+    };
+
 
     private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
     private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
@@ -220,9 +280,9 @@ public class Derivation extends PreDerivation {
         );
 
 
-        this.random =
+        this.derivedTasks.setCapacity(Param.DerivedTaskBagCapacity);
 
-                new SplitMix64Random(1);
+        this.random = new SplitMix64Random(1);
 
 
         this.anon = new Anon(ANON_INITIAL_CAPACITY);
@@ -304,7 +364,6 @@ public class Derivation extends PreDerivation {
                 m.put(x.term(), x);
 
 
-
             this.derivationFunctors = Maps.immutable.ofMap(m);
         }
 
@@ -368,7 +427,7 @@ public class Derivation extends PreDerivation {
 
         long tAt = _task.start();
 
-        assert(tAt != TIMELESS);
+        assert (tAt != TIMELESS);
 
         this.taskStart = tAt;
         this.taskPunc = _task.punc();
@@ -402,7 +461,7 @@ public class Derivation extends PreDerivation {
         } else {
 
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
-            assert(beliefTerm.op()!=NEG);
+            assert (beliefTerm.op() != NEG);
 
             this.beliefStart = TIMELESS;
             this.belief = null;
@@ -410,7 +469,6 @@ public class Derivation extends PreDerivation {
         }
 
         assert (beliefTerm != null) : (_beliefTerm + " could not be anonymized");
-
 
 
         this.taskBeliefTimeIntersects = this._belief == null || this._task.intersectsTime(this._belief);
@@ -501,8 +559,6 @@ public class Derivation extends PreDerivation {
         }*/
 
     }
-
-
 
 
     /**
@@ -603,27 +659,26 @@ public class Derivation extends PreDerivation {
     }
 
     public Task add(Task t) {
-        return derivedTasks.merge(t, t, DUPLICATE_DERIVATION_MERGE);
+        return derivedTasks.put(t);
     }
 
     public Term untransform(Term t) {
         return t.replace(untransform);
     }
 
-    public int commit() {
+    public void commit() {
 
         nar.input(linkActivations);
 
         int s = derivedTasks.size();
         if (s > 0) {
-            Collection<nars.Task> values = new FasterList(derivedTasks.values());
-            derivedTasks.clear();
 
-            nar.input(values);
+            derivedTasks.commit();
+
+            nar.input(derivedTasksDrainer);
 
             nar.emotion.deriveTask.increment(s);
         }
-        return s;
     }
 
     public final boolean revertLive(int before, int cost) {
@@ -638,12 +693,12 @@ public class Derivation extends PreDerivation {
 
 
     public boolean concTruthEviMul(float ratio) {
-        return concTruthEvi( c2wSafe(concTruth.conf()) * ratio );
+        return concTruthEvi(c2wSafe(concTruth.conf()) * ratio);
     }
 
     public boolean concTruthEvi(float e) {
         float cc = w2cSafe(e);
-        return cc >= confMin && (this.concTruth = $.t(concTruth.freq(), cc))!=null;
+        return cc >= confMin && (this.concTruth = $.t(concTruth.freq(), cc)) != null;
     }
 }
 

@@ -1,9 +1,7 @@
 package nars.link;
 
-import jcog.bag.Bag;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
-import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Op;
@@ -249,7 +247,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
 
     /** balance = nar.termlinkBalance */
-    @Override public void link(Concept src, float pri, List<TaskLink> fired, LinkActivations activated, Random rng, NAR nar) {
+    @Override public void link(Concept src, float pri, List<TaskLink> fired, LinkActivations termlinking, Random rng, NAR nar) {
 
 
         //TODO move to param
@@ -276,7 +274,6 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         List<Concept> targets = (concepts==0 ? List.of() : new FasterList<>(concepts));
 
-        Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
         MutableFloat refund = new MutableFloat(0);
 
         int j = rng.nextInt(n); //random starting position
@@ -293,16 +290,11 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
                 if (tgt != null) {
 
-
                     targets.add(tgt);
 
+                    termlinking.link(tgt, srcTerm, budgetedForward, refund);
+
                     tgtTerm = tgt.term();
-
-
-                    activated.link(tgt, srcTerm, budgetedForward, refund);
-//                    tgt.termlinks().put(
-//                            new PLink<>(srcTerm, budgetedForward), refund
-//                    );
 
                 }
 
@@ -311,9 +303,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             }
 
 
-
-            //srcTermLinks.put(new PLink<>(tgtTerm, budgetedReverse), refund);
-            activated.link(src, tgtTerm, budgetedReverse, refund);
+            termlinking.link(src, tgtTerm, budgetedReverse, refund);
 
         }
 

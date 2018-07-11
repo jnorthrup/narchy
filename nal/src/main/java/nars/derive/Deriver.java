@@ -6,7 +6,6 @@ import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.Param;
-import nars.Task;
 import nars.link.Activate;
 import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
@@ -20,7 +19,6 @@ import nars.link.TaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -66,20 +64,20 @@ abstract public class Deriver extends Causable {
 
 
     protected Deriver(Attention attn, Set<PremiseDeriverProto> rules, NAR nar) {
-        this(attn::fire, nar::input, rules, nar);
+        this(attn::fire, rules, nar);
     }
 
-    protected Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules) {
-        this(source, target, rules, rules.nar);
+    protected Deriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
+        this(source, rules, rules.nar);
     }
 
-    protected Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
-        this(source, target, PremiseDeriverCompiler.the(rules), nar);
+    protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseDeriverProto> rules, NAR nar) {
+        this(source, PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
 
-    private Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriver rules, NAR nar) {
+    private Deriver(Consumer<Predicate<Activate>> source, PremiseDeriver rules, NAR nar) {
         super(
             $.func("deriver", $.the(serial.getAndIncrement())) 
         );
@@ -96,16 +94,11 @@ abstract public class Deriver extends Causable {
 
     @Override
     protected int next(NAR n, final int iterations) {
-//        if (n == null || !(iterations > 0))
-//            throw new WTF();
-
-
         Derivation d = derivation.get().cycle(n, this);
-
 
         derive(n, iterations, d);
 
-        int derived = d.commit();
+        d.commit();
 
         //System.out.println(derivations + " -> " + iterations + " -> " + derived);
         //io.out(derived);

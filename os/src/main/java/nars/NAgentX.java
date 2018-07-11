@@ -168,12 +168,12 @@ abstract public class NAgentX extends NAgent {
             n.on(a);
 
             n.runLater(() -> {
-                SimpleDeriver motivation = new SimpleDeriver(a.fire(), n::input,
+                SimpleDeriver motivation = new SimpleDeriver(a.fire(),
                         Derivers.nal(n, 6, 6, "motivation.nal"
                         ),
                         SimpleDeriver.GlobalTermLinker);
 
-                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(), n::input,
+                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(),
                         Derivers.nal(n, 0, 0, "curiosity.nal"),
                         SimpleDeriver.GlobalTermLinker) {
                     @Override

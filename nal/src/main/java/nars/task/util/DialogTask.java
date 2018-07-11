@@ -40,7 +40,7 @@ public class DialogTask {
                 else
                     return null;
 
-            }), this::onTask),
+            })),
 
             monitor = n.onTask(this::onTask)
         );

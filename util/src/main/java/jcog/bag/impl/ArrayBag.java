@@ -383,7 +383,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     Y y = (Y) x;
                     float yp = priUpdate(y);
                     if (yp != yp) {
-                        remove(key(y));
+                        remove(key(y)); //deleted, remove
                     } else {
 
                         SampleReaction next = each.apply(y);
@@ -428,13 +428,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             removed = super.remove(x);
         }
         if (removed != null) {
-            deleteAndRemove(removed);
+            removed(removed);
         }
         return removed;
     }
 
     @Override
-    public final Y put(final Y incoming, @Nullable final MutableFloat overflow) {
+    public Y put(final Y incoming, @Nullable final MutableFloat overflow) {
 
         final int capacity = this.capacity;
 
@@ -456,7 +456,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         synchronized (items) {
 
-            Y existing = map.get(key);
+            Y existing = getExisting(key);
 
             if (existing != null) {
                 if (existing != incoming) {
@@ -511,7 +511,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         }
 
 
-        trash.forEach(this::deleteAndRemove);
+        trash.forEach(this::removed);
 
         if (inserted == null) {
             incoming.delete();
@@ -525,6 +525,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         return inserted;
 
 
+    }
+
+    protected Y getExisting(X key) {
+        return map.get(key);
     }
 
     private boolean insert(Y incoming, FasterList<Y> trash) {
@@ -610,13 +614,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             }
 
 
-            trash.forEach(this::deleteAndRemove);
+            trash.forEach(this::removed);
         }
 
         return this;
     }
 
-    private void deleteAndRemove(Y y) {
+    protected void removed(Y y) {
         onRemove(y);
         y.delete();
     }
@@ -639,7 +643,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         }
 
         if (trash != null)
-            trash.forEach(this::deleteAndRemove);
+            trash.forEach(this::removed);
     }
 
     @Override

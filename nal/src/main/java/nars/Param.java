@@ -34,6 +34,14 @@ public abstract class Param {
 
     public static final boolean SHUFFLE_TERMUTES = false;
 
+
+    /** size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
+     *  input may happen concurrently (draining the bag) while derivations are inserted from another thread.
+     */
+    public static final int DerivedTaskBagCapacity = 2048;
+    public static final float DerivedTaskBagDrainRate = 0.5f;
+
+
     /** warning: can interfere with expected test results */
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
@@ -162,7 +170,7 @@ public abstract class Param {
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
 

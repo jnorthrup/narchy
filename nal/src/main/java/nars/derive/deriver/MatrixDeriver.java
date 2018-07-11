@@ -19,7 +19,6 @@ import nars.link.LinkActivations;
 import nars.link.TaskLink;
 import nars.term.Term;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -32,7 +31,7 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 512);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
@@ -59,8 +58,8 @@ public class MatrixDeriver extends Deriver {
         super(nar.attn, rules, nar);
     }
 
-    public MatrixDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
-        super(source, target, rules, nar);
+    public MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseDeriverProto> rules, NAR nar) {
+        super(source, rules, nar);
     }
 
     @Override protected void derive(NAR n, int iterations, Derivation d) {

@@ -19,7 +19,6 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.link.TaskLink;
 import nars.term.Term;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -46,20 +45,20 @@ public class SimpleDeriver extends Deriver {
     final BiFunction<Concept, Derivation, LinkModel> linking;
 
     public SimpleDeriver(PremiseDeriverRuleSet rules) {
-        this(rules.nar.attn::fire, rules.nar::input, rules);
+        this(rules.nar.attn::fire, rules);
     }
 
-    public SimpleDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules) {
-        this(source, target, rules, ConceptTermLinker);
+    public SimpleDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
+        this(source, rules, ConceptTermLinker);
     }
 
-    public SimpleDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules, BiFunction<Concept, Derivation, LinkModel> linking) {
-        super(source, target, rules);
+    public SimpleDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules, BiFunction<Concept, Derivation, LinkModel> linking) {
+        super(source, rules);
         this.linking = linking;
     }
 
     /** randomly samples from list of concepts */
-    public static SimpleDeriver forConcepts(NAR n, List<Concept> concepts, Consumer<Collection<Task>> target) {
+    public static SimpleDeriver forConcepts(NAR n, List<Concept> concepts) {
         int cc = concepts.size();
         assert(cc>0);
         Random rng = n.random();
@@ -71,7 +70,7 @@ public class SimpleDeriver extends Deriver {
         };
         PremiseDeriverRuleSet rules = Derivers.nal(n, 1, 8);
 
-        return new SimpleDeriver(forEach, target, rules, GlobalTermLinker);
+        return new SimpleDeriver(forEach, rules, GlobalTermLinker);
     }
 
     public static SimpleDeriver forTasks(NAR n, List<Task> tasks) {
@@ -83,7 +82,7 @@ public class SimpleDeriver extends Deriver {
         };
         PremiseDeriverRuleSet rules = Derivers.nal(n, 1, 8);
 
-        return new SimpleDeriver(forEach, n::input, rules, GlobalTermLinker);
+        return new SimpleDeriver(forEach, rules, GlobalTermLinker);
     }
 
     @Override
