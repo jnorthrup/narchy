@@ -8,7 +8,7 @@ import jcog.bag.impl.hijack.PriorityHijackBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.control.DurService;
 
 import java.util.HashMap;

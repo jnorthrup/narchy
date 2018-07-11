@@ -813,7 +813,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             case 1:
                 return needEval ? yy.iterator().next() : ((List<ITask>)yy).get(0); /* avoid creating iterator */
             default:
-                return new NativeTask.NARTask((nn) -> yy.forEach(z -> z.run(nn)));
+                return new AbstractTask.NARTask((nn) -> yy.forEach(z -> z.run(nn)));
         }
     }
 

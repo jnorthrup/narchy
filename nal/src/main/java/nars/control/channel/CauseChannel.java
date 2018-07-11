@@ -60,7 +60,7 @@ abstract public class CauseChannel<X extends Priority> implements Consumer<X> {
     }
 
     public BufferedCauseChannel buffered() {
-        return new BufferedCauseChannel(this);
+        return buffered(8*1024);
     }
 
     public BufferedCauseChannel buffered(int capacity) {

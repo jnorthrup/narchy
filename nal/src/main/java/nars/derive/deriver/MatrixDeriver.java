@@ -9,12 +9,13 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.Activate;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.link.Activate;
+import nars.link.LinkActivations;
 import nars.link.TaskLink;
 import nars.term.Term;
 
@@ -37,7 +38,7 @@ public class MatrixDeriver extends Deriver {
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    private int premisesPerConcept = 3;
+    private int premisesPerConcept = 4;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
@@ -74,7 +75,6 @@ public class MatrixDeriver extends Deriver {
         /** temporary buffer for storing unique premises */
         ArrayHashSet<Premise> premiseBurst = d.premiseBuffer;
 
-        Random rng = d.random;
 
         while (totalPremisesRemain > 0) {
 
@@ -91,7 +91,7 @@ public class MatrixDeriver extends Deriver {
                     n.emotion.premiseBurstDuplicate.increment();
 
                 return true;
-            }, rng);
+            }, d);
 
 
             int s = premiseBurst.size();
@@ -129,7 +129,7 @@ public class MatrixDeriver extends Deriver {
 
 
 
-    private void selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each, Random rng) {
+    private void selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each, Derivation d) {
 
         int premisesRemain[] = new int[]{premisesMax};
         int perConceptRemain[] = new int[1];
@@ -152,18 +152,17 @@ public class MatrixDeriver extends Deriver {
 
             premiseMatrix(a,
                     nar, continueHypothesizing,
-                    tasklinks, termlinks, rng);
+                    tasklinks, termlinks, d.linkActivations, d.random);
 
             return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
         });
-
 
     }
 
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    public void premiseMatrix(Activate conceptActivation, NAR nar, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Random rng) {
+    public void premiseMatrix(Activate conceptActivation, NAR nar, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, LinkActivations linkActivations, Random rng) {
 
         Concept concept = conceptActivation.id;
 
@@ -219,9 +218,7 @@ public class MatrixDeriver extends Deriver {
         }
 
 
-
-
-        concept.linker().link(concept, conceptActivation.pri(), tasklinksFired, rng, nar);
+        concept.linker().link(concept, conceptActivation.pri(), tasklinksFired, linkActivations, rng, nar);
     }
 
 

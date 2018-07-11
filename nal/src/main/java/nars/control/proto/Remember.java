@@ -9,7 +9,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.NativeTask;
+import nars.task.AbstractTask;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * depending on the status of the insertion, activate links
  * in some proportion of the input task's priority.
  */
-public final class Remember extends NativeTask {
+public final class Remember extends AbstractTask {
 
 
     public final Task input;
@@ -68,7 +68,7 @@ public final class Remember extends NativeTask {
             if (!forgotten.isEmpty() || !remembered.isEmpty()) {
                 next.add(new Commit(forgotten, remembered));
             }
-            return NativeTask.of(next);
+            return AbstractTask.of(next);
         }
 
     }
@@ -86,7 +86,7 @@ public final class Remember extends NativeTask {
 
     //TODO: private static final class ListTask extends FasterList<ITask> extends NativeTask {
 
-    private static final class Commit extends NativeTask {
+    private static final class Commit extends AbstractTask {
 
         FasterList<Task> forgotten, remembered;
 

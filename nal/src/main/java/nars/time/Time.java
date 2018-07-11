@@ -3,7 +3,7 @@ package nars.time;
 import com.netflix.servo.util.Clock;
 import jcog.list.MetalConcurrentQueue;
 import nars.NAR;
-import nars.task.NativeTask.SchedTask;
+import nars.task.AbstractTask.SchedTask;
 import org.jetbrains.annotations.Nullable;
 
 import javax.measure.Quantity;

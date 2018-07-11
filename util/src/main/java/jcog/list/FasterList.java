@@ -576,6 +576,21 @@ public class FasterList<X> extends FastList<X> {
         clearIfChanged();
     }
 
+    public void clearReallocate(int maxSizeToReuse, int sizeIfNew) {
+        assert(sizeIfNew < maxSizeToReuse);
+
+        int s = this.size;
+        if (s == 0)
+            return;
+        else if (s > maxSizeToReuse) {
+            items = Arrays.copyOf(items, sizeIfNew);
+        } else {
+            //re-use, so nullify
+            Arrays.fill(this.items, 0, s, null);
+        }
+        this.size = 0;
+    }
+
     public boolean clearIfChanged() {
         int s = size;
         if (s > 0) {

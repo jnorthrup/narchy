@@ -9,7 +9,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.test.TestNAR;

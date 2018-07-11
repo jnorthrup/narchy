@@ -2,12 +2,14 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ArrayHashSet;
+import jcog.list.FasterList;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Prioritized;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
 import nars.derive.step.Occurrify;
+import nars.link.LinkActivations;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
@@ -33,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
@@ -76,6 +77,9 @@ public class Derivation extends PreDerivation {
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
     private final Map<Task, Task> derivedTasks = new LinkedHashMap<>(4096,0.9f);
+
+    //TODO ArrayBag<Task> inputTasks -> tasks waiting to be input, drained concurrently
+
     private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
     private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
         @Override
@@ -180,6 +184,9 @@ public class Derivation extends PreDerivation {
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
     public boolean temporal;
+
+    public final LinkActivations linkActivations = new LinkActivations();
+
     private boolean eternal;
     /**
      * original non-anonymized tasks
@@ -603,12 +610,18 @@ public class Derivation extends PreDerivation {
         return t.replace(untransform);
     }
 
-    public int  flush(Consumer<Collection<Task>> target) {
+    public int commit() {
+
+        nar.input(linkActivations);
+
         int s = derivedTasks.size();
         if (s > 0) {
-            nar.emotion.deriveTask.increment(s);
-            target.accept(derivedTasks.values());
+            Collection<nars.Task> values = new FasterList(derivedTasks.values());
             derivedTasks.clear();
+
+            nar.input(values);
+
+            nar.emotion.deriveTask.increment(s);
         }
         return s;
     }

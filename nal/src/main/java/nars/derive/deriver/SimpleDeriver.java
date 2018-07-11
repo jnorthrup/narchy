@@ -10,7 +10,7 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -154,7 +154,7 @@ public class SimpleDeriver extends Deriver {
                 return true; //remove from list
             });
 
-            concept.linker().link(concept, a.pri(), fired, nar);
+            concept.linker().link(concept, a.pri(), fired, d.linkActivations, nar);
 
             return ii[0]-- > 0;
         });

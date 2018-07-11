@@ -9,11 +9,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * for queued/scheduled native tasks
+ * natively implemented tasks
+ *
  * the reasoner remains oblivious of these.
  * but it holds a constant 1.0 priority.
  */
-public abstract class NativeTask implements ITask, Priority {
+public abstract class AbstractTask implements ITask, Priority {
 
     @Nullable
     public static ITask of(@Nullable FasterList<ITask> next) {
@@ -24,7 +25,7 @@ public abstract class NativeTask implements ITask, Priority {
             case 1:
                 return next.get(0);
             default:
-                return new NativeTaskSequence(next.toArrayRecycled(ITask[]::new));
+                return new AbstractTaskSequence(next.toArrayRecycled(ITask[]::new));
         }
     }
 
@@ -91,7 +92,7 @@ public abstract class NativeTask implements ITask, Priority {
 //    }
 
 
-    public static final class SchedTask extends NativeTask implements Comparable<SchedTask> {
+    public static final class SchedTask extends AbstractTask implements Comparable<SchedTask> {
 
         public final long when;
         public final Consumer<NAR> what;
@@ -117,7 +118,7 @@ public abstract class NativeTask implements ITask, Priority {
         }
 
         @Override
-        public int compareTo(NativeTask.SchedTask that) {
+        public int compareTo(AbstractTask.SchedTask that) {
             if (this == that) return 0;
 
             int t = Longs.compare(when, that.when);
@@ -130,7 +131,7 @@ public abstract class NativeTask implements ITask, Priority {
     }
 
 
-    public static class NARTask extends NativeTask {
+    public static class NARTask extends AbstractTask {
 
         final Consumer run;
 
@@ -151,10 +152,10 @@ public abstract class NativeTask implements ITask, Priority {
 
     }
 
-    private final static class NativeTaskSequence extends NativeTask {
+    private final static class AbstractTaskSequence extends AbstractTask {
         private final ITask[] tasks;
 
-        NativeTaskSequence(ITask[] x) {
+        AbstractTaskSequence(ITask[] x) {
             this.tasks = x;
         }
 

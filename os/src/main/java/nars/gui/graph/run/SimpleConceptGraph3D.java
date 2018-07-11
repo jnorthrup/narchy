@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.gui.graph.DynamicConceptSpace;

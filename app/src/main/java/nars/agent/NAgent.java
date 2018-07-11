@@ -17,7 +17,7 @@ import nars.concept.action.ActionConcept;
 import nars.concept.signal.DigitizedScalar;
 import nars.concept.signal.FilteredScalar;
 import nars.concept.signal.Signal;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.sensor.Bitmap2DSensor;

@@ -7,10 +7,10 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.link.Tasklinks;
 import nars.task.ITask;
-import nars.task.NativeTask;
+import nars.task.AbstractTask;
 import org.jetbrains.annotations.Nullable;
 
-public class TaskLinkTask extends NativeTask {
+public class TaskLinkTask extends AbstractTask {
 
     private final Task task;
     private final Concept concept;

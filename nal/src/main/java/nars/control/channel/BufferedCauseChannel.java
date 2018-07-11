@@ -1,6 +1,7 @@
 package nars.control.channel;
 
 import com.google.common.collect.AbstractIterator;
+import jcog.TODO;
 import jcog.list.MetalConcurrentQueue;
 
 import java.util.Iterator;
@@ -9,14 +10,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+
 public class BufferedCauseChannel implements Consumer {
 
     final MetalConcurrentQueue buffer;
     private final CauseChannel target;
 
-    public BufferedCauseChannel(CauseChannel c) {
-        this(c, 256);
-    }
+
     public BufferedCauseChannel(CauseChannel c, int capacity) {
         target = c;
         buffer = new MetalConcurrentQueue(capacity);
@@ -25,12 +25,14 @@ public class BufferedCauseChannel implements Consumer {
 
     public final void input(Object x) {
         while (!buffer.offer(x)) {
-            buffer.poll(); //OVERFLOW
+            //TODO on overflow it can optionally begin batching the previous items into compound tasks
+            throw new TODO();
+            //buffer.poll(); //OVERFLOW
         }
     }
 
     /** returns false if the input was denied */
-    public final boolean inputUntilBlocked(Object x) {
+    public final boolean inputIfCapacity(Object x) {
         return buffer.offer(x);
     }
 

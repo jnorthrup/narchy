@@ -3,7 +3,6 @@ package nars.link;
 import jcog.bag.Bag;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
-import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
@@ -250,7 +249,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
 
     /** balance = nar.termlinkBalance */
-    @Override public void link(Concept src, float pri, List<TaskLink> fired, Random rng, NAR nar) {
+    @Override public void link(Concept src, float pri, List<TaskLink> fired, LinkActivations activated, Random rng, NAR nar) {
 
 
         //TODO move to param
@@ -299,9 +298,11 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
                     tgtTerm = tgt.term();
 
-                    tgt.termlinks().put(
-                            new PLink<>(srcTerm, budgetedForward), refund
-                    );
+
+                    activated.link(tgt, srcTerm, budgetedForward, refund);
+//                    tgt.termlinks().put(
+//                            new PLink<>(srcTerm, budgetedForward), refund
+//                    );
 
                 }
 
@@ -309,9 +310,13 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 refund.add(budgetedForward);
             }
 
-            srcTermLinks.put(new PLink<>(tgtTerm, budgetedReverse), refund);
+
+
+            //srcTermLinks.put(new PLink<>(tgtTerm, budgetedReverse), refund);
+            activated.link(src, tgtTerm, budgetedReverse, refund);
 
         }
+
 
         //default all to all exhausive matrix insertion
         //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc

@@ -2,9 +2,10 @@ package nars.concept;
 
 import jcog.pri.PLink;
 import nars.*;
-import nars.control.Activate;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
+import nars.link.Activate;
+import nars.link.LinkActivations;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
@@ -49,6 +50,7 @@ class ActivateTest {
 
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
+            LinkActivations linkActivations = new LinkActivations();
             dummy.premiseMatrix(cf, n, (task, term) -> {
                 Task ptask = task;
                 Term pterm = term.get();
@@ -61,8 +63,10 @@ class ActivateTest {
                 termlinkHits.addOccurrences(/*tasklink.get() + " " +*/ tls, 1);
                 taskHits.addOccurrences(/*tasklink.get() + " " +*/ (ptask + " " + pterm), 1);
                 return --remain[0] > 0;
-            }, 1, 3, n.random());
+            }, 1, 3, linkActivations, n.random());
 
+            //TODO analyze linkActivations
+            n.input(linkActivations);
         }
 
 

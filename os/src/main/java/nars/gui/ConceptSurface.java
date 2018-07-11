@@ -4,7 +4,7 @@ import jcog.list.table.Table;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -34,7 +34,7 @@ public class ConceptSurface extends TabPane {
                     Plot2D p = new Plot2D(64, Plot2D.Line)
                             .add("pri", () -> {
 
-                                Table<?,nars.control.Activate> bag = n.attn.active;
+                                Table<?, Activate> bag = n.attn.active;
                                 if (bag != null) {
                                     Concept ni = n.conceptualize(id);
                                     if (ni!=null) {

@@ -257,7 +257,7 @@ public class ConjClustering extends Causable {
 
                                 m.priSet(Priority.fund(priMin * cmplFactor, true, uu));
 
-                                if (in.inputUntilBlocked(m)) {
+                                if (in.inputIfCapacity(m)) {
                                     centroidGen++;
                                     tasksGenerated++;
                                 } else {

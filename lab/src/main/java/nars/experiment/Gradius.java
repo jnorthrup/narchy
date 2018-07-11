@@ -26,10 +26,6 @@ public class Gradius extends NAgentX {
 
     public Gradius(NAR nar) {
         super("g", nar);
-    }
-
-    @Override
-    protected void init(NAR nar) {
 
 
         g.updateMS = 25; //TODO coordinate with fps

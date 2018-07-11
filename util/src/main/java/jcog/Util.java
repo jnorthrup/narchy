@@ -1508,12 +1508,15 @@ public enum Util {
     }
 
     public static void sleepNSWhile(long periodNS, long napTimeNS, BooleanSupplier wakeEarly) {
-        long start = System.nanoTime();
-        long end = start + periodNS;
-        long now = start;
-        do {
-            sleepNS(Math.min(napTimeNS, end-now));
-        } while (((now = System.nanoTime()) < end) && !wakeEarly.getAsBoolean());
+        if (periodNS <= napTimeNS) {
+            sleepNS(periodNS);
+        } else {
+            long now = System.nanoTime();
+            long end = now + periodNS;
+            do {
+                sleepNS(Math.min(napTimeNS, end - now));
+            } while (((now = System.nanoTime()) < end) && !wakeEarly.getAsBoolean());
+        }
     }
 
     public static int largestPowerOf2NoGreaterThan(int i) {

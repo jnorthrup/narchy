@@ -104,7 +104,8 @@ abstract public class BufferedExec extends UniExec {
         //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
         int incoming = in.size();
         if (incoming > 0) {
-            in.clear(b::add, (int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1)))));
+            in.clear(b::add, incoming);
+                    //(int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1)))));
         }
 
 
@@ -267,11 +268,11 @@ abstract public class BufferedExec extends UniExec {
             @Override
             public void run() {
                 while (running) {
-                    WorkerExec.super.onCycle(buffer, 1);
+                    WorkerExec.this.onCycle(buffer, 1);
 
                     if (idleTimePerCycle > 0) {
                         Util.sleepNSWhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
-                                in.size() == 0
+                                in.size() > 0 || !running
                         );
                     }
                 }

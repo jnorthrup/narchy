@@ -22,7 +22,7 @@ import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.NARService;

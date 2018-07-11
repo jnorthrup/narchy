@@ -199,7 +199,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
             super(Bitmap2DSensor.this.nar);
             lastUpdate = Bitmap2DSensor.this.nar.time();
             pixelsRemainPerUpdate = area;
-            in = nar.newChannel(Bitmap2DSensor.this).buffered(width*height /* plus extra? */);
+
+            int maxPendingHistory = 8;
+            in = nar.newChannel(Bitmap2DSensor.this).buffered(maxPendingHistory * width*height /* plus extra? */);
+
             this.mode = mode;
                     //(p, v) -> mode.apply(() -> conf).value(p, v);
         }

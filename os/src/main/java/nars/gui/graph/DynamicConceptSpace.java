@@ -13,7 +13,7 @@ import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.control.DurService;
 import nars.gui.ConceptSurface;
 import nars.link.TaskLink;

@@ -7,7 +7,7 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
@@ -51,7 +51,6 @@ abstract public class Deriver extends Causable {
      */
     protected final Consumer<Predicate<Activate>> source;
 
-    private final Consumer<Collection<Task>> target;
 
     public DeriverBudgeting prioritize =
             new DefaultDeriverBudgeting();
@@ -86,7 +85,7 @@ abstract public class Deriver extends Causable {
         );
         this.rules = rules;
         this.source = source;
-        this.target = target;
+
 
         nar.on(this);
     }
@@ -106,7 +105,7 @@ abstract public class Deriver extends Causable {
 
         derive(n, iterations, d);
 
-        int derived = d.flush(target);
+        int derived = d.commit();
 
         //System.out.println(derivations + " -> " + iterations + " -> " + derived);
         //io.out(derived);

@@ -28,7 +28,7 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.op.PriMerge;
-import nars.control.Activate;
+import nars.link.Activate;
 import nars.control.DurService;
 import nars.control.NARService;
 import nars.op.language.NARHear;

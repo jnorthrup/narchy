@@ -1,7 +1,6 @@
 package jcog.sort;
 
 
-
 import jcog.list.FasterList;
 
 /**
@@ -14,26 +13,10 @@ import jcog.list.FasterList;
  */
 public class SortedList<E extends Comparable> extends FasterList<E> {
 
-    
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /** indicates if the resulting ordering is different from the input order */
+    /**
+     * indicates if the resulting ordering is different from the input order
+     */
     public boolean orderChangedOrDeduplicated = false;
 
     public SortedList(int capacity) {
@@ -41,16 +24,14 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
     }
 
 
-    /** uses array directly */
+    /**
+     * uses array directly
+     */
     public SortedList(E[] toSort, E[] scratch) {
         super(0, scratch);
         for (E e : toSort)
-            add(e); 
+            add(e);
     }
-
-
-
-
 
 
     /**
@@ -74,26 +55,22 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
         }
 
 
-        
         int high = s - 1;
 
-
-
-        
 
         while (low <= high) {
             int mid = (low + high) / 2;
             E midVal = get(mid);
 
-            int cmp = midVal.compareTo(o); 
+            int cmp = midVal.compareTo(o);
 
             if (cmp < 0) {
                 low = mid + 1;
             } else if (cmp > 0) {
                 high = mid - 1;
             } else {
-                
-                
+
+
                 orderChangedOrDeduplicated = true;
                 return false;
 
@@ -102,7 +79,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
         }
 
         if (low == s) {
-            super.addWithoutResizeCheck(o); 
+            super.addWithoutResizeCheck(o);
         } else {
             orderChangedOrDeduplicated = true;
             super.add(low, o);
