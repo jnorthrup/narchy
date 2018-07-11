@@ -2,8 +2,8 @@ package nars.gui;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.bag.impl.CurveBag;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.bag.impl.hijack.DefaultHijackBag;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.$;
@@ -13,11 +13,11 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.util.math.Color3f;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
-import static jcog.pri.op.PriMerge.plus;
+import static jcog.pri.op.PriMerge.avg;
 import static spacegraph.space2d.container.grid.Gridding.col;
 import static spacegraph.space2d.container.grid.Gridding.row;
 
@@ -26,7 +26,7 @@ import static spacegraph.space2d.container.grid.Gridding.row;
  */
 public class BagLab {
 
-    public static final int BINS = 64;
+    public static final int BINS = 16;
 
     int histogramResetPeriod = 64;
     int iteration;
@@ -60,7 +60,8 @@ public class BagLab {
                         NARui.pane("Bag Selection Distribution (0..1)", new HistogramChart(
                                 () -> selectionHistogram, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
                         NARui.pane("Bag Content Distribution (0..1)", new HistogramChart(
-                                () -> bag.histogram(new float[10]), new Color3f(0f, 0.25f, 0.5f), new Color3f(0.1f, 0.5f, 1f)))
+                                () -> bag.histogram(new float[BINS]),
+                                new Color3f(0f, 0.25f, 0.5f), new Color3f(0.1f, 0.5f, 1f)))
                 )
                 
         );
@@ -95,9 +96,16 @@ public class BagLab {
 
     public static void main(String[] arg) {
 
-        BagLab bagLab = new BagLab(
-                new CurveBag(plus, new HashMap(), 256)
-                
+        int capacity = 512;
+        BagLab bagLab;
+        bagLab = new BagLab(
+//                new CurveBag(
+//                        //plus,
+//                        //replace,
+//                        PriMerge.avg,
+//                        new HashMap(), capacity)
+
+                new DefaultHijackBag<>(avg,capacity,4)
                 
         );
 
@@ -118,21 +126,16 @@ public class BagLab {
     private synchronized void update() {
 
 
-        int inputRate = 20;
-        for (int j = 0; j < inputRate; j++) {
-            int n = inputSliders.size();
-            for (int i = 0; i < n; i++) {
-                if (Math.random() < inputSliders.get(i).value()) {
-                    float p = (i + (float) Math.random()) / (n - 1);
-                    
-                    bag.put(new PLink<>((int) Math.floor(Math.random() * uniques), p));
-                }
-            }
-        }
+        //inputStochastic();
+        inputFlat();
 
-        bag.commit();
+        forget();
 
+        measure();
 
+    }
+
+    private void measure() {
         int bins = selectionHistogram.length;
         float sampleBatches = 1;
         int batchSize = 32;
@@ -140,18 +143,19 @@ public class BagLab {
         if (iteration++ % histogramResetPeriod == 0)
             Arrays.fill(selectionHistogram, 0);
 
-        
+        long seed = System.nanoTime();
 
-        XorShift128PlusRandom rng = new XorShift128PlusRandom(1);
+        Random rng = //new XorShift128PlusRandom(seed);
+                new XoRoShiRo128PlusRandom(seed);
 
         List<PriReference<Integer>> sampled = $.newArrayList(1024);
         for (int i = 0; i < (int) sampleBatches; i++) {
             sampled.clear();
 
-            
+
             bag.sample(rng, batchSize, (Consumer<PriReference<Integer>>) sampled::add);
 
-            
+
             for (PriReference<Integer> sample : sampled) {
                 if (sample != null) {
                     float p = sample.priElseZero();
@@ -161,7 +165,46 @@ public class BagLab {
                 }
             }
         }
+    }
 
+    private void forget() {
+        bag.commit(bag.forget(0.25f));
+    }
+
+    private void inputFlat() {
+//        if (!bag.isEmpty())
+//            return; //assume done already
+
+        float totalInputs = (float) inputSliders.stream().mapToDouble(x -> x.value()).sum();
+        if (totalInputs < 0.01f)
+            return;
+
+        int currentSlider = 0, sliderRemain = -1;
+        int cap = bag.capacity();
+        int n = inputSliders.size();
+        int r = 0;
+        for (int i = 0; i < cap && currentSlider < n; i++) {
+            if (sliderRemain == -1) {
+                r = sliderRemain = Math.round((inputSliders.get(currentSlider++).value()/totalInputs)  * cap);
+            }
+            bag.put(new PLink<>(i, (((float)currentSlider) / (n-1)) + (((float)sliderRemain)/r) * (1f/n))) ;
+            sliderRemain--;
+        }
+    }
+
+    private void inputStochastic() {
+        int n = inputSliders.size();
+        int inputRate = n*n;
+        for (int j = 0; j < inputRate; j++) {
+            for (int i = 0; i < n; i++) {
+                if (Math.random() < inputSliders.get(i).value()) {
+                    float p = 0.1f;
+                            //(i /* + (float) Math.random()*/) / (n - 1);
+
+                    bag.put(new PLink<>((int) Math.floor(Math.random() * uniques), p));
+                }
+            }
+        }
     }
 
 }

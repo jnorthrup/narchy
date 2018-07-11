@@ -51,19 +51,19 @@ class ActivateTest {
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
             LinkActivations linkActivations = new LinkActivations();
-            dummy.premiseMatrix(cf, n, (task, term) -> {
+            dummy.premiseMatrix(cf, (task, term) -> {
                 Task ptask = task;
                 Term pterm = term.get();
                 System.out.println("tasklink=" + ptask + " termlink=" + pterm);
                 if (pterm instanceof Atom || !A.equals(pterm.sub(0)))
-                    return true; 
+                    return true;
                 String tls = pterm.toString();
 
-                
+
                 termlinkHits.addOccurrences(/*tasklink.get() + " " +*/ tls, 1);
                 taskHits.addOccurrences(/*tasklink.get() + " " +*/ (ptask + " " + pterm), 1);
                 return --remain[0] > 0;
-            }, 1, 3, linkActivations, n.random());
+            }, 1, 3, linkActivations, n.random(), n);
 
             //TODO analyze linkActivations
             n.input(linkActivations);

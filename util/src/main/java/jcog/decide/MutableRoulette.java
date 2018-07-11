@@ -60,7 +60,14 @@ public final class MutableRoulette {
         int n = w.length;
         this.remaining = n;
         this.weightUpdate = weightUpdate;
+        this.rng = rng;
 
+        reweigh();
+        this.i = n == 1 ? 0 : rng.nextInt(n);
+    }
+
+    public MutableRoulette reweigh() {
+        int n = w.length;
         float s = 0;
 
         for (int i = 0; i < n; i++) {
@@ -69,7 +76,7 @@ public final class MutableRoulette {
                 throw new RuntimeException("invalid weight: " + wi);
 
             if (wi < EPSILON) {
-                w[i] = 0; 
+                w[i] = 0;
                 remaining--;
             } else {
                 s += wi;
@@ -77,15 +84,15 @@ public final class MutableRoulette {
         }
 
         if (remaining == 0 || s < (n) * EPSILON) {
-            
+
             Arrays.fill(w, 1);
             s = remaining = n;
         }
 
         this.weightSum = s;
-        this.rng = rng;
-        this.i = n == 1 ? 0 : rng.nextInt(n);
+        return this;
     }
+
 
     /**
      * weight array may be modified

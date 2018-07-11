@@ -222,6 +222,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         @Override
         protected int next(NAR nar, int work) {
 
+            if (in == null)
+                return -1;
+
             int dur = this.dur();
 
             int totalPixels = area;

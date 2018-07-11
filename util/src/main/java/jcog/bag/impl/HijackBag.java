@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.bag.Bag;
 import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
+import jcog.decide.MutableRoulette;
 import jcog.decide.Roulette;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Prioritized;
@@ -576,14 +577,17 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             int windowCap = Math.min(s,
                     
-                    (1 + reprobes) 
+                    //(1 + reprobes)
+                    3 * reprobes
             );
             float[] wPri = new float[windowCap];
             Object[] wVal = new Object[windowCap];
+            //int wSlide = Math.max(1, reprobes-1);
 
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
             int nulls = 0;
 
+            MutableRoulette roulette = new MutableRoulette(windowCap, (k)->wPri[k], random);
             
             int prefilled = 0;
             while ((nulls+prefilled) < c /*&& size > 0*/) {
@@ -610,56 +614,62 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             }
 
 
-            
+
 
             nulls = 0;
-            while (nulls < c/* && size > 0*/) {
-                V v0 = map
-                        .get(i);
-                        
-                float p;
-                if (v0 == null) {
-                    nulls++;
-                } else  if ((p = pri(v0)) == p /* not deleted*/) {
-                    nulls=0; 
 
-                    
+            while (nulls < c) {
+            //int ws = wSlide;
+            //while (ws-- > 0) {
+                V v0 = map.get(i);
+
+                float p;
+                if (v0 == null || (p = pri(v0)) != p) {
+                    if (nulls++ == c)
+                        break;
+                } else {
+                    nulls = 0;
+
+
                     System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
                     wVal[windowCap - 1] = v0;
                     System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
-                    wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON); 
-
-                    int which = Roulette.selectRoulette(windowCap, r -> wPri[r], random);
-                    V v = (V) wVal[which];
-                    if (v == null)
-                        continue; 
-
-                    SampleReaction next = each.apply(v);
-                    if (next.remove) {
-                        if (map.compareAndSet(i, v, null)) {
-                            
-                            
-
-                            sizeUpdater.decrementAndGet(this);
-                            _onRemoved(v);
-                        }
-                    }
-
-                    if (next.stop) {
-                        break restart;
-                    } else if (next.remove) {
-                        
-                        if (which==windowCap-1) {
-                            
-                            wVal[which] = null;
-                            wPri[which] = 0;
-                        } else if (wVal[0] != null) {
-                            
-                            ArrayUtils.swap(wVal, 0, which);
-                            ArrayUtils.swap(wPri, 0, which);
-                        }
-                    }
+                    wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON);
                 }
+            //}
+
+            int which = roulette.reweigh().next();
+            //int which = Roulette.selectRoulette(windowCap, r -> wPri[r], random);
+            V v = (V) wVal[which];
+            if (v == null)
+                continue;
+
+            SampleReaction next = each.apply(v);
+            if (next.remove) {
+                if (map.compareAndSet(i, v, null)) {
+
+
+
+                    sizeUpdater.decrementAndGet(this);
+                    _onRemoved(v);
+                }
+            }
+
+            if (next.stop) {
+                break restart;
+            } else if (next.remove) {
+
+                if (which==windowCap-1) {
+
+                    wVal[which] = null;
+                    wPri[which] = 0;
+                } else if (wVal[0] != null) {
+
+                    ArrayUtils.swap(wVal, 0, which);
+                    ArrayUtils.swap(wPri, 0, which);
+                }
+            }
+
 
 
                 if (map != this.map)

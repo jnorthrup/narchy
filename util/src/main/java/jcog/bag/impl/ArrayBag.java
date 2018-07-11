@@ -407,14 +407,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * size > 0
      */
     protected int sampleStart(@Nullable Random rng, int size) {
-
-
         return 0;
     }
 
     protected int sampleNext(Random rng, int size, int i) {
-        i++;
-        if (i >= size)
+        if (++i >= size)
             i = 0;
 
         return i;

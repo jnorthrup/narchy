@@ -27,33 +27,6 @@ public class HistogramChart extends Surface {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         Draw.bounds(gl, this, this::paintUnit);
@@ -69,7 +42,7 @@ public class HistogramChart extends Surface {
         int N = data.length;
         float max = data[Util.argmax(data)];
         if (max == 0)
-            return; 
+            return;
 
         float x = 0;
 
@@ -93,5 +66,6 @@ public class HistogramChart extends Surface {
         }
 
     }
+
 }
 
