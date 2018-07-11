@@ -23,7 +23,6 @@ import static nars.time.Tense.XTERNAL;
 public abstract class Param {
 
 
-
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
 
     /**
@@ -35,28 +34,24 @@ public abstract class Param {
     public static final boolean SHUFFLE_TERMUTES = false;
 
 
-    /** size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
-     *  input may happen concurrently (draining the bag) while derivations are inserted from another thread.
+    /**
+     * size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
+     * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
      */
     public static final int DerivedTaskBagCapacity = 2048;
     public static final float DerivedTaskBagDrainRate = 0.5f;
 
 
-    /** warning: can interfere with expected test results */
+    /**
+     * warning: can interfere with expected test results
+     */
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
 
-
-
-    /** default bag forget rate */
+    /**
+     * default bag forget rate
+     */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
-
-
-
-
-
-
-
 
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
@@ -72,35 +67,37 @@ public abstract class Param {
 
     public static final PriMerge conceptMerge =
             PriMerge.plus;
-            
+
 
     public static final PriMerge termlinkMerge =
             //PriMerge.max;
             PriMerge.plus;
-            //PriMerge.or;
+    //PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.avgGeoFast;
             PriMerge.max;
-            //PriMerge.plus;
-            //PriMerge.or;
+    //PriMerge.plus;
+    //PriMerge.or;
 
-    /** for equivalent tasks */
+    /**
+     * for equivalent tasks
+     */
     public static final PriMerge taskEquivalentMerge =
             PriMerge.max;
-            //PriMerge.avg;
-            //PriMerge.avgGeoSlow;
+    //PriMerge.avg;
+    //PriMerge.avgGeoSlow;
 
     /**
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            (t,b)->
+            (t, b) ->
                     //il.aveAri(t, b);
                     //Util.aveGeo(t, b);
                     //Util.and(t, b);
                     Util.or(t, b);
-                    //(t+b);
+    //(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget
@@ -109,15 +106,14 @@ public abstract class Param {
 
     public static final PriMerge taskMerge =
             PriMerge.max;
-            //PriMerge.plus;
+    //PriMerge.plus;
 
 
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    @Deprecated public final static int SIGNAL_LATCH_TIME_MAX = 8;
-            
-            
+    @Deprecated
+    public final static int SIGNAL_LATCH_TIME_MAX = 8;
 
 
     /**
@@ -128,16 +124,28 @@ public abstract class Param {
     public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0004f;
 
 
-
-    /** temporal radius (in durations) around the present moment to scan for truth */
+    /**
+     * temporal radius (in durations) around the present moment to scan for truth
+     */
     public final FloatRange timeFocus = new FloatRange(0.5f, 0, 100);
 
-    /** creates instance of the default truthpolation implementation */
+    /**
+     * when merging dt's, maximum difference in dt in which interpolation is applied to the merge.
+     * otherwise temporal information is discarded because it would be too inaccurate to simply
+     * choose an intermediate dt (ex: average value, or at random)
+     */
+    public final FloatRange intermpolationDurLimit = new FloatRange(2, 0, 128 /* no practical upper limit really */);
+
+    /**
+     * creates instance of the default truthpolation implementation
+     */
     public static TruthPolation truth(long start, long end, int dur) {
         return new FocusingLinearTruthPolation(start, end, dur);
     }
 
-    /** provides a start,end pair of time points for the current focus given the current time and duration */
+    /**
+     * provides a start,end pair of time points for the current focus given the current time and duration
+     */
     public final long[] timeFocus() {
         return timeFocus(time());
     }
@@ -148,7 +156,7 @@ public abstract class Param {
 
     public final long[] timeFocus(long when, float dur) {
         if (when == ETERNAL)
-            return new long[] { ETERNAL, ETERNAL };
+            return new long[]{ETERNAL, ETERNAL};
 
         if (when == XTERNAL) {
             throw new RuntimeException();
@@ -158,90 +166,84 @@ public abstract class Param {
         int ditherCycles = dtDither();
         long from = Tense.dither(when - f, ditherCycles);
         long to = Tense.dither(when + f, ditherCycles);
-        return new long[] {from, to};
+        return new long[]{from, to};
     }
 
     /**
      * TTL = 'time to live'
      */
 
-    public final IntRange deriveBranchTTL = new IntRange(2*TTL_MIN, 0, TTL_MIN*16);
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, 0, TTL_MIN * 16);
 
 
-    /** extends the time all unit tests are allowed to run for.
-     *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
+    /**
+     * extends the time all unit tests are allowed to run for.
+     * normally be kept to 1 but for debugging this may be increased to find what tests need more time
+     */
     public static float TEST_TIME_MULTIPLIER = 2f;
 
 
-
-    @Range(min=1, max=32)
+    @Range(min = 1, max = 32)
     public static int TEMPORAL_SOLVER_ITERATIONS = 3;
-
 
 
     /**
      * cost of attempting a unification
      */
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static int TTL_UNIFY = 1;
 
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static final int TTL_BRANCH = 1;
 
     /**
      * cost of executing a termute permutation
      */
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static int TTL_MUTATE = 1;
 
     /**
      * cost of a successful task derivation
      */
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static int TTL_DERIVE_TASK_SUCCESS = 5;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static int TTL_DERIVE_TASK_REPEAT = 3;
 
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static int TTL_DERIVE_TASK_UNPRIORITIZABLE = 3;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static int TTL_DERIVE_TASK_SAME = 3;
-
-
-
 
 
     /**
      * cost of a failed/aborted task derivation
      */
-    @Range(min=0, max=64)
+    @Range(min = 0, max = 64)
     public static int TTL_DERIVE_TASK_FAIL = 5;
 
 
-
-    /** estimate */
-    @Deprecated public static final int TTL_MIN =
+    /**
+     * estimate
+     */
+    @Deprecated
+    public static final int TTL_MIN =
             (Param.TTL_UNIFY * 2) +
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 
-
-
     public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
-    
 
     public final FloatRange activateConceptRate = new FloatRange(1f, 0, 1f);
-
-
 
 
     /**
@@ -251,7 +253,9 @@ public abstract class Param {
      */
     public final IntRange dtDither = new IntRange(1, 1, 1024);
 
-    /** number of time units (cycles) to dither into */
+    /**
+     * number of time units (cycles) to dither into
+     */
     public int dtDither() {
         return dtDither.intValue();
     }
@@ -271,8 +275,6 @@ public abstract class Param {
             Integer.MAX_VALUE / 16384;
 
 
-
-
     /**
      * absolute limit for constructing terms in any context in which a NAR is not known, which could provide a limit.
      * typically a NAR instance's 'compoundVolumeMax' parameter will be lower than this
@@ -283,13 +285,6 @@ public abstract class Param {
      * limited because some subterm paths are stored as byte[]. to be safe, use 7-bits
      */
     public static final int COMPOUND_SUBTERMS_MAX = 127;
-
-
-
-
-
-
-
 
 
     /**
@@ -308,7 +303,6 @@ public abstract class Param {
      * Evidential Horizon, the amount of future evidence to be considered
      */
     public static final float HORIZON = 1f;
-
 
 
     public static final int MAX_INTERNED_VARS = 32;
@@ -333,18 +327,10 @@ public abstract class Param {
     public static final int CAUSE_LIMIT = (causeCapacity.max * 2);
 
 
-    public final static int UnificationStackMax = 96; 
+    public final static int UnificationStackMax = 96;
 
 
-
-
-
-    
-    
-    
-    
-    
-    public static final boolean DEBUG_TASK_LOG = true; 
+    public static final boolean DEBUG_TASK_LOG = true;
 
     /**
      * internal granularity which truth components are rounded to
@@ -358,18 +344,7 @@ public abstract class Param {
     /**
      * how precise unit test results must match expected values to pass
      */
-    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON*4;
-
-
-
-
-
-
-
-
-
-
-
+    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON * 4;
 
 
     /**
@@ -389,18 +364,11 @@ public abstract class Param {
         @Override
         public void set(float value) {
             super.set(value);
-            value = get(); 
+            value = get();
             if (confMin.floatValue() < value)
                 confMin.set(value);
         }
     };
-
-
-
-
-
-
-
 
 
     /**
@@ -419,29 +387,6 @@ public abstract class Param {
 
         //return evi / (1.0 + Math.log(1 + dt / dur));
 
-        
-        
-
-        
-
-        
-
-
-
-
-
-        
-            
-
-        
-
-        
-
-        
-
-
-        
-        
 
     }
 
@@ -459,10 +404,6 @@ public abstract class Param {
                 throw new RuntimeException("Invalid punctuation " + punctuation + " for a TruthValue");
         }
     }
-
-
-
-
 
 
     /**
@@ -507,16 +448,14 @@ public abstract class Param {
     }
 
 
-    public final FloatRange beliefConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f-Param.TRUTH_EPSILON);
-    public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f-Param.TRUTH_EPSILON);
-
-
+    public final FloatRange beliefConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
+    public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
 
 
     public static float beliefValue(Task beliefOrGoal) {
-        
+
         return beliefOrGoal.conf();
-        
+
     }
 
 

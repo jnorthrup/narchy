@@ -20,7 +20,9 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
-/** https://en.wikipedia.org/wiki/Compressed_sensing */
+/**
+ * https://en.wikipedia.org/wiki/Compressed_sensing
+ */
 @Skill("Compressed_sensing")
 public interface TemporalBeliefTable extends TaskTable {
 
@@ -31,7 +33,15 @@ public interface TemporalBeliefTable extends TaskTable {
      */
     static float value(Task t, long start, long end, long dur) {
 
-        return TruthIntegration.eviInteg(t, start, end, dur);
+        float v = TruthIntegration.eviInteg(t, start, end, dur);
+
+        if (t.isGoal()) {
+            //v *= t.polarity();
+            //exp(polarity)? ~= softmax
+            v *= 0.5f + t.polarity()/2f;
+        }
+
+        return v;
 
 //        float absDistance =
 //
@@ -48,79 +58,13 @@ public interface TemporalBeliefTable extends TaskTable {
 //        return  ( ownEvi / (1 + (/*Math.log(1+*/absDistance/ dur)));
 
 
-
-
-
-        
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
-    static FloatFunction<TaskRegion> mergabilityWith(Task x, float tableDur) {
+    static FloatFunction<TaskRegion> mergeability(Task x, float tableDur) {
         ImmutableLongSet xStamp = Stamp.toSet(x);
 
         long xStart = x.start();
         long xEnd = x.end();
-
-        
-        float weakConfFactor = 0.25f;
 
         return (TaskRegion _y) -> {
             Task y = (Task) _y;
@@ -128,12 +72,12 @@ public interface TemporalBeliefTable extends TaskTable {
             if (Stamp.overlapsAny(xStamp, y.stamp()))
                 return Float.NaN;
 
-            
+
             return
                     (1f / (1f +
-                            (Math.abs(y.start() - xStart) + Math.abs(y.end() - xEnd))/tableDur))
-                    
-            ;
+                            (Math.abs(y.start() - xStart) + Math.abs(y.end() - xEnd)) / tableDur))
+
+                    ;
         };
     }
 
@@ -141,21 +85,40 @@ public interface TemporalBeliefTable extends TaskTable {
         return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
     }
 
-    /** finds or generates the strongest match to the specified parameters.
-     * Task against is an optional argument which can be used to compare internal temporal dt structure for similarity */
+    /**
+     * finds or generates the strongest match to the specified parameters.
+     * Task against is an optional argument which can be used to compare internal temporal dt structure for similarity
+     */
     Task match(long start, long end, @Nullable Term template, EternalTable eternals, NAR nar, Predicate<Task> filter);
 
-    /** estimates the truth value for the provided time.
+    /**
+     * estimates the truth value for the provided time.
      * the eternal table's top value, if existent, contributes a 'background'
      * level in interpolation.
-     * */
+     */
     Truth truth(long start, long end, EternalTable eternal, Term template, int dur);
-
 
     void setCapacity(int temporals);
 
-
     void update(SignalTask x, Runnable change);
+
+    long tableDur();
+
+    void whileEach(Predicate<? super Task> each);
+
+    /**
+     * finds all temporally intersectnig tasks.  minT and maxT inclusive.  while the predicate remains true, it will continue scanning
+     * TODO contains/intersects parameter
+     */
+    default void whileEach(long minT, long maxT, Predicate<? super Task> each) {
+        whileEach(x -> {
+            if (!x.isDeleted() && x.intersects(minT, maxT))
+                return each.test(x);
+            else
+                return true;
+        });
+    }
+
 
     TemporalBeliefTable Empty = new TemporalBeliefTable() {
 
@@ -180,7 +143,7 @@ public interface TemporalBeliefTable extends TaskTable {
 
         @Override
         public int capacity() {
-            
+
             return Integer.MAX_VALUE;
         }
 
@@ -200,7 +163,7 @@ public interface TemporalBeliefTable extends TaskTable {
             return Stream.empty();
         }
 
-           @Override
+        @Override
         public void forEachTask(Consumer<? super Task> x) {
 
         }
@@ -231,23 +194,6 @@ public interface TemporalBeliefTable extends TaskTable {
         }
     };
 
-
-    void whileEach(Predicate<? super Task> each);
-
-    /** finds all temporally intersectnig tasks.  minT and maxT inclusive.  while the predicate remains true, it will continue scanning
-     * TODO contains/intersects parameter
-     * */
-    default void whileEach(long minT, long maxT, Predicate<? super Task> each) {
-        whileEach(x -> {
-            if (!x.isDeleted() && x.intersects(minT, maxT))
-                return each.test(x);
-            else
-                return true; 
-        });
-    }
-
-
-    long tableDur();
 
 
 }

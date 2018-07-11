@@ -668,7 +668,10 @@ public class Derivation extends PreDerivation {
 
     public void commit() {
 
-        nar.input(linkActivations);
+        if (nar.exe.concurrent())
+            nar.exe.execute((nar)->nar.input(linkActivations));
+        else
+            nar.input(linkActivations);
 
         int s = derivedTasks.size();
         if (s > 0) {

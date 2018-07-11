@@ -31,7 +31,6 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import static java.lang.Long.MAX_VALUE;
-import static jcog.Util.lerp;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 
@@ -87,7 +86,7 @@ public class Revision {
             if (ao == CONJ) {
 
 
-                return Conj.conjIntermpolate(a, b, bOffset, nar);
+                return Conj.conjIntermpolate(a, b, aProp, bOffset, nar);
 
             } else if (ao == IMPL) {
                 return dtMergeDirect(a, b, aProp, curDepth, nar);
@@ -116,10 +115,8 @@ public class Revision {
                 ab[i] = ai;
             }
 
-            return !change ? a : ao.the(choose(a, b, aProp, nar.random()).dt(), ab);
+            return !change ? a : ao.the(choose(a, b, aProp, nar), ab);
         }
-
-        //        return choose(a, b, aProp, nar.random());
 
     }
 
@@ -127,36 +124,10 @@ public class Revision {
     /*@NotNull*/
     private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
 
-        int adt = a.dt();
-        int bdt = b.dt();
-
 
         depth /= 2f;
 
-        int dt;
-
-        if (adt == bdt) {
-            dt = adt;
-        } else {
-            if ((adt == XTERNAL) || (bdt == XTERNAL)) {
-                dt = XTERNAL;
-            } else if ((adt == DTERNAL || bdt == DTERNAL) || ((adt >= 0) != (bdt >= 0))) {
-
-                dt = DTERNAL;
-            } else {
-
-//                boolean mergeOrChoose = nar.dtMergeOrChoose();
-//                if (mergeOrChoose) {
-
-                dt = lerp(aProp, bdt, adt);
-
-//                } else {
-//                    dt = (choose(a, b, aProp, nar.random()) == a) ? adt : bdt;
-//                }
-            }
-        }
-
-        dt = Tense.dither(dt, nar);
+        int dt = choose(a, b, aProp, nar);
 
         Term a0 = a.sub(0);
         Term a1 = a.sub(1);
@@ -176,8 +147,36 @@ public class Revision {
 
     }
 
-    static Term choose(Term a, Term b, float aBalance, /*@NotNull*/ Random rng) {
-        return (rng.nextFloat() < aBalance) ? a : b;
+    public static int choose(Term a, Term b, float aProp, NAR nar) {
+
+        int adt = a.dt(), bdt = b.dt(), dt;
+
+        if (adt == bdt) {
+            dt = adt;
+        } else if (adt == XTERNAL || bdt == XTERNAL) {
+            dt = XTERNAL;
+        } else if (adt == DTERNAL || bdt == DTERNAL) {
+            dt = DTERNAL;
+        } else if (((adt > 0 == bdt > 0) && ((float)(Math.abs(adt - bdt))/nar.dur() <= nar.intermpolationDurLimit.floatValue()))) {
+            //merge if they are the same sign or within a some number of durations
+
+            long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
+            assert (Math.abs(abdt) < Integer.MAX_VALUE);
+
+            dt = (int) abdt;
+
+        } else {
+            //different directions and exceed a duration in difference.
+            //discard temporal information by resorting to eternity
+            dt = DTERNAL;
+        }
+
+
+        return Tense.dither(dt, nar);
+    }
+
+    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
+        return (rng.nextFloat() < aProp) ? a : b;
     }
 
 //    /*@NotNull*/
@@ -222,7 +221,7 @@ public class Revision {
         if (start == ETERNAL) {
             long minStart = MAX_VALUE;
             long maxStart = Long.MIN_VALUE;
-            for (TaskRegion z: tasks) {
+            for (TaskRegion z : tasks) {
                 long zs = z.start();
                 if (zs != ETERNAL) {
                     minStart = Math.min(minStart, zs);
@@ -255,16 +254,16 @@ public class Revision {
             return defaultTask;
         }
 
-        Truth baseTruth = T.truth(nar);
-        if (baseTruth == null)
+        Truth truth = T.truth(nar);
+        if (truth == null)
             return defaultTask;
 
-        float truthEvi = baseTruth.evi();
+        float truthEvi = truth.evi();
 
         if ((truthEvi * range) < eviMinInteg)
             return defaultTask;
 
-        Truth cTruth = Truth.theDithered(baseTruth.freq(), truthEvi, nar);
+        Truth cTruth = Truth.theDithered(truth.freq(), truthEvi, nar);
         if (cTruth == null)
             return defaultTask;
 

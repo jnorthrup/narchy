@@ -37,7 +37,6 @@ import java.util.stream.Stream;
 import static nars.table.TemporalBeliefTable.value;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
-import static nars.truth.TruthFunctions.c2wSafe;
 
 public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -116,7 +115,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                     boolean removed = tree.remove(x);
 
-
                     assert (removed);
                     return false;
                 }
@@ -152,25 +150,26 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         return (TaskRegion r) -> {
 
-            long regionTimeDist =
+            long timeDist = r.midTimeTo(when);
+            float conf = ((float) r.coord(true, 2));
+            return (float) -Param.evi(/*c2wSafe(*/conf,  timeDist, perceptDur);
 
-
-                    r.midTimeTo(when);
-
-            float timeDist = (regionTimeDist) / ((float) perceptDur);
-
-
-            float evi =
-                    c2wSafe((float) r.coord(true, 2));
-
-
-            float antivalue = 1f / (1f + evi);
-
-            if (PRESENT_AND_FUTURE_BOOST != 1 && r.end() >= when - perceptDur)
-                antivalue /= PRESENT_AND_FUTURE_BOOST;
-
-
-            return (float) ((antivalue) * (1 + timeDist));
+//            long regionTimeDist = r.midTimeTo(when);
+//
+//            float timeDist = (regionTimeDist) / ((float) perceptDur);
+//
+//
+//            float evi =
+//                    c2wSafe((float) r.coord(true, 2));
+//
+//
+//            float antivalue = 1f / (1f + evi);
+//
+//            if (PRESENT_AND_FUTURE_BOOST != 1 && r.end() >= when - perceptDur)
+//                antivalue /= PRESENT_AND_FUTURE_BOOST;
+//
+//
+//            return (float) ((antivalue) * (1 + timeDist));
         };
     }
 
@@ -410,25 +409,23 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
 
         FloatFunction<TaskRegion> leafRegionWeakness =
-                /*new CachedFloatFunction*/(regionWeakness(now, perceptDur));
+                regionWeakness(now, perceptDur);
+
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
+
         Top<Leaf<TaskRegion>> weakLeaf = new Top<>(leafWeakness);
 
-        FloatFunction<TaskRegion> weakestTask = (t ->
-                -taskStrength.floatValueOf((Task) t));
+        FloatFunction<TaskRegion> weakestTask = t ->
+                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t), t.midTimeTo(now), perceptDur));
 
-        Top<TaskRegion> closest = input != null ? new Top<>(
-                TemporalBeliefTable.mergabilityWith(input, perceptDur)
-        ) : null;
-        Top<TaskRegion> weakest = new Top<>(
-                weakestTask
-        );
+        Top<TaskRegion> weakest = new Top<>(weakestTask);
+
+        Top<TaskRegion> closest = input != null ? new Top<>(TemporalBeliefTable.mergeability(input, perceptDur)) : null;
 
 
-        if (!findEvictable(tree, tree.root(), closest, weakest, weakLeaf)) {
+        if (!findEvictable(tree, tree.root(), closest, weakest, weakLeaf))
             return true;
-        }
 
 
         assert (tree.size() >= cap);

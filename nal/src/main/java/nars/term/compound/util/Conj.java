@@ -5,6 +5,7 @@ import jcog.list.FasterList;
 import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.task.Revision;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.time.Tense;
@@ -358,29 +359,13 @@ public class Conj extends ByteAnonMap {
      * intermpolation is not considerably more complex than either of the inputs
      * assumes a and b are both conjunctions
      */
-    public static Term conjIntermpolate(Term a, Term b, long bOffset, NAR nar) {
+    public static Term conjIntermpolate(Term a, Term b, float aProp, long bOffset, NAR nar) {
 
         if (bOffset == 0 && a.subterms().equals(b.subterms())) {
             //special case: equal subs
-
-            int adt = a.dt();
-            int bdt = b.dt();
-            if (adt == XTERNAL || bdt == XTERNAL) {
-                return a.dt(XTERNAL);
-            } else if (adt == DTERNAL || bdt == DTERNAL) {
-                return a.dt(DTERNAL);
-            } else if (((adt > 0 == bdt > 0) || (Math.abs(adt - bdt) <= nar.dur()))) {
-                //merge if they are the same sign or within a duration
-                long abdt = (((long) adt) + (bdt)) / 2L;
-                assert (Math.abs(abdt) < Integer.MAX_VALUE);
-                return a.dt(Tense.dither((int) abdt, nar));
-            } else {
-                //choose
-                //return nar.random().nextBoolean() ? a : b;
-                return a.dt(DTERNAL);
-            }
-
+            return a.dt( Revision.choose(a, b, aProp, nar) );
         }
+
         return new Conjterpolate(a, b, bOffset, nar).term();
     }
 

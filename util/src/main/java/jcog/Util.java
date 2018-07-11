@@ -525,6 +525,7 @@ public enum Util {
         return min + Math.round((max - min) * unitize(x));
     }
 
+
     public static float max(float a, float b, float c) {
         return Util.max(Util.max(a, b), c);
     }
