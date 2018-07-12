@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static jcog.Services.ServiceState.Deleted;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public abstract class Service<C> extends AtomicReference<Services.ServiceState> implements Off {
@@ -17,7 +16,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
 
     public boolean isOff() {
         Services.ServiceState s = get();
-        return s == Services.ServiceState.Off || s == Deleted;
+        return s == Services.ServiceState.Off;
     }
 
     protected Service() {
@@ -44,28 +43,27 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
                     assert toggledOn;
                     x.change.emitAsync(pair(Service.this, true), exe);
                 } catch (Throwable e) {
-                    set(Deleted);
+                    set(Services.ServiceState.Off);
                     x.logger.error("{} {}", this, e);
                 }
             });
         }
     }
 
-    public final void stop(Services<C,?> x, Executor exe, @Nullable Runnable afterDelete) {
+    public final void stop(Services<C,?> x, Executor exe, @Nullable Runnable afterOff) {
         if (compareAndSet(Services.ServiceState.On, Services.ServiceState.OnToOff)) {
             exe.execute(() -> {
                 try {
                     stop(x.id);
                     boolean toggledOff = compareAndSet(Services.ServiceState.OnToOff, Services.ServiceState.Off);
                     assert toggledOff;
-                    if (afterDelete!=null) {
-                        set(Deleted);
-                        afterDelete.run();
+                    if (afterOff!=null) {
+                        afterOff.run();
                     }
                     x.change.emitAsync(pair(this, false), exe);
 
                 } catch (Throwable e) {
-                    set(Deleted);
+                    set(Services.ServiceState.Off);
                     x.logger.error("{} {}", this, e);
                 }
             });

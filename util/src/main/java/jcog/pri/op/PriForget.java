@@ -73,9 +73,10 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     @Override
     public void accept(P b) {
 
-        b.priMult(priMult,
-                minPossible
-        );
+        if (minPossible > 0)
+            b.priMult(priMult, minPossible);
+        else
+            b.priMult(priMult);
 
     }
 

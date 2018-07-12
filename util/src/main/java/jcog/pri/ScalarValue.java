@@ -7,6 +7,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
+import static java.lang.Float.floatToIntBits;
+
 /**
  * general purpose value.  consumes and supplies 32-bit float numbers
  * supports certain numeric operations on it
@@ -48,17 +50,18 @@ public interface ScalarValue {
         return false;
     }
 
-    @Deprecated private static float priElseZero(ScalarValue x) {
-        float p = x.pri();
-        return (p==p) ? p : 0;
+//    @Deprecated private static float priElseZero(ScalarValue x) {
+//        float p = x.pri();
+//        return (p==p) ? p : 0;
+//    }
+
+    default float priMax(float _max) {
+        //pri(Math.max(priElseZero(this), max));
+        return pri((x, max) -> Math.max(max, (x!=x) ? 0 : x), _max);
     }
 
-    default void priMax(float max) {
-        pri(Math.max(priElseZero(this), max));
-    }
-
-    default void priMin(float min) {
-        pri(Math.min(priElseZero(this), min));
+    default float priMin(float _min) {
+        return pri((x, min) -> Math.min(min, (x!=x) ? 0 : x), _min);
     }
 
     default float priAdd(float _y) {
@@ -140,6 +143,8 @@ public interface ScalarValue {
         protected static final AtomicFloatFieldUpdater<AtomicScalarValue> PRI =
                 new AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater.newUpdater(AtomicScalarValue.class, "pri"));
 
+        final static int NaN = floatToIntBits(Float.NaN);
+
         private volatile int pri;
 
         @Override
@@ -150,7 +155,17 @@ public interface ScalarValue {
 
         @Override
         public final float pri() {
-            return PRI.get(this);
+            return PRI.get(pri);
+        }
+
+        public boolean isDeleted() {
+            return pri == NaN;
+        }
+
+        @Override
+        public boolean delete() {
+            return PRI.updater.getAndSet(this, NaN) != NaN;
+            //if the above doesnt work, try converting with intToFloatBits( then do NaN test for equality etc
         }
 
         @Override

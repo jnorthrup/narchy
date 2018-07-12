@@ -342,11 +342,13 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      */
     default @Nullable Consumer<V> forget(float temperature) {
         return PriForget.forget(this, temperature, ScalarValue.EPSILON, (x)-> {
-            float m =
+            //float m =
                     //0.5f / size();
-                    0.5f / Util.sqrt(size());
+                    //0.5f / Util.sqrt(size());
             float minPossible =
-                    Math.max(m, ScalarValue.EPSILON);
+                    //Math.max(m, ScalarValue.EPSILON);
+                    //ScalarValue.EPSILON;
+                    0;
             return new PriForget(x, minPossible);
         });
     }

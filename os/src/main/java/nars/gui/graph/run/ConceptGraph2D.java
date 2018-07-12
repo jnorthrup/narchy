@@ -84,9 +84,8 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                         controls.nodeScale.floatValue() *
                         (float) (Math.min(g.bounds.w, g.bounds.h)
                         / Math.sqrt(1f + nodes()));
+                assert(AUTOSCALE == AUTOSCALE);
 
-                if (AUTOSCALE!=AUTOSCALE)
-                    throw new WTF();
                 g.forEachValue(nn -> {
                     if (nn.showing())
                         updateNode(nn);
@@ -105,6 +104,9 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         nn.color(pri, pri / 2f, 0f);
 
         float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
+        if (pri!=pri || (p!=p))
+            throw new WTF();
+
         nn.pos(RectFloat2D.XYWH(nn.cx(), nn.cy(), p, p));
     }
 

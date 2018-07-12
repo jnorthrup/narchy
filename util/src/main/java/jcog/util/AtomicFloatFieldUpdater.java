@@ -8,10 +8,10 @@ import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
 
 /** @see AtomicFloat */
-public class AtomicFloatFieldUpdater<X>  {
+public final class AtomicFloatFieldUpdater<X>  {
 
     private final static int ZERO = floatToIntBits(0f);
-    private final AtomicIntegerFieldUpdater<X> updater;
+    public final AtomicIntegerFieldUpdater<X> updater;
 
 
     /** for whatever reason, the field updater needs constructed from within the target class
@@ -62,7 +62,10 @@ public class AtomicFloatFieldUpdater<X>  {
     }
 
     public float get(X x) {
-        return intBitsToFloat(updater.get(x));
+        return get(updater.get(x));
+    }
+    public static float get(int x) {
+        return intBitsToFloat(x);
     }
 
     public void zero(X v, FloatConsumer with) {

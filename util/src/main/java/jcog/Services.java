@@ -117,13 +117,13 @@ public class Services<C /* context */, K /* service key */> {
             public String toString() {
                 return "+-";
             }
-        },
-        Deleted {
-            @Override
-            public String toString() {
-                return ".";
-            }
         }
+//        Deleted {
+//            @Override
+//            public String toString() {
+//                return ".";
+//            }
+//        }
     }
 
 

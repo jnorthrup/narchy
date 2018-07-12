@@ -19,7 +19,9 @@ public class UnitPri extends Pri {
 
     @Override
     public float pri(float p) {
-        return super.pri(Util.unitize(p));
+        return super.pri(
+            Util.unitize(p)
+        );
     }
 
 

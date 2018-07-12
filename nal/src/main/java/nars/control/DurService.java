@@ -26,6 +26,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     private volatile long lastStarted = Long.MIN_VALUE;
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
+    private long lastFinished = Long.MIN_VALUE;
 
     protected DurService(NAR n, float durs) {
         super((NAR)null);
@@ -94,37 +95,58 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
     @Override
     protected void starting(NAR nar) {
-        lastStarted = nar.time();
-        nar.runLater(()-> spawn(nar, durCycles(nar)));
-
+        long now = nar.time();
+        int durCycles = durCycles(nar);
+        lastStarted = now - durCycles + 1;
+        lastFinished = lastStarted  - durCycles;
+        spawn(nar, now + 1);
     }
 
     @Override
     public final void accept(NAR nar) {
-        
+
+
+        //System.out.println(this + " " + lastStarted + ".." + lastFinished);
 
         if (!busy.compareAndSet(false, true))
             return;
 
-        long atStart = nar.time();
+
         long durCycles = durCycles(nar);
+
+        long atStart = nar.time();
+
+        long lastStarted = this.lastStarted;
+
+        this.lastStarted = atStart;
+
+        long delta = atStart - lastStarted;
+
+        //assert(delta >= durCycles): delta + " delta, " + durCycles + " durCycles";
+        //System.out.println(this + "\t" + delta + " delta, " + durCycles + " durCycles");
 
 
         try {
-            long delta = atStart - this.lastStarted;
 
-            this.lastStarted = atStart;
-            if (delta >= durCycles) {
-                run(nar, delta);
-            } else {
-                
-            }
+
+            run(nar, delta);
+
         } catch (Throwable e) {
             logger.error("{} {}", this, e);
         } finally {
+            //long lastFinished = this.lastFinished;
+            long atEnd = this.lastFinished = nar.time();
+
             if (!isOff()) {
-                if (busy.compareAndSet(true, false))
-                    spawn(nar, atStart + durCycles);
+                if (busy.compareAndSet(true, false)) {
+                    long next = Math.max(
+                            atEnd + 1 /* next cycle */,
+                            atStart + durCycles);
+
+                    //System.out.println(this + "\tnext=" + next);
+
+                    spawn(nar, next);
+                }
             } else {
                 busy.set(false);
             }

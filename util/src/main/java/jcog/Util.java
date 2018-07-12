@@ -577,7 +577,6 @@ public enum Util {
      * clamps a value to 0..1 range
      */
     public static double unitize(double x) {
-        finite(x);
         return Util.clamp(x, 0.0, 1.0);
     }
 
@@ -585,10 +584,6 @@ public enum Util {
      * clamps a value to 0..1 range
      */
     public static float unitize(float x) {
-        finite(x);
-        return unitizeSafe(x);
-    }
-    public static float unitizeSafe(float x) {
         return Util.clamp(x, 0, 1f);
     }
 
@@ -1365,12 +1360,14 @@ public enum Util {
     }
 
     public static float clamp(float f, float min, float max) {
+        finite(f); //assertFinite(min); assertFinite(max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;
     }
 
     public static double clamp(double f, double min, double max) {
+        finite(f); //assertFinite(min); assertFinite(max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;

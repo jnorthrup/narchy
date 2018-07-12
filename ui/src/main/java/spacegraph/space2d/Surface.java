@@ -20,6 +20,9 @@ import java.util.function.Predicate;
  */
 abstract public class Surface implements SurfaceBase {
 
+    private static final AtomicReferenceFieldUpdater<Surface,RectFloat2D> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat2D.class, "bounds");
+    private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
+
     public static final Surface[] EmptySurfaceArray = new Surface[0];
 
     private final static AtomicInteger serial = new AtomicInteger();
@@ -33,17 +36,13 @@ abstract public class Surface implements SurfaceBase {
      * scale can remain the unit 1 vector, normally
      */
 
-    public volatile RectFloat2D bounds;
+    public volatile RectFloat2D bounds = RectFloat2D.Unit;
     public volatile SurfaceBase parent;
     protected volatile boolean visible = true, showing = false;
 
     public Surface() {
-        bounds = RectFloat2D.Unit;
+
     }
-
-
-
-
 
 
     public float x() {
@@ -90,18 +89,14 @@ abstract public class Surface implements SurfaceBase {
 
     abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
-    public Surface pos(RectFloat2D r) {
-        posChanged(r);
+    public Surface pos(RectFloat2D next) {
+        bounds = next;
         return this;
     }
 
-    protected final boolean posChanged(RectFloat2D r) {
-        RectFloat2D b = this.bounds;
-        if (!b.equals(r, Spatialization.EPSILONf)) {
-            this.bounds = r;
-            return true;
-        }
-        return false;
+    protected final boolean posChanged(RectFloat2D next) {
+        RectFloat2D last = BOUNDS.getAndSet(this, next);
+        return !last.equals(next, Spatialization.EPSILONf);
     }
 
     public final Surface pos(float x1, float y1, float x2, float y2) {
@@ -143,15 +138,12 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
-        return _parent.getAndSet(this, parent) == null;
+        return PARENT.getAndSet(this, parent) == null;
     }
 
 
-    private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> _parent =
-            AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
-
     public boolean stop() {
-        if (_parent.getAndSet(this, null) != null) {
+        if (PARENT.getAndSet(this, null) != null) {
             showing = false;
             return true;
         }

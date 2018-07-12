@@ -33,13 +33,13 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     private final AtomicBoolean busy = new AtomicBoolean(false);
     private final List<Graph2DLayer<X>> layers = new FasterList<>();
 
-    private final DequePool<NodeVis<X>> nodePool = new DequePool<>(1 * 256) {
+    private final DequePool<NodeVis<X>> nodePool = new DequePool<>(1024) {
         @Override
         public NodeVis<X> create() {
             return new NodeVis<>();
         }
     };
-    private final DequePool<EdgeVis<X>> edgePool = new DequePool<>(1 * 256) {
+    private final DequePool<EdgeVis<X>> edgePool = new DequePool<>(2048) {
         @Override
         public EdgeVis<X> create() {
             return new EdgeVis<>();
@@ -373,10 +373,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         float r = 0.5f;
         float g = 0.5f;
         float b = 0.5f;
+        float a = 0.75f;
         public float weight = 1f;
 
 
         public EdgeVis<X> weight(float w) {
+            assert(w==w);
             weight = w;
             return this;
         }
@@ -389,7 +391,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         void draw(GL2 gl, NodeVis<X> from) {
-            gl.glColor3f(r, g, b);
+            gl.glColor4f(r, g, b, a);
             float x = from.cx();
             float y = from.cy();
             gl.glLineWidth(1f + weight * 4f);

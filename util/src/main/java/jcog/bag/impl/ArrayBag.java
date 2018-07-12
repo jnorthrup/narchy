@@ -185,7 +185,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     @Override
     public float mass() {
-        return mass.get(this);
+        return mass.get(_mass);
     }
 
     @Override
