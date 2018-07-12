@@ -6,7 +6,6 @@ import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.Param;
-import nars.link.Activate;
 import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
@@ -15,6 +14,8 @@ import nars.derive.premise.PremiseDeriverProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.Attention;
 import nars.exe.Causable;
+import nars.link.Activate;
+import nars.link.ActivatedLinks;
 import nars.link.TaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,12 @@ abstract public class Deriver extends Causable {
 
     public DeriverBudgeting prioritize =
             new DefaultDeriverBudgeting();
-            
+
+    protected final DerivedTasks derived =
+            new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity);
+
+    public final ActivatedLinks linked = new ActivatedLinks();
+
 
     private Deriver(NAR nar, String... rules) {
         this(new PremiseDeriverRuleSet(nar, rules));
@@ -84,7 +90,6 @@ abstract public class Deriver extends Causable {
         this.rules = rules;
         this.source = source;
 
-
         nar.on(this);
     }
 
@@ -94,22 +99,20 @@ abstract public class Deriver extends Causable {
 
     @Override
     protected int next(NAR n, final int iterations) {
-        Derivation d = derivation.get().cycle(n, this);
 
-        derive(n, iterations, d);
+        derive(derivation.get().next(n, this), iterations);
 
-        d.commit();
+        if (!linked.isEmpty())
+            nar.input(linked);
 
-        //System.out.println(derivations + " -> " + iterations + " -> " + derived);
-        //io.out(derived);
+        derived.commit(n);
 
-        //return derived;
         return iterations;
     }
 
 
 
-    abstract protected void derive(NAR n, int iterations, Derivation d);
+    abstract protected void derive(Derivation d, int iterations);
 
 
     /** returns false if no tasklinks are present */
@@ -150,7 +153,7 @@ abstract public class Deriver extends Causable {
 
 
     @Override
-    public final boolean singleton() {
+    public boolean singleton() {
         return false;
     }
 

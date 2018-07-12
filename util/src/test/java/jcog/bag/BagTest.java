@@ -13,6 +13,7 @@ import jcog.math.tensor.Tensor;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -42,7 +43,7 @@ class BagTest {
         }
 
         
-        PLink x0 = new PLink("x", 2 * Prioritized.EPSILON);
+        PLink x0 = new PLink("x", 2 * ScalarValue.EPSILON);
         PriReference added = c.put(x0);
         assertSame(added, x0);
         c.commit();
@@ -50,7 +51,7 @@ class BagTest {
         assertEquals(1, c.size());
 
 
-        assertEquals(0, c.priMin(), Prioritized.EPSILON * 2);
+        assertEquals(0, c.priMin(), ScalarValue.EPSILON * 2);
 
         PriReference<String> x = c.get("x");
         assertNotNull(x);

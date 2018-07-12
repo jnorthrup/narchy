@@ -14,12 +14,13 @@ public class PLinkUntilDeleted<X extends Deleteable> extends PLink<X> {
     }
 
     @Override
-    public final float priUpdate() {
-        float p = this.pri;
+    public final float priCommit() {
+        float p = this.pri();
         if (p == p) {
             if (id.isDeleted()) {
                 this.priBeforeDeletion = p;
-                return (this.pri = Float.NaN);
+                delete();
+                return Float.NaN;
             } else {
                 return p;
             }

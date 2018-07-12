@@ -105,7 +105,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     public Stream<Task> streamTasks() {
 
 
-        Object[] list = this.list;
+        Object[] list = this.items;
         int size = Math.min(list.length, this.size);
         if (size == 0)
             return Stream.empty();
@@ -163,7 +163,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         if (s == 0)
             return Task.EmptyArray;
         else {
-            Task[] list = this.list;
+            Task[] list = this.items;
             return Arrays.copyOf(list, Math.min(s, list.length), Task[].class);
 
         }
@@ -179,14 +179,14 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     private Task strongest() {
-        Object[] l = this.list;
+        Object[] l = this.items;
         return (l.length == 0) ? null : (Task) l[0];
     }
 
     private Task weakest() {
         int s = size;
         if (s == 0) return null;
-        Object[] l = this.list;
+        Object[] l = this.items;
         int ll = Math.min(s, l.length);
         return ll == 0 ? null : (Task) l[ll - 1];
     }
@@ -276,7 +276,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
          * non-null: revised task
          */
 
-        Object[] list = this.list;
+        Object[] list = this.items;
 
         Task oldBelief = null;
         Truth conclusion = null;
@@ -364,7 +364,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     )
             );
             if (revised != null) {
-                revised.priSet(Priority.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
+                revised.pri(Priority.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
                 ((NALTask) revised).cause = Cause.sample(Param.causeCapacity.intValue(), input, prevBelief);
 
                 if (Param.DEBUG)

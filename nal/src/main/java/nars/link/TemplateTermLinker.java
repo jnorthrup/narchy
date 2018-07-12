@@ -2,7 +2,7 @@ package nars.link;
 
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -63,7 +63,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 return new TemplateTermLinker(((FasterList<Term>) tc.list).toArrayRecycled(Term[]::new));
         }
 
-        return Empty;
+        return NullLinker;
     }
 
     private TemplateTermLinker(Term[] terms) {
@@ -247,30 +247,26 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
 
     /** balance = nar.termlinkBalance */
-    @Override public void link(Concept src, float pri, List<TaskLink> fired, LinkActivations termlinking, Random rng, NAR nar) {
+    @Override public void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks termlinking, Random rng, NAR nar) {
 
-
-        //TODO move to param
-        int termlinkFanoutMax = 10;
 
         int n = size();
         if (n == 0)
             return;
 
-
-        n = Math.min(n, termlinkFanoutMax);
+        n = Math.min(n, Param.TermLinkFanoutMax);
 
         Term srcTerm = src.term();
 
         float balance = nar.termlinkBalance.floatValue();
 
-        float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n);
+        float budgetedReverse = Math.max(ScalarValue.EPSILON, pri * balance / n);
 
 //        //calculate exactly according to the size of the subset that are actually conceptualizable
 //        float budgetedForward = concepts == 0 ? 0 :
 //                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
 
-        float budgetedForward = Math.max(Prioritized.EPSILON, pri * (1-balance) / n);
+        float budgetedForward = Math.max(ScalarValue.EPSILON, pri * (1-balance) / n);
 
         List<Concept> targets = (concepts==0 ? List.of() : new FasterList<>(concepts));
 

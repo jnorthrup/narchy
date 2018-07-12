@@ -54,18 +54,10 @@ public abstract class AbstractTask implements ITask, Priority {
     }
 
     @Override
-    public float priSet(float p) {
+    public float pri(float p) {
         return 1f;
     }
 
-
-    /**
-     * fluent form of setPri which returns this class
-     */
-    public ITask pri(float p) {
-        priSet(p);
-        return this;
-    }
 
 //    /**
 //     * wraps a Runnable

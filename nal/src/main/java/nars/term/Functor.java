@@ -40,7 +40,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     protected Functor(@NotNull Atom atom) {
-        super(atom, TermLinker.Empty, ConceptBuilder.NullConceptBuilder);
+        super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
     }
 
     public static Term func(Term operation) {

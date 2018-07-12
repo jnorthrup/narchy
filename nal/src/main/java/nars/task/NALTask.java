@@ -76,15 +76,6 @@ public class NALTask extends UnitPri implements Task {
         return Task.equal(this, that);
     }
 
-    @Override
-    public boolean delete() {
-        float p = pri;
-        if (p==p) {
-            pri = Float.NaN;
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public boolean isCyclic() {

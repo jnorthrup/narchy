@@ -2,12 +2,12 @@ package jcog.memoize.byt;
 
 import jcog.Texts;
 import jcog.data.byt.DynBytes;
+import jcog.pri.Pri;
 import jcog.pri.PriProxy;
-import jcog.pri.Priority;
 
 import java.util.Arrays;
 
-public class ByteKey {
+public class ByteKey extends Pri {
 
     /*@Stable*/
     protected final byte[] key;
@@ -43,15 +43,14 @@ public class ByteKey {
         return Texts.i(key,16) + " [" + Integer.toUnsignedString(hash,32) + "]";
     }
 
-    static class ByteKeyInternal<Y> extends ByteKey implements Priority, PriProxy<ByteKey,Y> {
+    static class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKey,Y> {
 
         final Y result;
-        private volatile float pri;
 
         public ByteKeyInternal(byte[] key, int hash, Y result, float pri) {
             super(key, hash);
             this.result = result;
-            this.pri = pri;
+            pri(pri);
         }
 
         @Override
@@ -64,19 +63,11 @@ public class ByteKey {
             return result;
         }
 
-        @Override
-        public float priSet(float p) {
-            return pri = p;
-        }
 
-        @Override
-        public float pri() {
-            return pri;
-        }
 
         @Override
         public String toString() {
-            return result + " = $" + Texts.n4(pri) + " " + super.toString();
+            return result + " = $" + Texts.n4(pri()) + " " + super.toString();
         }
     }
 

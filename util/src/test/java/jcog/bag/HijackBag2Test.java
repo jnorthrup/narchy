@@ -9,6 +9,7 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.tensor.ArrayTensor;
 import jcog.math.tensor.Tensor;
 import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import jcog.util.FloatFloatToFloatFunction;
 import org.apache.commons.math3.stat.Frequency;
 import org.jetbrains.annotations.NotNull;
@@ -114,13 +115,13 @@ class HijackBag2Test {
         assertEquals(1, c.capacity());
 
         
-        c.put("x", 2 * Prioritized.EPSILON);
+        c.put("x", 2 * ScalarValue.EPSILON);
         c.commit();
 
         assertEquals(1, c.size());
 
 
-        assertEquals(0, c.priMin(), Prioritized.EPSILON * 2);
+        assertEquals(0, c.priMin(), ScalarValue.EPSILON * 2);
 
         String x = c.get("x");
         assertNotNull(x);

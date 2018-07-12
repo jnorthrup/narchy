@@ -15,7 +15,7 @@ import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.link.Activate;
-import nars.link.LinkActivations;
+import nars.link.ActivatedLinks;
 import nars.link.TaskLink;
 import nars.term.Term;
 
@@ -54,62 +54,85 @@ public class MatrixDeriver extends Deriver {
         super(nar.attn, rules, nar);
     }
 
+    public MatrixDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
+        super(source, rules, rules.nar);
+    }
+
     public MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseDeriverProto> rules, NAR nar) {
         super(source, rules, nar);
     }
 
     @Override
-    protected void derive(NAR n, int iterations, Derivation d) {
+    protected void derive(Derivation d, int iterations) {
+
+        NAR n = d.nar;
 
         /** temporary buffer for storing unique premises */
-        ArrayHashSet<Premise> p = d.premiseBuffer;
+        ArrayHashSet<Premise> premises = d.premiseBuffer;
 
-        int premises = iterations * conceptsPerIteration.intValue() * premisesPerConcept;
+        int premisesMax = iterations * conceptsPerIteration.intValue() * premisesPerConcept;
 
-        hypothesize(premises, (t, termlink) -> {
+        hypothesize(premisesMax, (t, termlink) -> {
 
             Premise premise = new Premise(t, termlink);
-            if (!p.add(premise))
+            if (!premises.add(premise))
                 n.emotion.premiseBurstDuplicate.increment();
 
             return true;
         }, d);
 
 
-        int s = p.size();
+        int s = premises.size();
         if (s == 0)
             return;
 
         if (s > 2)
-            ((FasterList<Premise>) (p.list)).sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
+            ((FasterList<Premise>) (premises.list)).sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
 
 
 
         int matchTTL = matchTTL();
         int deriveTTL = n.deriveBranchTTL.intValue();
 
-        p.forEach(premise -> {
+        premises.forEach(p -> {
 
-            if (premise.match(d, matchTTL)) {
+            if (p.match(d, matchTTL)) {
 
                 if (rules.derivable(d)) {
 
                     d.derive(deriveTTL);
 
-                    n.emotion.premiseFire.increment();
+                    premiseFired(p, d);
+                    d.nar.emotion.premiseFire.increment();
 
                 } else {
+                    premiseUnderivable(p, d);
                     n.emotion.premiseUnderivable.increment();
                 }
 
             } else {
+                premiseUnmatched(p);
                 n.emotion.premiseFailMatch.increment();
             }
 
         });
 
-        p.clear();
+        premises.clear();
 
+
+    }
+
+    protected void premiseUnmatched(Premise p) {
+        //p.termLink.priMult(0.9f); //HACK simple decay
+        //TODO use the original concept and tasklink bag to determine appropriate decay
+    }
+
+    protected void premiseUnderivable(Premise p, Derivation d) {
+        //p.termLink.priMult(0.9f); //HACK simple decay
+        //TODO use the original concept and tasklink bag to determine appropriate decay
+    }
+
+    protected void premiseFired(Premise p, Derivation d) {
 
     }
 
@@ -142,13 +165,13 @@ public class MatrixDeriver extends Deriver {
     }
 
     public void premiseMatrix(Activate concept, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int tasklinks, int termlinksPerTasklink, Derivation d) {
-        premiseMatrix(concept, continueHypothesizing, tasklinks, termlinksPerTasklink, d.linkActivations, d.random, d.nar);
+        premiseMatrix(concept, continueHypothesizing, tasklinks, termlinksPerTasklink, d.deriver.linked, d.random, d.nar);
     }
 
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    public void premiseMatrix(Activate conceptActivation, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, LinkActivations linkActivations, Random rng, NAR nar) {
+    public void premiseMatrix(Activate conceptActivation, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, ActivatedLinks linkActivations, Random rng, NAR nar) {
 
         Concept concept = conceptActivation.id;
 

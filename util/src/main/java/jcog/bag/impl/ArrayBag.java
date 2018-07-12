@@ -2,10 +2,11 @@ package jcog.bag.impl;
 
 import jcog.Util;
 import jcog.bag.Bag;
+import jcog.bag.Sampler;
 import jcog.list.FasterList;
 import jcog.list.table.SortedListTable;
-import jcog.pri.Prioritized;
 import jcog.pri.Priority;
+import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
 import jcog.util.AtomicFloatFieldUpdater;
@@ -285,7 +286,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     protected void sort(int from /* inclusive */, int to /* inclusive */) {
-        Object[] il = items.list;
+        Object[] il = items.items;
 
         int[] stack = new int[sortSize(to - from) /* estimate */];
         qsort(stack, il, from /*dirtyStart - 1*/, to);
@@ -295,7 +296,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     @Override
     public final float priUpdate(Y key) {
-        return key.priUpdate();
+        return key.priCommit();
     }
 
     private int update(@Deprecated boolean toAdd, int s, List<Y> trash, @Nullable Consumer<Y> update, boolean commit) {
@@ -320,7 +321,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 min = Util.min(min, p);
                 max = Util.max(max, p);
                 mass += p;
-                if (p - above >= Prioritized.EPSILON)
+                if (p - above >= ScalarValue.EPSILON)
                     mustSort = i;
 
                 above = p;
@@ -559,7 +560,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             throw new RuntimeException("Bag Map and List became unsynchronized: " + existing + " not found");
         }
 
-        float priBefore = existing.priUpdate();
+        float priBefore = existing.priCommit();
         Y result;
         float delta;
         if (priBefore != priBefore) {
@@ -576,7 +577,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         }
 
 
-        if (Math.abs(delta) >= Prioritized.EPSILON) {
+        if (Math.abs(delta) >= ScalarValue.EPSILON) {
             items.adjust(posBefore, this);
 
             mass.add(this, delta);
@@ -624,23 +625,46 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     @Override
     public final void clear() {
+        clear(-1, this::removed);
+    }
+
+    /**
+     * removes the top n items
+     * @param n # to remove, if -1 then all are removed
+     */
+    public final void clear(int n, Consumer<? super Y> each) {
         List<Y> trash;
 
         synchronized (items) {
 
             int s = size();
             if (s > 0) {
-                trash = new FasterList<>(s);
-                items.forEach(x -> trash.add(mapRemove(x)));
-                items.clear();
+                int toRemove = n==-1 ? s : Math.min(s, n);
+                trash = new FasterList<>(toRemove);
+
+                items.removeRange(0, toRemove, x -> trash.add(mapRemove(x)));
+
             } else {
                 trash = null;
             }
-            depressurize();
         }
 
+        depressurize();
+
         if (trash != null)
-            trash.forEach(this::removed);
+            trash.forEach(each);
+
+    }
+
+    @Override
+    public Sampler<Y> pop(Random rng, int max, Consumer<? super Y> each) {
+        if (rng == null) {
+            //high-efficiency non-random pop
+            clear(max, each);
+            return this;
+        } else {
+            return Bag.super.pop(rng, max, each);
+        }
     }
 
     @Override

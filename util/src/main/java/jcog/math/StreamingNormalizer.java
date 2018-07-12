@@ -2,7 +2,7 @@ package jcog.math;
 
 
 import jcog.Util;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 /**
@@ -43,7 +43,7 @@ public class StreamingNormalizer {
             if (v < min)
                 n[i * 2 + 1] = v;
 
-            y[i] = (!Float.isFinite(max) || !Float.isFinite(min) || !Util.equals(Math.abs(max - min),0, Prioritized.EPSILON)) ? v : (v - min) / (max - min);
+            y[i] = (!Float.isFinite(max) || !Float.isFinite(min) || !Util.equals(Math.abs(max - min),0, ScalarValue.EPSILON)) ? v : (v - min) / (max - min);
         }
         return y;
     }

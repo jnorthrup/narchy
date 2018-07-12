@@ -201,7 +201,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
             dyn.cause = cause();
 
-            dyn.priSet(pri());
+            dyn.pri(pri());
 
             if (Param.DEBUG_EXTRA)
                 dyn.log("Dynamic");

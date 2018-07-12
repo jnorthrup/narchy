@@ -13,7 +13,7 @@ import jcog.meter.FastCounter;
 import jcog.meter.Meter;
 import jcog.meter.MetricsMapper;
 import jcog.meter.event.AtomicMeanFloat;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.control.MetaGoal;
 import nars.task.NALTask;
 
@@ -215,7 +215,7 @@ public class Emotion implements Meter {
         float ansConf = answer.conf();
 
         float qPriBefore = questionTask.priElseZero();
-        if (qPriBefore > Prioritized.EPSILON) {
+        if (qPriBefore > ScalarValue.EPSILON) {
             //float fraction = ansConf * (1 - qOrig);
             //float fraction = qOrig / 2f;
             float fraction = 0.5f * (1f - qOrig);

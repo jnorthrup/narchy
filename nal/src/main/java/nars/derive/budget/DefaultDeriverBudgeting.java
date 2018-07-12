@@ -2,7 +2,7 @@ package nars.derive.budget;
 
 import jcog.Util;
 import jcog.math.FloatRange;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.DeriverBudgeting;
@@ -69,7 +69,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             factor *= Util.lerp(evidenceImportance.floatValue(), 1, relGrowthCost);
         }
 
-        return Math.max(Prioritized.EPSILON, factor * d.pri);
+        return Math.max(ScalarValue.EPSILON, factor * d.pri);
 
 
     }

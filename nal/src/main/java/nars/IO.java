@@ -100,7 +100,7 @@ public class IO {
 
             long cre = in.readLong();
 
-            return new NALTask(term, punc, truth, cre, start, end, evi).pri(pri);
+            return new NALTask(term, punc, truth, cre, start, end, evi).priSet(pri);
         } else {
             return new CommandTask(term);
         }

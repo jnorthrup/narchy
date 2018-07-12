@@ -1,7 +1,7 @@
 package nars.link;
 
 import jcog.bag.Bag;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -51,7 +51,7 @@ public class Tasklinks {
         int nTargets = targets.size();
         assert(nTargets > 0);
 
-        float pEach = Math.max(Prioritized.EPSILON,
+        float pEach = Math.max(ScalarValue.EPSILON,
                 priTransferred / nTargets
         );
 

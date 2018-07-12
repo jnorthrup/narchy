@@ -43,7 +43,9 @@ public interface PriProxy<X, Y> extends Priority, Supplier<Y> {
         }
     }
 
-    /** TODO needs tested for correct behavior on reclamation.  equailty/hash on X, supplies Y */
+    /** TODO needs tested for correct behavior on reclamation.  equailty/hash on X, supplies Y
+     *  TODO needs ScalarValue.AtomicScalarValue support.  this doesnt have it by extending SoftReference already cant extend Pri like the Strong impl
+     * */
     public final class SoftProxy<X, Y> extends SoftReference<Y> implements PriProxy<X, Y> {
 
         public final X x;
@@ -74,7 +76,7 @@ public interface PriProxy<X, Y> extends Priority, Supplier<Y> {
         }
 
         @Override
-        public float priSet(float p) {
+        public float pri(float p) {
             if (p == p) {
                 p = Util.clamp(p, 0, 1);
             }

@@ -63,7 +63,7 @@ public class TaskProxy implements Task {
     }
 
     @Override
-    public float priSet(float p) {
+    public float pri(float p) {
         if (Param.DEBUG)
             throw new UnsupportedOperationException();
         return p;

@@ -9,7 +9,7 @@ import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
 import jcog.list.MetalConcurrentQueue;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.control.DurService;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -132,7 +132,7 @@ public class UniExec extends AbstractExec {
                     });
 
                     double valRange = valMax[0] - valMin[0];
-                    if (Math.abs(valRange) > Prioritized.EPSILON) {
+                    if (Math.abs(valRange) > ScalarValue.EPSILON) {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY};
                         final double[] valRateMax = {Double.NEGATIVE_INFINITY};
@@ -177,7 +177,7 @@ public class UniExec extends AbstractExec {
                             }
                         });
                         double valRateRange = valRateMax[0] - valRateMin[0];
-                        if (valRateRange > Prioritized.EPSILON * can.size()) {
+                        if (valRateRange > ScalarValue.EPSILON * can.size()) {
                             forEach((InstrumentedWork s) -> {
                                 //s.need((float) s.valueNormalized); //abs
 
@@ -186,9 +186,9 @@ public class UniExec extends AbstractExec {
 
 
                                     //s.priSet((float) s.valueNormalized);
-                                    s.priSet((float) valuePerSecondNormalized);
+                                    s.pri((float) valuePerSecondNormalized);
                                 } else {
-                                    s.priSet(0);
+                                    s.pri(0);
                                 }
 
                                 //System.out.println(s + " " + s.iterations.getMean());
@@ -203,7 +203,7 @@ public class UniExec extends AbstractExec {
                     /** flat */
                     forEach((InstrumentedWork s) -> {
                         //s.need(1f/n);
-                        s.priSet(1f/n);
+                        s.pri(1f/n);
                     });
 
 

@@ -12,7 +12,7 @@ import java.io.PrintStream;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static jcog.pri.Prioritized.EPSILON;
+import static jcog.pri.ScalarValue.EPSILON;
 
 /**
  * compiled derivation rules

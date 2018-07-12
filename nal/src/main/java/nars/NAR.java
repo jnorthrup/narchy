@@ -14,6 +14,7 @@ import jcog.exe.Cycled;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import jcog.util.ArrayIterator;
 import jcog.util.TriConsumer;
 import nars.Narsese.NarseseException;
@@ -510,7 +511,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
         @Nullable Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
             Task y = new NALTask(c, punc, truth, time(), start, end, evidence());
-            y.priSet(pri);
+            y.pri(pri);
             return y;
         }, false);
 
@@ -577,21 +578,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-    /**
-     * main task entry point
-     */
+    @Override
+    public final void input(ITask t) {
+        exe.execute(t);
+    }
+
     @Override
     public final void input(ITask... t) {
-        if (t == null)
-            return;
+
         switch (t.length) {
             case 0:
                 break;
             case 1:
-                ITask t0 = t[0];
-                if (t0 != null) {
-                    exe.execute(t0);
-                }
+                input(t[0]);
                 break;
             default:
                 exe.execute((Iterator) new ArrayIterator<>(t));
@@ -670,30 +669,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * registers an operator
      */
-    public final Operator onOp(Atom a, BiFunction<Task, NAR, Task> exe) {
-        Operator op;
-        concepts.set(op = new Operator(a, (task, nar) -> {
-            //default handler
-            if (task.isCommand())
-                return exe.apply(task, nar);
-            else {
-                if (task.expectation() > 0.5f) {
-                    long s = task.start();
-                    long now = nar.time();
-                    int dur = nar.dur();
-                    if (s >= now - dur / 2) {
-                        if (s > now + dur / 2) {
-                            //delayed
-                            nar.runAt(s, () -> nar.input(exe.apply(task, nar)));
-                        } else {
-                            return exe.apply(task, nar);
-                        }
-                    }
-                }
-
-                return null;
-            }
-        }, this));
+    public final Operator onOp(Atom name, BiFunction<Task, NAR, Task> exe) {
+        Operator op = Operator.simple(name, exe);
+        concepts.set(op);
         return op;
     }
 
@@ -859,18 +837,30 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /**
-     * enqueues a task (avoids the scheduler, so may be executed before the end of the cycle)
+     * executes task. if executor is concurrent it will be async, otherwise it will be executed synch (current thread)
      */
     public final void run(Consumer<NAR> t) {
         exe.execute(t);
     }
 
     /**
-     * enqueues a task (avoids the scheduler, so may be executed before the end of the cycle)
+     * executes task. if executor is concurrent it will be async, otherwise it will be executed synch (current thread)
      */
     public final void run(Runnable t) {
         exe.execute(t);
     }
+
+//    /**
+//     * executes task either synchronously or asynchronously according to the executor's mode.
+//     * this is different from input(ITask) because it will force async if available whereas input will
+//     * execute AbstractTask inline by defaul
+//     */
+//    public final void run(ITask t) {
+//        //HACK
+//        if (exe.concurrent())
+//        input(t)
+//        exe.execute(t);
+//    }
 
     /**
      * adds a task to the queue of task which will be executed in batch
@@ -1371,7 +1361,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * +Infinity -> amp=2
      */
     public float amp(short[] effect) {
-        return Math.max(Prioritized.EPSILON, 1f + Util.tanhFast(value(effect)));
+        return Math.max(ScalarValue.EPSILON, 1f + Util.tanhFast(value(effect)));
     }
 
     public final float amp(Task task) {

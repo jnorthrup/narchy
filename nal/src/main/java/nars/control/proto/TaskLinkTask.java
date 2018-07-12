@@ -1,7 +1,7 @@
 package nars.control.proto;
 
 import jcog.Util;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -34,7 +34,7 @@ public class TaskLinkTask extends AbstractTask {
         this.concept = c;
 
         /** non-zero for safety */
-        this.pri = Math.max(Util.notNaN(pri), Prioritized.EPSILON);
+        this.pri = Math.max(Util.notNaN(pri), ScalarValue.EPSILON);
     }
 
     @Override

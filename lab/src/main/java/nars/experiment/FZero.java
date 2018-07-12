@@ -24,7 +24,6 @@ import java.awt.image.BufferedImage;
 
 import static com.google.common.collect.Iterables.concat;
 import static jcog.Util.lerp;
-import static jcog.Util.sqr;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static spacegraph.SpaceGraph.window;
@@ -67,8 +66,8 @@ public class FZero extends NAgentX {
         Term cam = $.the("cam");
         Bitmap2DConcepts<Scale> c = senseCamera(cam, new Scale(() -> fz.image,
 
-                24, 24
-                //16, 16
+                //24, 24
+                16, 16
 
 
         )/*.blur()*/)
@@ -80,10 +79,10 @@ public class FZero extends NAgentX {
         //initToggle();
 
 
-        initUnipolarLinear(5.5f);
+        initUnipolarLinear(2.5f);
 
         //initBipolarRotateRelative(fair, rotFactor);
-        initBipolarRotateDirect(true, 0.25f);
+        initBipolarRotateDirect(true, 0.1f);
         //initBipolarRotateAbsolute(fair);
 
         //eyelid
@@ -91,12 +90,17 @@ public class FZero extends NAgentX {
             c.pixelPri.set(lerp(camAware, 0, 0.1f));
             c.resolution(lerp(camAware, 0.1f, 0.02f));
            return camAware;
-        }).resolution(0.1f);
+        }).resolution(0.05f);
 
         actionUnipolar($.inh(id, $.the("curious")), (cur)->{
-            curiosity.set(lerp(sqr(cur), 0.001f, 0.02f));
+            curiosity.set(lerp(cur, 0.1f, 0.5f));
             return cur;
-        }).resolution(0.1f);
+        }).resolution(0.05f);
+
+        actionUnipolar($.inh(id, $.the("timeFocus")), (f)->{
+            nar.timeFocus.set(lerp(f, 1f, 16));
+            return f;
+        }).resolution(0.05f);
 
         Signal dVelX = senseNumberDifference($.inh(id, $.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
         Signal dVelY = senseNumberDifference($.inh(id, $.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
@@ -320,7 +324,7 @@ public class FZero extends NAgentX {
 //                        //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
 //                        deltaDistance / (fps*2)), -1f, +1f) - 0.5f;
 
-        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 1)) : -1f;
+        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 

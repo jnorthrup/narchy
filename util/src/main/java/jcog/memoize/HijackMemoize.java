@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.pri.PriProxy;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -88,7 +88,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
 
         float cut = boost / (reprobes / 2f);
 
-        assert (cut > Prioritized.EPSILON);
+        assert (cut > ScalarValue.EPSILON);
 
         this.CACHE_HIT_BOOST = boost;
 

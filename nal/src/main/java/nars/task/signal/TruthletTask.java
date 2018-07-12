@@ -141,7 +141,7 @@ public class TruthletTask extends SignalTask {
                 update(c, (tt) -> {
                     tt.truthlet = newTruthlet;
                     if (relink) {
-                        Tasklinks.linkTask(this, pri, c, n);
+                        Tasklinks.linkTask(this, pri(), c, n);
                     }
                 });
             }

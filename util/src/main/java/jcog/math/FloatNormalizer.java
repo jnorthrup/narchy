@@ -1,7 +1,7 @@
 package jcog.math;
 
 import jcog.Util;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 public class FloatNormalizer implements FloatToFloatFunction  {
@@ -72,7 +72,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     FloatNormalizer updateRange(float raw) {
         if (relax > 0) {
             float range = max - min;
-            if (range > Prioritized.EPSILON) {
+            if (range > ScalarValue.EPSILON) {
                 float mid = (max+min)/2;
                 max = Util.lerp(relax, max, mid);
                 min = Util.lerp(relax, min, mid);

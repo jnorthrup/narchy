@@ -17,9 +17,13 @@ public class PremiseKey extends ByteKey {
         DynBytes k = new DynBytes(64);
 
         Term _t = d.taskTerm;
-        Term t = _t.root();
+        Term t =
+                //_t.root();
+                _t;
         Term _b = d.beliefTerm;
-        Term b = _b.root();
+        Term b =
+                //_b.root();
+                _b;
 
         float pri = 1f/(1+(t.volume() + b.volume()));
 //            if (t.equals(b) && !_t.equals(_b)) {

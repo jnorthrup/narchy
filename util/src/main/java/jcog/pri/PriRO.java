@@ -26,7 +26,7 @@ public final class PriRO implements Priority {
     }
 
     @Override
-    public float priSet(float p) {
+    public float pri(float p) {
         throw new UnsupportedOperationException();
     }
 

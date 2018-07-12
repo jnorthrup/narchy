@@ -7,9 +7,8 @@ import jcog.bag.Bag;
 import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
 import jcog.decide.MutableRoulette;
-import jcog.decide.Roulette;
 import jcog.math.random.SplitMix64Random;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import jcog.util.AtomicFloatFieldUpdater;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -501,7 +500,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     protected boolean hijackFair(float newPri, float oldPri, float temperature) {
 
 
-        float priEpsilon = Prioritized.EPSILON;
+        float priEpsilon = ScalarValue.EPSILON;
 
         if (oldPri > priEpsilon) {
             
@@ -634,7 +633,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
                     wVal[windowCap - 1] = v0;
                     System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
-                    wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON);
+                    wPri[windowCap - 1] = Util.max(p, ScalarValue.EPSILON);
                 }
             //}
 

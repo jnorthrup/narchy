@@ -2,7 +2,7 @@ package jcog.learn;
 
 import jcog.Util;
 import jcog.decide.Deciding;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 
 import java.util.Random;
@@ -16,7 +16,7 @@ import static java.util.Arrays.fill;
  */
 public class Autoencoder {
 
-	final static float NORMALIZATION_EPSILON = Prioritized.EPSILON*2;
+	final static float NORMALIZATION_EPSILON = ScalarValue.EPSILON*2;
 
 
 	/** input vector after preprocessing (noise, corruption, etc..) */
@@ -162,7 +162,7 @@ public class Autoencoder {
 			}
 			if (lengthSq > NORMALIZATION_EPSILON*NORMALIZATION_EPSILON) {
 				float length = (float) Math.sqrt(lengthSq);
-				assert(length > Prioritized.EPSILON);
+				assert(length > ScalarValue.EPSILON);
 				for (int i = 0; i < outs; i++) {
 					y[i] /= length;
 				}

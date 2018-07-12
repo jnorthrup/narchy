@@ -97,14 +97,14 @@ public class SimpleDeriver extends Deriver {
     }
 
     @Override
-    protected void derive(NAR n, int iterations, Derivation d) {
+    protected void derive(Derivation d, int iterations) {
 
 
 
         final int[] ii = {iterations };
 
 
-        int deriveTTL = n.deriveBranchTTL.intValue();
+        int deriveTTL = d.nar.deriveBranchTTL.intValue();
         int matchTTL = matchTTL();
 
         source.accept(a -> {
@@ -153,7 +153,7 @@ public class SimpleDeriver extends Deriver {
                 return true; //remove from list
             });
 
-            concept.linker().link(concept, a.pri(), fired, d.linkActivations, nar);
+            concept.linker().link(concept, a.pri(), fired, d.deriver.linked, nar);
 
             return ii[0]-- > 0;
         });

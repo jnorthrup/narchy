@@ -66,7 +66,7 @@ public class CommandTask implements Task {
     }
 
     @Override
-    public float priSet(float ignored) {
+    public float pri(float ignored) {
         return 0;
     }
 

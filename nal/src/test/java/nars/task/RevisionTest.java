@@ -453,6 +453,7 @@ public class RevisionTest {
 
         Compound h = $.$("(a &&+1 b)");
         Compound i = $.$("(a &| b)");
+
         permuteChoose(h, i, "[(a&|b), (a &&+1 b)]");
     }
 

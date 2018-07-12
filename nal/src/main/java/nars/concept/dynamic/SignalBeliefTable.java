@@ -479,7 +479,7 @@ public class SignalBeliefTable extends DynamicBeliefTable {
 
         @Override
         public ITask inputStrategy(Task result, NAR n) {
-            return new TaskLinkTask(this, pri, concept); //just link
+            return new TaskLinkTask(this, pri(), concept); //just link
         }
 
     }

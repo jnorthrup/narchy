@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /** accumulates/buffers a stream of activations to be applied later as a batch
  *  re-usable. it can be drained while being populated from different threads.
  * */
-public class LinkActivations extends AbstractTask {
+public class ActivatedLinks extends AbstractTask {
 
 
     final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap();
@@ -32,11 +32,15 @@ public class LinkActivations extends AbstractTask {
             refund.add(overflow);
     }
 
+    public boolean isEmpty() {
+        return termlink.isEmpty();
+    }
+
     static final class TermLinkage extends Pri implements Comparable<TermLinkage> {
 
         public final static Comparator<TermLinkage> comparator = Comparator
             .comparing((TermLinkage x)->x.concept.term())
-            .thenComparingDouble((TermLinkage x)->-x.pri) //descending
+            .thenComparingDouble((TermLinkage x)->-x.pri()) //descending
             .thenComparingInt((TermLinkage x)->x.hash) //at this point the order doesnt matter so first decide by hash
             .thenComparing((TermLinkage x)->x.target);
 
@@ -67,15 +71,15 @@ public class LinkActivations extends AbstractTask {
 
         @Override
         public String toString() {
-            return "termlink(" + concept + "," + target + "," + pri + ")";
+            return "termlink(" + concept + "," + target + "," + pri() + ")";
         }
 
         public PLink<Term> link() {
-            return new PLink<>(target, pri);
+            return new PLink<>(target, pri());
         }
 
         @Override
-        public int compareTo(@NotNull LinkActivations.TermLinkage x) {
+        public int compareTo(@NotNull ActivatedLinks.TermLinkage x) {
             return comparator.compare(this, x);
         }
     }

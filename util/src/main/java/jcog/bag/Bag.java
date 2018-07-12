@@ -2,7 +2,7 @@ package jcog.bag;
 
 import jcog.Util;
 import jcog.list.table.Table;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import jcog.pri.op.PriForget;
 import jcog.util.FloatFloatToFloatFunction;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -220,8 +220,9 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
         V x = get(key);
         if (x == null)
             return ifMissing;
-        else
+        else {
             return priElse(x, ifMissing);
+        }
     }
 
     /**
@@ -340,7 +341,14 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      * how fast the bag should allow new items. 0.5 is a default value
      */
     default @Nullable Consumer<V> forget(float temperature) {
-        return PriForget.forget(this, temperature, Prioritized.EPSILON, PriForget::new);
+        return PriForget.forget(this, temperature, ScalarValue.EPSILON, (x)-> {
+            float m =
+                    //0.5f / size();
+                    0.5f / Util.sqrt(size());
+            float minPossible =
+                    Math.max(m, ScalarValue.EPSILON);
+            return new PriForget(x, minPossible);
+        });
     }
 
     float mass();

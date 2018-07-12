@@ -1,7 +1,7 @@
 package jcog.decide;
 
 import jcog.Util;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import java.util.Random;
@@ -57,7 +57,7 @@ public enum Roulette {
 
         int i = rng.nextInt(count); 
         assert (i >= 0);
-        if (weight_sum < Prioritized.EPSILON) {
+        if (weight_sum < ScalarValue.EPSILON) {
             return i; 
         }
 

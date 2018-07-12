@@ -3,6 +3,7 @@ package nars.derive.budget;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.DeriverBudgeting;
@@ -29,7 +30,7 @@ public class NormalizingDeriverBudgeting implements DeriverBudgeting {
             if (!isEmpty()) {
                 float pp = Util.numOr(premisePri, 0);
                 double totalPri = sumOfFloat(Prioritized::priElseZero);
-                float normalizeFactor = (totalPri > Prioritized.EPSILON) ? (float) (pp / totalPri) : 0 /* zero */;
+                float normalizeFactor = (totalPri > ScalarValue.EPSILON) ? (float) (pp / totalPri) : 0 /* zero */;
                 forEach(b -> b.priMult(normalizeFactor));
                 clear();
             }

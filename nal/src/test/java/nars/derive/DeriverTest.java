@@ -117,7 +117,7 @@ class DeriverTest {
     @Test
     void testCompile() {
         testCompile(
-                "(A --> B), (B --> C), neqRCom(A,C) |- (A --> C), (Belief:Deduction, Goal:Strong)"
+                "(A --> B), (B --> C), neqRCom(A,C) |- (A --> C), (Belief:Deduction, Goal:Desire)"
         );
 
     }

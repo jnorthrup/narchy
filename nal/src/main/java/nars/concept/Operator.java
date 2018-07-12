@@ -4,6 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.concept.util.ConceptBuilder;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
@@ -36,13 +37,16 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
 
     public static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594)); 
 
-    public final BiFunction<Task, NAR, Task> execute;
+    public final BiFunction<Task, NAR, Task> model;
 
-    public Operator(Atom atom, BiFunction<Task, NAR, Task> execute, NAR n) {
-        super(atom, TermLinker.Empty, n);
-        this.execute = execute;
+    public Operator(Atom atom, BiFunction<Task, NAR, Task> model) {
+        super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
+        this.model = model;
     }
 
+    public static Operator simple(Atom name, BiFunction<Task, NAR, Task> exe) {
+         return new Operator(name, new SimpleOperatorModel(exe));
+    }
 
 
     @Override
@@ -94,5 +98,43 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         return operation.sub(0).subterms().sub(sub);
     }
 
+
+    public static class SimpleOperatorModel implements BiFunction<Task, NAR, Task> {
+
+        private final BiFunction<Task, NAR, Task> exe;
+
+        public SimpleOperatorModel(BiFunction<Task, NAR, Task> exe) {
+            this.exe = exe;
+        }
+
+        @Override
+        public Task apply(Task task, NAR nar) {
+            //default handler
+            if (task.isCommand())
+                return exe.apply(task, nar);
+            else {
+                assert(task.isGoal());
+                if (executeGoal(task)) {
+                    long s = task.start();
+                    long now = nar.time();
+                    int dur = nar.dur();
+                    if (s >= now - dur / 2) {
+                        if (s > now + dur / 2) {
+                            //delayed
+                            nar.runAt(s, () -> nar.input(exe.apply(task, nar)));
+                        } else {
+                            return exe.apply(task, nar);
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        public boolean executeGoal(Task goal) {
+            return goal.expectation() > 0.5f;
+        }
+    }
 
 }

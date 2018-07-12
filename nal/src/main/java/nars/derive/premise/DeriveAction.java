@@ -1,6 +1,6 @@
 package nars.derive.premise;
 
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.step.Taskify;
@@ -54,7 +54,7 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
             return 0f; //disabled or not applicable to the premise
 
         float puncFactor = d.deriver.puncFactor(punc);
-        if (puncFactor <= Prioritized.EPSILON)
+        if (puncFactor <= ScalarValue.EPSILON)
             return 0f; //entirely disabled by deriver
 
         float causeValue = cause.amp();

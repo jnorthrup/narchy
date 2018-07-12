@@ -35,11 +35,11 @@ public interface TemporalBeliefTable extends TaskTable {
 
         float v = TruthIntegration.eviInteg(t, start, end, dur);
 
-        if (t.isGoal()) {
-            //v *= t.polarity();
-            //exp(polarity)? ~= softmax
-            v *= 0.5f + t.polarity()/2f;
-        }
+//        if (t.isGoal()) {
+//            //v *= t.polarity();
+//            //exp(polarity)? ~= softmax
+//            v *= 0.5f + t.polarity()/2f;
+//        }
 
         return v;
 

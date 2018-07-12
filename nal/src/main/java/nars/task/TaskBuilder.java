@@ -95,7 +95,7 @@ import static nars.time.Tense.ETERNAL;
 
     public TaskBuilder(Term term, byte punctuation /* TODO byte */, @Nullable Truth truth, float p, float q) throws InvalidTaskException {
         super(0);
-        pri = p; 
+        pri(p);;
 
         this.punc = punctuation;
 
@@ -201,7 +201,7 @@ import static nars.time.Tense.ETERNAL;
         
         float pp = priElseNeg1();
         if (pp < 0) {
-            priSet(n.priDefault(punc));
+            pri(n.priDefault(punc));
         }
 
 
@@ -230,7 +230,7 @@ import static nars.time.Tense.ETERNAL;
         }
 
         Task i = new NALTask(term, punc, tFinal, creation, start, end, evidence);
-        i.priSet(this);
+        i.pri(this);
         
 
 
@@ -541,13 +541,13 @@ import static nars.time.Tense.ETERNAL;
 
     @Override
     @NotNull public TaskBuilder setPriThen(float p) {
-        priSet(p);
+        pri(p);
         return this;
     }
 
-    @NotNull
+
     public final TaskBuilder pri(@NotNull Prioritized bb) {
-        priSet(bb);
+        this.pri(bb);
         return this;
     }
 

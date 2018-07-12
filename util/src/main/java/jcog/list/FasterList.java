@@ -298,6 +298,7 @@ public class FasterList<X> extends FastList<X> {
 
     }
 
+
     @Override
     public final boolean removeIf(Predicate<? super X> filter) {
         int s = size();
@@ -515,11 +516,6 @@ public class FasterList<X> extends FastList<X> {
         return false;
     }
 
-    public void removeBelow(int index) {
-        if (size <= index)
-            return;
-        this.items = Arrays.copyOfRange(items, 0, this.size = index);
-    }
 
     public boolean removeAbove(int index) {
         int s = this.size;

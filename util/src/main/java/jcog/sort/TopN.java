@@ -14,7 +14,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     protected final FloatFunction<X> rank;
 
     public TopN(X[] target, FloatFunction<X> rank) {
-        this.list = target;
+        this.items = target;
         this.rank = rank; 
     }
 
@@ -27,8 +27,8 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     }
 
     public void clear(int newCapacity, IntFunction<X[]> newArray) {
-        if (list == null || list.length != newCapacity) {
-            list = newArray.apply(newCapacity);
+        if (items == null || items.length != newCapacity) {
+            items = newArray.apply(newCapacity);
             size = 0;
         } else {
             super.clear();
@@ -38,7 +38,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     @Override
     public int add(X element, float elementRank, FloatFunction<X> cmp) {
 
-        if (this.size == list.length) {
+        if (this.size == items.length) {
             if (elementRank >= minValueIfFull()) {
                 rejectOnEntry(element);
                 return -1; 
@@ -99,9 +99,9 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
     public X[] drain(X[] next) {
 
-        X[] current = this.list;
+        X[] current = this.items;
 
-        this.list = next;
+        this.items = next;
         this.size = 0;
 
         return current;
@@ -133,7 +133,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         int belowIndex = (int) Math.floor(ofExistingOrCapacity ? size(): capacity() * below);
         if (belowIndex < size) {
             size = belowIndex;
-            Arrays.fill(list, size, list.length-1, null);
+            Arrays.fill(items, size, items.length-1, null);
         }
     }
 

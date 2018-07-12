@@ -9,7 +9,7 @@ import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
 import jcog.decide.Roulette;
 import jcog.math.random.SplitMix64Random;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import jcog.util.AtomicFloat;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -543,7 +543,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
     protected boolean hijackFair(float newPri, float oldPri, float temperature) {
 
 
-        float priEpsilon = Prioritized.EPSILON;
+        float priEpsilon = ScalarValue.EPSILON;
 
         if (oldPri > priEpsilon) {
             
@@ -682,7 +682,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
                     System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
                     System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
                     wVal[windowCap - 1] = v0;
-                    wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON); 
+                    wPri[windowCap - 1] = Util.max(p, ScalarValue.EPSILON);
 
                     int which = Roulette.selectRoulette(windowCap, (r) -> wPri[r], random);
                     V v = (V) wVal[which];

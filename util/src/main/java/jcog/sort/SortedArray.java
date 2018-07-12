@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  *
  * @param <X>
  * @author Andreas Hollmann
- *
+ * <p>
  * TODO extend FasterList as a base
  */
 public abstract class SortedArray<X> extends AbstractList<X> {
@@ -54,7 +54,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     public static final int BINARY_SEARCH_THRESHOLD = 8;
     private static final float GROWTH_RATE = 1.5f;
 
-    public X[] list = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+    public X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
 
     protected int size;
 
@@ -63,7 +63,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     private static int grow(int oldSize) {
         return 1 + (int) Math.ceil(oldSize * GROWTH_RATE);
-        
+
     }
 
     private static void swap(Object[] l, int a, int b) {
@@ -72,13 +72,14 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         l[b] = l[a];
         l[a] = x;
     }
+
     public X get(int i) {
         int s = size;
         if (s == 0)
             throw new NoSuchElementException();
         if (i >= s)
             throw new ArrayIndexOutOfBoundsException();
-        return list[i];
+        return items[i];
     }
 
 
@@ -86,7 +87,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
      * direct array access; use with caution ;)
      */
     public Object[] array() {
-        return list;
+        return items;
     }
 
     @Override
@@ -98,7 +99,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
         int totalOffset = this.size - index - 1;
         if (totalOffset >= 0) {
-            X[] list = this.list;
+            X[] list = this.items;
             X previous = list[index];
             if (totalOffset > 0) {
                 System.arraycopy(list, index + 1, list, index, totalOffset);
@@ -110,37 +111,10 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void removeFast(int index) {
         int totalOffset = this.size - index - 1;
         if (totalOffset >= 0) {
-            X[] list = this.list;
+            X[] list = this.items;
             if (totalOffset > 0) {
                 System.arraycopy(list, index + 1, list, index, totalOffset);
             }
@@ -155,9 +129,9 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     @Override
     public void clear() {
-        
-        Arrays.fill(list, null);
-        
+
+        Arrays.fill(items, null);
+
         this.size = 0;
     }
 
@@ -168,7 +142,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
     private int add(X element, FloatFunction<X> cmp, float elementRank) {
-        
+
         return (elementRank == elementRank) ? add(element, elementRank, cmp) : -1;
     }
 
@@ -181,14 +155,14 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
     private int addBinary(X element, float elementRank, FloatFunction<X> cmp, int size) {
-        
+
         final int index = this.findInsertionIndex(elementRank, 0, size - 1, new int[1], cmp);
 
         return insert(element, index, elementRank, cmp, size);
     }
 
     private int insert(X element, int index, float elementRank, FloatFunction<X> cmp, int size) {
-        final X last = list[size - 1];
+        final X last = items[size - 1];
 
         if (index == size || Util.fastCompare(cmp.floatValueOf(last), elementRank) < 0) {
             return addEnd(element);
@@ -198,7 +172,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
     private int addLinear(X element, float elementRank, FloatFunction<X> cmp, int size) {
-        X[] l = this.list;
+        X[] l = this.items;
         if (size > 0 && l.length > 0) {
             for (int i = 0; i < size; i++) {
                 final X current = l[i];
@@ -221,7 +195,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     private int addEnd(X e) {
         int s = this.size;
-        Object[] l = this.list;
+        Object[] l = this.items;
         if (l.length == s) {
             if (grows()) {
                 l = resize(grow(s));
@@ -235,8 +209,8 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     protected Object[] resize(int newLen) {
         X[] newList = newArray(newLen);
-        System.arraycopy(list, 0, newList, 0, size);
-        return this.list = newList;
+        System.arraycopy(items, 0, newList, 0, size);
+        return this.items = newList;
     }
 
     private int addInternal(int index, X e) {
@@ -253,13 +227,11 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         throw new UnsupportedOperationException();
 
 
-
-
     }
 
     private void addAtIndex(int index, X element) {
         int oldSize = this.size;
-        X[] list = this.list;
+        X[] list = this.items;
         if (list.length == oldSize) {
             if (grows()) {
 
@@ -269,7 +241,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
                     System.arraycopy(list, 0, newItems, 0, index);
                 }
                 System.arraycopy(list, index, newItems, index + 1, oldSize - index);
-                this.list = list = newItems;
+                this.items = list = newItems;
             } else {
                 rejectExisting(list[index]);
             }
@@ -282,7 +254,9 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
 
-    /** called when the lowest value has been kicked out of the list by a higher ranking insertion */
+    /**
+     * called when the lowest value has been kicked out of the list by a higher ranking insertion
+     */
     private void rejectExisting(X e) {
 
     }
@@ -300,22 +274,22 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
     public X removeLast() {
-        
-        return this.list[--size];
-        
-        
+
+        return this.items[--size];
+
+
     }
 
 
     public int capacity() {
-        return list.length;
+        return items.length;
     }
 
     /**
      * called when an item's sort order may have changed
      */
     public void adjust(int index, FloatFunction<X> cmp) {
-        X[] l = this.list;
+        X[] l = this.items;
         float cur = cmp.floatValueOf(l[index]);
 
         boolean reinsert = false;
@@ -338,40 +312,27 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         if (reinsert) {
             int next = this.findInsertionIndex(cur, 0, s - 1, new int[1], cmp);
             if (next == index - 1) {
-                
+
                 swap(l, index, index - 1);
             } else if (next == index + 1) {
-                
+
                 swap(l, index, index + 1);
             } else {
-                
+
                 insert(remove(index), next, cur, cmp, s);
             }
         }
     }
 
-    /** tests for descending sort */
+    /**
+     * tests for descending sort
+     */
     public boolean isSorted(FloatFunction<X> f) {
-        for (int i= 1; i < size; i++)
-            if (f.floatValueOf(list[i-1]) > f.floatValueOf(list[i]))
+        for (int i = 1; i < size; i++)
+            if (f.floatValueOf(items[i - 1]) > f.floatValueOf(items[i]))
                 return false;
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @SuppressWarnings("unchecked")
@@ -389,15 +350,14 @@ public abstract class SortedArray<X> extends AbstractList<X> {
             final int[] rightBorder = {0};
             final int left = this.findInsertionIndex(cmp.floatValueOf(element), 0, size, rightBorder, cmp);
 
-            X[] l = this.list;
+            X[] l = this.items;
             for (int index = left; index < rightBorder[0]; index++) {
                 if (element.equals(l[index])) {
                     return index;
                 }
             }
 
-            
-            
+
         }
 
         return indexOfInternal(element);
@@ -405,148 +365,8 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private int indexOfInternal(X e) {
-        Object[] l = this.list;
+        Object[] l = this.items;
         int s = this.size;
         for (int i = 0; i < s; i++) {
             if (e.equals(l[i]))
@@ -581,7 +401,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
         final int midle = left + (right - left) / 2;
 
-        X[] list = this.list;
+        X[] list = this.items;
 
         final X midleE = list[midle];
 
@@ -605,8 +425,8 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 //                }
 //            }
 //            if (index < max) {
-                rightBorder[0] = index;
-                return index;
+            rightBorder[0] = index;
+            return index;
 //            } else
 //                return -1; //table full
         }
@@ -617,58 +437,10 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         int nextLeft = c ? left : midle;
         int nextRight = c ? midle : right;
 
-            int next= findInsertionIndex(elementRank, nextLeft, nextRight, rightBorder, cmp);
-return next;
+        int next = findInsertionIndex(elementRank, nextLeft, nextRight, rightBorder, cmp);
+        return next;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -683,7 +455,7 @@ return next;
                                final int left, final int right, FloatFunction<X> cmp) {
 
 
-        X[] l = this.list;
+        X[] l = this.items;
         for (int index = left; index < right; ) {
             X anObject = l[index];
             if (0 < Util.fastCompare(cmp.floatValueOf(anObject), elementRank)) {
@@ -694,16 +466,6 @@ return next;
         return right;
 
 
-
-
-
-
-
-
-
-
-
-
     }
 
     /**
@@ -711,7 +473,7 @@ return next;
      */
     @Nullable
     public final X first() {
-        return this.isEmpty() ? null : list[0];
+        return this.isEmpty() ? null : items[0];
     }
 
     /**
@@ -721,27 +483,67 @@ return next;
     public final X last() {
         int size = this.size;
         if (size == 0) return null;
-        X[] ll = list;
+        X[] ll = items;
         return ll[Math.min(ll.length - 1, size - 1)];
 
     }
 
     @Override
-    public void forEach(Consumer<? super X> action) {
-        int s = size;
+    public final void forEach(Consumer<? super X> action) {
+        forEach(-1, action);
+    }
+
+    public final void forEach(int n, Consumer<? super X> action) {
+        int s = (n == -1) ? size : Math.min(size, n);
         if (s > 0) {
-            X[] l = list;
+            X[] l = items;
             for (int i = 0; i < s; i++)
                 action.accept(l[i]);
         }
     }
 
-    public Stream<X> stream() {
-        return ArrayIterator.stream(list,size());
+    public final void removeRange(int start, int _end, Consumer<? super X> action) {
+        int end = (_end == -1) ? size : Math.min(size, _end);
+        if (start<end) {
+            X[] l = items;
+            for (int i = start; i < end; i++)
+                action.accept(l[i]);
+            removeRange(start, end);
+        }
     }
+
+
+    protected void removeRange(int fromIndex, int toIndex) {
+        if (fromIndex <= toIndex)
+            shiftTailOverGap(this.items, fromIndex, toIndex);
+        else
+            throw new IndexOutOfBoundsException();
+    }
+
+    private void shiftTailOverGap(Object[] es, int lo, int hi) {
+        System.arraycopy(es, hi, es, lo, this.size - hi);
+        int ne = this.size;
+        int ns = (this.size -= hi - lo);
+        Arrays.fill(es, ns, ne, null);
+    }
+
+
+//    public boolean removeAbove(int index) {
+//        int s = this.size;
+//        if (index >= s)
+//            return false;
+//        Arrays.fill(items, index, s, null);
+//        this.size = index;
+//        return true;
+//    }
+
+    public Stream<X> stream() {
+        return ArrayIterator.stream(items, size());
+    }
+
     @Override
     public Iterator<X> iterator() {
-        return ArrayIterator.get(list, size());
+        return ArrayIterator.get(items, size());
     }
 
 }

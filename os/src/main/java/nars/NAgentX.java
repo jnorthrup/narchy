@@ -168,22 +168,54 @@ abstract public class NAgentX extends NAgent {
             n.on(a);
 
             n.runLater(() -> {
-                SimpleDeriver motivation = new SimpleDeriver(a.fire(),
-                        Derivers.nal(n, 6, 6, "motivation.nal"
-                        ),
-                        SimpleDeriver.GlobalTermLinker);
+                MatrixDeriver motivation = new MatrixDeriver(a.fire(),
+                        Derivers.nal(n, 6, 6, "motivation.nal"));
+
 
                 SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(),
                         Derivers.nal(n, 0, 0, "curiosity.nal"),
                         SimpleDeriver.GlobalTermLinker) {
+
+                    @Override
+                    public boolean singleton() {
+                        return true;
+                    }
+
+
+                    long last;
+
+                    @Override
+                    protected void starting(NAR nar) {
+                        last = nar.time();
+                        super.starting(nar);
+                    }
+
                     @Override
                     protected int next(NAR n, int iterations) {
-                        //enable.set(a.curiosity.floatValue() / (a.concepts.size()) );
-                        return super.next(n, Math.round(a.curiosity.floatValue() * iterations));
+                        long now = n.time();
+                        if (last + a.dur() > now)
+                            return 0; //already called for this duration
+                        last = now;
+
+                        int numActions = a.actions.size();
+
+                        iterations = numActions; //override
+//                        if (iterations == 1) {
+//                            if (n.random().nextFloat() >= a.curiosity.floatValue())
+//                                return 0;
+//
+//                        } else {
+                            iterations = Math.round(a.curiosity.floatValue() * iterations);
+                            iterations = Math.min(iterations, numActions);
+                            if (iterations < 1)
+                                return 0;
+//                        }
+
+                        return super.next(n, iterations);
                     }
                 };
 
-                a.curiosity.set(0.02f);
+                a.curiosity.set(0.5f);
 
 
                 //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);

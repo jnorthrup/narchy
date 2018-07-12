@@ -1,22 +1,16 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.bag.impl.PriArrayBag;
 import jcog.data.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
-import jcog.pri.Prioritized;
-import jcog.pri.op.PriMerge;
+import jcog.pri.ScalarValue;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
 import nars.derive.step.Occurrify;
-import nars.link.LinkActivations;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
-import nars.task.AbstractTask;
-import nars.task.ITask;
-import nars.task.NALTask;
 import nars.task.proxy.TaskWithTerm;
 import nars.term.*;
 import nars.term.anon.Anon;
@@ -29,7 +23,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 import nars.util.term.TermHashMap;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
@@ -41,8 +34,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
@@ -61,16 +52,7 @@ public class Derivation extends PreDerivation {
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
     private final static int ANON_INITIAL_CAPACITY = 16;
-    private final static BiFunction<Task, Task, Task> DERIVATION_MERGE = (pp, tt) -> {
-        pp.priMax(tt.pri());
-        if (pp instanceof NALTask)
-            ((NALTask) pp).causeMerge(tt);
-        if (pp.isCyclic() && !tt.isCyclic()) {
 
-            pp.setCyclic(false);
-        }
-        return pp;
-    };
 
     //    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     public final ArrayHashSet<Premise> premiseBuffer =
@@ -83,61 +65,6 @@ public class Derivation extends PreDerivation {
 
     public final Anon anon;
 
-    /**
-     * temporary buffer for derivations before input so they can be merged in case of duplicates
-     */
-    final PriArrayBag<Task> derivedTasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
-
-
-        @Override
-        public nars.Task put(nars.Task incoming, @Nullable MutableFloat overflow) {
-            //fast merge intercept: avoids synchronization in normal insert procedure
-            Task existing = map.get(incoming);
-            if (existing!=null) {
-                DERIVATION_MERGE.apply(existing, incoming);
-                return existing;
-            }
-
-            return super.put(incoming, overflow);
-        }
-
-        /** returning null elides lookup which was already performed on the intercept */
-        @Override protected nars.Task getExisting(nars.Task key) {
-            return null;
-        }
-
-        @Override
-        protected float merge(nars.Task existing, nars.Task incoming) {
-            throw new UnsupportedOperationException("should not reach here");
-        }
-
-        @Override
-        protected void removed(nars.Task task) {
-            //dont do anything, leave the task alone
-        }
-    };
-
-
-    final ITask derivedTasksDrainer = new AbstractTask() {
-
-        @Override
-        public ITask next(NAR nar) {
-            int s = derivedTasks.size();
-            int n =
-                    //Param.DerivedTaskBagDrainRate
-                    Util.clamp((int)(Math.ceil(s * Param.DerivedTaskBagDrainRate)), 1, s);
-
-
-            derivedTasks.pop(null, n, nar::input);
-
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            return "drainDerivations(" + Derivation.this + ")";
-        }
-    };
 
 
     private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
@@ -245,7 +172,6 @@ public class Derivation extends PreDerivation {
      */
     public boolean temporal;
 
-    public final LinkActivations linkActivations = new LinkActivations();
 
     private boolean eternal;
     /**
@@ -278,9 +204,6 @@ public class Derivation extends PreDerivation {
                 new TermHashMap()
 
         );
-
-
-        this.derivedTasks.setCapacity(Param.DerivedTaskBagCapacity);
 
         this.random = new SplitMix64Random(1);
 
@@ -584,7 +507,7 @@ public class Derivation extends PreDerivation {
         return atomic;
     }
 
-    public Derivation cycle(NAR nar, Deriver deri) {
+    public Derivation next(NAR nar, Deriver deri) {
         NAR pnar = this.nar;
 
         if (pnar != nar) {
@@ -629,7 +552,7 @@ public class Derivation extends PreDerivation {
                 te = task.priElseZero();
                 be = belief.priElseZero();
                 tb = te + be;
-                tb = tb < Prioritized.EPSILON ? 0.5f : te / tb;
+                tb = tb < ScalarValue.EPSILON ? 0.5f : te / tb;
             }
             return evidenceDouble = Stamp.zip(task.stamp(), belief.stamp(), tb);
         } else {
@@ -651,37 +574,19 @@ public class Derivation extends PreDerivation {
         anon.clear();
         taskUniques = 0;
         premiseBuffer.clear();
-        derivedTasks.clear();
         untransform.clear();
         termutes.clear();
         time = ETERNAL;
         super.clear();
     }
 
-    public Task add(Task t) {
-        return derivedTasks.put(t);
-    }
 
     public Term untransform(Term t) {
         return t.replace(untransform);
     }
 
-    public void commit() {
-
-        if (nar.exe.concurrent())
-            nar.exe.execute((nar)->nar.input(linkActivations));
-        else
-            nar.input(linkActivations);
-
-        int s = derivedTasks.size();
-        if (s > 0) {
-
-            derivedTasks.commit();
-
-            nar.input(derivedTasksDrainer);
-
-            nar.emotion.deriveTask.increment(s);
-        }
+    public final Task add(Task t) {
+        return deriver.derived.add(t, this);
     }
 
     public final boolean revertLive(int before, int cost) {
@@ -703,6 +608,7 @@ public class Derivation extends PreDerivation {
         float cc = w2cSafe(e);
         return cc >= confMin && (this.concTruth = $.t(concTruth.freq(), cc)) != null;
     }
+
 }
 
 

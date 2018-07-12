@@ -2,7 +2,7 @@ package jcog.exe.valve;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.pri.Pri;
+import jcog.pri.ScalarValue;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import static java.lang.System.nanoTime;
@@ -101,7 +101,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         if (this.start()) {
 
             float p = this.pri();
-            if (p == p && p > Pri.EPSILON) {
+            if (p == p && p > ScalarValue.EPSILON) {
 
                 long runtimeNS = Math.round(cycleNS * p);
 

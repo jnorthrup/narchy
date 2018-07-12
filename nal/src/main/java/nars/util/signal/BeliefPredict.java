@@ -114,7 +114,7 @@ public class BeliefPredict {
                     t,
                     when - sampleDur/2, when + sampleDur/2,
                     nar.evidence()[0]
-            ).pri(nar.priDefault(BELIEF));
+            ).priSet(nar.priDefault(BELIEF));
 
             predict.input(
                     p

@@ -23,7 +23,11 @@ import static nars.Op.GOAL;
  */
 public interface NARIn {
 
-    void input(ITask... t);
+    void input(ITask t);
+
+    default void input(ITask... t) {
+        for (ITask x : t) input(x);
+    }
 
     @Nullable
     default Task question(@NotNull String questionTerm, long occ, @NotNull BiConsumer<ActiveQuestionTask,Task> eachAnswer) throws Narsese.NarseseException {

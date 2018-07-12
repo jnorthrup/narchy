@@ -59,7 +59,6 @@ import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
 import static java.lang.Thread.onSpinWait;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
@@ -2160,9 +2159,7 @@ public enum Util {
     }
 
     public static float aveGeo(float a, float b) {
-
-
-        return (float) sqrt(a * b);
+        return (float) Math.sqrt(a * b);
     }
 
     public static void assertUnitized(float... f) {
@@ -2325,5 +2322,9 @@ public enum Util {
             }
             return Util.clamp(Math.round(y), YMin, YMax);
         };
+    }
+
+    public static int sqrt(int x) {
+        return (int) Math.round(Math.sqrt(x));
     }
 }

@@ -354,7 +354,7 @@ public class ShapeSensor extends NARService {
             long now = n.time();
             for (Term x : image) {
                 ITask xx = new SignalTask($.inh(x,id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
-                        last, now, n.time.nextStamp()).pri(n.priDefault(BELIEF));
+                        last, now, n.time.nextStamp()).priSet(n.priDefault(BELIEF));
                 t.accept(xx);
             }
         }

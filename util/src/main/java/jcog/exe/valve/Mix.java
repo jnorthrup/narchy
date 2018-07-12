@@ -3,7 +3,7 @@ package jcog.exe.valve;
 import com.google.common.base.Joiner;
 import jcog.Util;
 import jcog.bag.impl.ArrayBag;
-import jcog.pri.Pri;
+import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,12 +40,12 @@ public class Mix<Who, What, X extends Share<Who, What>> extends ArrayBag<Who, X>
 
         float range = max[0] - min[0];
         int n = size();
-        if (range < Pri.EPSILON * n) {
+        if (range < ScalarValue.EPSILON * n) {
             float each = 1f / n;
-            commit(s -> s.priSet(each));
+            commit(s -> s.pri(each));
         } else {
             float minn = min[0];
-            commit(s -> s.priSet(Util.clamp(((s.need - minn) / range),0.1f/n,1f/n)));
+            commit(s -> s.pri(Util.clamp(((s.need - minn) / range),0.1f/n,1f/n)));
 
         }
 

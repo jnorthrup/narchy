@@ -152,7 +152,7 @@ public class NARHear extends Loop {
                         c2w(nar.confDefault(BELIEF)*confFactor)
                 ),
                 nar)
-                .pri(nar.priDefault(BELIEF) * priorityFactor)
+                .priSet(nar.priDefault(BELIEF) * priorityFactor)
         );
     }
 

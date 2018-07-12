@@ -160,12 +160,15 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         return t;
     }
     public void alwaysWant(Termed x, float conf) {
+        long[] evidenceShared = nar.evidence();
+
         always.add(()-> {
             long now = Tense.dither(this.now, nar);
             long next = Tense.dither(this.now + nar.dur(), nar);
             return new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                     now, next,
-                    nar.evidence()
+                    evidenceShared
+                    //nar.evidence()
                     //Stamp.UNSTAMPED
 
             );

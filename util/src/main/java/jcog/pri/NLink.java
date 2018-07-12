@@ -2,8 +2,10 @@ package jcog.pri;
 
 import static jcog.Texts.n4;
 
-/** immutable object + mutable number pair;
- * considered in a 'deleted' state when the value is NaN */
+/**
+ * immutable object + mutable number pair;
+ * considered in a 'deleted' state when the value is NaN
+ */
 public class NLink<X> extends Pri implements PriReference<X> {
 
     public final X id;
@@ -12,19 +14,22 @@ public class NLink<X> extends Pri implements PriReference<X> {
         super(v);
         this.id = x;
     }
+
     @Override
     public boolean equals(Object that) {
         return (this == that) || id.equals(
                 (that instanceof NLink) ? ((NLink) that).id
                         :
-                      that
-                );
+                        that
+        );
     }
+
     @Override
     public boolean isDeleted() {
-        float p = pri;
-        return p!=p; 
+        float p = pri();
+        return p != p;
     }
+
     @Override
     public int hashCode() {
         return id.hashCode();
@@ -34,30 +39,6 @@ public class NLink<X> extends Pri implements PriReference<X> {
     final public X get() {
         return id;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override

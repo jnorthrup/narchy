@@ -7,33 +7,21 @@ package jcog.pri;
  *
  * range is not bounded; for 0..1.0 limit use UnitPri
  */
-public class Pri implements Priority {
+public class Pri extends Priority.AtomicScalarValue implements Priority {
 
-    protected volatile float pri;
 
     public Pri(Prioritized b) {
         this(b.pri());
     }
 
     public Pri(float p) {
-        priSet(p);
+        pri(p);
     }
 
     /** default: pri=0 */
     public Pri() {
-
+        pri(0);
     }
-
-    @Override
-    public float priSet(float p) {
-        return this.pri = p;
-    }
-
-    @Override
-    public final float pri() {
-        return pri;
-    }
-
 
     /**
      * Fully display the BudgetValue
@@ -46,12 +34,18 @@ public class Pri implements Priority {
     }
 
     public boolean delete() {
-        float p = pri;
+        float p = pri();
         if (p==p) {
-            pri = (Float.NaN);
+            priDirect(Float.NaN);
             return true;
         }
         return false;
     }
+
+    /** allows subclasses to bypass their own overridden pri() methods */
+    protected final void priDirect(float x) {
+        super.pri(x);
+    }
+
 
 }

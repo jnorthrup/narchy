@@ -107,7 +107,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         @Override
         public TermLinker termlinker(Term term) {
-            return TermLinker.Empty;
+            return TermLinker.NullLinker;
         }
 
         @Override

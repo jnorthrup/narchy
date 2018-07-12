@@ -34,7 +34,7 @@ public class Premise {
 
     public final Task task;
 
-    final PriReference<Term> termLink;
+    public final PriReference<Term> termLink;
 
     /**
      * specially constructed hash that is useful for sorting premises by:

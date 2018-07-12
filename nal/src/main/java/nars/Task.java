@@ -356,7 +356,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             return null;
 
         float xp = x.priElseZero();
-        y.priSet(xp);
+        y.pri(xp);
 
         ((NALTask) y).cause(x.cause().clone());
 
@@ -913,7 +913,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             if (o != null) {
                 try {
 
-                    Task yy = o.getOne().execute.apply(this, n);
+                    Task yy = o.getOne().model.apply(this, n);
                     if (yy != null && !this.equals(yy)) {
                         queue.add(yy);
                     }
@@ -1003,15 +1003,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     byte punc();
 
     /**
-     * fluent form of setPri which returns this class
+     * fluent form of pri(x) which returns this class
      */
-    default Task pri(float p) {
-        priSet(p);
+    default Task priSet(float p) {
+        this.pri(p);
         return this;
     }
 
     default Task pri(NAR defaultPrioritizer) {
-        return pri(defaultPrioritizer.priDefault(punc()));
+        return priSet(defaultPrioritizer.priDefault(punc()));
     }
 
     /**

@@ -114,7 +114,7 @@ class PremiseRuleTest {
 
 
 
-        PremiseDeriverSource x = PremiseDeriverSource.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Strong)");
+        PremiseDeriverSource x = PremiseDeriverSource.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
         
         
         assertEquals(vv, x.ref.volume());

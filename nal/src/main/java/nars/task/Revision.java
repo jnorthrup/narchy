@@ -154,10 +154,16 @@ public class Revision {
         if (adt == bdt) {
             dt = adt;
         } else if (adt == XTERNAL || bdt == XTERNAL) {
-            dt = XTERNAL;
+
+            dt = (adt == XTERNAL) ? bdt : adt;
+            //dt = choose(adt, bdt, aProp);
+
         } else if (adt == DTERNAL || bdt == DTERNAL) {
-            dt = DTERNAL;
-        } else if (((adt > 0 == bdt > 0) && ((float)(Math.abs(adt - bdt))/nar.dur() <= nar.intermpolationDurLimit.floatValue()))) {
+
+            dt = choose(adt, bdt, aProp);
+            //dt = (adt == DTERNAL) ? bdt : adt;
+
+        } else if (((adt >= 0 == bdt >= 0) && ((float)(Math.abs(adt - bdt))/nar.dur() <= nar.intermpolationDurLimit.floatValue()))) {
             //merge if they are the same sign or within a some number of durations
 
             long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
@@ -173,6 +179,10 @@ public class Revision {
 
 
         return Tense.dither(dt, nar);
+    }
+
+    static int choose(int a, int b, float aProp) {
+        return (aProp >= 0.5f) ? a : b;
     }
 
     static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
@@ -284,7 +294,7 @@ public class Revision {
 
         tasks = T.tasks();
 
-        t.priSet(Priority.fund(Util.max((TaskRegion p) -> p.task().priElseZero(), tasks),
+        t.pri(Priority.fund(Util.max((TaskRegion p) -> p.task().priElseZero(), tasks),
                 true,
 
                 Tasked::task, tasks));

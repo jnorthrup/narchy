@@ -15,11 +15,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Prioritized extends Deleteable {
 
-    /**
-     * default minimum difference necessary to indicate a significant modification in budget float number components
-     */
-    float EPSILON =             0.00001f;
-
     static float sum(Prioritized... src) {
         return Util.sum(Prioritized::priElseZero, src);
     }
@@ -38,7 +33,7 @@ public interface Prioritized extends Deleteable {
     /** used during periodic async updates to allow implementations to
      *  modify the local value depending on the referent or other condition
      */
-    default float priUpdate() {
+    default float priCommit() {
         return pri();
     }
 
@@ -101,7 +96,7 @@ public interface Prioritized extends Deleteable {
         assert (l > 0);
 
         float ss = sum(xx);
-        if (ss <= Prioritized.EPSILON)
+        if (ss <= ScalarValue.EPSILON)
             return;
 
         float factor = target / ss;
@@ -125,11 +120,10 @@ public interface Prioritized extends Deleteable {
     default float priElseNeg1() {
         float p = pri();
         return p == p ? p : -1;
-        
     }
 
-    @Override
-    default boolean isDeleted() {
+    /** deleted if pri()==NaN */
+    @Override default boolean isDeleted() {
         float p = pri();
         return p!=p; 
     }

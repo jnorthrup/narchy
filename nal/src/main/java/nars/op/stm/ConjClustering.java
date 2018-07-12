@@ -255,7 +255,7 @@ public class ConjClustering extends Causable {
                                 float cmplFactor =
                                         ((float) v) / (v + maxVolume);
 
-                                m.priSet(Priority.fund(priMin * cmplFactor, true, uu));
+                                m.pri(Priority.fund(priMin * cmplFactor, true, uu));
 
                                 if (in.inputIfCapacity(m)) {
                                     centroidGen++;

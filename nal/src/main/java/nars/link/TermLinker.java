@@ -22,18 +22,18 @@ public interface TermLinker {
      *
      * balance = nar.termlinkBalance
      */
-    void link(Concept src, float pri, List<TaskLink> fired, LinkActivations activations, Random rng, NAR nar);
+    void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks activations, Random rng, NAR nar);
 
 
     /** dont override
      *  preferable to use the RNG local to the derivation instance, not the NAR's.
      *  also termlinkBalance can be cached or modulated contextually with the newer method
      * */
-    @Deprecated default void link(Concept src, float pri, List<TaskLink> fired, LinkActivations activations,  NAR nar) {
+    @Deprecated default void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks activations, NAR nar) {
         link(src, pri, fired, activations, nar.random(), nar);
     }
 
-    TermLinker Empty = new TermLinker() {
+    TermLinker NullLinker = new TermLinker() {
         @Override
         public Stream<? extends Termed> targets() {
             return Stream.empty();
@@ -41,7 +41,7 @@ public interface TermLinker {
 
 
         @Override
-        public void link(Concept src, float pri, List<TaskLink> fired, LinkActivations activations, Random rng, NAR nar) {
+        public void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks activations, Random rng, NAR nar) {
             //nothing
         }
 

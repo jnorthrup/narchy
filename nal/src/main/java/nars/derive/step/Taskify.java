@@ -43,7 +43,7 @@ public class Taskify extends AbstractPred<Derivation> {
                 ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && !x.hasVarQuery()));
     }
 
-    protected static boolean spam(Derivation p, int cost) {
+    private static boolean spam(Derivation p, int cost) {
         p.use(cost);
         return true;
     }
@@ -118,23 +118,26 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
+        //these must be applied before possible merge on input to derivedTask bag
+        t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
+        if (d.concSingle)
+            t.setCyclic(true);
+        t.pri(priority);
+
 
         if (d.add(t) != t) {
+
+            d.use(Param.TTL_DERIVE_TASK_REPEAT);
             d.nar.emotion.deriveFailDerivationDuplicate.increment();
-            spam(d, Param.TTL_DERIVE_TASK_REPEAT);
+
         } else {
-
-            if (d.concSingle)
-                t.setCyclic(true);
-
-            t.priSet(priority);
-
-            t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
 
             if (Param.DEBUG)
                 t.log(channel.ruleString);
 
             d.use(Param.TTL_DERIVE_TASK_SUCCESS);
+            d.nar.emotion.deriveTask.increment();
+
         }
 
         return true;

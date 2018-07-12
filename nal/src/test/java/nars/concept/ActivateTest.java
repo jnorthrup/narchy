@@ -5,7 +5,7 @@ import nars.*;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.link.Activate;
-import nars.link.LinkActivations;
+import nars.link.ActivatedLinks;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
@@ -50,7 +50,7 @@ class ActivateTest {
 
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
-            LinkActivations linkActivations = new LinkActivations();
+            ActivatedLinks linkActivations = new ActivatedLinks();
             dummy.premiseMatrix(cf, (task, term) -> {
                 Task ptask = task;
                 Term pterm = term.get();

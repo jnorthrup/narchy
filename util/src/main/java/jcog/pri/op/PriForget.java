@@ -2,8 +2,8 @@ package jcog.pri.op;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.pri.Pri;
 import jcog.pri.Priority;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,9 +19,11 @@ public class PriForget<P extends Priority> implements Consumer<P> {
 
     
     final float priMult;
+    private final float minPossible;
 
-    public PriForget(float priRemovedPct) {
+    public PriForget(float priRemovedPct, float minPossible) {
         this.priMult = Util.unitize(1f - priRemovedPct);
+        this.minPossible = minPossible;
     }
 
 
@@ -47,7 +49,7 @@ public class PriForget<P extends Priority> implements Consumer<P> {
                         Math.min(1f, pressure / (pressure + mass))
             ;
 
-            if (eachMustForgetPct > cap * Pri.EPSILON) {
+            if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
                 return f.valueOf(eachMustForgetPct);
             }
 
@@ -71,7 +73,9 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     @Override
     public void accept(P b) {
 
-        b.priMult(priMult, Pri.EPSILON);
+        b.priMult(priMult,
+                minPossible
+        );
 
     }
 

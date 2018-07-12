@@ -29,7 +29,7 @@ public class PriorityAdjustingCauseChannel<X extends Priority> extends CauseChan
 
         float p = x.pri();
         if (p == p && (preBias != 0 || preAmp != 1)) {
-            x.priSet(preBias + p * preAmp);
+            x.pri(preBias + p * preAmp);
         }
         target.accept(x);
     }

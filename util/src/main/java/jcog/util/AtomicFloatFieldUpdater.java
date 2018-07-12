@@ -34,6 +34,11 @@ public class AtomicFloatFieldUpdater<X>  {
                 v -> floatToIntBits(f.valueOf(intBitsToFloat(v)))
         ));
     }
+    public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
+        return intBitsToFloat(updater.updateAndGet(x,
+                v -> floatToIntBits(f.apply(intBitsToFloat(v), y))
+        ));
+    }
 
     void addUpdate(X x, float add, Runnable r) {
         if (Math.abs(add) > Float.MIN_NORMAL) {

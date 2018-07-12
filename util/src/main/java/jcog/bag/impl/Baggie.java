@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.LightObjectFloatPair;
 import jcog.pri.PriMap;
-import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectFloatPredicate;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -348,7 +348,7 @@ public class Baggie<X> extends PriMap<X> {
             float min = priShort(this.min);
             float max = priShort(this.max);
             float diff = max - min;
-            if (diff > Prioritized.EPSILON * size) {
+            if (diff > ScalarValue.EPSILON * size) {
                 float i = random.nextFloat(); 
                 
                 i = Util.lerp(diff, i /* flat */, (i * i) /* curved */);
