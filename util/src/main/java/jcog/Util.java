@@ -657,41 +657,30 @@ public enum Util {
         return ((float) i) / discretness;
     }
 
-    public static boolean equals(double a, double b) {
-        return equals(a, b, Double.MIN_VALUE * 2);
-    }
 
     public static boolean equals(float a, float b) {
-        return equals(a, b, Float.MIN_VALUE * 2);
+        return equals(finite(a), finite(b), Float.MIN_VALUE * 2);
     }
 
     /**
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(float a, float b, float epsilon) {
-        assert (a == a);
-        return (Math.abs(a - b) < epsilon)
-
-
-                ;
+        return Math.abs(finite(a) - finite(b)) < epsilon;
     }
 
     /**
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(double a, double b, double epsilon) {
-        return ((a != a) && (b != b))
-                ||
-                (a == b)
-                ||
-                (Math.abs(a - b) < epsilon);
+        return (Math.abs(finite(a) - finite(b)) < epsilon);
     }
 
     public static boolean equals(float[] a, float[] b, float epsilon) {
         if (a == b) return true;
         int l = a.length;
         for (int i = 0; i < l; i++) {
-            if (!Util.equals(a[i], b[i], epsilon))
+            if (!equals(a[i], b[i], epsilon))
                 return false;
         }
         return true;

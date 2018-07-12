@@ -10,6 +10,8 @@ import nars.task.NALTask;
 import nars.util.TaskBagDrainer;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,11 +53,13 @@ public interface DerivedTasks {
      * while other thread(s) drain it in prioritized order as input to NAR.
       */
     class DerivedTasksBag implements DerivedTasks {
+
+        final static Logger logger = LoggerFactory.getLogger(DerivedTasksBag.class);
+
         /**
          * temporary buffer for derivations before input so they can be merged in case of duplicates
          */
         final PriArrayBag<Task> tasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
-
 
             @Override
             public Task put(Task incoming, @Nullable MutableFloat overflow) {
@@ -66,8 +70,16 @@ public interface DerivedTasks {
                     return existing;
                 }
 
+                if (isFull()) {
+                    if (incoming.pri() < priMin()) {
+                        return null; //fast drop the novel task due to insufficient priority
+                        //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
+                    }
+                }
+
                 return super.put(incoming, overflow);
             }
+
 
             /** returning null elides lookup which was already performed on the intercept */
             @Override protected Task getExisting(Task key) {

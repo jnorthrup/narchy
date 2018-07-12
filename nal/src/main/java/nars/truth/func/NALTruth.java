@@ -396,8 +396,8 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             float conf =
-                    n.confMin.floatValue();
-                    //n.confMin.floatValue() * 2;
+                    //n.confMin.floatValue();
+                    n.confMin.floatValue() * 2;
                         // + m.confResolution.floatValue();
                     //Util.lerp(Util.sqr(n.random().nextFloat()) * 0.5f, minConf, n.confDefault(GOAL));
 

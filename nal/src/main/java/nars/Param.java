@@ -31,19 +31,19 @@ public abstract class Param {
     public static final boolean STRONG_COMPOSITION = false;
 
 
-    public static final boolean SHUFFLE_TERMUTES = false;
+    public static final boolean SHUFFLE_TERMUTES = true;
 
 
     /**
      * size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
      * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
      */
-    public static final int DerivedTaskBagCapacity = 2048;
+    public static final int DerivedTaskBagCapacity = 512;
     public static final float DerivedTaskBagDrainRate = 0.5f;
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
-            10;
+            8;
             //5;
 
 
