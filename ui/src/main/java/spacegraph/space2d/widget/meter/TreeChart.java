@@ -175,20 +175,26 @@ public class TreeChart<X> extends Surface {
     }
 
     private static double worst(Collection<ItemVis> ch, double w) {
-        if (ch.isEmpty()) {
-            return Double.MAX_VALUE;
-        }
-        double areaSum = 0.0, maxArea = 0.0, minArea = Double.MAX_VALUE;
+        if (ch.isEmpty())
+            return Double.POSITIVE_INFINITY;
+
+        double areaSum = 0.0, maxArea = 0.0, minArea = Double.POSITIVE_INFINITY;
         for (ItemVis item : ch) {
             double area = item.area;
             areaSum += area;
             minArea = minArea < area ? minArea : area;
             maxArea = maxArea > area ? maxArea : area;
         }
+        if (areaSum < Double.MIN_NORMAL)
+            return Double.POSITIVE_INFINITY;
+        if (w < Double.MIN_NORMAL)
+            return Double.POSITIVE_INFINITY;
+
         double sqw = w * w;
+
         double sqAreaSum = areaSum * areaSum;
-        return Math.max(sqw * maxArea / sqAreaSum,
-                sqAreaSum / (sqw * minArea));
+
+        return Math.max(sqw * maxArea / sqAreaSum, sqAreaSum / (sqw * minArea));
     }
 
     private void layoutrow(Iterable<ItemVis> row, double w) {

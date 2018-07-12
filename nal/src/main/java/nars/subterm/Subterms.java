@@ -783,7 +783,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return (index == -1) ? null : termsExcept(index);
     }
 
-    default void append(ByteArrayDataOutput out) {
+    default void appendTo(ByteArrayDataOutput out) {
         out.writeByte(subs());
         forEach(t -> t.appendTo(out));
     }

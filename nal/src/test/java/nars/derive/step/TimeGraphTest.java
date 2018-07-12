@@ -207,11 +207,13 @@ class TimeGraphTest {
     }
 
     @Test
-    void testNobrainerNegation() throws Narsese.NarseseException {
+    void testNoBrainerNegation() {
 
         TimeGraph C = newTimeGraph(1);
-        C.know($.$("x"), 1);
-        C.know($.$("y"), 2);
+        C.autoNeg.add($$("x"));
+        C.print();
+        C.know($$("x"), 1);
+        C.know($$("y"), 2);
         
         System.out.println();
         assertSolved("(--x ==>+- y)", C,

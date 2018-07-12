@@ -191,7 +191,7 @@ public class AnonVector extends TermVector implements FullyInternable {
     }
 
     @Override
-    public void append(ByteArrayDataOutput out) {
+    public void appendTo(ByteArrayDataOutput out) {
         short[] ss = subterms;
         out.writeByte(ss.length);
         for (short s: ss) {

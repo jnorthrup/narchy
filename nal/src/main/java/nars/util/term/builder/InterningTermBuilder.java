@@ -68,7 +68,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     private Term compoundInterned(InternedCompound x) {
-        return compoundInstance(Op.ops[x.op], x.dt, x.rawSubs.get());
+        return compoundInstance(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key);
     }
 
     @Override
@@ -80,10 +80,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //        }
 
         return internable ?
-                apply(InternedCompound.get(op, dt, u)) :
+                compoundInterned(op, dt, u) :
                 super.compound(op, dt, u);
     }
 
+    private Term compoundInterned(Op op, int dt, Term[] u) {
+        return apply(InternedCompound.get(op, dt, u));
+    }
 
 
     @Override
@@ -92,7 +95,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             return Op.EmptySubterms;
 
         if (inOp != PROD && internable(s)) {
-            return compound(PROD, s).subterms();
+            return compoundInterned(PROD, DTERNAL, s).subterms();
         } else {
 //            if (s.length == 2 && s[0].compareTo(s[1]) > 0) {
 //                //TODO filter purely anon

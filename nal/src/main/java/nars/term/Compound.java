@@ -196,7 +196,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         Op o = op();
         out.writeByte(o.id);
-        subterms().append(out);
+        subterms().appendTo(out);
         if (o.temporal)
             out.writeInt(dt());
 

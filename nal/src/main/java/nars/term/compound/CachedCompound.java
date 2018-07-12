@@ -1,6 +1,9 @@
 package nars.term.compound;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
+import jcog.data.byt.DynBytes;
+import nars.IO;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -33,7 +36,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     private final short _volume;
     private final int _structure;
 
-    public static final class SimpleCachedCompound extends CachedCompound {
+    public static class SimpleCachedCompound extends CachedCompound {
 
         public SimpleCachedCompound(Op op, Subterms subterms) {
             super(op, DTERNAL, subterms);
@@ -91,6 +94,33 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         }
 
     }
+
+    public static final class SimpleCachedCompoundWithBytes extends SimpleCachedCompound {
+
+        final byte[] key;
+
+        public SimpleCachedCompoundWithBytes(Op op, Subterms subterms) {
+            this(op, subterms, null);
+        }
+
+        public SimpleCachedCompoundWithBytes(Op op, Subterms subterms, @Nullable byte[] knownKey) {
+            super(op, subterms);
+
+            if (knownKey==null) {
+                DynBytes d = new DynBytes(IO.termBytesEstimate(subterms)+1);
+                super.appendTo((ByteArrayDataOutput) d);
+                key = d.array();
+            } else {
+                key = knownKey;
+            }
+        }
+
+        @Override
+        public void appendTo(ByteArrayDataOutput out) {
+            out.write(key);
+        }
+    }
+
 
     /** caches a reference to the root for use in terms that are inequal to their root */
     public static class TemporalCachedCompound extends CachedCompound  {

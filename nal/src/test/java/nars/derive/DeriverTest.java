@@ -140,7 +140,10 @@ class DeriverTest {
         );
 
 
-        t.ask("(a-->b)").mustQuestion(64, "(a==>b)");
+        t.ask("(a-->b)")
+                .mustQuestion(64, "(a ==>+- b)")
+                .mustQuestion(64, "(a ==>+- a)")
+        ;
 
     }
 

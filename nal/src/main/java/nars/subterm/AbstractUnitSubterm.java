@@ -17,7 +17,7 @@ abstract class AbstractUnitSubterm implements Subterms {
     protected abstract Term sub();
 
     @Override
-    public final void append(ByteArrayDataOutput out) {
+    public final void appendTo(ByteArrayDataOutput out) {
         out.writeByte(1);
         sub().appendTo(out);
     }

@@ -11,6 +11,7 @@ import nars.task.CommandTask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termlike;
 import nars.term.Terms;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
@@ -305,10 +306,14 @@ public class IO {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
         } else {
-            DynBytes d = new DynBytes(t.volume() * 6 /* estimate */);
+            DynBytes d = new DynBytes(termBytesEstimate(t) /* estimate */);
             t.appendTo((ByteArrayDataOutput) d);
             return d.array();
         }
+    }
+
+    public static int termBytesEstimate(Termlike t) {
+        return t.volume() * 8;
     }
 
 
@@ -316,7 +321,7 @@ public class IO {
     public static byte[] taskToBytes(Task x) {
 
 
-        DynBytes dos = new DynBytes(x.volume() * 8);
+        DynBytes dos = new DynBytes(termBytesEstimate(x));
 
         return bytes(x, dos).array();
     }

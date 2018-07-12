@@ -168,7 +168,7 @@ public class ArrayTermVector extends TermVector {
         return true;
     }
 
-    public final void append(ByteArrayDataOutput out) {
+    public final void appendTo(ByteArrayDataOutput out) {
         Term[] t = this.terms;
         out.writeByte(t.length);
         for (Term x : t)

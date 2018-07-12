@@ -65,7 +65,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             .build();
 
 
-    protected final MutableSet<Term> autoNeg = new UnifiedSet();
+    public final MutableSet<Term> autoNeg = new UnifiedSet();
 
 
 

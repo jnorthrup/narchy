@@ -115,7 +115,11 @@ public abstract class TermBuilder {
     }
 
 
-    protected Term compoundInstance(Op o, int dt, Term[] u) {
+    protected final Term compoundInstance(Op o, int dt, Term[] u) {
+        return compoundInstance(o, dt, u, null);
+    }
+
+    protected Term compoundInstance(Op o, int dt, Term[] u, @Nullable byte[] key) {
         assert (!o.atomic) : o + " is atomic, with subterms: " + (u);
 
         boolean hasEllipsis = false;
@@ -142,7 +146,7 @@ public abstract class TermBuilder {
                     return new CachedUnitCompound(o, x);
             }
         } else {
-            return theCompound(o, dt, subterms(o, u));
+            return theCompound(o, dt, subterms(o, u), key);
         }
     }
 
@@ -151,7 +155,11 @@ public abstract class TermBuilder {
         return theCompound(op, DTERNAL, subterms);
     }
 
-    public Compound theCompound(Op op, int dt, Subterms subterms) {
+    public final Compound theCompound(Op op, int dt, Subterms subterms) {
+        return theCompound(op, dt, subterms, null);
+    }
+
+    public Compound theCompound(Op op, int dt, Subterms subterms, @Nullable byte[] key) {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
         if (!op.temporal && !subterms.isTemporal()) {
@@ -159,7 +167,11 @@ public abstract class TermBuilder {
 //                throw new WTF();
 //            }
             assert(dt == DTERNAL);
-            return new CachedCompound.SimpleCachedCompound(op, subterms);
+            if (subterms.volume() < Param.BYTE_KEY_CACHED_BELOW_VOLUME) {
+                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
+            } else {
+                return new CachedCompound.SimpleCachedCompound(op, subterms);
+            }
         } else {
             return new CachedCompound.TemporalCachedCompound(op, dt, subterms);
         }

@@ -172,9 +172,8 @@ public class Occurrify extends TimeGraph {
         long beliefStart = single ? TIMELESS : d.beliefStart, beliefEnd = single ? TIMELESS : d.belief.end();
 
 
-
-
         autoNegNext.clear();
+
         if (task.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
 
             assert(nextPos.isEmpty() && nextNeg.isEmpty());

@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class ByteKey extends Pri {
 
     /*@Stable*/
-    protected final byte[] key;
+    public final byte[] key;
     protected final int hash;
 
     public ByteKey(byte[] key, int hash) {
