@@ -26,8 +26,8 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Function;
 
-import static nars.derive.premise.PremiseDeriverSource.BeliefTerm;
-import static nars.derive.premise.PremiseDeriverSource.TaskTerm;
+import static nars.derive.premise.PremiseRuleSource.BeliefTerm;
+import static nars.derive.premise.PremiseRuleSource.TaskTerm;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -39,11 +39,11 @@ public enum PremiseDeriverCompiler {
             (int choice) -> 1f;
 
 
-    public static PremiseDeriver the(Set<PremiseDeriverProto> r) {
+    public static PremiseDeriver the(Set<PremiseRuleProto> r) {
         return the(r, null);
     }
 
-    public static PremiseDeriver the(Set<PremiseDeriverProto> r, @Nullable Function<PREDICATE<Derivation>, PREDICATE<Derivation>> each) {
+    public static PremiseDeriver the(Set<PremiseRuleProto> r, @Nullable Function<PREDICATE<Derivation>, PREDICATE<Derivation>> each) {
         assert (!r.isEmpty());
 
         /** indexed by local (deriver-specific) id */

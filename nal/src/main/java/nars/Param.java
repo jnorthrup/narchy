@@ -39,7 +39,7 @@ public abstract class Param {
      * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
      */
     public static final int DerivedTaskBagCapacity = 2048;
-    public static final float DerivedTaskBagDrainRate = 0.75f;
+    public static final float DerivedTaskBagDrainRate = 0.5f;
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =

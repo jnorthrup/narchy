@@ -26,7 +26,7 @@ public enum Image { ;
         if (t.op()==INH) {
             Term p = t.sub(0);
             if (p.op()==PROD && !imaged(p)) {
-                Term r = p.replace(x, Op.imExt);
+                Term r = p.replace(x, Op.ImgExt);
                 if (r!=p) {
                     Term i = t.sub(1);
                     return INH.the(x, PROD.the(ArrayUtils.prepend(i, r.subterms().arrayShared(), Term[]::new)));
@@ -37,7 +37,7 @@ public enum Image { ;
     }
 
     public static boolean imaged(Term p) {
-        return p.hasAny(Op.VAR_DEP) && p.OR(x -> (x == Op.imInt || x == Op.imExt));
+        return p.hasAny(Op.VAR_DEP) && p.OR(x -> (x == Op.ImgInt || x == Op.ImgExt));
     }
 
     private static Term imageInt(Term t, Term x) {
@@ -46,7 +46,7 @@ public enum Image { ;
         if (t.op()==INH) {
             Term p = t.sub(1);
             if (p.op()==PROD && !imaged(p)) {
-                Term r = p.replace(x, Op.imInt);
+                Term r = p.replace(x, Op.ImgInt);
                 if (r!=p) {
                     Term i = t.sub(0);
                     return INH.the(PROD.the(ArrayUtils.prepend(i, r.subterms().arrayShared(), Term[]::new)), x);
@@ -73,22 +73,22 @@ public enum Image { ;
         if (t.op()==INH && t.hasAll(imageBits)) {
             Term s = t.sub(0);
             Subterms ss = null;
-            boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.imInt);
+            boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.ImgInt);
             Term p = t.sub(1);
 
             Subterms pp = null;
-            boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.imExt);
+            boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.ImgExt);
 
             if (isInt && !isExt) {
                 
                 
-                Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.toArraySubRange(1, ss.subs()), Op.imInt, p)));
+                Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.toArraySubRange(1, ss.subs()), Op.ImgInt, p)));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);
             } else if (isExt && !isInt) {
                 
                 
-                Term u = INH.the(PROD.the(Util.replaceDirect(pp.toArraySubRange(1, pp.subs()), Op.imExt, s)), pp.sub(0));
+                Term u = INH.the(PROD.the(Util.replaceDirect(pp.toArraySubRange(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);
             }

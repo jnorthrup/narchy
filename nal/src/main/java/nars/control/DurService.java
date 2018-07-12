@@ -97,9 +97,10 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     protected void starting(NAR nar) {
         long now = nar.time();
         int durCycles = durCycles(nar);
-        lastStarted = now - durCycles + 1;
-        lastFinished = lastStarted  - durCycles;
-        spawn(nar, now + 1);
+        lastStarted = now - durCycles;
+        lastFinished = lastStarted - durCycles;
+        //spawn(nar, now + durCycles);
+        accept(nar);
     }
 
     @Override

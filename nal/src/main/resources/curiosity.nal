@@ -2,9 +2,6 @@
 X, X, task("@"), --has(X,"?") |- X,       (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
 //X, X, task("?"), --has(X,"?") |- X,       (Belief:Curiosity, Punctuation:Belief, Time:TaskInstant)
 
-G, A, task("!")  |- (polarize(B,task) &&+- polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
-G, A, task("!")  |- (polarize(B,task) &&+- --polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
-
 
 
 //X, Y, task("@"), neq(X,Y), --has(X,"?"), --has(Y,"?") |- (X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)

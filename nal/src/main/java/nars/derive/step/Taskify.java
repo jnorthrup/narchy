@@ -3,7 +3,7 @@ package nars.derive.step;
 import jcog.Util;
 import nars.*;
 import nars.derive.Derivation;
-import nars.derive.premise.PremiseDeriverProto;
+import nars.derive.premise.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Term;
@@ -27,11 +27,11 @@ public class Taskify extends AbstractPred<Derivation> {
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
      */
-    public final PremiseDeriverProto.RuleCause channel;
+    public final PremiseRuleProto.RuleCause channel;
 
     private static final Atomic TASKIFY = Atomic.the("taskify");
 
-    public Taskify(PremiseDeriverProto.RuleCause channel) {
+    public Taskify(PremiseRuleProto.RuleCause channel) {
         super(  $.func(TASKIFY, $.the(channel.id)) );
         this.channel = channel;
     }

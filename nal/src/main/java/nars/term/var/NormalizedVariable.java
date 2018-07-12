@@ -116,9 +116,9 @@ public abstract class NormalizedVariable implements Variable, AnonID {
             case VAR_DEP:
                 switch (id) {
                     case 126:
-                        return Op.imInt;
+                        return Op.ImgInt;
                     case 127:
-                        return Op.imExt;
+                        return Op.ImgExt;
                     default:
                         assert (id > 0);
                         return new VarDep(id);

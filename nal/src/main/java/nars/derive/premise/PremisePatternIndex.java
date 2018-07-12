@@ -157,7 +157,7 @@ public class PremisePatternIndex extends MapConceptIndex {
             if (x instanceof Ellipsis.EllipsisPrototype) {
                 return Ellipsis.EllipsisPrototype.make((byte) count,
                         ((Ellipsis.EllipsisPrototype) x).minArity);
-            } else if (x instanceof Ellipsis || x == Op.imExt || x == Op.imInt) {
+            } else if (x instanceof Ellipsis || x == Op.ImgExt || x == Op.ImgInt) {
                 return x;
 
 

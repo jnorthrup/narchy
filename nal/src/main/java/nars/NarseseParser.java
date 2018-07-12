@@ -182,14 +182,14 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         );
     }
 
-    public Rule TruthTenseSeparator(char defaultChar, Var<Tense> tense) {
-        return firstOf(
-                defaultChar,
-                sequence('|', tense.set(Tense.Present)),
-                sequence('\\', tense.set(Tense.Past)),
-                sequence('/', tense.set(Tense.Future))
-        );
-    }
+//    public Rule TruthTenseSeparator(char defaultChar, Var<Tense> tense) {
+//        return firstOf(
+//                defaultChar,
+//                sequence('|', tense.set(Tense.Present)),
+//                sequence('\\', tense.set(Tense.Past)),
+//                sequence('/', tense.set(Tense.Future))
+//        );
+//    }
 
 
     public Rule ShortFloat() {
@@ -586,7 +586,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     Rule Variable() {
         return firstOf(
-                seq("_", push(Op.Imdex)),
+                seq('_', push(Op.VarAuto)),
+                seq('\\', push(Op.ImgInt)),
+                seq('/', push(Op.ImgExt)),
                 seq(Op.VAR_INDEP.ch, Variable(VAR_INDEP)),
                 seq(Op.VAR_DEP.ch, Variable(VAR_DEP)),
                 seq(Op.VAR_QUERY.ch, Variable(VAR_QUERY)),

@@ -273,7 +273,7 @@ public enum Op {
      * Image index ("imdex") symbol for products, and anonymous variable in products
      */
     public final static char ImdexSym = '_';
-    public static final Atomic Imdex =
+    public static final Atomic VarAuto =
             new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(ImdexSym)) {
 
                 final int RANK = Term.opX(VAR_PATTERN, (short) 20 /* different from normalized variables with a subOp of 0 */);
@@ -386,8 +386,8 @@ public enum Op {
             return True;
         }
     };
-    public static final VarDep imInt = new ImDep((byte) 126, (byte) '\\');
-    public static final VarDep imExt = new ImDep((byte) 127, (byte) '/');
+    public static final VarDep ImgInt = new ImDep((byte) 126, (byte) '\\');
+    public static final VarDep ImgExt = new ImDep((byte) 127, (byte) '/');
     public static final int DiffBits = Op.DIFFe.bit | Op.DIFFi.bit;
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);

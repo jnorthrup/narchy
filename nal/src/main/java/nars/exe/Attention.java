@@ -73,7 +73,6 @@ public class Attention extends DurService implements Sampler<Concept> {
 
     @Override
     protected void starting(NAR nar) {
-        super.starting(nar);
 
 
         ons.add(nar.eventClear.on(this::clear));
@@ -99,6 +98,8 @@ public class Attention extends DurService implements Sampler<Concept> {
                                 concepts) {
                         }
         ;
+
+        super.starting(nar);
 
     }
 

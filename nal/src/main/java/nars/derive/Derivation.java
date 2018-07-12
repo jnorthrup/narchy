@@ -81,6 +81,8 @@ public class Derivation extends PreDerivation {
                 //assert(whichTask.equals(Belief))
                 compared = beliefTruth;
             }
+            if (compared == null)
+                return Null;
             return compared.isNegative() ? subterm.neg() : subterm;
         }
     };

@@ -10,7 +10,7 @@ import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
-import nars.derive.premise.PremiseDeriverProto;
+import nars.derive.premise.PremiseRuleProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.Attention;
 import nars.exe.Causable;
@@ -69,7 +69,7 @@ abstract public class Deriver extends Causable {
     }
 
 
-    protected Deriver(Attention attn, Set<PremiseDeriverProto> rules, NAR nar) {
+    protected Deriver(Attention attn, Set<PremiseRuleProto> rules, NAR nar) {
         this(attn::fire, rules, nar);
     }
 
@@ -77,7 +77,7 @@ abstract public class Deriver extends Causable {
         this(source, rules, rules.nar);
     }
 
-    protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseDeriverProto> rules, NAR nar) {
+    protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
         this(source, PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");

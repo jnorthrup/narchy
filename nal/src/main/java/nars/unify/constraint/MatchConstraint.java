@@ -17,7 +17,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
+
+import static nars.derive.premise.PremiseRuleSource.pp;
 
 
 /** must be stateless */
@@ -122,28 +125,36 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
     final static class ConstraintAsPredicate extends AbstractPred<Derivation> {
 
-        final static Term TASK_BELIEF = $.p(Derivation.Task, Derivation.Belief);
-        final static Term BELIEF_TASK = $.p(Derivation.Belief, Derivation.Task);
-
         private final RelationConstraint constraint;
-        private final boolean taskFirst;
 
-        ConstraintAsPredicate(RelationConstraint m, boolean taskFirst) {
-            super($.p(taskFirst ? TASK_BELIEF : BELIEF_TASK, m.term()));
+        /** taskterm, beliefterm -> extracted */
+        final BiFunction<Term,Term,Term> extractX, extractY;
+
+        ConstraintAsPredicate(RelationConstraint m, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
+            super($.p(m.term(), $.p(pp(xInTask), pp(xInBelief), pp(yInTask), pp(yInBelief))));
             this.constraint = m;
-            this.taskFirst = taskFirst;
+
+            if (xInTask!=null && (xInBelief == null || xInTask.length < xInBelief.length))
+                extractX = xInTask.length == 0 ? (t,b)->t : (t,b)->t.subPath(xInTask);
+            else
+                extractX = xInBelief.length == 0 ? (t,b)->b : (t,b)->b.subPath(xInBelief);
+
+            if (yInTask!=null && (yInBelief == null || yInTask.length < yInBelief.length))
+                extractY = yInTask.length == 0 ? (t,b)->t : (t,b)->t.subPath(yInTask);
+            else
+                extractY = yInBelief.length == 0 ? (t,b)->b : (t,b)->b.subPath(yInBelief);
         }
 
         @Override
         public boolean test(Derivation preDerivation) {
-            Term x, y;
-            if (taskFirst) {
-                x = preDerivation.taskTerm;
-                y = preDerivation.beliefTerm;
-            } else {
-                y = preDerivation.taskTerm;
-                x = preDerivation.beliefTerm;
-            }
+            Term t = preDerivation.taskTerm;
+            Term b = preDerivation.beliefTerm;
+            Term x = extractX.apply(t, b);
+            if (x == null)
+                return false;
+            Term y = extractY.apply(t, b);
+            if (y == null)
+                return false;
             return !constraint.invalid(x, y);
         }
 

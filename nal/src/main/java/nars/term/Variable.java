@@ -90,7 +90,7 @@ public interface Variable extends Atomic {
     static boolean unifyVar(Variable x, Variable y, boolean forward, Unify u) {
 
 
-        if (x == Op.imInt || x == Op.imExt || y == Op.imInt || y == Op.imExt)
+        if (x == Op.ImgInt || x == Op.ImgExt || y == Op.ImgInt || y == Op.ImgExt)
             return x == y;
 
 

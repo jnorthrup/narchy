@@ -95,7 +95,8 @@ public class Atom extends AtomicConst implements The {
             case '$':
             case ':':
             case '`':
-
+            case '/':
+            case '\\':
             case '\"':
             case '\'':
 

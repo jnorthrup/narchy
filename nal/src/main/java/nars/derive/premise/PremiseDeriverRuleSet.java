@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * intermediate representation of a set of compileable Premise Rules
  * TODO remove this class, just use Set<PremiseDeriverProto>'s
  */
-public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProto> {
+public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> {
 
     public NAR nar;
 
@@ -28,16 +28,16 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
     }
 
     public PremiseDeriverRuleSet(PremisePatternIndex index, String... rules) {
-        this(index, PremiseDeriverSource.parse(rules));
+        this(index, PremiseRuleSource.parse(rules));
     }
 
-    private PremiseDeriverRuleSet(PremisePatternIndex patterns, Stream<PremiseDeriverSource> parsed) {
+    private PremiseDeriverRuleSet(PremisePatternIndex patterns, Stream<PremiseRuleSource> parsed) {
         assert (patterns.nar != null);
         this.nar = patterns.nar;
         parsed.distinct().map(x -> x.apply(patterns)).forEach(super::add);
     }
 
-    private final static Memoize<String, Collection<PremiseDeriverSource>> ruleCache = CaffeineMemoize.build((String n) -> {
+    private final static Memoize<String, Collection<PremiseRuleSource>> ruleCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
 
@@ -51,7 +51,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
             bb = ArrayUtils.EMPTY_BYTE_ARRAY;
 
         }
-        return (PremiseDeriverSource.parse(load(bb)).collect(Collectors.toSet()));
+        return (PremiseRuleSource.parse(load(bb)).collect(Collectors.toSet()));
 
     }, 32, false);
 

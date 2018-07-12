@@ -142,14 +142,14 @@ public interface Atomic extends Term {
             char c = id.charAt(0);
             switch (c) {
                 case Op.ImdexSym:
-                    return Op.Imdex;
+                    return Op.VarAuto;
                 case Op.NullSym:
                     return Op.Null;
 
                 case Op.imIntSym:
-                    return Op.imInt;
+                    return Op.ImgInt;
                 case Op.imExtSym:
-                    return Op.imExt;
+                    return Op.ImgExt;
                 case '0':
                     return Int.pos[0];
                 case '1':

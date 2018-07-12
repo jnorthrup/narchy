@@ -93,7 +93,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
      */
     private static void add(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
-        if (x instanceof Bool || x == Op.imExt || x == Op.imInt)
+        if (x instanceof Bool || x == Op.ImgExt || x == Op.ImgInt)
             return;
 
         Op xo = x.op();

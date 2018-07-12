@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
+import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,11 +80,31 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
     }
 
 
+    default PREDICATE<X> neg() {
+        return new NegPredicate<>(this);
+    }
 
+    @Override
+    default PREDICATE<X> negIf(boolean negate) {
+        return negate ? neg() : this;
+    }
 
+    final class NegPredicate<X> extends AbstractPred<X> {
+        private final PREDICATE<X> p;
 
+        public NegPredicate(PREDICATE<X> p) {
+            super(p instanceof ProxyTerm ? ((ProxyTerm)p).ref.neg() : p.term().neg());
+            this.p = p;
+        }
 
+        @Override
+        public PREDICATE<X> neg() {
+            return p; //unneg
+        }
 
-
-
+        @Override
+        public boolean test(X o) {
+            return !p.test(o);
+        }
+    }
 }

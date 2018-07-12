@@ -6,7 +6,7 @@ import nars.Narsese;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.premise.PremiseDeriverSource;
+import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -62,7 +62,7 @@ class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse("A, A |- (A,A), (Belief:Intersection)");
+            PremiseRuleSource x = PremiseRuleSource.parse("A, A |- (A,A), (Belief:Intersection)");
             assertNotNull(x);
             
             
@@ -75,7 +75,7 @@ class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleSource x = PremiseRuleSource.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
             
             assertEquals(vv, x.ref.volume());
             
@@ -86,7 +86,7 @@ class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleSource x = PremiseRuleSource.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
             
             assertEquals(vv, x.ref.volume()); 
             
@@ -96,7 +96,7 @@ class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse(" <A --> B>, <B --> A>, task(\"!\") |- <A <-> (A,B)>,  (Belief:Conversion, Punctuation:Question)");
+            PremiseRuleSource x = PremiseRuleSource.parse(" <A --> B>, <B --> A>, task(\"!\") |- <A <-> (A,B)>,  (Belief:Conversion, Punctuation:Question)");
             
             assertEquals(25, x.ref.volume());
             
@@ -114,7 +114,7 @@ class PremiseRuleTest {
 
 
 
-        PremiseDeriverSource x = PremiseDeriverSource.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
+        PremiseRuleSource x = PremiseRuleSource.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
         
         
         assertEquals(vv, x.ref.volume());
@@ -289,7 +289,7 @@ TODO - share unification state for different truth/conclusions
 
 
 
-        Compound y = (Compound) PremiseDeriverSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion)").ref;
+        Compound y = (Compound) PremiseRuleSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion)").ref;
         Terms.printRecursive(System.out, y);
     }
 

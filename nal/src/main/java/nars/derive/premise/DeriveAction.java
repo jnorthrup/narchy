@@ -13,7 +13,7 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
     public final Cause cause;
     private final Truthify truth;
 
-    private DeriveAction(AND<Derivation> procedure, PremiseDeriverProto.RuleCause cause, Truthify t) {
+    private DeriveAction(AND<Derivation> procedure, PremiseRuleProto.RuleCause cause, Truthify t) {
         super(procedure.cond);
         this.cause = cause;
         this.truth = t;
@@ -21,7 +21,7 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
 
     static DeriveAction action(AND<Derivation> POST) {
 
-        PremiseDeriverProto.RuleCause cause = ((Taskify) AND.last(
+        PremiseRuleProto.RuleCause cause = ((Taskify) AND.last(
                 ((UnifyTerm.UnifySubtermThenConclude)
                 AND.last(POST)
         ).eachMatch)).channel;

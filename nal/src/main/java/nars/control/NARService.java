@@ -19,6 +19,10 @@ public class NARService extends Service<NAR> implements Termed {
 
     protected volatile NAR nar;
 
+    protected NARService() {
+        this((NAR)null);
+    }
+
     @Deprecated
     protected NARService(NAR nar) {
         this((Term) null);
@@ -40,12 +44,13 @@ public class NARService extends Service<NAR> implements Termed {
         logger.debug("start {}", id);
 
         assert (this.nar == null || this.nar == nar);
-        if (this.nar == null)
-            this.nar = nar;
+
+        this.nar = nar;
+
+        ons.add(nar.eventClear.on(n -> clear()));
 
         starting(nar);
 
-        ons.add(nar.eventClear.on(n -> clear()));
     }
 
     @Override

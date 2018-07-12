@@ -40,7 +40,7 @@ public class VariableNormalization extends VariableTransform {
     public Term transformAtomic(Atomic atomic) {
         if (normalizable(atomic)) {
 
-            if (atomic.equals(Op.Imdex)) {
+            if (atomic.equals(Op.VarAuto)) {
                 
                 return newVariableIncreasingCount((Variable) atomic);
             } else {
@@ -52,7 +52,7 @@ public class VariableNormalization extends VariableTransform {
     }
 
     private static boolean normalizable(Term atomic) {
-        return atomic instanceof Variable && !(atomic == Op.imExt || atomic == Op.imInt);
+        return atomic instanceof Variable && !(atomic == Op.ImgExt || atomic == Op.ImgInt);
     }
 
 

@@ -27,12 +27,12 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * ready-made template to make constructing this as fast as possible
  * in potentially multiple NAR instances later
  */
-public class PremiseDeriverProto extends PremiseDeriverSource {
+public class PremiseRuleProto extends PremiseRuleSource {
 
 
     public final Pair<PREDICATE<Derivation>[], DeriveAction> rule;
 
-    public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
+    public PremiseRuleProto(PremiseRuleSource raw, PremisePatternIndex index) {
         super(raw, index);
 
 
@@ -83,10 +83,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
     public static class RuleCause extends Cause implements IntToFloatFunction {
-        public final PremiseDeriverSource rule;
+        public final PremiseRuleSource rule;
         public final String ruleString;
 
-        RuleCause(PremiseDeriverSource rule, short id) {
+        RuleCause(PremiseRuleSource rule, short id) {
             super(id);
             this.rule = rule;
             this.ruleString = rule.toString();

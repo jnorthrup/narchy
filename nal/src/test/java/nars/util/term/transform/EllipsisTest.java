@@ -5,8 +5,8 @@ import nars.$;
 import nars.Narsese;
 import nars.Op;
 import nars.Param;
-import nars.derive.premise.PremiseDeriverProto;
-import nars.derive.premise.PremiseDeriverSource;
+import nars.derive.premise.PremiseRuleProto;
+import nars.derive.premise.PremiseRuleSource;
 import nars.derive.premise.PremisePatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
@@ -339,10 +339,10 @@ public class EllipsisTest {
         String rule = "(%S ==> %M), ((&&,%S,%A..+) ==> %M) |- ((&&,%A..+) ==> %M), (Belief:DecomposeNegativePositivePositive, Order:ForAllSame, SequenceIntervals:FromBelief)";
 
         Compound _x = $.$('<' + rule + '>');
-        assertTrue(_x instanceof PremiseDeriverSource, _x.toString());
-        PremiseDeriverSource x = (PremiseDeriverSource) _x;
+        assertTrue(_x instanceof PremiseRuleSource, _x.toString());
+        PremiseRuleSource x = (PremiseRuleSource) _x;
         
-        x = new PremiseDeriverProto(x, new PremisePatternIndex());
+        x = new PremiseRuleProto(x, new PremisePatternIndex());
         
 
         assertEquals(

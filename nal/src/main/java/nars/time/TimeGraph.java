@@ -117,7 +117,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
     public Event event(Term t, long start, long end, boolean add) {
-        if (t instanceof Bool || t == Op.imExt || t == Op.imInt)
+        if (t instanceof Bool || t == Op.ImgExt || t == Op.ImgInt)
             return null;
 
         Event e;

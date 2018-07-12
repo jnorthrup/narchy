@@ -285,7 +285,7 @@ public enum Terms {
     /** finds the shortest deterministic subterm path for extracting a subterm in a compound.
      *  paths in subterms of commutive terms are excluded also because the
      *  position is undeterministic. */
-    @Nullable public static byte[] extractFixedPath(Term container, Term subterm) {
+    @Nullable public static byte[] constantPath(Term container, Term subterm) {
         if (!canExtractFixedPath(container))
             return null;
 

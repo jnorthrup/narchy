@@ -1,6 +1,5 @@
 package nars.derive.premise;
 
-import jcog.TODO;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
@@ -50,7 +49,7 @@ import static nars.unify.op.TaskPunctuation.Goal;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseDeriverSource extends ProxyTerm implements Function<PremisePatternIndex, PremiseDeriverProto> {
+public class PremiseRuleSource extends ProxyTerm implements Function<PremisePatternIndex, PremiseRuleProto> {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
     private final String source;
@@ -84,7 +83,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     private static final PremisePatternIndex INDEX = new PremisePatternIndex();
     protected final Termify termify;
 
-    private PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
+    private PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
         super(
                 INDEX.rule(new UppercaseAtomsToPatternVariables().transform($.pFast(parseRuleComponents(ruleSrc))))
         );
@@ -179,18 +178,18 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 //                    break;
 
 
-                case "subOf":
+                case "subOf": {
 
-                    if (Y == Op.imExt || Y == Op.imInt) {
-
-                        pre.add(new SubOf(Y, taskPattern, X, beliefPattern));
-
-                    } else {
+                    if (!negated)
                         neq(constraints, X, Y);
-                        constraints.add(new SubOfConstraint(X, Y, false, false, Subterm));
-                        constraints.add(new SubOfConstraint(Y, X, true, false, Subterm));
-                    }
+
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm).negIf(negated));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm).negIf(negated));
+
+                    if (negated)
+                        negationApplied = true;
                     break;
+                }
 
 //                case "subOfNeg":
 //
@@ -280,9 +279,18 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
                     match(X, new TermMatch.SubsMin((short)$.intValue(Y)));
                     break;
 
-                case "notImaged":
-                    termIsNotImaged(X);
-                    break;
+//                case "imaged": {
+//                    //@Deprecated use subOf and --subOf for both / and \
+//                    if (!taskPattern.containsRecursively(X) && !taskPattern.equals(X))
+//                        throw new TODO("expected/tested occurrence in task concPattern ");
+//
+//                    final byte[] pp = Terms.constantPath(taskPattern, X);
+//                    assert pp != null;
+//                    pre.add(new Imaged(X, !negated, pp));
+//                    if (negated) negationApplied = true;
+//                    break;
+//                }
+
 
                 case "notSet":
                     /** deprecated soon */
@@ -446,11 +454,11 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
                 boolean isStrict = args.contains(Subst.STRICT);
 
                 //some structure exists that can be used to prefilter
-                byte[] xpInT = Terms.extractFixedPath(taskPattern, x);
-                byte[] xpInB = Terms.extractFixedPath(beliefPattern, x); //try the belief
+                byte[] xpInT = Terms.constantPath(taskPattern, x);
+                byte[] xpInB = Terms.constantPath(beliefPattern, x); //try the belief
                 if (xpInT != null || xpInB != null) {
-                    byte[] ypInT = Terms.extractFixedPath(taskPattern, y);
-                    byte[] ypInB = Terms.extractFixedPath(beliefPattern, y); //try the belief
+                    byte[] ypInT = Terms.constantPath(taskPattern, y);
+                    byte[] ypInB = Terms.constantPath(beliefPattern, y); //try the belief
                     if (ypInT != null || ypInB != null) {
                         //the unifying terms are deterministicaly extractable from the task or belief
                         pre.add(new UnifyPreFilter(xpInT, xpInB, ypInT, ypInB, isStrict));
@@ -590,7 +598,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         return mc;
     }
 
-    protected PremiseDeriverSource(PremiseDeriverSource raw, PremisePatternIndex index) {
+    protected PremiseRuleSource(PremiseRuleSource raw, PremisePatternIndex index) {
         super((index.rule(raw.ref)));
 
         this.termify = raw.termify;
@@ -613,20 +621,20 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
     }
 
-    public static PremiseDeriverSource parse(String ruleSrc) throws Narsese.NarseseException {
-        return new PremiseDeriverSource(ruleSrc);
+    public static PremiseRuleSource parse(String ruleSrc) throws Narsese.NarseseException {
+        return new PremiseRuleSource(ruleSrc);
     }
 
-    public static Stream<PremiseDeriverSource> parse(String... rawRules) {
+    public static Stream<PremiseRuleSource> parse(String... rawRules) {
         return parse(Stream.of(rawRules));
     }
 
-    public static Stream<PremiseDeriverSource> parse(Stream<String> rawRules) {
+    public static Stream<PremiseRuleSource> parse(Stream<String> rawRules) {
         return rawRules.map(src -> {
             try {
                 return parse(src);
             } catch (Exception e) {
-                throw new RuntimeException("rule parse: " + e + "\n\t" + src);
+                throw new RuntimeException("rule parse: " + e.getCause() + "\n\t" + src);
             }
         });
 
@@ -668,8 +676,8 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
     @Override
-    public PremiseDeriverProto apply(PremisePatternIndex i) {
-        return new PremiseDeriverProto(this, i);
+    public PremiseRuleProto apply(PremisePatternIndex i) {
+        return new PremiseRuleProto(this, i);
     }
 
 
@@ -681,8 +689,10 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
         boolean checkedTask = false, checkedBelief = false;
 
-        final byte[] pt = (taskPattern.equals(x) || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(taskPattern, x) : null;
-        final byte[] pb = (beliefPattern.equals(x) || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(beliefPattern, x) : null;
+        final byte[] pt = (taskPattern.equals(x) || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
+                Terms.constantPath(taskPattern, x) : null;
+        final byte[] pb = (beliefPattern.equals(x) || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
+                Terms.constantPath(beliefPattern, x) : null;
         if (pt != null || pb != null) {
             if (pt != null)
                 checkedTask = true;
@@ -744,14 +754,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 //        //filter(x, (pt, pb)->
 //
 //    }
-    private void termIsNotImaged(Term x) {
-        if (!taskPattern.containsRecursively(x) && !taskPattern.equals(x))
-            throw new TODO("expected/tested occurrence in task concPattern ");
 
-        final byte[] pp = Terms.extractFixedPath(taskPattern, x);
-        assert pp != null;
-        pre.add(new NotImaged(x, pp));
-    }
 
 
 //    private void termHasNot(Term taskPattern, Term beliefPattern, Collection<PrediTerm> pre, Set<MatchConstraint> constraints, Term t, int structure) {
@@ -777,9 +780,8 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         constraints.add(new NotEqualConstraint(y, x));
     }
 
-    private static Term pp(byte[] b) {
-        if (b == null) return Op.EmptyProduct;
-        else return $.p(b);
+    public static Term pp(byte[] b) {
+        return b == null ? Op.EmptyProduct : $.p(b);
     }
 
     static class UnifyPreFilter extends AbstractPred<Derivation> {
@@ -884,55 +886,56 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         }
     }
 
-    static final class SubOf extends AbstractPred<Derivation> {
-        private final Term y;
+//    static final class SubOf extends AbstractPred<Derivation> {
+//        private final Term y;
+//
+//        boolean task;
+//        boolean belief;
+//
+//        SubOf(Term y, Term taskPattern, Term x, Term beliefPattern) {
+//            super($.func("subOf", $.quote(y.toString())));
+//            this.y = y;
+//
+//            task = taskPattern.containsRecursively(x);
+//            belief = beliefPattern.containsRecursively(y);
+//            assert task || belief;
+//        }
+//
+//        @Override
+//        public boolean test(Derivation preDerivation) {
+//            if (task && !preDerivation.taskTerm.containsRecursively(y))
+//                return false;
+//            return !belief || preDerivation.beliefTerm.containsRecursively(y);
+//        }
+//
+//        @Override
+//        public float cost() {
+//            return 0.5f;
+//        }
+//    }
 
-        boolean task;
-        boolean belief;
-
-        SubOf(Term y, Term taskPattern, Term x, Term beliefPattern) {
-            super($.func("subOf", $.quote(y.toString())));
-            this.y = y;
-
-            task = taskPattern.containsRecursively(x);
-            belief = beliefPattern.containsRecursively(y);
-            assert task || belief;
-        }
-
-        @Override
-        public boolean test(Derivation preDerivation) {
-            if (task && !preDerivation.taskTerm.containsRecursively(y))
-                return false;
-            return !belief || preDerivation.beliefTerm.containsRecursively(y);
-        }
-
-        @Override
-        public float cost() {
-            return 0.5f;
-        }
-    }
-
-
-    static class NotImaged extends AbstractPred<Derivation> {
-
+    static final class Imaged extends AbstractPred<Derivation> {
         private final byte[] pp;
+        private final boolean isOrIsnt;
 
-        NotImaged(Term x, byte[] pp) {
-            super($.func("notImaged", x));
+        Imaged(Term x, boolean hasOrHasnt, byte[] pp) {
+            super($.func("imaged", x));
             this.pp = pp;
+            this.isOrIsnt = hasOrHasnt;
         }
 
         @Override
         public float cost() {
-            return 0.15f;
+            return 0.1f;
         }
 
         @Override
         public boolean test(Derivation o) {
             Term prod = o.taskTerm.subPath(pp);
-            return prod.op() == PROD && !Image.imaged(prod);
+            return prod.op() == PROD && (isOrIsnt==Image.imaged(prod));
         }
     }
+
 
 
     private static Function<PreDerivation, Term> TaskOrBelief(boolean taskOrBelief) {
