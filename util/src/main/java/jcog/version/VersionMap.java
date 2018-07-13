@@ -1,6 +1,6 @@
 package jcog.version;
 
-import jcog.list.ArrayUnenforcedSet;
+import jcog.data.set.ArrayUnenforcedSet;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

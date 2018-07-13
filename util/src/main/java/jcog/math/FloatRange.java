@@ -1,6 +1,6 @@
 package jcog.math;
 
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 
 
 public class FloatRange extends AtomicFloat {

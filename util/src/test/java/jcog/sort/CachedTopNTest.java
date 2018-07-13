@@ -1,6 +1,6 @@
 package jcog.sort;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

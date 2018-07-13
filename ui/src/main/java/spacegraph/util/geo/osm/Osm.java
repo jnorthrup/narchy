@@ -1,6 +1,6 @@
 package spacegraph.util.geo.osm;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.w3c.dom.*;

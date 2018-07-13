@@ -2,11 +2,11 @@ package nars.agent;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.data.ArrayHashSet;
+import jcog.data.set.ArrayHashSet;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.*;
 import nars.$;
 import nars.NAR;

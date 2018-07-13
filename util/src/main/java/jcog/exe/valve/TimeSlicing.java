@@ -3,7 +3,7 @@ package jcog.exe.valve;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.TODO;
 import jcog.exe.util.RunnableForkJoin;
-import jcog.list.MetalConcurrentQueue;
+import jcog.data.list.MetalConcurrentQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

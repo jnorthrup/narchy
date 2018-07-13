@@ -1,6 +1,6 @@
 package nars.index.concept;
 
-import jcog.bag.impl.hijack.PLinkHijackBag;
+import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;
 import nars.NAR;

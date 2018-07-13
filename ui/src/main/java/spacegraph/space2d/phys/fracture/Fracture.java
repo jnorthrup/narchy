@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space2d.phys.callbacks.ContactImpulse;
 import spacegraph.space2d.phys.collision.WorldManifold;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;

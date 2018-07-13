@@ -1,6 +1,6 @@
 package org.zhz.dfargx.automata;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.zhz.dfargx.node.*;
 
 import java.util.List;

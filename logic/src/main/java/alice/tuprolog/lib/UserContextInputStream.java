@@ -2,7 +2,7 @@ package alice.tuprolog.lib;
 
 import alice.tuprolog.event.ReadEvent;
 import alice.tuprolog.event.ReadListener;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.io.IOException;
 import java.io.InputStream;

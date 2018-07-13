@@ -1,5 +1,6 @@
 package jcog.data;
 
+import jcog.data.set.SimpleIntSet;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
 

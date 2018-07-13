@@ -1,7 +1,7 @@
 package nars.task;
 
 import jcog.data.map.CompactArrayMap;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.UnitPri;
 import jcog.pri.op.PriMerge;
 import nars.Param;

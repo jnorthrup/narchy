@@ -9,7 +9,7 @@ import com.github.fge.grappa.run.context.MatcherContext;
 import com.github.fge.grappa.stack.ArrayValueStack;
 import com.github.fge.grappa.support.Var;
 import jcog.Texts;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;

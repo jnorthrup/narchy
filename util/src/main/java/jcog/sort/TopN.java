@@ -1,6 +1,6 @@
 package jcog.sort;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Arrays;

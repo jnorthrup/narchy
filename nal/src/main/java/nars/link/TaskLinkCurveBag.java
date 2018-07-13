@@ -1,6 +1,6 @@
 package nars.link;
 
-import jcog.bag.impl.CurveBag;
+import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.op.PriMerge;
 
 import java.util.Map;

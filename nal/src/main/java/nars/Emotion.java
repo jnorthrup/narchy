@@ -8,11 +8,11 @@ import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
 import com.netflix.servo.util.Clock;
-import jcog.meter.ExplainedCounter;
-import jcog.meter.FastCounter;
-import jcog.meter.Meter;
-import jcog.meter.MetricsMapper;
-import jcog.meter.event.AtomicMeanFloat;
+import jcog.signal.meter.ExplainedCounter;
+import jcog.signal.meter.FastCounter;
+import jcog.signal.meter.Meter;
+import jcog.signal.meter.MetricsMapper;
+import jcog.signal.meter.event.AtomicMeanFloat;
 import jcog.pri.ScalarValue;
 import nars.control.MetaGoal;
 import nars.task.NALTask;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static jcog.Texts.n4;
-import static jcog.meter.Meter.meter;
+import static jcog.signal.meter.Meter.meter;
 
 /**
  * emotion - internal mental state

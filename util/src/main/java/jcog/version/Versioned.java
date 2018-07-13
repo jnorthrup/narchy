@@ -1,6 +1,6 @@
 package jcog.version;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
 /**

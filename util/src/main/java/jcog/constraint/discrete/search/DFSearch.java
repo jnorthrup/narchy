@@ -17,7 +17,7 @@ package jcog.constraint.discrete.search;
 
 import jcog.constraint.discrete.propagation.PropagationQueue;
 import jcog.constraint.discrete.trail.Trail;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 
 import java.util.List;

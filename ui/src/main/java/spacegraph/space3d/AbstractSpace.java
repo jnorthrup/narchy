@@ -1,6 +1,6 @@
 package spacegraph.space3d;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.Collections;
 import java.util.List;

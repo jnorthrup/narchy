@@ -1,7 +1,7 @@
 package jcog.exe.realtime;
 
 import jcog.TODO;
-import jcog.list.MetalConcurrentQueue;
+import jcog.data.list.MetalConcurrentQueue;
 
 /** TODO
  *  where each wheel is simply its own concurrent queue */

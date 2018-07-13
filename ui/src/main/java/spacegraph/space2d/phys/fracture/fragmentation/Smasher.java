@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.fracture.Fracture;
 import spacegraph.space2d.phys.fracture.Fragment;

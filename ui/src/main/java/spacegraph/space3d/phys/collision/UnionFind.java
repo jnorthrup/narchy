@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.collision;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space3d.phys.math.MiscUtil;
 
 import java.util.Comparator;

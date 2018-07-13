@@ -20,7 +20,7 @@ package jcog.data.map;
 
 import com.google.common.collect.Lists;
 import jcog.TODO;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.AbstractMap;
 import java.util.Arrays;

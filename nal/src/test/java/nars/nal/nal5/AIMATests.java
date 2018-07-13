@@ -2,7 +2,7 @@ package nars.nal.nal5;
 
 import com.google.common.math.PairedStatsAccumulator;
 import jcog.io.SparkLine;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.*;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;

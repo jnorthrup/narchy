@@ -1,6 +1,6 @@
 package jcog.learn.markov;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.List;
 import java.util.Random;

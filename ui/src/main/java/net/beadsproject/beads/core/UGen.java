@@ -3,7 +3,7 @@
  */
 package net.beadsproject.beads.core;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import net.beadsproject.beads.events.KillTrigger;
 import net.beadsproject.beads.ugens.Clock;
 import net.beadsproject.beads.ugens.Envelope;

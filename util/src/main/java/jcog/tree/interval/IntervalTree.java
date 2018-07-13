@@ -1,6 +1,6 @@
 package jcog.tree.interval;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

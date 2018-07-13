@@ -3,7 +3,7 @@
  */
 package net.beadsproject.beads.core;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package nars.term.control;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;

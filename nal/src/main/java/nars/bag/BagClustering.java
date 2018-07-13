@@ -1,10 +1,10 @@
 package nars.bag;
 
-import jcog.bag.Bag;
-import jcog.bag.impl.ArrayBag;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.ArrayBag;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;

@@ -3,7 +3,7 @@ package jcog.data.graph.search;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.data.graph.ObjectGraph;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.junit.jupiter.api.Test;

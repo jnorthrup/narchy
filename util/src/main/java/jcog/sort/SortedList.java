@@ -1,7 +1,7 @@
 package jcog.sort;
 
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 /**
  * <p>

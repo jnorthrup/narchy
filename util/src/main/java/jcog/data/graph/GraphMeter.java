@@ -18,7 +18,7 @@
 
 package jcog.data.graph;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.collection.primitive.MutableIntCollection;
 import org.eclipse.collections.api.iterator.IntIterator;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;

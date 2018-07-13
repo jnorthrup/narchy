@@ -3,7 +3,7 @@ package jcog.net.http;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.exe.Exe;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;

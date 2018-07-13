@@ -1,6 +1,6 @@
 package jcog;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import org.apache.lucene.document.DoubleRange;
 import org.eclipse.collections.impl.factory.Lists;

@@ -1,7 +1,7 @@
 package spacegraph.util.animate;
 
 import jcog.Util;
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 
 
 public class AnimFloat extends AtomicFloat implements Animated {

@@ -2,7 +2,7 @@ package nars.util.term;
 
 import com.google.common.collect.Iterators;
 import jcog.TODO;
-import jcog.data.UnenforcedConcatSet;
+import jcog.data.set.UnenforcedConcatSet;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;

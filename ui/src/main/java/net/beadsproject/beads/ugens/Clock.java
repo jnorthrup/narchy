@@ -3,7 +3,7 @@
  */
 package net.beadsproject.beads.ugens;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.core.AuventArray;

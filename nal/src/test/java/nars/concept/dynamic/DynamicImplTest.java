@@ -1,6 +1,6 @@
 package nars.concept.dynamic;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.*;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;

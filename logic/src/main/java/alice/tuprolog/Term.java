@@ -18,7 +18,7 @@
 package alice.tuprolog;
 
 import alice.util.OneWayList;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.io.Serializable;
 import java.util.*;

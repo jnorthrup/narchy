@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.math;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;

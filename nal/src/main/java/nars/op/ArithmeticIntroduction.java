@@ -3,7 +3,7 @@ package nars.op;
 import jcog.Paper;
 import jcog.Util;
 import jcog.decide.Roulette;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.memoize.HijackMemoize;
 import nars.*;
 import nars.bag.leak.LeakBack;

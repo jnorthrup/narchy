@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jcog.exe.realtime.AdmissionQueueWheelModel;
 import jcog.exe.realtime.HashedWheelTimer;
-import jcog.list.MetalConcurrentQueue;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.net.UDPeer;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;

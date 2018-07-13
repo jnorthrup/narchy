@@ -1,6 +1,6 @@
 package nars.subterm.util;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;

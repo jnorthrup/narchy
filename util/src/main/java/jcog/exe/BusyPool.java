@@ -2,7 +2,7 @@ package jcog.exe;
 
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import jcog.TODO;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

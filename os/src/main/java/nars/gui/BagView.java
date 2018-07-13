@@ -1,6 +1,6 @@
 package nars.gui;
 
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;

@@ -5,7 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
 import nars.The;

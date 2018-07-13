@@ -1,9 +1,9 @@
 package nars.index.concept;
 
 import com.google.common.collect.Iterables;
-import jcog.bag.impl.ConcurrentArrayBag;
+import jcog.pri.bag.impl.ConcurrentArrayBag;
 import jcog.bloom.YesNoMaybe;
-import jcog.list.table.Table;
+import jcog.data.list.table.Table;
 import jcog.pri.PLink;
 import jcog.pri.PriCache;
 import jcog.pri.PriReference;

@@ -6,7 +6,7 @@ import jcog.Skill;
 import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.map.CustomConcurrentHashMap;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.memoize.SoftMemoize;
 import nars.*;

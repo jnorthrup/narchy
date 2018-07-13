@@ -1,6 +1,6 @@
 package nars.test;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 

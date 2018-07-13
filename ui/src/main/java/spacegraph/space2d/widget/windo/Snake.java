@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.windo;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;

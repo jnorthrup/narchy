@@ -2,7 +2,7 @@ package nars.op.mental;
 
 
 import jcog.math.MutableIntRange;
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 import nars.$;
 import nars.NAR;
 import nars.Task;

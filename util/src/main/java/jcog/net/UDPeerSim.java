@@ -1,6 +1,6 @@
 package jcog.net;
 
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

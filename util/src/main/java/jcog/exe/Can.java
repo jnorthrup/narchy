@@ -1,6 +1,6 @@
 package jcog.exe;
 
-import jcog.meter.event.AtomicLongGuage;
+import jcog.signal.meter.event.AtomicLongGuage;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

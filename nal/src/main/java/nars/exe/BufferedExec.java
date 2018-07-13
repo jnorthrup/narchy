@@ -6,7 +6,7 @@ import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import jcog.exe.realtime.FixedRateTimedFuture;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.NARLoop;
 import nars.task.ITask;

@@ -1,10 +1,10 @@
 package nars.table;
 
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.Priority;
 import jcog.sort.SortedArray;
-import jcog.util.ArrayIterator;
+import jcog.data.iterator.ArrayIterator;
 import nars.$;
 import nars.NAR;
 import nars.Param;

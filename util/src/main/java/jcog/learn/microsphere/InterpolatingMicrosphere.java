@@ -17,7 +17,7 @@
 package jcog.learn.microsphere;
 
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.apache.commons.math3.exception.*;
 import org.apache.commons.math3.random.UnitSphereRandomVectorGenerator;
 import org.jetbrains.annotations.NotNull;

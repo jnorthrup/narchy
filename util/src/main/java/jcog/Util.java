@@ -16,7 +16,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Primitives;
 import jcog.data.bit.MetalBitSet;
 import jcog.io.BinTxt;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.NumberException;
 import jcog.math.OneDHaar;
 import jcog.math.random.XoRoShiRo128PlusRandom;

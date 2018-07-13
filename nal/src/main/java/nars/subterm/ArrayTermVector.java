@@ -1,8 +1,7 @@
 package nars.subterm;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.util.ArrayIterator;
-import nars.Param;
+import jcog.data.iterator.ArrayIterator;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;

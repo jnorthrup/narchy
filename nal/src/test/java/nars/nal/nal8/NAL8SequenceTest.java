@@ -1,6 +1,6 @@
 package nars.nal.nal8;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.*;
 import nars.term.Term;
 import nars.time.Tense;

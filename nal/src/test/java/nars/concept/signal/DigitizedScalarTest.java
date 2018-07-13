@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 import nars.$;
 import nars.NAR;
 import nars.NARS;

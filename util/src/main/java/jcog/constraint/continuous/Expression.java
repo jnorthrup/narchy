@@ -1,6 +1,6 @@
 package jcog.constraint.continuous;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.List;
 

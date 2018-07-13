@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget;
 
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;

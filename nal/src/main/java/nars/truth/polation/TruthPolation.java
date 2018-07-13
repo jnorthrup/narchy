@@ -2,7 +2,7 @@ package nars.truth.polation;
 
 import jcog.Paper;
 import jcog.Skill;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
 import nars.Param;

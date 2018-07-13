@@ -2,7 +2,7 @@ package jcog.pri;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.util.AtomicFloatFieldUpdater;
+import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 

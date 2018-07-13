@@ -5,7 +5,7 @@ import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
 import jcog.data.pool.DequePool;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;

@@ -1,7 +1,7 @@
 package nars.task;
 
 import com.google.common.primitives.Longs;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.Priority;
 import nars.NAR;
 import org.jetbrains.annotations.Nullable;

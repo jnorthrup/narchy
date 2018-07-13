@@ -2,7 +2,7 @@ package jcog.exe.valve;
 
 import com.google.common.base.Joiner;
 import jcog.Util;
-import jcog.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.Nullable;

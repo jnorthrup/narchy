@@ -1,10 +1,10 @@
 package nars.link;
 
-import jcog.data.ArrayHashSet;
-import jcog.list.FasterList;
+import jcog.data.set.ArrayHashSet;
+import jcog.data.list.FasterList;
 import jcog.pri.ScalarValue;
-import jcog.util.MutableFloat;
-import jcog.util.NumberX;
+import jcog.data.MutableFloat;
+import jcog.data.NumberX;
 import nars.NAR;
 import nars.Op;
 import nars.Param;

@@ -420,12 +420,12 @@ public enum Texts {
     }
 
     public static String i(byte[] b, int radix) {
-        assert(radix==16); //TODO other options
+        assert (radix == 16); //TODO other options
         byte[] c = new byte[b.length * 2];
         int i = 0;
-        for(byte x : b) {
-            c[i++] = (byte) ((x/radix) + '0');
-            c[i++] = (byte) ((x%radix) + '0');
+        for (byte x : b) {
+            c[i++] = (byte) ((x / radix) + '0');
+            c[i++] = (byte) ((x % radix) + '0');
         }
         return new String(c);
     }
@@ -636,7 +636,7 @@ public enum Texts {
      * from: https:
      */
     public static String timeStr(double ns) {
-        assert(Double.isFinite(ns));
+        assert (Double.isFinite(ns));
         boolean neg = ns < 0;
         return (neg ? "-" : "") + _timeStr(Math.abs(ns));
     }

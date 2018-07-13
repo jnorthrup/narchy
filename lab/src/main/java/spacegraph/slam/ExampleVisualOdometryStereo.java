@@ -36,7 +36,7 @@ import com.github.sarxos.webcam.Webcam;
 import georegression.struct.point.Vector3D_F64;
 import georegression.struct.se.Se3_F64;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.ddogleg.fitting.modelset.ModelMatcher;
 import org.ddogleg.struct.FastQueue;
 

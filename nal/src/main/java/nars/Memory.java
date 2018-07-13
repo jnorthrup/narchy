@@ -7,7 +7,7 @@ import jcog.TODO;
 import jcog.data.byt.DynBytes;
 import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.bzip2.BZip2OutputStream;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;

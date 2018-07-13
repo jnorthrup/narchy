@@ -1,6 +1,6 @@
 package nars.test.analyze;
 
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;

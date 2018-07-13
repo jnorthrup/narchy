@@ -5,9 +5,9 @@
  */
 package jcog;
 
-import jcog.meter.FunctionMeter;
-import jcog.meter.TemporalMetrics;
-import jcog.meter.func.BasicStatistics;
+import jcog.signal.meter.FunctionMeter;
+import jcog.signal.meter.TemporalMetrics;
+import jcog.signal.meter.func.BasicStatistics;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

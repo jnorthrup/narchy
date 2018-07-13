@@ -1,7 +1,7 @@
 package nars.control.proto;
 
 import jcog.TODO;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.Task;

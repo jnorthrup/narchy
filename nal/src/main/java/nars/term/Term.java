@@ -23,7 +23,7 @@ package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
 import nars.Task;

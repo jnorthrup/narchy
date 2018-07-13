@@ -1,6 +1,6 @@
 package nars.exe;
 
-import jcog.Service;
+import jcog.service.Service;
 import jcog.WTF;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Ons;
@@ -8,8 +8,7 @@ import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
-import jcog.list.MetalConcurrentQueue;
-import jcog.pri.ScalarValue;
+import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
 import nars.control.DurService;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;

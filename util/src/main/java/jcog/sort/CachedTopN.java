@@ -1,6 +1,6 @@
 package jcog.sort;
 
-import jcog.data.ArrayHashSet;
+import jcog.data.set.ArrayHashSet;
 import jcog.pri.NLink;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 

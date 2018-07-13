@@ -21,7 +21,7 @@ package jcog.tree.rtree;
  */
 
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.tree.rtree.util.Stats;
 
 import java.util.Collections;

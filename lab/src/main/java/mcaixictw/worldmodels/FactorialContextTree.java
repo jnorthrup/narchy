@@ -1,6 +1,6 @@
 package mcaixictw.worldmodels;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import mcaixictw.BooleanArrayList;
 
 import java.util.List;

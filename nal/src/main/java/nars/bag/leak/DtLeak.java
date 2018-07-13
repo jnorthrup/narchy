@@ -1,7 +1,7 @@
 package nars.bag.leak;
 
-import jcog.bag.Bag;
-import jcog.bag.Sampler;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.Sampler;
 import nars.NAR;
 import org.jetbrains.annotations.NotNull;
 

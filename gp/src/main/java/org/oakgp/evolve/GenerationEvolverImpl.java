@@ -15,7 +15,7 @@
  */
 package org.oakgp.evolve;
 
-import jcog.bag.impl.CurveBag;
+import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.PLink;
 import org.oakgp.node.Node;
 import org.oakgp.rank.Ranking;

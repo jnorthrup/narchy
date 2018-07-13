@@ -1,7 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;

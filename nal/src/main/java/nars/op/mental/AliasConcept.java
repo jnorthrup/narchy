@@ -1,6 +1,6 @@
 package nars.op.mental;
 
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;

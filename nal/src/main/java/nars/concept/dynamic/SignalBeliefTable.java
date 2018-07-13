@@ -1,7 +1,7 @@
 package nars.concept.dynamic;
 
 import com.google.common.collect.Iterators;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Param;

@@ -1,6 +1,6 @@
 package jcog.net.http;
 
-import jcog.list.MetalConcurrentQueue;
+import jcog.data.list.MetalConcurrentQueue;
 import org.java_websocket.*;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.framing.CloseFrame;

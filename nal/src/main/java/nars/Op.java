@@ -1,7 +1,7 @@
 package nars;
 
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.op.SetFunc;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;

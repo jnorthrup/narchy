@@ -4,7 +4,7 @@
  */
 package alice.tuprolog;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
 
 import java.util.ArrayList;

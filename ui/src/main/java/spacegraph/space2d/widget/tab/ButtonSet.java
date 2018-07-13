@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.tab;
 
-import jcog.data.ArrayHashSet;
+import jcog.data.set.ArrayHashSet;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;

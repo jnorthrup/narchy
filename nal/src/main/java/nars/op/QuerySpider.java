@@ -1,6 +1,6 @@
 package nars.op;
 
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import jcog.data.graph.AdjGraph;
 import jcog.pri.PriReference;
 import nars.NAR;

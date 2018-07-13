@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.solve;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.BulletStats;

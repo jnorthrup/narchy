@@ -1,8 +1,8 @@
 package nars.gui;
 
 import jcog.Util;
-import jcog.bag.Bag;
-import jcog.bag.impl.hijack.DefaultHijackBag;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;

@@ -1,6 +1,6 @@
 package spacegraph.space3d.widget;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space3d.AbstractSpatial;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Collidable;

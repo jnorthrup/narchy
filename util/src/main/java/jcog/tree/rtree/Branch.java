@@ -24,7 +24,7 @@ package jcog.tree.rtree;
 import com.google.common.base.Joiner;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
-import jcog.util.ArrayIterator;
+import jcog.data.iterator.ArrayIterator;
 
 import java.util.Iterator;
 import java.util.Objects;

@@ -25,7 +25,7 @@
 
 package spacegraph.space3d.phys.collision.broad;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.math.MiscUtil;

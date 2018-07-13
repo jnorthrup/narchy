@@ -3,7 +3,7 @@ package jcog.decide;
 import com.google.common.base.Joiner;
 import jcog.TODO;
 import jcog.Util;
-import jcog.list.FastCoWList;
+import jcog.data.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;

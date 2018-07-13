@@ -1,7 +1,7 @@
 package nars.task;
 
 import jcog.math.MultiStatistics;
-import jcog.meter.event.CSVOutput;
+import jcog.signal.meter.event.CSVOutput;
 import nars.*;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;

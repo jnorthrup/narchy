@@ -6,7 +6,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
-import jcog.list.FastCoWList;
+import jcog.data.list.FastCoWList;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
 import spacegraph.space2d.Surface;

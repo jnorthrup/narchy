@@ -1,6 +1,6 @@
 package nars.derive.premise;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.control.Cause;
 import nars.derive.Derivation;

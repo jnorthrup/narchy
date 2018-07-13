@@ -1,7 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.data.ArrayHashSet;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.ScalarValue;
 import nars.*;

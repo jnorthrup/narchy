@@ -1,6 +1,6 @@
 package nars.derive.step;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;

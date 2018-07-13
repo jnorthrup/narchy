@@ -1,6 +1,6 @@
 package spacegraph.util.state;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 public class MatchPath extends FasterList<String> {
 

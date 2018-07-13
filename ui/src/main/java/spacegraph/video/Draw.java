@@ -31,7 +31,7 @@ import com.jogamp.opengl.util.ImmModeSink;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;

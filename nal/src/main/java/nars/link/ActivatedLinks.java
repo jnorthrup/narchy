@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
 import jcog.sort.SortedList;
-import jcog.util.NumberX;
+import jcog.data.NumberX;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.task.AbstractTask;

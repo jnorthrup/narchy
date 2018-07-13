@@ -2,7 +2,7 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.$;

@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space3d.Spatial;

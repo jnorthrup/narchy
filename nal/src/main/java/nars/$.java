@@ -5,7 +5,7 @@ import com.google.common.base.Strings;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import nars.op.FileFunc;
 import nars.subterm.Subterms;

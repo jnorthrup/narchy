@@ -1,6 +1,6 @@
 package nars.control;
 
-import jcog.Service;
+import jcog.service.Service;
 import nars.NAR;
 import nars.NARS;
 import org.junit.jupiter.api.Test;

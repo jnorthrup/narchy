@@ -21,7 +21,7 @@
 package nars.concept;
 
 import com.google.common.collect.Iterators;
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import jcog.data.map.MetaMap;
 import jcog.pri.PriReference;
 import jcog.pri.Priority;

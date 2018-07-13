@@ -1,7 +1,7 @@
 package nars.nal;
 
-import jcog.meter.FunctionMeter;
-import jcog.meter.event.DoubleMeter;
+import jcog.signal.meter.FunctionMeter;
+import jcog.signal.meter.event.DoubleMeter;
 import nars.util.TimeAware;
 
 

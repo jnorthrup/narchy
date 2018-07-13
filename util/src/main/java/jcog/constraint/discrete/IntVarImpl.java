@@ -19,7 +19,7 @@ import jcog.constraint.discrete.propagation.PropagationQueue;
 import jcog.constraint.discrete.propagation.Propagator;
 import jcog.constraint.discrete.trail.Trail;
 import jcog.constraint.discrete.trail.TrailedInt;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 /**
  * A sparse set based implementation of IntVar

@@ -172,13 +172,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return nh;
     }
 
-    public final int getXNext() {
-        return nx;
-    }
-
-    public final int getYNext() {
-        return ny;
-    }
+//    public final int getXNext() {
+//        return nx;
+//    }
+//
+//    public final int getYNext() {
+//        return ny;
+//    }
 
     @Override
     public void dispose(GLAutoDrawable arg0) {
@@ -489,6 +489,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                         if (!drawables.isEmpty()) {
                             GLAutoDrawable d = drawables.get(0);
+                            if (d == null)
+                                return false;
+
                             d.display();
                             return true; //async
                         }

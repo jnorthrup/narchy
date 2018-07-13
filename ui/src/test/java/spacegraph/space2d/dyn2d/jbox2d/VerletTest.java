@@ -29,7 +29,7 @@ package spacegraph.space2d.dyn2d.jbox2d;
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.dynamics.*;

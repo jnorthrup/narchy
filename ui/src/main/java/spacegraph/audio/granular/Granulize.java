@@ -1,7 +1,7 @@
 package spacegraph.audio.granular;
 
-import jcog.util.AtomicFloat;
-import jcog.util.NumberX;
+import jcog.data.atomic.AtomicFloat;
+import jcog.data.NumberX;
 import spacegraph.audio.SoundProducer;
 import spacegraph.audio.sample.SoundSample;
 

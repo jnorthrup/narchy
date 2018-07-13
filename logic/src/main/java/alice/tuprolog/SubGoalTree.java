@@ -1,6 +1,6 @@
 package alice.tuprolog;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.Iterator;
 import java.util.List;

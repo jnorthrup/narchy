@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.util;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 /**
  * Stack-based object pool, see the example for usage. You must use the {@link #returning}

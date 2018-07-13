@@ -3,7 +3,7 @@ package jcog.lab.util;
 import jcog.io.arff.ARFF;
 import jcog.lab.Lab;
 import jcog.lab.Sensor;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.Date;
 import java.util.List;

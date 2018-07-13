@@ -3,7 +3,7 @@ package jcog.data.graph.search;
 import com.google.common.collect.Iterators;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.NodeGraph;
-import jcog.list.Cons;
+import jcog.data.list.Cons;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.tuple.Tuples;

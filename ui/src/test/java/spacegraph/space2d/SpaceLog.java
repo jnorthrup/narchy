@@ -9,7 +9,7 @@ import jcog.Util;
 import jcog.exe.Loop;
 import jcog.io.FSWatch;
 import jcog.net.UDPeer;
-import jcog.util.Grok;
+import jcog.io.Grok;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;

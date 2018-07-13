@@ -4,7 +4,7 @@ import alice.tuprolog.*;
 import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.math.Range;
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 import nars.*;
 import nars.control.channel.CauseChannel;
 import nars.index.concept.ConceptIndex;

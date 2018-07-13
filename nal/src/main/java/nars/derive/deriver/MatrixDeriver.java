@@ -1,8 +1,8 @@
 package nars.derive.deriver;
 
-import jcog.bag.Bag;
-import jcog.data.ArrayHashSet;
-import jcog.list.FasterList;
+import jcog.pri.bag.Bag;
+import jcog.data.set.ArrayHashSet;
+import jcog.data.list.FasterList;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;

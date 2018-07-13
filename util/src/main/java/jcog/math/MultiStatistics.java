@@ -2,7 +2,7 @@ package jcog.math;
 
 import com.google.common.base.Joiner;
 import com.google.common.math.PairedStatsAccumulator;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 

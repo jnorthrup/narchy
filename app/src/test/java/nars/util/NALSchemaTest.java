@@ -1,8 +1,8 @@
 package nars.util;
 
-import jcog.data.ArrayHashSet;
+import jcog.data.set.ArrayHashSet;
 import jcog.io.arff.ARFF;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;

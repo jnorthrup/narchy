@@ -20,7 +20,7 @@ package jcog.tree.rtree;
  * #L%
  */
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
 

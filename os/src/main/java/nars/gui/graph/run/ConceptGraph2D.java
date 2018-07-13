@@ -1,7 +1,7 @@
 package nars.gui.graph.run;
 
 import com.jogamp.opengl.GL2;
-import jcog.bag.util.Bagregate;
+import jcog.pri.bag.util.Bagregate;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.ScalarValue;

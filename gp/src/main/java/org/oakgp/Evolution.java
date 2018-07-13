@@ -15,7 +15,7 @@
  */
 package org.oakgp;
 
-import jcog.bag.impl.CurveBag;
+import jcog.pri.bag.impl.CurveBag;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;

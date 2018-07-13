@@ -1,6 +1,6 @@
 package jcog.grammar.parse;
 
-import jcog.list.ArrayUnenforcedSet;
+import jcog.data.set.ArrayUnenforcedSet;
 
 import java.util.ArrayList;
 import java.util.List;

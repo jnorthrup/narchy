@@ -2,7 +2,7 @@ package nars.perf;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.tree.perfect.Trie;
 import jcog.tree.perfect.TrieMatch;
 import jcog.tree.perfect.Tries;

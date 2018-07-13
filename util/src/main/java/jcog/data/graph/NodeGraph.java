@@ -2,9 +2,9 @@ package jcog.data.graph;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
-import jcog.data.ArrayHashSet;
+import jcog.data.set.ArrayHashSet;
 import jcog.data.graph.search.Search;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 

@@ -5,7 +5,7 @@ import jcog.TODO;
 import jcog.Texts;
 import jcog.data.byt.DynBytes;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.memoize.QuickMemoize;
 import jcog.tree.radix.MyConcurrentRadixTree;

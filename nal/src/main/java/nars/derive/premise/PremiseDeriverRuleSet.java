@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Streams;
-import jcog.list.ArrayUnenforcedSet;
+import jcog.data.set.ArrayUnenforcedSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
 import nars.NAR;

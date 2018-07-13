@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.solve;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.Intersecter;
 import spacegraph.space3d.phys.collision.narrow.PersistentManifold;

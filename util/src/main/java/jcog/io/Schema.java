@@ -1,7 +1,7 @@
 package jcog.io;
 
 import jcog.io.arff.ARFF;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.HashMap;
 import java.util.List;

@@ -25,7 +25,7 @@ package spacegraph.space3d;
 
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.input.finger.FPSLook;
 import spacegraph.input.finger.OrbMouse;
 import spacegraph.space3d.phys.Dynamics3D;

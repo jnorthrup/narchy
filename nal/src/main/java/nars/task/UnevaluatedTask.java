@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.task.util.InvalidTaskException;

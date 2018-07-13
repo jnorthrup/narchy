@@ -1,7 +1,7 @@
 package nars.derive.budget;
 
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import nars.Task;

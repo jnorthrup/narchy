@@ -1,5 +1,7 @@
 package jcog;
 
+import jcog.service.Service;
+import jcog.service.Services;
 import org.junit.jupiter.api.Test;
 
 class ServicesTest {

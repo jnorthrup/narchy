@@ -2,7 +2,7 @@ package nars;
 
 import jcog.TODO;
 import jcog.data.map.MRUCache;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;

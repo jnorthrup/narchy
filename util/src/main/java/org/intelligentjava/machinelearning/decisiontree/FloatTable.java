@@ -2,7 +2,7 @@ package org.intelligentjava.machinelearning.decisiontree;
 
 import com.google.common.base.Joiner;
 import jcog.Texts;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintStream;

@@ -1,8 +1,8 @@
 package nars.derive.deriver;
 
-import jcog.bag.Bag;
-import jcog.bag.Sampler;
-import jcog.list.FasterList;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.Sampler;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PLink;

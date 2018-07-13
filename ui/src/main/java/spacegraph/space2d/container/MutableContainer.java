@@ -1,8 +1,8 @@
 package spacegraph.space2d.container;
 
 import com.google.common.collect.Sets;
-import jcog.list.BufferedCoWList;
-import jcog.list.FastCoWList;
+import jcog.data.list.BufferedCoWList;
+import jcog.data.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;

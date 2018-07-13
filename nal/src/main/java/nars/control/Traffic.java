@@ -1,7 +1,7 @@
 package nars.control;
 
 import jcog.Texts;
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 
 /** concurrent traffic accumulator;
  *  concurrent updates (ie. add) but expects a synchronous commit

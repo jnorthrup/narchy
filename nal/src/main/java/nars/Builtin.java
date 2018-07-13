@@ -2,7 +2,7 @@ package nars;
 
 import jcog.Texts;
 import jcog.User;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.PriReference;
 import nars.concept.Concept;
 import nars.op.*;

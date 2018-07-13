@@ -1,7 +1,7 @@
 package jcog.learn.markov;
 
 import com.google.common.collect.Streams;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.WLink;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,6 @@
 package nars.op.java;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;

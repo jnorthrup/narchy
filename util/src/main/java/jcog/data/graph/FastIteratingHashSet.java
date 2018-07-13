@@ -1,6 +1,6 @@
 package jcog.data.graph;
 
-import jcog.util.ArrayIterator;
+import jcog.data.iterator.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Iterator;

@@ -1,7 +1,7 @@
 package nars.term.compound.util;
 
 import jcog.data.bit.MetalBitSet;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;

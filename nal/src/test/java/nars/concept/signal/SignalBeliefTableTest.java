@@ -1,6 +1,6 @@
 package nars.concept.signal;
 
-import jcog.util.AtomicFloat;
+import jcog.data.atomic.AtomicFloat;
 import nars.$;
 import nars.NAR;
 import nars.NARS;

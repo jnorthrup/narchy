@@ -1,10 +1,10 @@
 package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.Sets;
-import jcog.Service;
-import jcog.Services;
+import jcog.service.Service;
+import jcog.service.Services;
 import jcog.event.Ons;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;

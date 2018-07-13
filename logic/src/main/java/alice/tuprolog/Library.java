@@ -17,7 +17,7 @@
  */
 package alice.tuprolog;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;

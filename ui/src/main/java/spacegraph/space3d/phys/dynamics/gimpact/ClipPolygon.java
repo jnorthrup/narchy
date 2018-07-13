@@ -27,7 +27,7 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
-import jcog.util.ArrayPool;
+import jcog.data.pool.ArrayPool;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.util.OArrayList;

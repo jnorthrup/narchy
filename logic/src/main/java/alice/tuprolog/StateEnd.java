@@ -17,7 +17,7 @@
  */
 package alice.tuprolog;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
 package nars.link;
 
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import jcog.pri.ScalarValue;
-import jcog.util.NumberX;
+import jcog.data.NumberX;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;

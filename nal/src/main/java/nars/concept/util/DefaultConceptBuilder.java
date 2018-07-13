@@ -1,7 +1,7 @@
 package nars.concept.util;
 
-import jcog.bag.Bag;
-import jcog.bag.impl.CurveBag;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.PriReference;
 import nars.Op;
 import nars.Param;

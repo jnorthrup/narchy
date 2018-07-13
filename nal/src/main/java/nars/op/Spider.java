@@ -1,10 +1,10 @@
 package nars.op;
 
-import jcog.bag.Bag;
-import jcog.bag.Sampler;
-import jcog.bag.impl.CurveBag;
-import jcog.data.ArrayHashRing;
-import jcog.data.ArrayHashSet;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.Sampler;
+import jcog.pri.bag.impl.CurveBag;
+import jcog.data.set.ArrayHashRing;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;

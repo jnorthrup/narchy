@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.shape;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space3d.phys.math.AabbUtil2;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.VectorUtil;

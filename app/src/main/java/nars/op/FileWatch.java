@@ -1,7 +1,7 @@
 package nars.op;
 
 import jcog.Util;
-import jcog.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.io.FSWatch;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;

@@ -15,7 +15,7 @@
  */
 package jcog.constraint.discrete.trail;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.stack.mutable.primitive.IntArrayStack;
 
 /**

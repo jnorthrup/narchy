@@ -1,8 +1,8 @@
 package nars.nal.nal7;
 
 import jcog.math.FloatSupplier;
-import jcog.meter.TemporalMetrics;
-import jcog.meter.event.DoubleMeter;
+import jcog.signal.meter.TemporalMetrics;
+import jcog.signal.meter.event.DoubleMeter;
 import nars.$;
 import nars.NAR;
 import nars.NARS;

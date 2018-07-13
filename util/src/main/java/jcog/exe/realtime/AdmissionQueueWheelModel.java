@@ -1,7 +1,7 @@
 package jcog.exe.realtime;
 
 import jcog.TODO;
-import jcog.list.MetalConcurrentQueue;
+import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.ArrayDeque;
 import java.util.Iterator;

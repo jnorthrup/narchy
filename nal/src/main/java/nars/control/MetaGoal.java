@@ -2,7 +2,7 @@ package nars.control;
 
 import com.google.common.collect.TreeBasedTable;
 import jcog.Paper;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;

@@ -1,6 +1,6 @@
 //package nars.exe;
 //
-//import jcog.Service;
+//import jcog.service.Service;
 //import jcog.TODO;
 //import jcog.Util;
 //import jcog.event.Ons;
@@ -8,7 +8,7 @@
 //import jcog.exe.valve.InstrumentedWork;
 //import jcog.exe.valve.Sharing;
 //import jcog.exe.valve.TimeSlicing;
-//import jcog.list.FasterList;
+//import jcog.data.list.FasterList;
 //import jcog.math.random.SplitMix64Random;
 //import nars.NAR;
 //import nars.control.DurService;

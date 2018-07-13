@@ -1,7 +1,7 @@
 package nars;
 
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.term.AnonTest;

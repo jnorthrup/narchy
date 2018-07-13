@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.math.convexhull;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.util.math.v3;
 
 /**

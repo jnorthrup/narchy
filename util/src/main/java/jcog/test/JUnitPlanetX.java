@@ -3,7 +3,7 @@ package jcog.test;
 import jcog.TODO;
 import jcog.Util;
 import jcog.io.arff.ARFF;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtensionContext;

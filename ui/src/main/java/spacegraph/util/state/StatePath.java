@@ -3,7 +3,7 @@ package spacegraph.util.state;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.Iterator;
 import java.util.function.Function;

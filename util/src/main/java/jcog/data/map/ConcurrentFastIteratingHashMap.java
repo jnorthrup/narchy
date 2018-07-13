@@ -1,8 +1,8 @@
 package jcog.data.map;
 
 import jcog.TODO;
-import jcog.list.FasterList;
-import jcog.util.ArrayIterator;
+import jcog.data.list.FasterList;
+import jcog.data.iterator.ArrayIterator;
 
 import java.util.*;
 import java.util.function.BiFunction;

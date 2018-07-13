@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.meta;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Splitting;

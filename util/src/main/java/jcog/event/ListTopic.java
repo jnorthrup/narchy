@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  * arraylist implementation, thread safe.  creates an array copy on each update
  * for fastest possible iteration during emitted events.
  */
-public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements Topic<V> {
+public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implements Topic<V> {
 
     final CountDownThenRun busy = new CountDownThenRun();
 

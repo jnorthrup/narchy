@@ -2,7 +2,7 @@ package nars.experiment.connect4;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.NARchy;

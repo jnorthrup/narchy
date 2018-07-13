@@ -1,7 +1,7 @@
 package nars.concept.util;
 
 import jcog.TODO;
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;

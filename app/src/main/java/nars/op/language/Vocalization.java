@@ -1,7 +1,7 @@
 package nars.op.language;
 
 import com.google.common.collect.TreeBasedTable;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.control.NARService;

@@ -1,7 +1,7 @@
 package nars.control;
 
-import jcog.util.AtomicFloat;
-import jcog.util.NumberX;
+import jcog.data.atomic.AtomicFloat;
+import jcog.data.NumberX;
 import nars.NAR;
 import nars.term.Term;
 import org.slf4j.Logger;

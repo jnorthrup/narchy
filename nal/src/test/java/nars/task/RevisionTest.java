@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.bag.Bag;
+import jcog.pri.bag.Bag;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;

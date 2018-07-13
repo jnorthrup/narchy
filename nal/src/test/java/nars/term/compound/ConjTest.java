@@ -1,6 +1,6 @@
 package nars.term.compound;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.term.Term;

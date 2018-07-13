@@ -1,6 +1,6 @@
 package nars.op.stm;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.pri.NLink;
 import jcog.pri.Priority;
 import jcog.pri.VLink;

@@ -3,7 +3,7 @@ package spacegraph.space3d.widget;
 import com.google.common.graph.Graph;
 import com.google.common.graph.SuccessorsFunction;
 import jcog.data.graph.MapNodeGraph;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;

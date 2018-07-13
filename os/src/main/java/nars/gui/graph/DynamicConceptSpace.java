@@ -1,11 +1,11 @@
 package nars.gui.graph;
 
 import jcog.Util;
-import jcog.bag.Bag;
-import jcog.bag.impl.PLinkArrayBag;
-import jcog.bag.util.Bagregate;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.util.Bagregate;
 import jcog.event.Ons;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.pri.PriReference;

@@ -1,10 +1,10 @@
 package nars.exe;
 
 import jcog.TODO;
-import jcog.bag.Bag;
-import jcog.bag.Sampler;
-import jcog.bag.impl.CurveBag;
-import jcog.bag.impl.hijack.PriorityHijackBag;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.Sampler;
+import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.bag.impl.hijack.PriorityHijackBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;

@@ -13,7 +13,7 @@
  */
 package org.allen.temporalintervalrelationships;
 
-import jcog.data.ArrayHashSet;
+import jcog.data.set.ArrayHashSet;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;

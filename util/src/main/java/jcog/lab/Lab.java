@@ -9,7 +9,7 @@ import jcog.lab.util.ExperimentRun;
 import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import jcog.lab.var.FloatVar;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.Range;

@@ -2,7 +2,7 @@ package nars.control.channel;
 
 import com.google.common.collect.AbstractIterator;
 import jcog.TODO;
-import jcog.list.MetalConcurrentQueue;
+import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.Iterator;
 import java.util.Objects;

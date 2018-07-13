@@ -3,7 +3,7 @@ package jcog.tree.radix;
 import jcog.data.byt.AbstractBytes;
 import jcog.data.byt.ArrayBytes;
 import jcog.data.byt.ProxyBytes;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;

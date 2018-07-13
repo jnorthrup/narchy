@@ -1,6 +1,7 @@
 package jcog.util;
 
 import com.google.common.base.Joiner;
+import jcog.data.iterator.CartesianIterator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

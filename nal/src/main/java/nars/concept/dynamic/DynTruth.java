@@ -2,7 +2,7 @@ package nars.concept.dynamic;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
 import nars.NAR;

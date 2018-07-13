@@ -1,7 +1,7 @@
 package jcog.constraint.continuous;
 
 import jcog.constraint.continuous.exceptions.NonlinearExpressionException;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 import java.util.ArrayList;
 import java.util.List;

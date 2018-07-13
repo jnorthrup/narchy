@@ -1,6 +1,6 @@
 package nars.control;
 
-import jcog.Service;
+import jcog.service.Service;
 import jcog.event.Ons;
 import nars.$;
 import nars.NAR;

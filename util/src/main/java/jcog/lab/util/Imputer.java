@@ -2,7 +2,7 @@
 //
 //import com.google.common.collect.Table;
 //import com.google.common.collect.Tables;
-//import jcog.list.FasterList;
+//import jcog.data.list.FasterList;
 //import jcog.lab.Tweak;
 //import jcog.lab.Variables;
 //

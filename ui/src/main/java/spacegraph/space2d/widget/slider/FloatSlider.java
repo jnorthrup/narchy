@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
-import jcog.util.NumberX;
+import jcog.data.NumberX;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import spacegraph.space2d.SurfaceBase;

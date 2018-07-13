@@ -37,8 +37,8 @@ package jcog.io.arff;
 
 import com.google.common.primitives.Primitives;
 import jcog.Texts;
-import jcog.data.ArrayHashSet;
-import jcog.list.FasterList;
+import jcog.data.set.ArrayHashSet;
+import jcog.data.list.FasterList;
 import jcog.util.Reflect;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.impl.factory.Lists;

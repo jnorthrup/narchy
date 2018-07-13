@@ -1,7 +1,7 @@
 //package nars.op.mental;
 //
-//import jcog.bag.impl.HijackBag;
-//import jcog.bag.impl.hijack.PLinkHijackBag;
+//import jcog.pri.bag.impl.HijackBag;
+//import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 //import jcog.pri.PLink;
 //import jcog.pri.PriReference;
 //import jcog.pri.Priority;

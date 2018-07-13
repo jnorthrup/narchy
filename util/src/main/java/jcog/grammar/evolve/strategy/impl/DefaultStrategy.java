@@ -33,7 +33,7 @@ import jcog.grammar.evolve.strategy.ExecutionListener;
 import jcog.grammar.evolve.strategy.RunStrategy;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.variations.Variation;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 

@@ -1,6 +1,6 @@
 package nars.gui;
 
-import jcog.list.table.Table;
+import jcog.data.list.table.Table;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;

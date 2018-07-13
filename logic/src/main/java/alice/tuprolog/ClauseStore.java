@@ -1,7 +1,7 @@
 package alice.tuprolog;
 
 import alice.util.OneWayList;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Deque;

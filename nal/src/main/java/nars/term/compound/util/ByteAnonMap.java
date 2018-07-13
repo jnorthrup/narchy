@@ -1,6 +1,6 @@
 package nars.term.compound.util;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 

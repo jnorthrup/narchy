@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.collision.broad;
 
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 
 /**
  * OverlappingPairCache provides an interface for overlapping pair management (add,

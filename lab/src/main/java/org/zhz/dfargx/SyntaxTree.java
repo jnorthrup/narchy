@@ -1,7 +1,7 @@
 package org.zhz.dfargx;
 
 import jcog.Texts;
-import jcog.list.FasterList;
+import jcog.data.list.FasterList;
 import org.zhz.dfargx.node.*;
 import org.zhz.dfargx.node.bracket.LeftBracket;
 import org.zhz.dfargx.node.bracket.RightBracket;

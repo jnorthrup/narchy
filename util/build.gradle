@@ -5,7 +5,7 @@ dependencies {
 
     compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.2.0'
 
-    compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.11') {
+    compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.12') {
         exclude(module:'slf4j-api')
     }
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
