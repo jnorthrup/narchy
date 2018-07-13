@@ -20,6 +20,12 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         this.y = r.y;
         this.w = r.w;
         this.h = r.h;
+
+//        this.x = r.x;
+//        this.y = r.y;
+//        this.w = r.w;
+//        this.h = r.h;
+
     }
 
     private RectFloat2D(float x1, float y1, float x2, float y2) {

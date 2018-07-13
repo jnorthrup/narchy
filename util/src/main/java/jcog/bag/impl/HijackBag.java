@@ -577,8 +577,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             );
             final int entryCell = windowCap - 1;
 
-            float[] wPri = new float[windowCap];
-            Object[] wVal = new Object[windowCap];
+            final float[] wPri = new float[windowCap];
+            final Object[] wVal = new Object[windowCap];
             //int wSlide = Math.max(1, reprobes-1);
 
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
@@ -586,25 +586,27 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             MutableRoulette roulette = new MutableRoulette(windowCap, (k) -> wPri[k], random);
 
-            int prefilled = 1;
-            ////leave the (highest) entryCell open for the first slide to cover it
-            while ((mapNullSeen + prefilled) < c /*&& size > 0*/) {
-                V v = map.getOpaque(i);
+            int prefilled = 1; //leave the (highest) entryCell open for the first slide to cover it
+            if (windowCap > 1) {
+                while ((mapNullSeen + prefilled) < c /*&& size > 0*/) {
+                    V v = map.getOpaque(i);
 
 
-                i = Util.next(i, direction, c);
+                    i = Util.next(i, direction, c);
 
-                if (v != null) {
-                    wVal[windowCap - 1 - prefilled] = v;
-                    wPri[windowCap - 1 - prefilled] = pri(v);
+                    if (v != null) {
+                        wVal[windowCap - 1 - prefilled] = v;
+                        wPri[windowCap - 1 - prefilled] = pri(v);
 
-                    if (++prefilled >= windowCap-1) {
-                        break;
+
+                        if (++prefilled >= windowCap - 1) {
+                            break;
+                        }
+                    } else {
+                        mapNullSeen++;
                     }
-                } else {
-                    mapNullSeen++;
-                }
 
+                }
             }
 
 
