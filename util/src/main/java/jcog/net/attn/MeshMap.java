@@ -46,8 +46,8 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
 
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void starting() {
+        super.starting();
         onStart.emit(this);
     }
 

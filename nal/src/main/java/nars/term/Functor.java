@@ -516,7 +516,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     /** Functor template for a binary functor with bidirectional parameter cases */
-    public abstract static class BinaryBidiFunctor extends Functor {
+    public abstract static class BinaryBidiFunctor extends Functor implements The {
 
         public BinaryBidiFunctor(String name) {
             this(fName(name));

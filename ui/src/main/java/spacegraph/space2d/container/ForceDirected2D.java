@@ -20,10 +20,10 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         return new MovingRectFloat2D();
     }
 
-    public final FloatRange repelSpeed =new FloatRange(0.1f, 0, 0.2f);
+    public final FloatRange repelSpeed =new FloatRange(0.02f, 0, 0.1f);
 
     /** attractspeed << 0.5 */
-    public final FloatRange attractSpeed =new FloatRange(0.02f, 0, 0.1f);
+    public final FloatRange attractSpeed =new FloatRange(0.005f, 0, 0.025f);
     private float maxRepelDist;
 
     private float minAttractDistRelativeToRadii;

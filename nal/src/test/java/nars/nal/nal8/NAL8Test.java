@@ -3,6 +3,7 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
+import nars.Param;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 200;
+    public static final int cycles =100;
 
     @BeforeEach
     void setTolerance() {
@@ -308,7 +309,9 @@ public class NAL8Test extends NALTest {
     @Test
     void testConjParGoalDecomposeForward() {
 
+
         test
+                .log()
                 .goal("(x &| y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 0)
@@ -558,7 +561,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "((out) ==>-3 (happy)). :|:")
                 .inputAt(13, "(happy)! :|:")
-                .mustGoal(cycles, "(out)", 1f, 0.45f, 16)
+                .mustGoal(cycles, "(out)", 1f, 0.45f, (t)->t>13)
                 .mustNotOutput(cycles, "(out)", GOAL, 3);
     }
 

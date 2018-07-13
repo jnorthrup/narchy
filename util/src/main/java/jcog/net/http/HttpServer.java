@@ -111,7 +111,7 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     }
 
     @Override
-    protected synchronized void onStart() {
+    protected synchronized void starting() {
 
         http.onStart();
 
@@ -121,7 +121,7 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     }
 
     @Override
-    protected synchronized void onStop() {
+    protected synchronized void stopping() {
         http.onStop();
 
         ws.onStop();

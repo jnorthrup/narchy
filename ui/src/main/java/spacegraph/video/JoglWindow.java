@@ -468,7 +468,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 }
 
                 @Override
-                protected void onStart() {
+                protected void starting() {
                     paused = false;
                 }
 

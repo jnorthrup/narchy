@@ -11,7 +11,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by me on 10/20/16.
- *
+ * <p>
  * the Runnable.run method is actually the iteration which will
  * be repeatedly called.
  * Do not call it externally.
@@ -20,10 +20,13 @@ abstract public class Loop implements Runnable {
 
     protected final Logger logger;
 
-    
-    @Deprecated private volatile FixedRateTimedFuture task = null;
 
-    /** busy lock */
+    @Deprecated
+    private volatile FixedRateTimedFuture task = null;
+
+    /**
+     * busy lock
+     */
     protected final AtomicBoolean executing = new AtomicBoolean(false);
 
 
@@ -37,12 +40,6 @@ abstract public class Loop implements Runnable {
      * > 0: delay in milliseconds
      */
     public final AtomicInteger periodMS = new AtomicInteger(-1);
-
-
-
-
-
-
 
 
     /**
@@ -77,7 +74,7 @@ abstract public class Loop implements Runnable {
         return this;
     }
 
-    public void ready() {
+    public final void ready() {
         executing.setRelease(false);
     }
 
@@ -95,41 +92,37 @@ abstract public class Loop implements Runnable {
                 synchronized (periodMS) {
 
 
-                    assert(this.task == null);
-                    onStart();
+                    assert (this.task == null);
+                    starting();
                     this.task = Exe.timer()
-                        .scheduleAtFixedRate(this, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
-                        
+                            .scheduleAtFixedRate(this, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+
                 }
             } else if (/*prevPeriodMS >= 0 && */nextPeriodMS < 0) {
 
                 logger.info("stop");
 
                 synchronized (periodMS) {
-                    
+
                     FixedRateTimedFuture prevTask = this.task;
                     if (prevTask != null) {
 
                         this.task = null;
-                        
-                            prevTask.cancel(false);
-                            
-                            
 
-
+                        prevTask.cancel(false);
 
 
                     }
 
-                    onStop();
+                    stopping();
                 }
             } else if (prevPeriodMS >= 0) {
-                
+
 
                 logger.debug("period={}ms", nextPeriodMS);
 
                 FixedRateTimedFuture task = this.task;
-                if (task!=null)
+                if (task != null)
                     task.setPeriodMS(nextPeriodMS);
 
             }
@@ -139,15 +132,6 @@ abstract public class Loop implements Runnable {
     }
 
 
-
-
-
-
-
-
-
-
-
     public final boolean stop() {
         return setPeriodMS(-1);
     }
@@ -155,50 +139,48 @@ abstract public class Loop implements Runnable {
     /**
      * for subclass overriding; called from the looping thread
      */
-    protected void onStart() {
+    protected void starting() {
 
     }
 
     /**
      * for subclass overriding; called from the looping thread
      */
-    protected void onStop() {
+    protected void stopping() {
 
     }
 
     protected void thrown(Throwable e) {
-        logger.error(" {}", e);
+        stop();
+        ready();
+        //logger.error(" {}", e);
+        throw new RuntimeException(e);
     }
 
 
-    @Override public final void run() {
+    @Override
+    public final void run() {
 
+        if (!executing.weakCompareAndSetAcquire(false, true))
+            return;
 
-        if (!executing.compareAndSet(false, true))
-            return; 
-
+        beforeNext();
         try {
-//            if (periodMS.intValue()<0) {
-//                return;
-//            }
-
-            beforeNext();
-            try {
-                if (!next()) {
-                    stop(); 
-                }
-            } catch (Throwable e) {
-                thrown(e);
+            if (!next()) {
+                stop();
             }
-
-            afterNext();
+        } catch (Throwable e) {
+            thrown(e);
         } finally {
+            afterNext();
             if (!async())
                 ready();
         }
+
     }
 
-    /** if iterationAsync, then the executing flag will not be cleared automatically.  then it is the implementation's
+    /**
+     * if iterationAsync, then the executing flag will not be cleared automatically.  then it is the implementation's
      * responsibility to clear it so that the next iteration can proceed.
      */
     protected boolean async() {
@@ -216,36 +198,9 @@ abstract public class Loop implements Runnable {
     abstract public boolean next();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public float getFPS() {
         if (isRunning()) {
-            return 1000f/periodMS.intValue();
+            return 1000f / periodMS.intValue();
         } else {
             return 0;
         }

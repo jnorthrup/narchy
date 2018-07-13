@@ -277,9 +277,9 @@ public class UDPeer extends UDP {
     }
 
     @Override
-    protected void onStart() {
+    protected void starting() {
         synchronized (this) {
-            super.onStart();
+            super.starting();
             if (discover != null) {
                 discover.start();
                 discoverEvery = new Every(discover::update, 250);
@@ -290,14 +290,14 @@ public class UDPeer extends UDP {
     }
 
     @Override
-    protected void onStop() {
+    protected void stopping() {
         synchronized (this) {
             if (discover != null) {
                 discover.stop();
                 discoverEvery = null;
             }
             them.clear();
-            super.onStop();
+            super.stopping();
         }
     }
 

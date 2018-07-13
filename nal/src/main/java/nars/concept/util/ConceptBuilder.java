@@ -85,56 +85,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public static final Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
 
-    /**
-     * passes through terms without creating any concept anything
-     */
-    public static final ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
-
-        @Override
-        public void on(Conceptor c) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public NodeConcept nodeConcept(Term t) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public TaskConcept taskConcept(Term t) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public TermLinker termlinker(Term term) {
-            return TermLinker.NullLinker;
-        }
-
-        @Override
-        public TemporalBeliefTable newTemporalTable(Term c) {
-            return TemporalBeliefTable.Empty;
-        }
-
-        @Override
-        public BeliefTable newTable(Term t, boolean beliefOrGoal) {
-            return BeliefTable.Empty;
-        }
-
-        @Override
-        public EternalTable newEternalTable(Term c) {
-            return EternalTable.EMPTY;
-        }
-
-        @Override
-        public QuestionTable questionTable(Term term, boolean questionOrQuest) {
-            return QuestionTable.Empty;
-        }
-
-        @Override
-        public Bag[] newLinkBags(Term term) {
-            return new Bag[]{Bag.EMPTY, Bag.EMPTY};
-        }
-    };
 
     public static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);
@@ -284,7 +234,8 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             throw new TODO(x + " is not a The");
 
         Concept c = Task.validTaskTerm(x) ? taskConcept(x) : nodeConcept(x);
-        assert(c!=null);
+        if (c == null)
+            throw new NullPointerException("null Concept for term: " + x);
 
         start(c);
 
@@ -297,4 +248,56 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     }
 
     abstract public TermLinker termlinker(Term term);
+
+    /**
+     * passes through terms without creating any concept anything
+     */
+    public static final ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
+
+        @Override
+        public void on(Conceptor c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NodeConcept nodeConcept(Term t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public TaskConcept taskConcept(Term t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public TermLinker termlinker(Term term) {
+            return TermLinker.NullLinker;
+        }
+
+        @Override
+        public TemporalBeliefTable newTemporalTable(Term c) {
+            return TemporalBeliefTable.Empty;
+        }
+
+        @Override
+        public BeliefTable newTable(Term t, boolean beliefOrGoal) {
+            return BeliefTable.Empty;
+        }
+
+        @Override
+        public EternalTable newEternalTable(Term c) {
+            return EternalTable.EMPTY;
+        }
+
+        @Override
+        public QuestionTable questionTable(Term term, boolean questionOrQuest) {
+            return QuestionTable.Empty;
+        }
+
+        @Override
+        public Bag[] newLinkBags(Term term) {
+            return new Bag[]{Bag.EMPTY, Bag.EMPTY};
+        }
+    };
+
 }

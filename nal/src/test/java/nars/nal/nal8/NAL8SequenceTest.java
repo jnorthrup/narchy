@@ -17,7 +17,7 @@ public class NAL8SequenceTest {
 
     @Test
     void test1() throws Narsese.NarseseException {
-        Param.DEBUG = true;
+
         String sequence = "(((f(a) &&+2 f(b)) &&+2 f(c)) &&+2 done)";
         String goal = "done";
         List<Term> log = new FasterList();

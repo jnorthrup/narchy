@@ -12,7 +12,7 @@ import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -103,8 +103,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        //new HijackConceptIndex(64 * 1024, 4)
+                        //new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(64 * 1024, 4)
 
 
                 )
@@ -134,10 +134,10 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.05f);
         n.questPriDefault.set(0.08f);
 
-        n.emotion.want(MetaGoal.Perceive, -0.001f);
-        n.emotion.want(MetaGoal.Believe, +0.02f);
-        n.emotion.want(MetaGoal.Answer, +0.05f);
-        n.emotion.want(MetaGoal.Desire, +0.10f);
+        n.emotion.want(MetaGoal.Perceive, -0.01f);
+        n.emotion.want(MetaGoal.Believe, +0.25f);
+        n.emotion.want(MetaGoal.Answer, +0.10f);
+        n.emotion.want(MetaGoal.Desire, +0.50f);
         n.emotion.want(MetaGoal.Action, +0.75f);
 
 //        try {

@@ -169,6 +169,11 @@ public interface ScalarValue {
             return p;
         }
 
+        public final float priElseZero() {
+            int i = _pri();
+            return i == NaN ? 0 : intBitsToFloat(i);
+        }
+
         @Override
         public boolean delete() {
             return ((int)INT.getAndSet(this, NaN)) != NaN;
@@ -176,7 +181,9 @@ public interface ScalarValue {
         }
 
         private int _pri() {
+
             return (int) INT.getOpaque(this);
+            //return (int) INT.get(this);
         }
 
         @Override

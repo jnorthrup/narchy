@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 500;
+    private static final int cycles = 300;
 
     @BeforeEach
     void setup() {
@@ -25,10 +25,8 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(26);
-        n.confMin.set(0.1f);
-        //n.termlinkBalance.set(0.25f);
-
+        n.termVolumeMax.set(20);
+        n.confMin.set(0.05f);
         return n;
     }
 
@@ -259,7 +257,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<{Tweety} --> [withWings]>");
         tester.believe("<(&&,<$x --> [chirping]>,<$x --> [withWings]>) ==> <$x --> bird>>");
-        tester.mustBelieve(cycles, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>", 1.00f, 0.73f);
+        tester.mustBelieve(cycles*2, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>", 1.00f, 0.73f);
 
     }
 
@@ -468,10 +466,10 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("<<$x --> key> ==> open($x,lock1)>");
-        tester.believe("<lock1 --> lock>");
+        tester.believe("(key:$x ==> open($x,lock1))");
+        tester.believe("lock:lock1");
 
-        tester.mustBelieve(cycles, "((<$1 --> key> && <$2 --> lock>) ==> open($1,$2))",
+        tester.mustBelieve(cycles*2, "((key:$1 && lock:$2) ==> open($1,$2))",
                 1.00f, 0.81f);
 
 
@@ -532,8 +530,8 @@ public class NAL6Test extends NALTest {
         tester.believe("<<$1 --> lock> ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
         tester.believe("<{key1} --> key>", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "<<$1 --> lock> ==> open({key1},$1)>", 1.00f,
-                0.73f
-                /*0.43f*/);
+                //0.73f
+                0.43f);
 
     }
 
@@ -541,9 +539,9 @@ public class NAL6Test extends NALTest {
     void testSimpleIndepUnification() {
 
         TestNAR t = test;
-        t.input("(<$x --> y> ==> <$x --> z>).");
-        t.input("(x --> y).");
-        t.mustBelieve(cycles, "(x --> z)", 1.0f, 0.81f);
+        t.input("(y:$x ==> z:$x).");
+        t.input("y:x.");
+        t.mustBelieve(cycles, "z:x", 1.0f, 0.81f);
     }
 
 
@@ -554,7 +552,7 @@ public class NAL6Test extends NALTest {
 
         tester.believe("(open($1,lock1) ==> key:$1)");
         tester.believe("open(lock,lock1)");
-        tester.mustBelieve(cycles,
+        tester.mustBelieve(cycles*2,
                 "((open(lock,#1) && open($2,#1)) ==> key:$2)",
                 1.00f, 0.81f);
 
@@ -856,13 +854,12 @@ public class NAL6Test extends NALTest {
 
 
         test
-
                 .believe("num:x", 1.0f, 0.9f)
                 .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
-                .ask("num(((x)))")
+                //.ask("num(((x)))")
                 .mustBelieve(cycles, "num(x)", 1.0f, 1.0f, 0.81f, 1.0f)
-                .mustBelieve(cycles, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
-                .mustBelieve(cycles, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
+                .mustBelieve(cycles*2, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
+                .mustBelieve(cycles*3, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
 
 
         ;

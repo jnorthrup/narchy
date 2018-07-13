@@ -79,7 +79,7 @@ public class UDP extends Loop {
 
 
     @Override
-    protected void onStop() {
+    protected void stopping() {
         try {
             synchronized (c) {
                 c.configureBlocking(true);

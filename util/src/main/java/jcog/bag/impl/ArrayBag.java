@@ -29,16 +29,16 @@ import java.util.stream.Stream;
  * TODO extract a version of this which will work for any Prioritized, not only BLink
  */
 abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X, Y> implements Bag<X, Y> {
-    private static final AtomicFloatFieldUpdater<ArrayBag> mass =
+    private static final AtomicFloatFieldUpdater<ArrayBag> MASS =
             new AtomicFloatFieldUpdater(
-                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "_mass"));
-    private static final AtomicFloatFieldUpdater<ArrayBag> pressure =
+                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "mass"));
+    private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
             new AtomicFloatFieldUpdater(
-                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "_pressure"));
+                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "pressure"));
 
     final PriMerge mergeFunction;
 
-    private volatile int _mass, _pressure;
+    private volatile int mass, pressure;
 
     protected ArrayBag(PriMerge mergeFunction, int capacity) {
         this(mergeFunction, new HashMap<>(capacity, 0.99f));
@@ -185,7 +185,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     @Override
     public float mass() {
-        return mass.get(_mass);
+        return MASS.get(mass);
     }
 
     @Override
@@ -220,12 +220,12 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
     @Override
     public float depressurize() {
-        return Util.max(0, pressure.getAndZero(this));
+        return Util.max(0, PRESSURE.getAndZero(this));
     }
 
     @Override
     public void pressurize(float f) {
-        pressure.add(this, f);
+        PRESSURE.add(this, f);
     }
 
     /**
@@ -241,7 +241,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int s = size();
         if (s == 0) {
-            mass.zero(this);
+            MASS.zero(this);
             if (toAdd == null)
                 return;
         } else {
@@ -256,7 +256,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             if (s < c) {
 
                 items.add(toAdd, this);
-                mass.add(this, toAddPri);
+                MASS.add(this, toAddPri);
             } else {
 
                 Y removed;
@@ -272,7 +272,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                         items.add(toAdd, this);
                         massDelta += toAddPri;
 
-                        mass.add(this, massDelta);
+                        MASS.add(this, massDelta);
 
                     } else {
                         removed = toAdd;
@@ -335,8 +335,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         final int c = capacity;
         if (s > c) {
-
-
             SortedArray<Y> items1 = this.items;
             while (s > 0 && ((s - c) + (toAdd ? 1 : 0)) > 0) {
                 Y w1 = items1.removeLast();
@@ -346,8 +344,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             }
         }
 
-
-        ArrayBag.mass.set(this, mass);
+        ArrayBag.MASS.set(this, mass);
 
         if (mustSort != -1)
             sort(0, mustSort);
@@ -448,7 +445,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         //HACK special case for saving a lot of unnecessary work when merge=Max
         //TODO may also work with average and replace merges
         if (this.mergeFunction == PriMerge.max && isFull()) {
-            if (incoming.pri() < priMin()) {
+            if (p < priMin()) {
                 return null; //fast drop the novel task due to insufficient priority
                 //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
             }
@@ -552,7 +549,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             int i = items.add(incoming, -p, this);
 
             assert (i >= 0);
-            mass.add(this, p);
+            MASS.add(this, p);
         }
 
         return true;
@@ -589,7 +586,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
             items.adjust(posBefore, this);
 
-            mass.add(this, delta);
+            MASS.add(this, delta);
         }
 
         incoming.delete();

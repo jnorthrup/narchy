@@ -11,6 +11,8 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
@@ -29,7 +31,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     /**
      * content hash
      */
-    private final int hash;
+    protected final int hash;
 
     private final byte op;
 
@@ -112,6 +114,16 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
                 key = d.array();
             } else {
                 key = knownKey;
+            }
+        }
+
+        @Override public boolean equals(Object that) {
+            if (this == that) return true;
+            if (that instanceof SimpleCachedCompoundWithBytes) {
+                SimpleCachedCompoundWithBytes tha = ((SimpleCachedCompoundWithBytes) that);
+                return hash == tha.hash && Arrays.equals(key, tha.key);
+            } else {
+                return Compound.equals(this, that);
             }
         }
 
@@ -238,7 +250,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
 
 
     @Override
-    public final boolean equals(@Nullable Object that) {
+    public boolean equals(@Nullable Object that) {
         return Compound.equals(this, that);
     }
 

@@ -52,12 +52,12 @@ public class FSWatch extends Loop {
 
 
     @Override
-    protected void onStop() {
+    protected void stopping() {
         logger.info("stop: {}", path);
     }
 
     @Override
-    protected void onStart() {
+    protected void starting() {
         File f = path.toFile();
         if (f.isDirectory()) {
             for (File e : f.listFiles()) {
