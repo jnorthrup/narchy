@@ -53,19 +53,31 @@
         P, (S ~ P) |- S, (Belief:DecomposeNegativePositivePositive)
     P, (S ~ P) |- S, (Belief:DecomposeNegativeNegativeNegative)
 
-     //similarity between S, P (symmetric)
+     //similarity (S==P)! (symmetric: DecomposeNegative....)
      ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativePositivePositive)
-        ((P ~ S) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativePositivePositive)
-           ((S ~ P) --> M) , (S --> M) |- (P --> M), (Goal:DecomposeNegativeNegativeNegative)
-              ((P ~ S) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativeNegativeNegative)
+     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeNegativePositivePositive)
+     (S ~ P),         S         |- P,         (Goal:DecomposeNegativePositivePositive)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeNegativePositivePositive)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeNegativePositivePositive)
+        (S ~ P),         P         |- S,         (Goal:DecomposeNegativePositivePositive)
+           ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativeNegativeNegative)
+           (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeNegativeNegativeNegative)
+           (S ~ P),         S         |- P,         (Goal:DecomposeNegativeNegativeNegative)
+              ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeNegativeNegativeNegative)
+              (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeNegativeNegativeNegative)
+              (S ~ P),         P         |- S,         (Goal:DecomposeNegativeNegativeNegative)
 
-     //diff (asymmetric)
+     //difference --(S==P)! (asymmetric: DecomposePositive... )
      ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositiveNegative)
+     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositiveNegative)
+     (S ~ P),         S         |- P,         (Goal:DecomposePositivePositiveNegative)
         ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePositiveNegativePositive)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePositiveNegativePositive)
+        (S ~ P),         P         |- S,         (Goal:DecomposePositiveNegativePositive)
+
 
 
      //intersection conditional goal decompose
-     //TODO arity>2
      ((|,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositivePositive)
      ((&,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositiveNegativePositive)
      (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositivePositive)

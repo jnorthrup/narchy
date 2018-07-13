@@ -3,6 +3,7 @@ package nars.concept.signal;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.util.AtomicFloat;
+import jcog.util.NumberX;
 import nars.$;
 import nars.NAR;
 import nars.control.NARService;
@@ -21,7 +22,7 @@ import static nars.Op.BELIEF;
 /** base class for a multi-concept representation of a real scalar value input */
 abstract public class DemultiplexedScalar extends NARService implements Iterable<Signal>, Consumer<NAR>, FloatSupplier {
 
-    public final AtomicFloat value = new AtomicFloat();
+    public final NumberX value = new AtomicFloat();
 
     public final CauseChannel<ITask> in;
 

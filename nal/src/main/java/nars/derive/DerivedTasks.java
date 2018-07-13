@@ -3,13 +3,12 @@ package nars.derive;
 import jcog.Util;
 import jcog.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
+import jcog.util.NumberX;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.task.NALTask;
 import nars.util.TaskBagDrainer;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +61,7 @@ public interface DerivedTasks {
         final PriArrayBag<Task> tasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
 
             @Override
-            public Task put(Task incoming, @Nullable MutableFloat overflow) {
+            public Task put(Task incoming, NumberX overflow) {
                 //fast merge intercept: avoids synchronization in normal insert procedure
                 Task existing = map.get(incoming);
                 if (existing!=null) {

@@ -20,10 +20,10 @@ import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.net.attn.HashMapTagSet;
 import jcog.pri.Priority;
+import jcog.util.NumberX;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -159,7 +159,7 @@ public class UDPeer extends UDP {
             }
 
             @Override
-            protected UDProfile merge(@Nullable UDPeer.UDProfile existing, UDPeer.UDProfile incoming, MutableFloat overflowing) {
+            protected UDProfile merge(@Nullable UDPeer.UDProfile existing, UDProfile incoming, NumberX overflowing) {
                 return (existing != null ? existing : incoming);
             }
 

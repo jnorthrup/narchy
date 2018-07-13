@@ -2,12 +2,11 @@ package nars.table;
 
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.map.MRUCache;
+import jcog.util.NumberX;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.term.Term;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -182,7 +181,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        protected Task merge(Task existing, Task incoming, @Nullable MutableFloat overflowing) {
+        protected Task merge(Task existing, Task incoming, NumberX overflowing) {
             return existing;
         }
 

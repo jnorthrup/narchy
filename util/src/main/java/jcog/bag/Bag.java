@@ -5,7 +5,7 @@ import jcog.list.table.Table;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriForget;
 import jcog.util.FloatFloatToFloatFunction;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +66,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
         }
 
         @Override
-        public Object put(Object b, @Nullable MutableFloat overflowing) {
+        public Object put(Object b, NumberX overflowing) {
             return null;
         }
 
@@ -138,7 +138,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
         put(b);
     }
 
-    V put(V b, @Nullable MutableFloat overflowing);
+    V put(V b, NumberX overflowing);
 
     /**
      * returns the bag to an empty state
@@ -151,9 +151,9 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     }
 
     /**
-     * The number of items in the bag
+     * The NumberX of items in the bag
      *
-     * @return The number of items
+     * @return The NumberX of items
      */
     @Override
     int size();

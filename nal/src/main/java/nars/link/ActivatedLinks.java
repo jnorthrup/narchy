@@ -4,12 +4,12 @@ import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
 import jcog.sort.SortedList;
+import jcog.util.NumberX;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.term.Term;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +25,7 @@ public class ActivatedLinks extends AbstractTask {
 
     final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap();
 
-    public void link(Concept c, Term target, float pri, @Nullable MutableFloat refund) {
+    public void link(Concept c, Term target, float pri, @Nullable NumberX refund) {
         float overflow = termlink.computeIfAbsent(new TermLinkage(c, target), (cc)-> cc)
                 .priAddOverflow(pri);
         if (overflow > Float.MIN_NORMAL && refund!=null)

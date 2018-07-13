@@ -19,12 +19,11 @@ public interface Priority extends Prioritized, ScalarValue {
     default float take(Priority source, float p, boolean amountOrFraction, boolean copyOrMove) {
         float amount;
         if (!amountOrFraction) {
-            if (p < ScalarValue.EPSILON) return 0;
             amount = source.priElseZero() * p;
-            if (amount < ScalarValue.EPSILON) return 0;
         } else {
             amount = p;
         }
+        if (amount < ScalarValue.EPSILON) return 0;
 
         //TODO make fully atomic with update(..)
         float before = priElseZero();
@@ -112,11 +111,14 @@ public interface Priority extends Prioritized, ScalarValue {
         if (priTarget > ScalarValue.EPSILON) {
             float perSrc = priTarget / src.length;
             for (X t: src) {
-                if (t != null)
-                    u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
+                if (t != null) {
+                    float v = u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
+                    if (Util.equals(v, 1f, EPSILON))
+                        break; //done
+                }
             }
         }
-        assert (u.priElseZero() <= maxPri + ScalarValue.EPSILON);
+        assert (u.priElseZero() <= maxPri + ScalarValue.EPSILON): "not: " + u.priElseZero() + " <= " + maxPri + EPSILON;
         return u;
     }
 

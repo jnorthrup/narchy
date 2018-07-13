@@ -2,11 +2,11 @@ package nars.link;
 
 import jcog.bag.Bag;
 import jcog.pri.ScalarValue;
+import jcog.util.NumberX;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class Tasklinks {
 
-    public static void linkTask(TaskLink xx, Bag<?, TaskLink> b, @Nullable MutableFloat overflow) {
+    public static void linkTask(TaskLink xx, Bag<?, TaskLink> b, @Nullable NumberX overflow) {
 
         if (overflow != null) {
             TaskLink yy = b.put(xx, overflow);
@@ -47,7 +47,7 @@ public class Tasklinks {
     /**
      * create a batch of tasklinks, sharing common seed data
      */
-    public static void linkTask(TaskLink.GeneralTaskLink tasklink, float priTransferred, List<Concept> targets, MutableFloat overflow) {
+    public static void linkTask(TaskLink.GeneralTaskLink tasklink, float priTransferred, List<Concept> targets, NumberX overflow) {
         int nTargets = targets.size();
         assert(nTargets > 0);
 
@@ -61,7 +61,19 @@ public class Tasklinks {
 
         for (Concept c : targets) {
 
-            float change = overflow.subAtMost(headRoom);
+
+            float result;
+            float available = overflow.floatValue();
+            if (available > headRoom) {
+                //take some
+                overflow.add(-headRoom);
+                result = headRoom;
+            } else {
+                //take all
+                overflow.set(0f);
+                result = available;
+            }
+            float change = result;
 
             linkTask(
                 new TaskLink.GeneralTaskLink(tlSeed, pEach + change),

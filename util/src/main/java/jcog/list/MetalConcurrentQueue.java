@@ -46,8 +46,6 @@ public class MetalConcurrentQueue<E> extends MultithreadConcurrentQueue<E> {// i
     }
 
     public int clear(Consumer<E> each, int limit) {
-        if (limit == 0)
-            return 0;
         int count = 0;
         int s = limit >= 0 ? Math.min(limit, size()) : size();
         E next;

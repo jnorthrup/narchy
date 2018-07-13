@@ -26,12 +26,12 @@ public class Treadmill extends AtomicLongArray implements SpinMutex {
 
         while (true) {
 
-            int now = mod.get();
+            int now = mod.getAcquire();
 
             
             boolean collision = false;
             for (int i = 0; i < slots; i++) {
-                long v = get(i);
+                long v = getOpaque(i);
                 if (v == hash) {
                     collision = true;
                     break; 
@@ -39,7 +39,7 @@ public class Treadmill extends AtomicLongArray implements SpinMutex {
             }
 
             if (!collision) {
-                if (mod.compareAndSet(now, now+1)) { 
+                if (mod.weakCompareAndSetRelease(now, now+1)) {
                     for (int i = 0; i < slots; i++) {
                         if (compareAndSet(i, 0, hash))
                             return i; 
@@ -54,7 +54,7 @@ public class Treadmill extends AtomicLongArray implements SpinMutex {
 
     @Override
     public final void end(int slot) {
-        set(slot, 0);
+        setRelease(slot, 0);
     }
 
 

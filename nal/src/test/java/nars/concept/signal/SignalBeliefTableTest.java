@@ -1,11 +1,11 @@
 package nars.concept.signal;
 
+import jcog.util.AtomicFloat;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.dynamic.SignalBeliefTable;
 import nars.control.DurService;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,7 +16,7 @@ class SignalBeliefTableTest {
     void test1() {
         NAR n = NARS.shell();
 
-        MutableFloat xx = new MutableFloat(0);
+        AtomicFloat xx = new AtomicFloat(0);
         Signal x = new Signal($.the("x"), xx, n);
 
         DurService xAuto = x.auto(n, 1);

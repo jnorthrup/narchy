@@ -10,9 +10,9 @@
     X, X, task("!") |-         (?1 &&+- --X), (Punctuation:Quest)
 
 //goal induction
-G, A, task("!")  |- (polarize(G,task) &&+- polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
-//G, A, task("!")  |- (polarize(G,task) &&+- --polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
-G, A, task("!")  |- (polarize(G,task) &&+- --polarize(A,belief)), (Punctuation:Quest, Time:Relative, Also:VarIntro)
+//G, A, task("!")  |- (polarize(G,task) &&+- polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
+    //G, A, task("!")  |- (polarize(G,task) &&+- --polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
+//G, A, task("!")  |- (polarize(G,task) &&+- --polarize(A,belief)), (Punctuation:Quest, Time:Relative, Also:VarIntro)
 
 //goal search
     //(X-->Y), X, task("!") |-          (?1 ==>+- (X-->Y)), (Punctuation:Question)

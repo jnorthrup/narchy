@@ -24,6 +24,9 @@ public final class AtomicFloatFieldUpdater<X>  {
     public void set(X x, float value) {
         updater.set(x, floatToIntBits(value));
     }
+    public void lazySet(X x, float value) {
+        updater.lazySet(x, floatToIntBits(value));
+    }
 
     public void add(X x, float add) {
         updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
@@ -58,7 +61,7 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     public void zero(X x) {
-        updater.set(x, ZERO);
+        updater.lazySet(x, ZERO);
     }
 
     public float get(X x) {
@@ -94,10 +97,6 @@ public final class AtomicFloatFieldUpdater<X>  {
     public boolean compareAndSet(X x, float expected, float newvalue) {
         return updater.compareAndSet(x, floatToIntBits(expected), floatToIntBits(newvalue));
     }
-
-
-
-
 
 
 }

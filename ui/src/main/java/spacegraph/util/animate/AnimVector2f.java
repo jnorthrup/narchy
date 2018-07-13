@@ -1,7 +1,7 @@
 package spacegraph.util.animate;
 
 import jcog.Util;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.AtomicFloat;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
@@ -11,7 +11,7 @@ import spacegraph.util.math.v2;
 public class AnimVector2f extends v2 implements Animated {
 
     private final v2 target = new v2();
-    private final MutableFloat speed;
+    private final Number speed;
     private boolean running = true;
 
     public AnimVector2f(float speed) {
@@ -21,7 +21,7 @@ public class AnimVector2f extends v2 implements Animated {
     private AnimVector2f(float x, float y, float speed) {
         super(x, y);
         target.set(this);
-        this.speed = new MutableFloat(speed);
+        this.speed = new AtomicFloat(speed);
 
     }
 

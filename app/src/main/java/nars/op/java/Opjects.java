@@ -550,7 +550,7 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-    public <T> T the(String id, T instance, Object... args) {
+    public final <T> T the(String id, T instance, Object... args) {
         return the($.the(id), instance, args);
     }
 
@@ -616,7 +616,7 @@ public class Opjects extends DefaultTermizer {
         });
     }
 
-    public <T> T a(String id, Class<? extends T> cl, Object... args) {
+    public final <T> T a(String id, Class<? extends T> cl, Object... args) {
         return a($.the(id), cl, args);
     }
 

@@ -1,20 +1,20 @@
 package spacegraph.util.animate;
 
 import jcog.Util;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.AtomicFloat;
 
 
-public class AnimFloat extends MutableFloat implements Animated {
+public class AnimFloat extends AtomicFloat implements Animated {
 
     private float target;
-    private final MutableFloat speed;
+    private final Number speed;
     private boolean running = true;
 
     AnimFloat(float current, float speed) {
         super(Float.NaN);
         set(current);
         target = current;
-        this.speed = new MutableFloat(speed);
+        this.speed = new AtomicFloat(speed);
     }
 
     public void stop() {

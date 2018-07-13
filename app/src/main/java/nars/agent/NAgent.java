@@ -96,7 +96,6 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     public boolean trace;
 
-    public long now = ETERNAL; 
 
 
     /**
@@ -107,14 +106,13 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     private CauseChannel<ITask> in = null;
 
-
-
-    //public final FloatRange motivation = new FloatRange(1f, 0f, 2f);
-    public List<Supplier<Task>> always = $.newArrayList();
+    public final List<Supplier<Task>> always = $.newArrayList();
 
     /** non-null if an independent loop process has started */
 
     public int sensorDur;
+
+    private volatile long last;
 
 
     protected NAgent(NAR nar) {
@@ -149,7 +147,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 //    }
 
     @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
-        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
+        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now(),
                 ETERNAL, ETERNAL,
                 nar.evidence()
                 //Stamp.UNSTAMPED
@@ -159,16 +157,16 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         always.add(()->t);
         return t;
     }
-    public void alwaysWant(Termed x, float conf) {
-        long[] evidenceShared = nar.evidence();
+    public void alwaysWant(Termed x, float confFactor) {
+        //long[] evidenceShared = nar.evidence();
 
         always.add(()-> {
-            long now = Tense.dither(this.now, nar);
-            long next = Tense.dither(this.now + nar.dur(), nar);
-            return new NALTask(x.term(), GOAL, $.t(1f, conf), now,
+            long now = Tense.dither(this.now(), nar);
+            long next = Tense.dither(this.now() + nar.dur(), nar);
+            return new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
                     now, next,
-                    evidenceShared
-                    //nar.evidence()
+                    //evidenceShared
+                    nar.evidence()
                     //Stamp.UNSTAMPED
 
             );
@@ -186,8 +184,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
         Supplier<Task> t = () -> {
 
-            long now = Tense.dither(this.now, nar);
-            long next = Tense.dither(this.now + nar.dur(), nar);
+            long now = Tense.dither(this.now(), nar);
+            long next = Tense.dither(this.now() + nar.dur(), nar);
 
             long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
 
@@ -263,7 +261,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         
 
         return id + " rwrd=" + n2(reward) +
-                " dex=" + /*n4*/(dexterity(now, now)) +
+                " dex=" + /*n4*/(dexterity(now(), now())) +
                 
                 /*" var=" + n4(varPct(nar)) + */ "\t" + nar.concepts.summary() + " " +
                 nar.emotion.summary();
@@ -276,10 +274,11 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     @Override
     protected void starting(NAR nar) {
 
-        super.starting(nar);
+
 
         Term id = (this.id == null) ? nar.self() : this.id;
 
+        this.last = nar.time();
 
         this.happy =
 
@@ -310,7 +309,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         //happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));
 
         this.in = nar.newChannel(this);
-        this.now = nar.time() - nar.dur();
+
 
         init(nar);
 
@@ -329,6 +328,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         //always.forEach(t -> concepts.add(t.concept(nar,true)));
         Iterables.addAll(concepts, happy);
 
+        super.starting(nar);
 
         enabled.set(true);
     }
@@ -360,11 +360,11 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         if (!enabled.get())
             return;
 
-        long last = this.now;
         long now = nar.time();
+        long last = this.last;
+        this.last = now;
         if (now <= last)
             return;
-        this.now = now;
 
         this.sensorDur = Math.max(nar.dur(), (int)(now - last)); 
 
@@ -424,8 +424,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                     a = null;
                     if (remainMissing-- <= 0) 
                         break;
-                    else
-                        continue;
+
                 }
             } while (a==null || p.test(a));
         };
@@ -455,8 +454,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                     a = null;
                     if (remainMissing-- <= 0)
                         break;
-                    else
-                        continue;
+
                 }
             } while (a==null || p.test(a));
         };
@@ -467,6 +465,10 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 //        DurService d = DurService.on(nar, this);
         nar.run(frames * nar.dur() + 1);
 //        d.off();
+    }
+
+    public long now() {
+        return nar.time();
     }
 
 

@@ -1,6 +1,6 @@
 package jcog.net;
 
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.AtomicFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,7 +92,7 @@ public class UDPeerSim {
     public class MyUDPeer extends UDPeer {
 
         final Random random = new Random();
-        public final MutableFloat packetLossRate = new MutableFloat(0.05f);
+        public final Number packetLossRate = new AtomicFloat(0.05f);
 
         public MyUDPeer(int port, int i) throws IOException {
             super(port + i);

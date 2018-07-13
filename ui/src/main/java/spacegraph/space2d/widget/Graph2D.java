@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
-import jcog.WTF;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
@@ -90,8 +89,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (super.prePaint(r)) {
-            if (!showing())
-                throw new WTF();
             layout.layout(this, r.dtMS);
             return true;
         }
@@ -109,7 +106,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     public Graph2D<X> add(Iterable<X> nodes) {
-        if (!busy.get()) 
+        if (!busy.getAcquire())
             return add(nodes.iterator());
         return this;
     }
@@ -119,7 +116,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     public Graph2D<X> set(Iterable<X> nodes) {
-        if (!busy.get()) 
+        if (!busy.getAcquire())
             return set(nodes.iterator());
         return this;
     }
@@ -149,7 +146,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             updateEdges();
 
         } finally {
-            busy.set(false);
+            busy.setRelease(false);
         }
 
         return this;

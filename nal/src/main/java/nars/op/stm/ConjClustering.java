@@ -50,6 +50,10 @@ public class ConjClustering extends Causable {
     //temporary to the current singleton
     transient private int tasksGenerated;
 
+    public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
+        this(nar, punc, (t)->true, centroids, capacity);
+    }
+
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
 

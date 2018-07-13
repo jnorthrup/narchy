@@ -2,7 +2,7 @@ package jcog.bag.impl.hijack;
 
 import jcog.bag.impl.HijackBag;
 import jcog.pri.PLinkHashCached;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 
 import java.util.function.Consumer;
 
@@ -70,7 +70,7 @@ public class PLinkHijackBag<X> extends HijackBag<X, PLinkHashCached<X>> {
 
 
     @Override
-    protected PLinkHashCached<X> merge(PLinkHashCached<X> existing, PLinkHashCached<X> incoming, MutableFloat overflowing) {
+    protected PLinkHashCached<X> merge(PLinkHashCached<X> existing, PLinkHashCached<X> incoming, NumberX overflowing) {
         float overflow = existing.priAddOverflow(incoming.priElseZero() );
         if (overflow > 0) {
             

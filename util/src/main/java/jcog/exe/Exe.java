@@ -24,9 +24,10 @@ public enum Exe { ;
     /** global timer */
     private static volatile HashedWheelTimer timer =  new HashedWheelTimer(
             new AdmissionQueueWheelModel(16,
-                    TimeUnit.MICROSECONDS.toNanos(1000)
+                    TimeUnit.MILLISECONDS.toNanos(1)
             ),
             HashedWheelTimer.WaitStrategy.SleepWait,
+            //HashedWheelTimer.WaitStrategy.YieldingWait,
             Exe::invoke);
 
     private static volatile Executor executor = ForkJoinPool.commonPool();

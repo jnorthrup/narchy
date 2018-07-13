@@ -659,22 +659,35 @@ public enum Util {
 
 
     public static boolean equals(float a, float b) {
-        return equals(finite(a), finite(b), Float.MIN_VALUE * 2);
+        return equals(a, b, Float.MIN_NORMAL * 2);
     }
 
     /**
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(float a, float b, float epsilon) {
-        return Math.abs(finite(a) - finite(b)) < epsilon;
+        notNaN(a); notNaN(b);
+        if (a == b)
+            return true;
+        if (Float.isFinite(a) && Float.isFinite(b))
+            return Math.abs(a - b) < epsilon;
+        else
+            return false;
     }
 
     /**
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(double a, double b, double epsilon) {
-        return (Math.abs(finite(a) - finite(b)) < epsilon);
+        notNaN(a); notNaN(b);
+        if (a == b)
+            return true;
+        if (Double.isFinite(a) && Double.isFinite(b))
+            return Math.abs(a - b) < epsilon;
+        else
+            return false;
     }
+
 
     public static boolean equals(float[] a, float[] b, float epsilon) {
         if (a == b) return true;
@@ -1469,18 +1482,18 @@ public enum Util {
 
     public static boolean sleepNS(long periodNS) {
         if (periodNS <= 0) return false;
-        if (periodNS <= 10000 /** 10uS = 0.01ms */ ) {
+        if (periodNS <= 1000 /** 10uS = 0.01ms */ ) {
             long start = System.nanoTime();
             long end = start + periodNS;
             do {
                 Thread.onSpinWait();
             } while (System.nanoTime() < end);
-        } else if (periodNS <= 500000 /** 100uS = 0.5ms */ ) {
-            long start = System.nanoTime();
-            long end = start + periodNS;
-            do {
-                Thread.yield();
-            } while (System.nanoTime() < end);
+//        } else if (periodNS <= 500000 /** 100uS = 0.5ms */ ) {
+//            long start = System.nanoTime();
+//            long end = start + periodNS;
+//            do {
+//                Thread.yield();
+//            } while (System.nanoTime() < end);
         } else {
             LockSupport.parkNanos(periodNS);
         }
@@ -1492,6 +1505,8 @@ public enum Util {
 //        }
         return true;
     }
+
+
 
     public static void sleepNSWhile(long periodNS, long napTimeNS, BooleanSupplier wakeEarly) {
         if (periodNS <= napTimeNS) {
@@ -2313,4 +2328,6 @@ public enum Util {
     public static int sqrt(int x) {
         return (int) Math.round(Math.sqrt(x));
     }
+
+
 }

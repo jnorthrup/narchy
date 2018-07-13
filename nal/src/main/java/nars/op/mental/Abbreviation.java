@@ -2,6 +2,7 @@ package nars.op.mental;
 
 
 import jcog.math.MutableIntRange;
+import jcog.util.AtomicFloat;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -11,7 +12,6 @@ import nars.concept.PermanentConcept;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class Abbreviation/*<S extends Term>*/ {
     /**
      * generated abbreviation belief's confidence
      */
-    public final MutableFloat abbreviationConfidence;
+    public final Number abbreviationConfidence;
     /**
      * accepted volume range, inclusive
      */
@@ -92,7 +92,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
         this.termPrefix = termPrefix;
         this.abbreviationConfidence =
-                new MutableFloat(nar.confDefault(BELIEF));
+                new AtomicFloat(nar.confDefault(BELIEF));
 
 
         volume = new MutableIntRange(volMin, volMax);

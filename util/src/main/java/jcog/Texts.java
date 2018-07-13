@@ -636,6 +636,13 @@ public enum Texts {
      * from: https:
      */
     public static String timeStr(double ns) {
+        assert(Double.isFinite(ns));
+        boolean neg = ns < 0;
+        return (neg ? "-" : "") + _timeStr(Math.abs(ns));
+    }
+
+
+    private static String _timeStr(double ns) {
         if (ns < 1000) return n4(ns) + "ns";
         if (ns < 1_000_000) return n4(ns / 1_000d) + "us";
         if (ns < 1_000_000_000) return n4(ns / 1_000_000d) + "ms";

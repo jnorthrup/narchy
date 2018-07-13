@@ -2,7 +2,7 @@ package jcog.bag.impl.hijack;
 
 import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 
 
 public class DefaultHijackBag<K> extends PriorityHijackBag<K, PriReference<K>> {
@@ -15,7 +15,7 @@ public class DefaultHijackBag<K> extends PriorityHijackBag<K, PriReference<K>> {
     }
 
     @Override
-    protected PriReference<K> merge( PriReference<K> existing,  PriReference<K> incoming, MutableFloat overflowing) {
+    protected PriReference<K> merge(PriReference<K> existing, PriReference<K> incoming, NumberX overflowing) {
         float overflow = merge.merge(existing, incoming); 
         if (overflow > 0) {
             

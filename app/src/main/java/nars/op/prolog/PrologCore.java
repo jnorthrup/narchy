@@ -4,6 +4,7 @@ import alice.tuprolog.*;
 import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.math.Range;
+import jcog.util.AtomicFloat;
 import nars.*;
 import nars.control.channel.CauseChannel;
 import nars.index.concept.ConceptIndex;
@@ -13,7 +14,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,23 +64,23 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
      * beliefs above this expectation will be asserted as prolog beliefs
      */
     @Range(min = 0.5, max = 1.0)
-    public final MutableFloat trueFreqThreshold = new MutableFloat(0.9f);
+    public final Number trueFreqThreshold = new AtomicFloat(0.9f);
 
     /**
      * beliefs below this expectation will be asserted as negated prolog beliefs
      */
     @Range(min = 0, max = 0.5)
-    public final MutableFloat falseFreqThreshold = new MutableFloat(0.1f);
+    public final Number falseFreqThreshold = new AtomicFloat(0.1f);
 
     /**
      * beliefs above this expectation will be asserted as prolog beliefs
      */
     @Range(min = 0, max = 1.0)
-    public final MutableFloat confThreshold = new MutableFloat(0.75f);
+    public final Number confThreshold = new AtomicFloat(0.75f);
 
 
     @Range(min = 0, max = 1.0)
-    public final MutableFloat answerConf = new MutableFloat(confThreshold.floatValue() * 0.9f);
+    public final Number answerConf = new AtomicFloat(confThreshold.floatValue() * 0.9f);
 
 
 

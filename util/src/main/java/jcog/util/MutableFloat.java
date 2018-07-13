@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.lang3.mutable;
+package jcog.util;
 
 import jcog.math.FloatSupplier;
 
@@ -26,11 +26,11 @@ import jcog.math.FloatSupplier;
  * @see Float
  * @since 2.1
  */
-public class MutableFloat extends Number implements FloatSupplier {
+public class MutableFloat extends NumberX implements FloatSupplier {
 
 
     /** The mutable value. */
-    private /* volatile */ float value;
+    private float value;
 
     /**
      * Constructs a new MutableFloat with the default value of zero.
@@ -364,8 +364,8 @@ public class MutableFloat extends Number implements FloatSupplier {
      */
     @Override
     public boolean equals(final Object obj) {
-        return obj instanceof MutableFloat
-            && Float.floatToIntBits(((MutableFloat) obj).value) == Float.floatToIntBits(value);
+        return obj instanceof NumberX
+                && Float.floatToIntBits(((MutableFloat) obj).value) == Float.floatToIntBits(value);
     }
 
     /**

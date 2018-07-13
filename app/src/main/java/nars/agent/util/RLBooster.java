@@ -131,8 +131,8 @@ public class RLBooster implements Consumer<NAR> {
 
         NAR nar = env.nar();
         int dur = nar.dur();
-        long start = env.now - dur/2;
-        long end = env.now + dur/2;
+        long start = env.now() - dur/2;
+        long end = env.now() + dur/2;
 
         List<Task> e = new FasterList(actions.length);
         for (int o = 0; o < actions.length; o++) {

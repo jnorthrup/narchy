@@ -77,7 +77,7 @@ public class Line1DContinuous extends NAgent {
     protected float act() {
 
 
-        yHidden = Math.round(targetFunc.valueOf((int) now) * (size-1));
+        yHidden = Math.round(targetFunc.valueOf((int) now()) * (size-1));
 
         yHidden = Math.min(size-1, Math.max(0, yHidden));
         yEst    = Math.min(size-1, Math.max(0, yEst));

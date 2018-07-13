@@ -8,7 +8,7 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.op.PriMerge;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,7 +25,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 
     final Bag<X, PriReference<X>> bag;
     private final Iterable<X> src;
-    private final MutableFloat scale;
+    private final NumberX scale;
     final AtomicBoolean busy = new AtomicBoolean();
     private float forgetRate = 1f;
 
@@ -69,7 +69,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 
 
         } finally {
-            busy.set(false);
+            busy.setRelease(false);
         }
         return true;
     }

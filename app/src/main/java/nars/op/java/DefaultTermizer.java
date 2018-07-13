@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -124,8 +125,10 @@ public class DefaultTermizer implements Termizer {
         if (o instanceof Class) {
             Class oc = (Class) o;
             return classTerm(oc);
+        }
 
-
+        if (o instanceof Path) {
+            return $.the((Path)o);
         }
 
         if (o instanceof int[]) {
@@ -162,7 +165,7 @@ public class DefaultTermizer implements Termizer {
         if (o instanceof Set) {
             Collection<Term> arg = (Collection<Term>) ((Collection) o).stream().map(this::term).collect(Collectors.toList());
             if (arg.isEmpty()) return EMPTY;
-            return SETe.the((Collection) arg);
+            return SETe.the(arg);
         } else if (o instanceof Map) {
 
             Map mapo = (Map) o;
@@ -179,7 +182,7 @@ public class DefaultTermizer implements Termizer {
                 }
             });
             if (components.isEmpty()) return EMPTY;
-            return SETe.the((Collection) components);
+            return SETe.the(components);
         }
 
 
@@ -314,7 +317,8 @@ public class DefaultTermizer implements Termizer {
     @Nullable
     public Term obj2termCached(@Nullable Object o) {
 
-        if (o == null) return NULL;
+        if (o == null)
+            return NULL;
         if (o instanceof Term)
             return ((Term) o);
         if (o instanceof Integer) {
@@ -327,10 +331,11 @@ public class DefaultTermizer implements Termizer {
             oe = objToTerm.get(o);
             if (oe == null) {
                 Term ob = obj2term(o);
-                if (ob != null)
-                    oe = objToTerm.put(o, ob);
-                else
-                    return $.varDep("unknown_" + System.identityHashCode(o));
+                if (ob != null) {
+                    objToTerm.put(o, ob);
+                    return ob;
+                } else
+                    return $.the("Object_" + System.identityHashCode(o));
             }
         } else {
             oe = obj2term(o);

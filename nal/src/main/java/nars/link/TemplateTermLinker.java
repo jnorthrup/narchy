@@ -3,6 +3,8 @@ package nars.link;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.pri.ScalarValue;
+import jcog.util.MutableFloat;
+import jcog.util.NumberX;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -11,7 +13,6 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -270,7 +271,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         List<Concept> targets = (concepts==0 ? List.of() : new FasterList<>(concepts));
 
-        MutableFloat refund = new MutableFloat(0);
+        NumberX refund = new MutableFloat(0);
 
         int j = rng.nextInt(n); //random starting position
         for (int i = 0; i < n; i++) {
@@ -309,7 +310,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         if (!targets.isEmpty()) {
 
             for (TaskLink f : fired) {
-                MutableFloat overflow = new MutableFloat(); //keep overflow specific to the tasklink
+                NumberX overflow = new MutableFloat(); //keep overflow specific to the tasklink
                 Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, f.priElseZero(), targets, overflow);
             }
         }

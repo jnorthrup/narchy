@@ -1,19 +1,13 @@
 package jcog.math;
 
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.AtomicFloat;
 
 
-public class FloatRange extends MutableFloat  {
+public class FloatRange extends AtomicFloat {
 
     public final float max;
     public final float min;
-
-
-
-
-
-
-
+    
     public FloatRange(float value, float min, float max) {
         super(value);
         this.min = min;

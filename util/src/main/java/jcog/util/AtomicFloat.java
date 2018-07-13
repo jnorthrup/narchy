@@ -18,9 +18,9 @@ import static java.lang.Float.intBitsToFloat;
  *
  * sorry
  */
-public class AtomicFloat extends Number implements FloatSupplier {
+public class AtomicFloat extends NumberX implements FloatSupplier {
 
-    private static final AtomicFloatFieldUpdater<AtomicFloat> _f =
+    private static final AtomicFloatFieldUpdater<NumberX> F =
             new AtomicFloatFieldUpdater(
                     AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "f"));
 
@@ -35,11 +35,11 @@ public class AtomicFloat extends Number implements FloatSupplier {
     }
 
     public final boolean compareAndSet(float expect, float update) {
-        return _f.compareAndSet(this, expect, update);
+        return F.compareAndSet(this, expect, update);
     }
 
 
-    public final void set(float newValue) {
+    public void set(float newValue) {
         f = floatToIntBits(newValue);
     }
 
@@ -48,22 +48,22 @@ public class AtomicFloat extends Number implements FloatSupplier {
     }
 
     public final float getAndSet(float newValue) {
-        return _f.getAndSet(this, newValue);
+        return F.getAndSet(this, newValue);
     }
 
     public final float getAndZero() {
-        return _f.getAndZero(this);
+        return F.getAndZero(this);
     }
 
     public final void zero(FloatConsumer with) {
-        _f.zero(this, with);
+        F.zero(this, with);
     }
 
     public final void zeroIfNonZero(FloatConsumer with) {
-        _f.zeroIfNonZero(this, with);
+        F.zeroIfNonZero(this, with);
     }
     protected final float getAndZero(FloatConsumer with) {
-        return _f.getAndZero(this, with);
+        return F.getAndZero(this, with);
     }
 
 
@@ -84,14 +84,36 @@ public class AtomicFloat extends Number implements FloatSupplier {
     }
 
     public void add(float x) {
-        _f.add(this,x);
+        F.add(this,x);
     }
+
     protected void addUpdate(float v, Runnable r) {
-        _f.addUpdate(this, v, r);
+        F.addUpdate(this, v, r);
+    }
+
+    public float multiply(float _y) {
+        return F.updateAndGet(this, (x,y)->x*y, _y);
     }
 
     @Override
     public float asFloat() {
         return floatValue();
     }
+
+
+    /**
+     * Sets the value from any Number instance.
+     *
+     * @param value  the value to set, not null
+     * @throws NullPointerException if the object is null
+     */
+    public final void set(final Number value) {
+        set(value.floatValue());
+    }
+
+    public float get() {
+        return floatValue();
+    }
+
+
 }

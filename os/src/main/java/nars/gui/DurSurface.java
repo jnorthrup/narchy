@@ -34,16 +34,28 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     @Override
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
+
+            starting();
+
             assert(on == null);
             on = DurService.on(nar, this::updateIfShowing);
+
             return true;
         }
         return false;
     }
 
+    protected void starting() {
+
+    }
+    protected void stopping() {
+
+    }
+
     @Override
     public boolean stop() {
         if (super.stop()) {
+            stopping();
             on.off();
             on = null;
             return true;

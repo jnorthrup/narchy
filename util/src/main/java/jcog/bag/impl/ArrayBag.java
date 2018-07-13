@@ -10,7 +10,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
 import jcog.util.AtomicFloatFieldUpdater;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -432,7 +432,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     @Override
-    public Y put(final Y incoming, @Nullable final MutableFloat overflow) {
+    public Y put(final Y incoming, final NumberX overflow) {
 
         final int capacity = this.capacity;
 
@@ -552,7 +552,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     /**
      * will not need to be sorted after calling this; the index is automatically updated
      */
-    private Y merge(Y existing, Y incoming, @Nullable MutableFloat overflow) {
+    private Y merge(Y existing, Y incoming, @Nullable NumberX overflow) {
 
 
         int posBefore = items.indexOf(existing, this);

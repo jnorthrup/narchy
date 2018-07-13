@@ -97,7 +97,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Services<NAR, Term> services;
     public final Time time;
     public final ConceptIndex concepts;
-    public final NARLoop loop = new NARLoop(this);
+    public final NARLoop loop;
     public final Emotion emotion;
     public final Memory memory = new Memory(this);
     /**
@@ -145,15 +145,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         concepts.init(this);
         Builtin.init(this);
 
-
-        exe.start(this);
-
-
         this.emotion = new Emotion(this);
-
 
         this.attn = attn;
         this.on(attn);
+
+        this.loop = new NARLoop(this);
+        exe.start(this);
     }
 
     static void outputEvent(Appendable out, String previou, String chan, Object v) throws IOException {
@@ -768,20 +766,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Override
     public final void run() {
-        if (!busy.compareAndSet(false, true))
-            return;
-
-        emotion.cycle();
-
-        time.cycle(this);
-
-        if (exe.concurrent()) {
-            eventCycle.emitAsync(this, exe, () -> busy.set(false));
-        } else {
-            eventCycle.emit(this);
-            busy.set(false);
-        }
-
+        loop.run();
     }
 
     public NAR trace(Appendable out, Predicate<String> includeKey) {

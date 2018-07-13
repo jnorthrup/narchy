@@ -1,8 +1,9 @@
 package nars.control;
 
+import jcog.util.AtomicFloat;
+import jcog.util.NumberX;
 import nars.NAR;
 import nars.term.Term;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +21,13 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
      */
-    private final MutableFloat durations = new MutableFloat(1f);
+    private final NumberX durations = new AtomicFloat(1f);
 
     /** when the last cycle ended */
     private volatile long lastStarted = Long.MIN_VALUE;
-
+    //private volatile long lastFinished = Long.MIN_VALUE;
     private final AtomicBoolean busy = new AtomicBoolean(false);
-    private long lastFinished = Long.MIN_VALUE;
+
 
     protected DurService(NAR n, float durs) {
         super((NAR)null);
@@ -98,7 +99,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         long now = nar.time();
         int durCycles = durCycles(nar);
         lastStarted = now - durCycles;
-        lastFinished = lastStarted - durCycles;
+        //lastFinished = lastStarted - durCycles;
         //spawn(nar, now + durCycles);
         accept(nar);
     }
@@ -136,7 +137,8 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
             logger.error("{} {}", this, e);
         } finally {
             //long lastFinished = this.lastFinished;
-            long atEnd = this.lastFinished = nar.time();
+            long atEnd = nar.time();
+            //this.lastFinished = atEnd;
 
             if (!isOff()) {
                 if (busy.compareAndSet(true, false)) {
@@ -149,7 +151,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
                     spawn(nar, next);
                 }
             } else {
-                busy.set(false);
+                busy.setRelease(false);
             }
         }
     }

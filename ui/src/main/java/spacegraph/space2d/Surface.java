@@ -138,7 +138,8 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
-        return PARENT.getAndSet(this, parent) == null;
+        SurfaceBase p = PARENT.getAndSet(this, parent);
+        return p == null;
     }
 
 
@@ -181,6 +182,7 @@ abstract public class Surface implements SurfaceBase {
         if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
             paint(gl, r);
         }
+        //else System.out.println(this + " invisible because: visible=" + visible() + (clipBounds ? " clip=" + clipBounds : ""));
 
     }
 

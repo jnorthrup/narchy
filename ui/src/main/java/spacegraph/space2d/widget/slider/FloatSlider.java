@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import spacegraph.space2d.SurfaceBase;
@@ -150,8 +150,8 @@ public class FloatSlider extends Widget {
             if (parent!=null) {
                 
                 FloatSupplier input = parent.input; 
-                if (input instanceof MutableFloat) {
-                    ((MutableFloat) input).set(v(p));
+                if (input instanceof Number) {
+                    ((NumberX) input).set(v(p));
                 }
             }
 

@@ -2,8 +2,7 @@ package jcog.bag.impl.hijack;
 
 import jcog.bag.impl.HijackBag;
 import jcog.pri.Priority;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.Nullable;
+import jcog.util.NumberX;
 
 /**
  * Created by me on 2/17/17.
@@ -17,7 +16,7 @@ abstract public class PriorityHijackBag<K,V extends Priority> extends HijackBag<
 
 
     @Override
-    protected V merge(V existing, V incoming, @Nullable MutableFloat overflowing) {
+    protected V merge(V existing, V incoming, NumberX overflowing) {
         float overflow = existing.priAddOverflow(incoming.priElseZero());
         if (overflow > 0) {
             if (overflowing!=null) overflowing.add(overflow);

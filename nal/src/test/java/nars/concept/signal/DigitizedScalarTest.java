@@ -6,12 +6,12 @@ import jcog.Util;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
+import jcog.util.AtomicFloat;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.truth.Truth;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class DigitizedScalarTest {
     @Test
     void testRewardConceptsFuzzification3() {
         NAR n = NARS.shell();
-        MutableFloat m = new MutableFloat(0f);
+        AtomicFloat m = new AtomicFloat(0f);
 
         FloatNormalized range = new FloatPolarNormalized(m::floatValue, 1f);
         DigitizedScalar f = new DigitizedScalar(range, DigitizedScalar.FuzzyNeedle, n,
@@ -47,7 +47,7 @@ class DigitizedScalarTest {
         }, n);
     }
 
-    private void testSteadyFreqCondition(MutableFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
+    private void testSteadyFreqCondition(AtomicFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
 
 
         for (int i = 0; i < 5; i++) {
@@ -72,7 +72,7 @@ class DigitizedScalarTest {
     @Test
     void testRewardConceptsFuzzification2() {
         NAR n = NARS.tmp();
-        MutableFloat x = new MutableFloat(0f);
+        AtomicFloat x = new AtomicFloat(0f);
 
         testSteadyFreqCondition(x,
                 new DigitizedScalar(

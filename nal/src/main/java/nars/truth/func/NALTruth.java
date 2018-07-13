@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 /**
  * NAL Truth Functions
@@ -397,7 +398,9 @@ public enum NALTruth implements TruthFunc {
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             float conf =
                     //n.confMin.floatValue();
-                    n.confMin.floatValue() * 2;
+                    //n.confMin.floatValue() * 2;
+                    Math.min((float)Math.sqrt(n.confMin.floatValue()) + n.confResolution.floatValue(),
+                            n.confDefault(GOAL));
                         // + m.confResolution.floatValue();
                     //Util.lerp(Util.sqr(n.random().nextFloat()) * 0.5f, minConf, n.confDefault(GOAL));
 

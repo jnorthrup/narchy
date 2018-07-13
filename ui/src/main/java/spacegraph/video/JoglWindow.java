@@ -1,6 +1,5 @@
 package spacegraph.video;
 
-import com.jogamp.common.util.JarUtil;
 import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
@@ -19,7 +18,6 @@ import spacegraph.util.animate.Animated;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 
@@ -35,7 +33,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
     final Topic<JoglWindow> onUpdate = new ListTopic<>();
     private final Logger logger;
-    private final AtomicBoolean rendering = new AtomicBoolean(false);
+
 
     /**
      * update loop
@@ -90,13 +88,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     };
 
-    static {
-        JarUtil.class.hashCode(); //force load my version
-    }
-
     JoglWindow() {
         logger = LoggerFactory.getLogger(toString());
-
 
 
         renderer = new GameAnimatorControl();
@@ -143,7 +136,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public void off() {
         GLWindow w = this.window;
         if (w != null)
-            Exe.invokeLater(w::destroy);
+            Exe.invoke(w::destroy);
     }
 
     public final void pre(Consumer<JoglWindow> beforeNextRender) {
@@ -260,18 +253,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public final void display(GLAutoDrawable drawable) {
-        if (gl == null)
-            gl = drawable.getGL().getGL2();
-
-        rendering.set(true);
         try {
+            if (gl == null)
+                gl = drawable.getGL().getGL2();
+
             long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
             if (renderDTMS > Integer.MAX_VALUE) renderDTMS = Integer.MAX_VALUE;
             this.lastRenderMS = nowMS;
 
             render((int) renderDTMS);
+
         } finally {
-            rendering.set(false);
+            this.renderer.loop.ready();
         }
     }
 
@@ -283,19 +276,24 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         //Exe.invokeLater(() -> {
 
-            if (window != null) {
+        if (window != null) {
 
-                return;
-            }
+            return;
+        }
 
-            GLWindow W = window();
-            this.window = W;
+        GLWindow W = window();
+        this.window = W;
 
-            window.getScreen().getDisplay().getEDTUtil().setPollPeriod(EDT_POLL_PERIOD_MS);
+//        EDTUtil edt = window.getScreen().getDisplay().getEDTUtil();
+//        if (!edt.isRunning()) {
+//            edt.start();
+//            edt.setPollPeriod(EDT_POLL_PERIOD_MS);
+//        }
+
         window.addGLEventListener(this);
         window.addWindowListener(this);
 
-            windows.add(this);
+        windows.add(this);
 
         W.setTitle(title);
         if (x != Integer.MIN_VALUE) {
@@ -311,11 +309,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 Util.sleep(EDT_POLL_PERIOD_MS);
             }
         }
-
-
-
-
-
 
 
     }
@@ -385,7 +378,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         Draw.init(gl);
 
         init(gl);
-
 
 
         updater.runFPS(updateFPS);
@@ -481,70 +473,30 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 }
 
                 @Override
+                protected boolean async() {
+                    return true;
+                }
+
+                @Override
                 public boolean next() {
 
+                    if (window != null && !paused) {
 
+                        try {
+                            preRenderTasks.removeIf(r -> {
+                                r.accept(JoglWindow.this);
+                                return true;
+                            });
 
-                    if (window != null) {
-
-                        if (!paused) {
-                            try {
-
-
-                                //if (!window.isSurfaceLockedByOtherThread()) {
-                                //animThread = Thread.currentThread();
-
-                                if (!window.isSurfaceLockedByOtherThread()) {
-                                    preRenderTasks.removeIf(r -> {
-                                        r.accept(JoglWindow.this);
-                                        return true;
-                                    });
-
-                                    display();
-                                }
-
-//                                if (!drawables.isEmpty()) {
-//                                    drawables.get(0).display();
-//                                    //drawables.forEach(GLAutoDrawable::display);
-//                                }
-
-
-                                //}
-
-                            } catch (final UncaughtAnimatorException dre) {
-
-                                dre.printStackTrace();
+                            if (!drawables.isEmpty()) {
+                                GLAutoDrawable d = drawables.get(0);
+                                d.display();
                             }
-
-                    /*else if (pauseIssued && !quitIssued) { 
-
-
-
-                        
-
-
-
-                        if (exclusiveContext && !drawablesEmpty) {
-                            setDrawablesExclCtxState(false);
-                            try {
-                                display(); 
-                            } catch (final UncaughtAnimatorException dre) {
-                                dre.printStackTrace();
-                                
-
-                            }
+                        } finally {
+                            //ready();
                         }
-
-
-
-
-
-
-
-
-
-                    }*/
-                        }
+                    } else {
+                        ready();
                     }
                     return true;
 

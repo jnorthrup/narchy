@@ -3,7 +3,8 @@ package jcog.learn;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.graph.AdjGraph;
-import jcog.util.AtomicFloat;
+import jcog.util.MutableFloat;
+import jcog.util.NumberX;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 
@@ -135,11 +136,11 @@ public class HopfieldMap<X> {
 
     public static void main(String[] args) {
         int n = 8;
-        AtomicFloat[] m = new AtomicFloat[n];
-        for (int i = 0; i < n; i++) m[i] = new AtomicFloat();
+        NumberX[] m = new NumberX[n];
+        for (int i = 0; i < n; i++) m[i] = new MutableFloat();
 
-        HopfieldMap<AtomicFloat> h = new HopfieldMap<>(AtomicFloat::floatValue,
-                (v, x) -> x.set(v), m);
+        HopfieldMap<NumberX> h = new HopfieldMap<>(NumberX::floatValue,
+                (float v, NumberX x) -> x.set(v), m);
         h.randomWeights(0.9f);
         for (int i = 0; i < 16; i++) {
             h.set(+1, +1, +1, +1, -1, -1, -1, -1).learn(1);

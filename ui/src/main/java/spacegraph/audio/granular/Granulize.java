@@ -1,6 +1,7 @@
 package spacegraph.audio.granular;
 
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.AtomicFloat;
+import jcog.util.NumberX;
 import spacegraph.audio.SoundProducer;
 import spacegraph.audio.sample.SoundSample;
 
@@ -14,9 +15,9 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	private float playTime;
 
     /** this actually represents the target amplitude which the current amplitude will continuously interpolate towards */
-    private final MutableFloat amplitude = new MutableFloat(1.0f);
-	private final MutableFloat stretchFactor = new MutableFloat(1.0f);
-	private final MutableFloat pitchFactor = new MutableFloat(1.0f);
+    private final NumberX amplitude = new AtomicFloat(1.0f);
+	private final NumberX stretchFactor = new AtomicFloat(1.0f);
+	private final Number pitchFactor = new AtomicFloat(1.0f);
 
     private float currentAmplitude = amplitude.floatValue();
 

@@ -3,11 +3,11 @@ package nars.bag.leak;
 import jcog.bag.Bag;
 import jcog.bag.impl.PLinkArrayBag;
 import jcog.pri.PLink;
+import jcog.util.AtomicFloat;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.exe.Causable;
-import org.apache.commons.lang3.mutable.MutableFloat;
 
 import java.util.Random;
 
@@ -35,11 +35,11 @@ public abstract class TaskLeak extends Causable {
     }
 
     protected TaskLeak(Bag<Task, PLink<Task>> bag, float ratePerDuration, NAR n) {
-        this(bag, new MutableFloat(ratePerDuration), n);
+        this(bag, new AtomicFloat(ratePerDuration), n);
     }
 
 
-    TaskLeak(Bag<Task, PLink<Task>> bag, MutableFloat rate, NAR n) {
+    TaskLeak(Bag<Task, PLink<Task>> bag, Number rate, NAR n) {
         super(n);
         this.queue = new DtLeak<>(bag, rate) {
             @Override

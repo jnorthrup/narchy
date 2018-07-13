@@ -24,7 +24,7 @@ abstract public class Loop implements Runnable {
     @Deprecated private volatile FixedRateTimedFuture task = null;
 
     /** busy lock */
-    private final AtomicBoolean executing = new AtomicBoolean(false);
+    protected final AtomicBoolean executing = new AtomicBoolean(false);
 
 
     public static Loop of(Runnable iteration) {
@@ -75,6 +75,10 @@ abstract public class Loop implements Runnable {
     public final Loop runFPS(float fps) {
         setPeriodMS(fpsToMS(fps));
         return this;
+    }
+
+    public void ready() {
+        executing.setRelease(false);
     }
 
     static int fpsToMS(float fps) {
@@ -189,8 +193,16 @@ abstract public class Loop implements Runnable {
 
             afterNext();
         } finally {
-            executing.set(false);
+            if (!async())
+                ready();
         }
+    }
+
+    /** if iterationAsync, then the executing flag will not be cleared automatically.  then it is the implementation's
+     * responsibility to clear it so that the next iteration can proceed.
+     */
+    protected boolean async() {
+        return false;
     }
 
     protected void beforeNext() {
@@ -240,7 +252,7 @@ abstract public class Loop implements Runnable {
     }
 
     public long periodNS() {
-        return periodMS.longValue() * 1000000;
+        return periodMS.getOpaque() * 1000000L;
     }
 
 }

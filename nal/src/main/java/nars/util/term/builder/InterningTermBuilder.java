@@ -33,16 +33,22 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public InterningTermBuilder() {
-        this(64 * 1024);
+        this(32 * 1024);
     }
 
     public InterningTermBuilder(int sizePerOp) {
         this.cacheSizePerOp = sizePerOp;
         terms = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
-            if (Op.ops[i].atomic || Op.ops[i]==NEG) continue;
+            Op o = Op.ops[i];
+            if (o.atomic || o ==NEG) continue;
 
-            terms[i] = newOpCache(this::compoundInterned, cacheSizePerOp);
+            int s = cacheSizePerOp;
+            if (o == PROD)
+                s *= 2; //HACK since PROD also serves as subterm cache
+            //TODO use multiple PROD slices to decrease contention
+
+            terms[i] = newOpCache(this::compoundInterned, s);
         }
 
         concept = newOpCache(this::_concept, cacheSizePerOp);

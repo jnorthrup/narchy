@@ -8,6 +8,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import static java.lang.Float.floatToIntBits;
+import static java.lang.Float.intBitsToFloat;
 
 /**
  * general purpose value.  consumes and supplies 32-bit float numbers
@@ -125,8 +126,8 @@ public interface ScalarValue {
     }
 
 
-    class VolatileScalarValue implements ScalarValue {
-        private volatile float pri;
+    class PlainScalarValue implements ScalarValue {
+        private float pri;
 
         @Override
         public float pri(float p) {
@@ -155,7 +156,7 @@ public interface ScalarValue {
 
         @Override
         public final float pri() {
-            return PRI.get(pri);
+            return intBitsToFloat(pri); //volatile access
         }
 
         public boolean isDeleted() {

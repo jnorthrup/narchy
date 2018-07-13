@@ -5,7 +5,7 @@ import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.pri.PriProxy;
 import jcog.pri.ScalarValue;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +43,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
     }
 
     @Override
-    protected PriProxy<X, Y> merge(PriProxy<X, Y> existing, PriProxy<X, Y> incoming, @Nullable MutableFloat overflowing) {
+    protected PriProxy<X, Y> merge(PriProxy<X, Y> existing, PriProxy<X, Y> incoming, NumberX overflowing) {
         if (existing.isDeleted())
             return incoming;
         return super.merge(existing, incoming, overflowing);

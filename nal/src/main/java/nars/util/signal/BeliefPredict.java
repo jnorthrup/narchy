@@ -3,6 +3,7 @@ package nars.util.signal;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
+import jcog.util.AtomicFloat;
 import nars.NAR;
 import nars.Task;
 import nars.control.DurService;
@@ -11,7 +12,6 @@ import nars.task.signal.SignalTask;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ import static nars.truth.TruthFunctions.c2w;
  */
 public class BeliefPredict {
 
-    final MutableFloat conf = new MutableFloat(0.5f);
+    final Number conf = new AtomicFloat(0.5f);
 
     final DurService on;
     //final List<ITask> currentPredictions = new FasterList<>();

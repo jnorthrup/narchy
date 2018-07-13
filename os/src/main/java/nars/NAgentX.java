@@ -12,7 +12,7 @@ import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -103,8 +103,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        //new HijackConceptIndex(32 * 1024, 4)
+                        //new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(64 * 1024, 4)
 
 
                 )
@@ -140,12 +140,12 @@ abstract public class NAgentX extends NAgent {
         n.emotion.want(MetaGoal.Desire, +0.10f);
         n.emotion.want(MetaGoal.Action, +0.75f);
 
-        try {
-            InterNAR i = new InterNAR(n, 8, 0);
-            i.runFPS(4);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            InterNAR i = new InterNAR(n, 8, 0);
+//            i.runFPS(4);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 128);

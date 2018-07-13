@@ -15,8 +15,8 @@ import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
@@ -33,7 +33,7 @@ abstract public class BufferedExec extends UniExec {
     @Override
     public void execute(Object x) {
         if (x instanceof NALTask || x instanceof TaskProxy)
-            executeNow((ITask)x);
+            executeNow((ITask) x);
         else
             executeLater(x);
     }
@@ -49,12 +49,21 @@ abstract public class BufferedExec extends UniExec {
 
     @Override
     public final void execute(Runnable r) {
-        if (r instanceof FixedRateTimedFuture && ((((FixedRateTimedFuture)r).run instanceof NARLoop))) {
-            r.run(); //high-priority
+        if (r instanceof FixedRateTimedFuture && ((((FixedRateTimedFuture) r).run instanceof NARLoop))) {
+            nextCycle(r);
         } else {
             executeLater(r);
         }
     }
+
+    /** poll for the cycle runnable and runs it in the callee. returns true if it actually executed it. */
+    abstract protected boolean tryCycle();
+
+    /**
+     * receives the NARLoop cycle update. should execute immediately, preferably in a worker thread (not synchronously)
+     */
+    protected abstract void nextCycle(Runnable r);
+
 
     @Override
     public final void execute(Consumer<NAR> r) {
@@ -92,67 +101,57 @@ abstract public class BufferedExec extends UniExec {
 
     }
 
-    /** work and play execution. concurrency is the local conconcurrency being executed, typically 1  */
-    protected void onCycle(List b, int concurrency) {
 
-
-        if (concurrency!=1)
-            throw new TODO("just need parallel execution of the 'play' phase");
-
-
-
+    protected void work(FasterList b, int concurrency) {
         //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
         int incoming = in.size();
-        if (incoming > 0) {
-            in.clear(b::add, incoming);
-                    //(int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1)))));
+        if (incoming == 0)
+            return;
+
+        int batchSize = (int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1))));
+        int remaining = incoming;
+        do {
+
+            in.clear(b::add, batchSize);
+            remaining -= batchSize;
+
+        } while (execute(b, concurrency) && remaining > 0);
+
+
+    }
+
+    private boolean execute(FasterList b, int concurrency) {
+        //TODO sort, distribute etc
+        int bn = b.size();
+        if (bn == 0)
+            return false;
+
+        if (bn > 2) {
+            b.sortThisByInt(x -> x.getClass().hashCode()); //sloppy sort by type
         }
 
+        if (concurrency <= 1) {
+            b.forEach(this::executeNow);
+        } else {
 
-        long dutyTimeStart = System.nanoTime();
+            float granularity = 2;
+            int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (concurrency * granularity)));
 
-        int bn = b.size();
-        switch (bn) {
-            case 0:
-                return;
-//                case 1:
-//                    executeNow(b.get(0));
-//                    break;
-            default:
-                //TODO sort, distribute etc
-                if (bn > 2) {
-                    ((FasterList) b).sortThisByInt(x -> x.getClass().hashCode()); //sloppy sort by type
-                }
-
-                if (concurrency <= 1) {
-                    b.forEach(this::executeNow);
-                } else {
-
-                    float granularity = 2;
-                    int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (concurrency * granularity)));
-
-                    (((FasterList<?>) b).chunkView(chunkSize))
-                            .parallelStream().forEach(x -> x.forEach(this::executeNow));
-
-//                                .forEach(c -> {
-//                            execute(() -> c.forEach(this::executeNow));
-//                        });
-
-                    //Stream<Object> s = Arrays.stream(((FasterList) b).array(), 0, bn).parallel();
-                    //s.forEach(this::executeNow);
-                }
-
-                //ForkJoinPool.commonPool().invokeAll(b);
-                //Arrays.stream(((FasterList)b).array(), 0, bn).parallel().forEach(this::executeNow);
-                //(parallel ? b.parallelStream() : b.stream()).forEach(this::executeNow);
-                break;
+            (((FasterList<?>) b).chunkView(chunkSize))
+                    .parallelStream().forEach(x -> x.forEach(this::executeNow));
         }
 
         b.clear();
+        return true;
+    }
 
+    protected void play() {
+
+        long dutyTimeStart = System.nanoTime();
         long dutyTimeEnd = System.nanoTime();
-        long timeSliceNS = cpu.cycleTimeNS.longValue()- Math.max(0, (dutyTimeEnd - dutyTimeStart));
+        long timeSliceNS = cpu.cycleTimeNS.longValue() - Math.max(0, (dutyTimeEnd - dutyTimeStart));
         double finalTimeSliceNS = Math.max(1, timeSliceNS * nar.loop.jiffy.doubleValue());
+
         can.forEachValue(c -> {
             if (c.c.instance.availablePermits() == 0)
                 return;
@@ -161,7 +160,7 @@ abstract public class BufferedExec extends UniExec {
             double iterTimeMean = c.iterTimeNS.getMean();
             int work;
             if (iterTimeMean == iterTimeMean) {
-                double maxIters = (c.pri() * finalTimeSliceNS / (iterTimeMean / Math.max(1,c.iterations.getMean())));
+                double maxIters = (c.pri() * timeSliceNS / (iterTimeMean / Math.max(1, c.iterations.getMean())));
                 work = (maxIters == maxIters) ? (int) Math.round(Math.max(1, Math.min(CAN_ITER_MAX, maxIters))) : 1;
             } else {
                 work = 1;
@@ -171,19 +170,26 @@ abstract public class BufferedExec extends UniExec {
             //int workRequested = c.;
             //b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
 
-                if (c.start()) {
-                    try {
-                        c.next(work);
-                    } finally {
-                        c.stop();
-                    }
-                }
+            play(c, work);
 
 
             //}));
 
             //c.c.run(nar, WORK_PER_CYCLE, x -> b.add(x.get()));
         });
+    }
+
+    private void play(MyAbstractWork c, int work) {
+
+        tryCycle();
+
+        if (c.start()) {
+            try {
+                c.next(work);
+            } finally {
+                c.stop();
+            }
+        }
     }
 
 //    public static class UniBufferedExec extends BufferedExec {
@@ -205,15 +211,13 @@ abstract public class BufferedExec extends UniExec {
 //        }
 //    }
 
+
     public static class WorkerExec extends BufferedExec {
 
         public final int threads;
         final boolean affinity;
 
         final AffinityExecutor exe = new AffinityExecutor();
-
-
-
 
         public WorkerExec(int threads) {
             this(threads, false);
@@ -225,16 +229,44 @@ abstract public class BufferedExec extends UniExec {
             this.affinity = affinity;
         }
 
+        final AtomicReference<Runnable> narCycle = new AtomicReference(null);
+
+        @Override
+        protected void onCycle(NAR nar) {
+            super.onCycle(nar);
+        }
+
+        @Override protected final boolean tryCycle() {
+            Runnable r = narCycle.getAcquire();
+            if (r != null) {
+                //lucky worker gets to execute the NAR cycle
+                nar.run();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        protected void nextCycle(Runnable r) {
+            //it will be the same instance each time.  so only concerned if it wasnt already cleared by now
+            if (this.narCycle.getAndSet(r)!=null) {
+
+                //TODO measure
+                //if this happens excessively then probably need to reduce the framerate, ie. backpressure
+
+                //logger.warn("lag trying to execute NAR cycle");
+
+            }
+        }
+
         @Override
         public void start(NAR n) {
-
 
             synchronized (this) {
 
                 super.start(n);
 
-
-                exe.execute(MyRunnable::new, threads, affinity);
+                exe.execute(Worker::new, threads, affinity);
 
                 /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
                 Exe.setExecutor(this);
@@ -250,7 +282,6 @@ abstract public class BufferedExec extends UniExec {
 
                 exe.shutdownNow();
 
-
                 in.clear(this::executeNow);
 
                 super.stop();
@@ -258,32 +289,41 @@ abstract public class BufferedExec extends UniExec {
         }
 
 
-        private final class MyRunnable implements Runnable, Off {
+        private final class Worker implements Runnable, Off {
 
-            private final List buffer = new FasterList(1024);
+            private final FasterList schedule = new FasterList(1024);
 
-            private boolean running = true;
-
+            private boolean alive = true;
 
             @Override
             public void run() {
-                while (running) {
-                    WorkerExec.this.onCycle(buffer, 1);
+                while (alive) {
 
-                    if (idleTimePerCycle > 0) {
-                        Util.sleepNSWhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
-                                in.size() > 0 || !running
-                        );
-                    }
+                    work(schedule, 1);
+
+                    play();
+
+                    sleep();
+                }
+            }
+
+            public void sleep() {
+                if (idleTimePerCycle > 0) {
+
+                    tryCycle();
+
+                    Util.sleepNSWhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
+                            in.size() > 0 || !alive
+                    );
                 }
             }
 
             @Override
             public synchronized void off() {
-                running = false;
+                alive = false;
 
                 //execute remaining tasks in callee's thread
-                buffer.removeIf(x->{
+                schedule.removeIf(x -> {
                     executeNow(x);
                     return true;
                 });

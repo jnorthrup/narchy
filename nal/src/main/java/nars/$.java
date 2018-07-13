@@ -7,6 +7,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
+import nars.op.FileFunc;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.task.TaskBuilder;
@@ -37,6 +38,7 @@ import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import javax.script.ScriptEngineManager;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -530,6 +532,14 @@ public enum $ {
         return Atomic.the(x.toString());
     }
 
+    public static Term the(Path file) {
+        return FileFunc.the(file);
+    }
+
+    public static Path file(Term x) {
+        throw new TODO();
+    }
+
     public static Term the(Number n) {
         if (n instanceof Integer) {
             return Int.the((Integer) n);
@@ -610,13 +620,22 @@ public enum $ {
         return SECTe.the($.terms(t, x -> Atomic.the(Strings.repeat(String.valueOf(prefix), ++index[0]) + x)));
     }
 
-    public static @NotNull Term pRecurse(@NotNull Term... t) {
-        int tl = t.length;
-        Term inner = t[--tl];
+    public static @NotNull Term pRecurse(boolean innerStart, @NotNull Term... t) {
+        int j = t.length-1;
+        int n = innerStart ? 0 : j -1;
+        Term inner = t[n];
         Term nextInner = inner.op() != PROD ? $.p(inner) : inner;
-        while (tl > 0) {
-            Term next = t[--tl];
-            nextInner = next.op() != PROD ? $.p(next, nextInner) : $.p(ArrayUtils.add(next.subterms().arrayShared(), nextInner));
+        while (j-- > 0) {
+            n += innerStart ? +1 : -1;
+            Term next = t[n];
+
+            if (innerStart) {
+                nextInner = next.op() != PROD ?
+                        $.p(nextInner, next) : $.p(ArrayUtils.add(next.subterms().arrayShared(), nextInner));
+            } else {
+                nextInner = next.op() != PROD ?
+                        $.p(next, nextInner) : $.p(ArrayUtils.add(next.subterms().arrayShared(), nextInner));
+            }
         }
         return nextInner;
     }

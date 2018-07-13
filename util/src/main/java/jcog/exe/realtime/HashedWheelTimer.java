@@ -1,6 +1,5 @@
 package jcog.exe.realtime;
 
-import jcog.Texts;
 import jcog.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,10 +151,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         logger.info("{} restart {}", this, System.currentTimeMillis());
 
-        long deadline = System.nanoTime();
 
         long epochTime = wheels * resolution;
-        long nextEpoch = deadline;
+
 
         long tolerableLagPerEpochNS =
                 
@@ -163,26 +161,27 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         int c, empties;
 
+        long deadline = System.nanoTime();
+
         do {
 
             empties = 0;
 
             while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % wheels : SHUTDOWN)) >= 0) {
 
-                if (c == 0) {
-                    
-                    long now = System.nanoTime();
-
-                    long lag = now - nextEpoch;
-                    if (Math.abs(lag) > tolerableLagPerEpochNS) {
-                        double lagResolutions = ((double) lag) / epochTime;
-                        if (lagResolutions > 5) {
-                            logger.info("lag {} ({}%)", Texts.timeStr(lag), Texts.n2(100 * lagResolutions));
-                        }
-                        deadline = now;
-                    }
-                    nextEpoch = deadline + epochTime;
-                }
+//                if (c == 0) {
+//
+//                    long now = System.nanoTime();
+//
+//                    long lag = now - deadline;
+//                    if (Math.abs(lag) > tolerableLagPerEpochNS) {
+//                        double lagResolutions = ((double) lag) / epochTime;
+//                        if (lagResolutions > 0) {
+//                            logger.info("lag {} ({}%)", Texts.timeStr(lag), Texts.n2(100 * lagResolutions));
+//                        }
+//                        deadline = now;
+//                    }
+//                }
 
                 if (model.run(c, this) == 0) {
                     if (empties++ >= wheels * SLEEP_EPOCHS) {
@@ -191,9 +190,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 } else
                     empties = 0;
 
-                deadline += resolution;
 
-                await(deadline);
+
+                deadline = await(deadline);
             }
         }
         while (cursor.get()!= SHUTDOWN && !model.canExit() && !cursor.compareAndSet(c, -1));
@@ -205,13 +204,34 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     }
 
-    private void await(long deadline) {
-        try {
-            waitStrategy.waitUntil(deadline);
-        } catch (InterruptedException e) {
-            logger.error("interrupted: {}", e);
-            shutdownNow();
+    /** TODO call System.nanoTime() less by passing now,then as args to the wait interfce */
+    private long  await(long deadline) {
+
+        deadline += resolution;
+        long now = System.nanoTime();
+        long sleepTimeNanos = deadline - now;
+
+        if (sleepTimeNanos > 0) {
+            //System.out.println(Texts.timeStr(sleepTimeNanos) + " sleep");
+
+
+            try {
+                waitStrategy.waitUntil(deadline);
+            } catch (InterruptedException e) {
+                logger.error("interrupted: {}", e);
+                shutdownNow();
+            }
+
+            //TODO check after sleep?
+
+        } else {
+            float lagThreshold = 1; //in resolutions
+            if (sleepTimeNanos < -resolution * lagThreshold) {
+                //fell behind more than N resolutions, adjust
+                deadline = now + resolution;
+            }
         }
+        return deadline;
     }
 
     @Override public TimedFuture<?> submit(Runnable runnable) {
@@ -276,8 +296,12 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * Use submit for invokeLater-like behavior
      */
     @Override
-    public final void execute(Runnable command) {
-        executor.execute(command);
+    public final void execute(Runnable r) {
+        try {
+            executor.execute(r);
+        } catch (Throwable t) {
+            logger.error("{} {}", r, t);
+        }
     }
 
     @Override
@@ -482,10 +506,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
          * precise.
          */
         WaitStrategy SleepWait = (long deadline) -> {
-
-            long sleepTimeNanos = deadline - System.nanoTime();
-            if (sleepTimeNanos >= 0)
-                Util.sleepNS(sleepTimeNanos);
+            long sleepNS = deadline - System.nanoTime();
+            Util.sleepNS(sleepNS);
         };
 
         /**

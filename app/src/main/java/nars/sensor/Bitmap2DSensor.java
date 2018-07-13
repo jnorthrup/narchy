@@ -116,7 +116,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     public static Int2Function<Term> RadixRecurse(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
             Term coords = radix > 1 ?
-                    $.pRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
+                    $.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
                     $.p(x, y);
             return root == null ? coords : $.inh(coords, root);
         };

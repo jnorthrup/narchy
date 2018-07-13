@@ -13,7 +13,7 @@ abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
 
     @Override
     public final Status state() {
-        return rounds-- <= 0 ? Status.READY : Status.PENDING;
+        return --rounds <= 0 ? Status.READY : Status.PENDING;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package jcog.bag.util;
 
 import jcog.bag.Bag;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.NumberX;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,7 +72,7 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
     @Override
-    public Y put(Y b, @Nullable MutableFloat overflowing) {
+    public Y put(Y b, NumberX overflowing) {
         return bag.put(b, overflowing);
     }
 

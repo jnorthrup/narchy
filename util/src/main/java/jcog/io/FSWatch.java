@@ -25,15 +25,21 @@ public class FSWatch extends Loop {
     private final Path path;
     private final Consumer<Pair<Path,WatchEvent.Kind>> onEvent;
 
-    public FSWatch(String path, Executor exe, Consumer<Pair<Path,WatchEvent.Kind>> onEvent) throws IOException {
+
+    public FSWatch(String path, Consumer<Pair<Path,WatchEvent.Kind>> onEvent) throws IOException {
+        this(Paths.get(path), onEvent);
+    }
+
+    public FSWatch(Path path, Executor exe, Consumer<Pair<Path,WatchEvent.Kind>> onEvent) throws IOException {
         this(path, (t) -> exe.execute(() -> onEvent.accept(t)));
     }
 
-    public FSWatch(String path, Consumer<Pair<Path,WatchEvent.Kind>> onEvent) throws IOException {
+    public FSWatch(Path p, Consumer<Pair<Path,WatchEvent.Kind>> onEvent) throws IOException {
 
         watchService = FileSystems.getDefault().newWatchService();
 
-        this.path = Paths.get(path).toAbsolutePath();
+
+        this.path = p.toAbsolutePath();
 
         watchKey = this.path.register(watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,

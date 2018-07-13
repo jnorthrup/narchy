@@ -264,7 +264,7 @@ public class SignalBeliefTable extends DynamicBeliefTable {
                 }
 
             } finally {
-                compressing.set(false);
+                compressing.setRelease(false);
             }
         }
 

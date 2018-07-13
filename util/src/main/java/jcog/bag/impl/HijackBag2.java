@@ -11,8 +11,8 @@ import jcog.decide.Roulette;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.ScalarValue;
 import jcog.util.AtomicFloat;
+import jcog.util.NumberX;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +65,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
     
     public final AtomicFloat pressure = new AtomicFloat();
     /**
-     * internal random number generator, used for deciding hijacks but not sampling.
+     * internal random NumberX generator, used for deciding hijacks but not sampling.
      */
     final Random rng;
     /**
@@ -241,7 +241,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
     /**
      * core update function
      */
-    private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, float mode, @Nullable MutableFloat overflowing) {
+    private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, float mode, @Nullable NumberX overflowing) {
 
         AtomicReferenceArray<V> map;
         AtomicIntegerArray maf;
@@ -498,7 +498,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
         return Float.NaN;
     }
 
-    private void merge(AtomicIntegerArray maf, int index, float incoming, @Nullable MutableFloat overflowing) {
+    private void merge(AtomicIntegerArray maf, int index, float incoming, @Nullable NumberX overflowing) {
         float existing = Float.intBitsToFloat(maf.get(index*2+1));
         float result = merge(existing, incoming);
         if(result > 1) {
@@ -573,7 +573,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
     /**
      */
     @Override
-    @Deprecated public final V put(/*@NotNull*/ V v,  /* TODO */ @Nullable MutableFloat overflowing) {
+    @Deprecated public final V put(/*@NotNull*/ V v,  /* TODO */ NumberX overflowing) {
 
         throw new UnsupportedOperationException();
 
@@ -589,7 +589,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
     }
 
     /** prefferred put method */
-    public final V put(V v, float p, @Nullable MutableFloat overflowing) {
+    public final V put(V v, float p, @Nullable NumberX overflowing) {
         K k = key(v);
         if (k == null)
             return null;

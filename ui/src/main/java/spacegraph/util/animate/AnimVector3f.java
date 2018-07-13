@@ -2,13 +2,14 @@ package spacegraph.util.animate;
 
 import jcog.Util;
 import jcog.tree.rtree.Spatialization;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.util.AtomicFloat;
+import jcog.util.NumberX;
 import spacegraph.util.math.v3;
 
 public class AnimVector3f extends v3 implements Animated {
 
     private final v3 target = new v3();
-    protected final MutableFloat speed;
+    protected final NumberX speed;
     private boolean running = true;
 
     enum InterpolationCurve {
@@ -104,7 +105,7 @@ public class AnimVector3f extends v3 implements Animated {
     public AnimVector3f(float x, float y, float z, float speed) {
         super(x, y, z);
         target.set(this);
-        this.speed = new MutableFloat(speed);
+        this.speed = new AtomicFloat(speed);
     }
 
     public void stop() {

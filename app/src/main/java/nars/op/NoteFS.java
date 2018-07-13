@@ -5,21 +5,26 @@ import jcog.bag.impl.PLinkArrayBag;
 import jcog.io.FSWatch;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
+import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.NARService;
 import nars.op.java.Opjects;
+import nars.op.stm.ConjClustering;
 import org.eclipse.collections.api.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static nars.Op.BELIEF;
 
 public class NoteFS extends NARService {
 
@@ -47,31 +52,33 @@ public class NoteFS extends NARService {
 
         }
 
-        public void add(String path) {
+        public void add(Path path) {
 
         }
-        public void change(String path) {
+        public void change(Path path) {
 
         }
-        public void remove(String path) {
+        public void remove(Path path) {
 
         }
 
         protected void accept(Pair<Path, WatchEvent.Kind> event) {
-            System.out.println(event);
+            //System.out.println(event);
 
-            Path path = event.getOne().toAbsolutePath();
+
+            Path path = event.getOne(); //.toAbsolutePath();
+
             switch (event.getTwo().name()) {
                 case "ENTRY_CREATE": {
                     PLink<Path> q = paths.computeIfAbsent(path, p -> new PathState(p, 1f));
                     active.put(q);
-                    add(path.toString());
+                    add(path);
                     break;
                 }
                 case "ENTRY_DELETE": {
                     paths.remove(path);
                     active.remove(path);
-                    remove(path.toString());
+                    remove(path);
                     break;
                 }
                 case "ENTRY_MODIFY": {
@@ -79,7 +86,7 @@ public class NoteFS extends NARService {
                     assert(m!=null);
                     m.priAdd(0.5f);
                     active.put(m);
-                    change(path.toString());
+                    change(path);
                     break;
                 }
 
@@ -96,9 +103,9 @@ public class NoteFS extends NARService {
 
     private final PathWatch watch;
 
-    public NoteFS(String path, NAR n) throws IOException {
+    public NoteFS(Path path, NAR n) throws IOException {
         super();
-        this.watch = new Opjects(n).a(path, PathWatch.class);
+        this.watch = new Opjects(n).a($.the(path), PathWatch.class);
         fs = new FSWatch(path, n.exe, watch::accept);
         n.on(this);
     }
@@ -161,8 +168,11 @@ public class NoteFS extends NARService {
 
     public static void main(String[] args) throws IOException {
         NAR n = NARS.tmp();
-        NoteFS fs = new NoteFS("/var/log", n);
-
+        new ConjClustering(n, BELIEF, 4, 16);
+        n.termVolumeMax.set(60);
+        //NoteFS a = new NoteFS(Paths.get("/var/log"), n);
+//        NoteFS b = new NoteFS(Paths.get("/boot"), n);
+        NoteFS c = new NoteFS(Paths.get("/tmp"), n);
         n.log();
         n.startFPS(4f);
 
