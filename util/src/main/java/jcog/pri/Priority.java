@@ -118,7 +118,7 @@ public interface Priority extends Prioritized, ScalarValue {
                 }
             }
         }
-        assert (u.priElseZero() <= maxPri + ScalarValue.EPSILON): "not: " + u.priElseZero() + " <= " + maxPri + EPSILON;
+        //assert (u.priElseZero() <= maxPri + ScalarValue.EPSILON): "not: " + u.priElseZero() + " <= " + maxPri + EPSILON;
         return u;
     }
 

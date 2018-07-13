@@ -669,6 +669,18 @@ public class FasterList<X> extends FastList<X> {
 
         }
 
+    public void swap(int a, int b) {
+        X x = get(a);
+        X y = get(b);
+        set(a, y);
+        set(b, x);
+    }
+
+    /** use with caution */
+    public void setSize(int s) {
+        this.size = s;
+    }
+
 
     /**
      * modified from MutableIterator

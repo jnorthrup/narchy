@@ -8,6 +8,7 @@ import jcog.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -183,6 +184,8 @@ public class BagClustering<X> {
                 for (int i = 0; i < learningIterations; i++)
                     bag.forEach(this::learn);
 
+
+
             } finally {
                 bagBusy.set(false);
             }
@@ -191,13 +194,16 @@ public class BagClustering<X> {
         x = new FasterList<>(bag.size());
         bag.forEach(x::add);
 
+        int s = x.size();
+        if (s>0) {
+            ArrayUtils.quickSort(0, s,
+                    (a,b) -> Integer.compare(x.get(a).centroid, x.get(b).centroid),
+                    x::swap);
+//            x.sortThisByInt(xx -> xx.centroid);
+            takeSortedClusters.accept(x);
+        }
 
 
-        x.sortThisByInt(xx -> xx.centroid);
-
-        
-        
-        takeSortedClusters.accept(x);
 
     }
 

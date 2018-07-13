@@ -1,10 +1,13 @@
 package jcog.pri;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.util.AtomicFloatFieldUpdater;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import static java.lang.Float.floatToIntBits;
@@ -141,8 +144,20 @@ public interface ScalarValue {
     }
 
     class AtomicScalarValue implements ScalarValue {
-        protected static final AtomicFloatFieldUpdater<AtomicScalarValue> PRI =
+        protected static final AtomicFloatFieldUpdater<AtomicScalarValue> FLOAT =
                 new AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater.newUpdater(AtomicScalarValue.class, "pri"));
+
+        private static final VarHandle INT;
+
+        static {
+            try {
+                INT = MethodHandles.lookup().in(AtomicScalarValue.class)
+                    .findVarHandle(AtomicScalarValue.class,"pri",int.class);
+            } catch (Exception e) {
+                throw new WTF(e);
+            }
+        }
+
 
         final static int NaN = floatToIntBits(Float.NaN);
 
@@ -150,33 +165,39 @@ public interface ScalarValue {
 
         @Override
         public float pri(float p) {
-            PRI.set(this, p);
+            INT.set(this, floatToIntBits(p));
             return p;
         }
 
         @Override
-        public final float pri() {
-            return intBitsToFloat(pri); //volatile access
-        }
-
-        public boolean isDeleted() {
-            return pri == NaN;
-        }
-
-        @Override
         public boolean delete() {
-            return PRI.updater.getAndSet(this, NaN) != NaN;
+            return ((int)INT.getAndSet(this, NaN)) != NaN;
             //if the above doesnt work, try converting with intToFloatBits( then do NaN test for equality etc
         }
 
+        private int _pri() {
+            return (int) INT.getOpaque(this);
+        }
+
+        @Override
+        public final float pri() {
+            return intBitsToFloat( _pri() );
+        }
+
+        public boolean isDeleted() {
+            return _pri() == NaN;
+        }
+
+
+
         @Override
         public final float pri(FloatToFloatFunction update) {
-            return PRI.updateAndGet(this, update);
+            return FLOAT.updateAndGet(this, update);
         }
 
         @Override
         public final float pri(FloatFloatToFloatFunction update, float x) {
-            return PRI.updateAndGet(this, update, x);
+            return FLOAT.updateAndGet(this, update, x);
         }
     }
 }

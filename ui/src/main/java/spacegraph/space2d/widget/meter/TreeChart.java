@@ -181,7 +181,8 @@ public class TreeChart<X> extends Surface {
         double areaSum = 0.0, maxArea = 0.0, minArea = Double.POSITIVE_INFINITY;
         for (ItemVis item : ch) {
             double area = item.area;
-            areaSum += area;
+            if (area!=area) area = 0;
+            else areaSum += area;
             minArea = minArea < area ? minArea : area;
             maxArea = maxArea > area ? maxArea : area;
         }

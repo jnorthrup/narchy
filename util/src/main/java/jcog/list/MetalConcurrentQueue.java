@@ -21,9 +21,13 @@ package jcog.list;
  * #L%
  */
 
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import com.conversantmedia.util.concurrent.ConcurrentQueue;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
+
+import static java.lang.Thread.onSpinWait;
 
 /**
  * modified from Conversant Disruptor's PushPullConcurrentQueue
@@ -36,11 +40,9 @@ import java.util.function.Consumer;
  * <p>
  * Created by jcairns on 5/28/14.
  */
-public class MetalConcurrentQueue<E> extends MultithreadConcurrentQueue<E> {// implements ConcurrentQueue<E> {
+public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
-    public MetalConcurrentQueue(int cap) {
-        super(cap);
-    }
+  
     public int clear(Consumer<E> each) {
         return clear(each, -1);
     }
@@ -58,153 +60,285 @@ public class MetalConcurrentQueue<E> extends MultithreadConcurrentQueue<E> {// i
 
 
 
-//    final int cap;
-//
-//    final int mask;
-//
-//    final AtomicInteger tail = new AtomicInteger();
-//    final AtomicInteger head = new AtomicInteger();
-//
-//    //    long p1, p2, p3, p4, p5, p6, p7;
-////    //@sun.misc.Contended
-////    long tailCache = 0L;
-////    long a1, a2, a3, a4, a5, a6, a7, a8;
-////
-//    final AtomicReferenceArray<E> buffer;
-////
-////    long r1, r2, r3, r4, r5, r6, r7;
-////    //@sun.misc.Contended
-////    long headCache = 0L;
-////    long c1, c2, c3, c4, c5, c6, c7, c8;
-//
-//
-//    public MetalConcurrentQueue(final int cap) {
-//        int rs = 1;
-//        while (rs < cap) rs <<= 1;
-//        this.cap = rs;
-//        this.mask = rs - 1;
-//
-//        buffer = new AtomicReferenceArray<>(cap);
-//    }
-//
-//
-//    @Override
-//    public boolean offer(final E e) {
-//        assert (e != null);
-//
-////        final boolean[] ok = {true};
-////        int t = tail.getAndUpdate((tail)->{
-////            if (tail - head.get() < cap) {
-////                tail++;
-////            } else {
-////                ok[0] = false;
-////            }
-////            return tail;
-////        });
-////
-////        if (ok[0]) {
-////            buffer.getAndSet(t & mask, e);
-////            return true;
-////        }
-//
-//        int t;
-//        while ((t = tail.get()) - head.get() <= cap) {
-//            if (this.tail.compareAndSet(t, t+1)) {
-//                buffer.getAndSet(t & mask, e);
-//                //System.out.println((t & mask) + " = " + e);
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
-//
-//    @Override
-//    public E poll() {
-//
-//        int h;
-//        while ((h =  head.get()) - tail.get() < 0) {
-//            if (this.head.compareAndSet(h, h+1)) {
-//                E y = buffer.getAndSet(h & mask, null);
-//                //System.out.println(y + " = " + (h & mask));
-//                return y;
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    @Override
-//    public int remove(final E[] e) {
-//        throw new TODO();
-////        int n = 0;
-////
-////        int headCache = this.head.get();
-////
-////        final int nMax = e.length;
-////        for(int i = headCache, end = tail.get(); n<nMax && i<end; i++) {
-////            final int dx = (i & mask);
-////            e[n++] = buffer[dx];
-////            buffer[dx] = null;
-////        }
-////
-////        this.head.addAndGet(n);
-////
-////        return n;
-//    }
-//
-//    @Override
-//    public void clear() {
-//
-//        clear((x) -> {
-//        });
-//
-////        Arrays.fill(buffer, null);
-////        head.addAndGet(tail.get()-head.get());
-//    }
-//
-//
-//    @Override
-//    public final E peek() {
-//        return buffer.get((head.get() & mask));
-//    }
-//
-//    /**
-//     * This implemention is known to be broken if preemption were to occur after
-//     * reading the tail pointer.
-//     * <p>
-//     * Code should not depend on size for a correct result.
-//     *
-//     * @return int - possibly the size, or possibly any value less than capacity()
-//     */
-//    @Override
-//    public final int size() {
-//        return Math.max(tail.get() - head.get(), 0);
-//    }
-//
-//    @Override
-//    public int capacity() {
-//        return cap;
-//    }
-//
-//    @Override
-//    public final boolean isEmpty() {
-//        return size() == 0;
-//    }
-//
-//    @Override
-//    public final boolean contains(Object o) {
-//        //if(o != null) {
-//        for (int i = head.get(), end = tail.get(); i < end; i++) {
-//            final E e = buffer.get(i & mask);
-//            if (o.equals(e))
-//                return true;
-//        }
-//        //}
-//        return false;
-//    }
-//
-////    long sumToAvoidOptimization() {
-////        return p1+p2+p3+p4+p5+p6+p7+a1+a2+a3+a4+a5+a6+a7+a8+r1+r2+r3+r4+r5+r6+r7+c1+c2+c3+c4+c5+c6+c7+c8+headCache+tailCache;
-////    }
+    /*
+     * Note to future developers/maintainers - This code is highly tuned
+     * and possibly non-intuitive.    Rigorous performance and functional
+     * testing should accompany any proposed change
+     *
+     */
+
+    // maximum allowed capacity
+    // this must always be a power of 2
+    //
+    protected final int      size;
+
+    // we need to compute a position in the ring buffer
+    // modulo size, since size is a power of two
+    // compute the bucket position with x&(size-1)
+    // aka x&mask
+    final int     mask;
+
+    // the sequence number of the end of the queue
+    final AtomicInteger tail = new AtomicInteger();
+
+    final AtomicInteger tailCursor = new AtomicInteger(0);
+
+    // use the value in the L1 cache rather than reading from memory when possible
+    int p1, p2, p3, p4, p5, p6, p7;
+//    @sun.misc.Contended
+    int tailCache = 0;
+    int a1, a2, a3, a4, a5, a6, a7, a8;
+
+    // a ring buffer representing the queue
+    final E[] buffer;
+
+    int r1, r2, r3, r4, r5, r6, r7;
+//    @sun.misc.Contended
+    int headCache = 0;
+    int c1, c2, c3, c4, c5, c6, c7, c8;
+
+    // the sequence number of the start of the queue
+    final AtomicInteger head =  new AtomicInteger();
+
+    final AtomicInteger headCursor = new AtomicInteger(0);
+
+    /**
+     * Construct a blocking queue of the given fixed capacity.
+     *
+     * Note: actual capacity will be the next power of two
+     * larger than capacity.
+     *
+     * @param capacity maximum capacity of this queue
+     */
+
+    public MetalConcurrentQueue(final int capacity) {
+        int c = 1;
+        while(c < capacity) c <<=1;
+        size = c;
+        mask = size - 1;
+        buffer = (E[])new Object[size];
+    }
+
+    @Override
+    public boolean offer(E e) {
+        int spin = 0;
+
+        for(;;) {
+            final int tailSeq = tail.get();
+            // never offer onto the slot that is currently being polled off
+            final int queueStart = tailSeq - size;
+
+            // will this sequence exceed the capacity
+            if((headCache > queueStart) || ((headCache = head.get()) > queueStart)) {
+                // does the sequence still have the expected
+                // value
+                if(tailCursor.compareAndSet(tailSeq, tailSeq + 1)) {
+
+                    try {
+                        // tailSeq is valid
+                        // and we got access without contention
+
+                        // convert sequence number to slot id
+                        final int tailSlot = (tailSeq&mask);
+                        buffer[tailSlot] = e;
+
+                        return true;
+                    } finally {
+                        tail.incrementAndGet();
+                    }
+                } // else - sequence misfire, somebody got our spot, try again
+            } else {
+                // exceeded capacity
+                return false;
+            }
+
+            spin = progressiveYield(spin);
+        }
+    }
+
+
+
+    static final long PARK_TIMEOUT = 50L;
+    static final int MAX_PROG_YIELD = 2000;
+    /*
+     * progressively transition from spin to yield over time
+     */
+    static int progressiveYield(final int n) {
+        if(n > 500) {
+            if(n<1000) {
+                // "randomly" yield 1:8
+                if((n & 0x7) == 0) {
+                    LockSupport.parkNanos(PARK_TIMEOUT);
+                } else {
+                    onSpinWait();
+                }
+            } else if(n<MAX_PROG_YIELD) {
+                // "randomly" yield 1:4
+                if((n & 0x3) == 0) {
+                    Thread.yield();
+                } else {
+                    onSpinWait();
+                }
+            } else {
+                Thread.yield();
+                return n;
+            }
+        } else {
+            onSpinWait();
+        }
+        return n+1;
+    }
+
+    @Override
+    public E poll() {
+        int spin = 0;
+
+        for(;;) {
+            final int head = this.head.get();
+            // is there data for us to poll
+            if((tailCache > head) || (tailCache = tail.get()) > head) {
+                // check if we can update the sequence
+                if(headCursor.compareAndSet(head, head+1)) {
+                    try {
+                        // copy the data out of slot
+                        final int pollSlot = (head&mask);
+                        final E   pollObj  = buffer[pollSlot];
+
+                        // got it, safe to read and free
+                        buffer[pollSlot] = null;
+
+                        return pollObj;
+                    } finally {
+                        this.head.incrementAndGet();
+                    }
+                } // else - somebody else is reading this spot already: retry
+            } else {
+                return null;
+                // do not notify - additional capacity is not yet available
+            }
+
+            // this is the spin waiting for access to the queue
+            spin = progressiveYield(spin);
+        }
+    }
+
+    @Override
+    public final E peek() {
+        return buffer[head.get()&mask];
+    }
+
+    @Override
+    public int remove(final E[] e) {
+        return remove(e, e.length);
+    }
+
+    // drain the whole queue at once
+    public int remove(final E[] e, int maxElements) {
+
+        /* This employs a "batch" mechanism to load all objects from the ring
+         * in a single update.    This could have significant cost savings in comparison
+         * with poll
+         */
+
+        int spin = 0;
+
+        for(;;) {
+            final int pollPos = head.get(); // prepare to qualify?
+            // is there data for us to poll
+            // note we must take a difference in values here to guard against
+            // integer overflow
+            final int nToRead = Math.min((tail.get() - pollPos), maxElements);
+            if(nToRead > 0 ) {
+
+                for(int i=0; i<nToRead;i++) {
+                    final int pollSlot = ((pollPos+i)&mask);
+                    e[i] = buffer[pollSlot];
+                }
+
+                // if we still control the sequence, update and return
+                if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
+                    head.addAndGet(nToRead);
+                    return nToRead;
+                }
+            } else {
+                // nothing to read now
+                return 0;
+            }
+            // wait for access
+            spin = progressiveYield(spin);
+        }
+    }
+
+    /**
+     * This implemention is known to be broken if preemption were to occur after
+     * reading the tail pointer.
+     *
+     * Code should not depend on size for a correct result.
+     *
+     * @return int - possibly the size, or possibly any value less than capacity()
+     */
+    @Override
+    public final int size() {
+        // size of the ring
+        // note these values can roll from positive to
+        // negative, this is properly handled since
+        // it is a difference
+        return Math.max((tail.get() - head.get()), 0);
+    }
+
+    @Override
+    public int capacity() {
+        return size;
+    }
+
+    @Override
+    public final boolean isEmpty() {
+        return tail.get() == head.get();
+    }
+
+    @Override
+    public void clear() {
+        int spin = 0;
+        for(;;) {
+            final int head = this.head.get();
+            if(headCursor.compareAndSet(head, head+1)) {
+                for(;;) {
+                    final int tail = this.tail.get();
+                    if (tailCursor.compareAndSet(tail, tail + 1)) {
+
+                        // we just blocked all changes to the queue
+
+                        // remove leaked refs
+                        for (int i = 0; i < buffer.length; i++) {
+                            buffer[i] = null;
+                        }
+
+                        // advance head to same location as current end
+                        this.tail.incrementAndGet();
+                        this.head.addAndGet(tail-head+1);
+                        headCursor.set(tail + 1);
+
+                        return;
+                    }
+                    spin = progressiveYield(spin);
+                }
+            }
+            spin = progressiveYield(spin);
+        }
+    }
+
+    @Override
+    public final boolean contains(Object o) {
+        for(int i=0; i<size(); i++) {
+            final int slot = ((head.get() + i) & mask);
+            if(buffer[slot]!= null && buffer[slot].equals(o)) return true;
+        }
+        return false;
+    }
+
+    int sumToAvoidOptimization() {
+        return p1+p2+p3+p4+p5+p6+p7+a1+a2+a3+a4+a5+a6+a7+a8+r1+r2+r3+r4+r5+r6+r7+c1+c2+c3+c4+c5+c6+c7+c8+headCache+tailCache;
+    }
+
+
 }

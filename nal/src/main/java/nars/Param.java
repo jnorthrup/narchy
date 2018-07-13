@@ -38,8 +38,8 @@ public abstract class Param {
      * size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
      * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
      */
-    public static final int DerivedTaskBagCapacity = 512;
-    public static final float DerivedTaskBagDrainRate = 0.75f;
+    public static final int DerivedTaskBagCapacity = 2048;
+    public static final float DerivedTaskBagDrainRate = 0.5f;
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
@@ -102,8 +102,8 @@ public abstract class Param {
                     //il.aveAri(t, b);
                     //Util.aveGeo(t, b);
                     //Util.and(t, b);
-                    Util.or(t, b);
-    //(t+b);
+                    //Util.or(t, b);
+                    (t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget

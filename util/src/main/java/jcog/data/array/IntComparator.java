@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * Created by me on 6/8/15.
  */
-public interface IntComparator extends Comparator<Long> {
+@FunctionalInterface public interface IntComparator{
     /**
 	 * Compares the given primitive types.
 	 *

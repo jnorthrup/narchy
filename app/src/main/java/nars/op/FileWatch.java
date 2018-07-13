@@ -5,18 +5,17 @@ import jcog.bag.impl.PLinkArrayBag;
 import jcog.io.FSWatch;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Task;
+import nars.*;
 import nars.control.NARService;
 import nars.op.java.Opjects;
+import nars.op.mental.Abbreviation;
 import nars.op.stm.ConjClustering;
 import org.eclipse.collections.api.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
@@ -26,7 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static nars.Op.BELIEF;
 
-public class NoteFS extends NARService {
+/** watches a particular file or directory for live changes, notified by the filesystem asynchronously */
+public class FileWatch extends NARService {
 
 
 
@@ -43,18 +43,24 @@ public class NoteFS extends NARService {
 
     }
 
-    public static class PathWatch {
+
+    public static class FSView {
 
         final Map<Path,PLink<Path>> paths = new ConcurrentHashMap<>();
         final PLinkArrayBag<Path> active = new PLinkArrayBag<Path>(PriMerge.plus, 128);
 
-        public PathWatch() {
+        public FSView() {
 
         }
 
         public void add(Path path) {
 
         }
+
+        public void bytes(Path path) {
+
+        }
+
         public void change(Path path) {
 
         }
@@ -98,14 +104,19 @@ public class NoteFS extends NARService {
 
     final static int FPS = 2;
 
-    static final Logger logger = LoggerFactory.getLogger(NoteFS.class);
+    static final Logger logger = LoggerFactory.getLogger(FileWatch.class);
     final FSWatch fs;
 
-    private final PathWatch watch;
+    private final FSView watch;
 
-    public NoteFS(Path path, NAR n) throws IOException {
+    public FileWatch(Path path, NAR n) throws IOException {
         super();
-        this.watch = new Opjects(n).a($.the(path), PathWatch.class);
+
+        this.watch = new Opjects(n).a(
+                $.func("cpu", /* computer (more specific than "central") processing unit, short for computer */
+                        $.the(InetAddress.getLocalHost().getHostName())),
+                FSView.class);
+
         fs = new FSWatch(path, n.exe, watch::accept);
         n.on(this);
     }
@@ -166,18 +177,28 @@ public class NoteFS extends NARService {
         });
     }
 
-    public static void main(String[] args) throws IOException {
-        NAR n = NARS.tmp();
-        new ConjClustering(n, BELIEF, 4, 16);
-        n.termVolumeMax.set(60);
-        //NoteFS a = new NoteFS(Paths.get("/var/log"), n);
-//        NoteFS b = new NoteFS(Paths.get("/boot"), n);
-        NoteFS c = new NoteFS(Paths.get("/tmp"), n);
+    public static void main(String[] args) throws IOException, Narsese.NarseseException {
+        NAR n = NARS.tmp(6);
         n.log();
-        n.startFPS(4f);
+
+        new ConjClustering(n, BELIEF, 4, 16);
+        new Abbreviation(n, "z", 5, 10, 1f, 32);
+
+        n.termVolumeMax.set(40);
+        //FileWatch a = new FileWatch(Paths.get("/var/log"), n);
+        //FileWatch b = new FileWatch(Paths.get("/boot"), n);
+        //FileWatch c = new FileWatch(Paths.get("/tmp"), n);
+        FileWatch c = new FileWatch(Paths.get("/home/me/n/docs/nal/sumo"), n);
+        
+        n.input("$1.0 (add($cpu,$file) ==> ({$file}-->$cpu)).");
+        n.input("$1.0 (add(#cpu,file($directory,$filename)) ==> ({$filename}-->$directory)).");
+
+        n.startFPS(8f);
 
         while (true) {
             Util.sleep(100);
         }
     }
+
+    //public static class Note
 }

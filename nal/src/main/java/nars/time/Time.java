@@ -90,20 +90,7 @@ public abstract class Time implements Clock, Serializable {
     @Nullable
     public void scheduled(Consumer<SchedTask> each) {
 
-
         long now = now();
-        long nextScheduled = scheduledNext.get();
-        if ((now < nextScheduled) || !scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE))
-            return;
-
-
-        SchedTask next;
-        while (((next = scheduled.peek()) != null) && (next.when <= now)) {
-            SchedTask actualNext = scheduled.poll();
-            each.accept(actualNext);
-            //assert (next == actualNext);
-        }
-
         int s = incoming.size();
         if (s > 0) {
             //SchedTask p;
@@ -117,8 +104,20 @@ public abstract class Time implements Clock, Serializable {
             }
         }
 
-        long nextNextWhen = next != null ? next.when : Long.MAX_VALUE;
-        scheduledNext.updateAndGet(z -> Math.min(z, nextNextWhen));
+        long nextScheduled = scheduledNext.get();
+        if ((now >= nextScheduled) && scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE)) {
+            SchedTask next;
+            while (((next = scheduled.peek()) != null) && (next.when <= now)) {
+                SchedTask actualNext = scheduled.poll();
+                each.accept(actualNext);
+                //assert (next == actualNext);
+            }
+            long nextNextWhen = next != null ? next.when : Long.MAX_VALUE;
+            scheduledNext.updateAndGet(z -> Math.min(z, nextNextWhen));
+        }
+
+
+
 
 
     }

@@ -33,6 +33,7 @@ public class UniExec extends AbstractExec {
     final MetalConcurrentQueue in =
             //new ArrayBlockingQueue(8192);
             new MetalConcurrentQueue(32*1024);
+            //new DisruptorBlockingQueue(32*1024);
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
@@ -46,13 +47,13 @@ public class UniExec extends AbstractExec {
             super(new AbstractWork<>(sharing.start(c), "CPU", 0.5f) {
                 @Override
                 public boolean start() {
-                    return super.start() && c.instance.tryAcquire();
+                    return c.instance.tryAcquire() && super.start();
                 }
 
                 @Override
                 public void stop() {
-                    c.instance.release();
                     super.stop();
+                    c.instance.release();
                 }
 
                 @Override
@@ -132,7 +133,7 @@ public class UniExec extends AbstractExec {
                     });
 
                     double valRange = valMax[0] - valMin[0];
-                    if (Math.abs(valRange) > ScalarValue.EPSILON) {
+                    if (Math.abs(valRange) > Double.MIN_NORMAL) {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY};
                         final double[] valRateMax = {Double.NEGATIVE_INFINITY};
@@ -177,7 +178,7 @@ public class UniExec extends AbstractExec {
                             }
                         });
                         double valRateRange = valRateMax[0] - valRateMin[0];
-                        if (valRateRange > ScalarValue.EPSILON * can.size()) {
+                        if (valRateRange > Double.MIN_NORMAL * can.size()) {
                             forEach((InstrumentedWork s) -> {
                                 //s.need((float) s.valueNormalized); //abs
 
@@ -239,18 +240,19 @@ public class UniExec extends AbstractExec {
     }
 
     protected void onCycle(NAR nar) {
-//        if (nar==null)
-//            return; //??
-
         nar.time.scheduled(this::executeNow);
-
-        in.clear(this::executeNow);
+        sync();
 
         can.forEachValue(c->
             c.c.next(nar, WORK_PER_CYCLE)
         );
     }
 
+    protected void sync() {
+        //in.clear(this::executeNow);
+        Object next;
+        while ((next = in.poll())!=null) executeNow(next);
+    }
 
 
     public boolean remove(Causable s) {

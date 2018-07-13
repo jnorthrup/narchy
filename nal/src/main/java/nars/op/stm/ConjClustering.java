@@ -35,6 +35,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
 
+
     private final BagClustering<Task> bag;
     private final BagClustering.Dimensionalize<Task> ConjClusterModel;
     private final BufferedCauseChannel in;
@@ -162,8 +163,9 @@ public class ConjClustering extends Causable {
             float freq = 1f;
             float conf = 1f;
             float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
+            float confMax = Float.NEGATIVE_INFINITY;//, confMin = Float.POSITIVE_INFINITY;
             int vol = 0;
-            int maxVolume = 0;
+            int volMax = 0;
 
             do {
                 if (!gg.hasNext())
@@ -184,12 +186,12 @@ public class ConjClustering extends Causable {
                 }
 
                 int xtv = xt.volume();
-                maxVolume = Math.max(maxVolume, xt.volume());
-                if (vol + xtv + 1 >= volMax || conf * tx.conf() < confMin) {
+                volMax = Math.max(volMax, xt.volume());
+                if (vol + xtv + 1 >= this.volMax || conf * tx.conf() < confMin) {
                     continue;
                 }
 
-                boolean involved = false;
+                boolean include = false;
                 LongObjectPair<Term> ps = pair(zs, xt);
                 Term xtNeg = xt.neg();
 
@@ -197,12 +199,12 @@ public class ConjClustering extends Causable {
                 if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
                     if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
                         vol += xtv;
-                        involved = true;
+                        include = true;
                     }
                 }
 
 
-                if (involved) {
+                if (include) {
 
                     actualTasks.add(t);
 
@@ -211,7 +213,10 @@ public class ConjClustering extends Causable {
                     if (start > zs) start = zs;
                     if (end < zs) end = zs;
 
-                    conf *= tx.conf();
+                    float tc = tx.conf();
+                    if (tc > confMax) confMax = tc;
+
+                    conf *= tc;
 
                     float tf = tx.freq();
                     freq *= tx.isNegative() ? (1f - tf) : tf;
@@ -223,7 +228,7 @@ public class ConjClustering extends Causable {
                     if (actualTasks.size() >= Param.STAMP_CAPACITY)
                         break;
                 }
-            } while (vol < volMax - 1 && conf > confMin);
+            } while (vol < this.volMax - 1 && conf > confMin);
 
             int vs = actualTasks.size();
             if (vs < 2)
@@ -257,9 +262,12 @@ public class ConjClustering extends Causable {
 
                                 int v = cp.getOne().volume();
                                 float cmplFactor =
-                                        ((float) v) / (v + maxVolume);
+                                        ((float) v) / (v + volMax);
 
-                                m.pri(Priority.fund(priMin * cmplFactor, true, uu));
+                                float confFactor =
+                                        (conf / (conf + confMax)); //TODO is this good
+
+                                m.pri(Priority.fund(priMin * cmplFactor * confFactor, false, uu));
 
                                 if (in.inputIfCapacity(m)) {
                                     centroidGen++;

@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
 
-    private final static int CAN_ITER_MAX = 512;
     private final int totalConcurrency;
 
     protected volatile long idleTimePerCycle;
@@ -81,9 +80,7 @@ abstract public class BufferedExec extends UniExec {
     protected void onDur() {
         super.onDur();
         sharing.commit();
-    }
 
-    protected void onCycle(NAR nar) {
 
         if (nar.time instanceof RealTime) {
             double throttle = nar.loop.throttle.floatValue();
@@ -97,38 +94,51 @@ abstract public class BufferedExec extends UniExec {
         } else
             throw new TODO();
 
+
+    }
+
+    protected void onCycle(NAR nar) {
+
         nar.time.scheduled(this::executeLater);
+
 
     }
 
 
     protected void work(FasterList b, int concurrency) {
         //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
-        int incoming = in.size();
-        if (incoming == 0)
-            return;
 
-        int remaining = (int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1))));
-        int batchSize = 4;
+
+
+        int batchSize = (int) Math.ceil( (((float)in.capacity()) / Math.max(concurrency, (totalConcurrency - 1))));
+        //int batchSize = 8;
         //int remaining = Math.min(incoming, batchSize);
 
-        int exe = 0;
 
-        do {
 
-            tryCycle();
 
-            in.clear(b::add, batchSize);
-            remaining -= batchSize;
-            exe += b.size();
 
-        } while (execute(b, concurrency) && remaining > 0);
+            int drained = in.remove(b.array(), batchSize);
+
+            b.setSize(drained);
+
+//            if (drained > 0) {
+//
+//                exe += drained;
+//                //in.clear(b::add, batchSize);
+////            remaining -= batchSize;
+//
+//                return exe;
+//
+//            }
+
+
 
         //System.out.println(Thread.currentThread() + " " + incoming + " " + batchSize + " " + exe);
 
     }
 
-    private boolean execute(FasterList b, int concurrency) {
+    protected boolean execute(FasterList b, int concurrency) {
         //TODO sort, distribute etc
         int bn = b.size();
         if (bn == 0)
@@ -153,59 +163,59 @@ abstract public class BufferedExec extends UniExec {
         return true;
     }
 
-    protected void play() {
-
-//        long dutyTimeStart = System.nanoTime();
-//        long dutyTimeEnd = System.nanoTime();
-        double timeSliceNS =
-                Math.max(1,
-                    cpu.cycleTimeNS.longValue()// - Math.max(0, (dutyTimeEnd - dutyTimeStart))
-                        * nar.loop.jiffy.doubleValue()
-                );
-
-        can.forEachValue(c -> {
-            if (c.c.instance.availablePermits() == 0)
-                return;
-
-
-            double iterTimeMean = c.iterTimeNS.getMean();
-            double iterationsMean = c.iterations.getMean();
-            int work;
-            if (iterTimeMean == iterTimeMean && iterationsMean==iterationsMean) {
-
-                double growth = 2;
-                double maxIters = growth * Math.max(1, (c.pri() * timeSliceNS / (iterTimeMean / iterationsMean)));
-                work = (maxIters == maxIters) ?
-                        Util.clamp((int)Math.round(maxIters), 1, CAN_ITER_MAX) : 1;
-            } else {
-                work = 1;
-            }
-            //System.out.println(c + " " + work);
-
-            //int workRequested = c.;
-            //b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
-
-            play(c, work);
-
-
-            //}));
-
-            //c.c.run(nar, WORK_PER_CYCLE, x -> b.add(x.get()));
-        });
-    }
-
-    private void play(MyAbstractWork c, int work) {
-
-        tryCycle();
-
-        if (c.start()) {
-            try {
-                c.next(work);
-            } finally {
-                c.stop();
-            }
-        }
-    }
+//    protected void play() {
+//
+////        long dutyTimeStart = System.nanoTime();
+////        long dutyTimeEnd = System.nanoTime();
+//        double timeSliceNS =
+//                Math.max(1,
+//                    cpu.cycleTimeNS.longValue()// - Math.max(0, (dutyTimeEnd - dutyTimeStart))
+//                        * nar.loop.jiffy.doubleValue()
+//                );
+//
+//        can.forEachValue(c -> {
+//            if (c.c.instance.availablePermits() == 0)
+//                return;
+//
+//
+//            double iterTimeMean = c.iterTimeNS.getMean();
+//            double iterationsMean = c.iterations.getMean();
+//            int work;
+//            if (iterTimeMean == iterTimeMean && iterationsMean==iterationsMean) {
+//
+//                double growth = 1;
+//                double maxIters = growth * Math.max(1, (c.pri() * timeSliceNS / (iterTimeMean / iterationsMean)));
+//                work = (maxIters == maxIters) ?
+//                        Util.clamp((int)Math.round(maxIters), 1, CAN_ITER_MAX) : 1;
+//            } else {
+//                work = 1;
+//            }
+//            //System.out.println(c + " " + work);
+//
+//            //int workRequested = c.;
+//            //b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
+//
+//            play(c, work);
+//
+//
+//            //}));
+//
+//            //c.c.run(nar, WORK_PER_CYCLE, x -> b.add(x.get()));
+//        });
+//    }
+//
+//    private void play(MyAbstractWork c, int work) {
+//
+//        tryCycle();
+//
+//        if (c.start()) {
+//            try {
+//                c.next(work);
+//            } finally {
+//                c.stop();
+//            }
+//        }
+//    }
 
 //    public static class UniBufferedExec extends BufferedExec {
 //        final Flip<List> buffer = new Flip<>(FasterList::new);
@@ -297,7 +307,7 @@ abstract public class BufferedExec extends UniExec {
 
                 exe.shutdownNow();
 
-                in.clear(this::executeNow);
+                sync();
 
                 super.stop();
             }
@@ -314,18 +324,41 @@ abstract public class BufferedExec extends UniExec {
             public void run() {
                 while (alive) {
 
+                    tryCycle();
+
                     work(schedule, 1);
 
                     play();
 
+                    execute(schedule, 1);
+
                     sleep();
+
                 }
+            }
+
+            private void play() {
+
+                //if (in.size() < totalConcurrency) {
+
+                //generate planning
+                for (int i = 0; i < 1; i++) {
+                    //int ii = i;
+                    can.forEachValue(c -> {
+                        int runtimeNS =
+                                (int) Math.max(50_000, Math.round(c.pri() * cpu.cycleTimeNS.doubleValue()));
+
+                        //if (ii == 0)
+                        //System.out.println(c + " for " + Texts.timeStr(runtimeNS) + " " + c.iterations.getMean() + " iters");
+
+                        schedule.add((Runnable) () -> c.runFor(runtimeNS));
+                    });
+                }
+                //}
             }
 
             public void sleep() {
                 if (idleTimePerCycle > 0) {
-
-                    tryCycle();
 
                     Util.sleepNSWhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
                             in.size() > 0 || !alive
