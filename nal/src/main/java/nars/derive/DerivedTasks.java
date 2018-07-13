@@ -69,12 +69,6 @@ public interface DerivedTasks {
                     return existing;
                 }
 
-                if (isFull()) {
-                    if (incoming.pri() < priMin()) {
-                        return null; //fast drop the novel task due to insufficient priority
-                        //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
-                    }
-                }
 
                 return super.put(incoming, overflow);
             }

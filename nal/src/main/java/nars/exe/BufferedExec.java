@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
 
-    private final static int CAN_ITER_MAX = 4096;
+    private final static int CAN_ITER_MAX = 512;
     private final int totalConcurrency;
 
     protected volatile long idleTimePerCycle;
@@ -108,15 +108,23 @@ abstract public class BufferedExec extends UniExec {
         if (incoming == 0)
             return;
 
-        int batchSize = (int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1))));
-        int remaining = incoming;
+        int remaining = (int) Math.ceil( ((float)incoming / Math.max(concurrency, (totalConcurrency - 1))));
+        int batchSize = 4;
+        //int remaining = Math.min(incoming, batchSize);
+
+        int exe = 0;
+
         do {
+
+            tryCycle();
 
             in.clear(b::add, batchSize);
             remaining -= batchSize;
+            exe += b.size();
 
         } while (execute(b, concurrency) && remaining > 0);
 
+        //System.out.println(Thread.currentThread() + " " + incoming + " " + batchSize + " " + exe);
 
     }
 
@@ -147,10 +155,13 @@ abstract public class BufferedExec extends UniExec {
 
     protected void play() {
 
-        long dutyTimeStart = System.nanoTime();
-        long dutyTimeEnd = System.nanoTime();
-        long timeSliceNS = cpu.cycleTimeNS.longValue() - Math.max(0, (dutyTimeEnd - dutyTimeStart));
-        double finalTimeSliceNS = Math.max(1, timeSliceNS * nar.loop.jiffy.doubleValue());
+//        long dutyTimeStart = System.nanoTime();
+//        long dutyTimeEnd = System.nanoTime();
+        double timeSliceNS =
+                Math.max(1,
+                    cpu.cycleTimeNS.longValue()// - Math.max(0, (dutyTimeEnd - dutyTimeStart))
+                        * nar.loop.jiffy.doubleValue()
+                );
 
         can.forEachValue(c -> {
             if (c.c.instance.availablePermits() == 0)
@@ -158,14 +169,18 @@ abstract public class BufferedExec extends UniExec {
 
 
             double iterTimeMean = c.iterTimeNS.getMean();
+            double iterationsMean = c.iterations.getMean();
             int work;
-            if (iterTimeMean == iterTimeMean) {
-                double maxIters = (c.pri() * timeSliceNS / (iterTimeMean / Math.max(1, c.iterations.getMean())));
-                work = (maxIters == maxIters) ? (int) Math.round(Math.max(1, Math.min(CAN_ITER_MAX, maxIters))) : 1;
+            if (iterTimeMean == iterTimeMean && iterationsMean==iterationsMean) {
+
+                double growth = 2;
+                double maxIters = growth * Math.max(1, (c.pri() * timeSliceNS / (iterTimeMean / iterationsMean)));
+                work = (maxIters == maxIters) ?
+                        Util.clamp((int)Math.round(maxIters), 1, CAN_ITER_MAX) : 1;
             } else {
                 work = 1;
             }
-//            System.out.println(c + " " + work);
+            //System.out.println(c + " " + work);
 
             //int workRequested = c.;
             //b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
@@ -237,7 +252,7 @@ abstract public class BufferedExec extends UniExec {
         }
 
         @Override protected final boolean tryCycle() {
-            Runnable r = narCycle.getAcquire();
+            Runnable r = narCycle.getAndSet(null);
             if (r != null) {
                 //lucky worker gets to execute the NAR cycle
                 nar.run();

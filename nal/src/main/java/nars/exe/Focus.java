@@ -434,7 +434,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
     public static class DefaultRevaluator implements Exec.Revaluator {
 
-        final static double minUpdateDurs = 8f;
+        final static double minUpdateDurs = 1f;
 
 
         float momentum =
@@ -444,7 +444,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
 
 
-        long lastUpdate = ETERNAL;
+        volatile long lastUpdate = ETERNAL;
         /**
          * intermediate calculation buffer
          */

@@ -16,7 +16,7 @@ public class NARLoop extends InstrumentedLoop {
 
     /** scheduler temporal granularity (in sec) */
     public final FloatRange jiffy = new FloatRange(0.25f, 0.001f, 1f);
-    private final boolean async;
+    //private final boolean async;
 
     /**
      * starts paused; thread is not automatically created
@@ -24,7 +24,7 @@ public class NARLoop extends InstrumentedLoop {
     public NARLoop(@NotNull NAR n) {
         super();
         nar = n;
-        async = n.exe.concurrent();
+        //async = n.exe.concurrent();
     }
 
 
@@ -35,18 +35,19 @@ public class NARLoop extends InstrumentedLoop {
 
         nar.time.cycle(nar);
 
-        if (async) {
-            nar.eventCycle.emitAsync(nar, nar.exe, () -> ready());
-        } else {
+//        if (async) {
+//            nar.eventCycle.emitAsync(nar, nar.exe, () -> ready());
+//        } else {
             nar.eventCycle.emit(nar);
-        }
+//        }
+
 
         return true;
     }
 
 
-    @Override
-    protected boolean async() {
-        return async;
-    }
+//    @Override
+//    protected boolean async() {
+//        return async;
+//    }
 }

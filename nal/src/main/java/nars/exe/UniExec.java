@@ -194,7 +194,7 @@ public class UniExec extends AbstractExec {
                                 //System.out.println(s + " " + s.iterations.getMean());
 
                             });
-                            super.commit();
+
                             return this;
                         }
 
@@ -207,7 +207,6 @@ public class UniExec extends AbstractExec {
                     });
 
 
-                    super.commit();
                     return this;
                 }
             };

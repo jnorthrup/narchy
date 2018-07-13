@@ -445,6 +445,15 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         pressurize(p);
 
 
+        //HACK special case for saving a lot of unnecessary work when merge=Max
+        //TODO may also work with average and replace merges
+        if (this.mergeFunction == PriMerge.max && isFull()) {
+            if (incoming.pri() < priMin()) {
+                return null; //fast drop the novel task due to insufficient priority
+                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
+            }
+        }
+
         X key = key(incoming);
 
 

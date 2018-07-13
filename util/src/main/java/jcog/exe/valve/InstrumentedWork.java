@@ -133,4 +133,12 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         this.stop();
 
     }
+
+    @Override
+    public float pri(float p) {
+        need(p);
+        return super.pri(p);
+    }
+
+
 }
