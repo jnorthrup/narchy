@@ -1,10 +1,10 @@
 package nars.gui.graph.run;
 
 import com.jogamp.opengl.GL2;
-import jcog.WTF;
 import jcog.bag.util.Bagregate;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.concept.Concept;
@@ -100,12 +100,13 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
     void updateNode(NodeVis<Concept> nn) {
         float pri = nar.attn.active.pri(nn.id, 0f);
+        if (pri!=pri) pri = ScalarValue.EPSILON;
+
 
         nn.color(pri, pri / 2f, 0f);
 
         float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
-        if (pri!=pri || (p!=p))
-            throw new WTF();
+
 
         nn.pos(RectFloat2D.XYWH(nn.cx(), nn.cy(), p, p));
     }

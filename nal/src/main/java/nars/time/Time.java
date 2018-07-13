@@ -104,8 +104,8 @@ public abstract class Time implements Clock, Serializable {
             }
         }
 
-        long nextScheduled = scheduledNext.get();
-        if ((now >= nextScheduled) && scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE)) {
+        long nextScheduled = scheduledNext.getOpaque();
+        if ((now >= nextScheduled) && scheduledNext.weakCompareAndSetAcquire(nextScheduled, Long.MAX_VALUE)) {
             SchedTask next;
             while (((next = scheduled.peek()) != null) && (next.when <= now)) {
                 SchedTask actualNext = scheduled.poll();

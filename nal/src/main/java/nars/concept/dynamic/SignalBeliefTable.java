@@ -253,7 +253,7 @@ public class SignalBeliefTable extends DynamicBeliefTable {
         }
 
         void compress() {
-            if (!compressing.compareAndSet(false, true))
+            if (!compressing.weakCompareAndSetAcquire(false, true))
                 return;
 
             try {

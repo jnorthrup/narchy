@@ -105,8 +105,10 @@ public abstract class TermBuilder {
                                 new BiSubterm(t0, t1);
                 }
 
-                default:
+                default: {
+                    //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
                     return new ArrayTermVector(t);
+                }
             }
         } else {
             return new AnonVector(t);
@@ -167,7 +169,7 @@ public abstract class TermBuilder {
 //                throw new WTF();
 //            }
             assert(dt == DTERNAL);
-            if (subterms.volume() < Param.BYTE_KEY_CACHED_BELOW_VOLUME) {
+            if (subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
                 return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
             } else {
                 return new CachedCompound.SimpleCachedCompound(op, subterms);

@@ -110,7 +110,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
         //System.out.println(this + " " + lastStarted + ".." + lastFinished);
 
-        if (!busy.compareAndSet(false, true))
+        if (!busy.weakCompareAndSetAcquire(false, true))
             return;
 
 
@@ -141,7 +141,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
             //this.lastFinished = atEnd;
 
             if (!isOff()) {
-                if (busy.compareAndSet(true, false)) {
+                if (busy.weakCompareAndSetRelease(true, false)) {
                     long next = Math.max(
                             atEnd + 1 /* next cycle */,
                             atStart + durCycles);

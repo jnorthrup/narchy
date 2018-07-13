@@ -45,51 +45,56 @@ public final class MutableRoulette {
      * current # entries remaining above epsilon threshold
      */
     private int remaining;
+    private boolean direction;
 
-    /** with no weight modification */
+    /**
+     * with no weight modification
+     */
     public MutableRoulette(int count, IntToFloatFunction initialWeights, Random rng) {
         this(count, initialWeights, (x -> x), rng);
     }
 
     public MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
-        this(Util.map(count, initialWeights), weightUpdate, rng );
+        this(Util.map(count, initialWeights), weightUpdate, rng);
     }
 
     public MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
         this.w = w;
-        int n = w.length;
-        this.remaining = n;
         this.weightUpdate = weightUpdate;
         this.rng = rng;
 
         reweigh();
-        this.i = n == 1 ? 0 : rng.nextInt(n);
+
+        int l = w.length;
+        this.i = l == 1 ? 0 : rng.nextInt(l);
     }
 
     public MutableRoulette reweigh() {
         int n = w.length;
         float s = 0;
 
-        for (int i = 0; i < n; i++) {
+        final int nn = n;
+        for (int i = 0; i < nn; i++) {
             float wi = w[i];
-            if (!(wi >= 0 && Float.isFinite(wi)))
+            if (wi < 0 || !Float.isFinite(wi))
                 throw new RuntimeException("invalid weight: " + wi);
 
             if (wi < EPSILON) {
                 w[i] = 0;
-                remaining--;
+                n--;
             } else {
                 s += wi;
             }
         }
 
-        if (remaining == 0 || s < (n) * EPSILON) {
-
+        if (n == 0 || s < n * EPSILON) {
             Arrays.fill(w, 1);
-            s = remaining = n;
+            s = n = w.length;
         }
 
+        this.remaining = n;
         this.weightSum = s;
+        this.direction = rng.nextBoolean();
         return this;
     }
 
@@ -101,13 +106,14 @@ public final class MutableRoulette {
         switch (weights.length) {
             case 0:
                 throw new UnsupportedOperationException();
+
             case 1: {
                 float theWeight = weights[0];
                 while (choose.test(0) && ((theWeight = weightUpdate.valueOf(theWeight)) > EPSILON)) {
                 }
                 break;
             }
-            
+
             default: {
                 MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
                 while (r.next(choose)) {
@@ -131,54 +137,55 @@ public final class MutableRoulette {
         int count = w.length;
 
         if (remaining == 1) {
-            
-            
 
-            for (int x = 0; x < count; x++)
-                if (w[x] > 0) {
-                    
-                    w[x] = 0;
-                    remaining = 0;
+            for (int x = 0; x < count; x++) {
+                float wx = w[x];
+                if (wx > EPSILON) {
+                    float wy = weightUpdate.valueOf(wx);
+                    if (wx!=wy) {
+                        if ((w[x] = wx = wy) < EPSILON) {
+                            w[x] = 0;
+                            remaining = 0;
+                        }
+                    }
                     return x;
                 }
+            }
 
             throw new RuntimeException();
         } else {
 
             float distance = rng.nextFloat() * weightSum;
-            
+
 
             int i = this.i;
             int idle = 0;
             float wi;
-            while ((distance = distance - (wi = w[i])) > EPSILON) {
-                
-                if (++i == count) i = 0;
-                
-                
-                
+            while ((((wi = w[i = Util.next(i, direction, count)]) > EPSILON) && (distance = (distance - wi)) > EPSILON)) {
 
-                if (idle++ == count+1)
-                    return -1; 
-
+                if (idle++ == count + 1)
+                    return -1; //emergency bailout: WTF
             }
 
             float nextWeight = weightUpdate.valueOf(wi);
             if (nextWeight < EPSILON) {
                 w[i] = 0;
                 weightSum -= wi;
-
                 remaining--;
-
             } else if (nextWeight != wi) {
                 w[i] = nextWeight;
                 weightSum += nextWeight - wi;
             }
 
-
             return this.i = i;
+
+
         }
 
     }
 
+    /** weight sum */
+    public float weightSum() {
+        return weightSum;
+    }
 }

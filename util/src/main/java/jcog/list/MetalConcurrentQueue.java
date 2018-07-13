@@ -23,6 +23,7 @@ package jcog.list;
 
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
@@ -124,15 +125,15 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         int spin = 0;
 
         for(;;) {
-            final int tailSeq = tail.get();
+            final int tailSeq = tail.getAcquire();
             // never offer onto the slot that is currently being polled off
             final int queueStart = tailSeq - size;
 
             // will this sequence exceed the capacity
-            if((headCache > queueStart) || ((headCache = head.get()) > queueStart)) {
+            if((headCache > queueStart) || ((headCache = head.getOpaque()) > queueStart)) {
                 // does the sequence still have the expected
                 // value
-                if(tailCursor.compareAndSet(tailSeq, tailSeq + 1)) {
+                if(tailCursor.weakCompareAndSetVolatile(tailSeq, tailSeq + 1)) {
 
                     try {
                         // tailSeq is valid
@@ -144,7 +145,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
                         return true;
                     } finally {
-                        tail.incrementAndGet();
+                        tail.setRelease(tailSeq+1);
                     }
                 } // else - sequence misfire, somebody got our spot, try again
             } else {
@@ -194,11 +195,11 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         int spin = 0;
 
         for(;;) {
-            final int head = this.head.get();
+            final int head = this.head.getOpaque();
             // is there data for us to poll
-            if((tailCache > head) || (tailCache = tail.get()) > head) {
+            if((tailCache > head) || (tailCache = tail.getOpaque()) > head) {
                 // check if we can update the sequence
-                if(headCursor.compareAndSet(head, head+1)) {
+                if(headCursor.weakCompareAndSetVolatile(head, head+1)) {
                     try {
                         // copy the data out of slot
                         final int pollSlot = (head&mask);
@@ -209,7 +210,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
                         return pollObj;
                     } finally {
-                        this.head.incrementAndGet();
+                        this.head.setRelease(head+1);
                     }
                 } // else - somebody else is reading this spot already: retry
             } else {
@@ -224,7 +225,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
     @Override
     public final E peek() {
-        return buffer[head.get()&mask];
+        return buffer[head.getOpaque()&mask];
     }
 
     @Override
@@ -243,20 +244,19 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         int spin = 0;
 
         for(;;) {
-            final int pollPos = head.get(); // prepare to qualify?
+            final int pollPos = head.getOpaque(); // prepare to qualify?
             // is there data for us to poll
             // note we must take a difference in values here to guard against
             // integer overflow
-            final int nToRead = Math.min((tail.get() - pollPos), maxElements);
+            final int nToRead = Math.min((tail.getOpaque() - pollPos), maxElements);
             if(nToRead > 0 ) {
 
                 for(int i=0; i<nToRead;i++) {
-                    final int pollSlot = ((pollPos+i)&mask);
-                    e[i] = buffer[pollSlot];
+                    e[i] = buffer[((pollPos+i)&mask)];
                 }
 
                 // if we still control the sequence, update and return
-                if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
+                if(headCursor.weakCompareAndSetRelease(pollPos,  pollPos+nToRead)) {
                     head.addAndGet(nToRead);
                     return nToRead;
                 }
@@ -283,7 +283,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         // note these values can roll from positive to
         // negative, this is properly handled since
         // it is a difference
-        return Math.max((tail.get() - head.get()), 0);
+        return Math.max((tail.getOpaque() - head.getOpaque()), 0);
     }
 
     @Override
@@ -293,30 +293,28 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
     @Override
     public final boolean isEmpty() {
-        return tail.get() == head.get();
+        return tail.getOpaque() == head.getOpaque();
     }
 
     @Override
     public void clear() {
         int spin = 0;
         for(;;) {
-            final int head = this.head.get();
-            if(headCursor.compareAndSet(head, head+1)) {
+            final int head = this.head.getOpaque();
+            if(headCursor.weakCompareAndSetAcquire(head, head+1)) {
                 for(;;) {
-                    final int tail = this.tail.get();
-                    if (tailCursor.compareAndSet(tail, tail + 1)) {
+                    final int tail = this.tail.getOpaque();
+                    if (tailCursor.weakCompareAndSetVolatile(tail, tail + 1)) {
 
                         // we just blocked all changes to the queue
 
                         // remove leaked refs
-                        for (int i = 0; i < buffer.length; i++) {
-                            buffer[i] = null;
-                        }
+                        Arrays.fill(buffer, 0, buffer.length, null);
 
                         // advance head to same location as current end
                         this.tail.incrementAndGet();
                         this.head.addAndGet(tail-head+1);
-                        headCursor.set(tail + 1);
+                        headCursor.setRelease(tail + 1);
 
                         return;
                     }
@@ -329,9 +327,11 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
     @Override
     public final boolean contains(Object o) {
-        for(int i=0; i<size(); i++) {
-            final int slot = ((head.get() + i) & mask);
-            if(buffer[slot]!= null && buffer[slot].equals(o)) return true;
+        int s = size();
+        for(int i = 0; i< s; i++) {
+            final int slot = ((head.getOpaque() + i) & mask);
+            E b = buffer[slot];
+            if(b != null && b.equals(o)) return true;
         }
         return false;
     }

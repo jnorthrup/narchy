@@ -44,7 +44,9 @@ public abstract class Param {
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
             8;
-    public static final int BYTE_KEY_CACHED_BELOW_VOLUME = 12;
+
+    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 5;
+    public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
     //5;
 
 

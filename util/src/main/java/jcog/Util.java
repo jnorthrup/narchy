@@ -2330,4 +2330,13 @@ public enum Util {
     }
 
 
+    /** scan either up or down within a capacity range */
+    public static int next(int current, boolean direction, int cap) {
+        if (direction) {
+            if (++current == cap) current = 0;
+        } else {
+            if (--current == -1) current = cap - 1;
+        }
+        return current;
+    }
 }

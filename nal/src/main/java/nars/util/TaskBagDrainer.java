@@ -25,7 +25,7 @@ public class TaskBagDrainer extends AbstractTask {
     @Override
     public ITask next(NAR nar) {
 
-        if (singleton && !busy.compareAndSet(false,true))
+        if (singleton && !busy.weakCompareAndSetAcquire(false,true))
             return null; //an operation is in-progress
 
         try {
@@ -37,7 +37,7 @@ public class TaskBagDrainer extends AbstractTask {
             }
 
         } finally {
-            busy.set(false);
+            busy.setRelease(false);
         }
 
         return null;

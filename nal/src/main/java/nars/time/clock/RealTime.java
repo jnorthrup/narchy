@@ -79,7 +79,7 @@ public abstract class RealTime extends Time {
     protected abstract long realtime();
 
     double secondsSinceStart() {
-        return unitsToSeconds(t.getOpaque() - start);
+        return unitsToSeconds(now() - start);
     }
 
     protected final double unitsToSeconds(long l) {
@@ -88,7 +88,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public long sinceLast() {
-        return t.getOpaque() - last;
+        return now() - last;
     }
 
     @NotNull

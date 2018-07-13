@@ -110,7 +110,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
     };
     protected final Random random;
-    private final AtomicBoolean busy = new AtomicBoolean(false);
+
     /**
      * atomic for thread-safe schizophrenia
      */

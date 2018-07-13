@@ -160,7 +160,7 @@ public class BagClustering<X> {
 
         FasterList<VLink<X>> x;
 
-        if (bagBusy.compareAndSet(false, true)) {
+        if (bagBusy.weakCompareAndSetAcquire(false, true)) {
 
             
 
@@ -187,7 +187,7 @@ public class BagClustering<X> {
 
 
             } finally {
-                bagBusy.set(false);
+                bagBusy.setRelease(false);
             }
         }
 

@@ -183,6 +183,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     public void clear() {
         AtomicReferenceArray<V> x = reset(reprobes);
         PRESSURE.zero(this);
+        SIZE.set(this, 0);
+        mass = 0;
         if (x != null) {
             forEachActive(this, x, this::_onRemoved);
         }
@@ -399,7 +401,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
 
         if (toRemove != null) {
-            _onRemoved(toRemove);
+            if (map == this.map) {
+                _onRemoved(toRemove);
+            }
         }
 
         if (mode == PUT && toAdd == null) {
@@ -566,88 +570,89 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             boolean direction = random.nextBoolean();
 
-            int windowCap = Math.min(s,
+            final int windowCap = Math.min(s,
 
                     //(1 + reprobes)
-                    3 * reprobes
+                    2 * reprobes
             );
+            final int entryCell = windowCap - 1;
+
             float[] wPri = new float[windowCap];
             Object[] wVal = new Object[windowCap];
             //int wSlide = Math.max(1, reprobes-1);
 
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
-            int nulls = 0;
+            int mapNullSeen = 0;
 
             MutableRoulette roulette = new MutableRoulette(windowCap, (k) -> wPri[k], random);
 
-            int prefilled = 0;
-            while ((nulls + prefilled) < c /*&& size > 0*/) {
-                V v = map
-                        .getOpaque(i);
+            int prefilled = 1;
+            ////leave the (highest) entryCell open for the first slide to cover it
+            while ((mapNullSeen + prefilled) < c /*&& size > 0*/) {
+                V v = map.getOpaque(i);
 
 
-                if (direction) {
-                    if (++i == c) i = 0;
-                } else {
-                    if (--i == -1) i = c - 1;
-                }
+                i = Util.next(i, direction, c);
 
                 if (v != null) {
                     wVal[windowCap - 1 - prefilled] = v;
                     wPri[windowCap - 1 - prefilled] = pri(v);
-                    if (++prefilled >= windowCap)
+
+                    if (++prefilled >= windowCap-1) {
                         break;
+                    }
                 } else {
-                    nulls++;
+                    mapNullSeen++;
                 }
 
             }
 
 
-            nulls = 0;
+            mapNullSeen = 0;
 
-            while (nulls < c) {
-                V v0 = map.getOpaque(i);
+            while (mapNullSeen < c) {
+
+                V v0 = map.getOpaque(i = Util.next(i, direction, c));
 
                 //slide
                 float p;
+
                 if (v0 == null || (p = pri(v0)) != p) {
-                    if (nulls++ == c)
+                    if (mapNullSeen++ == c)
                         break;
                 } else {
-                    nulls = 0;
+                    mapNullSeen = 0;
 
-
-                    System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
-                    wVal[windowCap - 1] = v0;
-                    System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
-                    wPri[windowCap - 1] = Util.max(p, ScalarValue.EPSILON);
+                    if (wVal[entryCell]!=null) {
+                        //TODO if there are any holes in the window maybe fill those rather than sliding
+                        System.arraycopy(wVal, 1, wVal, 0, entryCell);
+                        System.arraycopy(wPri, 1, wPri, 0, entryCell);
+                    }
+                    wVal[entryCell] = v0;
+                    wPri[entryCell] = Util.max(p, ScalarValue.EPSILON);
                 }
 
                 int which = roulette.reweigh().next();
-                //int which = Roulette.selectRoulette(windowCap, r -> wPri[r], random);
+
                 V v = (V) wVal[which];
                 if (v == null)
-                    continue;
+                    continue; //assert(v!=null);
 
                 SampleReaction next = each.apply(v);
                 if (next.remove) {
-                    if (map.weakCompareAndSetRelease(i, v, null)) {
-                        SIZE.decrementAndGet(this);
-                        _onRemoved(v);
-                    }
+                    evict(map, i, v);
                 }
 
                 if (next.stop) {
                     break restart;
                 } else if (next.remove) {
 
-                    if (which == windowCap - 1) {
+                    if (which == entryCell || wVal[0] == null) {
 
                         wVal[which] = null;
                         wPri[which] = 0;
-                    } else if (wVal[0] != null) {
-
+                    } else {
+                        //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
                         ArrayUtils.swap(wVal, 0, which);
                         ArrayUtils.swap(wPri, 0, which);
                     }
@@ -657,13 +662,25 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 if (map != this.map)
                     continue restart;
 
-                if (direction) {
-                    if (++i == c) i = 0;
-                } else {
-                    if (--i == -1) i = c - 1;
-                }
+
             }
 
+        }
+    }
+
+    private void evict(AtomicReferenceArray<V> map, int i, V v) {
+        evict(map, i, v, true);
+    }
+
+    private void evict(AtomicReferenceArray<V> map, int i, V v, boolean updateSize) {
+        if (map.weakCompareAndSetVolatile(i, v, null)) {
+
+            //if the map is still active
+            if (this.map == map) {
+                if (updateSize)
+                    SIZE.decrementAndGet(this);
+                _onRemoved(v);
+            }
         }
     }
 
@@ -752,11 +769,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         int count = 0;
 
-        AtomicReferenceArray<V> a = map;
+        AtomicReferenceArray<V> map = this.map;
 
-        int len = a.length();
+        int len = map.length();
         for (int i = 0; i < len; i++) {
-            V f = a.getOpaque(i);
+            V f = map.getOpaque(i);
 
             if (f == null)
                 continue;
@@ -774,9 +791,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 if (p < min) min = p;
                 count++;
             } else {
-                if (a.weakCompareAndSetRelease(i, f, null)) {
-                    _onRemoved(f);
-                }
+                evict(map, i, f, false);
             }
         }
 

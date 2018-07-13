@@ -61,7 +61,7 @@ public class BufferedCauseChannel implements Consumer {
     }
 
     public void commit() {
-        if (inputPending.compareAndSet(false, true)) {
+        if (inputPending.weakCompareAndSetAcquire(false, true)) {
             target.input(inputDrainer);
         }
     }
@@ -79,7 +79,7 @@ public class BufferedCauseChannel implements Consumer {
     private final Iterable inputDrainer = ()-> new AbstractIterator() {
         @Override
         protected Object computeNext() {
-            inputPending.set(false);
+            inputPending.setRelease(false);
             Object t = buffer.poll();
             if (t == null)
                 endOfData();
