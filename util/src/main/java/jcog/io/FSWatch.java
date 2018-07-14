@@ -16,7 +16,7 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
-public class FSWatch extends Loop {
+@Deprecated public class FSWatch extends Loop {
 
     static final Logger logger = LoggerFactory.getLogger(FSWatch.class);
 

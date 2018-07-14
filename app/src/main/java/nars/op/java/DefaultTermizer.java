@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -129,6 +131,12 @@ public class DefaultTermizer implements Termizer {
 
         if (o instanceof Path) {
             return $.the((Path)o);
+        }
+        if (o instanceof URI) {
+            return $.the((URI)o);
+        }
+        if (o instanceof URL) {
+            return $.the((URL)o);
         }
 
         if (o instanceof int[]) {

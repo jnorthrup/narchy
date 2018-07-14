@@ -38,6 +38,8 @@ import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import javax.script.ScriptEngineManager;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
@@ -533,8 +535,15 @@ public enum $ {
     }
 
     public static Term the(Path file) {
-        return FileFunc.the(file);
+        return FileFunc.the(file.toUri());
     }
+    public static Term the(URL url) {
+        return FileFunc.the(url);
+    }
+    public static Term the(URI uri) {
+        return FileFunc.the(uri);
+    }
+
 
     public static Path file(Term x) {
         throw new TODO();

@@ -27,7 +27,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     /**
      * JOGL default is 10ms; we dont need/want it that often
      */
-    private static final long EDT_POLL_PERIOD_MS = 10;
+    private static final long syncConstructionDelay = 10;
 
 
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
@@ -58,6 +58,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     protected long dtMS = 0;
     private long lastRenderMS = System.currentTimeMillis();
     private volatile int nx, ny, nw, nh;
+
     private final Consumer<JoglWindow> windowUpdater = (s) -> {
         GLWindow w = window;
         if (w == null)
@@ -306,7 +307,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         if (!async) {
             Thread.yield();
             while (gl == null) {
-                Util.sleep(EDT_POLL_PERIOD_MS);
+                Util.sleep(syncConstructionDelay);
             }
         }
 

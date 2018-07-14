@@ -99,8 +99,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
     void updateNode(NodeVis<Concept> nn) {
-        float pri = nar.attn.active.pri(nn.id, 0f);
-        if (pri!=pri) pri = ScalarValue.EPSILON;
+        float pri = Math.max(nar.attn.active.pri(nn.id, 0f), ScalarValue.EPSILON);
 
 
         nn.color(pri, pri / 2f, 0f);

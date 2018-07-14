@@ -666,7 +666,8 @@ public enum Util {
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(float a, float b, float epsilon) {
-        notNaN(a); notNaN(b);
+        notNaN(a);
+        notNaN(b);
         if (a == b)
             return true;
         if (Float.isFinite(a) && Float.isFinite(b))
@@ -679,7 +680,8 @@ public enum Util {
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(double a, double b, double epsilon) {
-        notNaN(a); notNaN(b);
+        notNaN(a);
+        notNaN(b);
         if (a == b)
             return true;
         if (Double.isFinite(a) && Double.isFinite(b))
@@ -1434,6 +1436,7 @@ public enum Util {
     }
 
     final static Random insecureRandom = new XoRoShiRo128PlusRandom(System.nanoTime());
+
     public static String uuid64() {
         //UUID u = UUID.randomUUID();
         //long a = u.getLeastSignificantBits();
@@ -1474,38 +1477,37 @@ public enum Util {
         }
     }
 
-    public static boolean sleep(long periodMS) {
-        return sleepNS(periodMS * 1000000);
-
-
+    public static void sleep(long periodMS) {
+        sleepNS(periodMS * 1_000_000);
     }
 
-    public static boolean sleepNS(long periodNS) {
-        if (periodNS <= 0) return false;
-        if (periodNS <= 1000 /** 10uS = 0.01ms */ ) {
-            long start = System.nanoTime();
-            long end = start + periodNS;
-            do {
-                Thread.onSpinWait();
-            } while (System.nanoTime() < end);
-//        } else if (periodNS <= 500000 /** 100uS = 0.5ms */ ) {
-//            long start = System.nanoTime();
-//            long end = start + periodNS;
-//            do {
-//                Thread.yield();
-//            } while (System.nanoTime() < end);
-        } else {
+
+    public static void sleepNS(long periodNS) {
+        if (periodNS > 500000) {
             LockSupport.parkNanos(periodNS);
+            return;
         }
-//            try {
-//                TimeUnit.NANOSECONDS.sleep(periodNS);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        return true;
-    }
 
+        final long thresholdNS = 100;
+        if (periodNS < thresholdNS)
+            return;
+
+
+
+        long end = System.nanoTime() + periodNS;
+        long remainNS = end - System.nanoTime();
+        while (remainNS > thresholdNS) {
+
+            if (remainNS <= 500000 /** 100uS = 0.5ms */) {
+                Thread.yield();
+            } else if (remainNS <= 1000 /** 10uS = 0.01ms */) {
+                Thread.onSpinWait();
+            }
+
+            remainNS = end - System.nanoTime();
+        }
+
+    }
 
 
     public static void sleepNSWhile(long periodNS, long napTimeNS, BooleanSupplier wakeEarly) {
@@ -2242,11 +2244,12 @@ public enum Util {
         return x;
     }
 
-    /** removes elements from both f and g depending if the filter applied to 'f' element.
-     *  g's size remains the same but is overwritten with the compacted version
-     *  that has entries maintaining correlation to their original indices in f.
-     *  -1 is assigned to unused indices in 'g' as a placeholder of the missing value
-     * */
+    /**
+     * removes elements from both f and g depending if the filter applied to 'f' element.
+     * g's size remains the same but is overwritten with the compacted version
+     * that has entries maintaining correlation to their original indices in f.
+     * -1 is assigned to unused indices in 'g' as a placeholder of the missing value
+     */
     public static float[] remove(float[] f, short[] g, FloatPredicate removeIf) {
         int n = f.length;
         if (n == 0) return EmptyFloatArray;
@@ -2262,7 +2265,7 @@ public enum Util {
             return f; //no change
 
         if (r == n) {
-            Arrays.fill(g, (short)-1);
+            Arrays.fill(g, (short) -1);
             return EmptyFloatArray;
         }
 
@@ -2281,12 +2284,14 @@ public enum Util {
         return x;
     }
 
-    /** fits a polynomial curve to the specified points and compiles an evaluator for it */
+    /**
+     * fits a polynomial curve to the specified points and compiles an evaluator for it
+     */
     public static <X> ToIntFunction<X> curve(ToIntFunction<X> toInt, int... pairs) {
         if (pairs.length % 2 != 0)
             throw new RuntimeException("must be even # of arguments");
 
-        int points = pairs.length/2;
+        int points = pairs.length / 2;
         if (points < 2) {
             //TODO return constant function
             throw new RuntimeException("must provide at least 2 points");
@@ -2305,9 +2310,9 @@ public enum Util {
 
         int degree =
                 points - 1;
-                //points;
+        //points;
 
-        float coefficients[] = Util.toFloat( PolynomialCurveFitter.create(degree).fit(obs) );
+        float coefficients[] = Util.toFloat(PolynomialCurveFitter.create(degree).fit(obs));
 
         /* adapted from: PolynomialFunction
            https://en.wikipedia.org/wiki/Horner%27s_method
@@ -2330,7 +2335,9 @@ public enum Util {
     }
 
 
-    /** scan either up or down within a capacity range */
+    /**
+     * scan either up or down within a capacity range
+     */
     public static int next(int current, boolean direction, int cap) {
         if (direction) {
             if (++current == cap) current = 0;
