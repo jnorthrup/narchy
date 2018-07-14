@@ -63,7 +63,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
         };
 
 
-
         addCamera(
                 pixels = new Bitmap2DSensor<>(
                         (x, y) -> $.p(id, $.the(x), $.the(y))
@@ -631,7 +630,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             Arrays.fill(target, -1);
 
             int x = 0;
-            for (double i: worldState) {
+            for (double i : worldState) {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else

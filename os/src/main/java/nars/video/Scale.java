@@ -5,13 +5,12 @@ import jcog.signal.Bitmap2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.util.function.Supplier;
 
 /**
  * Pan/Zoom filter for a BuferredImage source
  */
-public class Scale extends BufferedImageBitmap2D implements ImageObserver {
+public class Scale extends BufferedImageBitmap2D /*implements ImageObserver*/ {
 
     private final Supplier<BufferedImage> src;
 
@@ -96,23 +95,25 @@ public class Scale extends BufferedImageBitmap2D implements ImageObserver {
          */
         int sw = in.getWidth(null);
         int sh = in.getHeight(null);
-        boolean stillChanging = outgfx.drawImage(in,
+
+        //boolean stillChanging =
+        outgfx.drawImage(in,
                 0, 0, pw, ph,
                 Math.round(sx1 * sw),
                 Math.round(sy1 * sh),
                 Math.round(sx2 * sw),
                 Math.round(sy2 * sh),
-                Color.BLACK, this);
-        if (stillChanging) {
-            
-            Thread.yield();
-        }
+                Color.BLACK, null);
+//        while (stillChanging) {
+//
+//            Thread.yield();
+//        }
 
     }
 
-    @Override
-    public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
-        return true;
-    }
+//    @Override
+//    public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+//        return true;
+//    }
 
 }

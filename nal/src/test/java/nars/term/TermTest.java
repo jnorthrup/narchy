@@ -436,7 +436,7 @@ public class TermTest {
 
     @Test
     void testFromEllipsisMatch() {
-        Term xy = EllipsisMatch.match($.the("x"), $.the("y"));
+        Term xy = EllipsisMatch.matched($.the("x"), $.the("y"));
 
         for (Op o : new Op[] { Op.SECTi, SECTe, DIFFe, DIFFi, CONJ }) {
             Term z = o.the(DTERNAL, xy);

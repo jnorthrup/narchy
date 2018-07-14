@@ -15,7 +15,7 @@ public class HeapTermBuilder extends TermBuilder {
 
     @Override
     public Term compound(Op o, int dt, Term[] u) {
-        return compoundInstance(o, dt, u);
+        return theCompound(o, dt, u);
     }
 
     @Override

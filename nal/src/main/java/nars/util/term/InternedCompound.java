@@ -24,16 +24,22 @@ public final class InternedCompound extends ByteKey  {
         this.op = o.id; this. dt = dt; this.rawSubs = rawSubs;
     }
 
-    /** for look-up */
     public static InternedCompound get(Term x) {
-
         DynBytes key = new DynBytes(4 * x.volume() /* ESTIMATE */);
+        return get(x, key);
+    }
+
+    /** for look-up */
+    public static InternedCompound get(Term x, DynBytes tmp) {
+
+        tmp.clear();
+
         Op o = x.op();
-        key.writeByte(o.id);
+        tmp.writeByte(o.id);
 
         int dt = x.dt();
         if (o.temporal)
-            key.writeInt(dt);
+            tmp.writeInt(dt);
         else {
             assert(dt == DTERNAL);
         }
@@ -41,16 +47,16 @@ public final class InternedCompound extends ByteKey  {
         if (x instanceof LighterCompound || x instanceof UnitCompound) {
             //HACK
             int s = x.subs();
-            key.writeByte(s);
+            tmp.writeByte(s);
             for (int i = 0; i < s; i++)
-                x.sub(i).appendTo((ByteArrayDataOutput) key);
+                x.sub(i).appendTo((ByteArrayDataOutput) tmp);
         } else {
             Subterms xx = x.subterms();
-            key.writeByte(xx.subs());
-            xx.forEach(s -> s.appendTo((ByteArrayDataOutput) key));
+            tmp.writeByte(xx.subs());
+            xx.forEach(s -> s.appendTo((ByteArrayDataOutput) tmp));
         }
 
-        return new InternedCompound(key, o, dt, x::arrayShared);
+        return new InternedCompound(tmp, o, dt, x::arrayShared);
     }
 
     public static InternedCompound get(Op o, Term... subs) {

@@ -76,10 +76,7 @@ public abstract class TermBuilder {
             if (purelyAnon) {
                 if (!(x instanceof AnonID)) {
                     Term ux = x.unneg();
-                    if (x != ux && ux instanceof AnonID) {
-
-
-                    } else {
+                    if (x == ux || !(ux instanceof AnonID)) {
                         purelyAnon = false;
                     }
                 }
@@ -117,12 +114,12 @@ public abstract class TermBuilder {
     }
 
 
-    protected final Term compoundInstance(Op o, int dt, Term[] u) {
-        return compoundInstance(o, dt, u, null);
+    protected final Term theCompound(Op o, int dt, Term[] u) {
+        return theCompound(o, dt, u, null);
     }
 
-    protected Term compoundInstance(Op o, int dt, Term[] u, @Nullable byte[] key) {
-        assert (!o.atomic) : o + " is atomic, with subterms: " + (u);
+    protected Term theCompound(Op o, int dt, Term[] u, @Nullable byte[] key) {
+        assert (!o.atomic) : o + " is atomic, with subterms: " + Arrays.toString(u);
 
         boolean hasEllipsis = false;
 
@@ -153,7 +150,7 @@ public abstract class TermBuilder {
     }
 
 
-    public Compound theCompound(Op op, Subterms subterms) {
+    public final Compound theCompound(Op op, Subterms subterms) {
         return theCompound(op, DTERNAL, subterms);
     }
 
@@ -165,9 +162,6 @@ public abstract class TermBuilder {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
         if (!op.temporal && !subterms.isTemporal()) {
-//            if (dt!=DTERNAL) {
-//                throw new WTF();
-//            }
             assert(dt == DTERNAL);
             if (subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
                 return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);

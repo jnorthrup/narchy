@@ -234,51 +234,50 @@ public class PremisePatternIndex extends MapConceptIndex {
             @Override
             protected boolean matchEllipsis(Term y, Unify u) {
                 Subterms Y = y.subterms();
-                int i = 0, j = 0;
+                int xi = 0, yi = 0;
                 int xsize = subs();
                 int ysize = Y.subs();
 
 
-                while (i < xsize) {
-                    Term x = sub(i++);
+                while (xi < xsize) {
+                    Term x = sub(xi++);
 
                     if (x instanceof Ellipsis) {
-                        int available = ysize - j;
+                        int available = ysize - yi;
 
-                        Term eMatched = u.resolve(x);
-                        if (eMatched != x) {
+                        Term xResolved = u.resolve(x);
+                        if (xResolved == x) {
 
 
-                            if (i == xsize) {
-
+                            if (xi == xsize) {
+                                //the ellipsis is at the right edge so capture the remainder
                                 if (!ellipsis.validSize(available))
                                     return false;
 
-                                return ellipsis.unify(EllipsisMatch.match(Y, j, j + available), u);
+                                return ellipsis.unify(EllipsisMatch.matched(Y, yi, yi + available), u);
 
                             } else {
-
-
-                                return false;
+                                //TODO ellipsis is in the center
+                                throw new TODO();
                             }
                         } else {
 
 
-                            if (eMatched instanceof EllipsisMatch) {
-                                EllipsisMatch ex = (EllipsisMatch) eMatched;
-                                if (!ex.linearMatch(Y, j, u))
+                            if (xResolved instanceof EllipsisMatch) {
+                                EllipsisMatch xe = (EllipsisMatch) xResolved;
+                                if (!xe.linearMatch(Y, yi, u))
                                     return false;
-                                j += ex.subs();
+                                yi += xe.subs();
                             } else {
 
-                                if (!sub(j).unify(eMatched, u))
-                                    j++;
+                                if (!sub(yi).unify(xResolved, u))
+                                    yi++;
                             }
                         }
 
 
                     } else {
-                        if (ysize <= j || !x.unify(Y.sub(j++), u))
+                        if (ysize <= yi || !x.unify(Y.sub(yi++), u))
                             return false;
                     }
                 }
@@ -432,7 +431,7 @@ public class PremisePatternIndex extends MapConceptIndex {
                 switch (xs) {
                     case 0:
 
-                        Term match = ys > 0 ? EllipsisMatch.match(yFree) : EllipsisMatch.empty;
+                        Term match = ys > 0 ? EllipsisMatch.matched(yFree) : EllipsisMatch.empty;
 
 
                         return this.ellipsis.unify(match, u);

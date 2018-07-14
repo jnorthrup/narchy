@@ -25,12 +25,18 @@ public interface Priority extends Prioritized, ScalarValue {
         }
         if (amount < ScalarValue.EPSILON) return 0;
 
-        //TODO make fully atomic with update(..)
-        float before = priElseZero();
+        final float[] before = new float[1];
 
-        float after = priAdd(amount);
+        float after = pri((x,a)->{
+            before[0] = x;
+            return x + a;
+        }, amount);
 
-        float taken = after - before;
+        float b = before[0];
+        if (b!=b)
+            b = 0;
+
+        float taken = after - b;
 
         if (!copyOrMove) {
             source.priSub(taken);

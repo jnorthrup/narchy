@@ -22,10 +22,12 @@ public final class EllipsisMatch extends LightCompound {
 
     private EllipsisMatch(Term[] t) {
         super(((byte)0), t);
+        assert(t.length > 1 || (t.length == 0 && empty == null /* HACK */));
     }
 
     private EllipsisMatch(Collection<Term> term) {
         this(term.toArray(Op.EmptyTermArray));
+        assert(term.size() > 1);
     }
 
     public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
@@ -45,6 +47,18 @@ public final class EllipsisMatch extends LightCompound {
         return z;
     }
 
+    public static Term matched(Term... matched) {
+        switch (matched.length) {
+            case 0:
+                return empty;
+            case 1:
+                return matched[0];
+            default:
+                return new EllipsisMatch(matched);
+        }
+
+    }
+
     @Override
     public Term the() {
         return null;
@@ -56,18 +70,9 @@ public final class EllipsisMatch extends LightCompound {
     }
 
 
-    public static Term match(Term... matched) {
-        switch (matched.length) {
-            case 0:
-                return empty;
-            case 1:
-                return matched[0];
-            default:
-                return new EllipsisMatch(matched);
-        }
-    }
 
-    public static Term match(SortedSet<Term> term) {
+
+    public static Term matched(SortedSet<Term> term) {
         int num = term.size();
         switch (num) {
             case 0:
@@ -79,7 +84,7 @@ public final class EllipsisMatch extends LightCompound {
         }
     }
 
-    public static Term matchExcept(Subterms matched, byte... except) {
+    public static Term matchedExcept(Subterms matched, byte... except) {
         int ll = matched.subs();
         int ee = except.length;
         Term[] t = new Term[ll - ee];
@@ -93,10 +98,10 @@ public final class EllipsisMatch extends LightCompound {
 
             t[j++] = matched.sub(i);
         }
-        return new EllipsisMatch(t);
+        return matched(t);
     }
 
-    public static Term matchExcept(Term[] matched, byte... except) {
+    public static Term matchedExcept(Term[] matched, byte... except) {
         int ll = matched.length;
         int ee = except.length;
         Term[] t = new Term[ll - ee];
@@ -109,19 +114,20 @@ public final class EllipsisMatch extends LightCompound {
 
             t[j++] = matched[i];
         }
-        return new EllipsisMatch(t);
+        return matched(t);
     }
 
-    public static Term match(/*@NotNull*/ Subterms y, int from, int to) {
+    public static Term matched(/*@NotNull*/ Subterms y, int from, int to) {
 
-
-        if (from == to) {
-            return EllipsisMatch.empty;
+        int len = to-from;
+        switch (len) {
+            case 0:
+                return EllipsisMatch.empty;
+            case 1:
+                return y.sub(from);
+            default:
+                return matched(y.toArraySubRange(from, to));
         }
-
-        return match(y.toArraySubRange(from, to));
-
-
     }
 
     @Override

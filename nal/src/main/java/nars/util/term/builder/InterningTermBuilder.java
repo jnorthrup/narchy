@@ -1,12 +1,16 @@
 package nars.util.term.builder;
 
 import jcog.Util;
+import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
+import nars.time.Tense;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -21,9 +25,9 @@ import static nars.time.Tense.XTERNAL;
  **/
 public class InterningTermBuilder extends HeapTermBuilder {
 
-    final HijackTermCache[] terms;
+    private final static boolean deep = true;
 
-    private final int cacheSizePerOp;
+    final HijackTermCache[] terms;
 
     private final HijackTermCache statements;
     private final HijackTermCache conj;
@@ -32,12 +36,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final HijackTermCache root;
 
 
+
     public InterningTermBuilder() {
         this(32 * 1024);
     }
 
-    public InterningTermBuilder(int sizePerOp) {
-        this.cacheSizePerOp = sizePerOp;
+    public InterningTermBuilder(int cacheSizePerOp) {
         terms = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
             Op o = Op.ops[i];
@@ -58,13 +62,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
         conj = newOpCache(this::_conj, cacheSizePerOp);
         statements = newOpCache(this::_statement, cacheSizePerOp*3);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            System.out.println(InterningTermBuilder.this + "\n" + summary());
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(()-> System.out.println(InterningTermBuilder.this + "\n" + summary())));
     }
 
 
-    private HijackTermCache newOpCache(Function<InternedCompound, Term> f, int capacity) {
+    private static HijackTermCache newOpCache(Function<InternedCompound, Term> f, int capacity) {
         return new HijackTermCache(f, capacity, 4);
     }
 
@@ -72,14 +74,22 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return terms[x.op].apply(x);
     }
 
+    private Term get(Term x, DynBytes tmp) {
+        Op xo = x.op();
+        if (internableRoot(xo, x.dt())) {
+            return terms[xo.id].getIfPresent(InternedCompound.get(x, tmp));
+        }
+        return null;
+    }
+
 
     private Term compoundInterned(InternedCompound x) {
-        return compoundInstance(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key);
+        return theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key);
     }
 
     @Override
     public final Term compound(Op op, int dt, Term[] u) {
-        boolean internable = internable(op, dt, u);
+        boolean internable = internableRoot(op, dt, u);
 //        if (!internable) {
 //            //internable(op, dt, u);
 //            System.out.println("why: " + op + " " + dt + " " + Arrays.toString(u));
@@ -100,7 +110,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (s.length == 0)
             return Op.EmptySubterms;
 
-        if (inOp != PROD && internable(s)) {
+        if (inOp != PROD && internableSubs(s)) {
             return compoundInterned(PROD, DTERNAL, s).subterms();
         } else {
 //            if (s.length == 2 && s[0].compareTo(s[1]) > 0) {
@@ -127,51 +137,64 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     }
 
-
-
-//    private Term internableSubterm(Term x) {
-//        return (x instanceof The) &&
-//                ((x instanceof Atomic)
-//                ||
-//                internable(x.op(), x.dt(), false)) ? x.the() : null;
-//    }
-
-    /** root */
-    private boolean internable(Op op, int dt, Term[] u) {
-        return internable(op, dt, true) && internable(u);
+    protected Term theCompound(Op o, int dt, Term[] t, @Nullable byte[] key) {
+        if (deep)
+            resolve(t);
+        return super.theCompound(o, dt, t, key);
+    }
+    public Subterms theSubterms(Term... t) {
+        if (deep)
+            resolve(t);
+        return super.theSubterms(t);
     }
 
-
-    private boolean internable(Op op, int dt, boolean root) {
-        return !op.atomic && (!root || op!=NEG);
-                //&& (!op.temporal || !Tense.dtSpecial(dt)); //allow temporals
+    final static ThreadLocal<DynBytes> tmpkey = ThreadLocal.withInitial(()->new DynBytes(256));
+    private static DynBytes tmpKey() {
+        return tmpkey.get();
     }
 
+    private void resolve(Term[] t) {
+        DynBytes tmp = null;
+        for (int i = 0, tLength = t.length; i < tLength; i++) {
+            Term x = t[i];
+            if (x instanceof Atomic || !internableSub(x))
+                continue;
 
 
-    private boolean internable(Term[] subterms) {
+            if (tmp == null)
+                tmp = tmpKey();
+
+            Term y = get(x, tmp);
+
+            if (y!=null && x!=y) {
+                t[i] = y;
+            }
+
+        }
+    }
+
+    private static boolean internableRoot(Op op, int dt, Term[] u) {
+        return internableRoot(op, dt) && internableSubs(u);
+    }
+
+    private static boolean internableRoot(Op op, int dt) {
+        return !op.atomic && op != NEG && Tense.dtSpecial(dt);
+    }
+
+    private static boolean internableSubs(Term[] subterms) {
 
         for (Term x : subterms) {
-            if (x.the() == null)
+            if (!internableSub(x))
                 return false;
         }
 
         return true;
     }
 
-//    @Override protected Term resolve(Term x){
-//        return !internable(x) ? x : resolveInternable(x);
-//    }
-//
-//    private Term resolveInternable(Term x){
-//        HijackTermCache tc = termCache[x.op().id];
-//        if (tc == null)
-//            return x;
-//        Term y = tc.apply(InternedCompound.get((Compound)x));
-//        if (y!=null)
-//            return y;
-//        return x;
-//    }
+    private static boolean internableSub(Term x) {
+        return x.the() != null;
+    }
+
 
     public String summary() {
         return summary(terms, normalize);
@@ -253,7 +276,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
         //TODO presort if commutive?
-        if (internable(CONJ, dt, u)) {
+        if (internableRoot(CONJ, dt, u)) {
             switch(dt) {
                 case 0:
                 case DTERNAL:

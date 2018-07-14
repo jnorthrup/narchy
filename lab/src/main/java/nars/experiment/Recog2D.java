@@ -63,7 +63,7 @@ public class Recog2D extends NAgentX {
 
 
     int image;
-    final int maxImages = 5;
+    final int maxImages = 2;
 
     int imagePeriod = 24;
 
@@ -115,7 +115,10 @@ public class Recog2D extends NAgentX {
 
         
 
-        outs = new BeliefVector(ii -> $.inst($.the( ii), $.the("x")), maxImages, this);
+        outs = new BeliefVector(ii ->
+                //$.inst($.the( ii), $.the("x"))
+                $.p(ii)
+                , maxImages, this);
         train = new Training(
                 
                 Lists.newArrayList(
