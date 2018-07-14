@@ -79,28 +79,12 @@ public class FZero extends NAgentX {
         //initToggle();
 
 
-        initUnipolarLinear(3.5f);
+        initUnipolarLinear(2f);
 
         //initBipolarRotateRelative(fair, rotFactor);
-        initBipolarRotateDirect(true, 0.3f);
+        initBipolarRotateDirect(true, 0.2f);
         //initBipolarRotateAbsolute(fair);
 
-        //eyelid
-        actionUnipolar($.inh(cam, $.the("aware")), (camAware)->{
-            c.pixelPri.set(lerp(camAware, 0, 0.1f));
-            c.resolution(lerp(camAware, 0.1f, 0.02f));
-           return camAware;
-        }).resolution(0.05f);
-
-        actionUnipolar($.inh(id, $.the("curious")), (cur)->{
-            curiosity.set(lerp(cur, 0.1f, 0.5f));
-            return cur;
-        }).resolution(0.05f);
-
-        actionUnipolar($.inh(id, $.the("timeFocus")), (f)->{
-            nar.timeFocus.set(lerp(f, 1f, 16));
-            return f;
-        }).resolution(0.05f);
 
         Signal dVelX = senseNumberDifference($.inh(id, $.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
         Signal dVelY = senseNumberDifference($.inh(id, $.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
@@ -116,6 +100,26 @@ public class FZero extends NAgentX {
         SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
                 dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
+
+        //eyelid
+        actionUnipolar($.func("aware", id, cam), (a)->{
+            c.pixelPri.set(lerp(a, 0, 0.3f));
+            //c.resolution(lerp(camAware, 0.1f, 0.02f));
+        }).resolution(0.05f);
+
+        float angPri[] = { 0 };
+        actionUnipolar($.func("aware", id, ang.id), (a)-> {
+            angPri[0] = lerp(a, 0, 0.5f);
+        }).resolution(0.5f);
+        ang.pri(()->angPri[0]);
+
+        actionUnipolar($.func("curious", id), (cur)->{
+            curiosity.set(lerp(cur, 0.1f, 0.5f));
+        }).resolution(0.05f);
+
+        actionUnipolar($.func("timeFocus", id), (f)->{
+            nar.timeFocus.set(lerp(f, 1f, 16));
+        }).resolution(0.05f);
     }
 
     private void actionSwitch() {

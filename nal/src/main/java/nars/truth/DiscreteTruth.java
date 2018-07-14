@@ -19,10 +19,7 @@ public class DiscreteTruth implements Truth {
     }
 
     public DiscreteTruth(float f, float c) {
-        this(Truth.truthToInt(f,
-                
-                c,
-                hashDiscretenessEpsilon));
+        this(Truth.truthToInt(f, c, hashDiscretenessEpsilon));
     }
 
     public DiscreteTruth(float f, float c, float res) {
@@ -42,7 +39,7 @@ public class DiscreteTruth implements Truth {
 
     @Override
     public Truth neg() {
-        return new PreciseTruth(
+        return PreciseTruth.byConf(
                 1f - freq(), conf());
     }
 

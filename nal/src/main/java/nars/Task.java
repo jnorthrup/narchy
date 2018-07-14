@@ -702,9 +702,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         float eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
         if (eve > Param.TRUTH_MIN_EVI) {
-            return new PreciseTruth(
+            return PreciseTruth.byEvi(
                     freq() /* TODO interpolate frequency wave */,
-                    eve, false);
+                    eve);
 
 
         }

@@ -241,21 +241,21 @@ public class Occurrify extends TimeGraph {
 
             if (single) {
                 Event s = know(task, taskStart, taskEnd);
-                if (taskTerm.op()==IMPL) {
-                    /* HACK since impl absolute time are not linked,
-                       link here to reify the implication subj as its own event in the single case
-                       this will in turn link the predicate if it is temporally calculable.
-                     */
-                    Term t0 = taskTerm.sub(0);
-                    know(t0, taskStart, taskEnd);
-                    if (taskStart!=ETERNAL && taskStart!=XTERNAL) {
-                        int tdt = taskTerm.dt();
-                        if (tdt != DTERNAL && tdt != XTERNAL) {
-                            long predStart = taskStart + tdt + t0.dtRange();
-                            know(taskTerm.sub(1), predStart, predStart + (taskEnd - taskStart)); //TODO check this for reverse (neg dt) impl
-                        }
-                    }
-                }
+//                if (taskTerm.op()==IMPL && taskStart!=ETERNAL) {
+//                    /* HACK since impl absolute time are not linked,
+//                       link here to reify the implication subj as its own event in the single case
+//                       this will in turn link the predicate if it is temporally calculable.
+//                     */
+//                    Term t0 = taskTerm.sub(0);
+//                    know(t0, taskStart, taskEnd);
+//                    if (taskStart!=ETERNAL && taskStart!=XTERNAL) {
+//                        int tdt = taskTerm.dt();
+//                        if (tdt != DTERNAL && tdt != XTERNAL) {
+//                            long predStart = taskStart + tdt + t0.dtRange();
+//                            know(taskTerm.sub(1), predStart, predStart + (taskEnd - taskStart)); //TODO check this for reverse (neg dt) impl
+//                        }
+//                    }
+//                }
 //                if (d.concPunc == QUESTION || d.concPunc == QUEST) {
 //                    //if doing this then punctuation must be a caching condition
 //                    //use the beliefTerm in question/quest cases because there could be timing information

@@ -5,8 +5,6 @@ import jcog.pri.NLink;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
@@ -22,7 +20,7 @@ import java.util.function.Consumer;
  */
 abstract public class Causable extends NARService {
 
-    private static final Logger logger = LoggerFactory.getLogger(Causable.class);
+//    private static final Logger logger = LoggerFactory.getLogger(Causable.class);
 
     public final Can can;
 

@@ -606,6 +606,13 @@ public interface NAct {
         return CC;
     }
 
+    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatConsumer update) {
+        return actionUnipolar(s, (x)->{
+            update.accept(x);
+            return x;
+        });
+    }
+
     default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
         return actionUnipolar(s, true, (x) -> Float.NaN, update);
     }

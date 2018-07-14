@@ -2,11 +2,12 @@ package nars.exe;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import jcog.exe.realtime.FixedRateTimedFuture;
-import jcog.data.list.FasterList;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.NARLoop;
 import nars.task.ITask;
@@ -15,13 +16,14 @@ import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
 
-    private final int totalConcurrency;
+    public final int totalConcurrency;
 
     protected volatile long idleTimePerCycle;
 
@@ -104,39 +106,35 @@ abstract public class BufferedExec extends UniExec {
 
     }
 
-
-    protected void work(FasterList b, int concurrency) {
-        //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
-
-
-
-        int batchSize = (int) Math.ceil( (((float)in.capacity()) / Math.max(concurrency, (totalConcurrency - 1))));
-        //int batchSize = 8;
-        //int remaining = Math.min(incoming, batchSize);
-
-
-
-
-
-            int drained = in.remove(b.array(), batchSize);
-
-            b.setSize(drained);
-
-//            if (drained > 0) {
 //
-//                exe += drained;
-//                //in.clear(b::add, batchSize);
-////            remaining -= batchSize;
+//    protected void work(FasterList b, int concurrency) {
+//        //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
 //
-//                return exe;
 //
-//            }
-
-
-
-        //System.out.println(Thread.currentThread() + " " + incoming + " " + batchSize + " " + exe);
-
-    }
+//
+//        int batchSize = (int) Math.ceil( (((float)in.capacity()) / Math.max(concurrency, (totalConcurrency - 1))));
+//        //int batchSize = 8;
+//        //int remaining = Math.min(incoming, batchSize);
+//
+//
+//        int drained = in.remove(b, batchSize);
+//
+//
+////            if (drained > 0) {
+////
+////                exe += drained;
+////                //in.clear(b::add, batchSize);
+//////            remaining -= batchSize;
+////
+////                return exe;
+////
+////            }
+//
+//
+//
+//        //System.out.println(Thread.currentThread() + " " + incoming + " " + batchSize + " " + exe);
+//
+//    }
 
     protected boolean execute(FasterList b, int concurrency) {
         //TODO sort, distribute etc
@@ -320,39 +318,71 @@ abstract public class BufferedExec extends UniExec {
 
             private boolean alive = true;
 
+            final Random rng = new XoRoShiRo128PlusRandom(System.nanoTime());
+
             @Override
             public void run() {
+
+
+
                 while (alive) {
 
                     tryCycle();
 
-                    work(schedule, 1);
+                    long workStart = System.nanoTime();
 
-                    play();
+                    int batchSize = (int) Math.ceil( (((float)in.capacity()) / (totalConcurrency - 1)));
+                    int drained = in.remove(schedule, batchSize);
+                    if (drained > 0) {
+                        execute(schedule, 1);
+                    }
+                    long workEnd = System.nanoTime();
 
-                    execute(schedule, 1);
+                    long playTime =  cpu.cycleTimeNS.longValue() - (workEnd - workStart);
+                    if (playTime > 0) {
+                        play(playTime);
 
-                    sleep();
-
+                        sleep();
+                    }
                 }
             }
 
-            private void play() {
+            private void play(long playTime) {
 
                 //if (in.size() < totalConcurrency) {
+                long until = System.nanoTime() + playTime;
 
                 //generate planning
-                for (int i = 0; i < 1; i++) {
-                    //int ii = i;
-                    can.forEachValue(c -> {
-                        int runtimeNS =
-                                (int) Math.max(50_000, Math.round(c.pri() * cpu.cycleTimeNS.doubleValue()));
+                long now, remain;
 
+                double baseTime = nar.loop.jiffy.doubleValue() * nar.loop.throttle.doubleValue() * playTime;
+
+                while ( (remain = (until - (now = System.nanoTime()))) > 0) {
+                    //int ii = i;
+                    InstrumentedCausable c = can.getIndex(rng);
+                    if (c == null) break; //empty
+
+                    boolean singleton = c.c.singleton();
+                    if (singleton && !c.c.instance.tryAcquire())
+                        continue;
+
+                    try {
+                        double timePerIteration = c.timePerIterationMean();
+                        long minExec = Double.isFinite(timePerIteration) ? Math.round(timePerIteration * 1.5) : 0;
+                        long runtimeNS =
+                                Math.min(remain, Math.max(minExec, Math.round(c.pri() * baseTime)));
+                        c.runFor(runtimeNS);
+                    } finally {
+                        if (singleton)
+                            c.c.instance.release();
+                    }
+
+                    tryCycle();
                         //if (ii == 0)
                         //System.out.println(c + " for " + Texts.timeStr(runtimeNS) + " " + c.iterations.getMean() + " iters");
 
-                        schedule.add((Runnable) () -> c.runFor(runtimeNS));
-                    });
+                        //schedule.add((Runnable) () -> c.runFor(runtimeNS));
+                    //});
                 }
                 //}
             }

@@ -81,7 +81,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public int size() {
         long size = 0;
         for (Section<K, V> s : sections) {
-            size += s.size.get();
+            size += s.size.getOpaque();
         }
         if (size >= Integer.MAX_VALUE)
             return Integer.MAX_VALUE-1; 
@@ -98,7 +98,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     public boolean isEmpty() {
         for (Section<K, V> s : sections) {
-            if (s.size.get() != 0) {
+            if (s.size.getOpaque() != 0) {
                 return false;
             }
         }
@@ -208,7 +208,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         Section(int capacity) {
             this.capacity = alignToPowerOfTwo(capacity);
             this.table = new Object[2 * this.capacity];
-            this.size.set(0);
+            this.size.setRelease(0);
             this.usedBuckets = 0;
             this.resizeThreshold = (int) (this.capacity * MapFillFactor);
         }
@@ -276,7 +276,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                     K storedKey = (K) table[bucket];
                     V storedValue = (V) table[bucket + 1];
 
-                    if (key.equals(storedKey)) {
+                    if (storedKey!=null && key.equals(storedKey)) {
                         if (!onlyIfAbsent) {
                             
                             table[bucket + 1] = value;
@@ -285,8 +285,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             return storedValue;
                         }
                     } else if (storedKey == null) {
-                        
-                        
+
+
                         if (firstDeletedKey != -1) {
                             bucket = firstDeletedKey;
                         } else {
@@ -302,7 +302,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         table[bucket + 1] = value;
                         return valueProvider != null ? value : null;
                     } else if (storedKey == DeletedKey) {
-                        
+
                         if (firstDeletedKey == -1) {
                             firstDeletedKey = bucket;
                         }
@@ -368,7 +368,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
                 Arrays.fill(table, null);
-                this.size.set(0);
+                this.size.setRelease(0);
                 this.usedBuckets = 0;
             } finally {
                 unlockWrite(stamp);
@@ -433,7 +433,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             this.table = newTable;
             capacity = newCapacity;
-            usedBuckets = size.get();
+            usedBuckets = size.getOpaque();
             resizeThreshold = (int) (capacity * MapFillFactor);
         }
 

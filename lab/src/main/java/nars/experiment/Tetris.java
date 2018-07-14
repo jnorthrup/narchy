@@ -9,7 +9,6 @@ import nars.NAgentX;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
-import nars.util.TimeAware;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -83,7 +82,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
     public static void main(String[] args) {
 
 
-        TimeAware nn = NAgentX.runRT((n) -> {
+        NAgentX.runRT((n) -> {
             Tetris a = null;
 
 

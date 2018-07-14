@@ -63,12 +63,12 @@ public interface Truth extends Truthed {
      */
     static int truthToInt(float freq, float conf, short discreteness) {
 
-        if (!(Float.isFinite(freq) && (freq >= 0) && (freq <= 1)))
+        if (!Float.isFinite(freq) || freq < 0 || freq > 1)
             throw new RuntimeException("invalid freq: " + freq);
 
         int freqHash = floatToInt(freq, discreteness);
 
-        if (!(Float.isFinite(conf) && conf >= 0))
+        if (!Float.isFinite(conf) || conf < 0)
             throw new RuntimeException("invalid conf: " + conf);
 
         int confHash = floatToInt(Math.min(Param.TRUTH_MAX_CONF, conf), discreteness);
@@ -154,7 +154,7 @@ public interface Truth extends Truthed {
     @Nullable
     static PreciseTruth theDithered(float f, float fRes, float evi, float cRes, float confMin) {
         float c = w2cDithered(evi, cRes);
-        return c >= confMin ? new PreciseTruth(freq(f, fRes), c) : null;
+        return c >= confMin ? PreciseTruth.byConf(freq(f, fRes), c) : null;
     }
 
     static float w2cDithered(float evi, float confRes) {
@@ -169,7 +169,7 @@ public interface Truth extends Truthed {
     static Truth read(DataInput in) throws IOException {
         float f = in.readFloat();
         float c = in.readFloat();
-        return new PreciseTruth(f, c);
+        return PreciseTruth.byConf(f, c);
     }
 
     @Override
@@ -198,7 +198,7 @@ public interface Truth extends Truthed {
      * the negated (1 - freq) of this truth value
      */
     default Truth neg() {
-        return new PreciseTruth(1f - freq(), conf());
+        return PreciseTruth.byConf(1f - freq(), conf());
     }
 
     default boolean equalsIn(@Nullable Truth x, float fTol, float cTol) {
@@ -229,12 +229,12 @@ public interface Truth extends Truthed {
     @Nullable
     default PreciseTruth dither(float freqRes, float confRes, float confMin, float eviGain) {
         float c = w2cDithered(evi() * eviGain, confRes);
-        return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
+        return c < confMin ? null : PreciseTruth.byConf(freq(freq(), freqRes), c);
     }
 
     @Nullable
     default Truth ditherFreq(float freqRes) {
-        return freqRes != 0 ? new PreciseTruth(freq(freq(), freqRes), evi(), false) : this;
+        return freqRes != 0 ? PreciseTruth.byEvi(freq(freq(), freqRes), evi()) : this;
     }
 
     default float freqTimesConf() {
@@ -249,7 +249,7 @@ public interface Truth extends Truthed {
         if (n!=null) {
             return Truth.theDithered(f, e, n);
         } else {
-            return new PreciseTruth(f, e, false);
+            return PreciseTruth.byEvi(f, e);
         }
     }
 

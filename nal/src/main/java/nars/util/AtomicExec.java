@@ -106,8 +106,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
             Concept c = n.concept(xx);
             if (c == null) {
-                
-                x.delete();
                 return;
             }
 
@@ -115,8 +113,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             long end = focus[1];
             Truth goalTruth = c.goals().truth(start, end, n);
             if (goalTruth == null || goalTruth.expectation() < exeThresh) {
-                x.delete();
-                return; 
+                return; //it may not have been input to the belief table yet so dont delete
             }
 
             Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */

@@ -105,7 +105,7 @@ public class NARui {
                                 "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
                                 "nar", () -> new AutoSurface<>(n),
                                 "exe", () -> ExeCharts.exePanel(n),
-                                "can", () -> ExeCharts.causePanel(n),
+                                "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
                                 "grp", () -> new ConceptGraph2D(n).widget(),
                                 "svc", () -> new ServicesTable(n.services),
                                 "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n),

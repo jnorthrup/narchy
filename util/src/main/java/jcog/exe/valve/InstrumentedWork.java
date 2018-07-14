@@ -12,7 +12,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
 
     
 
-    static final int WINDOW = 4;
+    static final int WINDOW = 16;
 
     /** total accumulated start/stop tme each cycle */
     public final DescriptiveStatistics startAndStopTimeNS = new DescriptiveStatistics(WINDOW);
@@ -50,6 +50,20 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         return starting;
     }
 
+    /** estimate, in NS */
+    public double timePerIterationMean() {
+        double numer = iterTimeNS.getMean();
+        if (!Double.isFinite(numer) || numer < Double.MIN_NORMAL) {
+            return Double.POSITIVE_INFINITY;
+        } else {
+            double denom = iterations.getMean();
+            if (!Double.isFinite(denom) || denom < Double.MIN_NORMAL) {
+                return Double.POSITIVE_INFINITY;
+            }
+            return numer/denom;
+        }
+    }
+    //TODO  timePerIterationPessimistic() {..
 
     @Override
     public boolean next() {

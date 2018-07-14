@@ -233,6 +233,12 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         return remove(e, e.length);
     }
 
+    public int remove(final FasterList<E> e, int maxElements) {
+        int drained = remove(e.array(), maxElements);
+        e.setSize(drained);
+        return drained;
+    }
+
     // drain the whole queue at once
     public int remove(final E[] e, int maxElements) {
 

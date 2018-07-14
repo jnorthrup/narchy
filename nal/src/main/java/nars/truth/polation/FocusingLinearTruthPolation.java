@@ -103,7 +103,7 @@ public class FocusingLinearTruthPolation extends TruthPolation {
 
         eAvg *= eviFactor;
         if (eAvg >= Param.TRUTH_MIN_EVI)
-            return new PreciseTruth(f, eAvg, false);
+            return PreciseTruth.byEvi(f, eAvg);
         else
             return null;
     }

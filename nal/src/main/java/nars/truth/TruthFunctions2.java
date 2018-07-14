@@ -137,9 +137,13 @@ public enum TruthFunctions2 {
         float cc = weak(c * sim);
         return cc >= minConf ? $.t(sim, cc) : null;
     }
-    static float weak(float c) {
+    public static float weak(float c) {
         //return w2cSafe(c);
         return c * TruthFunctions.w2cSafe(1.0f);
+    }
+
+    @Deprecated public static Truth weak(Truth t) {
+        return t!=null ? $.t(t.freq(), weak(t.conf())) : null;
     }
 
     /**

@@ -3,7 +3,6 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.Param;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -311,7 +310,6 @@ public class NAL8Test extends NALTest {
 
 
         test
-                .log()
                 .goal("(x &| y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 0)

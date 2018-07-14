@@ -27,7 +27,7 @@ public class UniExec extends AbstractExec {
             //new Focus.AERevaluator(new SplitMix64Random(1));
             new Focus.DefaultRevaluator();
 
-    final ConcurrentFastIteratingHashMap<Causable,MyAbstractWork> can = new ConcurrentFastIteratingHashMap<>(new MyAbstractWork[0]);
+    public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 
     final MetalConcurrentQueue in =
             //new ArrayBlockingQueue(8192);
@@ -38,11 +38,11 @@ public class UniExec extends AbstractExec {
     TimeSlicing cpu;
     private Ons ons = null;
 
-    public final class MyAbstractWork extends InstrumentedWork {
+    public final class InstrumentedCausable extends InstrumentedWork {
 
-        protected final Causable c;
+        public final Causable c;
 
-        public MyAbstractWork(Causable c) {
+        public InstrumentedCausable(Causable c) {
             super(new AbstractWork<>(sharing.start(c), "CPU", 0.5f) {
                 @Override
                 public boolean start() {
@@ -259,7 +259,7 @@ public class UniExec extends AbstractExec {
     }
 
     public boolean add(Causable s) {
-        MyAbstractWork r = can.put(s, new MyAbstractWork(s));
+        InstrumentedCausable r = can.put(s, new InstrumentedCausable(s));
 
         if (r!=null && r.c!=s) throw new WTF("duplicate: " + r + " replaced by " + s);
 

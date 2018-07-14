@@ -2,6 +2,7 @@ package nars.task;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import jcog.pri.Priority;
 import jcog.sort.Top;
 import nars.NAR;
@@ -51,10 +52,9 @@ public class Revision {
 
         return e <= minEvi ?
                 null :
-                new PreciseTruth(
+                PreciseTruth.byEvi(
                         (ae * a.freq() + be * b.freq()) / w,
-                        e,
-                        false
+                        e
                 );
     }
 
@@ -78,7 +78,13 @@ public class Revision {
 
 
         int len = a.subs();
-        assert (len > 0);
+        if (len == 0) {
+            //WTF
+            if (a.op() == PROD) return a;
+            else
+                throw new WTF();
+        }
+
 
         if (ao.temporal) {
 

@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static nars.truth.TruthFunctions2.weak;
 
 /**
  * NAL Truth Functions
@@ -51,6 +52,12 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
+        }
+    },
+    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return T != null ? weak(Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf)) : null;
         }
     },
 

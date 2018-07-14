@@ -5,9 +5,10 @@ import nars.NARS;
 import nars.term.Termed;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toCollection;
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -124,7 +125,13 @@ class TermLinkTest {
     void testTemplateConjInsideConj() {
         testTemplates("(x && (y &&+1 z))",
                 //"[x, y, z]"
-                "[(y&&z), x]"
+                "[(x&&y), (x&&z)]"
+        );
+    }
+    @Test
+    void testTemplateConjInsideConj2() {
+        testTemplates("(x &&+1 (y &&+1 z))",
+                "[x, y, z]"
         );
     }
 
@@ -142,7 +149,7 @@ class TermLinkTest {
     @Test
     void testTemplateConjInsideConjInsideImpl2() {
         testTemplates("((a && b) ==> (x && (y &&+1 z)))",
-                "[((y&&z) &&+- x), (a&&b)]");
+                "[((x&&y) &&+- (x&&z)), (a&&b), (x&&y), (x&&z), a, b]");
     }
 
     @Test
@@ -214,20 +221,14 @@ class TermLinkTest {
     @Test
     void testTemplateSimProdCompound() {
         testTemplates("((a,b)<->#1)",
-                "[(a,b), a, b, #1]");
+                "[(a,b), #1]");
     }
-
-
-
-
-
-
 
     private void testTemplates(String term, String expect) {
         
         Concept c = n.conceptualize($$(term));
         //Activate a = new Activate(c, 0.5f);
-        Collection<Termed> t = c.linker().targets().collect(toList());
+        Set<Termed> t = c.linker().targets().collect(toCollection(()->new TreeSet<>()));
         assertEquals(expect, t.toString());
     }
 

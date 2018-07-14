@@ -103,7 +103,6 @@ public class ConjClustering extends Causable {
         });
     }
 
-
     @Override
     public void run(NAR n, int workRequested, Consumer<NLink<Runnable>> buffer) {
         if (bag == null || bag.bag.isEmpty())

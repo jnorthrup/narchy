@@ -463,7 +463,7 @@ public enum $ {
 
 
     public static PreciseTruth t(float f, float c) {
-        return new PreciseTruth(f, c);
+        return PreciseTruth.byConf(f, c);
     }
 
 

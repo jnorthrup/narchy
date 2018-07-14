@@ -166,7 +166,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                             optional(TRUTH_VALUE_MARK), 
 
-                            swap() && truth.set(new PreciseTruth((float) pop(), (float) pop()))
+                            swap() && truth.set(PreciseTruth.byConf((float) pop(), (float) pop()))
                     ),
 
                     seq(TRUTH_VALUE_MARK, truth.set(pop()))

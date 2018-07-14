@@ -1,8 +1,5 @@
 package nars.truth;
 
-import jcog.Util;
-import nars.Param;
-
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -22,31 +19,29 @@ public class PreciseTruth extends DiscreteTruth {
 
     final float f, e;
 
-    public PreciseTruth(float freq, float conf) {
-        this(freq, conf, true);
+//    public static class TruthException extends RuntimeException {
+//        public TruthException(String msg) {
+//            super(msg);
+//        }
+//    }
+
+    public static PreciseTruth byConf(float freq, float conf) {
+        return new PreciseTruth(freq, conf, c2wSafe(conf));
     }
 
-    public PreciseTruth(float freq, float ce, boolean xIsConfOrEvidence) {
-        super(freq, xIsConfOrEvidence ? ce : w2cSafe(ce));
-
-        float e;
-        if (xIsConfOrEvidence)
-            e = c2wSafe(ce); 
-        else
-            e = ce; 
-
-        this.e = Util.clamp(e, Param.TRUTH_MIN_EVI, Param.TRUTH_MAX_EVI);
-        this.f = Util.clamp(freq, 0, 1f);
+    public static PreciseTruth byEvi(float freq, float evi) {
+        return new PreciseTruth(freq, w2cSafe(evi), evi);
     }
 
-    public PreciseTruth(Truth truth) {
-        this(truth.freq(), truth.evi(), false);
-        assert(!(truth instanceof PreciseTruth)): "pointless";
+    private PreciseTruth(float freq, float conf, float evi) {
+        super(freq, conf);
+        this.e = evi;
+        this.f = freq;
     }
 
     @Override
     public Truth neg() {
-        return new PreciseTruth(1f - f, e, false);
+        return byEvi(1f - f, e);
     }
 
     @Override

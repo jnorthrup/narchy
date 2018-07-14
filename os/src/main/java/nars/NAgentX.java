@@ -115,18 +115,18 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 1, 8, /*"curiosity.nal",*/ "motivation.nal"));
 
         n.dtDither.set(10);
-        n.timeFocus.set(5);
+        n.timeFocus.set(10);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(46);
 
-        n.forgetRate.set(0.9f);
+        n.forgetRate.set(0.8f);
         n.activateConceptRate.set(0.9f);
 
 
-        n.beliefConfDefault.set(0.95f);
-        n.goalConfDefault.set(0.95f);
+        n.beliefConfDefault.set(0.99f);
+        n.goalConfDefault.set(0.9f);
 
         n.beliefPriDefault.set(0.4f);
         n.goalPriDefault.set(0.8f);
@@ -135,7 +135,7 @@ abstract public class NAgentX extends NAgent {
         n.questPriDefault.set(0.08f);
 
         n.emotion.want(MetaGoal.Perceive, -0.01f);
-        n.emotion.want(MetaGoal.Believe, +0.25f);
+        n.emotion.want(MetaGoal.Believe, +0.05f);
         n.emotion.want(MetaGoal.Answer, +0.10f);
         n.emotion.want(MetaGoal.Desire, +0.50f);
         n.emotion.want(MetaGoal.Action, +0.75f);
@@ -169,7 +169,7 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
                 MatrixDeriver motivation = new MatrixDeriver(a.fire(),
-                        Derivers.nal(n, 6, 6, "motivation.nal"));
+                        Derivers.nal(n, 1, 6, "motivation.nal"));
 
 
                 SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(),

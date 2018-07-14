@@ -317,7 +317,7 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test @Disabled
+    @Test
     void testDisjStructuralDeduction() {
         test
                 .believe("(||, a, b)")

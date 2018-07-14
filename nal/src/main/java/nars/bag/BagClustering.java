@@ -196,9 +196,11 @@ public class BagClustering<X> {
 
         int s = x.size();
         if (s>0) {
-            ArrayUtils.quickSort(0, s,
-                    (a,b) -> Integer.compare(x.get(a).centroid, x.get(b).centroid),
-                    x::swap);
+            if (s > 2) {
+                ArrayUtils.quickSort(0, s,
+                        (a, b) -> Integer.compare(x.get(a).centroid, x.get(b).centroid),
+                        x::swap);
+            }
 //            x.sortThisByInt(xx -> xx.centroid);
             takeSortedClusters.accept(x);
         }

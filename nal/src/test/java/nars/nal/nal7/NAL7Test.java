@@ -24,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
-    private int cycles = 100;
+    private int cycles = 200;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         //test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(20);
+        test.nar.termVolumeMax.set(22);
         //test.nar.confMin.set(0.1f);
     }
 
@@ -41,10 +41,10 @@ public class NAL7Test extends NALTest {
         test
                 .input("x:before. :|:")
                 .inputAt(1, "(--,x:after). :|:")
-                .mustBelieve(cycles, "(x:before ==>+1 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
-                .mustBelieve(cycles, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 1)
-                .mustBelieve(cycles, "(x:before &&+1 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)
-                .mustNotOutput(cycles, "(x:before &&-1 (--,x:after))", BELIEF,
+                .mustBelieve(cycles*2, "(x:before ==>+1 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
+                .mustBelieve(cycles*2, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 1)
+                .mustBelieve(cycles*2, "(x:before &&+1 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)
+                .mustNotOutput(cycles*2, "(x:before &&-1 (--,x:after))", BELIEF,
                         (t -> t == 0 || t == 1));
     }
 
@@ -160,8 +160,22 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
+    void testShiftPlusDontEraseDT() {
+
+        test
+                //.log()
+                .inputAt(1, "((x &&+1 y) ==>+1 z).")
+                .mustBelieve(cycles, "(x ==>+2 z)", 1f, 0.81f)
+                .mustBelieve(cycles, "(y ==>+1 z)", 1f, 0.81f)
+                .mustNotOutput(cycles, "(x&&y)", BELIEF, (t) -> true)
+                .mustNotOutput(cycles, "(y==>z)", BELIEF, (t) -> true)
+                .mustNotOutput(cycles, "(x==>z)", BELIEF, (t) -> true)
+        ;
+    }
+    @Test
     void testShiftPlus() {
         test
+                //.log()
                 .inputAt(1, "((x &&+1 y) ==>+1 z).")
                 .inputAt(3, "z. :|:")
                 .mustNotOutput(cycles, "x", BELIEF, (t) -> t != 1)

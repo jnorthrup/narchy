@@ -203,6 +203,8 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
         return true;
     }
 
+
+
     private final class MyAbstractList extends AbstractList {
 
         @Override
@@ -218,9 +220,10 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     public T getIndex(int i) {
         T[] l = valueArray();
-        if (l!=null && l.length > i)
-            return l[i];
-        else
-            return null;
+        return l != null && l.length > i ? l[i] : null;
+    }
+    public T getIndex(Random rng) {
+        T[] l = valueArray();
+        return l != null && l.length > 0 ? l[rng.nextInt(l.length)] : null;
     }
 }

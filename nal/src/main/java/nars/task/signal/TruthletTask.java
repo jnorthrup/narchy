@@ -105,7 +105,7 @@ public class TruthletTask extends SignalTask {
             return null;
         float e = tl[1];
         if (e > 0)
-            return new PreciseTruth(f, e /* evi */, false);
+            return PreciseTruth.byEvi(f, e /* evi */);
         else
             return null;
     }

@@ -40,7 +40,7 @@ public class TruthAccumulator extends AtomicReference<double[]> {
 
         int n = (int)fc[2];
         float ee = ((sumOrAverage) ? ((float)e) : ((float)e)/n);
-        return new PreciseTruth((float)(fc[0]/e), ee, false);
+        return PreciseTruth.byEvi((float)(fc[0]/e), ee);
     }
 
     public void add(@Nullable Truth t) {

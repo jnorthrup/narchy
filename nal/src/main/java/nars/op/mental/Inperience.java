@@ -83,7 +83,7 @@ public class Inperience extends LeakBack {
     }
 
     private static Term reifyBelief(Task t, Term tt, NAR nar) {
-        Concept c = nar.conceptualizeDynamic(tt);
+        Concept c = nar.conceptualizeDynamic(tt.unneg());
         if (c == null)
             return Null;
 

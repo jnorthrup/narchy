@@ -14,12 +14,15 @@ import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
 import nars.exe.Causable;
+import nars.exe.UniExec;
 import nars.time.clock.RealTime;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.ForceDirected2D;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meta.LoopPanel;
@@ -28,6 +31,7 @@ import spacegraph.space2d.widget.meter.TreeChart;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -114,6 +118,44 @@ public class ExeCharts {
                                 metaGoalControls(n)
                         )),
                 0.9f);
+    }
+
+    static class CausableWidget extends Widget {
+        private final UniExec.InstrumentedCausable c;
+        private final Label label;
+
+        CausableWidget(UniExec.InstrumentedCausable c) {
+            this.c = c;
+            label =new Label(c.c.can.id);
+            add(label);
+
+        }
+
+        protected void update() {
+
+        }
+    }
+
+    public static Surface focusPanel(NAR nar) {
+        Graph2D<UniExec.InstrumentedCausable> s = new Graph2D<UniExec.InstrumentedCausable>()
+            .layer((node, g)->{
+                UniExec.InstrumentedCausable c = node.id;
+                float p = c.pri();
+                node.color(p, 0.25f, 0.25f);
+                node.size(p+0.1f, p+0.1f);
+                ((CausableWidget)node.getSafe(0)).update();
+            })
+            .layout(new ForceDirected2D<>())
+            .nodeBuilder((node)->{
+                node.add(new CausableWidget(node.id));
+            });
+
+
+        return DurSurface.get(
+            new Splitting(s, s.configWidget(), 0.9f),
+            nar, () -> {
+                s.set(((UniExec) nar.exe).can::valueIterator);
+            });
     }
 
     public static Surface causePanel(NAR nar) {
