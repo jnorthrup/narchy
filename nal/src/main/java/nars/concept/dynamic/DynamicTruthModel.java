@@ -53,8 +53,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
 
             /* x.intersects(subStart, subEnd) && */
-            Task bt = table.match(subStart, subEnd, concept, d::doesntOverlap, n
-            );
+            Task bt = table.match(subStart, subEnd, concept, d::doesntOverlap, n);
             if (bt == null)
                 return false;
 
@@ -237,9 +236,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     private static Term stmtReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred, boolean union) {
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
         if (union) {
-            if (superSect.op()!=NEG)
-                return null; //shouldnt happen
-            superSect = superSect.neg();
+            if (superSect.op()==NEG) {
+                superSect = superSect.neg();
+                assert(superSect.op()==CONJ);
+            }
         }
 
         //may not be correct TODO
@@ -290,7 +290,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             Term[] subs = stmtReconstruct(subjOrPred, components);
             if (subs == null)
                 return null;
-            if (union) {
+
+            if (union && superSect.op()==CONJ) {
                 for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
                     subs[i] = subs[i].neg();
                 }
@@ -338,9 +339,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             Term common = stmtCommon(subjOrPred, superterm);
             Term decomposed = stmtCommon(!subjOrPred, superterm);
             if (union) {
-                if (decomposed.op()!=NEG)
-                    return false; //??
-                decomposed = decomposed.unneg();
+                if (decomposed.op()==NEG) {
+                    decomposed = decomposed.unneg();
+                    assert(decomposed.op()==CONJ /* and not Sect/Union */);
+                }
             }
 
             Op op = superterm.op();
