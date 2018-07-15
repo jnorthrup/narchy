@@ -20,7 +20,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         return new MovingRectFloat2D();
     }
 
-    public final FloatRange repelSpeed =new FloatRange(0.02f, 0, 0.1f);
+    public final FloatRange repelSpeed =new FloatRange(0.02f, 0, 0.5f);
 
     /** attractspeed << 0.5 */
     public final FloatRange attractSpeed =new FloatRange(0.005f, 0, 0.025f);
@@ -31,7 +31,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     @Override protected void layoutDynamic(Graph2D<X> g) {
 
-        maxRepelDist = (float) (g.radius() * Math.sqrt(2)/2); //estimate
+        maxRepelDist = (float) ((2*g.radius()) * Math.sqrt(2)/2); //estimate
 
         minAttractDistRelativeToRadii = 1f;
 

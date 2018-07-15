@@ -44,16 +44,6 @@ public class UniExec extends AbstractExec {
 
         public InstrumentedCausable(Causable c) {
             super(new AbstractWork<>(sharing.start(c), "CPU", 0.5f) {
-                @Override
-                public boolean start() {
-                    return c.instance.tryAcquire() && super.start();
-                }
-
-                @Override
-                public void stop() {
-                    super.stop();
-                    c.instance.release();
-                }
 
                 @Override
                 public boolean next() {

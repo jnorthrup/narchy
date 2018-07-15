@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ForceDirected2D;
+import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
@@ -39,6 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.lang.Math.sqrt;
 import static spacegraph.space2d.container.grid.Gridding.*;
 
 public class ExeCharts {
@@ -55,7 +57,7 @@ public class ExeCharts {
                         gain.floatValue() * nar.causes.get(i).value()
                 ),
                 
-                s, Math.max(1, (int) Math.ceil(Math.sqrt(s))),
+                s, Math.max(1, (int) Math.ceil(sqrt(s))),
                 Draw::colorBipolar) {
 
             DurService on;
@@ -141,18 +143,24 @@ public class ExeCharts {
             .layer((node, g)->{
                 UniExec.InstrumentedCausable c = node.id;
                 float p = c.pri();
-                node.color(p, 0.25f, 0.25f);
-                node.size(p+0.1f, p+0.1f);
-                ((CausableWidget)node.getSafe(0)).update();
+                float v = c.c.value();
+                node.color(p, v, 0.25f);
+
+
+                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
+                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
+                node.size(r,r);
+
+                ((CausableWidget)((Scale)node.getSafe(0)).the).update();
             })
             .layout(new ForceDirected2D<>())
             .nodeBuilder((node)->{
-                node.add(new CausableWidget(node.id));
+                node.add(new Scale(new CausableWidget(node.id), 0.9f));
             });
 
 
         return DurSurface.get(
-            new Splitting(s, s.configWidget(), 0.9f),
+            new Splitting(s, s.configWidget(), 0.1f),
             nar, () -> {
                 s.set(((UniExec) nar.exe).can::valueIterator);
             });

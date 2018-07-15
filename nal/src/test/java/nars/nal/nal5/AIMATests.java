@@ -82,13 +82,13 @@ class AIMATests {
     void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.5f);
-        n.confMin.set(0.02f);
+        n.freqResolution.set(0.1f);
+        n.confMin.set(0.05f);
 
         n.beliefPriDefault.set(0.1f);
-        n.questionPriDefault.set(0.5f);
+        n.questionPriDefault.set(0.2f);
 
-        n.termVolumeMax.set(22);
+        n.termVolumeMax.set(24);
 //        n.log();
 
 
@@ -106,8 +106,8 @@ class AIMATests {
 
 
         n.question($.$(
-                //"Criminal:?x"
-                "Criminal(?x)"
+                "Criminal:?x"
+                //"Criminal(?x)"
 
         ), ETERNAL, (q, a) -> {
             System.out.println(a);

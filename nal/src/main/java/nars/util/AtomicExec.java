@@ -112,19 +112,18 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             long start = focus[0];
             long end = focus[1];
             Truth goalTruth = c.goals().truth(start, end, n);
-            if (goalTruth == null || goalTruth.expectation() < exeThresh) {
+            if (goalTruth == null || goalTruth.expectation() <= exeThresh) {
                 return; //it may not have been input to the belief table yet so dont delete
             }
 
             Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
-            if (beliefTruth != null && beliefTruth.expectation() > exeThresh) {
+            if (beliefTruth != null && beliefTruth.expectation() >= exeThresh) {
                 return; 
             }
 
             logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
             dispatch.add(xx);
-            x.delete();
-            
+
         });
 
         dispatch.forEach(tt -> exe.accept(tt, n));

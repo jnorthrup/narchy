@@ -153,8 +153,8 @@ abstract public class Loop implements Runnable {
     protected void thrown(Throwable e) {
         stop();
         ready();
-        //logger.error(" {}", e);
-        throw new RuntimeException(e);
+        logger.error(" {}", e);
+        //throw new RuntimeException(e);
     }
 
 

@@ -7,7 +7,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.time.Tense;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 import org.jetbrains.annotations.Nullable;
@@ -178,7 +177,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private static boolean internableRoot(Op op, int dt) {
-        return !op.atomic && op != NEG && Tense.dtSpecial(dt);
+        return !op.atomic && op != NEG
+                //&& Tense.dtSpecial(dt)
+                ;
     }
 
     private static boolean internableSubs(Term[] subterms) {

@@ -15,9 +15,9 @@ public class Flip<X> extends AtomicInteger {
         this.b = builder.get();
     }
 
-    public X write() { return (get() & 1) == 0 ? a : b;   }
+    public X write() { return (getOpaque() & 1) == 0 ? a : b;   }
     public X read() {
-        return (get() & 1) == 0 ? b : a;
+        return (getOpaque() & 1) == 0 ? b : a;
     }
 
     public X commit() {

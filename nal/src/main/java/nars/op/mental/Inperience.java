@@ -171,9 +171,6 @@ public class Inperience extends LeakBack {
         if (!c.op().conceptualizable)
             return 0;
 
-        if (c.op().conceptualizable)
-            return 0;
-
         long start = x.start();
         long end;
         if (start == ETERNAL) {

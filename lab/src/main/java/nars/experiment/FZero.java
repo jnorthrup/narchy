@@ -79,10 +79,10 @@ public class FZero extends NAgentX {
         //initToggle();
 
 
-        initUnipolarLinear(2f);
+        initUnipolarLinear(3f);
 
         //initBipolarRotateRelative(fair, rotFactor);
-        initBipolarRotateDirect(true, 0.2f);
+        initBipolarRotateDirect(true, 0.5f);
         //initBipolarRotateAbsolute(fair);
 
 
@@ -259,9 +259,9 @@ public class FZero extends NAgentX {
         final float[] heading = {0};
         final MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f);
 
-        float curve =
-                1;
-                //3; //curve exponent
+        float curve = //curve exponent
+                //1;
+                3;
 
         FloatToFloatFunction d = (dHeading) -> {
 
@@ -272,7 +272,7 @@ public class FZero extends NAgentX {
 
             return dHeading;
         };
-        actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, true, d);
+        actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, false, d);
         //actionUnipolar($.the("heading"), d);
     }
 

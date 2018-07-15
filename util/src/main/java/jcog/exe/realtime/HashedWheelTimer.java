@@ -151,13 +151,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         logger.info("{} restart {}", this, System.currentTimeMillis());
 
+        //long epochTime = wheels * resolution;
 
-        long epochTime = wheels * resolution;
-
-
-        long tolerableLagPerEpochNS =
-                
-                epochTime / 2;
 
         int c, empties;
 
@@ -168,20 +163,6 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             empties = 0;
 
             while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % wheels : SHUTDOWN)) >= 0) {
-
-//                if (c == 0) {
-//
-//                    long now = System.nanoTime();
-//
-//                    long lag = now - deadline;
-//                    if (Math.abs(lag) > tolerableLagPerEpochNS) {
-//                        double lagResolutions = ((double) lag) / epochTime;
-//                        if (lagResolutions > 0) {
-//                            logger.info("lag {} ({}%)", Texts.timeStr(lag), Texts.n2(100 * lagResolutions));
-//                        }
-//                        deadline = now;
-//                    }
-//                }
 
                 if (model.run(c, this) == 0) {
                     if (empties++ >= wheels * SLEEP_EPOCHS) {
@@ -195,7 +176,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 deadline = await(deadline);
             }
         }
-        while (cursor.get()!= SHUTDOWN && !model.canExit() && !cursor.compareAndSet(c, -1));
+        while (cursor.getOpaque()!= SHUTDOWN && !model.canExit() && !cursor.weakCompareAndSetVolatile(c, -1));
 
         loop = null;
 
@@ -306,14 +287,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public void shutdown() {
-        cursor.set(Integer.MIN_VALUE);
+        cursor.lazySet(Integer.MIN_VALUE);
         if (executor instanceof ExecutorService)
             ((ExecutorService) this.executor).shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        cursor.set(Integer.MIN_VALUE);
+        cursor.lazySet(Integer.MIN_VALUE);
         if (executor instanceof ExecutorService)
             return ((ExecutorService) this.executor).shutdownNow();
         else
@@ -322,13 +303,13 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public boolean isShutdown() {
-        return cursor.get() >= 0 &&
+        return cursor.getOpaque() >= 0 &&
                 (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).isShutdown());
     }
 
     @Override
     public boolean isTerminated() {
-        return cursor.get() >= 0 &&
+        return cursor.getOpaque() >= 0 &&
                 (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).isTerminated());
     }
 
@@ -449,7 +430,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
     void assertRunning() {
-        if (cursor.compareAndSet(-1, 0)) {
+        if (cursor.weakCompareAndSetVolatile(-1, 0)) {
             this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() +"_" + hashCode());
             this.loop.setDaemon(daemon); 
             this.loop.start();
