@@ -122,10 +122,6 @@ public class NAL1Test extends NALTest {
 
 
 
-
-
-
-
     @Test
     void backwardInference() throws nars.Narsese.NarseseException {
 

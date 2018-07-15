@@ -18,7 +18,7 @@ abstract public class Exec implements Executor {
 
     static final Logger logger = LoggerFactory.getLogger(Exec.class);
 
-    NAR nar;
+    protected NAR nar;
 
 
 

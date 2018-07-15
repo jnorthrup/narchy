@@ -8,8 +8,11 @@ import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
 import jcog.net.http.WebSocketConnection;
+import nars.exe.Exec;
+import nars.exe.UniExec;
 import nars.index.concept.MaplikeConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
+import nars.time.clock.RealTime;
 import nars.web.WebClientJS;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
@@ -36,6 +39,8 @@ public class Web implements HttpModel {
     private final NAR nar;
     /** adapter */
     private final MaplikeConceptIndex sharedIndex;
+
+
 
     @Override
     public void response(HttpConnection h) {
@@ -65,11 +70,6 @@ public class Web implements HttpModel {
                                 "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/classes.js\"></script>\n" +
                                 "  </head>\n" +
                                 "  <body onload=\"main()\">\n" +
-//                        "    <h1>Hello web application</h1>\n" +
-//                        "    <button id=\"hello-button\">Hello, server!</button>\n" +
-//                        "    <div id=\"response-panel\">\n" +
-//                        "    </div>\n" +
-//                        "    <div style=\"display:none\" id=\"thinking-panel\"><i>Server is thinking...</i></div>\n" +
                                 "  </body>\n" +
                                 "</html>");
                 break;
@@ -79,6 +79,7 @@ public class Web implements HttpModel {
 
     }
 
+    //TODO <URI,NAR>
     final CustomConcurrentHashMap<String, NAR> reasoners = new CustomConcurrentHashMap<>(
             STRONG, EQUALS, WEAK, IDENTITY, 64) {
         @Override
@@ -100,10 +101,11 @@ public class Web implements HttpModel {
             return false;
         }
 
-        NAR n = reasoners.computeIfAbsent(url, (Function<String,NAR>)this::reasoner);
+        NAR n = reasoners.computeIfAbsent(url, (Function<String,NAR>)this::nar);
         assert(n!=null);
 
-        System.out.println("NAR " + System.identityHashCode(n) + " for " + url);
+        //logger.info("..
+        //System.out.println("NAR " + System.identityHashCode(n) + " for " + url);
 
         conn.setAttachment(
                 new NARConnection(n,
@@ -128,7 +130,13 @@ public class Web implements HttpModel {
     @Override
     public void wssMessage(WebSocket ws, String message) {
         try {
-            ((NARConnection)ws.getAttachment()).nar.input(message);
+            NAR n = ((NARConnection) ws.getAttachment()).nar;
+            n.input(message);
+//            System.out.println(n.loop + " " + n.loop.isRunning());
+//            System.out.println(Iterables.toString(n.attn.active));
+//            System.out.println(Iterators.toString(n.services().iterator()));
+//            System.out.println(n.exe);
+
         } catch (Narsese.NarseseException e) {
             ws.send(e.toString()); //e.printStackTrace();
         }
@@ -148,19 +156,37 @@ public class Web implements HttpModel {
     }
 
     protected void starting(NAR n) {
-//        try {
-//            n.input("a:b.");
-//            n.input("a:c.");
-//            n.input("b:d.");
-//            n.input("b:c.");
-//            n.input("c:d.");
-//        } catch (Narsese.NarseseException e) {
-//            e.printStackTrace();
-//        }
+
     }
 
-    private NAR reasoner(String path) {
-        NAR n = new NARS().withNAL(1, 8).index(sharedIndex).get();
+    /** create a NAR */
+    private NAR nar(String path) {
+        final Exec exe = Web.this.nar.exe;
+        final Exec sharedExec = new UniExec() {
+
+            @Override
+            public boolean concurrent() {
+                return false;
+            }
+
+            @Override
+            public void start(NAR nar) {
+                super.start(nar);
+            }
+
+            @Override
+            public void execute(Runnable async) {
+                exe.execute(async);
+            }
+
+            @Override
+            public void execute(Consumer<NAR> r) {
+                execute(()->r.accept(this.nar));
+            }
+        };
+
+        NAR n = new NARS().withNAL(1, 8).time(new RealTime.MS()).exe(sharedExec).index(sharedIndex).get();
+
 
         assert (path.charAt(0) == '/');
         path = path.substring(1);
@@ -178,7 +204,7 @@ public class Web implements HttpModel {
 
     public Web() {
         this.nar = NARchy.core();
-        this.nar.loop.setFPS(10);
+        //this.nar.loop.setFPS(10);
         this.sharedIndex = new ProxyConceptIndex(nar.concepts);
     }
 
@@ -269,7 +295,7 @@ public class Web implements HttpModel {
 
 
         jcog.net.http.HttpServer h = new HttpServer("0.0.0.0", port, new Web());
-        h.setFPS(20f);
+        h.setFPS(10f);
 
 
 //        Util.sleep(100);
@@ -333,8 +359,8 @@ public class Web implements HttpModel {
                     w.send(t.toString(true).toString());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    w = null;
-                    w.close();
+//                    w = null;
+//                    w.close();
                 }
             //}
         }

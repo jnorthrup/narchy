@@ -341,8 +341,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public List<Task> input(String text) throws NarseseException, InvalidTaskException {
         List<Task> l = Narsese.the().tasks(text, this);
-        input(l);
-        return l;
+        switch (l.size()) {
+            case 0: return List.of();
+            case 1: input(l.get(0)); return l;
+            default: input(l); return l;
+        }
     }
 
     /**
