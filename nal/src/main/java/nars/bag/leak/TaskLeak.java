@@ -40,7 +40,7 @@ public abstract class TaskLeak extends Causable {
 
 
     TaskLeak(Bag<Task, PLink<Task>> bag, Number rate, NAR n) {
-        super(n);
+        super();
         this.queue = new DtLeak<>(bag, rate) {
             @Override
             protected Random random() {
@@ -50,10 +50,7 @@ public abstract class TaskLeak extends Causable {
             @Override
             protected float receive(PLink<Task> b) {
                 Task t = b.id;
-                if (t.isDeleted())
-                    return 0f;
-                else
-                    return TaskLeak.this.leak(t);
+                return t.isDeleted() ? 0f : TaskLeak.this.leak(t);
             }
 
             @Override
@@ -61,6 +58,7 @@ public abstract class TaskLeak extends Causable {
                 return TaskLeak.this.full();
             }
         };
+        n.on(this);
     }
 
 
@@ -87,7 +85,7 @@ public abstract class TaskLeak extends Causable {
             return -1; 
 
         float done = queue.commit(nar, iterations);
-        return (int) Math.ceil(done);
+        return iterations; //(int) Math.ceil(done);
     }
 
     public final void accept(Task t) {

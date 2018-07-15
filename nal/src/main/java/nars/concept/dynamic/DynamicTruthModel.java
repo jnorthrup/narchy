@@ -29,78 +29,60 @@ import static nars.time.Tense.*;
  * Created by me on 12/4/16.
  */
 abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Truth> {
-    final static class SectIntersection extends Intersection {
+    @Nullable
+    public final DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean timeFlexible, NAR n) {
 
-        final boolean union, subjOrPred;
+        assert (superterm.op() != NEG);
 
-        private SectIntersection(boolean union, boolean subjOrPred) {
-            this.union = union;
-            this.subjOrPred = subjOrPred;
-        }
+        DynTruth d = new DynTruth(4);
 
-        @Override
-        protected boolean negateFreq() {
-            return union;
-        }
+        return components(superterm, start, end, (Term concept, long subStart, long subEnd) -> {
+            boolean negated = concept.op() == Op.NEG;
+            if (negated)
+                concept = concept.unneg();
 
-        @Override
-        public Term reconstruct(Term superterm, List<TaskRegion> components) {
-            return stmtReconstruct(superterm, components, subjOrPred);
-        }
+            Concept subConcept =
+                    n.conceptualizeDynamic(concept);
 
 
-        protected final boolean subjOrPred() {
-            return subjOrPred;
-        }
-
-        public final boolean union() {
-            return union;
-        }
-
-
-        @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            Term common = stmtCommon(subjOrPred, superterm);
-            Term decomposed = stmtCommon(!subjOrPred, superterm);
-            Op op = superterm.op();
-
-            if (op.temporal && decomposed.op()==CONJ /* NEG , union ?  */) {
-                int outerDT = superterm.dt();
-                if ((outerDT !=XTERNAL)) {
-                    int totalDT = outerDT; //check direction, may need neg
-                    int innerDT = decomposed.dt();
-                    if (innerDT != XTERNAL) {
-                        int decRange = outerDT != DTERNAL ? decomposed.dtRange() : 0;
-                        return decomposed.eventsWhile((offset, y) ->
-                                {
-                                    boolean ixTernal = offset == ETERNAL || offset == XTERNAL;
-
-                                    long subStart = ixTernal ? start : start + offset;
-                                    long subEnd = end;
-                                    if (subEnd < subStart) {
-                                        //swap
-                                        long x = subStart;
-                                        subStart = subEnd;
-                                        subEnd = x;
-                                    }
-                                    return each.accept(stmtDecompose(op, subjOrPred, y, common,
-                                            ixTernal ? DTERNAL : (int) ((decRange - offset) + outerDT)),
-                                            subStart,
-                                            subEnd);
-                                }
-                                , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
-                                innerDT == DTERNAL, false, 0);
-                    }
-                }
+            if (!(subConcept instanceof TaskConcept)) {
+                return false;
             }
 
-            return decomposed.subterms().AND(
-                    y -> each.accept(stmtDecompose(op, subjOrPred, y, common), start, end)
+
+            BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
+
+
+            /* x.intersects(subStart, subEnd) && */
+            Task bt = table.match(subStart, subEnd, concept, d::doesntOverlap, n
             );
-        }
+            if (bt == null)
+                return false;
 
+            /** project to a specific time, and apply negation if necessary */
+            bt = Task.project(timeFlexible, bt, subStart, subEnd, n, negated);
+            if (bt == null)
+                return false;
 
+            return d.add(bt);
+
+        }) ? d : null;
     }
+
+    protected abstract boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
+
+    /**
+     * used to reconstruct a dynamic term from some or all components
+     */
+    abstract public Term reconstruct(Term superterm, List<TaskRegion> c);
+
+    @FunctionalInterface
+    interface ObjectLongLongPredicate<T> {
+        boolean accept(T object, long start, long end);
+    }
+
+
+
 
     public static final DynamicTruthModel UnionSubj = new SectIntersection(true, true);
     public static final DynamicTruthModel IsectSubj = new SectIntersection(false, true);
@@ -116,29 +98,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
 
     };
-
-
-    static class DiffInh extends Difference {
-        final boolean subjOrPred;
-
-        DiffInh(boolean subjOrPred) {
-            this.subjOrPred = subjOrPred;
-        }
-
-        @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            Term common = stmtCommon(subjOrPred, superterm);
-            Term decomposed = stmtCommon(!subjOrPred, superterm);
-            return each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(0), common), start, end) &&
-                    each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(1), common), start, end);
-        }
-
-        @Override
-        public Term reconstruct(Term superterm, List<TaskRegion> c) {
-            return stmtReconstruct(superterm, c, subjOrPred);
-        }
-    }
-
     public static final Difference DiffSubj = new DiffInh(true);
     public static final Difference DiffPred = new DiffInh(false);
     public static final DynamicTruthModel ImageIdentity = new DynamicTruthModel() {
@@ -158,6 +117,59 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             return ((Task) taskRegions.get(0)).truth();
         }
     };
+    public static final DynamicTruthModel ConjIntersection = new Intersection() {
+
+        @Override
+        public Term reconstruct(Term superterm, List<TaskRegion> components) {
+
+            int n = components.size();
+            Conj c = new Conj(n);
+
+            for (int i = 0; i < n; i++) {
+                TaskRegion t = components.get(i);
+                if (!c.add(((Task) t).term(), t.start(), t.end(), 1, 1))
+                    break;
+            }
+            return c.term();
+        }
+
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            int superDT = superterm.dt();
+
+
+            if ((superDT == DTERNAL || superDT == XTERNAL) && !superterm.hasAny(CONJ)) {
+                /* simple case: */
+                return superterm.subterms().AND(event ->
+                        each.accept(event, start, end)
+                );
+            } else {
+
+                boolean xternal = superDT == XTERNAL;
+                boolean dternal = superDT == DTERNAL;
+                LongObjectPredicate<Term> sub;
+                if (xternal || dternal) {
+                    //propagate start,end to each subterm.  allowing them to match freely inside
+                    sub = (whenIgnored, event) -> each.accept(event, start, end);
+                } else {
+                    //??subterm refrences a specific point as a result of event time within the term. so start/end range gets collapsed at this point
+                    long range = (end - start);
+                    sub = (when, event) -> each.accept(event, when, when + range);
+                }
+
+                //if (event!=superterm)
+//else
+//return false;
+                return superterm.eventsWhile(sub, start, superDT == 0, superDT == DTERNAL,
+                        true /* always decompose xternal */, 0);
+            }
+        }
+    };
+
+    /** statement component */
+    private static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common) {
+        return stmtDecompose(superOp, subjOrPred, subterm, common, DTERNAL);
+    }
 
 //    public static final DynamicTruthModel ImplConjSubj = new Intersection() {
 //
@@ -172,11 +184,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 //        }
 //    };
 
-    /** statement component */
-    private static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common) {
-        return stmtDecompose(superOp, subjOrPred, subterm, common, DTERNAL);
-    }
-
     /** statement component (temporal) */
     private static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common, int dt) {
         Term s, p;
@@ -187,8 +194,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             s = common;
             p = subterm;
         }
-        if (s == null || p == null)
-            throw new NullPointerException();
+        assert(!(s == null || p == null));
 
         if (dt == DTERNAL) {
             return superOp.the(s, p);
@@ -279,56 +285,89 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             return x;
     }
 
-    @Nullable
-    public final DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean timeFlexible, NAR n) {
 
-        assert (superterm.op() != NEG);
+    final static class SectIntersection extends Intersection {
 
-        DynTruth d = new DynTruth(4);
+        final boolean union, subjOrPred;
 
-        return components(superterm, start, end, (Term concept, long subStart, long subEnd) -> {
-            boolean negated = concept.op() == Op.NEG;
-            if (negated)
-                concept = concept.unneg();
+        private SectIntersection(boolean union, boolean subjOrPred) {
+            this.union = union;
+            this.subjOrPred = subjOrPred;
+        }
 
-            Concept subConcept =
-                    n.conceptualizeDynamic(concept);
+        @Override
+        protected boolean negateFreq() {
+            return union;
+        }
 
+        @Override
+        public Term reconstruct(Term superterm, List<TaskRegion> components) {
+            return stmtReconstruct(superterm, components, subjOrPred);
+        }
 
-            if (!(subConcept instanceof TaskConcept)) {
-                return false;
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            Term common = stmtCommon(subjOrPred, superterm);
+            Term decomposed = stmtCommon(!subjOrPred, superterm);
+            Op op = superterm.op();
+
+            if (op.temporal && decomposed.op()==CONJ /* NEG , union ?  */) {
+                int outerDT = superterm.dt();
+                if ((outerDT !=XTERNAL)) {
+                    //int totalDT = outerDT; //check direction, may need neg
+                    int innerDT = decomposed.dt();
+                    if (innerDT != XTERNAL) {
+                        int decRange = outerDT != DTERNAL ? decomposed.dtRange() : 0;
+                        return decomposed.eventsWhile((offset, y) ->
+                                {
+                                    boolean ixTernal = offset == ETERNAL || offset == XTERNAL;
+
+                                    long subStart = ixTernal ? start : start + offset;
+                                    long subEnd = end;
+                                    if (subEnd < subStart) {
+                                        //swap
+                                        long x = subStart;
+                                        subStart = subEnd;
+                                        subEnd = x;
+                                    }
+                                    return each.accept(stmtDecompose(op, subjOrPred, y, common,
+                                            ixTernal ? DTERNAL : (int) ((decRange - offset) + outerDT)),
+                                            subStart,
+                                            subEnd);
+                                }
+                                , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
+                                innerDT == DTERNAL, false, 0);
+                    }
+                }
             }
 
-
-            BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
-
-
-            /* x.intersects(subStart, subEnd) && */
-            Task bt = table.match(subStart, subEnd, concept, d::doesntOverlap, n
+            return decomposed.subterms().AND(
+                    y -> each.accept(stmtDecompose(op, subjOrPred, y, common), start, end)
             );
-            if (bt == null)
-                return false;
+        }
 
-            /** project to a specific time, and apply negation if necessary */
-            bt = Task.project(timeFlexible, bt, subStart, subEnd, n, negated);
-            if (bt == null)
-                return false;
 
-            return d.add(bt);
-
-        }) ? d : null;
     }
 
-    protected abstract boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
+    static class DiffInh extends Difference {
+        final boolean subjOrPred;
 
-    /**
-     * used to reconstruct a dynamic term from some or all components
-     */
-    abstract public Term reconstruct(Term superterm, List<TaskRegion> c);
+        DiffInh(boolean subjOrPred) {
+            this.subjOrPred = subjOrPred;
+        }
 
-    @FunctionalInterface
-    interface ObjectLongLongPredicate<T> {
-        boolean accept(T object, long start, long end);
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            Term common = stmtCommon(subjOrPred, superterm);
+            Term decomposed = stmtCommon(!subjOrPred, superterm);
+            return each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(0), common), start, end) &&
+                    each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(1), common), start, end);
+        }
+
+        @Override
+        public Term reconstruct(Term superterm, List<TaskRegion> c) {
+            return stmtReconstruct(superterm, c, subjOrPred);
+        }
     }
 
     abstract static class Intersection extends DynamicTruthModel {
@@ -380,12 +419,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 }
             }
 
-
-            if (considered != n) {
+            if (considered != n)
                 return null;
-
-
-            }
 
             return y.negIf(negateFreq());
         }
@@ -395,56 +430,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
 
     }
-
-
-    public static final DynamicTruthModel ConjIntersection = new Intersection() {
-
-        @Override
-        public Term reconstruct(Term superterm, List<TaskRegion> components) {
-
-            int n = components.size();
-            Conj c = new Conj(n);
-
-            for (int i = 0; i < n; i++) {
-                TaskRegion t = components.get(i);
-                if (!c.add(((Task) t).term(), t.start(), t.end(), 1, 1))
-                    break;
-            }
-            return c.term();
-        }
-
-        @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            int superDT = superterm.dt();
-
-
-            if ((superDT == DTERNAL || superDT == XTERNAL) && !superterm.hasAny(CONJ)) {
-                /* simple case: */
-                return superterm.subterms().AND(event ->
-                        each.accept(event, start, end)
-                );
-            } else {
-
-                boolean xternal = superDT == XTERNAL;
-                boolean dternal = superDT == DTERNAL;
-                LongObjectPredicate<Term> sub;
-                if (xternal || dternal) {
-                    //propagate start,end to each subterm.  allowing them to match freely inside
-                    sub = (whenIgnored, event) -> each.accept(event, start, end);
-                } else {
-                    //??subterm refrences a specific point as a result of event time within the term. so start/end range gets collapsed at this point
-                    long range = (end - start);
-                    sub = (when, event) -> each.accept(event, when, when + range);
-                }
-
-                //if (event!=superterm)
-//else
-//return false;
-                return superterm.eventsWhile(sub, start, superDT == 0, superDT == DTERNAL,
-                        true /* always decompose xternal */, 0);
-            }
-        }
-    };
 
     abstract static class Difference extends DynamicTruthModel {
 

@@ -135,33 +135,42 @@
 
 
 //// implication-based composition ////////////////////////////////////////////////////////////////////////////////////
+//note: the question forms of these are responsible for creating terms that can be truthed dynamically. so they are important
+
     //Same as for inheritance
     //union/intersection assymmetry: union if subj, intersect if pred
 
      (P ==> M), (S ==> M), neq(P,S) |- ((P && S) ==> M), (Belief:IntersectionSym)
+        (P ==> M), (S ==> M), neq(P,S), task("?") |- ((P && S) ==> M), (Punctuation:Question)
      (P ==> M), (S ==> M), neq(P,S) |- ((P || S) ==> M), (Belief:UnionSym)
-                //(Belief:Implsition, Also:VarIntro)
+        (P ==> M), (S ==> M), neq(P,S), task("?") |- ((P || S) ==> M), (Punctuation:Question)
+
+                //...Also:VarIntro)
 
 
      (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized)
+        (M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question)
      (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
+        (M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
 
 
 
+        //TODO question forms
         ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
         ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P || S),A..+) ==> X), (Belief:UnionSym)
             //(Belief:Implsition, Also:VarIntro)
 
+        //TODO question forms
         (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
         (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
             //, (Belief:Implsition, Also:VarIntro)
 
-        //contradiction anonymizer
-        //TODO make inv(A,B) predicate which is true if A == --B
-        //(Y ==> X), (--Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==> X), (Belief:IntersectionSym)
-            //, (Belief:Implsition)
-        //(--Y ==> X), (Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==> X), (Belief:IntersectionSym)
-            //, (Belief:Implsition)
+                //contradiction anonymizer
+                //TODO make inv(A,B) predicate which is true if A == --B
+                //(Y ==> X), (--Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==> X), (Belief:IntersectionSym)
+                    //, (Belief:Implsition)
+                //(--Y ==> X), (Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==> X), (Belief:IntersectionSym)
+                    //, (Belief:Implsition)
 
 
     (X ==> Y), ((&&,Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:Deduction)

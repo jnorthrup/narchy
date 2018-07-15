@@ -94,7 +94,7 @@ class DynamicImplTest {
                 if (xy==null)
                     xy = dtdt("((x &&" + dtStr(XY) + " y) ==>" + dtStr(YA) + " a)");
 
-                System.out.println("inner=" + inner + " outer=" + outer + "\t"
+                System.out.println("i=" + inner + " o=" + outer + "\t"
                         + x + " " + y + " " + xy);
 
 
@@ -110,6 +110,8 @@ class DynamicImplTest {
                 String cccase = inner + " " + outer + "\t" + x + " " + y + " " + xy;
                 assertEquals(pt_p.toString(), pt_p_Task.term().toString(),
                         cccase);
+                assertEquals(2, pt_p_Task.stamp().length);
+                assertEquals(0.81f, pt_p_Task.conf());
             }
         }
 
