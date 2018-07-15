@@ -124,7 +124,7 @@ public class ConjClustering extends Causable {
     @Override
     protected int next(NAR nar, int iterations /* max tasks generated per centroid, >=1 */) {
 
-        if (bag==null || bag.bag.isEmpty()) return -1;
+        if (bag==null || bag.bag.isEmpty()) return 0;
 
         this.now = nar.time();
         this.dur = nar.dur();
@@ -140,7 +140,7 @@ public class ConjClustering extends Causable {
         if (tasksGenerated > 0) {
             in.commit();
         }
-        return tasksGenerated;
+        return iterations;
     }
 
 

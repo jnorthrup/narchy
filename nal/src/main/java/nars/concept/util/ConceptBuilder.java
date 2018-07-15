@@ -108,21 +108,50 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                 //TODO NAL2 set identities?
                 break;
 
-                //TODO not done yet
-            case IMPL:
-                Term subj = t.sub(0);
+            //TODO not done yet
+            case IMPL: {
                 /* TODO:
                     ((&&,x,y,z,...) ==> z) from (x ==> z) and (y ==> z) //intersect pre
                     (--(--x && --y) ==> z) from (x ==> z) and (y ==> z) //union pre
                     (z ==> (x && y))  //intersect conc
                     (z ==> --(--x && --y))  //union conc
                  */
-                Term su = subj;
-                if (su.op() == CONJ && validDynamicSubterms(su.subterms())) {
-                    return DynamicTruthModel.IsectSubj;
-                }
+                Term su = t.sub(0);
+
+                Term pu = t.sub(1);
+
+                Op suo = su.op();
+                //subject has special negation union case
+                boolean subjDyn = (
+                    suo == CONJ && validDynamicSubterms(su.subterms())
+                        ||
+                    suo == NEG && (su.unneg().op()==CONJ && validDynamicSubterms(su.unneg().subterms()))
+                );
+                boolean predDyn = (pu.op() == CONJ && validDynamicSubterms(pu.subterms()));
+
                 //TODO if subj is negated
+
+                if (subjDyn && predDyn) {
+                    //choose the simpler to dynamically calculate for
+                    if (su.volume() <= pu.volume()) {
+                        predDyn = false; //dyn subj
+                    } else {
+                        subjDyn = false; //dyn pred
+                    }
+                }
+
+                if (subjDyn) {
+                    if (suo==NEG) {
+                        return DynamicTruthModel.UnionSubj;
+                    } else {
+                        return DynamicTruthModel.IsectSubj;
+                    }
+                } else if (predDyn) {
+                    return DynamicTruthModel.IsectPred;
+                }
+
                 break;
+            }
 
             case CONJ:
                 if (validDynamicSubterms(t.subterms()))

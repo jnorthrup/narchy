@@ -223,7 +223,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         protected int next(NAR nar, int work) {
 
             if (in == null)
-                return -1;
+                return 0; //return -1;
 
             int dur = this.dur();
 
@@ -240,7 +240,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
                 this.lastUpdate = now;
             } else {
                 if (pixelsRemainPerUpdate <= 0)
-                    return -1; 
+                    return 0; //return -1;
             }
 
 

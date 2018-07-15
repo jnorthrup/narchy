@@ -82,7 +82,7 @@ public abstract class TaskLeak extends Causable {
     protected int next(NAR nar, int iterations) {
 
         if (queue.isEmpty())
-            return -1; 
+            return 0;
 
         float done = queue.commit(nar, iterations);
         return iterations; //(int) Math.ceil(done);

@@ -75,10 +75,12 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         long a = nanoTime();
 
         int ran = work.next(n);
-        int ii = Math.abs(ran);
-        if (ii > 0) {
+        if (ran > 0) {
             workTimeThisCycleNS += (nanoTime() - a);
-            iterationsThisCycle += ii;
+            iterationsThisCycle += ran;
+        } else {
+            if (ran < 0)
+                throw new UnsupportedOperationException();
         }
         return ran;
     }
