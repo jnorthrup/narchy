@@ -24,8 +24,12 @@ public interface WebSocket extends JSObject {
     }
 
     static WebSocket newSocket(String host, int port, String path) {
+        StringBuilder s = new StringBuilder().append("ws://").append(host).append(":").append(port);
+        if (!path.startsWith("/"))
+            s.append('/');
+        s.append(path);
         return WebSocketUtil.newSocket(
-                new StringBuilder().append("ws://").append(host).append(":").append(port).append("/").append(path).toString()
+                s.toString()
         );
     }
 

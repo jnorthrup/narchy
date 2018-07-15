@@ -2,6 +2,7 @@ package jcog.net.http;
 
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.framing.CloseFrame;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ public class WebSocketConnection extends WebSocketImpl {
             decode(prependData);
             logger.info("connect {} {}", chan.getRemoteAddress(), getResourceDescriptor());
         } else {
+            close(CloseFrame.REFUSE);
             key.cancel();
             logger.info("non-connect {}", chan.getRemoteAddress(), this);
         }

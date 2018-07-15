@@ -72,7 +72,7 @@ public class Shell {
 
             switch (args[0]) {
                 case "web":
-                    Web.main(args);
+                    Web.Single.main(args);
                     break;
 
                 case "gui":

@@ -23,7 +23,7 @@ public class WebClientJS {
 
         body.appendChild(doc.createTextNode("start"));
 
-        socket = WebSocket.newSocket("me");
+        socket = WebSocket.newSocket("/");
         socket.setOnData((msg)->{
 
             HTMLElement e = doc.createElement("div").withChild(doc.createTextNode(JSON.stringify(msg)));

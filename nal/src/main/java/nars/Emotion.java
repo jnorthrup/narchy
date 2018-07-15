@@ -40,7 +40,7 @@ public class Emotion implements Meter {
 
     public final Counter conceptFire = new FastCounter("concept fire");
     public final Counter taskFire = new FastCounter("task fire");
-    public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
+    //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
     public final Counter premiseFire = new FastCounter("premise fire");
     public final Counter premiseFailMatch = new FastCounter("premise fail");
 
@@ -183,18 +183,13 @@ public class Emotion implements Meter {
     public void onInput(Task t, NAR nar) {
 
         float pri = t.priElseZero();
-        float vol = t.voluplexity();
+        int vol = t.volume();
 
-        /** heuristic, 3 components:
-         *      base penalty for processing
-         *      complexity
-         *      priority
-         */
-        float cost = (1f + vol / termVolMax + pri) / 3f;
+        float cost = vol;
 
         MetaGoal.Perceive.learn(t.cause(), cost, nar.causes);
 
-        busy(pri, (int) Math.ceil(vol));
+        busy(pri, vol);
     }
 
     /**
@@ -202,7 +197,7 @@ public class Emotion implements Meter {
      */
     public void onActivate(Task t, float activation) {
         taskFire.increment();
-        taskActivation_x100.increment(Math.round(activation * 100));
+        //taskActivation_x100.increment(Math.round(activation * 100));
     }
 
     public void onAnswer(Task questionTask, Task answer) {

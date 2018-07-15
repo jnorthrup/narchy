@@ -1,5 +1,7 @@
 package jcog.exe.realtime;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
     /** adjustable while running */
@@ -9,8 +11,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
                                 Runnable callable,
                                 long recurringTimeout, long resolution, int wheelSize) {
         super(rounds, callable);
-        this.period = recurringTimeout;
-        reset(resolution, wheelSize);
+        reset(this.period = recurringTimeout, resolution, wheelSize);
     }
 
     @Override
@@ -24,12 +25,26 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         return true;
     }
 
+    private final AtomicBoolean pending = new AtomicBoolean();
+
     @Override
     public void execute(HashedWheelTimer t) {
         if (!isCancelled()) {
+            pending.setRelease(true);
             super.execute(t);
-            reset(t.resolution, t.wheels);
+            reset(period, t.resolution, t.wheels); //TODO time since last
             t._schedule(this);
+        }
+    }
+
+    @Override
+    public void run() {
+        if (pending.weakCompareAndSetAcquire(true, false)) { //coalesce
+            //System.out.println(" run " + this);
+            super.run();
+        } else {
+            //elide
+            //System.out.println("skip " + this);
         }
     }
 
@@ -50,7 +65,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         return (int) Math.round(((double)period)/resolution);
     }
 
-    public void reset(long resolution, int wheels) {
+    public void reset(long period, long resolution, int wheels) {
         this.rounds = (int)
             Math.min(Integer.MAX_VALUE-1,
                 Math.round((((double)period)/resolution) / wheels)

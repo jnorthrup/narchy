@@ -38,7 +38,7 @@ abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
     }
 
     @Override
-    public final void run() {
+    public void run() {
         run.run();
     }
 

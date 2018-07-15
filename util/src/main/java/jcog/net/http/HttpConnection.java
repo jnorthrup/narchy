@@ -33,7 +33,7 @@ public class HttpConnection {
 
     private final ConnectionStateChangeListener stateChangeListener;
 
-    private final Deque<HttpResponse> responses = new ArrayDeque<>(4); 
+    private final Deque<HttpResponse> responses = new ArrayDeque<>(4);
     public final Map<String, String> request = new HashMap<>();
 
     private final HttpModel model;
@@ -45,13 +45,13 @@ public class HttpConnection {
     private ByteBuffer lineBuffer;
 
 
-    private HttpResponse currentResponse; 
+    private HttpResponse currentResponse;
 
     private boolean keepAlive;
-    
+
     private STATE state;
     private METHOD method;
-    private int clientHttpMinor; 
+    private int clientHttpMinor;
     private URI requestUri;
 
     HttpConnection(ConnectionStateChangeListener stateChangeListener, HttpModel model, SelectionKey key, SocketChannel sChannel) {
@@ -65,12 +65,11 @@ public class HttpConnection {
         lastReceivedNS = System.nanoTime();
     }
 
-    
+
     @SuppressWarnings("unchecked")
     public void read(ByteBuffer buf) {
         lastReceivedNS = System.nanoTime();
 
-        
 
         if (state == STATE.CLOSED || state == STATE.BAD_REQUEST || state == STATE.UPGRADE) {
             return;
@@ -84,7 +83,7 @@ public class HttpConnection {
                 logger.info("connect {}", requestUri);
 
             } catch (HttpException ex) {
-                respond(new HttpResponse(method,  ex.status, ex.getMessage(), ex.fatal || !this.keepAlive, null));
+                respond(new HttpResponse(method, ex.status, ex.getMessage(), ex.fatal || !this.keepAlive, null));
 
                 setState(ex.fatal ? STATE.BAD_REQUEST : STATE.WAIT_FOR_REQUEST_LINE);
 
@@ -102,7 +101,7 @@ public class HttpConnection {
                     respondNull();
                 }
 
-                
+
                 setState(this.keepAlive ? STATE.WAIT_FOR_REQUEST_LINE : STATE.CLOSED);
             }
 
@@ -125,12 +124,9 @@ public class HttpConnection {
 
     public void respond(File file) {
 
-            
-            respond(new HttpResponse(method,
-                    /*(Map<String, String>) headers.clone()*/ 200, "", !this.keepAlive, file));
 
-
-
+        respond(new HttpResponse(method,
+                /*(Map<String, String>) headers.clone()*/ 200, "", !this.keepAlive, file));
 
 
     }
@@ -139,73 +135,6 @@ public class HttpConnection {
         respond(new HttpResponse(method,
                 /*(Map<String, String>) headers.clone()*/ 404, "", !this.keepAlive, null));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private void respond(HttpResponse resp) {
@@ -236,13 +165,12 @@ public class HttpConnection {
             buf.position(pos);
         }
 
-        
 
         if (state == STATE.WAIT_FOR_REQUEST_LINE) {
             readRequestLine(buf);
         }
 
-        
+
         if (state == STATE.READING_HEADERS) {
 
 
@@ -251,7 +179,7 @@ public class HttpConnection {
 
         if (state == STATE.DONE_READING) {
             String upgradeField = request.get("upgrade");
-            if (upgradeField!=null && "websocket".equalsIgnoreCase(upgradeField)) {
+            if (upgradeField != null && "websocket".equalsIgnoreCase(upgradeField)) {
                 websocket = true;
                 setState(STATE.UPGRADE);
                 return false;
@@ -263,17 +191,15 @@ public class HttpConnection {
 
 
             if (request.containsKey("content-length")) {
-                
+
                 throw new HttpException(400, true, "Request body is not allowed for this method");
             }
-
-            
 
 
             return true;
         }
 
-        
+
         if (buf.hasRemaining()) {
             if (state == STATE.WAIT_FOR_REQUEST_LINE || state == STATE.READING_HEADERS) {
                 if (lineBuffer == null) {
@@ -294,7 +220,7 @@ public class HttpConnection {
 
     private void ensureRawHeadHasRemaining(int remaining) {
         if (rawHead == null) {
-            
+
             rawHead = ByteBuffer.allocate((remaining / RAWHEAD_SIZE + 1) * RAWHEAD_SIZE);
         } else if (remaining > rawHead.remaining()) {
             int newCap = rawHead.capacity();
@@ -316,25 +242,27 @@ public class HttpConnection {
         int position = buf.position();
         int limit = buf.limit();
 
-        
+
         buf.position(beforeLinePosition);
         buf.limit(position);
 
         ensureRawHeadHasRemaining(buf.remaining());
 
-        
+
         rawHead.put(buf);
 
-        
+
         buf.position(position);
         buf.limit(limit);
     }
+
+    final static ThreadLocal<StringBuilder> lineParser = ThreadLocal.withInitial(() -> new StringBuilder(4 * 1024));
 
     /**
      * Read the request line and move the buffer position beyond the request line
      */
     private void readRequestLine(ByteBuffer buf) throws HttpException {
-        StringBuilder line = new StringBuilder();
+        StringBuilder line = lineParser.get();
 
         try {
             while (true) {
@@ -349,16 +277,8 @@ public class HttpConnection {
                 rawHead_putToPos(buf, beforeLinePosition);
 
                 if (line.length() == 0) {
-                    
                     continue;
                 }
-
-                
-                
-                
-
-                
-                
 
                 if (line.length() > 300) {
                     throw new HttpException(414, true, "Request-Line Too Long");
@@ -375,7 +295,7 @@ public class HttpConnection {
                         if (uri.length() > 255) {
                             throw new HttpException(414, true, "Request-URI Too Long");
                         } else {
-                            requestUri = new URI(uri);
+                            this.requestUri = new URI(uri);
                             this.clientHttpMinor = Integer.parseInt(requestLine.group(3), 10);
                         }
                     } else {
@@ -391,7 +311,7 @@ public class HttpConnection {
         } catch (NumberFormatException ex) {
             throw new HttpException(400, true, "Invalid Request-Line. Expected integer", ex);
         } catch (URISyntaxException ex) {
-            throw new HttpException(400, true, "Invalid Request-Line. Malformed URI", ex);
+            throw new HttpException(400, true, "Invalid Request-Line. Malformed URI: " + requestUri, ex);
         }
     }
 
@@ -408,14 +328,12 @@ public class HttpConnection {
 
                 rawHead_putToPos(buf, beforeLinePosition);
 
-                
-
 
                 Matcher headerLine = HttpUtil.headerLine.matcher(line.subSequence(0, line.length()));
                 if (headerLine.matches()) {
                     String name = headerLine.group(1);
                     String value = headerLine.group(2);
-                    
+
                     request.put(name.toLowerCase(), value.trim());
                     if (request.size() > 50) {
                         throw new HttpException(400, true, "Too many headers");
@@ -425,12 +343,12 @@ public class HttpConnection {
                 }
 
                 if (buf.remaining() >= 2) {
-                    
+
                     if (HttpUtil.isCR(buf.get(buf.position()))
                             && HttpUtil.isLF(buf.get(buf.position() + 1))) {
                         ensureRawHeadHasRemaining(2);
 
-                        
+
                         rawHead.put(buf.get());
                         rawHead.put(buf.get());
 
@@ -455,7 +373,7 @@ public class HttpConnection {
         if (newState == STATE.DONE_READING) {
             if (this.clientHttpMinor > 0) {
                 this.keepAlive = "keep-alive".equals(request.get("connection"));
-                
+
             } else {
                 this.keepAlive = false;
             }
@@ -463,8 +381,7 @@ public class HttpConnection {
 
         stateChangeListener.connectionStateChange(this, oldState, newState);
 
-        
-        
+
         if (newState == STATE.WAIT_FOR_REQUEST_LINE || newState == STATE.CLOSED || newState == STATE.BAD_REQUEST) {
             this.requestUri = null;
             this.clientHttpMinor = 0;
@@ -483,7 +400,7 @@ public class HttpConnection {
         }
     }
 
-    
+
     public void writeable() throws IOException {
         while (!responses.isEmpty() || currentResponse != null) {
             if (currentResponse == null) {
@@ -494,19 +411,19 @@ public class HttpConnection {
             if (currentResponse.write(channel)) {
                 if (currentResponse.close) {
                     setState(STATE.CLOSED);
-                    channel.close(); 
+                    channel.close();
                     logger.info("closed {}", this.keepAlive);
                 }
 
-                
+
                 currentResponse = null;
             } else {
-                return; 
+                return;
             }
 
         }
 
-        
+
         key.interestOps(SelectionKey.OP_READ);
     }
 
@@ -546,13 +463,13 @@ public class HttpConnection {
 
 
     enum STATE {
-        WAIT_FOR_REQUEST_LINE, 
-        READING_HEADERS, 
+        WAIT_FOR_REQUEST_LINE,
+        READING_HEADERS,
 
-        
+
         DONE_READING,
-        UPGRADE, 
-        BAD_REQUEST, 
+        UPGRADE,
+        BAD_REQUEST,
         CLOSED
     }
 

@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.Util;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.BufferedExec;
@@ -18,7 +17,12 @@ public class NARchy extends NARS {
 
     //static final Logger logger = LoggerFactory.getLogger(NARchy.class);
 
+
     public static NAR core() {
+        return core(1);
+    }
+
+    public static NAR core(int threads) {
 
 
         NAR nar = new DefaultNAR(0, true)
@@ -26,7 +30,7 @@ public class NARchy extends NARS {
                 .index(new CaffeineIndex(32*1024))
                 //.index(new HijackConceptIndex(32*1024, 4))
 
-                .exe(new BufferedExec.WorkerExec(Util.concurrency()))
+                .exe(new BufferedExec.WorkerExec(threads))
 
                 .time(new RealTime.MS(false ).durFPS(10f))
                 

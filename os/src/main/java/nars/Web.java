@@ -16,8 +16,8 @@ import nars.time.clock.RealTime;
 import nars.web.WebClientJS;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
+import org.jetbrains.annotations.Nullable;
 import org.teavm.tooling.RuntimeCopyOperation;
 import org.teavm.tooling.TeaVMTool;
 import org.teavm.tooling.TeaVMToolException;
@@ -31,22 +31,13 @@ import java.util.function.Function;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 
-public class Web implements HttpModel {
+abstract public class Web implements HttpModel {
 
     static final int DEFAULT_PORT = 60606;
 
-
-    private final NAR nar;
-    /** adapter */
-    private final MaplikeConceptIndex sharedIndex;
-
-
-
-    @Override
-    public void response(HttpConnection h) {
+    @Override public void response(HttpConnection h) {
 
         URI url = h.url();
-
 
         String path = url.getPath();
         switch (path) {
@@ -61,17 +52,17 @@ public class Web implements HttpModel {
                 break;
             default:
                 h.respond(
-                        "<html>\n" +
-                                "  <head>\n" +
-                                "    <title></title>\n" +
-                                "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"websocket.js\"></script>\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/runtime.js\"></script>\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/classes.js\"></script>\n" +
-                                "  </head>\n" +
-                                "  <body onload=\"main()\">\n" +
-                                "  </body>\n" +
-                                "</html>");
+            "<html>\n" +
+                    "  <head>\n" +
+                    "    <title></title>\n" +
+                    "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\n" +
+                    "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"websocket.js\"></script>\n" +
+                    "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/runtime.js\"></script>\n" +
+                    "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/classes.js\"></script>\n" +
+                    "  </head>\n" +
+                    "  <body onload=\"main()\">\n" +
+                    "  </body>\n" +
+                    "</html>");
                 break;
 
         }
@@ -79,43 +70,30 @@ public class Web implements HttpModel {
 
     }
 
-    //TODO <URI,NAR>
-    final CustomConcurrentHashMap<String, NAR> reasoners = new CustomConcurrentHashMap<>(
-            STRONG, EQUALS, WEAK, IDENTITY, 64) {
-        @Override
-        protected void reclaim(NAR n) {
-            Web.this.remove(n);
-        }
-    };
-
-    private void remove(NAR n) {
-        stopping(n);
-        n.reset();
-    }
 
     @Override
     public boolean wssConnect(WebSocketConnection conn) {
-        String url = conn.url().getPath();
-        if (url.equals("/")) {
-            conn.close(CloseFrame.REFUSE);
+        NAR n = nar(conn, conn.url().getPath());
+        if (n != null) {
+
+            //logger.info("..
+            //System.out.println("NAR " + System.identityHashCode(n) + " for " + url);
+
+            conn.setAttachment(
+                    new NARConnection(n,
+                            n.onTask(new WebSocketLogger(conn, n))
+                            //...
+                    )
+            );
+
+            return true;
+        } else {
             return false;
         }
-
-        NAR n = reasoners.computeIfAbsent(url, (Function<String,NAR>)this::nar);
-        assert(n!=null);
-
-        //logger.info("..
-        //System.out.println("NAR " + System.identityHashCode(n) + " for " + url);
-
-        conn.setAttachment(
-                new NARConnection(n,
-                        n.onTask(new WebSocketLogger(conn, n))
-                        //...
-                )
-        );
-
-        return true;
     }
+
+    @Nullable
+    protected abstract NAR nar(WebSocketConnection conn, String url);
 
 
     static class NARConnection extends Ons {
@@ -159,70 +137,29 @@ public class Web implements HttpModel {
 
     }
 
-    /** create a NAR */
-    private NAR nar(String path) {
-        final Exec exe = Web.this.nar.exe;
-        final Exec sharedExec = new UniExec() {
-
-            @Override
-            public boolean concurrent() {
-                return false;
-            }
-
-            @Override
-            public void start(NAR nar) {
-                super.start(nar);
-            }
-
-            @Override
-            public void execute(Runnable async) {
-                exe.execute(async);
-            }
-
-            @Override
-            public void execute(Consumer<NAR> r) {
-                execute(()->r.accept(this.nar));
-            }
-        };
-
-        NAR n = new NARS().withNAL(1, 8).time(new RealTime.MS()).exe(sharedExec).index(sharedIndex).get();
 
 
-        assert (path.charAt(0) == '/');
-        path = path.substring(1);
-        n.named(path);
-
-        n.log(); //temporary
-
-        int initialFPS = 5;
-        n.startFPS(initialFPS);
-
-        starting(n);
-
-        return n;
-    }
-
-    public Web() {
-        this.nar = NARchy.core();
-        //this.nar.loop.setFPS(10);
-        this.sharedIndex = new ProxyConceptIndex(nar.concepts);
-    }
-
-    public static void clientGenerate() {
+    public static void buildClient(Class entryClass, boolean clean) {
         try {
+
             TeaVMTool tea = new TeaVMTool();
-//            try {
-//                org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/teacache"));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+
+            if (clean) {
+                try {
+                    org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/teacache"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
             try {
                 org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/tea"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            tea.setMainClass(WebClientJS.class.getName());
+            tea.setMainClass(entryClass.getName());
             tea.setCacheDirectory(new File("/tmp/teacache"));
             tea.setIncremental(true);
             //tea.setDebugInformationGenerated(true);
@@ -282,21 +219,122 @@ public class Web implements HttpModel {
         }
     }
 
-    public static void main(String[] args) throws IOException {
 
-        clientGenerate();
 
-        int port;
-        if (args.length > 0) {
-            port = Texts.i(args[0]);
-        } else {
-            port = DEFAULT_PORT;
+
+    /** Web Interface for 1 NAR */
+    public static class Single extends Web  {
+
+        private final NAR nar;
+
+        public Single(NAR nar) {
+            this.nar = nar;
         }
 
+        public static void main(String[] args) throws IOException {
 
-        jcog.net.http.HttpServer h = new HttpServer("0.0.0.0", port, new Web());
-        h.setFPS(10f);
+            buildClient(WebClientJS.class, false);
 
+            int port;
+            if (args.length > 0) {
+                port = Texts.i(args[0]);
+            } else {
+                port = DEFAULT_PORT;
+            }
+
+
+            jcog.net.http.HttpServer h = new HttpServer(port, new Web.Single(NARchy.core(1)));
+            h.setFPS(10f);
+
+        }
+
+        @Override
+        protected @Nullable NAR nar(WebSocketConnection conn, String url) {
+            return url.equals("/") ? nar : null;
+        }
+    }
+
+    /** Shared Multi-NAR Server
+     *  TODO
+     * */
+    public static class Multi extends Web {
+        private final NAR nar;
+        /** adapter */
+        private final MaplikeConceptIndex sharedIndex;
+
+        public Multi() {
+            this.nar = NARchy.core();
+            //this.nar.loop.setFPS(10);
+            this.sharedIndex = new ProxyConceptIndex(nar.concepts);
+        }
+
+        @Override
+        protected NAR nar(WebSocketConnection conn, String url) {
+            if (url.equals("/")) {
+                return null;
+            }
+
+            return reasoners.computeIfAbsent(url, (Function<String,NAR>)this::nar);
+        }
+
+        //TODO <URI,NAR>
+        final CustomConcurrentHashMap<String, NAR> reasoners = new CustomConcurrentHashMap<>(
+                STRONG, EQUALS, WEAK, IDENTITY, 64) {
+            @Override
+            protected void reclaim(NAR n) {
+                Multi.this.remove(n);
+            }
+        };
+
+        private void remove(NAR n) {
+            stopping(n);
+            n.reset();
+        }
+
+        /** create a NAR */
+        private NAR nar(String path) {
+            final Exec exe = nar.exe;
+            final Exec sharedExec = new UniExec() {
+
+                @Override
+                public boolean concurrent() {
+                    return false;
+                }
+
+                @Override
+                public void start(NAR nar) {
+                    super.start(nar);
+                }
+
+                @Override
+                public void execute(Runnable async) {
+                    exe.execute(async);
+                }
+
+                @Override
+                public void execute(Consumer<NAR> r) {
+                    execute(()->r.accept(this.nar));
+                }
+            };
+
+            NAR n = new NARS().withNAL(1, 8).time(new RealTime.MS()).exe(sharedExec).index(sharedIndex).get();
+
+
+            assert (path.charAt(0) == '/');
+            path = path.substring(1);
+            n.named(path);
+
+            n.log(); //temporary
+
+            int initialFPS = 5;
+            n.startFPS(initialFPS);
+
+            starting(n);
+
+            return n;
+        }
+
+    }
 
 //        Util.sleep(100);
 //
@@ -306,8 +344,10 @@ public class Web implements HttpModel {
 //        Util.sleep(500);
 //        c1.closeBlocking();
 //        c2.closeBlocking();
-    }
 
+
+
+    /** client access for use in java */
     public static class WebClient extends WebSocketClient {
 
         public WebClient(URI serverUri) {
@@ -341,7 +381,7 @@ public class Web implements HttpModel {
         }
     }
 
-    private static class WebSocketLogger implements Consumer<Task> {
+    static class WebSocketLogger implements Consumer<Task> {
 
         private final NAR n;
         volatile WebSocket w;
@@ -355,14 +395,17 @@ public class Web implements HttpModel {
         public void accept(Task t) {
             //if (w != null && w.isOpen()) {
 
-                try {
-                    w.send(t.toString(true).toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                w.send(t.toString(true).toString());
+            } catch (Exception e) {
+                e.printStackTrace();
 //                    w = null;
 //                    w.close();
-                }
+            }
             //}
         }
+
+
     }
+
 }

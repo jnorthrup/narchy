@@ -314,7 +314,7 @@ abstract public class BufferedExec extends UniExec {
 
         private final class Worker implements Runnable, Off {
 
-            private final FasterList schedule = new FasterList(1024);
+            private final FasterList schedule = new FasterList(IN_CAPACITY);
 
             private boolean alive = true;
 
@@ -331,7 +331,7 @@ abstract public class BufferedExec extends UniExec {
 
                     long workStart = System.nanoTime();
 
-                    int batchSize = (int) Math.ceil( (((float)in.capacity()) / (totalConcurrency - 1)));
+                    int batchSize = (int) Math.ceil( (((float)in.capacity()) / Math.max(1,(totalConcurrency - 1))));
                     int drained = in.remove(schedule, batchSize);
                     if (drained > 0) {
                         execute(schedule, 1);

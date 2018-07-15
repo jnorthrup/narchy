@@ -71,7 +71,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
     // maximum allowed capacity
     // this must always be a power of 2
     //
-    protected final int      size;
+    protected final int cap;
 
     // we need to compute a position in the ring buffer
     // modulo size, since size is a power of two
@@ -115,9 +115,9 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
     public MetalConcurrentQueue(final int capacity) {
         int c = 1;
         while(c < capacity) c <<=1;
-        size = c;
-        mask = size - 1;
-        buffer = (E[])new Object[size];
+        cap = c;
+        mask = cap - 1;
+        buffer = (E[])new Object[cap];
     }
 
     @Override
@@ -127,7 +127,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         for(;;) {
             final int tailSeq = tail.getAcquire();
             // never offer onto the slot that is currently being polled off
-            final int queueStart = tailSeq - size;
+            final int queueStart = tailSeq - cap;
 
             // will this sequence exceed the capacity
             if((headCache > queueStart) || ((headCache = head.getOpaque()) > queueStart)) {
@@ -140,8 +140,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
                         // and we got access without contention
 
                         // convert sequence number to slot id
-                        final int tailSlot = (tailSeq&mask);
-                        buffer[tailSlot] = e;
+                        buffer[(tailSeq&mask)] = e;
 
                         return true;
                     } finally {
@@ -249,6 +248,8 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
         int spin = 0;
 
+        maxElements = Math.min(e.length, maxElements);
+
         for(;;) {
             final int pollPos = head.getOpaque(); // prepare to qualify?
             // is there data for us to poll
@@ -294,7 +295,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
     @Override
     public int capacity() {
-        return size;
+        return cap;
     }
 
     @Override

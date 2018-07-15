@@ -47,6 +47,10 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     private final WebSocketSelector ws;
 
 
+    public HttpServer(int port, HttpModel model) throws IOException {
+        this("0.0.0.0", port, model);
+    }
+
     public HttpServer(String host, int port, HttpModel model) throws IOException {
         this(new InetSocketAddress(host, port), model);
     }
