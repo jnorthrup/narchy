@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 abstract public class BufferedExec extends UniExec {
 
+    public static final float MIN_BUFFER_AVAILABILITY = 0.1f;
     public final int totalConcurrency;
 
     protected volatile long idleTimePerCycle;
@@ -291,8 +292,10 @@ abstract public class BufferedExec extends UniExec {
 
                 exe.execute(Worker::new, threads, affinity);
 
-                /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
-                Exe.setExecutor(this);
+                if (totalConcurrency > Runtime.getRuntime().availableProcessors()/2) {
+                    /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
+                    Exe.setExecutor(this);
+                }
             }
 
         }
@@ -357,24 +360,23 @@ abstract public class BufferedExec extends UniExec {
 
                 double baseTime = nar.loop.jiffy.doubleValue() * nar.loop.throttle.doubleValue() * playTime;
 
-                while ( (remain = (until - (now = System.nanoTime()))) > 0) {
+                while (in.availablePct() > MIN_BUFFER_AVAILABILITY && (remain = (until - (now = System.nanoTime()))) > 0) {
                     //int ii = i;
                     InstrumentedCausable c = can.getIndex(rng);
                     if (c == null) break; //empty
 
                     boolean singleton = c.c.singleton();
-                    if (singleton && !c.c.instance.tryAcquire())
-                        continue;
-
-                    try {
-                        double timePerIteration = c.timePerIterationMean();
-                        long minExec = Double.isFinite(timePerIteration) ? Math.round(timePerIteration * 1.5) : 0;
-                        long runtimeNS =
-                                Math.min(remain, Math.max(minExec, Math.round(c.pri() * baseTime)));
-                        c.runFor(runtimeNS);
-                    } finally {
-                        if (singleton)
-                            c.c.instance.release();
+                    if (!singleton || c.c.instance.tryAcquire()) {
+                        try {
+                            double timePerIteration = c.timePerIterationMean();
+                            long minExec = Double.isFinite(timePerIteration) ? Math.round(timePerIteration * 1.5) : 0;
+                            long runtimeNS =
+                                    Math.min(remain, Math.max(minExec, Math.round(c.pri() * baseTime)));
+                            c.runFor(runtimeNS);
+                        } finally {
+                            if (singleton)
+                                c.c.instance.release();
+                        }
                     }
 
                     tryCycle();
@@ -390,8 +392,9 @@ abstract public class BufferedExec extends UniExec {
             public void sleep() {
                 if (idleTimePerCycle > 0) {
 
-                    Util.sleepNSWhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
-                            in.size() > 0 || !alive
+                    Util.sleepNSUntil(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
+                            //in.size() > 0 || !alive
+                            false
                     );
                 }
             }

@@ -1,5 +1,6 @@
 package nars.web;
 
+import org.teavm.jso.JSObject;
 import org.teavm.jso.dom.html.HTMLBodyElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
@@ -7,42 +8,55 @@ import org.teavm.jso.json.JSON;
 
 import java.util.ArrayDeque;
 
-/** see: https://github.com/automenta/spimedb/commit/93cc982f6d31cacb9c5d23e29f93d54ac5b9c1a8 */
+/**
+ * see: https://github.com/automenta/spimedb/commit/93cc982f6d31cacb9c5d23e29f93d54ac5b9c1a8
+ */
 public class WebClientJS {
 
 
-    private final HTMLDocument doc = HTMLDocument.current();
+    private final HTMLDocument doc;
+    private final HTMLBodyElement body;
+
     private final WebSocket socket;
 
-    final static int bufferCapacity = 8;
+    final static int bufferCapacity = 32;
     private final ArrayDeque<HTMLElement> buffer = new ArrayDeque<>(bufferCapacity);
 
     WebClientJS() {
 
-        HTMLBodyElement body = doc.getBody();
+        doc = HTMLDocument.current();
+        body = doc.getBody();
+        socket = WebSocket.connect("/");
 
-        body.appendChild(doc.createTextNode("start"));
-
-        socket = WebSocket.newSocket("/");
-        socket.setOnData((msg)->{
-
-            HTMLElement e = doc.createElement("div").withChild(doc.createTextNode(JSON.stringify(msg)));
-
-            if (buffer.size()+1 >= bufferCapacity) {
-                HTMLElement r = buffer.removeFirst();
-                r.delete();
-            }
-
-            buffer.add(e);
-            body.appendChild(e);
+        socket.setOnData((msg) -> {
+            MsgPack.decodeArray(msg, (x) -> {
+                push(x);
+            });
         });
 
-        socket.setOnOpen(()->{
+        socket.setOnOpen(() -> {
             socket.send("(x-->y).");
             socket.send("(x-->a).");
         });
     }
 
+
+    protected void push(JSObject m) {
+
+
+        String s = JSON.stringify(m); ///*JSON.stringify(m)*/
+
+        HTMLElement e = doc.createElement("div").withChild(doc.createTextNode(s));
+
+        if (buffer.size() + 1 >= bufferCapacity) {
+            HTMLElement r = buffer.removeFirst();
+            r.delete();
+        }
+
+        buffer.add(e);
+        body.appendChild(e);
+
+    }
 
     public static void main(String[] args) {
         new WebClientJS();

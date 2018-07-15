@@ -22,6 +22,7 @@ package jcog.data.list;
  */
 
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
+import jcog.Util;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,17 +42,17 @@ import static java.lang.Thread.onSpinWait;
  * <p>
  * Created by jcairns on 5/28/14.
  */
-public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
+public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
 
   
-    public int clear(Consumer<E> each) {
+    public int clear(Consumer<X> each) {
         return clear(each, -1);
     }
 
-    public int clear(Consumer<E> each, int limit) {
+    public int clear(Consumer<X> each, int limit) {
         int count = 0;
         int s = limit >= 0 ? Math.min(limit, size()) : size();
-        E next;
+        X next;
         while ((s-- > 0) && (next = poll()) != null) {
             each.accept(next);
             count++;
@@ -91,7 +92,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
     int a1, a2, a3, a4, a5, a6, a7, a8;
 
     // a ring buffer representing the queue
-    final E[] buffer;
+    final X[] buffer;
 
     int r1, r2, r3, r4, r5, r6, r7;
 //    @sun.misc.Contended
@@ -117,11 +118,23 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         while(c < capacity) c <<=1;
         cap = c;
         mask = cap - 1;
-        buffer = (E[])new Object[cap];
+        buffer = (X[])new Object[cap];
+    }
+
+    public boolean push(X x, int retries) {
+        return push(x, Thread::onSpinWait, retries);
+    }
+
+    public boolean push(X x, Runnable wait, int retries) {
+        boolean pushed = false;
+        while (!(pushed = offer(x)) && retries-- > 0) {
+            wait.run();
+        }
+        return pushed;
     }
 
     @Override
-    public boolean offer(E e) {
+    public boolean offer(X x) {
         int spin = 0;
 
         for(;;) {
@@ -140,7 +153,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
                         // and we got access without contention
 
                         // convert sequence number to slot id
-                        buffer[(tailSeq&mask)] = e;
+                        buffer[(tailSeq&mask)] = x;
 
                         return true;
                     } finally {
@@ -190,7 +203,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
     }
 
     @Override
-    public E poll() {
+    public X poll() {
         int spin = 0;
 
         for(;;) {
@@ -202,7 +215,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
                     try {
                         // copy the data out of slot
                         final int pollSlot = (head&mask);
-                        final E   pollObj  = buffer[pollSlot];
+                        final X pollObj  = buffer[pollSlot];
 
                         // got it, safe to read and free
                         buffer[pollSlot] = null;
@@ -223,23 +236,23 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
     }
 
     @Override
-    public final E peek() {
+    public final X peek() {
         return buffer[head.getOpaque()&mask];
     }
 
     @Override
-    public int remove(final E[] e) {
-        return remove(e, e.length);
+    public int remove(final X[] x) {
+        return remove(x, x.length);
     }
 
-    public int remove(final FasterList<E> e, int maxElements) {
-        int drained = remove(e.array(), maxElements);
-        e.setSize(drained);
+    public int remove(final FasterList<X> x, int maxElements) {
+        int drained = remove(x.array(), maxElements);
+        x.setSize(drained);
         return drained;
     }
 
     // drain the whole queue at once
-    public int remove(final E[] e, int maxElements) {
+    public int remove(final X[] x, int maxElements) {
 
         /* This employs a "batch" mechanism to load all objects from the ring
          * in a single update.    This could have significant cost savings in comparison
@@ -248,7 +261,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
         int spin = 0;
 
-        maxElements = Math.min(e.length, maxElements);
+        maxElements = Math.min(x.length, maxElements);
 
         for(;;) {
             final int pollPos = head.getOpaque(); // prepare to qualify?
@@ -259,7 +272,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
             if(nToRead > 0 ) {
 
                 for(int i=0; i<nToRead;i++) {
-                    e[i] = buffer[((pollPos+i)&mask)];
+                    x[i] = buffer[((pollPos+i)&mask)];
                 }
 
                 // if we still control the sequence, update and return
@@ -337,7 +350,7 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
         int s = size();
         for(int i = 0; i< s; i++) {
             final int slot = ((head.getOpaque() + i) & mask);
-            E b = buffer[slot];
+            X b = buffer[slot];
             if(b != null && b.equals(o)) return true;
         }
         return false;
@@ -345,6 +358,14 @@ public class MetalConcurrentQueue<E>  implements ConcurrentQueue<E> {
 
     int sumToAvoidOptimization() {
         return p1+p2+p3+p4+p5+p6+p7+a1+a2+a3+a4+a5+a6+a7+a8+r1+r2+r3+r4+r5+r6+r7+c1+c2+c3+c4+c5+c6+c7+c8+headCache+tailCache;
+    }
+
+
+    public int available() {
+        return Math.max(0,capacity()-size());
+    }
+    public float availablePct() {
+        return Util.clamp(1f-((float)size())/capacity(), 0, 1f);
     }
 
 

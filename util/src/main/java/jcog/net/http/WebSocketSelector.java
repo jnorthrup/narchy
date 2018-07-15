@@ -36,7 +36,7 @@ class WebSocketSelector extends WebSocketAdapter {
     }
 
     @Nullable
-    private boolean registerNext()  {
+    private boolean registerNext() {
         NewChannel newChannel = newChannels.poll();
         if (newChannel == null) {
             return false;
@@ -72,10 +72,10 @@ class WebSocketSelector extends WebSocketAdapter {
             if (key.isValid()) {
                 key.interestOps(SelectionKey.OP_READ);
             }
-            return true; 
+            return true;
         }
 
-        return false; 
+        return false;
     }
 
     private final ByteBuffer buffer = ByteBuffer.allocate(WebSocketImpl.RCVBUF);
@@ -94,73 +94,62 @@ class WebSocketSelector extends WebSocketAdapter {
     public void next() {
 
 
+        try {
+            selector.selectNow();
+        } catch (ClosedSelectorException | IOException ex) {
+            return;
+        }
 
-                try {
-                    
-                    selector.selectNow();
-                } catch (ClosedSelectorException | IOException ex) {
-                    return;
-                }
+        while (registerNext()) {
+        }
 
-                while (registerNext()) {
-                }
+        Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+        while (it.hasNext()) {
 
-                Iterator<SelectionKey> it;
-                it = selector.selectedKeys().iterator();
-                while (it.hasNext()) {
+            SelectionKey key = it.next();
 
-                    SelectionKey key = it.next();
+            if (!key.isValid()) {
+                continue;
+            }
 
-                    if (!key.isValid()) {
-                        continue;
-                    }
+            it.remove();
 
-                    WebSocketImpl conn = null;
-                    try {
-                        boolean removed = false;
-                        if (key.isReadable()) {
-                            conn = (WebSocketImpl) key.attachment();
-                            if (readable(conn)) {
-                                it.remove();
-                                removed = true;
-                            }
+            WebSocketImpl conn = null;
+            try {
+                if (key.isReadable()) {
+                    conn = (WebSocketImpl) key.attachment();
+                    if (readable(conn)) {
 
-                        }
-
-                        if (key.isValid() && key.isWritable()) {
-                            conn = (WebSocketImpl) key.attachment();
-                            if (writable(key, conn)) {
-                                if (!removed) {
-                                    try {
-                                        it.remove();
-                                    } catch (IllegalStateException ex) {
-                                    }
-                                }
-                            }
-                        }
-
-                    } catch (ClosedSelectorException ex) {
-                        return;
-                    } catch (CancelledKeyException ex) {
-                        it.remove();
-                    } catch (IOException ex) {
-                        
-                        conn.close();
-                        key.cancel();
-                        it.remove();
-
-                        handleIOException(conn, ex);
                     }
 
                 }
 
+                if (key.isValid() && key.isWritable()) {
+                    conn = (WebSocketImpl) key.attachment();
+                    if (writable(key, conn)) {
 
+                    }
+                }
+
+            } catch (ClosedSelectorException ex) {
+                return;
+            } catch (CancelledKeyException ex) {
+                return;
+            } catch (IOException ex) {
+
+                conn.close();
+                key.cancel();
+
+                handleIOException(conn, ex);
+            }
+
+        }
 
 
     }
 
     private void handleIOException(WebSocket conn, IOException ex) {
-        onWebsocketError(conn, ex); 
+        onWebsocketError(conn, ex);
 
         try {
             if (conn != null) {
@@ -244,7 +233,7 @@ class WebSocketSelector extends WebSocketAdapter {
         listener.wssError(conn, ex);
     }
 
-    
+
     void addNewChannel(HttpConnection http, ByteBuffer prependData) {
         if (!newChannels.offer(new NewChannel(http, prependData))) {
             System.err.println("newChannel queue overflow");
@@ -253,7 +242,7 @@ class WebSocketSelector extends WebSocketAdapter {
         try {
             selector.wakeup();
         } catch (IllegalStateException | NullPointerException ex) {
-            
+
             assert false;
         }
     }

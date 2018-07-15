@@ -631,7 +631,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     @Override
     public final void clear() {
-        clear(-1, this::removed);
+        clear(this::removed);
+    }
+
+    public final void clear(Consumer<? super Y> each) {
+        clear(-1, each);
     }
 
     /**

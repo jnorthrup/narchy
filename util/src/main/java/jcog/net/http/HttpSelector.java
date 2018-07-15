@@ -91,15 +91,17 @@ class HttpSelector implements ConnectionStateChangeListener {
             return;
         }
 
-        SocketChannel sChannel = newChannels.poll();
-        if (sChannel != null) {
-            try {
-                sChannel.configureBlocking(false);
-                sChannel.socket().setTcpNoDelay(false);
-                SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
-                key.attach(new HttpConnection(this, model, key, sChannel));
-            } catch (IOException e) {
-                logger.error("connect {}", e);
+        {
+            SocketChannel sChannel;
+            while ((sChannel = newChannels.poll()) != null) {
+                try {
+                    sChannel.configureBlocking(false);
+                    sChannel.socket().setTcpNoDelay(false);
+                    SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
+                    key.attach(new HttpConnection(this, model, key, sChannel));
+                } catch (IOException e) {
+                    logger.error("connect {}", e);
+                }
             }
         }
 
@@ -119,36 +121,38 @@ class HttpSelector implements ConnectionStateChangeListener {
             }
         }
 
-        Iterator<SelectionKey> it = selector.selectedKeys().iterator();
-        while (it.hasNext()) {
-            SelectionKey key = it.next();
+        {
+            Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+            while (it.hasNext()) {
+                SelectionKey key = it.next();
 
-            HttpConnection conn = (HttpConnection) key.attachment();
+                HttpConnection conn = (HttpConnection) key.attachment();
 
-            it.remove();
+                it.remove();
 
-            if (conn == null) {
-                continue;
-            }
+                if (conn == null) {
+                    continue;
+                }
 
-            try {
+                try {
 
-                if (key.isReadable()) {
-                    if (!readable(conn)) {
-                        key.attach(null);
-                        key.cancel();
-                        conn.close();
-                        continue;
+                    if (key.isReadable()) {
+                        if (!readable(conn)) {
+                            key.attach(null);
+                            key.cancel();
+                            conn.close();
+                            continue;
+                        }
                     }
-                }
 
-                if (key.isValid() && key.isWritable()) {
-                    conn.writeable();
+                    if (key.isValid() && key.isWritable()) {
+                        conn.writeable();
+                    }
+                } catch (IOException ex) {
+                    key.attach(null);
+                    key.cancel();
+                    conn.close(ex);
                 }
-            } catch (IOException ex) {
-                key.attach(null);
-                key.cancel();
-                conn.close(ex);
             }
         }
     }

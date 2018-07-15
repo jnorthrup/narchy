@@ -84,10 +84,7 @@ public interface DerivedTasks {
                 throw new UnsupportedOperationException("should not reach here");
             }
 
-            @Override
-            protected void removed(Task task) {
-                //dont do anything, leave the task alone
-            }
+
         };
 
         private final TaskBagDrainer derivedTasksDrainer = new TaskBagDrainer(tasks, true,

@@ -78,9 +78,10 @@ public enum Util {
 
     //public static final int MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors();
     public static final ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
-    public final static ObjectMapper msgPackMapper =
+    public final static ObjectMapper msgPacker =
             new ObjectMapper(new MessagePackFactory())
-                    .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
+                    .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
+            ;
     public final static ObjectMapper jsonMapper =
             new ObjectMapper()
                     .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
@@ -1510,7 +1511,7 @@ public enum Util {
     }
 
 
-    public static void sleepNSWhile(long periodNS, long napTimeNS, BooleanSupplier wakeEarly) {
+    public static void sleepNSUntil(long periodNS, long napTimeNS, BooleanSupplier wakeEarly) {
         if (periodNS <= napTimeNS) {
             sleepNS(periodNS);
         } else {
@@ -1694,11 +1695,11 @@ public enum Util {
      * json/msgpack serialization
      */
     public static byte[] toBytes(Object x) throws JsonProcessingException {
-        return msgPackMapper.writeValueAsBytes(x);
+        return msgPacker.writeValueAsBytes(x);
     }
 
     public static byte[] toBytes(Object x, Class cl) throws JsonProcessingException {
-        return msgPackMapper.writerFor(cl).writeValueAsBytes(x);
+        return msgPacker.writerFor(cl).writeValueAsBytes(x);
     }
 
 
@@ -1706,25 +1707,25 @@ public enum Util {
      * msgpack deserialization
      */
     public static <X> X fromBytes(byte[] msgPacked, Class<? extends X> type) throws IOException {
-        return msgPackMapper/*.reader(type)*/.readValue(msgPacked, type);
+        return msgPacker/*.reader(type)*/.readValue(msgPacked, type);
     }
 
     public static <X> X fromBytes(byte[] msgPacked, int len, Class<? extends X> type) throws IOException {
-        return msgPackMapper/*.reader(type)*/.readValue(msgPacked, 0, len, type);
+        return msgPacker/*.reader(type)*/.readValue(msgPacked, 0, len, type);
     }
 
 
     public static JsonNode jsonNode(Object x) {
         if (x instanceof String) {
             try {
-                return msgPackMapper.readTree(x.toString());
+                return msgPacker.readTree(x.toString());
             } catch (IOException e) {
                 e.printStackTrace();
 
             }
         }
 
-        return msgPackMapper.valueToTree(x);
+        return msgPacker.valueToTree(x);
     }
 
     /**

@@ -1,41 +1,48 @@
 package nars;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import jcog.Texts;
+import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.Off;
 import jcog.event.Ons;
+import jcog.exe.Exe;
 import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
 import jcog.net.http.WebSocketConnection;
+import jcog.pri.bag.impl.PriArrayBag;
+import jcog.pri.op.PriMerge;
 import nars.exe.Exec;
 import nars.exe.UniExec;
 import nars.index.concept.MaplikeConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
 import nars.time.clock.RealTime;
+import nars.web.ClientBuilder;
+import nars.web.MsgPack;
 import nars.web.WebClientJS;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
-import org.teavm.tooling.RuntimeCopyOperation;
-import org.teavm.tooling.TeaVMTool;
-import org.teavm.tooling.TeaVMToolException;
-import org.teavm.tooling.TeaVMToolLog;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
+import static nars.TaskJsonCodec.Native.taskify;
 
 abstract public class Web implements HttpModel {
 
     static final int DEFAULT_PORT = 60606;
 
-    @Override public void response(HttpConnection h) {
+    @Override
+    public void response(HttpConnection h) {
 
         URI url = h.url();
 
@@ -48,21 +55,25 @@ abstract public class Web implements HttpModel {
                 h.respond(new File("/tmp/tea/classes.js"));
                 break;
             case "/websocket.js":
-                h.respond(nars.web.WebSocket.ReconnectingWebsocket_js);
+                h.respond(nars.web.WebSocket.websocket_js);
+                break;
+            case "/msgpack.js":
+                h.respond(MsgPack.msgpack_js);
                 break;
             default:
                 h.respond(
-            "<html>\n" +
-                    "  <head>\n" +
-                    "    <title></title>\n" +
-                    "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\n" +
-                    "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"websocket.js\"></script>\n" +
-                    "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/runtime.js\"></script>\n" +
-                    "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/classes.js\"></script>\n" +
-                    "  </head>\n" +
-                    "  <body onload=\"main()\">\n" +
-                    "  </body>\n" +
-                    "</html>");
+                        "<html>\n" +
+                                "  <head>\n" +
+                                "    <title></title>\n" +
+                                "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\n" +
+                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"websocket.js\"></script>\n" +
+                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"msgpack.js\"></script>\n" +
+                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/runtime.js\"></script>\n" +
+                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/classes.js\"></script>\n" +
+                                "  </head>\n" +
+                                "  <body onload=\"main()\">\n" +
+                                "  </body>\n" +
+                                "</html>");
                 break;
 
         }
@@ -123,7 +134,7 @@ abstract public class Web implements HttpModel {
     @Override
     public void wssClose(WebSocket ws, int code, String reason, boolean remote) {
         Ons o = ws.getAttachment();
-        if (o!=null) {
+        if (o != null) {
             ws.setAttachment(null);
             o.off();
         }
@@ -138,92 +149,10 @@ abstract public class Web implements HttpModel {
     }
 
 
-
-    public static void buildClient(Class entryClass, boolean clean) {
-        try {
-
-            TeaVMTool tea = new TeaVMTool();
-
-            if (clean) {
-                try {
-                    org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/teacache"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-            try {
-                org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/tea"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            tea.setMainClass(entryClass.getName());
-            tea.setCacheDirectory(new File("/tmp/teacache"));
-            tea.setIncremental(true);
-            //tea.setDebugInformationGenerated(true);
-
-            tea.setTargetDirectory(new File("/tmp/tea"));
-            tea.setLog(new TeaVMToolLog() {
-                @Override
-                public void info(String text) {
-                    System.out.println(text);
-                }
-
-                @Override
-                public void debug(String text) {
-                    System.out.println(text);
-                }
-
-                @Override
-                public void warning(String text) {
-                    System.err.println(text);
-                }
-
-                @Override
-                public void error(String text) {
-                    System.err.println(text);
-                }
-
-                @Override
-                public void info(String text, Throwable e) {
-                    System.out.println(text);
-                }
-
-                @Override
-                public void debug(String text, Throwable e) {
-                    System.out.println(text);
-                }
-
-                @Override
-                public void warning(String text, Throwable e) {
-                    System.err.println(text + "\n" + e);
-                }
-
-                @Override
-                public void error(String text, Throwable e) {
-                    System.err.println(text + "\n" + e);
-                }
-            });
-
-
-
-            tea.setRuntime(RuntimeCopyOperation.SEPARATE);
-
-
-            tea.generate();
-            System.out.println("TeaVM generate " + tea.getGeneratedFiles());
-        } catch (TeaVMToolException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-    /** Web Interface for 1 NAR */
-    public static class Single extends Web  {
+    /**
+     * Web Interface for 1 NAR
+     */
+    public static class Single extends Web {
 
         private final NAR nar;
 
@@ -233,7 +162,7 @@ abstract public class Web implements HttpModel {
 
         public static void main(String[] args) throws IOException {
 
-            buildClient(WebClientJS.class, false);
+            ClientBuilder.rebuildAsync(WebClientJS.class, false);
 
             int port;
             if (args.length > 0) {
@@ -242,10 +171,12 @@ abstract public class Web implements HttpModel {
                 port = DEFAULT_PORT;
             }
 
-
-            jcog.net.http.HttpServer h = new HttpServer(port, new Web.Single(NARchy.core(1)));
+            NAR nar;
+            jcog.net.http.HttpServer h = new HttpServer(port, new Web.Single(nar = NARchy.core(1)));
             h.setFPS(10f);
 
+            nar.startFPS(5f);
+            nar.loop.throttle.set(0.1f);
         }
 
         @Override
@@ -254,12 +185,15 @@ abstract public class Web implements HttpModel {
         }
     }
 
-    /** Shared Multi-NAR Server
-     *  TODO
-     * */
+    /**
+     * Shared Multi-NAR Server
+     * TODO
+     */
     public static class Multi extends Web {
         private final NAR nar;
-        /** adapter */
+        /**
+         * adapter
+         */
         private final MaplikeConceptIndex sharedIndex;
 
         public Multi() {
@@ -274,7 +208,7 @@ abstract public class Web implements HttpModel {
                 return null;
             }
 
-            return reasoners.computeIfAbsent(url, (Function<String,NAR>)this::nar);
+            return reasoners.computeIfAbsent(url, (Function<String, NAR>) this::nar);
         }
 
         //TODO <URI,NAR>
@@ -291,7 +225,9 @@ abstract public class Web implements HttpModel {
             n.reset();
         }
 
-        /** create a NAR */
+        /**
+         * create a NAR
+         */
         private NAR nar(String path) {
             final Exec exe = nar.exe;
             final Exec sharedExec = new UniExec() {
@@ -313,7 +249,7 @@ abstract public class Web implements HttpModel {
 
                 @Override
                 public void execute(Consumer<NAR> r) {
-                    execute(()->r.accept(this.nar));
+                    execute(() -> r.accept(this.nar));
                 }
             };
 
@@ -346,8 +282,9 @@ abstract public class Web implements HttpModel {
 //        c2.closeBlocking();
 
 
-
-    /** client access for use in java */
+    /**
+     * client access for use in java
+     */
     public static class WebClient extends WebSocketClient {
 
         public WebClient(URI serverUri) {
@@ -385,25 +322,60 @@ abstract public class Web implements HttpModel {
 
         private final NAR n;
         volatile WebSocket w;
-
+        final PriArrayBag<Task> out = new PriArrayBag<Task>(PriMerge.max, 64);
+        final AtomicBoolean busy = new AtomicBoolean();
         public WebSocketLogger(WebSocket ws, NAR n) {
             this.n = n;
             this.w = ws;
+
         }
 
         @Override
         public void accept(Task t) {
-            //if (w != null && w.isOpen()) {
-
-            try {
-                w.send(t.toString(true).toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-//                    w = null;
-//                    w.close();
+            if (out.put(t)!=null) {
+                if (busy.weakCompareAndSetAcquire(false, true)) {
+                    Exe.invoke(this::drain);
+                }
             }
-            //}
         }
+
+
+        protected void drain() {
+            if (w.isOpen()) {
+                busy.setRelease(false);
+
+//                final StringBuilder buf = new StringBuilder(2*1024);
+//
+//                buf.append('[');
+//                out.clear(t -> buf.append('\"').append(t.toString(true)).append("\",")); //tmp
+//                if (buf.length() > 0) {
+//                    buf.setLength(buf.length() - 1);
+//                }
+//                buf.append(']');
+//
+//                String s = buf.toString();
+//                w.send(s);
+
+                ArrayNode a = Util.msgPacker.createArrayNode();
+
+                out.clear(t -> {
+                    taskify(t, a.addObject());
+                });
+
+                if (a.size() > 0) {
+                    try {
+                        w.send(Util.msgPacker.writeValueAsBytes(a));
+                    } catch (JsonProcessingException e) {
+                        //logger.error("")
+                        e.printStackTrace();
+                    }
+                }
+
+            } else {
+                //closed, dont un-busy
+            }
+        }
+
 
 
     }
