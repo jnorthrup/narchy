@@ -2,8 +2,8 @@ package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-import jcog.event.On;
 import jcog.data.list.FasterList;
+import jcog.event.On;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.widget.windo.Widget;

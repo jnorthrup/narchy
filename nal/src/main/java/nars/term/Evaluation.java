@@ -1,9 +1,9 @@
 package nars.term;
 
-import jcog.data.set.ArrayHashSet;
-import jcog.data.list.FasterList;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.iterator.CartesianIterator;
+import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
 import nars.$;

@@ -2,8 +2,8 @@ package nars.table;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.decide.MutableRoulette;
 import jcog.data.list.FasterList;
+import jcog.decide.MutableRoulette;
 import jcog.pri.Deleteable;
 import jcog.sort.CachedTopN;
 import jcog.sort.Top;

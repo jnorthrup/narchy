@@ -1,6 +1,8 @@
 package jcog.net.http;
 
 import jcog.net.http.HttpUtil.METHOD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,15 +11,13 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 /**
  * @author Joris
  */
 class HttpResponse {
-    private static final Logger log = Logger.getLogger("jcog/net/http");
+    private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
     final boolean close;
     private final METHOD requestMethod;
     private int status;
@@ -86,6 +86,7 @@ class HttpResponse {
                         sendStatusAsContent = false;
                     }
                 } catch (HttpUtil.HttpDateUtils.DateParseException ex) {
+                    logger.error("{}", ex);
                 }
             }
         }
@@ -101,6 +102,7 @@ class HttpResponse {
                 try {
                     raf.close();
                 } catch (IOException ex2) {
+                    logger.error("{}", ex);
                 }
 
                 raf = null;
@@ -108,11 +110,12 @@ class HttpResponse {
                     status = 404;
                     statusMessage = "File Not Found";
                 }
-                log.log(Level.INFO, "File not found", ex);
+                logger.info("File not found: {}", ex);
             } catch (IOException ex) {
                 try {
                     raf.close();
                 } catch (IOException ex2) {
+                    logger.error("{}", ex);
                 }
 
                 raf = null;
@@ -120,7 +123,7 @@ class HttpResponse {
                     status = 404;
                     statusMessage = "Error reading file";
                 }
-                log.log(Level.SEVERE, "Error reading file", ex);
+                logger.warn("Error reading file: {}", ex);
             }
 
             String rangeValue = con.request.get("range");
@@ -172,10 +175,8 @@ class HttpResponse {
                         rangeLength = rangeEnd - rangeStart + 1;
 
                         raf.seek(rangeStart);
-                    } catch (NumberFormatException ex) {
-                        log.log(Level.WARNING, "", ex);
-                        range = false;
-                    } catch (IOException ex) {
+                    } catch (NumberFormatException | IOException ex) {
+                        logger.warn("{}", ex);
                         range = false;
                     }
                 }
@@ -304,6 +305,7 @@ class HttpResponse {
                     if (range) {
                         long limit = rangeLength - fileBytesSent;
                         if (fileBuffer.limit() > limit) {
+                            assert(limit < java.lang.Integer.MAX_VALUE);
                             fileBuffer.limit((int) limit);
                         }
                     }

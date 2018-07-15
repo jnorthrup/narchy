@@ -1,14 +1,14 @@
 package jcog.pri.bag.util;
 
 import com.google.common.collect.Iterators;
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
-import jcog.data.NumberX;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;

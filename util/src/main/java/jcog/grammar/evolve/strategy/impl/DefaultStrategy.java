@@ -18,6 +18,7 @@
 package jcog.grammar.evolve.strategy.impl;
 
 
+import jcog.data.list.FasterList;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.configuration.EvolutionParameters;
 import jcog.grammar.evolve.evaluators.TreeEvaluationException;
@@ -33,7 +34,6 @@ import jcog.grammar.evolve.strategy.ExecutionListener;
 import jcog.grammar.evolve.strategy.RunStrategy;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.variations.Variation;
-import jcog.data.list.FasterList;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 

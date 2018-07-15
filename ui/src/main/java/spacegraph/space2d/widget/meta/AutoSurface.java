@@ -1,13 +1,13 @@
 package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.Sets;
-import jcog.service.Service;
-import jcog.service.Services;
-import jcog.event.Ons;
 import jcog.data.list.FasterList;
+import jcog.event.Ons;
 import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.service.Service;
+import jcog.service.Services;
 import jcog.util.Reflect;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;

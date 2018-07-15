@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.BufferOverflowException;
@@ -40,7 +41,7 @@ public class HttpConnection {
     long lastReceivedNS;
     boolean websocket = false;
 
-    protected ByteBuffer rawHead; 
+    ByteBuffer rawHead;
     private ByteBuffer lineBuffer;
 
 
@@ -62,12 +63,6 @@ public class HttpConnection {
         setState(STATE.WAIT_FOR_REQUEST_LINE);
 
         lastReceivedNS = System.nanoTime();
-
-        try {
-            logger.info("connect {}", sChannel.getRemoteAddress());
-        } catch (IOException | NullPointerException ex) {
-            logger.error(null, ex);
-        }
     }
 
     
@@ -82,15 +77,18 @@ public class HttpConnection {
         }
 
         while (buf.hasRemaining()) {
-            boolean requestReady = false;
+            boolean requestReady;
             try {
                 requestReady = decodeRequest(buf);
+
+                logger.info("connect {}", requestUri);
+
             } catch (HttpException ex) {
                 respond(new HttpResponse(method,  ex.status, ex.getMessage(), ex.fatal || !this.keepAlive, null));
 
                 setState(ex.fatal ? STATE.BAD_REQUEST : STATE.WAIT_FOR_REQUEST_LINE);
 
-                logger.error(null, ex);
+                logger.error("{}", ex);
                 return;
             }
 
@@ -137,7 +135,7 @@ public class HttpConnection {
 
     }
 
-    public void respondNull() {
+    private void respondNull() {
         respond(new HttpResponse(method,
                 /*(Map<String, String>) headers.clone()*/ 404, "", !this.keepAlive, null));
     }
@@ -210,7 +208,7 @@ public class HttpConnection {
 
 
 
-    public void respond(HttpResponse resp) {
+    private void respond(HttpResponse resp) {
         responses.add(resp);
         key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
@@ -512,12 +510,38 @@ public class HttpConnection {
         key.interestOps(SelectionKey.OP_READ);
     }
 
-    public void closed() {
+    public final void close() {
+        try {
+            channel.close();
+        } catch (Throwable e) {
+
+        }
         setState(STATE.CLOSED);
     }
 
-    public URI url() {
+    public final URI url() {
         return requestUri;
+    }
+
+    void timeout() {
+
+        if (logger.isDebugEnabled()) {
+            SocketAddress remote = null;
+            try {
+                remote = channel.getRemoteAddress();
+                close();
+            } catch (IOException e) {
+                logger.debug("timeout {}", remote);
+            }
+        } else {
+            close();
+        }
+
+    }
+
+    public final void close(IOException ex) {
+        close();
+        logger.warn("{}", ex);
     }
 
 

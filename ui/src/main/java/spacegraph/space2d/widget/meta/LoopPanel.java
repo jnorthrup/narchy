@@ -69,7 +69,7 @@ public class LoopPanel extends Gridding {
                 int g = Math.round(loop.getFPS());
                 if (f > 0) {
                     if (f != g) {
-                        loop.runFPS(f);
+                        loop.setFPS(f);
                         fpsLabel.set(f);
                     }
                 } else {

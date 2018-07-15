@@ -1,9 +1,9 @@
 package nars.sensor;
 
+import jcog.data.iterator.Array2DIterable;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.signal.Bitmap2D;
-import jcog.data.iterator.Array2DIterable;
 import jcog.util.Int2Function;
 import nars.NAR;
 import nars.Task;

@@ -1,7 +1,7 @@
 package nars.util.term;
 
-import jcog.data.set.ArrayHashSet;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import nars.Op;
 import nars.Param;
 import nars.op.mental.AliasConcept;

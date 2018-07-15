@@ -17,6 +17,7 @@
  */
 package jcog.grammar.evolve.generations;
 
+import jcog.data.list.FasterList;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.inputs.Context;
 import jcog.grammar.evolve.inputs.DataSet;
@@ -28,7 +29,6 @@ import jcog.grammar.evolve.tree.operator.Concatenator;
 import jcog.grammar.evolve.tree.operator.ListMatch;
 import jcog.grammar.evolve.tree.operator.MatchOneOrMore;
 import jcog.grammar.evolve.utils.Utils;
-import jcog.data.list.FasterList;
 
 import java.util.*;
 

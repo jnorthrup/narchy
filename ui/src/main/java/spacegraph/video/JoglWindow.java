@@ -381,7 +381,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         init(gl);
 
 
-        updater.runFPS(updateFPS);
+        updater.setFPS(updateFPS);
 
     }
 
@@ -391,8 +391,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         renderFPS = render;
         updateFPS = update;
         if (updater.isRunning()) {
-            renderer.loop.runFPS(renderFPS);
-            updater.runFPS(updateFPS);
+            renderer.loop.setFPS(renderFPS);
+            updater.setFPS(updateFPS);
         }
 
     }
@@ -506,7 +506,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             };
 
 
-            loop.runFPS(renderFPS);
+            loop.setFPS(renderFPS);
 
 
         }

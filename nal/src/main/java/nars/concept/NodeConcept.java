@@ -1,8 +1,8 @@
 package nars.concept;
 
-import jcog.pri.bag.Bag;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.PriReference;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Task;

@@ -1,8 +1,8 @@
 package nars.util;
 
 import jcog.Texts;
-import jcog.io.arff.ARFF;
 import jcog.data.list.FasterList;
+import jcog.io.arff.ARFF;
 import nars.$;
 import nars.NAR;
 import nars.Op;

@@ -1,12 +1,12 @@
 package nars.bag;
 
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.ArrayBag;
+import jcog.data.list.FasterList;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
-import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.VLink;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;

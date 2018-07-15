@@ -36,7 +36,7 @@ public class MeshChipTest {
 
         public MeshChip(UDPeer peer) {
             this.peer = peer;
-            peer.runFPS(5f);
+            peer.setFPS(5f);
             this.in = new Port().on(x->{
                 try {
                     peer.tellSome(Util.toBytes(x), ttl.intValue());

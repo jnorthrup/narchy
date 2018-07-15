@@ -46,7 +46,7 @@ public class WaveIn extends NARService {
 
         capturing = capture.get();
         capturing.frame.on(this::update);
-        capturing.runFPS(fps);
+        capturing.setFPS(fps);
         surfaceWindow = SpaceGraph.window(surface(), 800, 600);
 
     }

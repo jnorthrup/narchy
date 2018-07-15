@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
@@ -18,17 +17,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 class HttpSelector implements ConnectionStateChangeListener {
 
     //private final long TIMEOUT_CHECK_PERIOD_ms = 1_000;
-    private final long TIMEOUT_PERIOD_ms = 5_000;
+    private static final long TIMEOUT_PERIOD_ms = 5_000;
 
-    private static final Logger log = LoggerFactory.getLogger("jcog/net/http");
+    private static final Logger logger = LoggerFactory.getLogger(HttpSelector.class);
     private final WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler;
     private final ByteBuffer buf = ByteBuffer.allocateDirect(HttpServer.BUFFER_SIZE);
     private final ConcurrentLinkedQueue<SocketChannel> newChannels = new ConcurrentLinkedQueue<>();
     private final HttpModel model;
-    
-    
+
+
     private Selector selector;
-    
+
 
     HttpSelector(HttpModel model, WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler) {
         this.model = model;
@@ -39,12 +38,12 @@ class HttpSelector implements ConnectionStateChangeListener {
     @Override
     public void connectionStateChange(HttpConnection conn, STATE oldState, STATE newState) {
         if (newState == STATE.CLOSED) {
-        conn.key.attach(null);
-        conn.key.cancel();
+            conn.key.attach(null);
+            conn.key.cancel();
             try {
                 conn.channel.close();
             } catch (IOException ex) {
-                log.error("{}",ex);
+                logger.error("{}", ex);
             }
 
         } else if (newState == STATE.UPGRADE) {
@@ -53,20 +52,20 @@ class HttpSelector implements ConnectionStateChangeListener {
 
             if (conn.websocket && upgradeWebSocketHandler != null) {
                 ByteBuffer rawHead = conn.rawHead;
-                conn.rawHead = null; 
+                conn.rawHead = null;
                 rawHead.flip();
                 upgradeWebSocketHandler.upgradeWebSocketHandler(conn.channel, rawHead);
             } else {
                 try {
                     conn.channel.close();
                 } catch (IOException ex) {
-                    log.error("{}",ex);
+                    logger.error("{}", ex);
                 }
             }
         }
     }
 
-    public synchronized void onStart() {
+    void start() {
         try {
             selector = Selector.open();
         } catch (IOException e) {
@@ -75,49 +74,52 @@ class HttpSelector implements ConnectionStateChangeListener {
     }
 
 
-
-    public void next() throws IOException {
+    public void next(ServerSocketChannel ssChannel) {
 
         try {
-            selector.selectNow(); 
+            SocketChannel sChannel;
+            while ((sChannel = ssChannel.accept()) != null) {
+                addNewChannel(sChannel);
+            }
+        } catch (IOException ex) {
+            logger.warn("error in accept {}", ex);
+        }
+
+        try {
+            selector.selectNow();
         } catch (ClosedSelectorException | IOException ex) {
             return;
         }
 
         SocketChannel sChannel = newChannels.poll();
         if (sChannel != null) {
-            sChannel.configureBlocking(false);
-            sChannel.socket().setTcpNoDelay(false);
-            SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
-            key.attach(new HttpConnection(this, model, key, sChannel));
+            try {
+                sChannel.configureBlocking(false);
+                sChannel.socket().setTcpNoDelay(false);
+                SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
+                key.attach(new HttpConnection(this, model, key, sChannel));
+            } catch (IOException e) {
+                logger.error("connect {}", e);
+            }
         }
 
-        Iterator<SelectionKey> it;
 
         long now = System.nanoTime();
 
-
         {
-
-
-            it = selector.keys().iterator();
-
+            Iterator<SelectionKey> it = selector.keys().iterator();
             while (it.hasNext()) {
                 SelectionKey key = it.next();
                 HttpConnection conn = (HttpConnection) key.attachment();
-                if (now - conn.lastReceivedNS > TIMEOUT_PERIOD_ms * 1_000_000L) {
+                if (now - conn.lastReceivedNS >= TIMEOUT_PERIOD_ms * 1_000_000L) {
                     key.attach(null);
                     key.cancel();
-                    SocketAddress remote = conn.channel.getRemoteAddress();
-                    conn.channel.close();
-                    conn.closed();
-                    log.debug("timeout {}", remote);
+                    conn.timeout();
                 }
             }
         }
 
-        it = selector.selectedKeys().iterator();
-
+        Iterator<SelectionKey> it = selector.selectedKeys().iterator();
         while (it.hasNext()) {
             SelectionKey key = it.next();
 
@@ -126,7 +128,6 @@ class HttpSelector implements ConnectionStateChangeListener {
             it.remove();
 
             if (conn == null) {
-                
                 continue;
             }
 
@@ -136,8 +137,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                     if (!readable(conn)) {
                         key.attach(null);
                         key.cancel();
-                        conn.channel.close();
-                        conn.closed();
+                        conn.close();
                         continue;
                     }
                 }
@@ -146,18 +146,15 @@ class HttpSelector implements ConnectionStateChangeListener {
                     conn.writeable();
                 }
             } catch (IOException ex) {
-                log.warn("{}",ex);
-
                 key.attach(null);
                 key.cancel();
-                conn.channel.close();
-                conn.closed();
+                conn.close(ex);
             }
         }
     }
 
 
-    public synchronized void onStop() {
+    void stop() {
         try {
             selector.close();
         } catch (IOException e) {
@@ -173,7 +170,7 @@ class HttpSelector implements ConnectionStateChangeListener {
     private boolean readable(HttpConnection conn) throws IOException {
         buf.clear();
 
-        
+
         buf.limit(buf.capacity());
         buf.position(HttpServer.LINEBUFFER_SIZE);
         buf.mark();
@@ -203,14 +200,14 @@ class HttpSelector implements ConnectionStateChangeListener {
      * Add a new socket channel to be handled by this thread.
      */
 
-    
+
     void addNewChannel(SocketChannel sChannel) {
         newChannels.add(sChannel);
 
         try {
             selector.wakeup();
         } catch (IllegalStateException | NullPointerException ex) {
-            
+
             assert false;
         }
     }

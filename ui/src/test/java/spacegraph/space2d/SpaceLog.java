@@ -8,8 +8,8 @@ import jcog.User;
 import jcog.Util;
 import jcog.exe.Loop;
 import jcog.io.FSWatch;
-import jcog.net.UDPeer;
 import jcog.io.Grok;
+import jcog.net.UDPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
@@ -52,7 +52,7 @@ public class SpaceLog {
     public SpaceLog(int port) throws IOException {
         this.udp = new UDPeer(port);
         this.udp.receive.on(this::input);
-        this.udp.runFPS(10f);
+        this.udp.setFPS(10f);
 
         logger = LoggerFactory.getLogger(SpaceLog.class.getSimpleName() + "@" + udp.name());
 
@@ -183,12 +183,12 @@ public class SpaceLog {
     public static void main(String[] args) throws IOException {
         SpaceLog s = new SpaceLog();
 
-        Loop.of(new DummyLogGenerator(new UDPeer())).runFPS(0.75f);
-        Loop.of(new DummyLogGenerator(new UDPeer())).runFPS(0.2f);
+        Loop.of(new DummyLogGenerator(new UDPeer())).setFPS(0.75f);
+        Loop.of(new DummyLogGenerator(new UDPeer())).setFPS(0.2f);
 
         new FSWatch("/tmp", (p)-> {
             s.input("/tmp", p);
-        }).runFPS(1);
+        }).setFPS(1);
 
         s.gui();
     }
@@ -201,7 +201,7 @@ public class SpaceLog {
 
         public DummyLogGenerator(UDPeer udPeer) {
             this.out = udPeer;
-            out.runFPS(10f);
+            out.setFPS(10f);
         }
 
         @Override

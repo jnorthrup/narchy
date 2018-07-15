@@ -2,8 +2,8 @@ package nars.util.signal;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.learn.LivePredictor;
 import jcog.data.atomic.AtomicFloat;
+import jcog.learn.LivePredictor;
 import nars.NAR;
 import nars.Task;
 import nars.control.DurService;

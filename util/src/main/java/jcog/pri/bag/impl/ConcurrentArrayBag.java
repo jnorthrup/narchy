@@ -1,8 +1,8 @@
 package jcog.pri.bag.impl;
 
 import jcog.Util;
-import jcog.pri.bag.Bag;
 import jcog.pri.Priority;
+import jcog.pri.bag.Bag;
 import jcog.pri.op.PriMerge;
 import jcog.util.QueueLock;
 import org.jetbrains.annotations.NotNull;

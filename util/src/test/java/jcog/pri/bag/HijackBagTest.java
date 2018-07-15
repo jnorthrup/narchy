@@ -1,11 +1,11 @@
 package jcog.pri.bag;
 
 import com.google.common.base.Joiner;
-import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.data.list.table.Table;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
+import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.pri.op.PriMerge;
 import org.junit.jupiter.api.Test;
 

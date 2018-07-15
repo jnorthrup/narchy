@@ -1,8 +1,8 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.pri.bag.Bag;
 import jcog.pri.PriReference;
+import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -10,8 +10,8 @@ import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
-import nars.derive.premise.PremiseRuleProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.premise.PremiseRuleProto;
 import nars.exe.Attention;
 import nars.exe.Causable;
 import nars.link.Activate;

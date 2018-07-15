@@ -1,8 +1,8 @@
 package org.intelligentjava.machinelearning.decisiontree;
 
-import jcog.util.StreamReplay;
 import jcog.TODO;
 import jcog.data.list.FasterList;
+import jcog.util.StreamReplay;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;

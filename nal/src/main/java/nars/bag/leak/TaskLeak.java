@@ -1,9 +1,9 @@
 package nars.bag.leak;
 
+import jcog.data.atomic.AtomicFloat;
+import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
-import jcog.pri.PLink;
-import jcog.data.atomic.AtomicFloat;
 import nars.NAR;
 import nars.Param;
 import nars.Task;

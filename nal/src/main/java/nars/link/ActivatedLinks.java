@@ -1,10 +1,10 @@
 package nars.link;
 
 import jcog.Util;
+import jcog.data.NumberX;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
 import jcog.sort.SortedList;
-import jcog.data.NumberX;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.task.AbstractTask;

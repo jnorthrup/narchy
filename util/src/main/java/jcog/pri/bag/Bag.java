@@ -1,11 +1,11 @@
 package jcog.pri.bag;
 
 import jcog.Util;
+import jcog.data.NumberX;
 import jcog.data.list.table.Table;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriForget;
 import jcog.util.FloatFloatToFloatFunction;
-import jcog.data.NumberX;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

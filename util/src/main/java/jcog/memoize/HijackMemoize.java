@@ -1,11 +1,11 @@
 package jcog.memoize;
 
 import jcog.Texts;
-import jcog.pri.bag.impl.HijackBag;
-import jcog.pri.bag.impl.hijack.PriorityHijackBag;
+import jcog.data.NumberX;
 import jcog.pri.PriProxy;
 import jcog.pri.ScalarValue;
-import jcog.data.NumberX;
+import jcog.pri.bag.impl.HijackBag;
+import jcog.pri.bag.impl.hijack.PriorityHijackBag;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
 

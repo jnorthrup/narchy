@@ -6,8 +6,8 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.link.Tasklinks;
-import nars.task.ITask;
 import nars.task.AbstractTask;
+import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;
 
 public class TaskLinkTask extends AbstractTask {

@@ -9,7 +9,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.atom.Bool;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;

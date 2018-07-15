@@ -1,9 +1,9 @@
 package spacegraph.input.finger;
 
 import com.jogamp.opengl.GL2;
+import jcog.data.atomic.AtomicFloat;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.tree.rtree.rect.RectFloat2D;
-import jcog.data.atomic.AtomicFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Widget;

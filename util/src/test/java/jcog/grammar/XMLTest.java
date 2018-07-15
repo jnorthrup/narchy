@@ -31,9 +31,11 @@ class XMLTest {
                 "<a xy=\"xy\"/>",
                 "<a/>"
         );
+
+        XMLInputFactory f = XMLInputFactory.newDefaultFactory();
         Predicate<String> oracle = (q) -> {
             try {
-                XMLInputFactory.newDefaultFactory().createXMLEventReader(new StringReader(q)).forEachRemaining(r->{
+                f.createXMLEventReader(new StringReader(q)).forEachRemaining(r->{
                     
                 });
                 return true;

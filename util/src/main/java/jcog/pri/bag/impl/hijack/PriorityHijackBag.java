@@ -1,8 +1,8 @@
 package jcog.pri.bag.impl.hijack;
 
-import jcog.pri.bag.impl.HijackBag;
-import jcog.pri.Priority;
 import jcog.data.NumberX;
+import jcog.pri.Priority;
+import jcog.pri.bag.impl.HijackBag;
 
 /**
  * Created by me on 2/17/17.

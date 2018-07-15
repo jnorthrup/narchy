@@ -1,8 +1,8 @@
 package jcog.pri.bag.impl.hijack;
 
+import jcog.data.NumberX;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
-import jcog.data.NumberX;
 
 
 public class DefaultHijackBag<K> extends PriorityHijackBag<K, PriReference<K>> {

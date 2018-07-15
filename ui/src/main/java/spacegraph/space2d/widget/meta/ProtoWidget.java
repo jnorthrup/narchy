@@ -68,7 +68,7 @@ public class ProtoWidget extends Widget {
         add("Microphone", ()->{
             {
                 WaveCapture au = new WaveCapture(new AudioSource(20));
-                au.runFPS(20f);
+                au.setFPS(20f);
                 return au.view();
             }
         }, "Hardware");

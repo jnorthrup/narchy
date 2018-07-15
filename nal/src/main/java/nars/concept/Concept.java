@@ -21,10 +21,10 @@
 package nars.concept;
 
 import com.google.common.collect.Iterators;
-import jcog.pri.bag.Bag;
 import jcog.data.map.MetaMap;
 import jcog.pri.PriReference;
 import jcog.pri.Priority;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
 import nars.link.TaskLink;

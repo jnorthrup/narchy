@@ -15,9 +15,9 @@
  */
 package org.oakgp.evolve;
 
-import jcog.pri.bag.impl.CurveBag;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
+import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.op.PriMerge;
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;

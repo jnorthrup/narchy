@@ -2,7 +2,6 @@ package jcog.pri.bag;
 
 import com.google.common.base.Joiner;
 import jcog.Util;
-import jcog.pri.bag.impl.HijackBag2;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -10,6 +9,7 @@ import jcog.math.tensor.ArrayTensor;
 import jcog.math.tensor.Tensor;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
+import jcog.pri.bag.impl.HijackBag2;
 import jcog.util.FloatFloatToFloatFunction;
 import org.apache.commons.math3.stat.Frequency;
 import org.jetbrains.annotations.NotNull;

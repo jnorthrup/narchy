@@ -18,9 +18,9 @@
 package jcog.grammar.evolve.tree.operator;
 
 
+import jcog.data.list.FasterList;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.tree.ParentNode;
-import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.factory.Lists;
 
 /**

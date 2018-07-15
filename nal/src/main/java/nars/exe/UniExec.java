@@ -1,14 +1,14 @@
 package nars.exe;
 
-import jcog.service.Service;
-import jcog.WTF;
+import jcog.TODO;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Ons;
 import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
-import jcog.data.list.MetalConcurrentQueue;
+import jcog.service.Service;
 import nars.NAR;
 import nars.control.DurService;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -78,33 +78,22 @@ public class UniExec extends AbstractExec {
                         UniExec.this.remove((Causable) s);
                 }
             };
+            refreshServices();
             n.services.change.on(serviceChange);
-            n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
+            refreshServices(); //to be sure
 
 
             cpu = new TimeSlicing<>("CPU", 1, nar.exe) {
 
 
-                @Override
+                @Deprecated @Override
                 protected void trySpawn() {
-                    //dont
+
                 }
 
                 @Override
                 @Deprecated protected boolean work() {
                     throw new UnsupportedOperationException();
-//                    if (super.work()) {
-//                        //TODO better calculation
-//                        long now = TIME;
-//                        MutableLong ll = last.get();
-//                        long lastSleepCycle = ll.get();
-//                        if (lastSleepCycle != now) {
-//                            Util.sleepNS(idleTimePerCycle);
-//                            ll.set(now);
-//                        }
-//                        return true;
-//                    }
-//                    return false;
                 }
 
                 @Override
@@ -132,10 +121,7 @@ public class UniExec extends AbstractExec {
 
                                 s.valueNormalized = (s.valueNormalized - valMin[0]) / valRange;
 
-
-
-                                double value =
-                                        s.valueNormalized;
+                                double value = s.valueNormalized;
                                 //(1 + Util.tanhFast(c.value()))/2;
 
                                 if (Math.abs(value) > Double.MIN_NORMAL) {
@@ -162,8 +148,6 @@ public class UniExec extends AbstractExec {
                                 double valuePerSecond = s.valuePerSecond;
                                 if (valuePerSecond > valRateMax[0]) valRateMax[0] = valuePerSecond;
                                 if (valuePerSecond < valRateMin[0]) valRateMin[0] = valuePerSecond;
-
-
                             }
                         });
                         double valRateRange = valRateMax[0] - valRateMin[0];
@@ -173,12 +157,10 @@ public class UniExec extends AbstractExec {
 
                                 double valuePerSecondNormalized = (s.valuePerSecond - valRateMin[0])/valRateRange;
                                 if (Double.isFinite(valuePerSecondNormalized)) {
-
-
-                                    //s.priSet((float) s.valueNormalized);
                                     s.pri((float) valuePerSecondNormalized);
                                 } else {
-                                    s.pri(0);
+                                    //s.pri(0);
+                                    throw new TODO();
                                 }
 
                                 //System.out.println(s + " " + s.iterations.getMean());
@@ -191,9 +173,9 @@ public class UniExec extends AbstractExec {
                     }
 
                     /** flat */
+                    float flatDemand = n > 1 ?  (1f/n) : 0.5f;
                     forEach((InstrumentedWork s) -> {
-                        //s.need(1f/n);
-                        s.pri(1f/n);
+                        s.pri(flatDemand);
                     });
 
 
@@ -206,6 +188,10 @@ public class UniExec extends AbstractExec {
             ons.add(n.onCycle(this::onCycle));
             ons.add(DurService.on(n, this::onDur));
         }
+    }
+
+    private void refreshServices() {
+        nar.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
     }
 
 
@@ -238,7 +224,6 @@ public class UniExec extends AbstractExec {
     }
 
     protected void sync() {
-        //in.clear(this::executeNow);
         Object next;
         while ((next = in.poll())!=null) executeNow(next);
     }
@@ -248,12 +233,8 @@ public class UniExec extends AbstractExec {
         return can.remove(s)!=null;
     }
 
-    public boolean add(Causable s) {
-        InstrumentedCausable r = can.put(s, new InstrumentedCausable(s));
-
-        if (r!=null && r.c!=s) throw new WTF("duplicate: " + r + " replaced by " + s);
-
-        return true;
+    public void add(Causable s) {
+        InstrumentedCausable r = can.computeIfAbsent(s, InstrumentedCausable::new);
     }
 
     @Override

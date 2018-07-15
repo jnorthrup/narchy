@@ -8,12 +8,12 @@ import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
 import com.netflix.servo.util.Clock;
+import jcog.pri.ScalarValue;
 import jcog.signal.meter.ExplainedCounter;
 import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
 import jcog.signal.meter.MetricsMapper;
 import jcog.signal.meter.event.AtomicMeanFloat;
-import jcog.pri.ScalarValue;
 import nars.control.MetaGoal;
 import nars.task.NALTask;
 

@@ -1,19 +1,19 @@
 package nars.derive.deriver;
 
-import jcog.pri.bag.Bag;
-import jcog.data.set.ArrayHashSet;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
-import nars.derive.premise.PremiseRuleProto;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.premise.PremiseRuleProto;
 import nars.link.Activate;
 import nars.link.ActivatedLinks;
 import nars.link.TaskLink;

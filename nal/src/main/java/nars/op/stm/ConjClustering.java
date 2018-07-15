@@ -37,10 +37,11 @@ public class ConjClustering extends Causable {
 
 
     private final BagClustering<Task> bag;
-    private final BagClustering.Dimensionalize<Task> ConjClusterModel;
+    private final BagClustering.Dimensionalize<Task> model;
     private final BufferedCauseChannel in;
     private final byte punc;
     private final float termVolumeMaxFactor = 0.9f;
+    private final Predicate<Task> filter;
     private long now;
     private int dur;
     private float confMin;
@@ -56,11 +57,13 @@ public class ConjClustering extends Causable {
     }
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
-        super(nar);
+        super();
 
-        dur = nar.dur();
+        this.in = nar.newChannel(this).buffered();
 
-        this.ConjClusterModel = new BagClustering.Dimensionalize<>(4) {
+        this.dur = nar.dur();
+
+        this.model = new BagClustering.Dimensionalize<>(4) {
 
             @Override
             public void coord(Task t, double[] c) {
@@ -83,12 +86,18 @@ public class ConjClustering extends Causable {
             }
         };
 
-        this.bag = new BagClustering<>(ConjClusterModel, centroids, capacity);
+        this.bag = new BagClustering<>(model, centroids, capacity);
 
         this.punc = punc;
-        this.in = nar.newChannel(this).buffered();
+        this.filter = filter;
 
-        nar.onTask(t -> {
+        nar.on(this);
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        ons.add(nar.onTask(t -> {
             if (!t.isEternal()
                     && t.punc() == punc
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
@@ -100,7 +109,8 @@ public class ConjClustering extends Causable {
                 );
 
             }
-        });
+        }));
+
     }
 
     @Override

@@ -2,9 +2,9 @@ package spacegraph.space2d.widget.slider;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
-import jcog.data.NumberX;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import spacegraph.space2d.SurfaceBase;

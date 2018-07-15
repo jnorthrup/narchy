@@ -1,8 +1,8 @@
 package nars.table;
 
-import jcog.pri.bag.impl.hijack.PriorityHijackBag;
-import jcog.data.map.MRUCache;
 import jcog.data.NumberX;
+import jcog.data.map.MRUCache;
+import jcog.pri.bag.impl.hijack.PriorityHijackBag;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;

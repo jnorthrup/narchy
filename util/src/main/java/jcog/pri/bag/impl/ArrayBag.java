@@ -1,16 +1,16 @@
 package jcog.pri.bag.impl;
 
 import jcog.Util;
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.Sampler;
+import jcog.data.NumberX;
+import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.SortedListTable;
 import jcog.pri.Priority;
 import jcog.pri.ScalarValue;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
-import jcog.data.atomic.AtomicFloatFieldUpdater;
-import jcog.data.NumberX;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

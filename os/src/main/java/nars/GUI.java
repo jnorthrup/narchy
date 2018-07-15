@@ -1,8 +1,8 @@
 package nars;
 
 import jcog.User;
-import jcog.exe.Loop;
 import jcog.data.list.FasterList;
+import jcog.exe.Loop;
 import nars.gui.NARui;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;

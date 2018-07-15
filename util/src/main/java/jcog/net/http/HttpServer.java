@@ -10,7 +10,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -54,11 +53,11 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
         this(new InetSocketAddress(host, port), model);
     }
 
-    public HttpServer(InetSocketAddress addr, HttpModel model) throws IOException {
+    private HttpServer(InetSocketAddress addr, HttpModel model) throws IOException {
         this(HttpServer.openServerChannel(addr), model);
     }
 
-    public HttpServer(ServerSocketChannel ssChannel, HttpModel model) throws IOException {
+    private HttpServer(ServerSocketChannel ssChannel, HttpModel model) throws IOException {
         this.ssChannel = ssChannel;
         this.model = model;
 
@@ -76,7 +75,7 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
 
     }
 
-    static ServerSocketChannel openServerChannel(InetSocketAddress listenAddr) throws IOException {
+    private static ServerSocketChannel openServerChannel(InetSocketAddress listenAddr) throws IOException {
         ServerSocketChannel ssChannel = ServerSocketChannel.open();
         ssChannel.configureBlocking(false);
         ServerSocket socket = ssChannel.socket();
@@ -111,44 +110,27 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     }
 
     @Override
-    protected synchronized void starting() {
+    protected void starting() {
 
-        http.onStart();
+        http.start();
 
-        ws.onStart();
+        ws.start();
 
         
     }
 
     @Override
-    protected synchronized void stopping() {
-        http.onStop();
+    protected void stopping() {
+        http.stop();
 
-        ws.onStop();
+        ws.stop();
     }
 
 
     @Override
     public boolean next() {
 
-        try {
-            SocketChannel sChannel;
-            while ((sChannel = ssChannel.accept()) != null) {
-                http.addNewChannel(sChannel);
-            }
-
-            http.next();
-
-        } catch (ClosedChannelException ex) {
-            
-            
-            
-            
-            logger.info("Channel closed in accept()");
-        } catch (IOException ex) {
-            logger.error("IOException in accept()", ex);
-        }
-
+        http.next(ssChannel);
 
         ws.next();
 

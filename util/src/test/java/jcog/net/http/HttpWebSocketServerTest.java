@@ -32,7 +32,7 @@ class HttpWebSocketServerTest {
         });
 
 
-        server.runFPS(20f);
+        server.setFPS(20f);
 
         //test http client connect
         URL u = new URL("http://localhost:8080/");
@@ -86,7 +86,7 @@ class HttpWebSocketServerTest {
         public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
             HttpServer server = new HttpServer("localhost", 8080, new JSSocket<>(MyInterface::new));
 
-            server.runFPS(20f);
+            server.setFPS(20f);
 
             //test http client connect
             URL u = new URL("http://localhost:8080/");

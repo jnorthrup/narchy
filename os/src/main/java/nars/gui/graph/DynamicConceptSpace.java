@@ -1,21 +1,21 @@
 package nars.gui.graph;
 
 import jcog.Util;
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PLinkArrayBag;
-import jcog.pri.bag.util.Bagregate;
-import jcog.event.Ons;
 import jcog.data.list.FasterList;
+import jcog.event.Ons;
 import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.pri.PriReference;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.util.Bagregate;
 import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.link.Activate;
 import nars.control.DurService;
 import nars.gui.ConceptSurface;
+import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;

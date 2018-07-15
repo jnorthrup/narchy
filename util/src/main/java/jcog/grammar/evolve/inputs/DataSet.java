@@ -18,8 +18,8 @@
 package jcog.grammar.evolve.inputs;
 
 import jcog.Util;
-import jcog.grammar.evolve.utils.Range;
 import jcog.data.list.FasterList;
+import jcog.grammar.evolve.utils.Range;
 
 import java.io.IOException;
 import java.io.Serializable;

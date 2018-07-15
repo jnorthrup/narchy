@@ -1,9 +1,9 @@
 package nars.concept.signal;
 
 import jcog.Util;
-import jcog.math.FloatSupplier;
-import jcog.data.atomic.AtomicFloat;
 import jcog.data.NumberX;
+import jcog.data.atomic.AtomicFloat;
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.control.NARService;

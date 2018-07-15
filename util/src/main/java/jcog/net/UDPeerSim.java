@@ -86,7 +86,7 @@ public class UDPeerSim {
 
     public void start(float fps) {
         for (UDPeer p : peer)
-            p.runFPS(fps);
+            p.setFPS(fps);
     }
 
     public class MyUDPeer extends UDPeer {

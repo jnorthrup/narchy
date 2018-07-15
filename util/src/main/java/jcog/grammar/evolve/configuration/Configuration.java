@@ -17,6 +17,7 @@
  */
 package jcog.grammar.evolve.configuration;
 
+import jcog.data.list.FasterList;
 import jcog.grammar.evolve.evaluators.CachedTreeEvaluator;
 import jcog.grammar.evolve.evaluators.TreeEvaluator;
 import jcog.grammar.evolve.generations.InitialPopulationBuilder;
@@ -32,7 +33,6 @@ import jcog.grammar.evolve.strategy.impl.CombinedMultithreadStrategy;
 import jcog.grammar.evolve.terminalsets.TerminalSetBuilder;
 import jcog.grammar.evolve.terminalsets.TokenizedContextTerminalSetBuilder;
 import jcog.grammar.evolve.tree.*;
-import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.io.File;

@@ -1,8 +1,8 @@
 package spacegraph.space2d.widget.meta;
 
+import jcog.event.On;
 import jcog.service.Service;
 import jcog.service.Services;
-import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;

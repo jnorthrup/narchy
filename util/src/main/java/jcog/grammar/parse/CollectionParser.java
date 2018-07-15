@@ -1,7 +1,7 @@
 package jcog.grammar.parse;
 
-import jcog.grammar.parse.tokens.Symbol;
 import jcog.data.list.FasterList;
+import jcog.grammar.parse.tokens.Symbol;
 
 import java.util.List;
 import java.util.Set;

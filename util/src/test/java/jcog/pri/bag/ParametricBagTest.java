@@ -1,9 +1,9 @@
 package jcog.pri.bag;
 
-import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
+import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.junit.jupiter.api.Test;

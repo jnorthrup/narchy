@@ -1,8 +1,8 @@
 package jcog.pri.bag.impl.hijack;
 
-import jcog.pri.bag.impl.HijackBag;
-import jcog.pri.PLinkHashCached;
 import jcog.data.NumberX;
+import jcog.pri.PLinkHashCached;
+import jcog.pri.bag.impl.HijackBag;
 
 import java.util.function.Consumer;
 

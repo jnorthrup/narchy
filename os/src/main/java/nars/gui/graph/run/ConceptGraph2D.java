@@ -1,10 +1,10 @@
 package nars.gui.graph.run;
 
 import com.jogamp.opengl.GL2;
-import jcog.pri.bag.util.Bagregate;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.ScalarValue;
+import jcog.pri.bag.util.Bagregate;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.concept.Concept;

@@ -1,8 +1,8 @@
 package nars.concept.signal;
 
 import jcog.Util;
-import jcog.math.FloatSupplier;
 import jcog.data.iterator.ArrayIterator;
+import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.term.Term;
 import nars.truth.Truth;

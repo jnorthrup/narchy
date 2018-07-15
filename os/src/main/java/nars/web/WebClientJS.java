@@ -2,8 +2,10 @@ package nars.web;
 
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.dom.html.HTMLBodyElement;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
+import org.teavm.jso.json.JSON;
 
 import java.util.Random;
 
@@ -11,7 +13,7 @@ import java.util.Random;
 public class WebClientJS {
 
 
-    private final HTMLDocument document;
+    private final HTMLDocument doc;
     private HTMLCanvasElement canvas;
     private CanvasRenderingContext2D graphics;
     private boolean[][] cells;
@@ -26,7 +28,7 @@ public class WebClientJS {
 
 //
 
-        document = HTMLDocument.current();
+        doc = HTMLDocument.current();
 //        width = 100;
 //        height = 100;
 //        delay = 10;
@@ -39,18 +41,16 @@ public class WebClientJS {
 ////
 //        cells = new boolean[height][width];
 
-        document.getBody().appendChild(document.createTextNode("start"));
+        HTMLBodyElement body = doc.getBody();
 
-        //WebSocket ws = WebSocket.newSocket("attn");
-        String host = "localhost";
-        int port = 60606;
-        String path = "";
-        WebSocket ws = WebSocketUtil.newSocket("ws://" + host + ":" + port + "/" + path);
+        body.appendChild(doc.createTextNode("start"));
 
 
-//        ws.setOnData((msg)->{
-//            document.getBody().appendChild(document.createTextNode(JSON.stringify(msg)));
-//        });
+        WebSocket ws = WebSocket.newSocket("me");
+        ws.setOnData((msg)->{
+            body.appendChild(doc.createElement("div").withChild(doc.createTextNode(JSON.stringify(msg))));
+        });
+
 //        ws.setOnOpen(()->{
 //            ws.send("");
 //

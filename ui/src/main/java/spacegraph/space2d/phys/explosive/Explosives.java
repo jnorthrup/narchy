@@ -216,7 +216,7 @@ public class Explosives {
 
 
         Gun g = new Gun(1f, w);
-        Loop.of(g::fire).runFPS(10f);
+        Loop.of(g::fire).setFPS(10f);
 
 
     }

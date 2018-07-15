@@ -1,11 +1,11 @@
 package nars.util;
 
-import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
+import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;

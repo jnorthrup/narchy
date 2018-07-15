@@ -1,11 +1,14 @@
 package jcog.net.http;
 
 import jcog.data.list.MetalConcurrentQueue;
-import org.java_websocket.*;
-import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.SocketChannelIOHelper;
+import org.java_websocket.WebSocket;
+import org.java_websocket.WebSocketAdapter;
+import org.java_websocket.WebSocketImpl;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.Handshakedata;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -15,57 +18,35 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Joris
  */
-public class WebSocketSelector extends WebSocketAdapter {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger("jcog/net/http");
+class WebSocketSelector extends WebSocketAdapter {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebSocketSelector.class);
     private final MetalConcurrentQueue<NewChannel> newChannels = new MetalConcurrentQueue(1024);
-    private final HttpModel listener;
+    protected final HttpModel listener;
     private final Set<WebSocket> connections = new LinkedHashSet<>();
-    private final Selector selector = Selector.open();;
+    protected final Selector selector = Selector.open();
 
 
     WebSocketSelector(HttpModel listener) throws IOException {
         this.listener = listener;
     }
 
-    public Set<WebSocket> connections() {
-        return this.connections;
-    }
-
-    private boolean nextRegistration() throws IOException {
+    @Nullable
+    private boolean registerNext()  {
         NewChannel newChannel = newChannels.poll();
         if (newChannel == null) {
-            return false; 
+            return false;
         }
 
-        WebSocketImpl conn = new ServerWebSocketImpl(this);
-
-        SocketChannel chan = newChannel.sChannel;
-        chan.configureBlocking(false);
-        chan.socket().setTcpNoDelay(true);
-
-        conn.key = chan.register(selector, SelectionKey.OP_READ, conn);
-
-        if (!onConnect(conn.key)) {
-            conn.key.cancel();
-            log.info("connect reject: {}", chan.getRemoteAddress());
-        } else {
-            conn.channel = chan;
-
-            ByteBuffer prependData = newChannel.prependData;
-            newChannel.prependData = null;
-
-            conn.decode(prependData);
-            log.info("connect: {}", chan.getRemoteAddress());
+        try {
+            new WebSocketConnection(newChannel, this);
+        } catch (IOException e) {
+            logger.warn("{}", e);
         }
-
-
         return true;
     }
 
@@ -74,23 +55,16 @@ public class WebSocketSelector extends WebSocketAdapter {
         int read = conn.channel.read(buffer);
         buffer.flip();
 
-        if (read == -1) {
-            
-            conn.eot();
-            return true;
+        switch (read) {
+            case -1:
+                conn.eot();
+                return true;
+            case 0:
+                return true;
+            default:
+                conn.decode(buffer);
+                return false;
         }
-
-        if (read == 0) {
-            return true;  
-        }
-
-        
-        
-        
-
-        conn.decode(buffer);
-
-        return false; 
     }
 
     private static boolean writable(SelectionKey key, WebSocketImpl conn) throws IOException {
@@ -106,19 +80,18 @@ public class WebSocketSelector extends WebSocketAdapter {
 
     private final ByteBuffer buffer = ByteBuffer.allocate(WebSocketImpl.RCVBUF);
 
-    synchronized void onStart() {
+    void start() {
 
     }
 
-    synchronized void onStop() {
+    void stop() {
         for (WebSocket ws : connections) {
             ws.close(CloseFrame.NORMAL);
         }
         connections.clear();
     }
 
-    public boolean next() {
-        try {
+    public void next() {
 
 
 
@@ -126,10 +99,10 @@ public class WebSocketSelector extends WebSocketAdapter {
                     
                     selector.selectNow();
                 } catch (ClosedSelectorException | IOException ex) {
-                    return true;
+                    return;
                 }
 
-                while (nextRegistration()) {
+                while (registerNext()) {
                 }
 
                 Iterator<SelectionKey> it;
@@ -144,10 +117,12 @@ public class WebSocketSelector extends WebSocketAdapter {
 
                     WebSocketImpl conn = null;
                     try {
+                        boolean removed = false;
                         if (key.isReadable()) {
                             conn = (WebSocketImpl) key.attachment();
                             if (readable(conn)) {
                                 it.remove();
+                                removed = true;
                             }
 
                         }
@@ -155,22 +130,19 @@ public class WebSocketSelector extends WebSocketAdapter {
                         if (key.isValid() && key.isWritable()) {
                             conn = (WebSocketImpl) key.attachment();
                             if (writable(key, conn)) {
-                                try {
-                                    it.remove();
-                                } catch (IllegalStateException ex) {
-                                    
+                                if (!removed) {
+                                    try {
+                                        it.remove();
+                                    } catch (IllegalStateException ex) {
+                                    }
                                 }
                             }
                         }
 
                     } catch (ClosedSelectorException ex) {
-
-
-                        return false; 
+                        return;
                     } catch (CancelledKeyException ex) {
                         it.remove();
-
-                        
                     } catch (IOException ex) {
                         
                         conn.close();
@@ -184,13 +156,7 @@ public class WebSocketSelector extends WebSocketAdapter {
 
 
 
-        } catch (Exception ex) {
-            log.warn("{}", ex);
 
-            onError(null, ex);
-        }
-
-        return true;
     }
 
     private void handleIOException(WebSocket conn, IOException ex) {
@@ -229,6 +195,7 @@ public class WebSocketSelector extends WebSocketAdapter {
         try {
             selector.wakeup();
         } catch (IllegalStateException ex) {
+            logger.error("{}", ex);
         }
 
         if (this.connections.remove(conn)) {
@@ -252,6 +219,7 @@ public class WebSocketSelector extends WebSocketAdapter {
         try {
             selector.wakeup();
         } catch (IllegalStateException ex) {
+            logger.error("{}", ex);
         }
     }
 
@@ -315,7 +283,7 @@ public class WebSocketSelector extends WebSocketAdapter {
         return (InetSocketAddress) socket(conn).getRemoteSocketAddress();
     }
 
-    private static final class NewChannel {
+    static final class NewChannel {
         final SocketChannel sChannel;
         ByteBuffer prependData;
 
@@ -329,29 +297,4 @@ public class WebSocketSelector extends WebSocketAdapter {
         void upgradeWebSocketHandler(SocketChannel sChannel, ByteBuffer prependData);
     }
 
-    /**
-     * @author Joris
-     */
-    public static class ServerWebSocketImpl extends WebSocketImpl {
-
-        final static AtomicInteger serial = new AtomicInteger();
-
-        private final int hash;
-
-        ServerWebSocketImpl(WebSocketListener listener) {
-            
-            super(listener, List.of(new Draft_6455()));
-            this.hash = serial.incrementAndGet();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj;
-        }
-
-        @Override
-        public int hashCode() {
-            return hash;
-        }
-    }
 }

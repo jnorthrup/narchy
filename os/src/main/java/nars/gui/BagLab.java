@@ -1,11 +1,11 @@
 package nars.gui;
 
 import jcog.Util;
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import nars.$;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;

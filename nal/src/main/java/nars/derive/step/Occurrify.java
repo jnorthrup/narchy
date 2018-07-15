@@ -1,8 +1,8 @@
 package nars.derive.step;
 
 import jcog.WTF;
-import jcog.data.set.ArrayHashSet;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.Longerval;
 import nars.Op;
 import nars.Param;

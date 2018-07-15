@@ -1,8 +1,8 @@
 package nars.gui;
 
-import jcog.pri.bag.Bag;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.control.DurService;
 import spacegraph.space2d.SurfaceBase;

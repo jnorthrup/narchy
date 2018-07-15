@@ -7,9 +7,9 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.AbstractTask;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 

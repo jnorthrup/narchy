@@ -23,9 +23,9 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics;
 
-import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
+import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.math.FloatSupplier;
 import spacegraph.space2d.phys.callbacks.*;
 import spacegraph.space2d.phys.collision.AABB;

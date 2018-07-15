@@ -1,8 +1,8 @@
 package nars.index.concept;
 
-import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;
+import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import nars.NAR;
 import nars.concept.PermanentConcept;
 import nars.control.DurService;

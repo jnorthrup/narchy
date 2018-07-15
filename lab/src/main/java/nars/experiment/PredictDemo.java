@@ -48,7 +48,7 @@ public class PredictDemo {
             X.update(truther, n);
 
             
-        }).runFPS(15f);
+        }).setFPS(15f);
 
         
 

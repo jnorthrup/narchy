@@ -1,7 +1,7 @@
 package jcog.pri.bag.util;
 
-import jcog.pri.bag.Bag;
 import jcog.data.NumberX;
+import jcog.pri.bag.Bag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

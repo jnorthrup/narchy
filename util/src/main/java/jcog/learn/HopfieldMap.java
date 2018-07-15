@@ -2,9 +2,9 @@ package jcog.learn;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.data.graph.AdjGraph;
 import jcog.data.MutableFloat;
 import jcog.data.NumberX;
+import jcog.data.graph.AdjGraph;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 

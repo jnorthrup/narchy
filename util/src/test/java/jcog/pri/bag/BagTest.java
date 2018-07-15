@@ -1,10 +1,6 @@
 package jcog.pri.bag;
 
 import jcog.Util;
-import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.CurveBag;
-import jcog.pri.bag.impl.HijackBag;
-import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.data.list.FasterList;
 import jcog.math.random.SplitMix64Random;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -14,6 +10,10 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
+import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.bag.impl.HijackBag;
+import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;

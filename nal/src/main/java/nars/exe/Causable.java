@@ -34,6 +34,10 @@ abstract public class Causable extends NARService {
         this(nar, null);
     }
 
+    protected Causable() {
+        this((Term)null);
+    }
+
     /** if using this constructor, make sure to call 'nar.on(this);' in the callee */
     protected Causable(Term id) {
         this(null, id);

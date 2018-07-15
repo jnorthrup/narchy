@@ -16,7 +16,7 @@ class UDPeerTest {
     @ValueSource(ints={0,1})
     void testDiscoverDoesntSelfConnect(int pingSelf) throws IOException {
         UDPeer x = new UDPeer();
-        x.runFPS(8f);
+        x.setFPS(8f);
          if (pingSelf==1) {
             x.ping(x.addr);
         }
@@ -33,8 +33,8 @@ class UDPeerTest {
 
         UDPeer x = new UDPeer();
         UDPeer y = new UDPeer();
-        x.runFPS(4);
-        y.runFPS(4);
+        x.setFPS(4);
+        y.setFPS(4);
 
         Util.sleep(2000);
 

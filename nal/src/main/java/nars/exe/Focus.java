@@ -1,13 +1,13 @@
 package nars.exe;
 
-import jcog.service.Service;
 import jcog.Util;
 import jcog.data.bit.AtomicMetalBitSet;
+import jcog.data.list.FasterList;
 import jcog.decide.AtomicRoulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
-import jcog.data.list.FasterList;
 import jcog.math.MutableInteger;
+import jcog.service.Service;
 import nars.NAR;
 import nars.control.Cause;
 import nars.control.Traffic;

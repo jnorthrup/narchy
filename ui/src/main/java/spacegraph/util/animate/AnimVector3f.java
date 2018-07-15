@@ -1,9 +1,9 @@
 package spacegraph.util.animate;
 
 import jcog.Util;
-import jcog.tree.rtree.Spatialization;
-import jcog.data.atomic.AtomicFloat;
 import jcog.data.NumberX;
+import jcog.data.atomic.AtomicFloat;
+import jcog.tree.rtree.Spatialization;
 import spacegraph.util.math.v3;
 
 public class AnimVector3f extends v3 implements Animated {

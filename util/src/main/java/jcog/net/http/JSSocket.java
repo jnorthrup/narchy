@@ -1,9 +1,9 @@
 package jcog.net.http;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.exe.Exe;
-import jcog.data.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;
@@ -32,12 +32,12 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
  */
 public class JSSocket<X> implements HttpModel {
 
-    static transient final ScriptEngineManager engineManager = new ScriptEngineManager();
-    static transient final NashornScriptEngine JS = (NashornScriptEngine) engineManager.getEngineByName("nashorn");
+    private static transient final ScriptEngineManager engineManager = new ScriptEngineManager();
+    private static transient final NashornScriptEngine JS = (NashornScriptEngine) engineManager.getEngineByName("nashorn");
 
     private static final Logger logger = LoggerFactory.getLogger(JSSocket.class);
 
-    final CustomConcurrentHashMap<WebSocket, JsSession<X>> session =
+    private final CustomConcurrentHashMap<WebSocket, JsSession<X>> session =
             new CustomConcurrentHashMap<>(
                     WEAK, EQUALS, STRONG, IDENTITY,
                     1024
@@ -79,7 +79,7 @@ public class JSSocket<X> implements HttpModel {
         return s;
     }
 
-    static Object eval(String code, SimpleBindings bindings, NashornScriptEngine engine) {
+    private static Object eval(String code, SimpleBindings bindings, NashornScriptEngine engine) {
         Object o;
 
         try {
@@ -120,11 +120,11 @@ public class JSSocket<X> implements HttpModel {
 
     }
 
-    protected void onOpened(JsSession<X> session) {
+    private void onOpened(JsSession<X> session) {
 
     }
 
-    protected void onClosed(JsSession<X> session) {
+    private void onClosed(JsSession<X> session) {
 
     }
 
@@ -138,13 +138,13 @@ public class JSSocket<X> implements HttpModel {
         final AtomicBoolean pending = new AtomicBoolean(false);
         final Queue<String> q = new ArrayBlockingQueue<>(MAX_QUEUE_SIZE);
 
-        public JsSession(WebSocket s, X context) {
+        JsSession(WebSocket s, X context) {
             this.socket = s;
             this.context = context;
             put("i", context);
         }
 
-        public void invoke(String expr) {
+        void invoke(String expr) {
             if (socket.isClosed())
                 return;
 
@@ -169,23 +169,23 @@ public class JSSocket<X> implements HttpModel {
                     
                     
 
-                    Object y = eval("i." + message, JsSession.this, JS);
-                    if (y == null)
+                    Object x = eval("i." + message, JsSession.this, JS);
+                    if (x == null)
                         return true;
 
                     if (socket.isClosed())
                         return true;
 
-                    if (y instanceof ScriptException)
-                        y = ((ScriptException) y).getMessage();
+                    if (x instanceof ScriptException)
+                        x = ((Throwable) x).getMessage();
 
-                    if (y instanceof String)
-                        socket.send((String) y);
+                    if (x instanceof String)
+                        socket.send((String) x);
                     else {
                         try {
-                            socket.send(Util.jsonNode(y).asText());
+                            socket.send(Util.jsonNode(x).asText());
                         } catch (Exception serialization) {
-                            socket.send(y.toString());
+                            socket.send(x.toString());
                         }
                     }
 

@@ -2,6 +2,7 @@ package jcog.lab.util;
 
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.io.arff.ARFF;
 import jcog.lab.Goal;
@@ -9,7 +10,6 @@ import jcog.lab.Lab;
 import jcog.lab.Sensor;
 import jcog.lab.Var;
 import jcog.lab.var.FloatVar;
-import jcog.data.list.FasterList;
 import jcog.math.Quantiler;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;

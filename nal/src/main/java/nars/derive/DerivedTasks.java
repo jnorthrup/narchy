@@ -1,9 +1,9 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.data.NumberX;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
-import jcog.data.NumberX;
 import nars.NAR;
 import nars.Param;
 import nars.Task;

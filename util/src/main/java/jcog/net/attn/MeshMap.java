@@ -25,7 +25,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     static {
         try {
             seed = new UDPeer();
-            seed.runFPS(seedFPS);
+            seed.setFPS(seedFPS);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -101,7 +101,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
         return the.computeIfAbsent(id, i -> {
             try {
                 MeshMap<K, V> y = new MeshMap<K, V>(id, x);
-                y.runFPS(mapFPS);
+                y.setFPS(mapFPS);
                 return y;
             } catch (IOException e) {
                 

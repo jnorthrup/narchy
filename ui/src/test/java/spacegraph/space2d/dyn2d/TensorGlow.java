@@ -139,7 +139,7 @@ public class TensorGlow {
         Loop.of(() -> {
             lerpVector.update();
             q.act((((float) Math.random()) - 0.5f) * 2, in);
-        }).runFPS(25);
+        }).setFPS(25);
 
     }
 

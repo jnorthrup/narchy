@@ -170,7 +170,7 @@ public class Dyn2DSurfaceTest {
 
             Loop.of(() -> {
                 A.out(String.valueOf(s.rng.nextInt(5)));
-            }).runFPS(0.3f);
+            }).setFPS(0.3f);
         }
 
     }

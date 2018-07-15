@@ -1,7 +1,10 @@
 package nars.nal.nal8;
 
 import jcog.data.list.FasterList;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
 import nars.term.Term;
 import nars.time.Tense;
 import org.junit.jupiter.api.Disabled;

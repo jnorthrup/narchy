@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.exe.realtime.AdmissionQueueWheelModel;
 import jcog.exe.realtime.HashedWheelTimer;
-import jcog.data.list.MetalConcurrentQueue;
 import jcog.net.UDPeer;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
@@ -101,7 +101,7 @@ public enum Exe { ;
         final MetalConcurrentQueue<JsonNode> out = new MetalConcurrentQueue<>(2048);
 
         public UDPeerProfiler() throws IOException {
-            p.runFPS(10f);
+            p.setFPS(10f);
         }
 
         @Override

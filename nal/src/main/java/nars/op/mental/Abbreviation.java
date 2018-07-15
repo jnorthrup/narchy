@@ -1,8 +1,8 @@
 package nars.op.mental;
 
 
-import jcog.math.MutableIntRange;
 import jcog.data.atomic.AtomicFloat;
+import jcog.math.MutableIntRange;
 import nars.$;
 import nars.NAR;
 import nars.Task;

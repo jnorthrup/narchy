@@ -1,12 +1,12 @@
 package jcog.pri.bag;
 
 import jcog.Util;
-import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.CurveBag;
-import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.UnitPri;
+import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;

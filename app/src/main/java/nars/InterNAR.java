@@ -194,7 +194,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
 
     public void runFPS(float fps) {
         nar.runLater(()->{
-        peer.runFPS(fps);
+        peer.setFPS(fps);
         });
     }
 

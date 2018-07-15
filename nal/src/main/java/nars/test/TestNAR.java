@@ -1,7 +1,7 @@
 package nars.test;
 
-import jcog.event.Topic;
 import jcog.data.list.FasterList;
+import jcog.event.Topic;
 import nars.*;
 import nars.task.ITask;
 import nars.task.Tasked;

@@ -1,9 +1,9 @@
 package jcog.pri.op;
 
 import jcog.Util;
-import jcog.pri.bag.Bag;
 import jcog.pri.Priority;
 import jcog.pri.ScalarValue;
+import jcog.pri.bag.Bag;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,9 +1,9 @@
 package jcog.lab.util;
 
+import jcog.data.list.FasterList;
 import jcog.io.arff.ARFF;
 import jcog.lab.Lab;
 import jcog.lab.Sensor;
-import jcog.data.list.FasterList;
 
 import java.util.Date;
 import java.util.List;
