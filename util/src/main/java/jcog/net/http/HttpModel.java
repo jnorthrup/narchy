@@ -5,7 +5,6 @@ import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 
 
 /**
@@ -22,7 +21,7 @@ public interface HttpModel {
      * @see {@link #onOpen(WebSocket, ClientHandshake)}, {@link #onWebsocketHandshakeReceivedAsServer(WebSocket, Draft, ClientHandshake)}
      */
 
-    default boolean wssConnect(SelectionKey key) {
+    default boolean wssConnect(WebSocketConnection key) {
         return true;
     }
 

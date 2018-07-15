@@ -5,6 +5,7 @@ import org.java_websocket.drafts.Draft_6455;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -14,25 +15,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Joris
  */
-class WebSocketConnection extends WebSocketImpl {
+public class WebSocketConnection extends WebSocketImpl {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
     final static AtomicInteger serial = new AtomicInteger();
 
     private final int hash;
+    public final HttpConnection http;
 
     WebSocketConnection(WebSocketSelector.NewChannel newChannel, WebSocketSelector ws) throws IOException {
         super(ws, List.of(new Draft_6455()));
+        this.http = newChannel.http;
         this.hash = serial.incrementAndGet();
 
-        SocketChannel chan = newChannel.sChannel;
+        SocketChannel chan = http.channel;
         chan.configureBlocking(false);
         chan.socket().setTcpNoDelay(true);
 
         key = chan.register(ws.selector, SelectionKey.OP_READ, this);
 
-        if (ws.listener.wssConnect(key)) {
+        if (ws.listener.wssConnect(this)) {
             channel = chan;
 
             ByteBuffer prependData = newChannel.prependData;
@@ -55,5 +58,9 @@ class WebSocketConnection extends WebSocketImpl {
     @Override
     public int hashCode() {
         return hash;
+    }
+
+    public URI url() {
+        return http.url();
     }
 }

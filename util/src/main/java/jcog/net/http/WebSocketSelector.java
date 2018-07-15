@@ -223,9 +223,6 @@ class WebSocketSelector extends WebSocketAdapter {
         }
     }
 
-    private boolean onConnect(SelectionKey key) {
-        return listener.wssConnect(key);
-    }
 
     private void onOpen(WebSocket conn, ClientHandshake handshake) {
         listener.wssOpen(conn, handshake);
@@ -248,8 +245,8 @@ class WebSocketSelector extends WebSocketAdapter {
     }
 
     
-    void addNewChannel(SocketChannel sChannel, ByteBuffer prependData) {
-        if (!newChannels.offer(new NewChannel(sChannel, prependData))) {
+    void addNewChannel(HttpConnection http, ByteBuffer prependData) {
+        if (!newChannels.offer(new NewChannel(http, prependData))) {
             System.err.println("newChannel queue overflow");
         }
 
@@ -284,17 +281,17 @@ class WebSocketSelector extends WebSocketAdapter {
     }
 
     static final class NewChannel {
-        final SocketChannel sChannel;
+        final HttpConnection http;
         ByteBuffer prependData;
 
-        NewChannel(SocketChannel sChannel, ByteBuffer prependData) {
-            this.sChannel = sChannel;
+        NewChannel(HttpConnection http, ByteBuffer prependData) {
+            this.http = http;
             this.prependData = prependData;
         }
     }
 
     interface UpgradeWebSocketHandler {
-        void upgradeWebSocketHandler(SocketChannel sChannel, ByteBuffer prependData);
+        void upgradeWebSocketHandler(HttpConnection sChannel, ByteBuffer prependData);
     }
 
 }

@@ -2,16 +2,18 @@ package nars;
 
 import jcog.Texts;
 import jcog.data.map.CustomConcurrentHashMap;
+import jcog.event.Off;
+import jcog.event.Ons;
 import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
+import jcog.net.http.WebSocketConnection;
 import nars.index.concept.MaplikeConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
 import nars.web.WebClientJS;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.CloseFrame;
-import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshake;
 import org.teavm.tooling.RuntimeCopyOperation;
 import org.teavm.tooling.TeaVMTool;
@@ -21,7 +23,6 @@ import org.teavm.tooling.TeaVMToolLog;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.channels.SelectionKey;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -78,8 +79,8 @@ public class Web implements HttpModel {
 
     }
 
-    final CustomConcurrentHashMap<WebSocket, NAR> reasoners = new CustomConcurrentHashMap<>(
-            WEAK, IDENTITY, STRONG, IDENTITY, 64) {
+    final CustomConcurrentHashMap<String, NAR> reasoners = new CustomConcurrentHashMap<>(
+            STRONG, EQUALS, WEAK, IDENTITY, 64) {
         @Override
         protected void reclaim(NAR n) {
             Web.this.remove(n);
@@ -92,34 +93,53 @@ public class Web implements HttpModel {
     }
 
     @Override
-    public boolean wssConnect(SelectionKey key) {
+    public boolean wssConnect(WebSocketConnection conn) {
+        String url = conn.url().getPath();
+        if (url.equals("/")) {
+            conn.close(CloseFrame.REFUSE);
+            return false;
+        }
+
+        NAR n = reasoners.computeIfAbsent(url, (Function<String,NAR>)this::reasoner);
+        assert(n!=null);
+
+        System.out.println("NAR " + System.identityHashCode(n) + " for " + url);
+
+        conn.setAttachment(
+                new NARConnection(n,
+                        n.onTask(new WebSocketLogger(conn, n))
+                        //...
+                )
+        );
+
         return true;
     }
 
-    @Override
-    public void wssOpen(WebSocket ws, ClientHandshake handshake) {
 
-        String url = ws.getResourceDescriptor();
-        if (url.equals("/")) {
-            ws.close(CloseFrame.REFUSE);
-            return;
+    static class NARConnection extends Ons {
+        public final NAR nar;
+
+        public NARConnection(NAR n, Off... ons) {
+            this.nar = n;
+            addingAll(ons);
         }
+    }
 
-        NAR n = reasoners.computeIfAbsent(ws, (Function<WebSocket, NAR>) this::reasoner);
-        ws.setAttachment(n);
-
-        int initialFPS = 5;
-        n.startFPS(initialFPS);
-
-        starting(n);
+    @Override
+    public void wssMessage(WebSocket ws, String message) {
+        try {
+            ((NARConnection)ws.getAttachment()).nar.input(message);
+        } catch (Narsese.NarseseException e) {
+            ws.send(e.toString()); //e.printStackTrace();
+        }
     }
 
     @Override
     public void wssClose(WebSocket ws, int code, String reason, boolean remote) {
-        NAR n = reasoners.remove(ws);
-        if (n!=null) {
-            stopping(n);
-            n.reset();
+        Ons o = ws.getAttachment();
+        if (o!=null) {
+            ws.setAttachment(null);
+            o.off();
         }
     }
 
@@ -128,27 +148,30 @@ public class Web implements HttpModel {
     }
 
     protected void starting(NAR n) {
-        try {
-            n.input("a:b.");
-            n.input("a:c.");
-            n.input("b:d.");
-            n.input("b:c.");
-            n.input("c:d.");
-        } catch (Narsese.NarseseException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            n.input("a:b.");
+//            n.input("a:c.");
+//            n.input("b:d.");
+//            n.input("b:c.");
+//            n.input("c:d.");
+//        } catch (Narsese.NarseseException e) {
+//            e.printStackTrace();
+//        }
     }
 
-    private NAR reasoner(WebSocket ws) {
+    private NAR reasoner(String path) {
         NAR n = new NARS().withNAL(1, 8).index(sharedIndex).get();
 
-        String path = ws.getResourceDescriptor();
         assert (path.charAt(0) == '/');
         path = path.substring(1);
         n.named(path);
 
-        n.onTask(new WebSocketLogger(ws, n));
-        n.log();
+        n.log(); //temporary
+
+        int initialFPS = 5;
+        n.startFPS(initialFPS);
+
+        starting(n);
 
         return n;
     }
@@ -162,11 +185,11 @@ public class Web implements HttpModel {
     public static void clientGenerate() {
         try {
             TeaVMTool tea = new TeaVMTool();
-            try {
-                org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/teacache"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/teacache"));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             try {
                 org.apache.commons.io.FileUtils.deleteDirectory(new File("/tmp/tea"));
             } catch (IOException e) {
@@ -311,7 +334,6 @@ public class Web implements HttpModel {
                 } catch (Exception e) {
                     e.printStackTrace();
                     w = null;
-                    n.stop();
                     w.close();
                 }
             //}

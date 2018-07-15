@@ -54,7 +54,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                 ByteBuffer rawHead = conn.rawHead;
                 conn.rawHead = null;
                 rawHead.flip();
-                upgradeWebSocketHandler.upgradeWebSocketHandler(conn.channel, rawHead);
+                upgradeWebSocketHandler.upgradeWebSocketHandler(conn, rawHead);
             } else {
                 try {
                     conn.channel.close();

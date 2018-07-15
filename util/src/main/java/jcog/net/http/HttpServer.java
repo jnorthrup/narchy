@@ -10,9 +10,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 
 /**
  * A simple http 1.1 server with WebSockets.
@@ -139,13 +137,13 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
 
 
     @Override
-    public void upgradeWebSocketHandler(SocketChannel sChannel, ByteBuffer prependData) {
-        ws.addNewChannel(sChannel, prependData);
+    public void upgradeWebSocketHandler(HttpConnection http, ByteBuffer prependData) {
+        ws.addNewChannel(http, prependData);
     }
 
     @Override
-    public final boolean wssConnect(SelectionKey key) {
-        return model.wssConnect(key);
+    public final boolean wssConnect(WebSocketConnection conn) {
+        return model.wssConnect(conn);
     }
 
     @Override

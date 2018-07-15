@@ -215,11 +215,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         int hash(Object x);
     }
 
-    
 
     static final class EquivalenceUsingIdentity
             implements Equivalence<Object>, Serializable {
-        
+
 
         @Override
         public final boolean equal(Object a, Object b) {
@@ -234,7 +233,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class EquivalenceUsingEquals
             implements Equivalence<Object>, Serializable {
-        
+
 
         @Override
         public final boolean equal(Object a, Object b) {
@@ -249,7 +248,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class EquivalenceUsingHashAndIdentity
             implements Equivalence<Object>, Serializable {
-        
+
 
         @Override
         public final boolean equal(Object a, Object b) {
@@ -413,7 +412,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * of the table. This class contains only those methods for
      * directly assigning these fields, which must only be called
      * while holding locks.
-     *
+     * <p>
      * TODO use StampedLock
      */
     static final class Segment extends ReentrantLock {
@@ -441,7 +440,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         final Node[] getTableForAdd(CustomConcurrentHashMap cchm) {
             int len;
             Node[] tab = table;
-            return tab == null ||  
+            return tab == null ||
                     ((len = tab.length) - (len >>> 2)) < count ? resizeTable(cchm) : tab;
         }
 
@@ -466,12 +465,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                     Node next = e.getLinkage();
                     int idx = e.getLocator() & sizeMask;
 
-                    
+
                     if (next == null)
                         newTable[idx] = e;
 
                     else {
-                        
+
                         Node lastRun = e;
                         int lastIdx = idx;
                         for (Node last = next;
@@ -485,7 +484,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                         }
                         newTable[lastIdx] = lastRun;
 
-                        
+
                         for (Node p = e; p != lastRun; p = p.getLinkage()) {
                             int ph = p.getLocator();
                             int k = ph & sizeMask;
@@ -505,7 +504,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
 
     static final int SEGMENT_BITS = 6;
     static final int NSEGMENTS = 1 << SEGMENT_BITS;
@@ -522,8 +520,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * or upper bits.
      */
     static int spreadHash(int h) {
-        
-        
+
+
         h += (h << 15) ^ 0xffffcd7d;
         h ^= (h >>> 10);
         h += (h << 3);
@@ -557,7 +555,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     final int initialSegmentCapacity;
 
-    
+
     transient Set<K> keySet;
     transient Set<Map.Entry<K, V>> entrySet;
     transient Collection<V> values;
@@ -573,7 +571,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             throw new NullPointerException();
         this.keyEquivalence = keq;
         this.valueEquivalence = veq;
-        
+
         String factoryName =
                 CustomConcurrentHashMap.class.getName() + '$' +
                         ks + "Key" +
@@ -591,7 +589,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             int sc = (int) ((1L + (4L * es) / 3) >>> SEGMENT_BITS);
             if (sc < MIN_SEGMENT_CAPACITY)
                 sc = MIN_SEGMENT_CAPACITY;
-            int capacity = MIN_SEGMENT_CAPACITY; 
+            int capacity = MIN_SEGMENT_CAPACITY;
             while (capacity < sc)
                 capacity <<= 1;
             if (capacity > MAX_SEGMENT_CAPACITY)
@@ -707,7 +705,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         Segment seg;
         while ((seg = segs.get(index)) == null) {
             Segment s2;
-            if (segs.compareAndSet(index,null, s2 = new Segment())) {
+            if (segs.compareAndSet(index, null, s2 = new Segment())) {
                 storeSegment(segs, index, s2);
                 return s2;
             }
@@ -795,8 +793,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 Node[] tab = seg.getTableForAdd(this);
                 int i = hash & (tab.length - 1);
                 r = factory.newNode(hash, key, value, this, tab[i]);
-                
-                
+
+
                 storeNode(tab, i, r);
                 seg.incrementCount();
             }
@@ -1019,7 +1017,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             try {
                 Node[] tab = seg.table();
                 if (tab != null) {
-                    
+
                     int i = hash & (tab.length - 1);
                     Node pred = null;
                     Node p = tab[i];
@@ -1190,7 +1188,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             try {
                 r = findNode(key, hash, seg);
                 if (r == null || (v = (V) (r.getValue())) == null) {
-                    
+
                     v = mappingFunction.map(key);
                     if (v != null) {
                         if (r != null)
@@ -1199,12 +1197,15 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                             Node[] tab = seg.getTableForAdd(this);
                             int i = hash & (tab.length - 1);
                             r = factory.newNode(hash, key, v, this, tab[i]);
-                            
-                            storeNode(tab, i, r); 
+
+                            storeNode(tab, i, r);
                             seg.incrementCount();
                         }
                     }
                 }
+            } catch (Throwable e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
             } finally {
                 seg.unlock();
             }
@@ -1287,8 +1288,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             } else if (value != null) {
                 Node r =
                         factory.newNode(hash, key, value, this, tab[i]);
-                
-                
+
+
                 storeNode(tab, i, r);
                 seg.incrementCount();
             }
@@ -1303,9 +1304,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         int nextTableIndex;
         Node[] currentTable;
         Node nextNode;
-        Object nextKey;           
-        Object nextValue;         
-        Object lastKey;           
+        Object nextKey;
+        Object nextValue;
+        Object lastKey;
 
         HashIterator() {
             nextSegmentIndex = segments.length() - 1;
@@ -1381,7 +1382,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
     final class WriteThroughEntry implements Map.Entry<K, V>, Serializable {
-        
+
         final K key;
         V value;
 
@@ -1430,7 +1431,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    final KeyIterator keyIterator() { 
+    final KeyIterator keyIterator() {
         return new KeyIterator();
     }
 
@@ -1616,7 +1617,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         return (es != null) ? es : (entrySet = new EntrySet());
     }
 
-    
 
     /**
      * Compares the specified object with this map for equality.
@@ -1669,42 +1669,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         for (Entry<K, V> kvEntry : entrySet()) h += kvEntry.hashCode();
         return h;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -1842,11 +1806,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
 
     private static final ReclamationThread reclaim = new ReclamationThread();
+
     static {
-        synchronized(reclaim) {
+        synchronized (reclaim) {
             if (!reclaim.isAlive())
                 reclaim.start();
         }
@@ -1879,7 +1843,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
 
     static class EmbeddedWeakReference extends WeakReference
             implements Reclaimable {
@@ -1913,9 +1876,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
-
-    
 
     abstract static class StrongKeyNode implements Node {
         final Object key;
@@ -1997,9 +1957,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeySelfValueNodeFactory
             implements NodeFactory {
-        
 
-        public StrongKeySelfValueNodeFactory() { }
+
+        public StrongKeySelfValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2078,7 +2039,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class StrongKeyStrongValueNodeFactory
             implements NodeFactory {
 
-        public StrongKeyStrongValueNodeFactory() { }
+        public StrongKeyStrongValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2091,7 +2053,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
 
     abstract static class StrongKeyIntValueNode
             extends StrongKeyNode {
@@ -2158,7 +2119,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeyIntValueNodeFactory
             implements NodeFactory {
-        
+
 
         @Override
         public final Node newNode(int locator,
@@ -2171,7 +2132,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
 
     abstract static class StrongKeyWeakValueNode
             extends StrongKeyNode {
@@ -2246,8 +2206,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeyWeakValueNodeFactory
             implements NodeFactory {
-        
-        public StrongKeyWeakValueNodeFactory() { }
+
+        public StrongKeyWeakValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2334,9 +2295,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeySoftValueNodeFactory
             implements NodeFactory {
-        
 
-        public StrongKeySoftValueNodeFactory() { }
+
+        public StrongKeySoftValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2349,7 +2311,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
 
     abstract static class WeakKeyNode extends WeakReference
             implements Node {
@@ -2432,9 +2393,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeySelfValueNodeFactory
             implements NodeFactory {
-        
 
-        public WeakKeySelfValueNodeFactory() { }
+
+        public WeakKeySelfValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2512,8 +2474,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeyStrongValueNodeFactory
             implements NodeFactory {
-        
-        public WeakKeyStrongValueNodeFactory() { }
+
+        public WeakKeyStrongValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2590,7 +2553,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeyIntValueNodeFactory
             implements NodeFactory {
-        
+
 
         @Override
         public final Node newNode(int locator,
@@ -2669,8 +2632,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeyWeakValueNodeFactory
             implements NodeFactory {
-        
-        public WeakKeyWeakValueNodeFactory() { }
+
+        public WeakKeyWeakValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2750,8 +2714,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeySoftValueNodeFactory
             implements NodeFactory {
-        
-        public WeakKeySoftValueNodeFactory() { }
+
+        public WeakKeySoftValueNodeFactory() {
+        }
+
         @Override
         public final Node newNode(int locator,
                                   Object key, Object value,
@@ -2763,7 +2729,6 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
     }
 
-    
 
     abstract static class SoftKeyNode extends SoftReference
             implements Node {
@@ -2846,9 +2811,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeySelfValueNodeFactory
             implements NodeFactory {
-        
 
-        public SoftKeySelfValueNodeFactory() { }
+
+        public SoftKeySelfValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -2926,9 +2892,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeyStrongValueNodeFactory
             implements NodeFactory {
-        
 
-        public SoftKeyStrongValueNodeFactory() { }
+
+        public SoftKeyStrongValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -3005,7 +2972,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeyIntValueNodeFactory
             implements NodeFactory {
-        
+
 
         @Override
         public final Node newNode(int locator,
@@ -3084,9 +3051,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeyWeakValueNodeFactory
             implements NodeFactory {
-        
 
-        public SoftKeyWeakValueNodeFactory() { }
+
+        public SoftKeyWeakValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -3166,9 +3134,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeySoftValueNodeFactory
             implements NodeFactory {
-        
 
-        public SoftKeySoftValueNodeFactory() { }
+
+        public SoftKeySoftValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -3259,9 +3228,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeySelfValueNodeFactory
             implements NodeFactory {
-        
 
-        public IntKeySelfValueNodeFactory() { }
+
+        public IntKeySelfValueNodeFactory() {
+        }
 
         @Override
         public final Node newNode(int locator,
@@ -3339,7 +3309,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeyStrongValueNodeFactory
             implements NodeFactory {
-        
+
 
         @Override
         public final Node newNode(int locator,
@@ -3417,7 +3387,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeyIntValueNodeFactory
             implements NodeFactory {
-        
+
 
         @Override
         public final Node newNode(int locator,
@@ -3503,7 +3473,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeyWeakValueNodeFactory
             implements NodeFactory {
-        
+
 
         @Override
         public final Node newNode(int locator,
@@ -3590,7 +3560,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeySoftValueNodeFactory
             implements NodeFactory {
-        
+
 
         @Override
         public final Node newNode(int locator,
@@ -3604,12 +3574,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
 
-    
-
     static final Unsafe UNSAFE;
     static final long tableBase;
     static final int tableShift;
-
 
 
     static {
@@ -3622,15 +3589,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             tableShift = 31 - Integer.numberOfLeadingZeros(scale);
 
 
-
-
-
         } catch (Throwable e) {
             throw new RuntimeException("Could not initialize intrinsics", e);
         }
     }
 
-    
+
     static void storeNode(Node[] table,
                           int i, Node r) {
         long nodeOffset = ((long) i << tableShift) + tableBase;
