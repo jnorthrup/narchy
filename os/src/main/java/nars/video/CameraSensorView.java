@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.NAR;
 import nars.agent.NAgent;
 import nars.concept.TaskConcept;
-import nars.concept.signal.Signal;
+import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;

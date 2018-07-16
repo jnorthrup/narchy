@@ -6,13 +6,13 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.concept.util.ConceptBuilder;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
-import nars.table.QuestionTable;
+import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.util.concept.ConceptBuilder;
 
 import java.util.function.Function;
 import java.util.stream.Stream;

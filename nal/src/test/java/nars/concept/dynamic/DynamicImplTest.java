@@ -2,6 +2,8 @@ package nars.concept.dynamic;
 
 import jcog.data.list.FasterList;
 import nars.*;
+import nars.table.dynamic.DynamicBeliefTable;
+import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
@@ -10,9 +12,7 @@ import java.util.List;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DynamicImplTest {
 

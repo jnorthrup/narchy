@@ -7,7 +7,7 @@ import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.NAR;
 import nars.Task;
-import nars.concept.signal.Signal;
+import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;

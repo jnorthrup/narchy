@@ -4,6 +4,8 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
+import nars.table.eternal.EternalTable;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;

@@ -2,6 +2,7 @@ package nars.concept.dynamic;
 
 import nars.*;
 import nars.concept.Concept;
+import nars.table.dynamic.DynamicTruthBeliefTable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;

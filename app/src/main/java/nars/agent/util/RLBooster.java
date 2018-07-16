@@ -10,7 +10,7 @@ import nars.NAR;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
-import nars.concept.signal.Signal;
+import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;

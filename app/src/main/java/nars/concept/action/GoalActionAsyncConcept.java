@@ -2,8 +2,8 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
-import nars.concept.dynamic.SignalBeliefTable;
 import nars.control.channel.CauseChannel;
+import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;

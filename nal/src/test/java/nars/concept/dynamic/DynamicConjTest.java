@@ -3,6 +3,7 @@ package nars.concept.dynamic;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;

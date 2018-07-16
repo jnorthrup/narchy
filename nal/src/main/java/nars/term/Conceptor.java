@@ -5,10 +5,10 @@ import nars.Op;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
-import nars.concept.util.ConceptBuilder;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.util.concept.ConceptBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;

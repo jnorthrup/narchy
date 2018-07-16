@@ -6,7 +6,7 @@ import nars.*;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
 import nars.table.BeliefTable;
-import nars.table.RTreeBeliefTable;
+import nars.table.temporal.RTreeBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;

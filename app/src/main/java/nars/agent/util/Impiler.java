@@ -9,12 +9,12 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.concept.dynamic.DynTruth;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.compound.util.ByteAnonMap;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynTruth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

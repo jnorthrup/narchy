@@ -2,8 +2,8 @@ package nars.task;
 
 import nars.*;
 import nars.concept.TaskConcept;
-import nars.concept.dynamic.DynamicTruthBeliefTable;
 import nars.table.BeliefTable;
+import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;

@@ -5,14 +5,14 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
-import nars.table.QuestionTable;
 import nars.table.TaskTable;
+import nars.table.question.QuestionTable;
 import nars.term.Term;
+import nars.util.concept.ConceptBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

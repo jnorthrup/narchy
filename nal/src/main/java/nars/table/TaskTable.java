@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.term.Term;
+import nars.util.task.TaskMatch;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;

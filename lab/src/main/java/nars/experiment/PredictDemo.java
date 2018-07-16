@@ -5,7 +5,7 @@ import jcog.learn.LivePredictor;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.signal.Signal;
+import nars.concept.sensor.Signal;
 import nars.gui.NARui;
 import nars.time.clock.RealTime;
 import nars.truth.Truth;

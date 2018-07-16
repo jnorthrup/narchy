@@ -4,7 +4,7 @@ import jcog.signal.ArrayBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.signal.Signal;
+import nars.concept.sensor.Signal;
 import nars.sensor.Bitmap2DSensor;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Assertions;

@@ -3,7 +3,7 @@ package nars.term;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.concept.util.DefaultConceptBuilder;
+import nars.util.concept.DefaultConceptBuilder;
 import nars.util.term.transform.Retemporalize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

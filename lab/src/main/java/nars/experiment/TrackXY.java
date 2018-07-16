@@ -11,7 +11,7 @@ import nars.NARS;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
-import nars.concept.signal.SwitchAction;
+import nars.concept.action.SwitchAction;
 import nars.control.DurService;
 import nars.derive.Deriver;
 import nars.derive.Derivers;

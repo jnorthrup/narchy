@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.NAgent;
-import nars.concept.signal.Signal;
+import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.control.channel.BufferedCauseChannel;
 import nars.exe.Causable;

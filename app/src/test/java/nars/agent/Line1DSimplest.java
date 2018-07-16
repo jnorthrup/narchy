@@ -3,7 +3,7 @@ package nars.agent;
 import jcog.Util;
 import jcog.math.FloatRange;
 import nars.$;
-import nars.concept.signal.Signal;
+import nars.concept.sensor.Signal;
 
 
 /**
