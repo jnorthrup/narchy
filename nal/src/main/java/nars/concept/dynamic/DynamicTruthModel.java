@@ -3,7 +3,6 @@ package nars.concept.dynamic;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -266,8 +265,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 if (t.subs()!=2) {
                     if (t.op()==NEG && superterm.op()==IMPL) {
                         if (!subjOrPred)
-                            t = t.neg(); //negated predicate of implication. which means negate it
-                        assert(t.op()==IMPL);
+                            t = t.unneg(); //negated predicate of implication. which means negate it
+                        //assert(t.op()==IMPL);
                     } else {
                         throw new WTF();
                         //return null; //fail ???
@@ -276,7 +275,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
                 int tdt = t.dt();
                 if (!c.add(tdt==DTERNAL ? ETERNAL : -tdt, t.sub(subjOrPred ? 0 : 1).negIf(union)))
-                    return null; //fail
+                    break;
             }
 
             sect = c.term();
@@ -399,8 +398,9 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Term common = stmtCommon(subjOrPred, superterm);
             Term decomposed = stmtCommon(!subjOrPred, superterm);
-            return each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(0), common), start, end) &&
-                    each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(1), common), start, end);
+            Op supOp = superterm.op();
+            return each.accept(stmtDecompose(supOp, subjOrPred, decomposed.sub(0), common), start, end) &&
+                    each.accept(stmtDecompose(supOp, subjOrPred, decomposed.sub(1), common), start, end);
         }
 
         @Override
@@ -417,34 +417,13 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
 
             int n = l.size();
-            int avail = 0;
-            for (int i = 0; i < n; i++) {
-                LongInterval li = l.get(i);
-                if (li != null) {
-                    if ((((Task) li)).truth() == null)
-                        l.set(i, null);
-                    else
-                        avail++;
-                }
-            }
-            if (avail == 0)
-                return null;
-
-            int[] order = new int[n];
-            for (int i = 0; i < n; i++) {
-                order[i] = i;
-            }
-
 
             Truth y = null;
-            int considered = 0;
             for (int i = 0; i < n; i++) {
-                TaskRegion ii = l.get(order[i]);
-                if (ii == null)
-                    continue;
-
-                Truth x = ((Task) ii).truth();
-                considered++;
+                TaskRegion li = l.get(i);
+                Truth x = (((Task) li)).truth();
+                if (x ==null)
+                    return null;
 
                 if (negateFreq())
                     x = x.neg();
@@ -458,8 +437,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 }
             }
 
-            if (considered != n)
-                return null;
 
             return y.negIf(negateFreq());
         }

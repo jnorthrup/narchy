@@ -53,7 +53,12 @@ public class UniExec extends AbstractExec {
 
                 @Override
                 public final int next(int n) {
-                    return c.next(nar, n);
+                    try {
+                        return c.next(nar, n);
+                    } catch (Throwable t) {
+                        logger.error("{} {}", c, t);
+                        return 0;
+                    }
                 }
             });
             this.c = c;

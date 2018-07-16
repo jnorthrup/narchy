@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
-import nars.control.MetaGoal;
 import nars.op.ArithmeticIntroduction;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -24,31 +23,31 @@ public class ThermostatTest {
 
     public static void main(String[] args) {
 
-        final int DUR = 3;
+        final int DUR = 10;
 
         final int subTrainings = 2;
         final int thinkDurs = 3;
 
         NAR n = NARS.tmp();
 
-        new ArithmeticIntroduction(16, n);
+        new ArithmeticIntroduction(4, n);
 
         n.time.dur(DUR);
-        n.dtDither.set(5);
-        n.timeFocus.set(6);
+        n.dtDither.set(2);
+        n.timeFocus.set(4);
 
         n.termVolumeMax.set(25);
         n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
         //n.activateConceptRate.set(0.1f);
 
-        n.goalPriDefault.set(0.5f);
-        n.emotion.want(MetaGoal.Believe, -0.1f);
+        n.goalPriDefault.set(0.9f);
+        //n.emotion.want(MetaGoal.Believe, -0.1f);
 
         float exeThresh = 0.51f;
 
 
-        new ConjClustering(n, BELIEF, (t) -> true, 8, 32);
+        new ConjClustering(n, BELIEF, (t) -> true, 2, 8);
 
 
         boolean[] training = new boolean[]{true};
