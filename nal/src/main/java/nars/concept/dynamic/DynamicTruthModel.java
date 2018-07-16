@@ -1,6 +1,7 @@
 package nars.concept.dynamic;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import nars.NAR;
@@ -13,6 +14,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.compound.util.Conj;
 import nars.term.compound.util.Image;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -123,8 +125,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             int n = components.size();
             Conj c = new Conj(n);
 
-            for (int i = 0; i < n; i++) {
-                TaskRegion t = components.get(i);
+            for (TaskRegion t : components) {
                 if (!c.add(((Task) t).term(), t.start(), t.end(), 1, 1))
                     break;
             }
@@ -262,11 +263,16 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             for (TaskRegion x : components) {
                 Term t = ((Task)x).term();
 
-                //boolean neg = (t.op()==NEG);
-
-
-                if (t.subs()!=2)
-                    return null; //fail ???
+                if (t.subs()!=2) {
+                    if (t.op()==NEG && superterm.op()==IMPL) {
+                        if (!subjOrPred)
+                            t = t.neg(); //negated predicate of implication. which means negate it
+                        assert(t.op()==IMPL);
+                    } else {
+                        throw new WTF();
+                        //return null; //fail ???
+                    }
+                }
 
                 int tdt = t.dt();
                 if (!c.add(tdt==DTERNAL ? ETERNAL : -tdt, t.sub(subjOrPred ? 0 : 1).negIf(union)))
@@ -278,13 +284,13 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 return null; //but allow other Bool's
 
             long cs = c.shift();
-            long shift;
-            if (cs == DTERNAL) {
-                shift = DTERNAL; //some temporal information destroyed
+            if (cs == DTERNAL || cs == ETERNAL) {
+                outerDT = DTERNAL; //some temporal information destroyed
             } else {
-                shift = -cs - sect.dtRange();
+                long shift = -cs - sect.dtRange();
+                outerDT = Tense.occToDT(shift);
             }
-            outerDT = (int) shift;
+
         } else {
 
             Term[] subs = stmtReconstruct(subjOrPred, components);
@@ -307,11 +313,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             sect = sect.neg();
 
         Op op = superterm.op();
-        Term x = subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
-//        if (x.op() != op)
-//            return null;
-//        else
-            return x;
+        return subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
     }
 
 
@@ -341,7 +343,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             if (union) {
                 if (decomposed.op()==NEG) {
                     decomposed = decomposed.unneg();
-                    assert(decomposed.op()==CONJ /* and not Sect/Union */);
+                    assert(decomposed.op()==CONJ /* and not Sect/Union */): "unneg'd decomposed is " + decomposed;
                 }
             }
 
@@ -368,7 +370,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                                     }
 
                                     Term x = stmtDecompose(op, subjOrPred, y, common,
-                                            ixTernal ? DTERNAL : (int) ((decRange - offset) + outerDT), union);
+                                            ixTernal ? DTERNAL : occToDT(decRange - offset + outerDT), union);
 
                                     return each.accept(x, subStart, subEnd);
                                 }

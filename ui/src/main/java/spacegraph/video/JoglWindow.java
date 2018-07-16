@@ -187,18 +187,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowResized(WindowEvent windowEvent) {
-        if (!preRenderTasks.contains(windowUpdater)) {
+        //if (!preRenderTasks.contains(windowUpdater)) {
             this.nw = getWidth();
             this.nh = getHeight();
-        }
+        //}
     }
 
     @Override
     public void windowMoved(WindowEvent windowEvent) {
-        if (!preRenderTasks.contains(windowUpdater)) {
+        //if (!preRenderTasks.contains(windowUpdater)) {
             this.nx = getX();
             this.ny = getY();
-        }
+        //}
     }
 
     @Override
@@ -255,8 +255,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public final void display(GLAutoDrawable drawable) {
         try {
-            if (gl == null)
-                gl = drawable.getGL().getGL2();
+//            if (gl == null)
+//                gl = drawable.getGL().getGL2();
 
             long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
             if (renderDTMS > Integer.MAX_VALUE) renderDTMS = Integer.MAX_VALUE;

@@ -24,7 +24,7 @@ public class Audio implements Runnable {
     public synchronized static Audio the() {
 
             if (defaultAudio == null) {
-                defaultAudio = new Audio(4);
+                defaultAudio = new Audio(2);
             }
 
         return defaultAudio;
@@ -38,7 +38,7 @@ public class Audio implements Runnable {
     private final SourceDataLine sdl;
 
     private final int rate = 44100;
-    private final int bufferSize = rate / 32;
+    private final int bufferSize = rate / 200;
 
     private final ListenerMixer listenerMixer;
 

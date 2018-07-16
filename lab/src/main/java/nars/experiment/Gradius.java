@@ -28,7 +28,9 @@ public class Gradius extends NAgentX {
         super("g", nar);
 
 
-        g.updateMS = 25; //TODO coordinate with fps
+        g.updateMS =
+                25; //TODO coordinate with fps
+                //10;
 
 
         int dx = 2, dy = 2;
@@ -72,22 +74,22 @@ public class Gradius extends NAgentX {
 //        actionToggle($.inh("pause", id),
 //                (b) -> g.paused = b);
 
-        actionUnipolar($.prop(this.nar.self(), $.the("deep")), (d)->{
+        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d)->{
             if (d == d) {
                 //deep incrases both duration and max term volume
                 this.nar.time.dur(Util.lerp(d * d, 20, 120));
-                this.nar.termVolumeMax.set(Util.lerp(d, 30, 80));
+                this.nar.termVolumeMax.set(Util.lerp(d, 30, 60));
             }
             return d;
         });
 
-        actionUnipolar($.prop(this.nar.self(), $.the("awake")), (a)->{
-            if (a == a) {
-                this.nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
-            }
-            return a;
+//        actionUnipolar($.inh(this.nar.self(), $.the("awake")), (a)->{
+//            if (a == a) {
+//                this.nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
+//            }
+//            return a;
+//        });
 
-        });
 //        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
 //            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
 //            return a;

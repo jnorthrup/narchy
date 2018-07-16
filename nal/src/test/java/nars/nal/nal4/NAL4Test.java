@@ -14,10 +14,10 @@ import static nars.time.Tense.ETERNAL;
 public class NAL4Test extends NALTest {
 
 
-    private static final int CYCLES = 350;
+    private static final int CYCLES = 250;
 
     @Override protected NAR nar() {
-        NAR n =  NARS.tmp(6);
+        NAR n =  NARS.tmp(4);
         n.termVolumeMax.set(16);
         return n;
     }
@@ -152,16 +152,15 @@ public class NAL4Test extends NALTest {
         test
                 .believe("f((x|y),z)", 1.0f, 0.9f)
                 .mustBelieve(CYCLES , "((x|y)-->(f,/,z))", 1.0f, 0.9f)
-                .mustBelieve(CYCLES , "(x-->(f,/,z))", 1.0f, 0.81f)
-                .mustBelieve(CYCLES , "(y-->(f,/,z))", 1.0f, 0.81f)
-                .mustBelieve(CYCLES*4 , "f(x,z)", 1.0f, 0.81f)
-                .mustBelieve(CYCLES*4 , "f(y,z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*4 , "(x-->(f,/,z))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*4 , "(y-->(f,/,z))", 1.0f, 0.81f)
+                //.mustBelieve(CYCLES*4 , "f(x,z)", 1.0f, 0.81f)
+                //.mustBelieve(CYCLES*4 , "f(y,z)", 1.0f, 0.81f)
         ;
 
     }
 
     @Test
-    @Disabled
     void testNeqComRecursiveConstraint() {
 
         /*
@@ -174,7 +173,7 @@ public class NAL4Test extends NALTest {
         test
                 .believe("happy(L)", 1f, 0.9f)
                 .believe("((L)-->(o-(i-happy)))", 1f, 0.9f)
-                .mustNotOutput(CYCLES, "((o-(i-happy))-->happy)", BELIEF, ETERNAL);
+                .mustNotOutput(CYCLES*2, "((o-(i-happy))-->happy)", BELIEF, ETERNAL);
     }
 
 

@@ -89,6 +89,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
      * action exploration rate; analogous to epsilon in QLearning
      */
     public FloatRange curiosity;
+    public FloatRange motivation = new FloatRange(1f, 0, 2f);
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
 
@@ -313,9 +314,9 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
         init(nar);
 
-        alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
-        alwaysWant(happy.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
-        alwaysWant(happy.filter[2].term, nar.confMin.floatValue()); //acute
+        alwaysWant/*Eternally*/(happy.filter[0].term, nar.confDefault(GOAL));
+        alwaysWantEternally(happy.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
+        alwaysWantEternally(happy.filter[2].term, nar.confMin.floatValue()); //acute
 
         actions.keySet().forEach(a -> {
             alwaysQuest(a, true);
@@ -357,7 +358,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     @Override
     protected void run(NAR n, long dt) {
-        if (!enabled.get())
+        if (!enabled.getOpaque())
             return;
 
         long now = nar.time();
@@ -379,7 +380,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         sensors.forEach((key, value) -> value.input(key.update(last, now, truther, sensorDur, nar)));
 
         
-        always( 1f /* motivation.floatValue()*/ );
+        always( motivation.floatValue() );
 
         
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);

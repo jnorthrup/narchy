@@ -12,12 +12,13 @@ import nars.Task;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.signal.SwitchAction;
+import nars.control.DurService;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.UniExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.Op.INH;
 import static spacegraph.SpaceGraph.window;
@@ -73,24 +75,24 @@ public class TrackXY extends NAgent {
                 .time(new CycleTime().dur(dur))
                 .index(
                         
-                        new CaffeineIndex(32 * 1024)
+                        //new CaffeineIndex(32 * 1024)
+                        new HijackConceptIndex(8 * 1024, 4)
                 );
 
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(30);
+        n.termVolumeMax.set(40);
+
+        //n.activateConceptRate.set(0.5f);
 
 
-        n.activateConceptRate.set(0.5f);
-
-
-
-        TrackXY t = new TrackXY(4, 4);
+        TrackXY t = new TrackXY(6, 1);
         n.on(t);
+        n.synch();
+
 
         int experimentTime = 1280;
-        n.synch();
 
 
 
@@ -143,7 +145,7 @@ public class TrackXY extends NAgent {
 
                     "motivation.nal"));
 
-            ((MatrixDeriver)d).conceptsPerIteration.set(32);
+            ((MatrixDeriver)d).conceptsPerIteration.set(8);
             n.timeFocus.set(2);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
@@ -164,8 +166,6 @@ public class TrackXY extends NAgent {
                     new AutoSurface(d),
                     new AutoSurface(cjB)
 
-
-                    
             ), 400, 300);
             n.onTask(tt -> {
                 if (tt instanceof DerivedTask && tt.isGoal()) {
@@ -178,13 +178,11 @@ public class TrackXY extends NAgent {
 
 
 
-        n.onCycle(t);
-        final double[] rewardSum = {0};
-        n.onCycle(() ->
-
-        {
-            rewardSum[0] += t.reward;
-        });
+        DurService.on(n,t);
+//        final double[] rewardSum = {0};
+//        n.onCycle(() -> {
+//            rewardSum[0] += t.reward;
+//        });
 
 
         n.runLater(() -> {
@@ -357,11 +355,12 @@ public class TrackXY extends NAgent {
 
 
                 float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
-                float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-                return Util.unitize(
-                        Math.max(1 - distOther * visionContrast,
-                                1 - distSelf * visionContrast
-                        ));
+                //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
+                return unitize(1 - distOther * visionContrast);
+//                return Util.unitize(
+//                        Math.max(1 - distOther * visionContrast,
+//                                1 - distSelf * visionContrast
+//                        ));
 
 
 

@@ -199,17 +199,18 @@ abstract public class NAgentX extends NAgent {
 
                         int numActions = a.actions.size();
 
-                        iterations = numActions; //override
+                        //iterations = numActions; //override
 //                        if (iterations == 1) {
 //                            if (n.random().nextFloat() >= a.curiosity.floatValue())
 //                                return 0;
 //
 //                        } else {
-                            iterations = Math.round(a.curiosity.floatValue() * iterations);
-                            iterations = Math.min(iterations, numActions);
-                            if (iterations < 1)
-                                return 0;
+                            //iterations = (int) Math.ceil(a.curiosity.floatValue() * iterations);
+                            //iterations = Math.min(iterations, numActions);
+//                            if (iterations < 1)
+//                                return 0;
 //                        }
+                        iterations = (int) Math.ceil(a.curiosity.floatValue() * numActions);
 
                         return super.next(n, iterations);
                     }

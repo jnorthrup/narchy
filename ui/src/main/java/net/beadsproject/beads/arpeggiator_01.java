@@ -24,14 +24,14 @@ public class arpeggiator_01 {
         synth.setup();
     }
 
-    
+
     private void setup() {
         AudioContext ac = new AudioContext();
 
-        
+
         gainEnvelope = new Envelope(ac, 0.0f);
 
-        
+
         arpeggiator = new FuncGen(gainEnvelope) {
 
             @Override
@@ -45,48 +45,26 @@ public class arpeggiator_01 {
                 if (tick >= 4) tick = 0;
             }
         };
-        
+
         ac.out(arpeggiator);
 
-        
+
         square = new WavePlayer(ac, arpeggiator, WaveFactory.SQUARE);
 
-        
-        beatClock = new Clock(ac, 500.0f);
+
+
+        beatClock = new Clock(ac, 800.0f);
         beatClock.setTicksPerBeat(4);
         beatClock.on(arpeggiator);
         ac.out.dependsOn(beatClock);
 
-        
+
         gain = new Gain(ac, 1, gainEnvelope);
+        gain.setGain(1f);
         gain.in(square);
 
 
         ac.out.in(gain);
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         keyDown(79);
@@ -108,20 +86,20 @@ public class arpeggiator_01 {
         if (square != null && gainEnvelope != null) {
             lastKeyPressed = midiPitch;
 
-            
+
             frequency = midiPitchToFrequency(midiPitch);
             tick = -1;
             beatClock.reset();
 
-            
+
             gainEnvelope.clear();
-            
+
             gainEnvelope.add(0.5f, 10.0f);
         }
     }
 
     public void keyUp(int midiPitch) {
-        
+
         if (midiPitch == lastKeyPressed && gainEnvelope != null)
             gainEnvelope.add(0.0f, 50.0f);
     }

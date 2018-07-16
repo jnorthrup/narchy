@@ -40,9 +40,9 @@ class DynamicSectTest {
             assertEquals($.t(1f, 0.81f), n.beliefTruth("((x|y)-->a)", now));
             assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("((x|z)-->a)")), now));
             assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x&z)-->a)")), now));
-            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x|y))")), now));
-            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x|z))")), now));
-            assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x&z))")), now));
+            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b-->(x|y))")), now));
+            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b-->(x|z))")), now));
+            assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(b-->(x&z))")), now));
 
             Concept xIntNegY = n.conceptualize($("((x|--y)-->a)"));
             assertTrue(xIntNegY.beliefs() instanceof DynamicTruthBeliefTable);

@@ -89,7 +89,6 @@ public class AudioContext {
     @SuppressWarnings("unused")
     private long nanoLeap;
     @SuppressWarnings("unused")
-    private boolean lastFrameGood;
 
     /**
      * Used for concurrency-friendly method execution.
@@ -177,30 +176,30 @@ public class AudioContext {
     }
 
 
-    /**
-     * Creates a new AudioContext with the specified buffer size, AudioIO and audio format.
-     *
-     * @param bufferSizeInFrames the buffer size in samples.
-     * @param ioSystem           the AudioIO system.
-     * @param audioFormat        the audio format, which specifies sample rate, bit depth,
-     *                           number of channels, signedness and byte order.
-     */
-    public AudioContext(AudioIO ioSystem, int bufferSizeInFrames, IOAudioFormat audioFormat) {
-        
-        this.audioIO = ioSystem;
-        this.audioIO.context = this;
-        
-        this.audioFormat = audioFormat;
-        
-        setBufferSize(bufferSizeInFrames);
-        
-        logTime = false;
-        maxReserveBufs = 50;
-        stopped = true;
-        
-        out = new Gain(this, audioFormat.outputs);
-        AudioIO.prepare();
-    }
+//    /**
+//     * Creates a new AudioContext with the specified buffer size, AudioIO and audio format.
+//     *
+//     * @param bufferSizeInFrames the buffer size in samples.
+//     * @param ioSystem           the AudioIO system.
+//     * @param audioFormat        the audio format, which specifies sample rate, bit depth,
+//     *                           number of channels, signedness and byte order.
+//     */
+//    public AudioContext(AudioIO ioSystem, int bufferSizeInFrames, IOAudioFormat audioFormat) {
+//
+//        this.audioIO = ioSystem;
+//        this.audioIO.context = this;
+//
+//        this.audioFormat = audioFormat;
+//
+//        setBufferSize(bufferSizeInFrames);
+//
+//        logTime = false;
+//        maxReserveBufs = 50;
+//        stopped = true;
+//
+//        out = new Gain(this, audioFormat.outputs);
+//        AudioIO.prepare();
+//    }
 
 
 
@@ -545,9 +544,8 @@ public class AudioContext {
     public void start() {
         if (stopped) {
             
-            nanoLeap = (long) (1000000000 * (bufferSizeInFrames / audioFormat.sampleRate));
-            lastFrameGood = true;
-            
+            nanoLeap = (long) (1000000000L * (bufferSizeInFrames / audioFormat.sampleRate));
+
             reset();
             stopped = false;
             

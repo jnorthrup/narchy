@@ -225,11 +225,13 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
         @Override
         public void node(NodeVis<Concept> node, Graph2D.GraphBuilder<Concept> graph) {
+
             if (!statements.get())
                 return;
 
             Concept t = node.id;
-            if (t.op().statement) {
+
+            if (t!=null && t.op().statement) {
 
                 @Nullable EdgeVis<Concept> e = graph.edge(new ProxyTerm(t.sub(0)), new ProxyTerm(t.sub(1)));
                 if (e != null) {

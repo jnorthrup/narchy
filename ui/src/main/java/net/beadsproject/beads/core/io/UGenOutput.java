@@ -11,68 +11,21 @@ public class UGenOutput extends AudioIO implements SoundProducer {
     /**
      * The default system buffer size.
      */
-
-
-
-
-
-
-
-    /**
-     * The system buffer size in frames.
-     */
-    private int systemBufferSizeInFrames;
-
-    /**
-     * The current byte buffer.
-     */
-    private int channels;
+//
+//
+//    /**
+//     * The system buffer size in frames.
+//     */
+//    private int systemBufferSizeInFrames;
+//
+//    /**
+//     * The current byte buffer.
+//     */
+//    private int channels;
 
     public UGenOutput() {
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -80,28 +33,12 @@ public class UGenOutput extends AudioIO implements SoundProducer {
      */
     @Override
     protected boolean start() {
-        
+
         IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
         AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.outputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
 
-        this.channels = audioFormat.getChannels();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//        this.channels = audioFormat.getChannels();
 
 
         return true;
@@ -110,7 +47,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
 
     @Override
     protected UGen getAudioInput(int[] channels) {
-        
+
         IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
         AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.inputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
@@ -123,19 +60,17 @@ public class UGenOutput extends AudioIO implements SoundProducer {
         int samples = buf.length;
         context.setBufferSize(samples);
 
-        update(); 
+        update();
 
         int c = 0;
         for (int i = 0; i < samples; i++) {
-            
+
             int j = 0;
             float vi = context.out.getValue(j, i);
             buf[c++] = vi;
         }
 
         return 1f;
-
-
 
 
     }

@@ -1,6 +1,7 @@
 package nars.time;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.task.util.TaskRegion;
@@ -159,6 +160,13 @@ public enum Tense {
             default:
                 return false;
         }
+    }
+
+    /** safely transform occ (64-bit) to dt (32-bit) */
+    public static int occToDT(long occ) {
+        if (occ > Integer.MAX_VALUE-1 || occ < Integer.MIN_VALUE+1)
+            throw new WTF();
+        return (int)occ;
     }
 
 
