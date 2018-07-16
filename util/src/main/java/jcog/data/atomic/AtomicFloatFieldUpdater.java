@@ -69,6 +69,7 @@ public final class AtomicFloatFieldUpdater<X>  {
     public float get(X x) {
         return get(updater.get(x));
     }
+
     public static float get(int x) {
         return intBitsToFloat(x);
     }

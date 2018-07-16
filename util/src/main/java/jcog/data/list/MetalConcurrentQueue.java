@@ -3,6 +3,7 @@ package jcog.data.list;
 /*
  * Conversant Disruptor
  * modified for jcog
+ * see also: https://www.codeproject.com/articles/153898/yet-another-implementation-of-a-lock-free-circular
  *
  * ~~
  * Conversantmedia.com © 2016, Conversant, Inc. Conversant® is a trademark of Conversant, Inc.

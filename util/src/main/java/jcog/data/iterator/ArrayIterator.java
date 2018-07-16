@@ -7,14 +7,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Stream;
+
+import static jcog.Util.ITEM;
 
 /** TODO optionally skip nulls */
 public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     protected final E[] array;
-    int index;
+    protected int index;
 
     public ArrayIterator(E[] array) {
         this.array = array;
@@ -28,10 +29,11 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     @Override
     public E next() {
-        if (index < array.length)
+        //if (index < array.length)
             return array[index++];
-        throw new NoSuchElementException();
+        //throw new NoSuchElementException();
     }
+
 
     @Override
     public void remove() {
@@ -103,7 +105,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         }
     }
 
-    static final class PartialArrayIterator<E> extends ArrayIterator<E> {
+    public static class PartialArrayIterator<E> extends ArrayIterator<E> {
 
         private final int size;
 
@@ -122,4 +124,15 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         }
     }
 
+    public static class AtomicArrayIterator<X> extends PartialArrayIterator<X> {
+
+        public AtomicArrayIterator(X[] array, int size) {
+            super(array, size);
+        }
+
+        @Override
+        public X next() {
+            return (X)ITEM.getOpaque(array, index++);
+        }
+    }
 }

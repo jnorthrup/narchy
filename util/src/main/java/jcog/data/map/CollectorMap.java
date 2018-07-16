@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
  */
 public abstract class CollectorMap<K, V> {
 
-    @NotNull
+
     public final Map<K, V> map;
 
     protected CollectorMap(Map<K, V> map) {
@@ -25,120 +25,23 @@ public abstract class CollectorMap<K, V> {
     abstract public K key(V v);
 
 
-
-
-
-
-    /**
-     * returns an object that stores the items so that it can be synchronized upon
-     */
-    abstract protected Object _items();
-
-
-
-
-
-
-
-
     /**
      * implementation for removing the value to another collecton (called internally)
      */
-    @Nullable
-    protected abstract V removeItem(V e);
+    protected abstract void removeItem(V e);
 
     public final void forEach(BiConsumer<K, V> each) {
         map.forEach(each);
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Nullable public V remove(/*@NotNull*/ K x) {
+    @Nullable
+    public V remove(/*@NotNull*/ K x) {
         V removed = map.remove(x);
-        if (removed!=null)
+        if (removed != null)
             removeItem(removed);
         return removed;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void clear() {
@@ -149,14 +52,6 @@ public abstract class CollectorMap<K, V> {
     public final V get(Object key) {
         return map.get(key);
     }
-
-
-
-
-
-
-
-
 
 
     public boolean containsKey(K name) {
@@ -172,17 +67,6 @@ public abstract class CollectorMap<K, V> {
     public Collection<V> values() {
         return map.values();
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

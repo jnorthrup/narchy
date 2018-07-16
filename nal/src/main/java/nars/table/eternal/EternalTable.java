@@ -89,7 +89,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
     public Task select(@Nullable Predicate<? super Task> selector) {
         if (selector == null)
-            return strongest();
+            return first();
 
         Task[] a = toArray();
         for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
@@ -179,25 +179,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
     }
 
-    private Task strongest() {
-        Object[] l = this.items;
-        return (l.length == 0) ? null : (Task) l[0];
-    }
-
-    private Task weakest() {
-        int s = size;
-        if (s == 0) return null;
-        Object[] l = this.items;
-        int ll = Math.min(s, l.length);
-        return ll == 0 ? null : (Task) l[ll - 1];
-    }
-
     /**
      * for ranking purposes.  returns negative for descending order
      */
     @Override
     public final float floatValueOf(Task w) {
-
         return -eternalTaskValueWithOriginality(w);
     }
 
@@ -209,7 +195,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             Task displaced = null;
 
             if (size == capacity()) {
-                Task weakestPresent = weakest();
+                Task weakestPresent = last();
                 if (weakestPresent != null) {
                     if (eternalTaskValueWithOriginality(weakestPresent)
                             <=
@@ -230,7 +216,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     public final Truth truth() {
-        Task s = strongest();
+        Task s = first();
         return s != null ? s.truth() : null;
     }
 
@@ -415,7 +401,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
     @Nullable
     public Truth strongestTruth() {
-        Task e = strongest();
+        Task e = first();
         return (e != null) ? e.truth() : null;
     }
 
@@ -431,7 +417,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         float eviMin;
         //synchronized (this) {
             if (size() == capacity()) {
-                Task w = weakest();
+                Task w = last();
                 eviMin = w!=null ? w.evi() : 0;
             } else {
                 eviMin = 0;

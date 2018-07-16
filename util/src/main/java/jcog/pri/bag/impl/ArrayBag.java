@@ -57,135 +57,19 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     }
 
-    static boolean cmpGT(@Nullable Priority o1, float o2) {
-        return (pCmp(o1) < o2);
-    }
-
-    static boolean cmpGT(float o1, float o2) {
-        return (o1 < o2);
-    }
-
-    static boolean cmpLT(@Nullable Priority o1, float o2) {
-        return (pCmp(o1) > o2);
-    }
-
     /**
      * gets the scalar float value used in a comparison of BLink's
      * essentially the same as b.priIfFiniteElseNeg1 except it also includes a null test. otherwise they are interchangeable
      */
-    public static float pCmp(@Nullable Priority b) {
-        return (b == null) ? -2f : b.priElseNeg1();
-
-
+    static float pCmp(@Nullable Object b) {
+        return b == null ? -2f : ((Priority)b).priElseNeg1();
     }
 
-    static int sortSize(int s) {
 
-        if (s < 16)
-            return 4;
-        if (s < 64)
-            return 6;
-        if (s < 128)
-            return 8;
-        if (s < 2048)
-            return 16;
-        else
-            return 32;
-    }
-
-    /**
-     * http:
-     */
-
-    public static void qsort(int[] stack, Object[] c, int left, int right) {
-        int stack_pointer = -1;
-        int cLenMin1 = c.length - 1;
-        while (true) {
-            int i, j;
-            if (right - left <= 7) {
-
-                for (j = left + 1; j <= right; j++) {
-                    Priority swap = (Priority) c[j];
-                    i = j - 1;
-                    float swapV = pCmp(swap);
-                    while (i >= left && cmpGT((Priority) c[i], swapV)) {
-                        swap(c, i + 1, i--);
-                    }
-                    c[i + 1] = swap;
-                }
-                if (stack_pointer != -1) {
-                    right = stack[stack_pointer--];
-                    left = stack[stack_pointer--];
-                } else {
-                    break;
-                }
-            } else {
-
-                int median = (left + right) / 2;
-                i = left + 1;
-                j = right;
-
-                swap(c, i, median);
-
-                float cl = pCmp((Priority) c[left]);
-                float cr = pCmp((Priority) c[right]);
-                if (cmpGT(cl, cr)) {
-                    swap(c, right, left);
-                    float x = cr;
-                    cr = cl;
-                    cl = x;
-                }
-                float ci = pCmp((Priority) c[i]);
-                if (cmpGT(ci, cr)) {
-                    swap(c, right, i);
-                    ci = cr;
-                }
-                if (cmpGT(cl, ci)) {
-                    swap(c, i, left);
-
-                }
-
-                Priority temp = (Priority) c[i];
-                float tempV = pCmp(temp);
-
-                while (true) {
-                    while (i < cLenMin1 && cmpLT((Priority) c[++i], tempV)) ;
-                    while (j > 0 && /* <- that added */ cmpGT((Priority) c[--j], tempV)) ;
-                    if (j < i) {
-                        break;
-                    }
-                    swap(c, j, i);
-                }
-
-                c[left + 1] = c[j];
-                c[j] = temp;
-
-                int a, b;
-                if ((right - i + 1) >= (j - left)) {
-                    a = i;
-                    b = right;
-                    right = j - 1;
-                } else {
-                    a = left;
-                    b = j - 1;
-                    left = i;
-                }
-
-                stack[++stack_pointer] = a;
-                stack[++stack_pointer] = b;
-            }
-        }
-    }
-
-    static void swap(Object[] c, int x, int y) {
-        Object swap = c[y];
-        c[y] = c[x];
-        c[x] = swap;
-    }
 
     @Override
     public float mass() {
-        return MASS.get(mass);
+        return MASS.get(this);
     }
 
     @Override
@@ -263,7 +147,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 if (size() > 0) {
                     if (toAddPri > priMin()) {
 
-                        assert (size() == s);
+                        assert size() == s;
 
 
                         removed = items.removeLast();
@@ -286,12 +170,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     protected void sort(int from /* inclusive */, int to /* inclusive */) {
-        Object[] il = items.items;
-
-        int[] stack = new int[sortSize(to - from) /* estimate */];
-        qsort(stack, il, from /*dirtyStart - 1*/, to);
-
-
+        items.sort(ArrayBag::pCmp, from, to);
     }
 
     @Override
@@ -311,8 +190,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         int mustSort = -1;
         for (int i = 0; i < s; i++) {
             Y x = (Y) l[i];
-            assert (x != null);
-            float p = (commit ? priUpdate(x) : pri(x));
+            assert x != null;
+            float p = commit ? priUpdate(x) : pri(x);
             if (update != null && p == p) {
                 update.accept(x);
                 p = pri(x);
@@ -336,7 +215,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         final int c = capacity;
         if (s > c) {
             SortedArray<Y> items1 = this.items;
-            while (s > 0 && ((s - c) + (toAdd ? 1 : 0)) > 0) {
+            while (s > 0 && s - c + (toAdd ? 1 : 0) > 0) {
                 Y w1 = items1.removeLast();
                 mass -= w1.priElseZero();
                 trash.add(w1);
@@ -548,7 +427,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             float p = pri(incoming);
             int i = items.add(incoming, -p, this);
 
-            assert (i >= 0);
+            assert i >= 0;
             MASS.add(this, p);
         }
 
@@ -608,7 +487,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
 
         int s = size();
-        if ((update != null && s > 0) || (update == null && (s > capacity))) {
+        if (update != null && s > 0 || update == null && s > capacity) {
             @Nullable FasterList<Y> trash = new FasterList(Math.max(s / 8, 4));
             synchronized (items) {
 
@@ -730,7 +609,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     static final class SortedPLinks extends SortedArray {
         @Override
         protected Object[] newArray(int oldSize) {
-            return new Object[oldSize == 0 ? 2 : oldSize + (Math.max(1, oldSize / 2))];
+            return new Object[oldSize == 0 ? 2 : oldSize + Math.max(1, oldSize / 2)];
         }
     }
 
