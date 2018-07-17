@@ -131,4 +131,8 @@ public class MovingRectFloat2D {
                 ", h=" + h +
                 '}';
     }
+
+    public float aspectExtreme() {
+        return Math.max(w/h, h/w);
+    }
 }

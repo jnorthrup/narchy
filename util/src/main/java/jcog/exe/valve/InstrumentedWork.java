@@ -155,5 +155,11 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         return super.pri(p);
     }
 
+    public float pri(float pNext, float lerpRate) {
+        float p = Util.lerp(lerpRate, this.need, pNext);
+        need(p);
+        return super.pri(p);
+    }
+
 
 }

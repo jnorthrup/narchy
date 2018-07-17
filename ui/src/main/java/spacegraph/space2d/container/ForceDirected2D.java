@@ -159,7 +159,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         float scale = (ar + br);
 
-        float len = delta.normalize() -  (scale*equilibriumDist);
+        float len = delta.normalize() - scale; // -  (scale*equilibriumDist);
         if (len < Spatialization.EPSILONf) {
             //coincident, apply random vector
             double theta = (float) (rng.nextFloat()*Math.PI*2);

@@ -117,6 +117,7 @@ public class UniExec extends AbstractExec {
                     });
 
                     double valRange = valMax[0] - valMin[0];
+                    float UPDATE_RATE = 0.25f;
                     if (Math.abs(valRange) > Double.MIN_NORMAL) {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY};
@@ -163,7 +164,7 @@ public class UniExec extends AbstractExec {
 
                                 double valuePerSecondNormalized = (s.valuePerSecond - valRateMin[0])/valRateRange;
                                 if (Double.isFinite(valuePerSecondNormalized)) {
-                                    s.pri((float) valuePerSecondNormalized);
+                                    s.pri((float) valuePerSecondNormalized, UPDATE_RATE);
                                 } else {
                                     //s.pri(0);
                                     throw new TODO();
@@ -181,7 +182,7 @@ public class UniExec extends AbstractExec {
                     /** flat */
                     float flatDemand = n > 1 ?  (1f/n) : 0.5f;
                     forEach((InstrumentedWork s) -> {
-                        s.pri(flatDemand);
+                        s.pri(flatDemand, UPDATE_RATE);
                     });
 
 

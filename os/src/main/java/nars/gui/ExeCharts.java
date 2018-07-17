@@ -22,6 +22,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ForceDirected2D;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.TreeMap2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -133,9 +134,6 @@ public class ExeCharts {
 
         }
 
-        protected void update() {
-
-        }
     }
 
     public static Surface focusPanel(NAR nar) {
@@ -148,22 +146,19 @@ public class ExeCharts {
                 UniExec.InstrumentedCausable c = node.id;
 
                 final float epsilon = 0.01f;
-                float p = c.priElse(epsilon);
+                float p = Math.max(c.priElse(epsilon), epsilon);
                 float v = c.c.value();
                 node.color(p, v, 0.25f);
 
 
                 //Graph2D G = node.parent(Graph2D.class);
-                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
-                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
+//                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
+//                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
 
-                //node.pri = p;
-                node.size(r,r/2);
-
-                ((CausableWidget)((Scale)node.getSafe(0)).the).update();
+                node.pri = Math.max(epsilon, p);
             })
-            .layout(fd)
-            //.layout(new TreeMap2D<>())
+            //.layout(fd)
+            .layout(new TreeMap2D<>())
             .nodeBuilder((node)->{
                 node.add(new Scale(new CausableWidget(node.id), 0.9f));
             });

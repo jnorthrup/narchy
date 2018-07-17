@@ -24,8 +24,11 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
     @Override
     protected void layout(Graph2D<X> g) {
         nodes.sortThisByFloat((a)-> {
-            return -a.node.pri;
-        }); //sort descending
+            //a.w = a.h = 1;
+            a.w = g.bounds.w;
+            a.h = g.bounds.h;
+            return a.node.pri;
+        });
         int end = nodes.size() - 1;
         total = areaSum(0, end);
         layout(0, end, g.bounds);
@@ -54,7 +57,6 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             nodes.get(start).set(bounds);
         }
 
-
         this.mid = start;
         while (mid < end) {
             if (highestAspect(start, mid, bounds) > highestAspect(start, mid + 1, bounds)) {
@@ -72,7 +74,8 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         float max = Float.NEGATIVE_INFINITY;
         for (int i = start; i <= end; i++) {
-            float r = this.nodes.get(i).aspectRatio();
+            float r = this.nodes.get(i).aspectExtreme();
+
             if (r > max) {
                 max = r;
             }
@@ -91,28 +94,30 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         for (int i = start; i <= end; i++) {
             MovingRectFloat2D x = this.nodes.get(i);
 
-            if (x.node.pri < ScalarValue.EPSILON)
+            float p = x.node.pri;
+            if (p != p || p < ScalarValue.EPSILON) {
+                x.size(0.1f,0.1f);
                 continue;
+            }
 
-            float ratio = x.node.pri / rowSize;
+            float ratio = p / rowSize;
 
 
-            assert(ratio==ratio): x.node.pri + " " + rowSize;
+            assert(ratio==ratio): p + " " + rowSize;
 
             RectFloat2D r;
             if (isHorizontal) {
-                r = RectFloat2D.XYWH(bounds.x,
+                r = RectFloat2D.X0Y0WH(bounds.x,
                         bounds.y + bounds.h * offset,
                         bounds.w * rowRatio,
                         bounds.h * ratio);
             } else {
-                r = RectFloat2D.XYWH(
+                r = RectFloat2D.X0Y0WH(
                         bounds.x + bounds.w * offset,
-                        bounds.w * ratio,
                         bounds.y,
+                        bounds.w * ratio,
                         bounds.h * rowRatio);
             }
-            System.out.println(x + " <- " + r);
             x.set(r);
             offset += ratio;
         }

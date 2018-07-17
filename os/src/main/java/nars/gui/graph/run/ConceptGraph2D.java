@@ -12,10 +12,7 @@ import nars.term.ProxyTerm;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Clipped;
-import spacegraph.space2d.container.ForceDirected2D;
-import spacegraph.space2d.container.Scale;
-import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.*;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
@@ -91,6 +88,17 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
             }
         })
+//        layout(new TreeMap2D<>() {
+//            @Override
+//            public void layout(Graph2D<Concept> g, int dtMS) {
+//
+//                g.forEachValue(nn -> {
+//                    if (nn.showing())
+//                        updateNode(nn);
+//                });
+//                super.layout(g, dtMS);
+//            }
+//        })
                 .layer(new TermlinkVis(n))
                 .layer(new TasklinkVis(n))
                 .layer(new StatementVis(n));
