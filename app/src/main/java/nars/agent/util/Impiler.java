@@ -50,10 +50,12 @@ public class Impiler {
         @Override
         protected float leak(Task next) {
             TaskConcept c = (TaskConcept) nar.conceptualizeDynamic(next.term());
-            ImplNode i = c.meta(ImpilerTracker.class.getSimpleName());
-            if (i!=null) {
-                solve(next, c, i);
-                return 1;
+            if (c!=null) {
+                ImplNode i = c.meta(ImpilerTracker.class.getSimpleName());
+                if (i != null) {
+                    solve(next, c, i);
+                    return 1;
+                }
             }
             return 0;
         }
@@ -216,7 +218,7 @@ public class Impiler {
 
 
     abstract static class ImplBeam extends FasterList<ImplEdge> {
-        public final static int MAX_DEPTH = 5;
+        public final static int MAX_DEPTH = 3;
         protected final Concept source;
 
         /** belief cache */

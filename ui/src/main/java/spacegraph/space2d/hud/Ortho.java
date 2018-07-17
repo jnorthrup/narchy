@@ -79,6 +79,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             public boolean animate(float dt) {
                 //System.out.println(this);
                 if (super.animate(dt)) {
+                    //System.out.println(z);
                     float W = bounds.w;
                     float H = bounds.h;
                     speed.set(Math.max(W, H) * CAM_RATE);

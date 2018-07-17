@@ -11,7 +11,6 @@ import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import org.apache.commons.math3.random.EmpiricalDistribution;
@@ -167,7 +166,7 @@ class BagTest {
         fillLinear(bag, bag.capacity());
         testBagSamplingDistribution(bag, batchSizeProp);
     }
-    static void testBagSamplingDistributionRandom(CurveBag<PLink<String>> bag, float batchSizeProp) {
+    static void testBagSamplingDistributionRandom(ArrayBag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
         fillRandom(bag);
         testBagSamplingDistribution(bag, batchSizeProp);
     }
@@ -330,7 +329,7 @@ class BagTest {
         assertEquals(1 - 1f/(c*2f), bag.priMax(), 0.03f); 
         if (bag instanceof ArrayBag) assertSorted((ArrayBag)bag);
     }
-    private static void fillRandom(CurveBag<PLink<String>> bag) {
+    private static void fillRandom(ArrayBag<PLink<String>, PLink<String>> bag) {
         assertTrue(bag.isEmpty());
 
         int c = bag.capacity();

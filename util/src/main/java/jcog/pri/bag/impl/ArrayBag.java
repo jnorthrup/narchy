@@ -284,14 +284,45 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * size > 0
      */
     protected int sampleStart(@Nullable Random rng, int size) {
-        return 0;
+        assert (size > 0);
+        if (size == 1 || rng == null)
+            return 0;
+        else {
+//            float min = this.priMin();
+//            float max = this.priMax();
+//            float diff = max - min;
+//            if (diff > Prioritized.EPSILON * size) {
+            float i = rng.nextFloat();
+
+            //i = Util.lerp(diff, i /* flat */, (i * i) /* curved */);
+            i = (i*i);
+
+            return Util.clamp(0, Math.round(i * (size - 1)), size-1);
+//            } else {
+//                return random.nextInt(size);
+//            }
+        }
     }
 
-    protected int sampleNext(Random rng, int size, int i) {
-        if (++i >= size)
-            i = 0;
+    protected int sampleNext(@Nullable Random rng, int size, int i) {
+        if (rng == null) {
+            if (++i >= size)
+                i = 0;
 
-        return i;
+            return i;
+        } else {
+            float runLength = 3;
+            float restartProb = (1f/(1+runLength));
+            if (rng.nextFloat() < restartProb) {
+                return sampleStart(rng, size);
+            }
+
+            if (--i >= 0)
+                return i; //decrease toward high end
+            else
+                return sampleStart(rng, size);
+        }
+
     }
 
     @Nullable

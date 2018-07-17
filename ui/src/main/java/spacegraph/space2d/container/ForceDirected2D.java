@@ -2,98 +2,141 @@ package spacegraph.space2d.container;
 
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.tree.rtree.Spatialization;
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.List;
-
-import static spacegraph.util.math.v3.v;
+import java.util.Random;
 
 public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
-    private int iterations = 1;
+    final Random rng = new XoRoShiRo128PlusRandom(1);
+    private int iterations = 2;
+    private float AUTOSCALE = 0f;
+    private float _momentum;
+
 
     @Override
     protected MovingRectFloat2D newContainer() {
         return new MovingRectFloat2D();
     }
 
-    public final FloatRange repelSpeed =new FloatRange(0.02f, 0, 0.5f);
+    public final FloatRange repelSpeed = new FloatRange(0.25f, 0, 1f);
 
-    /** attractspeed << 0.5 */
-    public final FloatRange attractSpeed =new FloatRange(0.005f, 0, 0.025f);
+    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 1f);
+
+    public final FloatRange nodeScale = new FloatRange(0.5f, 0.04f, 1.5f);
+
+    public final FloatRange nodeSpacing  = new FloatRange(1f, 1f, 4f);
+
+    public final FloatRange maxSpeed  = new FloatRange(10f, 0f, 100f);
+
+    public final FloatRange momentum = new FloatRange(0.5f, 0f, 1f);
+
     private float maxRepelDist;
 
-    private float minAttractDistRelativeToRadii;
+    private float equilibriumDist;
 
+    @Override
+    public void initialize(Graph2D<X> g, Graph2D.NodeVis<X> n) {
+        n.move(g.cx(), g.cy());
+    }
 
-    @Override protected void layoutDynamic(Graph2D<X> g) {
+    @Override protected void put(MovingRectFloat2D mover, Graph2D.NodeVis node) {
+        node.posX0Y0WH(
+                Util.lerp(_momentum, mover.x, node.bounds.x),
+                Util.lerp(_momentum, mover.y, node.bounds.y),
+                mover.w, mover.h);
+    }
 
-        maxRepelDist = (float) ((2*g.radius()) * Math.sqrt(2)/2); //estimate
+    @Override
+    protected void layout(Graph2D<X> g) {
 
-        minAttractDistRelativeToRadii = 1f;
+        int n = nodes.size();
+        if (n == 0)
+            return;
+
+        AUTOSCALE = nodeScale.floatValue() *
+                (float) (Math.min(g.bounds.w, g.bounds.h)
+                        / Math.sqrt(1f + n));
+
+        assert (AUTOSCALE == AUTOSCALE);
+
+        for (MovingRectFloat2D m : nodes) {
+            float pri = m.node.pri;
+            float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
+            m.size(p, p);
+        }
+
+        maxRepelDist = (float) ((2 * g.radius()) * Math.sqrt(2) / 2); //estimate
+
+        equilibriumDist = 1 + nodeSpacing.floatValue();
+
 
         int iterations = this.iterations;
-        float repelSpeed = this.repelSpeed.floatValue()/iterations;
-        float attractSpeed = this.attractSpeed.floatValue()/iterations;
-        int n = bounds.size();
+        float repelSpeed = this.repelSpeed.floatValue() / iterations;
+        float attractSpeed = this.attractSpeed.floatValue() / iterations;
+
+        float maxSpeedPerIter = maxSpeed.floatValue() / iterations;
+
         for (int ii = 0; ii < iterations; ii++) {
+
             for (int x = 0; x < n; x++) {
-                MovingRectFloat2D bx = bounds.get(x);
-                attract(nodes.get(x), bx, attractSpeed);
+                MovingRectFloat2D bx = nodes.get(x);
+                attract(bx, attractSpeed);
                 for (int y = x + 1; y < n; y++)
-                    repel(bx, bounds.get(y), repelSpeed);
+                    repel(bx, nodes.get(y), repelSpeed);
 
             }
 
-
-            for (MovingRectFloat2D bound : bounds) {
-                bound.moveTo(0, 0, 0.01f);
+            RectFloat2D gg = g.bounds;
+            for (MovingRectFloat2D b : nodes) {
+                b.limitSpeed(maxSpeedPerIter);
+                b.fence(gg);
             }
 
 
         }
 
 
-        v2 center = new v2();
-        for (MovingRectFloat2D bx : bounds) {
-            center.add(bx.cx(), bx.cy());
-        }
-        center.scaled(1f/n); 
-        tx = Util.lerp(0.5f, recenterX - center.x, recenterX);
-        ty = Util.lerp(0.5f, recenterY - center.y, recenterY);
+        this._momentum = momentum.floatValue();
     }
 
 
-    /** HACK this reads the positions from the nodevis not the rectangle */
-    private void attract(Graph2D.NodeVis<X> from, MovingRectFloat2D b, float attractSpeed) {
-        float px = from.cx(); float py = from.cy();
-        v2 delta = new v2();
+    /**
+     * HACK this reads the positions from the nodevis not the rectangle
+     */
+    private void attract(MovingRectFloat2D b, float attractSpeed) {
 
-        float fromRad = from.radius();
+        Graph2D.NodeVis<X> from = b.node;
+        float px = b.cx(), py = b.cy();
+
+
+        float fromRad = b.radius();
 
         List<Graph2D.EdgeVis<X>> read = from.edgeOut.read();
+        //int neighbors = read.size();
 
         v2 total = new v2();
-        for (Graph2D.EdgeVis<X> edge : read) {
+        for (Graph2D.EdgeVis<?> edge : read) {
 
-            Graph2D.NodeVis<X> to = edge.to;
-
-            delta.set(to.cx(), to.cy()).subbed(px, py);
-
-            float lenSq = delta.lengthSquared();
-            if (!Float.isFinite(lenSq))
+            MovingRectFloat2D to = edge.to.mover;
+            if (to == null)
                 continue;
 
-            float len = (float) Math.sqrt(lenSq);
-            len -= (minAttractDistRelativeToRadii * (fromRad + to.radius()));
-            if (len <= 0)
+            v2 delta = new v2(to.cx(), to.cy());
+            delta.subbed(px, py);
+
+            float len = delta.normalize() - ((fromRad + to.radius()) * (equilibriumDist));
+            if (Math.abs(len) <= Spatialization.EPSILONf)
                 continue;
 
-            delta.normalize();
-
+            //attractSpeed/=neighbors;
 
             float s = attractSpeed * len * weightToVelocity(edge.weight);
             total.add(delta.x * s, delta.y * s);
@@ -103,38 +146,38 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
     }
 
     private float weightToVelocity(float weight) {
-        return weight*weight; 
+        return weight * weight;
     }
 
     private void repel(MovingRectFloat2D a, MovingRectFloat2D b, float repelSpeed) {
 
         Tuple2f delta = new v2(a.cx(), a.cy()).subbed(b.cx(), b.cy());
 
-        float len = delta.normalize();
 
         float ar = a.radius();
         float br = b.radius();
-
-        
-        ar *= ar;
-        br *= br;
+//        ar *= ar;
+//        br *= br;
 
         float abr = (ar + br);
 
-        len -= (abr);
-        if (len < 0)
+        float len = delta.normalize();
+        len -= (abr*equilibriumDist);
+        if (len < Spatialization.EPSILONf) {
+            //coincident, apply random vector
+            delta.set((rng.nextFloat()-0.5f)*len,(rng.nextFloat()-0.5f)*len);
             len = 0;
-        else if (len >= maxRepelDist)
+        } else if (len >= maxRepelDist)
             return;
 
-        float s = repelSpeed / ( 1 + (len * len) );
+        float s = repelSpeed / (1 + (len * len));
 
-        v2 v = v(delta.x * s, delta.y * s);
+        delta.scaled(s);
 
         double baRad = br / abr;
-        a.move(v.x * baRad, v.y * baRad);
+        a.move(delta.x * baRad, delta.y * baRad);
         double abRad = ar / abr;
-        b.move(v.x * -abRad, v.y * abRad);
+        b.move(delta.x * -abRad, delta.y * abRad);
 
     }
 

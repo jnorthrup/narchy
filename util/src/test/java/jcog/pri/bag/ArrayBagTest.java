@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArrayBagTest {
 
 
-    private CurveBag<PLink<String>> curveBag(int n, PriMerge mergeFunction) {
+    private ArrayBag<PLink<String>, PLink<String>> curveBag(int n, PriMerge mergeFunction) {
         return new CurveBag<>(mergeFunction, new HashMap<>(n),
                 
                 
@@ -53,10 +53,10 @@ class ArrayBagTest {
 
     }
 
-    @NotNull CurveBag<PLink<String>> populated(int n, @NotNull DoubleSupplier random) {
+    @NotNull ArrayBag<PLink<String>, PLink<String>> populated(int n, @NotNull DoubleSupplier random) {
 
 
-        CurveBag<PLink<String>> a = curveBag(n, plus);
+        ArrayBag<PLink<String>, PLink<String>> a = curveBag(n, plus);
 
 
         
@@ -136,7 +136,7 @@ class ArrayBagTest {
     @Test
     void testInsertOrBoostDoesntCauseSort() {
         final int[] sorts = {0};
-        @NotNull CurveBag<PLink<String>> x = new CurveBag(PriMerge.plus, new HashMap<>(), 4) {
+        @NotNull ArrayBag<PLink<String>, PLink<String>> x = new CurveBag(PriMerge.plus, new HashMap<>(), 4) {
             @Override
             protected void sort(int from, int to) {
                 sorts[0]++;

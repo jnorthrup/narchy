@@ -3,13 +3,15 @@ package nars.exe;
 import jcog.TODO;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
-import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriorityHijackBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.link.Activate;
+import nars.term.Term;
+import nars.term.Termed;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -27,7 +29,7 @@ public class Attention extends DurService implements Sampler<Concept> {
      */
     private final int concepts;
 
-    public Bag<?, Activate> active;
+    public Bag<Term, Activate> active;
 
     public Attention(int concepts) {
         super((NAR)null);
@@ -82,9 +84,10 @@ public class Attention extends DurService implements Sampler<Concept> {
                 nar.exe.concurrent() ?
 
                         new PriorityHijackBag<>(Math.round(concepts * 1.5f /* estimate */), 4) {
+
                             @Override
-                            public Activate key(Activate value) {
-                                return value;
+                            public Term key(Activate value) {
+                                return value.term();
                             }
 
 
@@ -92,10 +95,17 @@ public class Attention extends DurService implements Sampler<Concept> {
 
                         :
 
-                        new CurveBag<>(
+                        new ArrayBag<Term,Activate>(
+                                concepts,
                                 Param.conceptMerge,
-                                new HashMap<>(concepts * 2),
-                                concepts) {
+                                new HashMap<>(concepts * 2, 0.99f)
+                        ) {
+
+                            @Override
+                            public Term key(Activate value) {
+                                return value.term();
+                            }
+
                         }
         ;
 
@@ -126,5 +136,9 @@ public class Attention extends DurService implements Sampler<Concept> {
     @Override
     public void sample(Random rng, Function<? super Concept, SampleReaction> each) {
         throw new TODO();
+    }
+
+    public float pri(Termed id, float ifMissing) {
+        return active.pri(id.term(), ifMissing);
     }
 }

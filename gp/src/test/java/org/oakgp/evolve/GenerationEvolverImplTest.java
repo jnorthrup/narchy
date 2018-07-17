@@ -17,6 +17,7 @@ package org.oakgp.evolve;
 
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
+import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.op.PriMerge;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ public class GenerationEvolverImplTest {
         
         float elitismRate = 0.5f;
 
-        CurveBag<PLink<GeneticOperator>> operators = new CurveBag<>(PriMerge.plus, new HashMap(), 2);
+        ArrayBag<PLink<GeneticOperator>, PLink<GeneticOperator>> operators = new CurveBag<>(PriMerge.plus, new HashMap(), 2);
         GeneticOperator generator1 = mock(GeneticOperator.class);
         GeneticOperator generator2 = mock(GeneticOperator.class);
         operators.put(new PLink(generator1, 0.3f));

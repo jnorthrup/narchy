@@ -34,7 +34,7 @@ public class Dyn2DLayout<E> extends DynamicLayout2D<E, MovingRectFloat2D> {
     }
 
     @Override
-    protected void layoutDynamic(Graph2D<E> g) {
+    protected void layout(Graph2D<E> g) {
 
 
 
@@ -42,7 +42,7 @@ public class Dyn2DLayout<E> extends DynamicLayout2D<E, MovingRectFloat2D> {
         W.addStatic(new FixtureDef(PolygonShape.box(0, g.y()-bo, g.w()*scale, g.y()), 0.9f, 0));
         W.addStatic(new FixtureDef(PolygonShape.box(0, g.y()+g.h(), g.w()*scale, g.y()+g.h()+bo), 0.9f, 0));
 
-        for (MovingRectFloat2D b : bounds) {
+        for (MovingRectFloat2D b : nodes) {
             FixtureDef fd = new FixtureDef(PolygonShape.box(b.w * scale * 2, b.h * scale * 2), 1f, 0.9f);
 
             Body2D bbb = W.addBody(
@@ -59,8 +59,8 @@ public class Dyn2DLayout<E> extends DynamicLayout2D<E, MovingRectFloat2D> {
         for (int i = 0; i < 4; i++)
             W.step(0.5f, 4, 4);
 
-        for (int i = 0, boundsSize = bounds.size(); i < boundsSize; i++) {
-            MovingRectFloat2D b = bounds.get(i);
+        for (int i = 0, boundsSize = nodes.size(); i < boundsSize; i++) {
+            MovingRectFloat2D b = nodes.get(i);
             Body2D bbb = bb.get(i);
             Tuple2f pos = bbb.getPosition();
             b.pos(pos.x/scale, pos.y/scale);

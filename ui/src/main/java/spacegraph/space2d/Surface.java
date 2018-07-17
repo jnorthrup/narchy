@@ -102,6 +102,9 @@ abstract public class Surface implements SurfaceBase {
     public final Surface pos(float x1, float y1, float x2, float y2) {
         return pos(RectFloat2D.XYXY(x1, y1, x2, y2));
     }
+    public final Surface posXYWH(float x, float y, float w, float h) {
+        return pos(RectFloat2D.XYWH(x, y, w, h));
+    }
 
     public AspectAlign align(AspectAlign.Align align) {
         return new AspectAlign(this, 1.0f, align, 1.0f);
@@ -235,5 +238,9 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean showing() {
         return showing;
+    }
+
+    public void posX0Y0WH(float x, float y, float w, float h) {
+        pos(RectFloat2D.X0Y0WH(x,y,w,h));
     }
 }

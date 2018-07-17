@@ -2,12 +2,12 @@ package nars.util.concept;
 
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.CurveBag;
 import nars.Op;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
-import nars.link.TaskLink;
 import nars.link.TaskLinkCurveBag;
 import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
@@ -68,7 +68,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
         Bag<Term, PriReference<Term>> termbag =
                 new CurveBag<>(Param.termlinkMerge, newBagMap(v), 0);
 
-        CurveBag<TaskLink> taskbag =
+        ArrayBag<nars.link.TaskLink,nars.link.TaskLink> taskbag =
                 new TaskLinkCurveBag(Param.tasklinkMerge, newBagMap(v), 0);
 
         return new Bag[]{termbag, taskbag};

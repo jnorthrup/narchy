@@ -1,5 +1,6 @@
 package jcog.tree.rtree;
 
+import jcog.Util;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
@@ -11,6 +12,7 @@ public class Spatialization<T> {
 
     public static final double EPSILON = Math.sqrt(Float.MIN_NORMAL);
     public static final float EPSILONf = (float) Math.sqrt(Float.MIN_NORMAL);
+    public static final float sqrEPSILONf = Util.sqr(Float.MIN_NORMAL);
     public static final float sqrtEPSILONf = (float) Math.sqrt(Math.sqrt(Float.MIN_NORMAL));
 
     public final Split<T> split;

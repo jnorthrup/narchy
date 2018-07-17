@@ -86,8 +86,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         NAgentX.runRT((n) -> {
             Tetris a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
 
-            new Impiler.ImpilerTracker(64, 16, n);
-            new Impiler.ImpilerSolver(32, 8, n);
+
 
 
             //Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;

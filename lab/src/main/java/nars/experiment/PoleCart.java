@@ -10,6 +10,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
+import nars.agent.util.Impiler;
 import nars.concept.Concept;
 import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +44,9 @@ public class PoleCart extends NAgentX {
 
             try {
                 NAgent a = new PoleCart(n);
-                
-                
+
+                new Impiler.ImpilerTracker(96, 32, n);
+                new Impiler.ImpilerSolver(64, 16, n);
 
 
 

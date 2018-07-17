@@ -1,11 +1,9 @@
 package nars.gui.graph.run;
 
 import com.jogamp.opengl.GL2;
-import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.util.Bagregate;
-import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
@@ -33,15 +31,13 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
     Iterable<Concept> source;
 
-    private float AUTOSCALE = 0f;
 
     public class Controls {
-        public final FloatRange nodeScale = new FloatRange(0.2f, 0.04f, 0.5f);
         public final IntRange maxNodes = new IntRange(64, 2, 128) {
             @Override
             public void set(int value) {
                 super.set(value);
-                nodesMax = value;
+                nodesMax(value);
             }
         };
         public final AtomicBoolean update = new AtomicBoolean(true);
@@ -73,24 +69,26 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                 0.8f
                )
            );
-           updateNode(nn);
         });
 
         this.layout(new ForceDirected2D<>() {
+
+            @Override
+            public void initialize(Graph2D<Concept> g, NodeVis<Concept> n) {
+                updateNode(n);
+                super.initialize(g, n);
+            }
+
             @Override
             public void layout(Graph2D<Concept> g, int dtMS) {
-
-                AUTOSCALE =
-                        controls.nodeScale.floatValue() *
-                                (float) (Math.min(g.bounds.w, g.bounds.h)
-                                        / Math.sqrt(1f + nodes()));
-                assert (AUTOSCALE == AUTOSCALE);
 
                 g.forEachValue(nn -> {
                     if (nn.showing())
                         updateNode(nn);
                 });
+
                 super.layout(g, dtMS);
+
             }
         })
                 .layer(new TermlinkVis(n))
@@ -99,15 +97,12 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
     void updateNode(NodeVis<Concept> nn) {
-        float pri = Math.max(nar.attn.active.pri(nn.id, 0f), ScalarValue.EPSILON);
 
+        float pri = Math.max(nar.attn.pri(nn.id, 0f), ScalarValue.EPSILON);
 
         nn.color(pri, pri / 2f, 0f);
 
-        float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
-
-
-        nn.pos(RectFloat2D.XYWH(nn.cx(), nn.cy(), p, p));
+        nn.pri = pri;
     }
 
     /** updates the source */
@@ -116,9 +111,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         return this;
     }
 
-    public int nodes() {
-        return cellMap.size();
-    }
+
 
     @Override
     public boolean start(SurfaceBase parent) {

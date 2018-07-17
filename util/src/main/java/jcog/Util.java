@@ -39,6 +39,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.tuple.Tuples;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
@@ -592,6 +593,7 @@ public enum Util {
         return Util.clamp(x, 0, 1f);
     }
 
+    @Contract("_ -> param1")
     public static float finite(float x) throws NumberException {
         if (!Float.isFinite(x))
             throw new NumberException("non-finite: " + x);

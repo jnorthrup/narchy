@@ -32,6 +32,7 @@
 package spacegraph.util.math;
 
 import jcog.Util;
+import jcog.tree.rtree.Spatialization;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space3d.phys.BulletGlobals;
 
@@ -691,11 +692,16 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      * Normalizes this vector in place.
      */
     public final float normalize() {
-        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y);
-        if (norm >= BulletGlobals.FLT_EPSILON) {
-            set(this.x / norm, this.y / norm);
+        float sqrNorm = (this.x * this.x + this.y * this.y);
+        if (sqrNorm >= Spatialization.sqrEPSILONf) {
+            float norm = (float) Math.sqrt(sqrNorm);
+            if (norm >= Spatialization.EPSILONf) {
+                set(this.x / norm, this.y / norm);
+                return norm;
+            }
         }
-        return norm;
+        this.x = this.y = 0;
+        return 0;
     }
 
     /**
@@ -775,5 +781,9 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
             return true;
         }
         return false;
+    }
+
+    public void ensureFinite() {
+        Util.finite(x); Util.finite(y);
     }
 }

@@ -6,7 +6,6 @@ import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.data.map.CellMap;
 import jcog.data.pool.DequePool;
-import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceRender;
@@ -16,6 +15,7 @@ import spacegraph.space2d.container.grid.MutableMapContainer;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.windo.Windo;
+import spacegraph.util.MovingRectFloat2D;
 import spacegraph.video.Draw;
 
 import java.util.*;
@@ -45,8 +45,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     };
 
-    /** hard limit on # nodes */
-    protected int nodesMax = 2048;
+    private int nodesMax = 2048;
 
     private volatile Graph2DLayout<X> layout = (c, d) -> {
     };
@@ -84,6 +83,10 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             g.add(new AutoSurface(l));
         }
         return g;
+    }
+
+    public int nodes() {
+        return cellMap.size();
     }
 
     @Override
@@ -171,8 +174,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     xx = nodePool.get();
                     xx.reset(x);
                     nodeBuilder.accept(xx);
-                    xx.show();
                     layout.initialize(this, xx);
+                    xx.show();
                     return xx;
                 } else
                     return xx; 
@@ -180,7 +183,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
             dontRemain.remove(nv);
 
-            if (nCount++ == nodesMax)
+            if (nCount++ == nodesMax())
                 break; 
         }
 
@@ -210,6 +213,15 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         cellMap.forEachValue((NodeVis<X> nv) -> layers.forEach(layer -> layer.node(nv, builder)));
 
         cellMap.forEachValue((NodeVis<X> nv) -> nv.edgeOut.commit());
+    }
+
+    /** hard limit on # nodes */
+    public int nodesMax() {
+        return nodesMax;
+    }
+
+    public void nodesMax(int nodesMax) {
+        this.nodesMax = nodesMax;
     }
 
     /** wraps all graph construction procedure in this interface for which layers construct graph with */
@@ -254,16 +266,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
          * set an initial location (and/or size) for a newly created NodeVis
          */
         default void initialize(Graph2D<X> g, NodeVis<X> n) {
-            float gw = g.w();
-            float gh = g.h();
-            int count = g.cellMap.cache.size();
-            float defaultSize = (float) (Math.min(gw, gh) / Math.sqrt(count + 1));
-
-            n.pos(RectFloat2D.XYWH(
-                    g.x() + (gw / 2 - gw / 4) + (float) Math.random() * gw / 2f,
-                    g.y() + (gh / 2 - gh / 4) + (float) Math.random() * gh / 2f,
-                    defaultSize, defaultSize
-            ));
+//            float gw = g.w();
+//            float gh = g.h();
+//            int count = g.cellMap.cache.size();
+//            float defaultSize = (float) (Math.min(gw, gh) / Math.sqrt(count + 1));
+//
+//            n.pos(RectFloat2D.XYWH(
+//                    g.x() + (gw / 2 - gw / 4) + (float) Math.random() * gw / 2f,
+//                    g.y() + (gh / 2 - gh / 4) + (float) Math.random() * gh / 2f,
+//                    defaultSize, defaultSize
+//            ));
         }
     }
 
@@ -323,10 +335,20 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         public X id;
         public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(FasterList::new);
+
+        /** optional priority component */
+        public float pri;
+
+
+        /** current layout movement instance */
+        public transient MovingRectFloat2D mover = null;
+
         private float r, g, b;
 
         void reset(X id) {
             this.id = id;
+            this.mover = null;
+            pri = 0.5f;
             edgeOut.write().clear();
             edgeOut.commit();
             edgeOut.write().clear();

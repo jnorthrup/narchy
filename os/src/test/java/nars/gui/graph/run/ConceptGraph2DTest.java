@@ -24,10 +24,10 @@ class ConceptGraph2DTest {
                 
                 new Windo(g.widget())
                 
-                , 800, 800
+                , 1200, 800
         );
 
-        n.startFPS(55f);
+        n.startFPS(4f);
     }
 
 

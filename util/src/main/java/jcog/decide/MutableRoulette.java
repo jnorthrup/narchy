@@ -140,10 +140,10 @@ public final class MutableRoulette {
 
             for (int x = 0; x < count; x++) {
                 float wx = w[x];
-                if (wx > EPSILON) {
+                if (wx >= EPSILON) {
                     float wy = weightUpdate.valueOf(wx);
                     if (wx!=wy) {
-                        if ((w[x] = wx = wy) < EPSILON) {
+                        if ((w[x] = wy) < EPSILON) {
                             w[x] = 0;
                             remaining = 0;
                         }

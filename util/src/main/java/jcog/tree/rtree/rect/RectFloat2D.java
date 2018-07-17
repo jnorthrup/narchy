@@ -60,6 +60,15 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         return new RectFloat2D(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2);
     }
 
+    /** x,y corresponds to "lower left" corner rather than XYWH's center */
+    public static RectFloat2D X0Y0WH(float x0, float y0, float w, float h) {
+        return XYXY(x0, y0, x0+w, y0+h);
+    }
+
+    public static RectFloat2D XYWH(double cx, double cy, double w, double h) {
+        return XYWH((float)cx, ((float)cy), (float)w, (float)h);
+    }
+
     /**
      * interpolates the coordinates, and the scale is proportional to the mean dimensions of each
      */
@@ -69,6 +78,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2f);
         return RectFloat2D.XYWH(cx, cy, wh, wh);
     }
+
 
 
     public RectFloat2D move(double dx, double dy) {

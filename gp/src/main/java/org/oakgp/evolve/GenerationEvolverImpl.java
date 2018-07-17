@@ -16,7 +16,7 @@
 package org.oakgp.evolve;
 
 import jcog.pri.PLink;
-import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.bag.impl.ArrayBag;
 import org.oakgp.node.Node;
 import org.oakgp.rank.Ranking;
 import org.oakgp.select.NodeSelector;
@@ -47,7 +47,7 @@ public final class GenerationEvolverImpl implements GenerationEvolver {
 
 
 
-    public GenerationEvolverImpl(float eliteRate, NodeSelector selector, CurveBag<PLink<GeneticOperator>> operators, Random random) {
+    public GenerationEvolverImpl(float eliteRate, NodeSelector selector, ArrayBag<PLink<GeneticOperator>, PLink<GeneticOperator>> operators, Random random) {
         this(eliteRate, selector,
                 //TODO: if operators.size()==1 ?
                 () -> operators.sample(random).id
