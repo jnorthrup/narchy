@@ -68,7 +68,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     }
 
     @Override
-    protected X[] newArray(int oldSize) {
+    protected X[] newArray(int s) {
         throw new UnsupportedOperationException();
     }
 

@@ -188,16 +188,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public void windowResized(WindowEvent windowEvent) {
         //if (!preRenderTasks.contains(windowUpdater)) {
-            this.nw = getWidth();
-            this.nh = getHeight();
+        this.nw = getWidth();
+        this.nh = getHeight();
         //}
     }
 
     @Override
     public void windowMoved(WindowEvent windowEvent) {
         //if (!preRenderTasks.contains(windowUpdater)) {
-            this.nx = getX();
-            this.ny = getY();
+        this.nx = getX();
+        this.ny = getY();
         //}
     }
 
@@ -254,20 +254,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public final void display(GLAutoDrawable drawable) {
-        try {
+
 //            if (gl == null)
 //                gl = drawable.getGL().getGL2();
 
-            long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
-            if (renderDTMS > Integer.MAX_VALUE) renderDTMS = Integer.MAX_VALUE;
-            this.lastRenderMS = nowMS;
+        long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
+        if (renderDTMS > Integer.MAX_VALUE) renderDTMS = Integer.MAX_VALUE;
+        this.lastRenderMS = nowMS;
 
-            render((int) renderDTMS);
+        render((int) renderDTMS);
 
-        } finally {
-            this.renderer.loop.ready();
-        }
     }
+
 
     public void show(int w, int h, boolean async) {
         show("", w, h, async);
@@ -446,122 +444,116 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
 
-    /* from: Jake2's */
-    class GameAnimatorControl extends AnimatorBase {
+/* from: Jake2's */
+class GameAnimatorControl extends AnimatorBase {
 
-        final Loop loop;
-        private volatile boolean paused = true;
-
-
-        GameAnimatorControl() {
-            super();
-
-            setIgnoreExceptions(false);
-            setPrintExceptions(true);
+    final Loop loop;
+    private volatile boolean paused = true;
 
 
-            this.loop = new Loop() {
+    GameAnimatorControl() {
+        super();
+
+        setIgnoreExceptions(false);
+        setPrintExceptions(true);
 
 
-                @Override
-                public String toString() {
-                    return JoglWindow.this + ".render";
-                }
+        this.loop = new Loop() {
 
-                @Override
-                protected void starting() {
-                    paused = false;
-                }
 
-                @Override
-                protected boolean async() {
-                    return true;
-                }
+            @Override
+            public String toString() {
+                return JoglWindow.this + ".render";
+            }
 
-                @Override
-                public boolean next() {
+            @Override
+            protected void starting() {
+                paused = false;
+            }
 
-                    if (window != null && !paused) {
 
-                        preRenderTasks.removeIf(r -> {
-                            r.accept(JoglWindow.this);
-                            return true;
-                        });
+            @Override
+            public boolean next() {
 
-                        if (!drawables.isEmpty()) {
-                            GLAutoDrawable d = drawables.get(0);
-                            if (d == null)
-                                return false;
+                if (window != null && !paused) {
 
-                            d.display();
-                            return true; //async
-                        }
+                    preRenderTasks.removeIf(r -> {
+                        r.accept(JoglWindow.this);
+                        return true;
+                    });
+
+                    if (!drawables.isEmpty()) {
+                        GLAutoDrawable d = drawables.get(0);
+                        if (d == null)
+                            return false;
+
+                        d.display();
+                        return true; //async
                     }
-
-                    ready(); //sync
-
-                    return true;
-
                 }
-            };
+
+                return true;
+
+            }
+        };
 
 
-            loop.setFPS(renderFPS);
-
-
-        }
-
-        @Override
-        protected String getBaseName(String prefix) {
-            return prefix;
-        }
-
-        @Override
-        public final boolean start() {
-            return false;
-        }
-
-
-        @Override
-        public final boolean stop() {
-
-            pause();
-            loop.stop();
-            return true;
-        }
-
-
-        @Override
-        public final boolean pause() {
-
-
-            paused = true;
-            return true;
-        }
-
-        @Override
-        public final boolean resume() {
-            paused = false;
-            return true;
-        }
-
-        @Override
-        public synchronized final boolean isStarted() {
-            return loop.isRunning();
-        }
-
-        @Override
-        public final boolean isAnimating() {
-            return !paused;
-        }
-
-        @Override
-        public final boolean isPaused() {
-            return paused;
-        }
+        loop.setFPS(renderFPS);
 
 
     }
+
+    @Override
+    protected String getBaseName(String prefix) {
+        return prefix;
+    }
+
+    @Override
+    public final boolean start() {
+        return false;
+    }
+
+
+    @Override
+    public final boolean stop() {
+
+        pause();
+        loop.stop();
+        return true;
+    }
+
+
+    @Override
+    public final boolean pause() {
+
+
+        paused = true;
+        return true;
+    }
+
+    @Override
+    public final boolean resume() {
+        paused = false;
+        return true;
+    }
+
+    @Override
+    public synchronized final boolean isStarted() {
+        return loop.isRunning();
+    }
+
+    @Override
+    public final boolean isAnimating() {
+        return !paused;
+    }
+
+    @Override
+    public final boolean isPaused() {
+        return paused;
+    }
+
+
+}
 
 
 }

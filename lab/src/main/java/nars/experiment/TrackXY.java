@@ -11,6 +11,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.agent.NAgent;
+import nars.agent.util.Impiler;
 import nars.agent.util.RLBooster;
 import nars.concept.action.SwitchAction;
 import nars.control.DurService;
@@ -37,8 +38,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static jcog.Util.unitize;
-import static nars.Op.BELIEF;
-import static nars.Op.INH;
+import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 /* 1D and 2D grid tracking */
@@ -64,7 +64,8 @@ public class TrackXY extends NAgent {
         senseNumber($.inh("tx", id), new FloatNormalized(() -> sx));
         senseNumber($.inh("ty", id), new FloatNormalized(() -> sy));
 
-        actionSwitch();
+        //actionSwitch();
+        actionPushButton();
 
         this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
 
@@ -94,13 +95,13 @@ public class TrackXY extends NAgent {
         n.dtDither.set(dur/2);
         n.freqResolution.set(0.02f);
         n.goalPriDefault.set(0.9f);
-        n.beliefPriDefault.set(0.2f);
+        n.beliefPriDefault.set(0.3f);
         n.questionPriDefault.set(0.1f);
         n.questPriDefault.set(0.1f);
 
 
 
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(24);
 
         //n.activateConceptRate.set(0.5f);
 
@@ -109,7 +110,7 @@ public class TrackXY extends NAgent {
         n.synch();
 
 
-        int experimentTime = 6280;
+        int experimentTime = 1000;
 
 
         if (rl) {
@@ -135,7 +136,6 @@ public class TrackXY extends NAgent {
             n.timeFocus.set(2);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
-
                     Task::isInput,
                     4, 16);
 
@@ -178,13 +178,34 @@ public class TrackXY extends NAgent {
         n.on(t);
         n.run(experimentTime);
 
+
+        printGoals(n);
+        printImpls(n);
+
+//        //Iterables.concat(t.actions.keySet(), t.sensors.keySet())
+//        Impiler.Impiled ii = Impiler.of(true, ()->n.concepts().filter(x->x.op()==IMPL).limit(20).map(x->(Termed)x.term()).iterator(), n);
+//        ii.print();
+
+    }
+
+    public static void printGoals(NAR n) {
+        int dur = n.dur();
         long now = n.time();
         List<Task> l = n.tasks(false, false, true, false)
                 .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
                 .collect(Collectors.toList());
         l.forEach(System.out::println);
-
-
+        System.out.println();
+    }
+    public static void printImpls(NAR n) {
+        int dur = n.dur();
+        long now = n.time();
+        List<Task> l = n.tasks(true, false, false, false)
+                .filter(x -> x.op()==IMPL)
+                .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
+                .collect(Collectors.toList());
+        l.forEach(System.out::println);
+        System.out.println();
     }
 
 

@@ -103,7 +103,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         this.surface = content;
 
         this.fingerUpdate = () -> {
-            if (focused.get())
+            if (focused())
                 finger();
         };
     }
@@ -116,8 +116,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         //doLayout(0);
     }
 
-    boolean focused() {
-        return focused.get();
+    final boolean focused() {
+        return focused.getOpaque();
     }
 
     @Override

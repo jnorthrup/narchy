@@ -109,8 +109,12 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 Term decomposed = stmtCommon(!subjOrPred, superterm);
                 if (union) {
                     if (decomposed.op()==NEG) {
-                        decomposed = decomposed.unneg();
-                        assert(decomposed.op()==CONJ /* and not Sect/Union */): "unneg'd decomposed " + decomposed + " in superterm " + superterm;
+                        if (superterm.op()==IMPL) {
+                            decomposed = decomposed.unneg();
+                        } else {
+                            //leave as-is
+                            // assert (decomposed.op() == CONJ /* and not Sect/Union */) : "unneg'd decomposed " + decomposed + " in superterm " + superterm;
+                        }
                     }
                 }
 
@@ -351,8 +355,9 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
         if (union) {
             if (superSect.op()==NEG) {
-                superSect = superSect.neg();
-                assert(superSect.op()==CONJ);
+                if (superterm.op()==IMPL && !subjOrPred)
+                    superSect = superSect.neg();
+
             }
         }
 

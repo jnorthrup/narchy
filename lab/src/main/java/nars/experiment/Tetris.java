@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
+import nars.agent.util.Impiler;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -83,10 +84,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
         NAgentX.runRT((n) -> {
-            Tetris a = null;
+            Tetris a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
 
-
-            a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
+            new Impiler.ImpilerTracker(64, 16, n);
+            new Impiler.ImpilerSolver(32, 8, n);
 
 
             //Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;

@@ -1,5 +1,6 @@
 package nars.index.concept;
 
+import jcog.WTF;
 import jcog.pri.Priority;
 import nars.NAR;
 import nars.concept.Concept;
@@ -99,6 +100,8 @@ public abstract class ConceptIndex implements Iterable<Termed> {
 
 
         Term xx = x.concept();
+        if (xx == null)
+            throw new WTF();
 //        if (!(xx.op().conceptualizable)) {
 //
 //

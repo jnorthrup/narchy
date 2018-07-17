@@ -110,14 +110,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
             //TODO not done yet
             case IMPL: {
-                /* TODO:
-                    ((&&,x,y,z,...) ==> z) from (x ==> z) and (y ==> z) //intersect pre
-                    (--(--x && --y) ==> z) from (x ==> z) and (y ==> z) //union pre
-                    (z ==> (x && y))  //intersect conc
-                    (z ==> --(--x && --y))  //union conc
-                 */
                 Term su = t.sub(0);
-
                 Term pu = t.sub(1);
 
                 Op suo = su.op();
@@ -187,19 +180,14 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             Op po = pred.op();
 
 
-            if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)
-
-            ) {
+            if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)) {
 
                 //TODO move this to impl-specific test function
                 Subterms subjsubs = subj.subterms();
                 int s = subjsubs.subs();
-//                Term[] x = new Term[s];
                 for (int i = 0; i < s; i++) {
-                    Term y;
-                    if (!validDynamicSubterm.test(y = INH.the(subjsubs.sub(i), pred)))
+                    if (!validDynamicSubterm.test(INH.the(subjsubs.sub(i), pred)))
                         return null;
-//                    x[i] = y;
                 }
 
                 switch (so) {
@@ -220,12 +208,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                 Compound cpred = (Compound) pred;
                 int s = cpred.subs();
-//                Term[] x = new Term[s];
                 for (int i = 0; i < s; i++) {
-                    Term y;
-                    if (!validDynamicSubterm.test(y = INH.the(subj, cpred.sub(i))))
+                    if (!validDynamicSubterm.test(INH.the(subj, cpred.sub(i))))
                         return null;
-//                    x[i] = y;
                 }
 
                 switch (po) {

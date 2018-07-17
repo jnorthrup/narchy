@@ -180,6 +180,11 @@ public interface ScalarValue {
             return x;
         }
 
+        /** allows NaN */
+        protected float _v(float x) {
+            return x!=x ? Float.NaN : v(x);
+        }
+
         private int _pri() {
 
             return (int) INT.getOpaque(this);
@@ -205,12 +210,12 @@ public interface ScalarValue {
 
         /** update */
         @Override public final float pri(FloatToFloatFunction update) {
-            return FLOAT.updateAndGet(this, (x)-> v(update.valueOf(x)) );
+            return FLOAT.updateAndGet(this, (x)-> _v(update.valueOf(x)) );
         }
 
         /** update */
         @Override public final float pri(FloatFloatToFloatFunction update, float x) {
-            return FLOAT.updateAndGet(this, (xx,yy)->v(update.apply(xx,yy)), x);
+            return FLOAT.updateAndGet(this, (xx,yy)-> _v(update.apply(xx,yy)), x);
         }
     }
 }

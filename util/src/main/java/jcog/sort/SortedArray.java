@@ -462,7 +462,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     /**
      * generally, uses grow(oldSize) (not oldSize directly!) to get the final constructed array length
      */
-    abstract protected X[] newArray(int oldSize);
+    abstract protected X[] newArray(int s);
 
     @Nullable
     public X removeFirst() {

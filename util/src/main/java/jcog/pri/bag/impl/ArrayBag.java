@@ -608,8 +608,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     static final class SortedPLinks extends SortedArray {
         @Override
-        protected Object[] newArray(int oldSize) {
-            return new Object[oldSize == 0 ? 2 : oldSize + Math.max(1, oldSize / 2)];
+        protected Object[] newArray(int s) {
+            return new Object[s == 0 ? 2 : s + Math.max(1, s / 2)];
         }
     }
 
