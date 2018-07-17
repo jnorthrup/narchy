@@ -355,7 +355,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
         if (union) {
             if (superSect.op()==NEG) {
-                if (superterm.op()==IMPL && !subjOrPred)
+                if (superterm.op()==IMPL)
                     superSect = superSect.neg();
 
             }

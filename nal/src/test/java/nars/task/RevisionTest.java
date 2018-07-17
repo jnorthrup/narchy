@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -321,7 +322,7 @@ public class RevisionTest {
     void testIntermpolation0() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+3 (b &&+1 c))");
-        permuteChoose(a, b, "[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+3 c)]");
+        permuteChoose(a, b, "((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]");
     }
 
 
@@ -362,17 +363,23 @@ public class RevisionTest {
     }
 
     @Test
-    void testIntermpolationOrderMixDternal() throws Narsese.NarseseException {
+    void testIntermpolationOrderMixDternalPre() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(a &&+1 (b && c))");
         permuteChoose(a, b, "[(a &&+1 (b&&c))]");
     }
     @Test
-    void testIntermpolationOrderMixDternalReverse() throws Narsese.NarseseException {
-        Compound a = $.$("((a &&+1 b) &&+1 c)");
-        Compound b = $.$("((a &&   b) &&+1 c)");
-        permuteChoose(a, b, "[((a&&b) &&+1 c)]");
+    void testIntermpolationOrderMixDternalPost() throws Narsese.NarseseException {
+        Term e = $$("(a && (b &&+1 c))");
+        assertEquals("((a&|b) &&+1 (a&|c))", e.toString());
+
+        Compound a = $.$("(a &&+1 (b &&+1 c))");
+        Compound b = $.$("(a && (b &&+1 c))");
+
+        permuteChoose(a, b, "[" + e + "]");
     }
+
+
     @Test
     void testIntermpolationWrongOrderSoDternalOnlyOption() throws Narsese.NarseseException {
         Compound a = $.$("(((right-->tetris) &&+5 (rotCW-->tetris)) &&+51 (tetris-->[happy]))");
@@ -404,7 +411,10 @@ public class RevisionTest {
     void testIntermpolationOrderPartialMismatchReverse2() throws Narsese.NarseseException {
         Compound a = $.$("(b &&+1 (a &&+1 (c &&+1 d)))");
         Compound b = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
-        permuteChoose(a, b, "[(((a&|b) &&+1 c) &&+1 d), (((a&|b) &&+2 c) &&+1 d), ((b &&+1 a) &&+1 (c &&+1 d)), ((a &&+1 b) &&+1 (c &&+1 d))]");
+        permuteChoose(a, b,
+                //"[(((a&|b) &&+1 c) &&+1 d), (((a&|b) &&+2 c) &&+1 d), ((b &&+1 a) &&+1 (c &&+1 d)), ((a &&+1 b) &&+1 (c &&+1 d))]"
+                "[(((a&&c)&|b) &&+2 ((a&&c)&|d))]"
+        );
     }
 
 
@@ -472,7 +482,7 @@ public class RevisionTest {
         NAR s = NARS.shell();
         s.time.dur(dur);
 
-        assertEquals(a.concept(), b.concept());
+        assertEquals(a.concept(), b.concept(), "concepts differ: " + a + " " + b);
 
         
 
@@ -497,8 +507,8 @@ public class RevisionTest {
 
     @Test
     void testEmbeddedIntermpolation() {
-        Term a = $.$$("(a, (b ==>+2 c))");
-        Term b = $.$$("(a, (b ==>+10 c))");
+        Term a = $$("(a, (b ==>+2 c))");
+        Term b = $$("(a, (b ==>+10 c))");
         NAR nar = NARS.shell();
         {
             Term c = Revision.intermpolate(a, b, 0.5f, nar);
