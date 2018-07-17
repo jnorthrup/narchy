@@ -150,8 +150,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now(),
                 ETERNAL, ETERNAL,
-                nar.evidence()
-                //Stamp.UNSTAMPED
+                //nar.evidence()
+                Stamp.UNSTAMPED
                 
         );
 
@@ -314,7 +314,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
         init(nar);
 
-        alwaysWant/*Eternally*/(happy.filter[0].term, nar.confDefault(GOAL));
+        alwaysWantEternally(happy.filter[0].term, nar.confDefault(GOAL));
         alwaysWantEternally(happy.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
         alwaysWantEternally(happy.filter[2].term, nar.confMin.floatValue()); //acute
 

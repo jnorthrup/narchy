@@ -1,4 +1,4 @@
-package nars.web;
+package nars.web.util;
 
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
@@ -67,7 +67,7 @@ public interface WebSocket extends JSObject {
         native static WebSocket newSocket(String url);
 
         @JSBody(params = {"socket", "each"},
-                script = "socket.onmessage = function(m) { each(m.data); console.log(msgpack.decode(m.data)); };")
+                script = "socket.onmessage = function(m) { each(m.data); };")
         native static void setOnMessage(WebSocket socket, JSConsumer each);
 
         @JSBody(params = {"socket", "each"},

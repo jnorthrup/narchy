@@ -19,8 +19,8 @@ import nars.exe.UniExec;
 import nars.index.concept.MaplikeConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
 import nars.time.clock.RealTime;
-import nars.web.ClientBuilder;
-import nars.web.MsgPack;
+import nars.web.util.ClientBuilder;
+import nars.web.util.MsgPack;
 import nars.web.WebClientJS;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
-import static nars.TaskJsonCodec.Native.taskify;
+import static nars.web.TaskJsonCodec.Native.taskify;
 
 abstract public class Web implements HttpModel {
 
@@ -55,7 +55,7 @@ abstract public class Web implements HttpModel {
                 h.respond(new File("/tmp/tea/classes.js"));
                 break;
             case "/websocket.js":
-                h.respond(nars.web.WebSocket.websocket_js);
+                h.respond(nars.web.util.WebSocket.websocket_js);
                 break;
             case "/msgpack.js":
                 h.respond(MsgPack.msgpack_js);
@@ -359,7 +359,7 @@ abstract public class Web implements HttpModel {
                 ArrayNode a = Util.msgPacker.createArrayNode();
 
                 out.clear(t -> {
-                    taskify(t, a.addObject());
+                    taskify(t, a.addArray());
                 });
 
                 if (a.size() > 0) {

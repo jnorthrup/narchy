@@ -1,4 +1,3 @@
-//untested
 
         //to the degree that the desired sequence includes state which is not the case, desire that case
         C, X, eventOf(C,X)    |- X, (Goal:DesireWeakPN)
@@ -9,5 +8,34 @@
         C, X, eventOfNeg(C,X) |- X, (Goal:DesireWeakNN)
 
         //desire what co-occurs with satisfied goal
-        X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:DesireWeak)
-        X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:DesireWeakN)
+        X, C, eventOf(C,X)    |- C, (Goal:DesireWeak)
+        X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak)
+        X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
+        X, C, eventOfNeg(C,X) |- C, (Goal:DesireWeakN)
+            //X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:DesireWeak)
+            //X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:DesireWeakN)
+
+
+
+
+
+//goal contained in conjunction/impl, weakly desire the entire conj; guilt by association
+//    X, C, eventOf(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTask)
+//        X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTask)
+//          X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskPN)
+//    X, C, eventOfNeg(C,X)   |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
+//        X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTask)
+//          X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskPN)
+//    X, C, eventOf(C,X)      |- (--,polarize(C,task)), (Goal:WeakDepolarizedTaskN)
+//        X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskN)
+//          X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTaskNN)
+//    X, C, eventOfNeg(C,X)   |- polarize(C,task), (Goal:WeakDepolarizedTaskN)
+//        X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskN)
+//          X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskNN)
+
+    //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
+    //X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
+    //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
+    //X, C, eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
+
+

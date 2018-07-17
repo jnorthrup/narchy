@@ -32,7 +32,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import static jcog.Util.*;
+
 import static nars.truth.TruthFunctions.w2cSafe;
 
 
@@ -64,16 +64,22 @@ public interface Truth extends Truthed {
     static int truthToInt(float freq, float conf, short discreteness) {
 
         if (!Float.isFinite(freq) || freq < 0 || freq > 1)
-            throw new RuntimeException("invalid freq: " + freq);
+            throw new TruthException("invalid freq", freq);
 
-        int freqHash = floatToInt(freq, discreteness);
+        int freqHash = Util.floatToInt(freq, discreteness);
 
         if (!Float.isFinite(conf) || conf < 0)
-            throw new RuntimeException("invalid conf: " + conf);
+            throw new TruthException("invalid conf", conf);
 
-        int confHash = floatToInt(Math.min(Param.TRUTH_MAX_CONF, conf), discreteness);
+        int confHash = Util.floatToInt(Math.min(Param.TRUTH_MAX_CONF, conf), discreteness);
 
         return (freqHash << 16) | confHash;
+    }
+
+    public static class TruthException extends RuntimeException {
+        public TruthException(String reason, float value) {
+            super(new StringBuilder(64).append(reason).append(": ").append(value).toString());
+        }
     }
 
     static Truth intToTruth(int h) {
@@ -81,11 +87,11 @@ public interface Truth extends Truthed {
     }
 
     static float freq(int h) {
-        return intToFloat((h >> 16) /* & 0xffff*/, hashDiscretenessEpsilon);
+        return Util.intToFloat((h >> 16) /* & 0xffff*/, hashDiscretenessEpsilon);
     }
 
     static float conf(int h) {
-        return intToFloat(h & 0xffff, hashDiscretenessEpsilon);
+        return Util.intToFloat(h & 0xffff, hashDiscretenessEpsilon);
     }
 
     /**
@@ -107,31 +113,26 @@ public interface Truth extends Truthed {
 
     static int compare(Truth a, Truth b) {
         if (a == b) return 0;
-
-
         return Integer.compare(b.hashCode(), a.hashCode());
-
-
     }
 
     @Nullable
     static <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {
         if (b == null)
             return a;
-        if (a == null)
+        else if (a == null)
             return b;
-        return a.evi() >= b.evi() ? a : b;
+        else
+            return a.evi() >= b.evi() ? a : b;
     }
 
     static float freq(float f, float epsilon) {
         assert (f == f) : "invalid freq: " + f;
-
-        Util.assertUnitized(f);
-        return Util.unitize(round(f, epsilon));
+        return Util.unitize(Util.round(f, epsilon));
     }
 
     static float conf(float c, float epsilon) {
-        assert (c == c && c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
+        assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
         return confSafe(c, epsilon);
     }
 
@@ -139,9 +140,9 @@ public interface Truth extends Truthed {
         if (epsilon == 0)
             return c;
 
-        return clamp(
+        return Util.clamp(
 
-                round(c, epsilon),
+                Util.round(c, epsilon),
 
                 0, 1f - epsilon);
     }

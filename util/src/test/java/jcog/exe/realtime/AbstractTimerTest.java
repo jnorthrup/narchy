@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class AbstractTimerTest {
 
     private final HashedWheelTimer timer = new HashedWheelTimer(
-                    new AdmissionQueueWheelModel(128,
+                    new AdmissionQueueWheelModel(64,
                     TimeUnit.MILLISECONDS.toNanos(1)),
                     waitStrategy());
 

@@ -631,6 +631,8 @@ public enum Util {
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
      */
     public static float round(float value, float epsilon) {
+        finite(epsilon);
+        finite(value);
         if (epsilon == 0) return value;
         else return Math.round(value / epsilon) * epsilon;
     }

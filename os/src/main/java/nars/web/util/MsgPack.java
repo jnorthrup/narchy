@@ -1,4 +1,4 @@
-package nars.web;
+package nars.web.util;
 
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
@@ -12,7 +12,9 @@ public class MsgPack {
 
 
     @JSBody(params = {"data","each"},
-            script = "msgpack.decode(new Uint8Array(data), window.msgPackOptions).forEach(each);")
+            script = "msgpack.decode(new Uint8Array(data), window.msgPackOptions).forEach(function(x){" +
+                    "   try { each(x); } catch (e) { console.error(e); }" +
+                    "});")
     public native static void decodeArray(JSObject data, JSConsumer each);
 
     /* https://github.com/kawanet/msgpack-lite */

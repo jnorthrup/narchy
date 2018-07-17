@@ -163,11 +163,6 @@ public interface ScalarValue {
 
         private volatile int pri;
 
-        @Override
-        public float pri(float p) {
-            INT.set(this, floatToIntBits(p));
-            return p;
-        }
 
         public final float priElseZero() {
             int i = _pri();
@@ -178,6 +173,11 @@ public interface ScalarValue {
         public boolean delete() {
             return ((int)INT.getAndSet(this, NaN)) != NaN;
             //if the above doesnt work, try converting with intToFloatBits( then do NaN test for equality etc
+        }
+
+        /** post-filter */
+        public float v(float x) {
+            return x;
         }
 
         private int _pri() {
@@ -197,14 +197,20 @@ public interface ScalarValue {
 
 
 
-        @Override
-        public final float pri(FloatToFloatFunction update) {
-            return FLOAT.updateAndGet(this, update);
+        /** set */
+        @Override public float pri(float p) {
+            INT.set(this, floatToIntBits(v(p)));
+            return p;
         }
 
-        @Override
-        public final float pri(FloatFloatToFloatFunction update, float x) {
-            return FLOAT.updateAndGet(this, update, x);
+        /** update */
+        @Override public final float pri(FloatToFloatFunction update) {
+            return FLOAT.updateAndGet(this, (x)-> v(update.valueOf(x)) );
+        }
+
+        /** update */
+        @Override public final float pri(FloatFloatToFloatFunction update, float x) {
+            return FLOAT.updateAndGet(this, (xx,yy)->v(update.apply(xx,yy)), x);
         }
     }
 }

@@ -12,8 +12,8 @@ public class PLink<X> extends NLink<X> {
     }
 
     @Override
-    public float pri(float p) {
-        return super.pri(Util.unitize(p));
+    public float v(float x) {
+        return Util.unitize(x);
     }
 
     @Override

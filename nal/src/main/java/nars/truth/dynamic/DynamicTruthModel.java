@@ -110,7 +110,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 if (union) {
                     if (decomposed.op()==NEG) {
                         decomposed = decomposed.unneg();
-                        assert(decomposed.op()==CONJ /* and not Sect/Union */): "unneg'd decomposed is " + decomposed;
+                        assert(decomposed.op()==CONJ /* and not Sect/Union */): "unneg'd decomposed " + decomposed + " in superterm " + superterm;
                     }
                 }
 

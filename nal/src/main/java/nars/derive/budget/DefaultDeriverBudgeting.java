@@ -36,7 +36,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
         float pCompl = d.parentComplexitySum;
         float dCompl = t.voluplexity();
         float relGrowthCost =
-                (pCompl / (pCompl + dCompl));
+                pCompl / (pCompl + dCompl);
 
         factor *= Math.pow(relGrowthCost, relGrowthExponent.floatValue());
 
@@ -69,7 +69,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             factor *= Util.lerp(evidenceImportance.floatValue(), 1, relGrowthCost);
         }
 
-        return Math.max(ScalarValue.EPSILON, factor * d.pri);
+        return Math.max(ScalarValue.EPSILON, Math.min(1f, factor) * d.pri);
 
 
     }

@@ -151,12 +151,12 @@ public class Taskify extends AbstractPred<Derivation> {
 
             if (parent.punc() == punc) {
                 if (parent.term().equals(derived.term())) {
-                    if (Tense.dither(parent.start(), n) == Tense.dither(occ[0], n) &&
-                            Tense.dither(parent.end(), n) == Tense.dither(occ[1], n)) {
+                    if (sameTime(occ, parent, n)) {
 
                         if ((punc == QUESTION || punc == QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
-                                        parent.conf() <= truth.conf() - n.confResolution.floatValue() / 2 /* + epsilon to avid creeping confidence increase */
+                                        parent.conf() <= truth.conf() - n.confResolution.floatValue()
+                                                // / 2 /* + epsilon to avid creeping confidence increase */
                         )) {
 
                             if (Param.DEBUG_SIMILAR_DERIVATIONS)
@@ -170,6 +170,16 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
         return false;
+    }
+
+    private static boolean sameTime(long[] occ, Task parent, NAR n) {
+//        if (parent.isEternal()) {
+//            return true;
+//        } else {
+            return parent.contains(occ[0], occ[1]);
+//            Tense.dither(parent.start(), n) == Tense.dither(occ[0], n) &&
+//                    Tense.dither(parent.end(), n) == Tense.dither(occ[1], n);
+//        }
     }
 
 //    @Deprecated

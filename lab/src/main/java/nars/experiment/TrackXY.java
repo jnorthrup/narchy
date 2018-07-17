@@ -3,6 +3,7 @@ package nars.experiment;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.learn.ql.HaiQae;
+import jcog.math.FloatNormalized;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.$;
@@ -45,22 +46,31 @@ public class TrackXY extends NAgent {
 
     final ArrayBitmap2D view;
     public Bitmap2DSensor cam;
-    
+
     float tx, ty;
-    
+
     float sx, sy;
-    Consumer<TrackXY> updater =
-            
-            
-            new CircleTarget();
+    Consumer<TrackXY> updater = new CircleTarget();
     private final float controlSpeed =
+            //0.5f;
             1f;
-    
+
     private final float visionContrast = 0.9f;
 
-    protected TrackXY(int x, int y) {
-        super("trackXY", null);
+    protected TrackXY(NAR nar, int x, int y) {
+        super("trackXY", nar);
         this.view = new ArrayBitmap2D(x, y);
+
+        senseNumber($.inh("tx", id), new FloatNormalized(() -> sx));
+        senseNumber($.inh("ty", id), new FloatNormalized(() -> sy));
+
+        actionSwitch();
+
+        this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
+
+        sensorCam.add(cam);
+
+        randomize();
     }
 
     public static void main(String[] args) {
@@ -68,74 +78,50 @@ public class TrackXY extends NAgent {
         boolean nars = true;
         boolean rl = false;
 
-        int dur = 2;
+        int dur = 10;
 
         NARS nb = new NARS()
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
-                        
+
                         //new CaffeineIndex(32 * 1024)
                         new HijackConceptIndex(8 * 1024, 4)
                 );
 
 
         NAR n = nb.get();
+        n.dtDither.set(dur/2);
+        n.freqResolution.set(0.02f);
+        n.goalPriDefault.set(0.9f);
+        n.beliefPriDefault.set(0.2f);
+        n.questionPriDefault.set(0.1f);
+        n.questPriDefault.set(0.1f);
+
+
 
         n.termVolumeMax.set(40);
 
         //n.activateConceptRate.set(0.5f);
 
 
-        TrackXY t = new TrackXY(6, 1);
-        n.on(t);
+        TrackXY t = new TrackXY(n, 5, 5);
         n.synch();
 
 
-        int experimentTime = 1280;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        int experimentTime = 6280;
 
 
         if (rl) {
             new RLBooster(t,
-                    
-                    
+
+
                     HaiQae::new,
-                    
+
                     1);
             t.curiosity.set(0);
         }
         if (nars) {
-
-            
-            
-
-
-
-
 
 
             Deriver d = new MatrixDeriver(Derivers.nal(
@@ -145,21 +131,13 @@ public class TrackXY extends NAgent {
 
                     "motivation.nal"));
 
-            ((MatrixDeriver)d).conceptsPerIteration.set(8);
+            ((MatrixDeriver) d).conceptsPerIteration.set(8);
             n.timeFocus.set(2);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    
+
                     Task::isInput,
                     4, 16);
-
-
-
-
-
-
-
-
 
 
             window(new Gridding(
@@ -175,10 +153,7 @@ public class TrackXY extends NAgent {
         }
 
 
-
-
-
-        DurService.on(n,t);
+        DurService.on(n, t);
 //        final double[] rewardSum = {0};
 //        n.onCycle(() -> {
 //            rewardSum[0] += t.reward;
@@ -198,6 +173,9 @@ public class TrackXY extends NAgent {
                 }
             }.withControls(), 800, 800);
         });
+
+
+        n.on(t);
         n.run(experimentTime);
 
         long now = n.time();
@@ -206,80 +184,53 @@ public class TrackXY extends NAgent {
                 .collect(Collectors.toList());
         l.forEach(System.out::println);
 
-        
-        
-
-
-
-
-
 
     }
 
-    @Override
-    protected void starting(NAR nar) {
-
-        super.starting(nar);
-
-        
-        
-        actionSwitch();
-
-        this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
-        this.cam.pixelPri.set(0.2f);
-        
-        sensorCam.add(cam);
-
-        
-        
-
-
-        randomize();
-    }
 
     private void actionSwitch() {
-        SwitchAction s = new SwitchAction(nar, (a)->{
+        SwitchAction s = new SwitchAction(nar, (a) -> {
             switch (a) {
                 case 0: {
-                    
+
                     float dy = -1;
                     float py = sy;
                     sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
                     return !Util.equals(py, sy, 0.01f);
                 }
                 case 1: {
-                    
+
                     float dy = +1;
                     float py = sy;
                     sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
                     return !Util.equals(py, sy, 0.01f);
                 }
                 case 2: {
-                    
+
                     float dx = -1;
                     float px = sx;
                     sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
                     return !Util.equals(px, sx, 0.01f);
                 }
                 case 3: {
-                    
+
                     float dx = +1;
                     float px = sx;
                     sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
                     return !Util.equals(px, sx, 0.01f);
                 }
                 case 4: {
-                    
+
                     return true;
                 }
                 default:
                     throw new UnsupportedOperationException();
             }
         }, INH.the($.the("up"), id),
-           INH.the($.the("down"), id),
-           INH.the($.the("left"), id),
-           INH.the($.the("right"), id),
-           INH.the($.the("stay"), id)
+                INH.the($.the("down"), id),
+                INH.the($.the("left"), id),
+                INH.the($.the("right"), id),
+                INH.the($.the("stay"), id)
         );
         onFrame(s);
         SpaceGraph.window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
@@ -351,9 +302,6 @@ public class TrackXY extends NAgent {
             view.set((x, y) -> {
 
 
-
-
-
                 float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
                 //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
                 return unitize(1 - distOther * visionContrast);
@@ -363,19 +311,10 @@ public class TrackXY extends NAgent {
 //                        ));
 
 
-
-
-
-
-
-
-
-
-
             });
         }
 
-        if (cam!=null) {
+        if (cam != null) {
             cam.input();
         }
 
@@ -385,10 +324,8 @@ public class TrackXY extends NAgent {
                 / maxDist;
 
 
-        
-        
-        return -dist; 
-        
+        return -dist;
+
     }
 
     public static class RandomTarget implements Consumer<TrackXY> {
@@ -421,7 +358,6 @@ public class TrackXY extends NAgent {
             t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
 
 
-
             t.ty = 0;
         }
     }
@@ -433,7 +369,7 @@ public class TrackXY extends NAgent {
 
 
         float speed =
-                0.02f;
+                0.2f;
         float theta = 0;
 
 
@@ -447,9 +383,6 @@ public class TrackXY extends NAgent {
                 t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.height() - 1);
             else
                 t.ty = 0;
-
-
-
 
 
         }

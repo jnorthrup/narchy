@@ -1,4 +1,4 @@
-package nars.web;
+package nars.web.util;
 
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;

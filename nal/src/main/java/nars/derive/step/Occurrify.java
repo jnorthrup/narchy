@@ -239,43 +239,28 @@ public class Occurrify extends TimeGraph {
 
             this.curSingle = single;
 
-            if (single) {
-                Event s = know(task, taskStart, taskEnd);
-//                if (taskTerm.op()==IMPL && taskStart!=ETERNAL) {
-//                    /* HACK since impl absolute time are not linked,
-//                       link here to reify the implication subj as its own event in the single case
-//                       this will in turn link the predicate if it is temporally calculable.
-//                     */
-//                    Term t0 = taskTerm.sub(0);
-//                    know(t0, taskStart, taskEnd);
-//                    if (taskStart!=ETERNAL && taskStart!=XTERNAL) {
-//                        int tdt = taskTerm.dt();
-//                        if (tdt != DTERNAL && tdt != XTERNAL) {
-//                            long predStart = taskStart + tdt + t0.dtRange();
-//                            know(taskTerm.sub(1), predStart, predStart + (taskEnd - taskStart)); //TODO check this for reverse (neg dt) impl
-//                        }
-//                    }
-//                }
-//                if (d.concPunc == QUESTION || d.concPunc == QUEST) {
-//                    //if doing this then punctuation must be a caching condition
-//                    //use the beliefTerm in question/quest cases because there could be timing information
-//                    //but in belief/goal derivations, i consider such temporal info potentially interfering with purely single premise derivation
-//                    know(beliefTerm);
-//                }
-            } else {
+            know(task, taskStart, taskEnd);
+
+            if (!single) {
                 know(task, taskStart, taskEnd);
 
                 if (!belief.equals(task) || (taskStart!=beliefStart)) {
-                    know(belief, beliefStart, beliefEnd);
+                    boolean taskDominant = task.isGoal() && !task.isEternal();
+                    if (taskDominant) {
+                        know(beliefTerm);
+                    } else {
+                        know(belief, beliefStart, beliefEnd);
+                    }
                 }
             }
+
             if (!nextUntransform.isEmpty()) {
                 this.prevUntransform = Map.copyOf(nextUntransform);
 
                 nextUntransform.forEach((x, y) -> {
-                    if (y.isAny(Op.BOOL.bit |  Op.INT.bit))
-                        return;
-                    link(shadow(x), 0, shadow(y)); //weak
+                    if (!y.isAny(Op.BOOL.bit | Op.INT.bit)) {
+                        link(shadow(x), 0, shadow(y)); //weak
+                    }
                 });
             } else {
                 this.prevUntransform = Map.of();
@@ -404,7 +389,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return new long[]{d.task.start(), d.task.end()};
+                return occ(d.task);
             }
 
         },
@@ -440,26 +425,26 @@ public class Occurrify extends TimeGraph {
 
         },
 
-        TaskImmediate() {
-            @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
-
-                Pair<Term, long[]> p = Task.solve(d, x);
-                if (p != null) {
-                    if (d.concPunc == GOAL) {
-                        if (!immediateIfPast(d, p.getTwo()))
-                            return null;
-                    }
-                }
-                return p;
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return new long[]{d.task.start(), d.task.end()};
-            }
-
-        },
+//        TaskImmediate() {
+//            @Override
+//            public Pair<Term, long[]> solve(Derivation d, Term x) {
+//
+//                Pair<Term, long[]> p = Task.solve(d, x);
+//                if (p != null) {
+//                    if (d.concPunc == GOAL) {
+//                        if (!immediateIfPast(d, p.getTwo()))
+//                            return null;
+//                    }
+//                }
+//                return p;
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return new long[]{d.task.start(), d.task.end()};
+//            }
+//
+//        },
 
         /** happens in current present focus. no projection */
         TaskInstant() {
@@ -470,7 +455,9 @@ public class Occurrify extends TimeGraph {
                 if (p != null) {
 
                     //immediate future, dont interfere with present
-                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur * 2);
+                    int durs = 1;
+                                //2;
+                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur * durs);
 
                     System.arraycopy(when, 0, p.getTwo(), 0, 2);
                 }
@@ -479,7 +466,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return new long[]{d.task.start(), d.task.end()};
+                return occ(d.task);
             }
 
         },
@@ -515,7 +502,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return new long[]{d.task.start(), d.task.end()};
+                return occ(d.task);
             }
 
         },
@@ -528,7 +515,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return new long[]{d.task.start(), d.task.end()};
+                return occ(d.task);
             }
         },
 
@@ -545,8 +532,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                Task task = d.task;
-                return new long[]{task.start(), task.end()};
+                return occ(!d.task.isEternal() ? d.task : d.belief);
             }
 
             @Override
@@ -567,8 +553,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                Task belief = d.belief;
-                return new long[]{belief.start(), belief.end()};
+                return occ(!d.belief.isEternal() ? d.belief : d.task);
             }
 
             @Override
@@ -589,7 +574,15 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return null;
+                if (d.task.isEternal())
+                    return occ(d.belief);
+                else if (d.belief.isEternal())
+                    return occ(d.task);
+                else {
+                    nars.Task early = d.task.start() < d.belief.start() ? d.task : d.belief;
+                    //TODO compute appropriate end time, dont just use one task's range
+                    return occ(early);
+                }
             }
 
             @Override
@@ -869,6 +862,10 @@ public class Occurrify extends TimeGraph {
         public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
         }
+    }
+
+    private static long[] occ(Task t) {
+        return new long[]{t.start(), t.end()};
     }
 
 

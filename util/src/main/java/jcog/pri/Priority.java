@@ -28,6 +28,8 @@ public interface Priority extends Prioritized, ScalarValue {
         final float[] before = new float[1];
 
         float after = pri((x,a)->{
+            if (x!=x)
+                x = 0;
             before[0] = x;
             return x + a;
         }, amount);

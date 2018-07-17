@@ -365,38 +365,18 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire, Time:TaskImmediate)
-    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN, Time:TaskImmediate)
-        //X, C, eventOf(C,X) |- conjEarliestIfLatest(C,X), (Goal:Desire, Time:TaskImmediate)
-        //X, C, eventOfNeg(C,X) |- conjEarliestIfLatest(C,--X), (Goal:DesireN, Time:TaskImmediate)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire)
+    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN)
+        //X, C, eventOf(C,X) |- conjEarliestIfLatest(C,X), (Goal:Desire)
+        //X, C, eventOfNeg(C,X) |- conjEarliestIfLatest(C,--X), (Goal:DesireN)
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
 
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
-     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Desire, Time:TaskImmediate)
+     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Desire)
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN)
-     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN, Time:TaskImmediate)
+     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN)
 
-
-
-    //goal contained in conjunction/impl, weakly desire the entire conj; guilt by association
-//    X, C, eventOf(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTask)
-//        X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTask)
-//          X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskPN)
-//    X, C, eventOfNeg(C,X)   |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
-//        X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTask)
-//          X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskPN)
-//    X, C, eventOf(C,X)      |- (--,polarize(C,task)), (Goal:WeakDepolarizedTaskN)
-//        X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskN)
-//          X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTaskNN)
-//    X, C, eventOfNeg(C,X)   |- polarize(C,task), (Goal:WeakDepolarizedTaskN)
-//        X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskN)
-//          X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskNN)
-
-    //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    //X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
-    //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    //X, C, eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
 
 
 

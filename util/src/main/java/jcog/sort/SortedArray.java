@@ -526,9 +526,11 @@ public abstract class SortedArray<X> extends AbstractList<X> {
      * tests for descending sort
      */
     public boolean isSorted(FloatFunction<X> f) {
-        for (int i = 1; i < size; i++)
-            if (f.floatValueOf(items[i - 1]) > f.floatValueOf(items[i]))
+        X[] ii = this.items;
+        for (int i = 1; i < size; i++) {
+            if (f.floatValueOf(ii[i - 1]) > f.floatValueOf(ii[i]))
                 return false;
+        }
         return true;
     }
 
@@ -607,26 +609,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         float ev = cmp.floatValueOf(midleE);
         final int comparedValue = Util.fastCompare(ev, elementRank);
         if (comparedValue == 0) {
-//            //scan until the next element weaker than midlE/ev
-            int index = midle;
-//            int max = capacity();
-//            for (; index < max; index++) {
-//                final X e = list[index];
-//                if (e == null) {
-//                    rightBorder[0] = index;
-//                    return index;
-//                }
-//                int i = Util.fastCompare(cmp.floatValueOf(e), elementRank);
-//                if (0 != i) {
-//                    assert(i > 0); //must be weaker if table is consistent
-//                    break;
-//                }
-//            }
-//            if (index < max) {
-            rightBorder[0] = index;
-            return index;
-//            } else
-//                return -1; //table full
+            return rightBorder[0] = midle;
         }
 
         boolean c = (0 < comparedValue);
@@ -652,13 +635,12 @@ public abstract class SortedArray<X> extends AbstractList<X> {
                                final int left, final int right, FloatFunction<X> cmp) {
 
 
-        X[] l = this.items;
+        X[] ii = this.items;
         for (int index = left; index < right; ) {
-            X anObject = l[index];
-            if (0 < Util.fastCompare(cmp.floatValueOf(anObject), elementRank)) {
-                return index;
+            X x = ii[index++];
+            if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
+                return index-1;
             }
-            index++;
         }
         return right;
 
@@ -693,9 +675,9 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     public final void forEach(int n, Consumer<? super X> action) {
         int s = (n == -1) ? size : Math.min(size, n);
         if (s > 0) {
-            X[] l = items;
+            X[] ii = items;
             for (int i = 0; i < s; i++)
-                action.accept((X) ITEM.getOpaque(l,i));
+                action.accept((X) ITEM.getOpaque(ii,i));
         }
     }
 
@@ -736,7 +718,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     public Stream<X> stream() {
         //return ArrayIterator.stream(items, size());
-        return IntStream.range(0, size()).mapToObj(i -> (X)ITEM.getOpaque(items, i));
+        return IntStream.range(0, size()).mapToObj(i -> (X) ITEM.getOpaque(items, i));
     }
 
     @Override

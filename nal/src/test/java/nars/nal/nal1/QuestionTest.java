@@ -251,6 +251,7 @@ class QuestionTest {
                 .inputAt(7, "x. :|: %0.00;0.90%")
                 .inputAt(8, "$1.0 x?") 
                 .mustBelieve(64, "x", 0.5f, 0.73f /*ETERNAL*/)
+                .mustBelieve(64, "x", 0.5f, 0.9f, t -> t==4 /*temporal*/)
                 .test();
     }
 

@@ -1,6 +1,7 @@
-package nars.web;
+package nars.web.util;
 
 import jcog.Texts;
+import nars.web.WebClientJS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teavm.tooling.*;
@@ -11,9 +12,6 @@ import java.util.concurrent.ForkJoinPool;
 
 public class ClientBuilder {
 
-    public static void main(String[] args) {
-        rebuild(WebClientJS.class, false);
-    }
 
     /** TODO target directory params, cache directory = system determined temp directory */
     public static synchronized void rebuild(Class entryClass, boolean clean) {
@@ -40,7 +38,8 @@ public class ClientBuilder {
 
             tea.setMainClass(entryClass.getName());
             tea.setCacheDirectory(new File("/tmp/teacache"));
-            tea.setIncremental(true);
+            //tea.setIncremental(true);
+
 
             //tea.setDebugInformationGenerated(true);
 
@@ -51,8 +50,11 @@ public class ClientBuilder {
             tea.setRuntime(RuntimeCopyOperation.SEPARATE);
 
             tea.setTargetType(TeaVMTargetType.JAVASCRIPT);
+            tea.setMinifying(false);
 
             tea.generate();
+
+            //System.out.println(tea.getUsedResources())
 
             long end = System.nanoTime();
 

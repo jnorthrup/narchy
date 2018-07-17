@@ -18,7 +18,9 @@ public class Pri extends Priority.AtomicScalarValue implements Priority {
         pri(p);
     }
 
-    /** default: pri=0 */
+    /**
+     * default: pri=0
+     */
     public Pri() {
         pri(0);
     }
@@ -33,19 +35,8 @@ public class Pri extends Priority.AtomicScalarValue implements Priority {
         return getBudgetString();
     }
 
-    public boolean delete() {
-        float p = pri();
-        if (p==p) {
-            priDirect(Float.NaN);
-            return true;
-        }
-        return false;
+    /** override to implement a value post-filter */
+    public float v(float x) {
+        return x;
     }
-
-    /** allows subclasses to bypass their own overridden pri() methods */
-    protected final void priDirect(float x) {
-        super.pri(x);
-    }
-
-
 }
