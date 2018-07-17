@@ -277,8 +277,6 @@ public class Derivation extends PreDerivation {
                     nar.concept("conjWithoutPosOrNeg"),
                     nar.concept("conjDropIfEarliest"),
                     nar.concept("conjDropIfLatest"),
-                    nar.concept("conjNonSequence"),
-                    nar.concept("conjEarliestIfLatest"),
                     nar.concept("dropAnySet"),
                     nar.concept("dropAnyEvent"),
                     nar.concept("without"),

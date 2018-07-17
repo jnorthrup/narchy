@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
@@ -21,6 +22,8 @@ import spacegraph.video.Draw;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+
+import static jcog.Util.sqr;
 
 /**
  * 2D directed/undirected graph widget
@@ -365,7 +368,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         void paintEdges(GL2 gl) {
-            edgeOut.read().forEach(x -> x.draw(gl, this));
+            edgeOut.read().forEach(x -> x.draw(this, gl));
         }
 
         @Override
@@ -388,16 +391,57 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     public static class EdgeVis<X> {
-        public NodeVis<X> to;
-        float r = 0.5f;
-        float g = 0.5f;
-        float b = 0.5f;
-        float a = 0.75f;
-        public float weight = 1f;
+        volatile public NodeVis<X> to;
+        volatile float r = 0.5f;
+        volatile float g = 0.5f;
+        volatile float b = 0.5f;
+        volatile float a = 0.75f;
+        volatile public float weight = 1f;
+        volatile public EdgeVisRenderer renderer = EdgeVisRenderer.Triangle;
+
+        enum EdgeVisRenderer {
+            Line {
+                @Override
+                public void render(EdgeVis e, NodeVis from, GL2 gl) {
+                    float x = from.cx(), y = from.cy();
+                    gl.glLineWidth(1f + e.weight * 4f);
+                    e.color(gl);
+                    NodeVis to = e.to;
+                    Draw.line(gl, x, y, to.cx(), to.cy());
+                }
+            },
+            Triangle {
+                @Override
+                public void render(EdgeVis e, NodeVis from, GL2 gl) {
+                    float fx = from.cx(), fy = from.cy();
+                    NodeVis to = e.to;
+                    float tx = to.cx(), ty = to.cy();
+
+                    float scale = Math.min(from.w(), from.h());
+                    float base = Util.lerp(e.weight, scale/3f, scale);
+
+                    float len = (float) Math.sqrt( sqr(fx-tx) + sqr(fy-ty ));
+                    float theta = (float) (Math.atan2( ty - fy, tx - fx ) * 180/Math.PI) + 90f;
+
+                    //isosceles triangle
+                    gl.glPushMatrix();
+                    gl.glTranslatef((tx+fx)/2, (ty+fy)/2, 0);
+                    gl.glRotatef(theta, 0, 0, 1);
+                    e.color(gl);
+                    Draw.tri2f(gl, -base/2, -len/2, +base/2, -len/2, 0, +len/2);
+                    gl.glPopMatrix();
+
+                }
+            };
+            abstract public void render(EdgeVis e, NodeVis from, GL2 gl);
+        }
+
+        private void color(GL2 gl) {
+            gl.glColor4f(r, g, b, a);
+        }
 
 
         public EdgeVis<X> weight(float w) {
-            assert(w==w);
             weight = w;
             return this;
         }
@@ -409,12 +453,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             return this;
         }
 
-        void draw(GL2 gl, NodeVis<X> from) {
-            gl.glColor4f(r, g, b, a);
-            float x = from.cx();
-            float y = from.cy();
-            gl.glLineWidth(1f + weight * 4f);
-            Draw.line(gl, x, y, to.cx(), to.cy());
+        final void draw(NodeVis<X> from, GL2 gl) {
+           renderer.render(this, from, gl);
         }
     }
 

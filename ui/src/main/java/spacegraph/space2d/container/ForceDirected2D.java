@@ -1,6 +1,5 @@
 package spacegraph.space2d.container;
 
-import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
@@ -18,7 +17,6 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
     final Random rng = new XoRoShiRo128PlusRandom(1);
     private int iterations = 2;
     private float AUTOSCALE = 0f;
-    private float _momentum;
 
 
     @Override
@@ -26,7 +24,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         return new MovingRectFloat2D();
     }
 
-    public final FloatRange repelSpeed = new FloatRange(0.25f, 0, 1f);
+    public final FloatRange repelSpeed = new FloatRange(4f, 0, 8f);
 
     public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 1f);
 
@@ -34,9 +32,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     public final FloatRange nodeSpacing  = new FloatRange(1f, 1f, 4f);
 
-    public final FloatRange maxSpeed  = new FloatRange(10f, 0f, 100f);
+    public final FloatRange maxSpeed  = new FloatRange(5f, 0f, 100f);
 
-    public final FloatRange momentum = new FloatRange(0.5f, 0f, 1f);
+
 
     private float maxRepelDist;
 
@@ -44,15 +42,16 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     @Override
     public void initialize(Graph2D<X> g, Graph2D.NodeVis<X> n) {
-        n.move(g.cx(), g.cy());
+        float rx = g.w()/2*(rng.nextFloat()*2-1), ry = g.h()/2*(rng.nextFloat()*2-1);
+        n.posXYWH(g.cx() + rx, g.cy() + ry, 1, 1);
     }
 
-    @Override protected void put(MovingRectFloat2D mover, Graph2D.NodeVis node) {
-        node.posX0Y0WH(
-                Util.lerp(_momentum, mover.x, node.bounds.x),
-                Util.lerp(_momentum, mover.y, node.bounds.y),
-                mover.w, mover.h);
-    }
+//    @Override protected void put(MovingRectFloat2D mover, Graph2D.NodeVis node) {
+//        node.posX0Y0WH(
+//                Util.lerp(_momentum, mover.x, node.bounds.x),
+//                Util.lerp(_momentum, mover.y, node.bounds.y),
+//                mover.w, mover.h);
+//    }
 
     @Override
     protected void layout(Graph2D<X> g) {
@@ -75,7 +74,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         maxRepelDist = (float) ((2 * g.radius()) * Math.sqrt(2) / 2); //estimate
 
-        equilibriumDist = 1 + nodeSpacing.floatValue();
+        equilibriumDist = nodeSpacing.floatValue();
 
 
         int iterations = this.iterations;
@@ -103,8 +102,6 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         }
 
-
-        this._momentum = momentum.floatValue();
     }
 
 
@@ -132,9 +129,10 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             v2 delta = new v2(to.cx(), to.cy());
             delta.subbed(px, py);
 
-            float len = delta.normalize() - ((fromRad + to.radius()) * (equilibriumDist));
-            if (Math.abs(len) <= Spatialization.EPSILONf)
-                continue;
+            float scale = fromRad + to.radius();
+            float len = delta.normalize() - (scale * equilibriumDist);
+//            len = len * (1+Util.tanhFast(len - (scale)))/2;
+
 
             //attractSpeed/=neighbors;
 
@@ -159,25 +157,29 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 //        ar *= ar;
 //        br *= br;
 
-        float abr = (ar + br);
+        float scale = (ar + br);
 
-        float len = delta.normalize();
-        len -= (abr*equilibriumDist);
+        float len = delta.normalize() -  (scale*equilibriumDist);
         if (len < Spatialization.EPSILONf) {
             //coincident, apply random vector
-            delta.set((rng.nextFloat()-0.5f)*len,(rng.nextFloat()-0.5f)*len);
+            double theta = (float) (rng.nextFloat()*Math.PI*2);
+            float tx = (float) Math.cos(theta);
+            float ty = (float) Math.sin(theta);
+            delta.set(tx, ty);
             len = 0;
         } else if (len >= maxRepelDist)
             return;
 
-        float s = repelSpeed / (1 + (len * len));
+        float s = repelSpeed /
+                (1 + (len * len));
+                //Util.sqr(1 + len);
 
         delta.scaled(s);
 
-        double baRad = br / abr;
+        double baRad = br / scale;
         a.move(delta.x * baRad, delta.y * baRad);
-        double abRad = ar / abr;
-        b.move(delta.x * -abRad, delta.y * abRad);
+        double abRad = -ar / scale;
+        b.move(delta.x * abRad, delta.y * abRad);
 
     }
 

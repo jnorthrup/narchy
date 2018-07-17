@@ -70,6 +70,9 @@ public class MovingRectFloat2D {
             delta.scaled(speed);
             x = x0 + delta.x;
             y = y0 + delta.y;
+        } else {
+            x = Util.lerp(0.5f, x0, x);
+            y = Util.lerp(0.5f, y0, y);
         }
 
     }
