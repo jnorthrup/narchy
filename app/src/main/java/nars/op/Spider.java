@@ -209,7 +209,7 @@ public class Spider extends Causable {
                         nar.question(anon);
                     } else {
                         Term i = INH.the(ct, anon);
-                        if (Task.validTaskTerm(i))
+                        if (Task.taskConceptTerm(i))
                             nar.believe(i);
                     }
                 }

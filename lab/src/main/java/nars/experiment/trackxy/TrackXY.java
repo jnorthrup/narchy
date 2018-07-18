@@ -1,17 +1,15 @@
-package nars.experiment;
+package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatNormalized;
+import jcog.math.FloatRange;
+import jcog.math.MutableEnum;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Task;
+import nars.*;
 import nars.agent.NAgent;
-import nars.agent.util.Impiler;
 import nars.agent.util.RLBooster;
 import nars.concept.action.SwitchAction;
 import nars.control.DurService;
@@ -44,32 +42,55 @@ import static spacegraph.SpaceGraph.window;
 /* 1D and 2D grid tracking */
 public class TrackXY extends NAgent {
 
+    final Bitmap2DSensor cam;
     final ArrayBitmap2D view;
-    public Bitmap2DSensor cam;
+
+    final int W, H;
 
     float tx, ty;
 
     float sx, sy;
-    Consumer<TrackXY> updater = new CircleTarget();
-    private final float controlSpeed =
-            //0.5f;
-            1f;
 
-    private final float visionContrast = 0.9f;
+    public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
 
-    protected TrackXY(NAR nar, int x, int y) {
+    public final FloatRange targetSpeed = new FloatRange(0.1f, 0, 2f);
+
+    public final FloatRange visionContrast = new FloatRange(0.9f, 0, 1f);
+
+    public final MutableEnum<TrackXYMode> mode =
+            new MutableEnum<TrackXYMode>(TrackXYMode.class).set(TrackXYMode.CircleTarget);
+
+    static boolean targetNumerics = true, targetCam = true;
+
+    private transient float lastDistance = Float.POSITIVE_INFINITY;
+
+
+    protected TrackXY(NAR nar, int W, int H) {
         super("trackXY", nar);
-        this.view = new ArrayBitmap2D(x, y);
 
-        senseNumber($.inh("tx", id), new FloatNormalized(() -> sx));
-        senseNumber($.inh("ty", id), new FloatNormalized(() -> sy));
+        this.view = new ArrayBitmap2D(this.W = W, this.H = H);
 
+        senseNumber($.inh("sx", id), new FloatNormalized(() -> sx, 0, W));
+        if (H > 1)
+            senseNumber($.inh("sy", id), new FloatNormalized(() -> sy, 0, H));
+
+        actionPushButtonMutex();
         //actionSwitch();
-        actionPushButton();
+        //actionTriState();
 
-        this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
 
-        sensorCam.add(cam);
+        if (targetNumerics) {
+            senseNumber($.inh("tx", id), new FloatNormalized(() -> tx, 0, W));
+            if (H > 1)
+                senseNumber($.inh("ty", id), new FloatNormalized(() -> ty, 0, H));
+        }
+        if (targetCam) {
+            this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
+            sensorCam.add(cam);
+        } else {
+            this.cam = null;
+        }
+
 
         randomize();
     }
@@ -87,12 +108,13 @@ public class TrackXY extends NAgent {
                 .index(
 
                         //new CaffeineIndex(32 * 1024)
-                        new HijackConceptIndex(8 * 1024, 4)
+                        new HijackConceptIndex(4 * 1024, 4)
                 );
 
 
         NAR n = nb.get();
-        n.dtDither.set(dur/2);
+        n.dtDither.set(dur / 2);
+        n.timeFocus.set(4);
         n.freqResolution.set(0.02f);
         n.goalPriDefault.set(0.9f);
         n.beliefPriDefault.set(0.3f);
@@ -100,22 +122,18 @@ public class TrackXY extends NAgent {
         n.questPriDefault.set(0.1f);
 
 
-
         n.termVolumeMax.set(24);
 
-        //n.activateConceptRate.set(0.5f);
 
 
-        TrackXY t = new TrackXY(n, 5, 5);
-        n.synch();
+        TrackXY t = new TrackXY(n, 4, 4);
 
-
-        int experimentTime = 1000;
+        DurService.on(n, t);
+        n.on(t);
 
 
         if (rl) {
             new RLBooster(t,
-
 
                     HaiQae::new,
 
@@ -125,18 +143,19 @@ public class TrackXY extends NAgent {
         if (nars) {
 
 
-            Deriver d = new MatrixDeriver(Derivers.nal(
-
-                    n, 1,
-                    8,
-
-                    "motivation.nal"));
+            Deriver d = new MatrixDeriver(Derivers.nal(n,
+                    1,
+                    8
+            //,"curiosity.nal"
+                    ,"motivation.nal"
+            ));
 
             ((MatrixDeriver) d).conceptsPerIteration.set(8);
-            n.timeFocus.set(2);
+
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    Task::isInput,
+                    x -> true,
+                    //Task::isInput,
                     4, 16);
 
 
@@ -145,39 +164,37 @@ public class TrackXY extends NAgent {
                     new AutoSurface(cjB)
 
             ), 400, 300);
+
+            Param.DEBUG = true;
             n.onTask(tt -> {
                 if (tt instanceof DerivedTask && tt.isGoal()) {
                     System.out.println(tt.proof());
                 }
             });
+
         }
-
-
-        DurService.on(n, t);
-//        final double[] rewardSum = {0};
-//        n.onCycle(() -> {
-//            rewardSum[0] += t.reward;
-//        });
 
 
         n.runLater(() -> {
             window(NARui.top(n), 800, 250);
             NARui.agentWindow(t);
-            window(new CameraSensorView(t.cam, n) {
-                @Override
-                protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                    super.paint(gl, surfaceRender);
-                    RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
-                    gl.glColor4f(1, 0, 0, 0.9f);
-                    Draw.rect(gl, at.move(x(), y(), 0.01f));
-                }
-            }.withControls(), 800, 800);
+            if (t.cam!=null) {
+                window(new CameraSensorView(t.cam, n) {
+                    @Override
+                    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                        super.paint(gl, surfaceRender);
+                        RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
+                        gl.glColor4f(1, 0, 0, 0.9f);
+                        Draw.rect(gl, at.move(x(), y(), 0.01f));
+                    }
+                }.withControls(), 800, 800);
+            }
         });
 
 
-        n.on(t);
-        n.run(experimentTime);
 
+        int experimentTime = 35000;
+        n.run(experimentTime);
 
         printGoals(n);
         printImpls(n);
@@ -197,11 +214,12 @@ public class TrackXY extends NAgent {
         l.forEach(System.out::println);
         System.out.println();
     }
+
     public static void printImpls(NAR n) {
         int dur = n.dur();
         long now = n.time();
         List<Task> l = n.tasks(true, false, false, false)
-                .filter(x -> x.op()==IMPL)
+                .filter(x -> x.op() == IMPL)
                 .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
                 .collect(Collectors.toList());
         l.forEach(System.out::println);
@@ -211,6 +229,7 @@ public class TrackXY extends NAgent {
 
     private void actionSwitch() {
         SwitchAction s = new SwitchAction(nar, (a) -> {
+            float controlSpeed = this.controlSpeed.floatValue();
             switch (a) {
                 case 0: {
 
@@ -262,14 +281,14 @@ public class TrackXY extends NAgent {
         if (view.height() > 1) {
             actionTriState($.inh($.the("Y"), id), (dy) -> {
                 float py = sy;
-                sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
+                sy = Util.clamp(sy + this.controlSpeed.floatValue() * dy, 0, view.height() - 1);
                 return !Util.equals(py, sy, 0.01f);
             });
         }
 
         actionTriState($.inh($.the("X"), id), (dx) -> {
             float px = sx;
-            sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
+            sx = Util.clamp(sx + this.controlSpeed.floatValue() * dx, 0, view.width() - 1);
             return !Util.equals(px, sx, 0.01f);
         });
     }
@@ -277,137 +296,140 @@ public class TrackXY extends NAgent {
     private void actionPushButton() {
         if (view.height() > 1) {
             actionPushButton(INH.the($.the("up"), id), () -> {
-                sy = Util.clamp(sy + controlSpeed, 0, view.height() - 1);
+                sy = Util.clamp(sy + this.controlSpeed.floatValue(), 0, view.height() - 1);
 
             });
             actionPushButton(INH.the($.the("down"), id), () -> {
-                sy = Util.clamp(sy - controlSpeed, 0, view.height() - 1);
+                sy = Util.clamp(sy - this.controlSpeed.floatValue(), 0, view.height() - 1);
             });
         }
 
         actionPushButton(INH.the($.the("right"), id), () -> {
-            sx = Util.clamp(sx + controlSpeed, 0, view.width() - 1);
+            sx = Util.clamp(sx + this.controlSpeed.floatValue(), 0, view.width() - 1);
         });
         actionPushButton(INH.the($.the("left"), id), () -> {
-            sx = Util.clamp(sx - controlSpeed, 0, view.width() - 1);
+            sx = Util.clamp(sx - this.controlSpeed.floatValue(), 0, view.width() - 1);
         });
     }
 
+    private void actionPushButtonMutex() {
+        if (view.height() > 1) {
+            actionPushButtonMutex(INH.the($.the("up"), id), INH.the($.the("down"), id), (b) -> {
+                if (b)
+                    sy = Util.clamp(sy + this.controlSpeed.floatValue(), 0, view.height() - 1);
+            }, (b) -> {
+                if (b)
+                    sy = Util.clamp(sy - this.controlSpeed.floatValue(), 0, view.height() - 1);
+            });
+        }
+
+        actionPushButtonMutex(INH.the($.the("right"), id), INH.the($.the("left"), id), (b) -> {
+            if (b)
+                sx = Util.clamp(sx + this.controlSpeed.floatValue(), 0, view.width() - 1);
+        }, (b) -> {
+            if (b)
+                sx = Util.clamp(sx - this.controlSpeed.floatValue(), 0, view.width() - 1);
+        });
+    }
     protected void randomize() {
         this.tx = random().nextInt(view.width());
-        this.sx = random().nextInt(view.width());
+        //this.sx = random().nextInt(view.width());
         if (view.height() > 1) {
             this.ty = random().nextInt(view.height());
-            this.sy = random().nextInt(view.height());
+            //this.sy = random().nextInt(view.height());
         } else {
             this.ty = this.sy = 0;
         }
     }
 
-    public int width() {
-        return view.width();
-    }
-
-    public int height() {
-        return view.height();
-    }
-
     @Override
-    protected synchronized float act() {
-
-        synchronized (view) {
-            Consumer<TrackXY> u = updater;
-            if (u != null)
-                u.accept(this);
-
-            view.set((x, y) -> {
+    protected float act() {
 
 
-                float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
-                //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-                return unitize(1 - distOther * visionContrast);
+        mode.get().accept(this);
+
+        view.set((x, y) -> {
+
+
+            float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
+            //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
+            return unitize(1 - distOther * visionContrast.floatValue());
 //                return Util.unitize(
 //                        Math.max(1 - distOther * visionContrast,
 //                                1 - distSelf * visionContrast
 //                        ));
 
 
-            });
-        }
+        });
+
 
         if (cam != null) {
             cam.input();
         }
 
 
-        float maxDist = (float) Math.sqrt(width() * width() + height() * height());
-        float dist = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy))
-                / maxDist;
+        float maxDist = (float) Math.sqrt(W * W + H * H);
+        float distance = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy));
+
+        this.lastDistance = distance;
+
+        float distRatio = distance / maxDist;
 
 
-        return -dist;
+        return -distRatio;
 
     }
 
-    public static class RandomTarget implements Consumer<TrackXY> {
-        private final float targetSpeed = 0.5f;
 
-        public void accept(TrackXY t) {
+    public enum TrackXYMode implements Consumer<TrackXY> {
 
-            float tx, ty;
-            tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.width() - 1);
-            if (t.height() > 1) {
-                ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.height() - 1);
-            } else {
-                ty = 0;
+        FixedCenter {
+            float x;
+
+            @Override
+            public void accept(TrackXY t) {
+                x += t.targetSpeed.floatValue();
+                t.tx = t.W/2;
+                t.ty = t.H/2;
             }
+        },
 
-            t.tx = tx;
-            t.ty = ty;
-        }
-    }
+        RandomTarget {
+            @Override
+            public void accept(TrackXY t) {
+                float targetSpeed = t.targetSpeed.floatValue();
+                float tx, ty;
+                tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.W - 1);
+                if (t.H > 1) {
+                    ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.H - 1);
+                } else {
+                    ty = 0;
+                }
 
-    public static class CyclicTarget implements Consumer<TrackXY> {
+                t.tx = tx;
+                t.ty = ty;
+            }
+        },
 
+        CircleTarget {
+            float theta;
 
-        float speed = 0.02f;
-        float x = 0;
+            @Override
+            public void accept(TrackXY t) {
+                theta += t.targetSpeed.floatValue();
 
-        @Override
-        public void accept(TrackXY t) {
-            x += speed;
-            t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
+                t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.W - 1);
 
+                if (t.H > 1)
+                    t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.H - 1);
+                else
+                    t.ty = 0;
 
-            t.ty = 0;
-        }
-    }
-
-    /**
-     * ellipse, technically
-     */
-    public static class CircleTarget implements Consumer<TrackXY> {
-
-
-        float speed =
-                0.2f;
-        float theta = 0;
-
-
-        @Override
-        public void accept(TrackXY t) {
-            theta += speed;
-
-            t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.width() - 1);
-
-            if (t.height() > 1)
-                t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.height() - 1);
-            else
-                t.ty = 0;
-
-
+            }
         }
 
     }
+
+
 }
 

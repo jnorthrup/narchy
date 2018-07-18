@@ -14,8 +14,8 @@ class ImpilerTest {
         n.input("(--a ==> c). %0.9;0.5%");
         n.input("((c&&d) ==> e). %1.0;0.9%");
 
-        Impiler.Impiled i = Impiler.of(true, n.concepts, n);
-        i.print();
+//        Impiler.Impiled i = Impiler.of(true, n.concepts, n);
+//        i.print();
     }
 
 }

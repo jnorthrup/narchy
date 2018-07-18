@@ -83,7 +83,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     }
 
 
-    public static final Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
+    public static final Predicate<Term> validDynamicSubterm = x -> Task.taskConceptTerm(x.unneg());
 
 
     public static boolean validDynamicSubterms(Subterms subterms) {
@@ -241,13 +241,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return apply(x);
     }
 
-    public final Termed apply(Term x) {
+    public final Termed apply(Term _x) {
 
-        x = x.the();
+        Term x = _x.the();
         if (x == null)
-            throw new TODO(x + " is not a The");
+            throw new TODO(_x + " seems non-immutable");
 
-        Concept c = Task.validTaskTerm(x) ? taskConcept(x) : nodeConcept(x);
+        Concept c = Task.taskConceptTerm(x) ? taskConcept(x) : nodeConcept(x);
         if (c == null)
             throw new NullPointerException("null Concept for term: " + x);
 

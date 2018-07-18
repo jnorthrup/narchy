@@ -23,7 +23,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         super(null, Needle, nar, states);
         this.decider =
                 //new DecideEpsilonGreedy(0.05f, nar.random());
-                new DecideSoftmax(0.5f, nar.random());
+                new DecideSoftmax(0.1f, nar.random());
         this.action = action;
         exp = new float[states.length];
         

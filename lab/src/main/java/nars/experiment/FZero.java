@@ -272,7 +272,7 @@ public class FZero extends NAgentX {
 
             return dHeading;
         };
-        actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, false, d);
+        actionBipolarFrequencyDifferential($.p(/*id, */$.the("ang")), fair, false, d);
         //actionUnipolar($.the("heading"), d);
     }
 

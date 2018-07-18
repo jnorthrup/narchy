@@ -69,8 +69,14 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             factor *= Util.lerp(evidenceImportance.floatValue(), 1, relGrowthCost);
         }
 
-        return Math.max(ScalarValue.EPSILON, Math.min(1f, factor) * d.pri);
+        float p = Math.max(ScalarValue.EPSILON, Math.min(1f, factor) * d.pri);
 
+//        if (d.concPunc == GOAL) {
+//            //goal boost
+//            p = Util.or(p, d.nar.priDefault(GOAL));
+//        }
+
+        return p;
 
     }
 }

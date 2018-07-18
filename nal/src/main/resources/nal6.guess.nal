@@ -10,7 +10,8 @@
 
     (C ==> X), X, task("?"), is(C,"&&")   |- (dropAnyEvent(C) ==> X), (Punctuation:Question)
     (X ==> C), X, task("?"), is(C,"&&")   |- (X ==> dropAnyEvent(C)), (Punctuation:Question)
-    (--C ==> X), X, task("?"), is(C,"&&") |- (--dropAnyEvent(C) ==> X), (Punctuation:Question)
+    (--C ==> X), X, task("?"), is(C,"&&") |- (dropAnyEvent(--C) ==> X), (Punctuation:Question)
+
 
 //question/quest propagation
     Z, (X==>Y), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)

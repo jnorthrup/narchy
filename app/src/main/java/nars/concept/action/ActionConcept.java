@@ -1,8 +1,10 @@
 package nars.concept.action;
 
+import jcog.Util;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.agent.NAgent;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
@@ -16,6 +18,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 
 public abstract class ActionConcept extends Sensor {
@@ -25,7 +28,7 @@ public abstract class ActionConcept extends Sensor {
                 new SignalBeliefTable(term, true, n.conceptBuilder),
                 n.conceptBuilder.newTable(term, false),
                 n.conceptBuilder);
-        ((SignalBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
+        ((SignalBeliefTable)beliefs()).pri(() -> Util.or(n.priDefault(BELIEF), n.priDefault(GOAL)));
         ((SignalBeliefTable)beliefs()).res(resolution);
     }
 
@@ -44,7 +47,7 @@ public abstract class ActionConcept extends Sensor {
         }
     }
 
-    abstract public Stream<ITask> update(long start, long end, int dur, NAR nar);
+    abstract public Stream<ITask> update(long start, long end, int dur, NAgent nar);
 
     @Override
     public void value(Task t, float activation, NAR n) {

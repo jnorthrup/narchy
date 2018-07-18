@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.Sets;
 import jcog.data.list.FasterList;
 import jcog.event.Ons;
-import jcog.math.EnumParam;
+import jcog.math.MutableEnum;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.service.Service;
@@ -80,7 +80,7 @@ public class AutoSurface<X> extends Gridding {
             return;
         }
 
-        if (x instanceof Services) { 
+        if (x instanceof Services) {
             target.add(new AutoServices((Services) x));
             return;
         }
@@ -103,8 +103,8 @@ public class AutoSurface<X> extends Gridding {
 
         } else if (x instanceof Runnable) {
             target.add(new PushButton(yLabel, (Runnable) x));
-        } else if (x instanceof EnumParam) {
-            target.add(newSwitch((EnumParam) x));
+        } else if (x instanceof MutableEnum) {
+            target.add(newSwitch((MutableEnum) x));
         }
 
         if (depth < MAX_DEPTH) {
@@ -112,21 +112,25 @@ public class AutoSurface<X> extends Gridding {
         }
     }
 
-    private <C extends Enum<C>> ButtonSet newSwitch(EnumParam x) {
+    private <C extends Enum<C>> ButtonSet newSwitch(MutableEnum x) {
         EnumSet<C> s = EnumSet.allOf(x.klass);
-        //System.out.println(x + " " + x.value + " " + x.klass + " " + s);
 
+        Enum initialValue = x.get();
+        int initialButton = -1;
 
         ToggleButton[] b = new ToggleButton[s.size()];
         int i = 0;
         for (C xx : s) {
-            CheckBox tb = new CheckBox(((Enum)xx).name());
+            CheckBox tb = new CheckBox(xx.name());
             tb.on((c, enabled) -> {
                 if (enabled)
                     x.set(xx);
             });
+            if (xx == initialValue)
+                initialButton = i;
             b[i++] = tb;
         }
+
 
 //JDK12 compiler error has trouble with this:
 //        ToggleButton[] b = ((EnumSet) EnumSet.allOf(x.klass)).stream().map(e -> {
@@ -138,7 +142,13 @@ public class AutoSurface<X> extends Gridding {
 //            return tb;
 //        }).toArray(ToggleButton[]::new);
 //
-        return new ButtonSet(ButtonSet.Mode.One, b);
+        ButtonSet bs = new ButtonSet(ButtonSet.Mode.One, b);
+
+        if (initialButton != -1) {
+            b[initialButton].set(true);
+        }
+
+        return bs;
     }
 
     private Surface collectElements(Iterable<?> x, int depth) {
@@ -163,7 +173,7 @@ public class AutoSurface<X> extends Gridding {
 
     private void collectFields(Object x, List<Surface> target, int depth) {
         Class cc = x.getClass();
-        Reflect.on(cc).fields(true,false,false).forEach((s,ff)->{
+        Reflect.on(cc).fields(true, false, false).forEach((s, ff) -> {
             Field f = ff.get();
             try {
                 Object y = f.get(x);
@@ -239,48 +249,17 @@ public class AutoSurface<X> extends Gridding {
                 Service<?> s = ks.getValue();
 
                 if (addService(s)) {
-                    String label = s.toString(); 
-
-
-
-
-
-
-
-
+                    String label = s.toString();
 
 
                     l.add(
-                            new PushButton(IconBuilder.simpleBuilder.apply(s)).click(()-> SpaceGraph.window(
+                            new PushButton(IconBuilder.simpleBuilder.apply(s)).click(() -> SpaceGraph.window(
                                     new LabeledPane(label, new AutoSurface(s)),
                                     500, 500))
-                            
-
-
-
-                                            
-
-
-
-
-
-
-
-
-
-
 
 
                     );
                 }
-
-
-
-
-
-
-
-
 
 
             });

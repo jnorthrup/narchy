@@ -295,8 +295,8 @@
     S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositivePositivePositive)
     S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativePositivePositive)
     //DISJ
-    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative, Goal:DecomposeNegativeNegativeNegative)
-    S, D, eventOf(D,S) |- conjWithout(D,S), (Belief:DecomposePositiveNegativeNegative, Goal:DecomposePositiveNegativeNegative)
+    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative, Goal:DecomposeNegativeNegativeNegative, Time:TaskImmediate)
+    S, D, eventOf(D,S) |- conjWithout(D,S), (Belief:DecomposePositiveNegativeNegative, Goal:DecomposePositiveNegativeNegative, Time:TaskImmediate)
 
 
 
@@ -348,10 +348,10 @@
 //// conjunction decompose AND dependent variable elimination - decomposition with elimination of a variable
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:TaskImmediate)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
-    D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+    D, X, eventOfNeg(D,X) |- (--,conjWithout(D,--X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN, Time:TaskImmediate)
 
         //, Goal:StructuralStrong
            //maybe subOf?
@@ -365,8 +365,8 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire)
-    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire, Time:TaskImmediate)
+    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN, Time:TaskImmediate)
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
 

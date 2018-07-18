@@ -253,7 +253,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             
 
-            if (Task.validTaskTerm(term)) {
+            if (Task.taskConceptTerm(term)) {
                 this.term = term;
                 return differenceFactor;
             } else {

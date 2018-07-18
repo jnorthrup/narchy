@@ -149,7 +149,7 @@ public class NARui {
 
     public static void agentWindow(NAgent a) {
         NAR nar = a.nar();
-        nar.runLater(() -> {
+        //nar.runLater(() -> {
             SpaceGraph.window(
                     grid(
                             new AutoSurface(a),
@@ -308,7 +308,7 @@ public class NARui {
 
 
                     900, 600);
-        });
+        //});
     }
 
 

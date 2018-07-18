@@ -52,7 +52,7 @@ public class NALTask extends UnitPri implements Task {
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
 
         if (Param.DEBUG_EXTRA)
-            Task.validTaskTerm(term, punc, false);
+            Task.taskConceptTerm(term, punc, false);
 
         this.hash = Task.hash(
                 this.term = term,

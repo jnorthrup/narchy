@@ -453,6 +453,11 @@ public class Builtin {
         /** drops a random contained event, whether at first layer or below */
         nar.on(Functor.f1((Atom) $.the("dropAnyEvent"), (Term t) -> {
             Op oo = t.op();
+            boolean negated = (oo == NEG);
+            if (negated) {
+                t = t.unneg();
+                oo = t.op();
+            }
             if (oo != CONJ)
                 return Null;
 
@@ -462,7 +467,7 @@ public class Builtin {
             if (x.equals(t))
                 return Null;
             assert(x != null);
-            return x;
+            return x.negIf(negated);
         }));
 
 

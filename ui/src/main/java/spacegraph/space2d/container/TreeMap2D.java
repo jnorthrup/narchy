@@ -11,9 +11,9 @@ import spacegraph.util.MovingRectFloat2D;
  * <p>
  * Squarified Treemaps
  * https://www.win.tue.nl/~vanwijk/stm.pdf
- * https://github.com/peterdmv/treemap/
+ *
+ * adapted from:https://github.com/peterdmv/treemap/
  */
-
 public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     @Override
@@ -23,29 +23,18 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     @Override
     protected void layout(Graph2D<X> g) {
+        RectFloat2D b = g.bounds;
         nodes.sortThisByFloat((a)-> {
             //a.w = a.h = 1;
-            a.w = g.bounds.w;
-            a.h = g.bounds.h;
+            a.w = b.w;
+            a.h = b.h;
             return a.node.pri;
         });
         int end = nodes.size() - 1;
         total = areaSum(0, end);
-        layout(0, end, g.bounds);
+        layout(0, end, b);
     }
 
-//    public MovingRectFloat2D[] sortDescending(MovingRectFloat2D[] items) {
-//        if (items == null || items.length == 0) {
-//            return null;
-//        }
-//        MovingRectFloat2D[] inputArr = new MovingRectFloat2D[items.length];
-//        System.arraycopy(items, 0, inputArr, 0, items.length);
-//        int length = inputArr.length;
-//
-//        quickSortDesc(inputArr, 0, length - 1);
-//
-//        return inputArr;
-//    }
 
     int mid;
     float total;

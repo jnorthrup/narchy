@@ -8,7 +8,6 @@ import nars.agent.NAgent;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
-import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.NARui;
@@ -165,6 +164,8 @@ abstract public class NAgentX extends NAgent {
             NAgent a = init.apply(n);
             //a.durs(2f); //nyquist?
 
+            a.curiosity.set(0.25f);
+
             n.on(a);
 
             n.runLater(() -> {
@@ -172,49 +173,49 @@ abstract public class NAgentX extends NAgent {
                         Derivers.nal(n, 1, 6, "motivation.nal"));
 
 
-                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(),
-                        Derivers.nal(n, 0, 0, "curiosity.nal"),
-                        SimpleDeriver.GlobalTermLinker) {
-
-                    @Override
-                    public boolean singleton() {
-                        return true;
-                    }
-
-
-                    long last;
-
-                    @Override
-                    protected void starting(NAR nar) {
-                        last = nar.time();
-                        super.starting(nar);
-                    }
-
-                    @Override
-                    protected int next(NAR n, int iterations) {
-                        long now = n.time();
-                        if (last + a.dur() > now)
-                            return 0; //already called for this duration
-                        last = now;
-
-                        int numActions = a.actions.size();
-
-                        //iterations = numActions; //override
-//                        if (iterations == 1) {
-//                            if (n.random().nextFloat() >= a.curiosity.floatValue())
-//                                return 0;
+//                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(),
+//                        Derivers.nal(n, 0, 0, "curiosity.nal"),
+//                        SimpleDeriver.GlobalTermLinker) {
 //
-//                        } else {
-                            //iterations = (int) Math.ceil(a.curiosity.floatValue() * iterations);
-                            //iterations = Math.min(iterations, numActions);
-//                            if (iterations < 1)
-//                                return 0;
-//                        }
-                        iterations = (int) Math.ceil(a.curiosity.floatValue() * numActions);
-
-                        return super.next(n, iterations);
-                    }
-                };
+//                    @Override
+//                    public boolean singleton() {
+//                        return true;
+//                    }
+//
+//
+//                    long last;
+//
+//                    @Override
+//                    protected void starting(NAR nar) {
+//                        last = nar.time();
+//                        super.starting(nar);
+//                    }
+//
+//                    @Override
+//                    protected int next(NAR n, int iterations) {
+//                        long now = n.time();
+//                        if (last + a.dur() > now)
+//                            return 0; //already called for this duration
+//                        last = now;
+//
+//                        int numActions = a.actions.size();
+//
+//                        //iterations = numActions; //override
+////                        if (iterations == 1) {
+////                            if (n.random().nextFloat() >= a.curiosity.floatValue())
+////                                return 0;
+////
+////                        } else {
+//                            //iterations = (int) Math.ceil(a.curiosity.floatValue() * iterations);
+//                            //iterations = Math.min(iterations, numActions);
+////                            if (iterations < 1)
+////                                return 0;
+////                        }
+//                        iterations = (int) Math.ceil(a.curiosity.floatValue() * numActions);
+//
+//                        return super.next(n, iterations);
+//                    }
+//                };
 
                 a.curiosity.set(0.5f);
 

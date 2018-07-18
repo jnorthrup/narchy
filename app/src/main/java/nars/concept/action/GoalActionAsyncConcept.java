@@ -2,6 +2,7 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
+import nars.agent.NAgent;
 import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
@@ -35,18 +36,20 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long pPrev, long pNow, int dur, NAR nar) {
+    public Stream<ITask> update(long pPrev, long pNow, int dur, NAgent a) {
 
 
 
 
 
+        NAR nar = a.nar();
 
 
 
-
-        long gStart = pNow - dur/2;
-        long gEnd = pNow + dur/2;
+        long gStart, gEnd;
+        //gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
+        gStart = pNow; gEnd = pNow + dur;
+        
         Truth goal = this.goals().truth(gStart, gEnd, nar);
 
 

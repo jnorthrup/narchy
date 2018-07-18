@@ -381,6 +381,14 @@ public class Occurrify extends TimeGraph {
         }
     };
 
+    private static final PREDICATE<Derivation> intersectFilterIfBelief = new AbstractPred<>(Atomic.the("TimeIntersects")) {
+        @Override
+        public boolean test(Derivation d) {
+            return (d.concSingle||d.concPunc!=BELIEF) || d.taskBeliefTimeIntersects;
+        }
+    };
+
+
     public enum TaskTimeMerge {
 
 
@@ -417,6 +425,32 @@ public class Occurrify extends TimeGraph {
 
         },
 
+        TaskImmediate() {
+            @Override
+            public Pair<Term, long[]> solve(Derivation d, Term x) {
+
+                if (d.concPunc == GOAL || d.concPunc == QUEST) {
+                    Pair<Term, long[]> p = solveDT(d, x, d.occ(x));
+                    if (p != null) {
+                        if (!immediateIfPast(d, p.getTwo()))
+                            return null;
+                    }
+                    return p;
+                } else {
+                    return solveOccDT(d, x, d.occ(x));
+                }
+            }
+
+            @Override
+            public @Nullable PREDICATE<Derivation> filter() {
+                return intersectFilterIfBelief;
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return new long[]{d.task.start(), d.task.end()};
+            }
+        },
 
         /**
          * happens in current present focus. no projection
@@ -451,7 +485,6 @@ public class Occurrify extends TimeGraph {
             public Pair<Term, long[]> solve(Derivation d, Term x) {
                 return solveShiftBeliefDT(d, solveDT(d, x, d.occ(x)), +1);
             }
-
 
 
             @Override
@@ -627,7 +660,7 @@ public class Occurrify extends TimeGraph {
                     o[0] += bdt;
                     o[1] += bdt;
 
-                    if (d.concPunc == GOAL)
+                    if (d.concPunc == GOAL || d.concPunc == QUEST)
                         if (!immediateIfPast(d, o))
                             return null;
                 }
@@ -638,36 +671,46 @@ public class Occurrify extends TimeGraph {
         private static boolean immediateIfPast(Derivation d, long[] o) {
 
             if (o[0] == ETERNAL) {
-                //convert eternal to present
-                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
-            } else {
-                long NOW = d.time;
-                if (o[0] < NOW) {
-                    if (NOW <= o[1]) {
-                        //NOW is contained in the interval
-                    } else {
-                        //entirely within the past:
-                        // shift and project to present, "as-if" past-perfect/subjunctive tense
-                        long deltaToStart = Math.abs(NOW - o[0]);
-                        long deltaToEnd = Math.abs(NOW - o[1]);
-                        long delta = Math.min(deltaToStart, deltaToEnd);
-                        if (delta > 0) {
-                            //discount for projection
-                            float e = (float) Param.evi(d.concTruth.evi(), delta, d.dur);
-                            if (!d.concTruthEvi(e)) {
-                                return false;
-                            }
+                if (d.belief != null && d.belief.isEternal())
+                    return true; //both task and belief are eternal; keep eternal
+
+                //pretend in present
+                System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
+            }
+
+            long NOW = d.time;
+            if (o[0] < NOW) {
+//                if (NOW <= o[1]) {
+//                    //NOW is contained in the interval - goal is ongoing
+//                } else {
+
+                long range = o[1] - o[0];
+
+                if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+                    //starts and ends before now; entirely past
+                    // shift and project to present, "as-if" past-perfect/subjunctive tense
+                    //long mid = (o[0] + o[1])/2L;
+                    //long deltaToStart = Math.abs(NOW - o[0]);
+                    //long deltaToEnd = Math.abs(NOW - o[1]);
+                    //long delta = Math.min(deltaToStart, deltaToEnd);
+                    long delta = Math.abs(NOW - o[0]);
+                    if (delta > 0) {
+                        //discount for projection
+                        float eFactor = (float) Param.evi(1, delta, d.dur);
+                        if (!d.concTruthEviMul(eFactor)) {
+                            return false;
                         }
-
-                        System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
-
-//                        long range = o[1] - o[0];
-//                        o[0] = NOW;
-//                        o[1] = NOW + range;
-
                     }
                 }
+
+                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
+
+                o[0] = NOW;
+                o[1] = NOW + range;
+
+//                }
             }
+
             return true;
         }
 

@@ -150,8 +150,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now(),
                 ETERNAL, ETERNAL,
-                //nar.evidence()
-                Stamp.UNSTAMPED
+                nar.evidence()
+                //Stamp.UNSTAMPED
                 
         );
 
@@ -386,7 +386,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
         ArrayUtils.shuffle(aa, random());
         for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
-            Stream<ITask> s = ac.getKey().update(last, now, sensorDur, NAgent.this.nar);
+            Stream<ITask> s = ac.getKey().update(last, now, sensorDur, NAgent.this);
             if (s != null)
                 ac.getValue().input(s);
         }

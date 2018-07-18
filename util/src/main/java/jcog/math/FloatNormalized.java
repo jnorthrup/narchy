@@ -17,12 +17,12 @@ public class FloatNormalized implements FloatSupplier {
         this(in, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY);
     }
 
-    public FloatNormalized(FloatSupplier in, float minStart, float maxStart) {
-        this(in, minStart, maxStart, false);
-    }
-
     public FloatNormalized(FloatSupplier in, float polarRadius) {
         this(in, polarRadius, Float.NaN /* ignored */, true);
+    }
+
+    public FloatNormalized(FloatSupplier in, float minStart, float maxStart) {
+        this(in, minStart, maxStart, false);
     }
 
     private FloatNormalized(FloatSupplier in, float minStart, float maxStart, boolean polar) {

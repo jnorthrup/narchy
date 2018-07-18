@@ -117,7 +117,7 @@ public class UniExec extends AbstractExec {
                     });
 
                     double valRange = valMax[0] - valMin[0];
-                    float UPDATE_RATE = 0.25f;
+                    float UPDATE_RATE = 0.5f;
                     if (Math.abs(valRange) > Double.MIN_NORMAL) {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY};

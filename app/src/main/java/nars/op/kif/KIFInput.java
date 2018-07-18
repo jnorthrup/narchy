@@ -195,7 +195,7 @@ public class KIFInput {
                 return true;
             }
             Term bb = b.unneg().normalize();
-            if (!Task.validTaskTerm(bb, BELIEF, true)) {
+            if (!Task.taskConceptTerm(bb, BELIEF, true)) {
                 logger.error("invalid task term: {}\n\t{}", b, bb);
                 return true;
             }

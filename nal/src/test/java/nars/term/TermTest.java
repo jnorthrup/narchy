@@ -404,7 +404,7 @@ public class TermTest {
 
     @Test
     void testValidIndep() {
-        assertTrue(Task.validTaskTerm(
+        assertTrue(Task.taskConceptTerm(
                 $$("(($1 &&+4 $1) ==>-2 ((--,angX) &&+8 $1))")));
     }
 

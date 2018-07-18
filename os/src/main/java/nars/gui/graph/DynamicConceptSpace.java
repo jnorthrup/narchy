@@ -3,7 +3,7 @@ package nars.gui.graph;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Ons;
-import jcog.math.EnumParam;
+import jcog.math.MutableEnum;
 import jcog.math.FloatRange;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
@@ -239,7 +239,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public final FloatRange separation = new FloatRange(1f, 0f, 6f);
         public final FloatRange lineAlphaMin = new FloatRange(0.1f, 0f, 1f);
         public final FloatRange lineAlphaMax = new FloatRange(0.8f, 0f, 1f);
-        public final EnumParam<ColorNode> colorNode = new EnumParam(Hash, ColorNode.class);
+        public final MutableEnum<ColorNode> colorNode = new MutableEnum(ColorNode.class, Hash);
         public final FloatRange edgeBrightness = new FloatRange(1 / 16f, 0f, 2f);
 
         public ConceptVis2(int maxEdges) {
