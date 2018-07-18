@@ -28,7 +28,6 @@ import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.TimeAware;
 import org.apache.commons.lang3.ArrayUtils;
@@ -183,25 +182,32 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
 
-        Supplier<Task> t = () -> {
+//        always.add(() -> {
+//
+//            long now = Tense.dither(this.now(), nar);
+//            long next = Tense.dither(this.now() + nar.dur(), nar);
+//
+//            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
+//
+//            return new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
+//                    now, next,
+//                    stamp
+//            )/* {
+//                @Override
+//                public boolean isInput() {
+//                    return false;
+//                }
+//            }*/;
+//        });
 
-            long now = Tense.dither(this.now(), nar);
-            long next = Tense.dither(this.now() + nar.dur(), nar);
+        NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
+                ETERNAL, ETERNAL,
+                //evidenceShared
+                nar.evidence()
+                //Stamp.UNSTAMPED
 
-            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
-
-            return new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
-                    now, next,
-                    stamp
-            )/* {
-                @Override
-                public boolean isInput() {
-                    return false;
-                }
-            }*/;
-        };
-
-        always.add(t);
+        );
+        always.add(()-> etq);
     }
 
 

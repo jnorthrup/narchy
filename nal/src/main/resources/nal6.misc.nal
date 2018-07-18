@@ -8,10 +8,10 @@
         C, X, eventOfNeg(C,X) |- X, (Goal:DesireWeakNN)
 
         //desire what co-occurs with satisfied goal
-        X, C, eventOf(C,X)    |- C, (Goal:DesireWeak)
-        X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak)
-        X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
-        X, C, eventOfNeg(C,X) |- C, (Goal:DesireWeakN)
+        //X, C, eventOf(C,X)    |- C, (Goal:DesireWeak)
+        //X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak)
+        //X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
+        //X, C, eventOfNeg(C,X) |- C, (Goal:DesireWeakN)
             //X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:DesireWeak)
             //X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:DesireWeakN)
 

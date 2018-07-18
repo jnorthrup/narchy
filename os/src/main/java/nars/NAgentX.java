@@ -217,7 +217,6 @@ abstract public class NAgentX extends NAgent {
 //                    }
 //                };
 
-                a.curiosity.set(0.5f);
 
 
                 //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);

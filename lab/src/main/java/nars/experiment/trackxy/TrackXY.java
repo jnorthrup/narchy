@@ -18,7 +18,7 @@ import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.UniExec;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
@@ -107,19 +107,19 @@ public class TrackXY extends NAgent {
                 .time(new CycleTime().dur(dur))
                 .index(
 
-                        //new CaffeineIndex(32 * 1024)
-                        new HijackConceptIndex(4 * 1024, 4)
+                        new CaffeineIndex(8 * 1024)
+                        //new HijackConceptIndex(4 * 1024, 4)
                 );
 
 
         NAR n = nb.get();
         n.dtDither.set(dur / 2);
-        n.timeFocus.set(4);
+        n.timeFocus.set(8);
         n.freqResolution.set(0.02f);
-        n.goalPriDefault.set(0.9f);
-        n.beliefPriDefault.set(0.3f);
-        n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.1f);
+//        n.goalPriDefault.set(0.9f);
+//        n.beliefPriDefault.set(0.3f);
+//        n.questionPriDefault.set(0.1f);
+//        n.questPriDefault.set(0.1f);
 
 
         n.termVolumeMax.set(24);
