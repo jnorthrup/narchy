@@ -201,12 +201,10 @@ public class NAL1Test extends NALTest {
 
     @Test
     void analogy() {
-
-        TestNAR tester = test;
-        tester.believe("<swan --> swimmer>");
-        tester.believe("<gull <-> swan>");
-        tester.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.81f);
-
+        test
+            .believe("<swan --> swimmer>")
+            .believe("<gull <-> swan>")
+            .mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.81f);
     }
 
     @Test

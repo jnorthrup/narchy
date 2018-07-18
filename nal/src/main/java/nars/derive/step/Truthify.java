@@ -180,7 +180,7 @@ public class Truthify extends AbstractPred<Derivation> {
 
         switch (beliefProjection) {
             case Raw:
-                return d.beliefTruth;
+                return d.beliefTruthRaw;
 
             case Task:
                 return d.beliefTruthDuringTask;

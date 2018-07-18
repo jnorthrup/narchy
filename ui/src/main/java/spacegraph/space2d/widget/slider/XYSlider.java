@@ -103,11 +103,8 @@ public class XYSlider extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        gl.glColor4f(0f, 0f, 0f, 0.8f); 
-        Draw.rect(gl, bounds);
 
-        
-        
+        Draw.rectRGBA(bounds, 0f, 0f, 0f, 0.8f, gl);
 
         float px = knob.x;
         float py = knob.y;

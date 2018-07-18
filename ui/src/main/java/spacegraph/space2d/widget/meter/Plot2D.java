@@ -180,7 +180,7 @@ public class Plot2D extends Widget {
 
     @Override
     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-        Draw.bounds(gl, bounds, this::paintUnit);
+        Draw.bounds(bounds, gl, this::paintUnit);
     }
 
     private void paintUnit(GL2 gl) {

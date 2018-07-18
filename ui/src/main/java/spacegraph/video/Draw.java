@@ -1021,10 +1021,10 @@ public enum Draw {
     }
 
     public static void bounds(GL2 gl, Surface s, Consumer<GL2> c) {
-        bounds(gl, s.bounds, c);
+        bounds(s.bounds, gl, c);
     }
 
-    public static void bounds(GL2 gl, RectFloat2D s, Consumer<GL2> c) {
+    public static void bounds(RectFloat2D s, GL2 gl, Consumer<GL2> c) {
         bounds(gl, s.x, s.y, s.w, s.h, c);
     }
 
@@ -1036,7 +1036,7 @@ public enum Draw {
         gl.glPopMatrix();
     }
 
-    public static void rect(GL2 gl, RectFloat2D bounds) {
+    public static void rect(RectFloat2D bounds, GL2 gl) {
         Draw.rect(gl, bounds.x, bounds.y, bounds.w, bounds.h);
     }
 
@@ -1390,6 +1390,11 @@ public enum Draw {
         for (HGlyph x : fontMono) {
             x.init(gl);
         }
+    }
+
+    public static void rectRGBA(RectFloat2D bounds, float r, float g, float b, float a, GL2 gl) {
+        gl.glColor4f(r, g, b, a);
+        Draw.rect(bounds, gl);
     }
 
     public enum TextAlignment {

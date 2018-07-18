@@ -281,7 +281,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         
         
 
-        Draw.bounds(ggl, bounds, (gl) -> {
+        Draw.bounds(bounds, ggl, (gl) -> {
 
 
             long minT, maxT;

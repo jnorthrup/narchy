@@ -182,7 +182,7 @@ public class Recog2D extends NAgentX {
 
                         float m = 0.5f * conf;
 
-                        Draw.rect(gl, bounds);
+                        Draw.rect(bounds, gl);
 
                         if (tv.verify) {
                             float error = nn.error;

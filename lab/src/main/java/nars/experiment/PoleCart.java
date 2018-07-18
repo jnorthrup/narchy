@@ -47,15 +47,6 @@ public class PoleCart extends NAgentX {
 
                 new Impiler.ImpilerTracker(96, 32, n);
                 new Impiler.ImpilerSolver(64, 16, n);
-
-
-
-
-
-
-
-
-                
                 
                 return a;
             } catch (Exception e) {

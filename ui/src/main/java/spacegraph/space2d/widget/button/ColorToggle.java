@@ -15,7 +15,7 @@ public class ColorToggle extends ToggleButton {
     @Override
     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
         gl.glColor4f(r, g, b, 0.95f);
-        Draw.rect(gl, bounds);
+        Draw.rect(bounds, gl);
 
     }
 

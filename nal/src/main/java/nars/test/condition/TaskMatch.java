@@ -8,6 +8,7 @@ import nars.task.Tasked;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Consumer;
-import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.NEG;
@@ -28,13 +28,12 @@ public class TaskMatch implements NARCondition, Predicate<Task>, Consumer<Tasked
 
 
     private final Term term;
-    private final LongPredicate start;
-    private final LongPredicate end;
 
     /**
      * whether to apply meta-feedback to drive the reasoner toward success conditions
      */
     public static final boolean feedback = false;
+    private final LongLongPredicate time;
 
     boolean succeeded;
 
@@ -59,7 +58,7 @@ public class TaskMatch implements NARCondition, Predicate<Task>, Consumer<Tasked
     protected final TreeMap<Float, Task> similar = new TreeMap();
 
 
-    public TaskMatch(@NotNull NAR n, long creationStart, long creationEnd, @NotNull String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) throws RuntimeException, nars.Narsese.NarseseException {
+    public TaskMatch(@NotNull NAR n, long creationStart, long creationEnd, @NotNull String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException, nars.Narsese.NarseseException {
 
 
         if (freqMax < freqMin) throw new RuntimeException("freqMax < freqMin");
@@ -69,8 +68,7 @@ public class TaskMatch implements NARCondition, Predicate<Task>, Consumer<Tasked
             throw new RuntimeException("cycleEnd must be after cycleStart by at least 1 cycle");
 
         this.nar = n;
-        this.start = start;
-        this.end = end;
+        this.time = time;
 
         this.creationStart = creationStart;
         this.creationEnd = creationEnd;
@@ -194,7 +192,7 @@ public class TaskMatch implements NARCondition, Predicate<Task>, Consumer<Tasked
     }
 
     protected boolean occurrenceTimeMatches(Task t) {
-        return start.test(t.start()) && end.test(t.end());
+        return time.accept(t.start(), t.end());
     }
 
     @Override

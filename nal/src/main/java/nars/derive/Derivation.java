@@ -79,7 +79,7 @@ public class Derivation extends PreDerivation {
                 compared = taskTruth;
             } else {
                 //assert(whichTask.equals(Belief))
-                compared = beliefTruth;
+                compared = beliefTruthRaw;
             }
             if (compared == null)
                 return Null;
@@ -276,7 +276,9 @@ public class Derivation extends PreDerivation {
                     nar.concept("conjWithoutAll"),
                     nar.concept("conjWithoutPosOrNeg"),
                     nar.concept("conjDropIfEarliest"),
+                    nar.concept("conjDropIfEarliestFiltered"),
                     nar.concept("conjDropIfLatest"),
+                    nar.concept("conjDropIfLatestFiltered"),
                     nar.concept("dropAnySet"),
                     nar.concept("dropAnyEvent"),
                     nar.concept("without"),
@@ -348,11 +350,11 @@ public class Derivation extends PreDerivation {
 
         }
 
-        long tAt = _task.start();
+        long taskStart = _task.start();
 
-        assert (tAt != TIMELESS);
+        assert (taskStart != TIMELESS);
 
-        this.taskStart = tAt;
+        this.taskStart = taskStart;
         this.taskPunc = _task.punc();
 
         if ((taskPunc == BELIEF || taskPunc == GOAL)) {
@@ -363,11 +365,12 @@ public class Derivation extends PreDerivation {
         }
 
 
+        long taskEnd = _task.end();
         if (_belief != null) {
-            this.beliefTruthDuringTask = _belief.truth(_task.start(), _task.end(), dur);
-            this.beliefTruth = _belief.truth();
+            this.beliefTruthDuringTask = _belief.truth(taskStart, taskEnd, dur);
+            this.beliefTruthRaw = _belief.truth();
 
-            if (beliefTruth != null || beliefTruthDuringTask != null) {
+            if (beliefTruthRaw != null || beliefTruthDuringTask != null) {
                 this._belief = _belief;
             } else {
                 this._belief = null;
@@ -388,13 +391,19 @@ public class Derivation extends PreDerivation {
 
             this.beliefStart = TIMELESS;
             this.belief = null;
-            this.beliefTruth = this.beliefTruthDuringTask = null;
+            this.beliefTruthRaw = this.beliefTruthDuringTask = null;
         }
 
         assert (beliefTerm != null) : (_beliefTerm + " could not be anonymized");
 
 
-        this.taskBeliefTimeIntersects = this._belief == null || this._task.intersectsTime(this._belief);
+        this.taskBeliefTimeIntersects =
+                this._belief == null
+                ||
+                this._belief.intersects(taskStart, taskEnd)
+                ||
+                this.taskTerm.op()==CONJ &&
+                      _belief.intersects(taskStart, taskStart + taskTerm.dtRange()); //to be safe
 
         this.forEachMatch = null;
         this.concTruth = null;
@@ -453,9 +462,9 @@ public class Derivation extends PreDerivation {
 
 
         this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : Float.NaN;
-        this.premiseEviDouble = beliefTruth != null ?
+        this.premiseEviDouble = beliefTruthRaw != null ?
 
-                premiseEviSingle + beliefTruth.evi() :
+                premiseEviSingle + beliefTruthRaw.evi() :
                 premiseEviSingle;
 
 
@@ -545,7 +554,7 @@ public class Derivation extends PreDerivation {
             if (task.isBeliefOrGoal()) {
 
                 te = taskTruth.evi();
-                be = beliefTruth != null ? beliefTruth.evi() : 0;
+                be = beliefTruthRaw != null ? beliefTruthRaw.evi() : 0;
                 tb = te / (te + be);
             } else {
 
@@ -594,14 +603,12 @@ public class Derivation extends PreDerivation {
         return revertLive(before);
     }
 
-    public Occurrify occ(Term pattern) {
-        occ.reset(pattern);
-        return occ;
-    }
 
-
-    public boolean concTruthEviMul(float ratio) {
-        return concTruthEvi(c2wSafe(concTruth.conf()) * ratio);
+    public boolean concTruthEviMul(float ratio, boolean eternalize) {
+        float e = c2wSafe(concTruth.conf()) * ratio;
+        if (eternalize)
+            e = Math.max(concTruth.eviEternalized(), e);
+        return concTruthEvi(e);
     }
 
     public boolean concTruthEvi(float e) {

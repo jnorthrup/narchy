@@ -100,6 +100,9 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
             @Override
             public Term reconstruct(Term superterm, List<TaskRegion> components) {
+                if (!superterm.hasAny(Op.Temporal))
+                    return superterm; //shortcut
+
                 return stmtReconstruct(superterm, components, subjOrPred, union);
             }
 
@@ -353,10 +356,14 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     @Nullable
     static Term stmtReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred, boolean union) {
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
+        Op op = superterm.op();
         if (union) {
             if (superSect.op()==NEG) {
-                if (superterm.op()==IMPL)
-                    superSect = superSect.neg();
+                if (op==CONJ || op==IMPL /* will be subj only, pred is auto unnegated */)
+                    superSect = superSect.unneg();
+                else {
+                    throw new WTF("maybe ok");
+                }
 
             }
         }
@@ -427,10 +434,11 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         Term common = superterm.sub(subjOrPred ? 1 : 0);
 
-        if (union)
-            sect = sect.neg();
+        if (union) {
+            if (op==CONJ || op==IMPL /* but not Sect's */)
+                sect = sect.neg();
+        }
 
-        Op op = superterm.op();
         return subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
     }
 

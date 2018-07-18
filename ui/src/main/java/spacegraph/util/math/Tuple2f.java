@@ -784,6 +784,6 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
     }
 
     public void ensureFinite() {
-        Util.finite(x); Util.finite(y);
+        Util.assertFinite(x); Util.assertFinite(y);
     }
 }

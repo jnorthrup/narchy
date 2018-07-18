@@ -70,10 +70,8 @@ public class CompactArrayMap<K, V>  {
             return e;
 
         V v = mappingFunction.apply(key);
-        synchronized (this) {
-            put(key, v);
-            return v;
-        }
+        put(key, v);
+        return v;
     }
 
 

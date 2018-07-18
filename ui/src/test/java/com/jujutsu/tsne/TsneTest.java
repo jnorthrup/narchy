@@ -56,7 +56,7 @@ public class TsneTest {
 
                 @Override
                 protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                    Draw.bounds(gl, bounds, this::paint);
+                    Draw.bounds(bounds, gl, this::paint);
                 }
 
                 protected void paint(GL2 gl) {

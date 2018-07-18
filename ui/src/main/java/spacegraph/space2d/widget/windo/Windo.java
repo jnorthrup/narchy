@@ -320,7 +320,7 @@ public class Windo extends Stacking {
     private void paintBack(GL2 gl) {
         if (opaque()) {
             gl.glColor4f(0.5f,0.5f,0.5f, 0.5f);
-            Draw.rect(gl, bounds);
+            Draw.rect(bounds, gl);
         }
     }
 

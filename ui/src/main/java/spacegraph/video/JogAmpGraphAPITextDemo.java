@@ -180,7 +180,7 @@ public class JogAmpGraphAPITextDemo {
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
             gl.glColor3f(0.25f, 0.25f, 0.25f); 
-            Draw.rect(gl, bounds);
+            Draw.rect(bounds, gl);
 
             if (this.gl == null) {
                 this.gl = gl;

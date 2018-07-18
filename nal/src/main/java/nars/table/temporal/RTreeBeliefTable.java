@@ -1,7 +1,6 @@
 package nars.table.temporal;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
 import jcog.pri.Deleteable;
@@ -36,6 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static jcog.WTF.WTF;
 import static nars.table.temporal.TemporalBeliefTable.value;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -535,7 +535,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     r.forget(W);
                     return true;
                 }
-                throw new WTF();
+                throw WTF();
             }
 
             case RejectInput: {
@@ -543,7 +543,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     r.forget(I);
                     return false;
                 }
-                throw new WTF();
+                throw WTF();
             }
 
             case MergeInputClosest: {
@@ -554,7 +554,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     } //else: already contained the merger
                     return true;
                 }
-                throw new WTF();
+                throw WTF();
             }
 
             case MergeLeaf: {
@@ -576,7 +576,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     }
                     return true;
                 }
-                throw new WTF();
+                throw WTF();
             }
 
             default:
@@ -802,7 +802,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             long boundsStart = bounds.start();
             long boundsEnd = bounds.end();
             if (boundsEnd == XTERNAL || boundsEnd < boundsStart) {
-                throw new WTF();
+                throw WTF();
             }
 
             int ss = s / COMPLETE_SCAN_SIZE_THRESHOLD;

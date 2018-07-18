@@ -5,6 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;
+import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
@@ -227,7 +228,9 @@ public class MatrixDeriver extends Deriver {
         }
 
 
-        concept.linker().link(concept, conceptActivation.pri(), tasklinksFired, linkActivations, rng, nar);
+        concept.linker().link(concept,
+                Math.max(ScalarValue.EPSILON, conceptActivation.priElseZero()),
+                tasklinksFired, linkActivations, rng, nar);
     }
 
 

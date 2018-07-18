@@ -79,13 +79,13 @@ public class FloatSlider extends Widget {
         return this;
     }
 
-    float lastValue = Float.NaN;
+    @Deprecated volatile float lastValue = Float.NaN;
 
     @Override
     public boolean prePaint(SurfaceRender r) {
 
         slider.update();
-        float nextValue = value();
+        float nextValue = get();
         if (lastValue != nextValue) {
             updateText();
         }
@@ -94,12 +94,12 @@ public class FloatSlider extends Widget {
         return super.prePaint(r);
     }
 
-    public float value() {
+    public float get() {
         return slider.value();
     }
 
-    public void value(float v) {
-        slider.value(v);
+    public void set(float value) {
+        slider.setValue(value);
     }
 
     public FloatSlider on(ObjectFloatProcedure<SliderModel> c) {
@@ -111,12 +111,6 @@ public class FloatSlider extends Widget {
     }
 
     abstract public static class FloatSliderModel extends SliderModel {
-
-
-        public FloatSliderModel(float v) {
-            super(0);
-            p(v);
-        }
 
         @Override
         public boolean start(SurfaceBase parent) {
@@ -133,7 +127,7 @@ public class FloatSlider extends Widget {
             if (p!=null) {
                 FloatSupplier input = p.input; 
                 if (input != null)
-                    value(input.asFloat());
+                    setValue(input.asFloat());
             }
         }
 
@@ -141,21 +135,19 @@ public class FloatSlider extends Widget {
         public abstract float max();
 
 
-
         @Override
-        protected void set(float p) {
-            super.set(p);
-
+        protected void onChanged() {
+            super.onChanged();
             FloatSlider parent = parent(FloatSlider.class);
             if (parent!=null) {
-                
-                FloatSupplier input = parent.input; 
-                if (input instanceof Number) {
-                    ((NumberX) input).set(v(p));
+
+                FloatSupplier input = parent.input;
+                if (input instanceof NumberX) {
+                    ((NumberX) input).set(value());
                 }
             }
-
         }
+
 
         @Override
         protected float p(float v) {
@@ -168,21 +160,22 @@ public class FloatSlider extends Widget {
         protected float v(float p) {
             float min = min();
             float max = max();
-            return Util.clamp(p, 0, 1f) * (max - min) + min;
+            return Util.unitize(p) * (max - min) + min;
         }
 
     }
 
     /** with constant min/max limits */
-    public static class DefaultFloatSlider extends FloatSliderModel {
+    public static final class DefaultFloatSlider extends FloatSliderModel {
 
         private final float min;
         private final float max;
 
         DefaultFloatSlider(float v, float min, float max) {
-            super(v);
+            super();
             this.min = min;
             this.max = max;
+            setValue(v);
         }
 
         @Override

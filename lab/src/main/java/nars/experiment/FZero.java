@@ -1,5 +1,6 @@
 package nars.experiment;
 
+import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
@@ -107,18 +108,18 @@ public class FZero extends NAgentX {
 
             //eyelid
             actionUnipolar($.func("aware", id, cam), (a) -> {
-                c.pixelPri.set(lerp(a, 0, 0.3f));
+                c.pixelPri.set(lerp(a, 0, 0.25f));
                 //c.resolution(lerp(camAware, 0.1f, 0.02f));
             }).resolution(0.05f);
 
             float angPri[] = {0};
             actionUnipolar($.func("aware", id, ang.id), (a) -> {
-                angPri[0] = lerp(a, 0, 0.5f);
+                angPri[0] = lerp(a, 0, 1f);
             }).resolution(0.5f);
             ang.pri(() -> angPri[0]);
 
             actionUnipolar($.func("curious", id), (cur) -> {
-                curiosity.set(lerp(cur, 0.1f, 0.5f));
+                curiosity.set(lerp(cur, 0.01f, 0.5f));
             }).resolution(0.05f);
 
             actionUnipolar($.func("timeFocus", id), (f) -> {
@@ -331,12 +332,12 @@ public class FZero extends NAgentX {
         lastDistance = distance;
 
 
-//        float r = Util.clamp(
-//                ((float)
-//                        //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-//                        deltaDistance / (fps*2)), -1f, +1f) - 0.5f;
+        float r = Util.clamp(
+                ((float)
+                        //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
+                        deltaDistance / (fps*0.2f)), -1f, +1f) - 0.5f;
 
-        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
+//        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 

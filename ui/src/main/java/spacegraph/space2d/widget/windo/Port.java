@@ -159,11 +159,11 @@ public class Port extends Widget implements Wiring.Wireable {
 
         if (beingWiredOut !=null) {
             gl.glColor4f(0.5f, 1, 0, 0.35f);
-            Draw.rect(gl, bounds);
+            Draw.rect(bounds, gl);
         }
         if (beingWiredIn !=null) {
             gl.glColor4f(0, 0.5f, 1, 0.35f);
-            Draw.rect(gl, bounds);
+            Draw.rect(bounds, gl);
         }
 
 

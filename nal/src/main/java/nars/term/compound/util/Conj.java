@@ -87,9 +87,10 @@ public class Conj extends ByteAnonMap {
 
     /**
      * returns null if wasnt contained, Null if nothing remains after removal
+     *
      */
     @Nullable
-    public static Term conjDrop(Term conj, Term event, boolean earlyOrLate) {
+    public static Term conjDrop(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return Null;
 
@@ -106,44 +107,49 @@ public class Conj extends ByteAnonMap {
         } else {
 
             Conj c = Conj.from(conj);
+
+            /* check that event.neg doesnt occurr in the result.
+                for use when deriving goals.
+                 since it would be absurd to goal the opposite just to reach the desired later
+                 */
+            byte id = c.get(event);
+            if (id == Byte.MIN_VALUE)
+                return conj; //not found
+
+
             long targetTime;
             if (c.event.size() == 1) {
 
                 targetTime = c.event.keysView().longIterator().next();
             } else if (earlyOrLate) {
-                Object eternalTemporarilyRemoved = c.event.remove(ETERNAL);
+                Object eternalTemporarilyRemoved = c.event.remove(ETERNAL); //HACK
                 targetTime = c.event.keysView().min();
-                if (eternalTemporarilyRemoved != null)
-                    c.event.put(ETERNAL, eternalTemporarilyRemoved);
+                if (eternalTemporarilyRemoved != null)  c.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
             } else {
-                //check that event.neg doesnt occurr sooner. it would be absurd to goal the opposite just to reach the desired later
-                byte id = c.get(event);
-                if (id == Byte.MIN_VALUE)
-                    return conj; //not found
+                targetTime = c.event.keysView().max();
+            }
+            assert (targetTime != XTERNAL);
+
+            if (filterContradiction) {
+
 
                 byte idNeg = (byte) -id;
 
-                targetTime = c.event.keysView().max();
-
-                final boolean[] foundEarlierOpposite = {false};
+                final boolean[] contradiction = {false};
                 c.event.forEachKeyValue((w, wh) -> {
-                    if (w == targetTime || foundEarlierOpposite[0])
-                        return;
-                    if (wh instanceof byte[]) {
-                        byte[] b = (byte[]) wh;
-                        if (ArrayUtils.indexOf(b, idNeg) == -1)
-                            return;
-                    } else {
-                        RoaringBitmap r = (RoaringBitmap) wh;
-                        if (!r.contains(idNeg))
-                            return;
-                    }
-                    foundEarlierOpposite[0] = true;
+                    if (w == targetTime || contradiction[0])
+                        return; //HACK should return early via predicate method
+
+                    if ((wh instanceof byte[] && ArrayUtils.indexOf((byte[]) wh, idNeg) != -1)
+                         ||
+                       (wh instanceof RoaringBitmap && ((RoaringBitmap) wh).contains(idNeg)))
+                            contradiction[0] = true;
                 });
-                if (foundEarlierOpposite[0])
+                if (contradiction[0])
                     return Null;
             }
-            assert (targetTime != XTERNAL);
+
+
             boolean removed = c.remove(event, targetTime);
             if (!removed) {
                 return Null;

@@ -594,13 +594,13 @@ public enum Util {
     }
 
     @Contract("_ -> param1")
-    public static float finite(float x) throws NumberException {
+    public static float assertFinite(float x) throws NumberException {
         if (!Float.isFinite(x))
             throw new NumberException("non-finite: " + x);
         return x;
     }
 
-    public static double finite(double x) throws NumberException {
+    public static double assertFinite(double x) throws NumberException {
         if (!Double.isFinite(x))
             throw new NumberException("non-finite: " + x);
         return x;
@@ -633,8 +633,8 @@ public enum Util {
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
      */
     public static float round(float value, float epsilon) {
-        finite(epsilon);
-        finite(value);
+        assertFinite(epsilon);
+        assertFinite(value);
         if (epsilon == 0) return value;
         else return Math.round(value / epsilon) * epsilon;
     }
@@ -675,28 +675,24 @@ public enum Util {
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(float a, float b, float epsilon) {
-        notNaN(a);
-        notNaN(b);
         if (a == b)
             return true;
         if (Float.isFinite(a) && Float.isFinite(b))
             return Math.abs(a - b) < epsilon;
         else
-            return false;
+            return (a!=a) && (b!=b); //both NaN
     }
 
     /**
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(double a, double b, double epsilon) {
-        notNaN(a);
-        notNaN(b);
         if (a == b)
             return true;
         if (Double.isFinite(a) && Double.isFinite(b))
             return Math.abs(a - b) < epsilon;
         else
-            return false;
+            return (a!=a) && (b!=b); //both NaN
     }
 
 
@@ -1373,14 +1369,14 @@ public enum Util {
     }
 
     public static float clamp(float f, float min, float max) {
-        finite(f); //assertFinite(min); assertFinite(max);
+        assertFinite(f); //assertFinite(min); assertFinite(max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;
     }
 
     public static double clamp(double f, double min, double max) {
-        finite(f); //assertFinite(min); assertFinite(max);
+        assertFinite(f); //assertFinite(min); assertFinite(max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;

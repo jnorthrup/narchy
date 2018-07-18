@@ -432,7 +432,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public NAR believe(String termString, float freq, float conf) throws NarseseException {
-        believe($(termString), freq, conf);
+        return believe(termString, freq, conf,ETERNAL,ETERNAL);
+    }
+    public NAR believe(String termString, float freq, float conf, long start, long end) throws NarseseException {
+        believe($(termString), start, end, freq, conf);
         return this;
     }
 
@@ -486,12 +489,24 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public NAR believe(Term term, long occurrenceTime) throws InvalidTaskException {
-        input(priDefault(BELIEF), term, BELIEF, occurrenceTime, 1f, confDefault(BELIEF));
+        return believe(term, occurrenceTime, occurrenceTime);
+    }
+
+    public NAR believe(Term term, long start, long end) throws InvalidTaskException {
+        input(priDefault(BELIEF), term, BELIEF, start, end, 1f, confDefault(BELIEF));
         return this;
     }
 
+    public Task believe(Term term, long start, long end, float freq, float conf) throws InvalidTaskException {
+        return believe(priDefault(BELIEF), term, start, end, freq, conf);
+    }
+
     public Task believe(float pri, Term term, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
-        return input(pri, term, BELIEF, occurrenceTime, freq, conf);
+        return believe(pri, term, occurrenceTime, occurrenceTime, freq, conf);
+    }
+
+    public Task believe(float pri, Term term, long start, long end, float freq, float conf) throws InvalidTaskException {
+        return input(pri, term, BELIEF, start, end, freq, conf);
     }
 
     public Task want(float pri, Term goal, long when, float freq, float conf) throws InvalidTaskException {

@@ -74,8 +74,8 @@ public class TrackXY extends NAgent {
         if (H > 1)
             senseNumber($.inh("sy", id), new FloatNormalized(() -> sy, 0, H));
 
-        actionPushButtonMutex();
-        //actionSwitch();
+        //actionPushButtonMutex();
+        actionSwitch();
         //actionTriState();
 
 
@@ -122,7 +122,7 @@ public class TrackXY extends NAgent {
 //        n.questPriDefault.set(0.1f);
 
 
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(22);
 
 
 
@@ -185,7 +185,7 @@ public class TrackXY extends NAgent {
                         super.paint(gl, surfaceRender);
                         RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
                         gl.glColor4f(1, 0, 0, 0.9f);
-                        Draw.rect(gl, at.move(x(), y(), 0.01f));
+                        Draw.rect(at.move(x(), y(), 0.01f), gl);
                     }
                 }.withControls(), 800, 800);
             }
@@ -199,9 +199,6 @@ public class TrackXY extends NAgent {
         printGoals(n);
         printImpls(n);
 
-//        //Iterables.concat(t.actions.keySet(), t.sensors.keySet())
-//        Impiler.Impiled ii = Impiler.of(true, ()->n.concepts().filter(x->x.op()==IMPL).limit(20).map(x->(Termed)x.term()).iterator(), n);
-//        ii.print();
 
     }
 

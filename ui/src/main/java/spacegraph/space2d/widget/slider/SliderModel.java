@@ -19,7 +19,6 @@ public class SliderModel extends Surface {
 
     /** dead-zone at the edges to latch min/max values */
     static private final float margin =
-            
             0.0001f;
 
     
@@ -29,9 +28,10 @@ public class SliderModel extends Surface {
 
     private volatile float p;
 
-    public SliderModel(float p) {
-
-        set(p);
+    public SliderModel() {
+    }
+    public SliderModel(float v) {
+        setValue(v);
     }
 
 
@@ -42,7 +42,7 @@ public class SliderModel extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        Draw.bounds(gl, bounds, (GL2 g)-> ui.draw(this.p, g));
+        Draw.bounds(bounds, gl, g-> ui.draw(this.p, g));
     }
 
     private SliderUI ui = SolidLeft;
@@ -72,7 +72,7 @@ public class SliderModel extends Surface {
             if (finger.tryFingering(new FingerDragging(0) {
                 @Override protected boolean drag(Finger f) {
                     v2 hitPoint = finger.relativePos(SliderModel.this);
-                    set(ui.p(hitPoint));
+                    setPoint(ui.p(hitPoint));
                     return true;
                 }
             }))
@@ -82,23 +82,36 @@ public class SliderModel extends Surface {
     }
 
 
+    private void setPoint(float pNext) {
+        Util.assertFinite(pNext);
 
-    void set(float p) {
-        if (this.p == this.p && Util.equals(this.p, p, Float.MIN_NORMAL))
+        float pPrev = this.p;
+        if (Util.equals(pPrev, pNext, Float.MIN_NORMAL))
             return;
 
-        this.p = p;
+        this.p = pNext;
 
-        if (change!=null)
+        onChanged();
+    }
+
+    protected void onChanged() {
+        if (change!=null) {
             change.value(this, value());
+        }
+    }
+
+
+    protected final void setValue(float v) {
+        if (v == v) {
+            setPoint(p(v));
+        } else {
+            //? NaN to disable?
+        }
+
     }
 
     public float value() {
         return v(p);
-    }
-
-    public final void value(float v) {
-        this.p = p(v);
     }
 
     /** normalize: gets the output value given the proportion (0..1.0) */

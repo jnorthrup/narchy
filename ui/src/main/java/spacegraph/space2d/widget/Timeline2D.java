@@ -3,7 +3,6 @@ package spacegraph.space2d.widget;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
-import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 import spacegraph.space2d.Surface;
@@ -22,73 +21,22 @@ import java.util.stream.Collectors;
 
 public class Timeline2D<E> extends Graph2D<E> {
 
-    /** viewable range */
+    /**
+     * viewable range
+     */
     protected double tStart = 0;
     protected double tEnd = 1;
 
     private final TimelineModel<E> model;
+
+    /** minimum displayed temporal width, for tasks less than this duration */
+    private float timeVisibleEpsilon = 0.5f;
 
 
     public Timeline2D(TimelineModel<E> model, Consumer<NodeVis<E>> view) {
         super();
         this.model = model;
         nodeBuilder(view);
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         layout(new DefaultTimelineLayout());
     }
@@ -101,13 +49,18 @@ public class Timeline2D<E> extends Graph2D<E> {
         Bordering b = new Bordering();
 
         FloatSlider whenSlider = new FloatSlider(0.5f, 0, 1) {
-            @Override public boolean prePaint(SurfaceRender r) {
-                float v = ((float) this.value() - 0.5f) * 2;
-                if (Math.abs(v) > 0.05f)
-                    viewShift(v * (tEnd - tStart) * 0.1f);
-                slider.value(Util.lerp(0.75f, slider.value(), 0.5f));
+            @Override
+            public boolean prePaint(SurfaceRender r) {
+                float v = this.get();
+                float d = (v - 0.5f) * 2;
+                if (Math.abs(d) > 0.05f)
+                    viewShift(d * (tEnd - tStart) * 0.1f);
+
+                set(Util.lerp(0.6f, v, 0.5f));
+
                 return super.prePaint(r);
             }
+
             @Override
             public String text() {
                 return "";
@@ -117,10 +70,11 @@ public class Timeline2D<E> extends Graph2D<E> {
         b.center(whenSlider);
 
         FloatSlider zoomSlider = new FloatSlider(0.5f, 0.48f, 0.52f) {
-            @Override public boolean prePaint(SurfaceRender r) {
-                float v = (float) this.value();
-                viewScale((v+0.5f));
-                slider.value(Util.lerp(0.75f, v, 0.5f));
+            @Override
+            public boolean prePaint(SurfaceRender r) {
+                float v = this.get();
+                viewScale((v + 0.5f));
+                set(Util.lerp(0.75f, v, 0.5f));
                 return super.prePaint(r);
             }
 
@@ -135,23 +89,26 @@ public class Timeline2D<E> extends Graph2D<E> {
     }
 
     private Timeline2D<E> viewShift(double dt) {
-        return view(tStart+dt, tEnd+dt);
-    }
-    private Timeline2D<E> viewScale(double dPct) {
-        double range = (tEnd - tStart) * dPct;
-        double tCenter = (tEnd + tStart)/2;
-        return view(tCenter - range/2, tCenter + range/2);
+        return view(tStart + dt, tEnd + dt);
     }
 
-    /** keeps current range */
+    private Timeline2D<E> viewScale(double dPct) {
+        double range = (tEnd - tStart) * dPct;
+        double tCenter = (tEnd + tStart) / 2;
+        return view(tCenter - range / 2, tCenter + range / 2);
+    }
+
+    /**
+     * keeps current range
+     */
     public Timeline2D<E> view(double when) {
         double range = tEnd - tStart;
-        assert(range>0);
-        return view(when-range/2, when+range/2);
+        assert (range > 0);
+        return view(when - range / 2, when + range / 2);
     }
 
     public Timeline2D<E> view(double start, double end) {
-        assert(start < end);
+        assert (start < end);
         tStart = start;
         tEnd = end;
         return update();
@@ -162,57 +119,34 @@ public class Timeline2D<E> extends Graph2D<E> {
         double e = tEnd;
         float X = x();
         float W = w();
-        return (float)((t - s) / (e - s) * W + X);
+        return (float) ((t - s) / (e - s) * W + X);
     }
 
     private Timeline2D<E> update() {
-        set(model.events((long)Math.floor(tStart), (long)Math.ceil(tEnd-1)));
+        set(model.events((long) Math.floor(tStart), (long) Math.ceil(tEnd - 1)));
         return this;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    interface TimelineModel<X> {
-        /** any events intersecting with the provided range */
+    public interface TimelineModel<X> {
+        /**
+         * any events intersecting with the provided range
+         */
         Iterable<X> events(long start, long end);
+
         long[] range(X event);
-        @Nullable X first();
-        @Nullable X last();
+//        @Nullable X first();
+//        @Nullable X last();
 
         default boolean intersects(X x, long start, long end) {
             long[] r = range(x);
-            return Longerval.intersectLength(r[0], r[1], start, end)>=0;
+            return Longerval.intersectLength(r[0], r[1], start, end) >= 0;
         }
 
         default int compareStart(X x, X y) {
             long rx = range(x)[0];
             long ry = range(y)[0];
-            return Long.compare(rx,ry);
+            return Long.compare(rx, ry);
         }
 
         default int compareDur(X x, X y) {
@@ -222,7 +156,7 @@ public class Timeline2D<E> extends Graph2D<E> {
         }
 
         static int compareDur(long[] rx, long[] ry) {
-            return Long.compare(rx[1]-rx[0],ry[1]-ry[0]);
+            return Long.compare(rx[1] - rx[0], ry[1] - ry[0]);
         }
 
         default long intersectLength(X x, X y) {
@@ -232,16 +166,18 @@ public class Timeline2D<E> extends Graph2D<E> {
         }
 
         default int compareDurThenStart(X x, X y) {
-            if (x == y) return 0;
+            if (x.equals(y)) return 0;
+
             long[] rx = range(x);
             long[] ry = range(y);
             int wc = -compareDur(rx, ry);
-            if (wc!=0)
+            if (wc != 0)
                 return wc;
             int xc = Long.compare(rx[0], ry[0]);
-            if (xc!=0)
+            if (xc != 0)
                 return xc;
-            return ((Comparable)x).compareTo(y); 
+
+            return x instanceof Comparable ? ((Comparable) x).compareTo(y) : Integer.compare(System.identityHashCode(x), System.identityHashCode(y));
         }
 
     }
@@ -259,23 +195,23 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public String toString() {
-            return name + "[" + start + ((start!=end) ? (end + "]") : "]");
+            return name + "[" + start + ((start != end) ? (end + "]") : "]");
         }
 
         @Override
         public int compareTo(Timeline2D.SimpleEvent x) {
             if (this == x) return 0;
             int s = Long.compare(start, x.start);
-            if (s!=0)
+            if (s != 0)
                 return s;
             int e = Long.compare(end, x.end);
-            if (e!=0)
+            if (e != 0)
                 return e;
             return Integer.compare(System.identityHashCode(this), System.identityHashCode(x));
         }
 
         public double range() {
-            return end-start;
+            return end - start;
         }
     }
 
@@ -283,7 +219,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
-            
+
             return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
         }
 
@@ -294,7 +230,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public long[] range(SimpleEvent event) {
-            return new long[] { event.start, event.end };
+            return new long[]{event.start, event.end};
         }
     }
 
@@ -319,7 +255,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
-            
+
             return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
         }
 
@@ -330,7 +266,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public long[] range(SimpleEvent event) {
-            return new long[] { event.start, event.end };
+            return new long[]{event.start, event.end};
         }
     }
 
@@ -338,37 +274,37 @@ public class Timeline2D<E> extends Graph2D<E> {
     private class DefaultTimelineLayout implements Graph2DLayout<E> {
 
 
+        FasterList<NodeVis<E>> next = new FasterList<>();
 
         @Override
         public void layout(Graph2D<E> g, int dtMS) {
-            FasterList<NodeVis<E>> next = new FasterList<>();
+            next.clear();
 
             g.forEachValue(next::add);
-            next.sortThis((x,y)->model.compareDurThenStart(x.id, y.id));
+            next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
             if (next.isEmpty())
                 return;
 
 
-
-
             List<RoaringBitmap> lanes = new FasterList();
             RoaringBitmap l0 = new RoaringBitmap();
-            l0.add(0); 
+            l0.add(0);
             lanes.add(l0);
 
             for (int i = 1, byDurationSize = next.size(); i < byDurationSize; i++) {
                 NodeVis<E> in = next.get(i);
-                
+
                 int lane = -1;
-                nextLane: for (int l = 0, lanesSize = lanes.size(); l < lanesSize; l++) {
+                nextLane:
+                for (int l = 0, lanesSize = lanes.size(); l < lanesSize; l++) {
                     RoaringBitmap r = lanes.get(l);
                     PeekableIntIterator rr = r.getIntIterator();
                     boolean collision = false;
                     while (rr.hasNext()) {
                         int j = rr.next();
-                        if (model.intersectLength(next.get(j).id,in.id)>0) {
+                        if (model.intersectLength(next.get(j).id, in.id) > 0) {
                             collision = true;
-                            break ; 
+                            break;
                         }
                     }
                     if (!collision) {
@@ -385,16 +321,23 @@ public class Timeline2D<E> extends Graph2D<E> {
             }
 
             int nlanes = lanes.size();
-            float laneHeight = g.h()/nlanes;
+            float laneHeight = g.h() / nlanes;
             float Y = g.y();
             for (int i = 0; i < nlanes; i++) {
                 RoaringBitmap ri = lanes.get(i);
                 PeekableIntIterator ii = ri.getIntIterator();
                 while (ii.hasNext()) {
-                    int j =  ii.next();
+                    int j = ii.next();
                     NodeVis<E> jj = next.get(j);
                     long[] w = model.range(jj.id);
-                    jj.pos(x(w[0]), Y+laneHeight*i, x(w[1]), Y+laneHeight*(i+1));
+                    float left = (w[0]), right = (w[1]);
+                    if (right-left < timeVisibleEpsilon) {
+                        float mid = (left + right)/2f;
+                        left = mid - timeVisibleEpsilon /2;
+                        right = mid + timeVisibleEpsilon /2;
+                    }
+
+                    jj.pos(x(left), Y + laneHeight * i, x(right), Y + laneHeight * (i + 1));
                 }
             }
         }

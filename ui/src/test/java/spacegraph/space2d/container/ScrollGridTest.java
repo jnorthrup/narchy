@@ -47,7 +47,7 @@ class ScrollGridTest {
                                 @Override
                                 protected void paintWidget(GL2 gl, RectFloat2D bounds) {
                                     Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
-                                    Draw.rect(gl, bounds);
+                                    Draw.rect(bounds, gl);
                                 }
                             };
                             return new Widget(p);

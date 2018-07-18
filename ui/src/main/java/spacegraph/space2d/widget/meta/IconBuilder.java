@@ -22,7 +22,7 @@ abstract public class IconBuilder<X> implements Function<X,Surface> {
                 protected void paintBelow(GL2 gl) {
                     super.paintBelow(gl);
                     Draw.colorHash(gl, classHash);
-                    Draw.rect(gl, bounds);
+                    Draw.rect(bounds, gl);
                 }
             };
         }

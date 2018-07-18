@@ -318,7 +318,7 @@ class NarseseExtendedTest extends NarseseTest {
         assertEquals("(x &&+2 (&|,(a),(b),(c)))", term("(x &&+2 (&|,(a), (b), (c)))").toString());
     }
     
-    @Test
+    @Disabled @Test
     void testIntRanges() throws Narsese.NarseseException {
         assertEquals(Int.range(0,2), term("0..2"));
     }

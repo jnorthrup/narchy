@@ -12,4 +12,8 @@ public class WTF extends RuntimeException {
     public WTF(Throwable wrap) {
         super(wrap);
     }
+
+
+    public static WTF WTF() { throw new WTF(); }
+    public static WTF WTF(String message) { throw new WTF(message); }
 }

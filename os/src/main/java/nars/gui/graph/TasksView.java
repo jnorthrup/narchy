@@ -1,187 +1,61 @@
 package nars.gui.graph;
 
-import jcog.TODO;
-import jcog.Util;
-import jcog.data.graph.MapNodeGraph;
-import jcog.data.graph.NodeGraph;
-import nars.Task;
-import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
+import com.jogamp.opengl.GL2;
+import nars.*;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.MutableContainer;
+import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.widget.Graph2D;
+import spacegraph.space2d.widget.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.util.math.v2;
+import spacegraph.video.Draw;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.function.Consumer;
 
 import static nars.Op.*;
 
-public class TasksView extends MutableContainer {
+public class TasksView implements Timeline2D.TimelineModel<Task> {
 
-    public static void main(String[] args) throws IOException {
+    private static final Consumer<Graph2D.NodeVis<Task>> TaskRenderer = (n) -> {
+        n.set(new Scale(new TaskIcon(n.id), 0.9f));
+    };
 
-        TasksView t = new TasksView();
-        t.loadTasks(new File("/tmp/NALTest/" +
-                
-                
-                "NAL7Test.induction_on_events_composition3.nal"
-        ));
+    private final Iterable<Task> tasks;
 
-        t.layoutTimeline();
-
-        SpaceGraph.window(t, 800, 800);
+    public TasksView(Iterable<Task> tasks) {
+        this.tasks = tasks;
     }
 
-    final LongObjectHashMap<Surface> evidences = new LongObjectHashMap<>();
+    public static void main(String[] args) throws Narsese.NarseseException {
 
+        Param.DEBUG = true;
 
-    public void layoutTimeline() {
+        NAR n = NARS.tmp();
+        n.log();
+        //n.inputAt(0, "(x &&+1 y). |");
+        n.inputAt(0, "(x ==>+1 y). |");
+        n.inputAt(2,"y! |");
+        n.inputAt(3,"x. |");
+        n.run(10);
 
-        final MapNodeGraph<Surface, String> graph = new MapNodeGraph();
+        Iterable<Task> tasks = ()->n.tasks().filter(x->!x.isEternal()).iterator();
 
-        float tScale = 100;
-        float tMin = tScale;
-
-        for (Surface cc : children()) {
-
-            TaskIcon c = (TaskIcon) cc;
-
-
-            Task t = c.task;
-
-            NodeGraph.MutableNode<Surface, String> tn = graph.addNode(c);
-
-            for (long e : t.stamp()) {
-                NodeGraph.Node en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
-                    Surface s = new PushButton("_" + ee);
-
-                    
-                    
-
-                    graph.addNode(s);
-                    return s;
-                }));
-
-                graph.addEdge((NodeGraph.MutableNode)en, "stamp", tn);
-            }
-
-            float minH = 30;
-            float maxH = 200;
-            float h = t.isQuestionOrQuest() ?
-                    Util.lerp(t.originality()/2f, minH, maxH) :
-                    Util.lerp( t.originality() * t.conf(), minH, maxH);
-
-
-            long start, end;
-            if (!t.isEternal()) {
-                start = t.start();
-                end = t.end();
-            } else {
-                start = t.creation();
-                end = 10; 
-            }
-
-
-            float x1 = start * tScale;
-            float x2 = end * tScale;
-            if (x2 - x1 < tMin) {
-                float x = (x1 + x2) / 2f;
-                x1 = x - tMin / 2;
-                x2 = x + tMin / 2;
-            }
-
-
-            float y = (float) (Math.random() * 500);
-            c.pos(x1, y, x2, y + h);
-
-
-        }
-
-        graph.print();
-
-        new Thread(() -> {
-            int iterations = 300;
-            for (int i = 0; i < iterations; i++) {
-
-                layoutForceDirect(graph);
-
-                layout();
-
-                Util.sleep(5);
-
-            }
-        }).start();
-
+        SpaceGraph.window(new Timeline2D<>(new TasksView(tasks), TaskRenderer)
+                        .view(0, n.time())
+                        .withControls(),
+                1200, 500);
     }
 
-    private void layoutForceDirect(MapNodeGraph<Surface, String> graph) {
-
-
-        float maxRepelDist = 2000;
-        float attractSpeed = 10f;
-        float repelSpeed = 250f;
-        float minAttractEpsilon = 1f;
-        float centerGravity = 0.001f;
-
-        graph.nodes().forEach(a -> {
-            a.edges(false, true).forEach(e -> {
-                direct(minAttractEpsilon, attractSpeed, a, e.to);
-            });
-        });
-
-        graph.nodes().forEach(a -> {
-            graph.nodes().forEach(b -> {
-                direct(maxRepelDist, -repelSpeed, a, b);
-            });
-        });
-
-        graph.nodes().forEach(a -> {
-            float cx = a.id.x();
-            float cy = a.id.y();
-            a.id.move(centerGravity * -cx, centerGravity * -cy);
-        });
-
-
+    @Override
+    public Iterable<Task> events(long start, long end) {
+        return tasks;
     }
 
-    /**
-     * speed < 0 = repel, speed > 0 = attract
-     */
-    private void direct(float limit, float speed, NodeGraph.Node<Surface,String> a, NodeGraph.Node<Surface,String> b) {
-        v2 ac = new v2(a.id.x(), a.id.y());
-
-        v2 bc = new v2(b.id.x(), b.id.y());
-
-        v2 delta = new v2(ac);
-        delta.subbed(bc);
-
-        float dist = delta.normalize();
-        dist -= (a.id.radius() + b.id.radius());
-        if (dist < 0)
-            dist = 0;
-
-        float s;
-        if (speed < 0) {
-            if (dist >= limit)
-                return;
-
-            s = -speed / (1 + (dist * dist));
-        } else {
-            if (dist <= limit)
-                return;
-            s = speed * Math.min(1, dist);
-        }
-
-
-        a.id.move(delta.x * s, delta.y * s);
-        b.id.move(-delta.x * s, -delta.y * s);
+    @Override
+    public long[] range(Task event) {
+        return new long[] { event.start(), event.end()+1 };
     }
 
-    public void loadTasks(File f) {
-        
-        throw new TODO();
-    }
 
     static class TaskIcon extends PushButton {
         public final Task task;
@@ -189,20 +63,20 @@ public class TasksView extends MutableContainer {
         float r, g, b, a;
 
         public TaskIcon(Task x) {
-            super(x.toString());
+            super(x.toStringWithoutBudget());
             this.task = x;
-            System.out.println(x);
+
 
             switch (x.punc()) {
                 case BELIEF:
                     r = 0.8f * x.freq();
                     b = g = 0;
-                    a = x.conf();
+                    a = 0.2f + 0.8f * x.conf();
                     break;
                 case GOAL:
                     g = 0.8f * x.freq();
                     b = r = 0;
-                    a = x.conf();
+                    a = 0.2f + 0.8f * x.conf();
                     break;
                 case QUESTION:
                     r = 0;
@@ -220,6 +94,11 @@ public class TasksView extends MutableContainer {
         }
 
         @Override
+        protected void paintBelow(GL2 gl) {
+            Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
+        }
+
+        @Override
         public Surface move(float dxIgnored, float dy) {
             return super.move(0, dy); 
         }
@@ -228,9 +107,6 @@ public class TasksView extends MutableContainer {
         public float radius() {
             return h(); 
         }
-
-
-
 
 
     }

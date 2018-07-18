@@ -77,7 +77,7 @@ public class Label extends EmptyContainer {
 
     @Override
     protected void paintIt(GL2 gl) {
-        Draw.bounds(gl, innerBounds, this::paintUnit);
+        Draw.bounds(innerBounds, gl, this::paintUnit);
     }
 
     @Override

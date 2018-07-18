@@ -110,13 +110,8 @@ public class Widget extends MutableContainer {
                 g += -t / 4f;
             }
 
-            gl.glColor4f(r, g, b, 0.5f);
-
-            Draw.rect(gl, bounds);
+            Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
         }
-
-
-        
         
         
     }

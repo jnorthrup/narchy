@@ -21,6 +21,7 @@ import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.link.Activate;
 import nars.sensor.Bitmap2DSensor;
+import nars.table.DefaultBeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -146,7 +147,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 //        x.forEach(xx -> alwaysWant(xx, conf));
 //    }
 
-    @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
+    public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now(),
                 ETERNAL, ETERNAL,
                 nar.evidence()
@@ -322,13 +323,20 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
         alwaysWantEternally(happy.filter[0].term, nar.confDefault(GOAL));
         alwaysWantEternally(happy.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
-        alwaysWantEternally(happy.filter[2].term, nar.confMin.floatValue()); //acute
+        alwaysWantEternally(happy.filter[2].term, nar.confDefault(GOAL) * 0.5f); //acute
+        for (FilteredScalar.Filter x : happy.filter) {
+            ((DefaultBeliefTable)x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
 
-        actions.keySet().forEach(a -> {
-            alwaysQuest(a, true);
-            //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
-            //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
-        });
+            //should normally be able to create these beliefs but if you want to filter more broadly:
+            //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table
+
+        }
+
+//        actions.keySet().forEach(a -> {
+//            alwaysQuest(a, true);
+//            //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
+//            //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
+//        });
 
         concepts.addAll(actions.keySet());
         concepts.addAll(sensors.keySet());

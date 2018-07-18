@@ -33,6 +33,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 
+import static jcog.WTF.WTF;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 
@@ -257,7 +258,7 @@ public interface Truth extends Truthed {
     default void ensureDithered(NAR n) {
         Truth d = dither(n);
         if (!equals(d))
-            throw new WTF("not dithered");
+            throw WTF("not dithered");
     }
 
 //    default Truth eternalized() {

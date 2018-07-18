@@ -274,8 +274,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
             ByteByteHashMap count = new ByteByteHashMap();
 
-
-            int numVarPaths = varPaths.size();
             for (ByteList p: varPaths) {
 
 

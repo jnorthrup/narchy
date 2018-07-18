@@ -18,22 +18,22 @@ public class StencilTest extends Surface {
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
         gl.glColor4f(1,1,1, 0.75f);
-        Draw.rect(gl, bounds);
+        Draw.rect(bounds, gl);
 
         Draw.stencilMask(gl, true, (g)-> {
             
             
             gl.glColor3f(0,0,1);
-            Draw.rect(gl, bounds.scale(0.75f).move(0.5f, 0.5f));
+            Draw.rect(bounds.scale(0.75f).move(0.5f, 0.5f), gl);
         }, (g)->{
             gl.glColor3f(1,0,0);
-            Draw.rect(gl, bounds.scale(0.75f).move(Math.random()*w(), Math.random()*h()));
+            Draw.rect(bounds.scale(0.75f).move(Math.random()*w(), Math.random()*h()), gl);
         });
 
         
         
         gl.glColor4f(0,1,0, 0.2f);
-        Draw.rect(gl, bounds.scale(0.75f).move(Math.random()*w(), Math.random()*h()));
+        Draw.rect(bounds.scale(0.75f).move(Math.random()*w(), Math.random()*h()), gl);
 
     }
 }

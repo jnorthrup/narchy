@@ -375,7 +375,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         protected void paintBelow(GL2 gl) {
             float alpha = 0.8f;
             gl.glColor4f(r, g, b, alpha);
-            Draw.rect(gl, bounds);
+            Draw.rect(bounds, gl);
         }
 
         public void color(float r, float g, float b) {

@@ -23,7 +23,7 @@ public class TogglePort extends Gridding {
                 } else {
                     gl.glColor4f(1,0,0,0.75f);
                 }
-                Draw.rect(gl, bounds);
+                Draw.rect(bounds, gl);
             }
         };
         port.on((w, x)-> port.out(x));

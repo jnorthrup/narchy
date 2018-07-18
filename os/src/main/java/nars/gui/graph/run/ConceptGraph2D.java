@@ -158,7 +158,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
                 
                 gl.glColor4f(0,0,0, 0.9f);
-                Draw.rect(gl, bounds);
+                Draw.rect(bounds, gl);
 
                 super.paintBelow(gl);
             }

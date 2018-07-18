@@ -104,7 +104,7 @@ public class ScrollGrid<X> extends Bordering {
         }));
 
         set(S, this.scrollX = new FloatSlider("X",
-                new FloatSlider.FloatSliderModel(0 /* left initial pos */) {
+                new FloatSlider.FloatSliderModel() {
                     @Override
                     public float min() {
                         return 0;
@@ -118,7 +118,7 @@ public class ScrollGrid<X> extends Bordering {
         ).type(SliderModel.KnobHoriz));
 
         set(E, this.scrollY = new FloatSlider("Y",
-                new FloatSlider.FloatSliderModel(0) {
+                new FloatSlider.FloatSliderModel() {
                     @Override
                     public float min() {
                         return 0;
@@ -135,7 +135,9 @@ public class ScrollGrid<X> extends Bordering {
         set(N, new Gridding(
                 new EmptySurface(), 
                 this.scaleW = new FloatSlider("W",
-                        new FloatSlider.FloatSliderModel(1) {
+                        new FloatSlider.FloatSliderModel() {
+
+                            {  setValue(1); }
 
                             @Override
                             public float min() {
@@ -144,9 +146,6 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                
-                                
-                                
                                 return Math.min(model.cellsX() * 1.25f, MAX_DISPLAYED_CELLS_X);
                             }
                         }
@@ -156,7 +155,9 @@ public class ScrollGrid<X> extends Bordering {
         set(W, new Gridding(
                 new EmptySurface(), 
                 this.scaleH = new FloatSlider("H",
-                        new FloatSlider.FloatSliderModel(1) {
+                        new FloatSlider.FloatSliderModel() {
+
+                            {  setValue(1); }
 
                             @Override
                             public float min() {
@@ -165,9 +166,6 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                
-                                
-                                
                                 return Math.min(model.cellsY() * 1.25f, MAX_DISPLAYED_CELLS_Y);
                             }
                         }

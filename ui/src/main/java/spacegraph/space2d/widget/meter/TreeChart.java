@@ -51,7 +51,7 @@ public class TreeChart<X> extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        Draw.bounds(gl, bounds, this::paint);
+        Draw.bounds(bounds, gl, this::paint);
     }
 
 

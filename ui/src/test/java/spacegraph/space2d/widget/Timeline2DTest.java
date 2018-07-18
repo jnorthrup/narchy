@@ -23,7 +23,7 @@ public class Timeline2DTest {
             @Override
             protected void paintBelow(GL2 gl) {
                 gl.glColor3f(0.1f, 0, 0.1f);
-                Draw.rect(gl, bounds);
+                Draw.rect(bounds, gl);
             }
         }.view(0, range+1).withControls(), 800, 600);
     }

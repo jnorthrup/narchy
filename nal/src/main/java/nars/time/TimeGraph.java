@@ -61,12 +61,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
      */
     protected final Multimap<Term, Event> byTerm = MultimapBuilder
             .linkedHashKeys()
-            .linkedHashSetValues() 
+            .linkedHashSetValues()
             .build();
 
 
     public final MutableSet<Term> autoNeg = new UnifiedSet();
-
 
 
     /**
@@ -83,7 +82,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             assert (bWhen != XTERNAL);
             return bWhen - aWhen;
         }
-        
+
     }
 
     @Override
@@ -131,7 +130,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
             if (add) {
 
-                
+
                 Iterator<Event> ff = te.iterator();
                 while (ff.hasNext()) {
                     Event f = ff.next();
@@ -166,8 +165,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         }
 
 
-
-
         if (add) {
             return addNode(e).id;
         } else {
@@ -196,19 +193,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     public void link(Event x, long dt, Event y) {
 
         if ((x == y || ((x.id.equals(y.id)) && (x.start() == y.start()))))
-            return; 
+            return;
 
         boolean swap = false;
-
-        
-
-
 
 
         int vc = Integer.compare(x.id.volume(), y.id.volume());
         if (vc == 0) {
 
-            if (x.hashCode() > y.hashCode()) { 
+            if (x.hashCode() > y.hashCode()) {
                 swap = true;
             }
         } else if (vc > 0) {
@@ -237,27 +230,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         }
 
 
-
-
-
         int edt = eventTerm.dt();
 
 
         switch (eventTerm.op()) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             case IMPL:
@@ -265,9 +241,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 Term subj = eventTerm.sub(0);
 
 
-
                 Event se = know(subj);
-
 
 
                 Term pred = eventTerm.sub(1);
@@ -305,44 +279,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
                 }
 
-                
 
                 break;
             case CONJ:
-                
 
 
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
                 long eventStart = event.start();
                 long eventEnd = event.end();
 
@@ -355,7 +296,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         Subterms es = eventTerm.subterms();
                         int esn = es.subs();
                         Term prev = es.sub(0);
-                        for (int i = 1; i < esn; i++) { 
+                        for (int i = 1; i < esn; i++) {
                             Term next = es.sub(i);
                             link(knowComponent(eventStart, eventEnd, 0, prev), ETERNAL, knowComponent(eventStart, eventEnd, 0, next));
                             prev = next;
@@ -364,19 +305,19 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         break;
                     case 0:
 
-                        
+
                         boolean timed = eventStart != ETERNAL;
                         for (Term s : eventTerm.subterms()) {
                             Event t = edt == 0 ?
-                                    knowComponent(eventStart, eventEnd, 0, s) : 
-                                    (timed ? know(s, eventStart, eventEnd) :  
+                                    knowComponent(eventStart, eventEnd, 0, s) :
+                                    (timed ? know(s, eventStart, eventEnd) :
                                             know(s));
                             if (t != null) {
                                 link(event, (edt == 0 || timed) ? 0 : ETERNAL,
-                                        t 
+                                        t
                                 );
                             } else {
-                                
+
                             }
                         }
                         break;
@@ -397,7 +338,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
     protected void onNewTerm(Term t) {
-        if (autoNeg!=null && autoNeg.contains(t)) {
+        if (autoNeg != null && autoNeg.contains(t.unneg())) {
             link(shadow(t), 0, shadow(t.neg()));
         }
     }
@@ -417,17 +358,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         Subterms xx = x.subterms();
 
 
-
-
-
-
-
-
-
-
-
-
-
         int subs = xx.subs();
         if (subs == 2) {
             Term a = xx.sub(0);
@@ -445,11 +375,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 if (aes > 0) {
                     if (aEqB) {
 
-                        
+
                         if (aes > 1) {
 
                             Event[] ab = ae.toArray(new Event[aes]);
-                            
+
                             Set<LongLongPair> uniqueTry = new UnifiedSet<>(4);
                             for (int i = 0; i < ab.length; i++) {
                                 Event abi = ab[i];
@@ -459,7 +389,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                                     long to = dt(abi, ab[j]);
                                     if (uniqueTry.add(pair(from, to))) {
                                         if (!solveDT(x, from, to,
-                                                
+
                                                 Math.min(abi.dur(), ab[j].dur())
                                                 , each))
                                             return false;
@@ -476,42 +406,33 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         });
                         int bes = be.size();
                         if (bes > 0) {
-                            
-                            
+
+
                             Set<Twin<Event>> uniqueTry = new UnifiedSet<>(4);
                             if (!ae.allSatisfy(ax ->
                                     be.allSatisfyWith((bx, axx) -> {
                                         if (uniqueTry.add(twin(axx, bx))) {
                                             return solveDT(x, axx.start(), dt(axx, bx),
-                                                    Math.min(axx.dur(), bx.dur()), 
+                                                    Math.min(axx.dur(), bx.dur()),
                                                     each);
                                         } else {
                                             return true;
                                         }
                                     }, ax)))
                                 return false;
-                            
+
                         }
                     }
                 }
             }
 
 
-
-
-
             FasterList<Event> rels = new FasterList<>(4);
-
-            
-
-
-
 
 
             Consumer<Event> collect = rels::add;
 
             byTerm.get(a).forEach(collect);
-
 
 
             if (aEqB) {
@@ -524,36 +445,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             }
 
 
-            
-            
-            
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             int relCount = rels.size();
             if (relCount > 0) {
 
-
-
-
-
-
-
-                
 
                 if (relCount > 1)
                     rels.shuffleThis(random());
@@ -562,16 +456,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     @Override
                     protected boolean next(BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> move, Node<TimeGraph.Event, TimeGraph.TimeSpan> next) {
 
-                        
 
                         long[] startDT = pathDT(next, a, b, path);
                         if (startDT == null)
-                            return true; 
+                            return true;
 
                         long start = startDT[0];
                         long ddt = startDT[1];
                         return TimeGraph.this.solveDT(x, start, ddt,
-                                (start != ETERNAL && start != XTERNAL) ? Math.min(pathStart(path).dur(), pathEnd(path).dur()) : 0 
+                                (start != ETERNAL && start != XTERNAL) ? Math.min(pathStart(path).dur(), pathEnd(path).dur()) : 0
                                 , each);
                     }
                 });
@@ -579,67 +472,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         return true;
-        
+
     }
 
     /**
@@ -671,13 +508,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
     private boolean solveDT(Term x, long start, long ddt, long dur, Predicate<Event> each) {
-        assert (ddt != TIMELESS && ddt != XTERNAL && ddt!=ETERNAL);
+        assert (ddt != TIMELESS && ddt != XTERNAL && ddt != ETERNAL);
         int dt;
 
 
-
-            assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
-            dt = (int) ddt;
+        assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
+        dt = (int) ddt;
 
         Term y = dt(x, dt);
 
@@ -686,7 +522,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
 
         if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0) {
-            start += dt; 
+            start += dt;
         }
 
         return start != TIMELESS ?
@@ -714,7 +550,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             return x.dt(DTERNAL);
         }
 
-        
+
         Op xo = x.op();
         if (xo == IMPL) {
             return x.dt(dt - x.sub(0).dtRange());
@@ -730,18 +566,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     xEarly, 0,
                     xLate, dt);
         } else {
-            
+
         }
 
 
         throw new UnsupportedOperationException();
     }
-
-
-
-
-
-
 
 
     /**
@@ -767,15 +597,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
                 return target.test(y);
             } else {
-                return true; 
+                return true;
             }
         };
 
 
-        
-        return 
+        return
                 solveAll(x, each);
-        
 
 
     }
@@ -800,21 +628,21 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
             Map<Term, Term> subSolved = new UnifiedMap(2);
 
-            
+
             x.subterms().recurseTerms(Term::isTemporal, y -> {
                 if (y.dt() == XTERNAL) {
                     solveDT(y, (z) -> {
                         subSolved.put(y, z.id);
-                        
-                        return false; 
+
+                        return false;
                     });
                 }
                 return true;
             }, null);
 
-            
+
             if (!subSolved.isEmpty()) {
-                
+
                 Term y = x.replace(subSolved);
                 if (y != null && !(y instanceof Bool)) {
                     x = y;
@@ -828,10 +656,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 solveOccurrence(x, each);
 
     }
-
-
-
-
 
 
     /**
@@ -860,7 +684,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             }
 
 
-
         }
 
         Queue<Pair<List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>>, Node<Event, TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
@@ -873,8 +696,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
-        assert(x instanceof Relative);
-        
+        assert (x instanceof Relative);
+
         return solveExact(x.id, each) && bfsPush(x, new CrossTimeSolver() {
 
             Set<Event> nexts = null;
@@ -886,7 +709,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     return true;
 
                 long pathEndTime = n.id.start();
-                
 
 
                 long startTime;
@@ -894,33 +716,25 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     startTime = ETERNAL;
                 } else {
 
-                    
-                    long pathDelta =
-                        pathTime(path, false);
-                        
 
-                    if (pathDelta == ETERNAL) 
+                    long pathDelta =
+                            pathTime(path, false);
+
+
+                    if (pathDelta == ETERNAL)
                         return true;
                     else {
 
 
-
-
-
-                        
-
-
-
-
-                        startTime = pathEndTime - (pathDelta );
+                        startTime = pathEndTime - (pathDelta);
                     }
                 }
 
                 long endTime;
-                if (startTime != ETERNAL && startTime != XTERNAL && x.id.op()!=CONJ) {
+                if (startTime != ETERNAL && startTime != XTERNAL && x.id.op() != CONJ) {
                     long startDur = pathStart(path).dur();
                     long endDur = pathEnd(path).dur();
-                    long dur = Math.min(startDur, endDur); 
+                    long dur = Math.min(startDur, endDur);
                     endTime = startTime + dur;
                 } else {
                     endTime = startTime;
@@ -943,49 +757,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     protected Random random() {
         return ThreadLocalRandom.current();
     }
@@ -995,19 +766,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
 
-
     static final class TimeSpan {
         public final static TimeSpan TS_ZERO = new TimeSpan(0);
-        
-        
+
 
         public final static TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
         public final long dt;
 
         private TimeSpan(long dt) {
             this.dt = dt;
-            
-            
+
+
         }
 
         public static TimeSpan the(long dt) {
@@ -1037,7 +806,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         @Override
         public String toString() {
             return (dt == ETERNAL ? "~" : (dt >= 0 ? ("+" + dt) : ("-" + (-dt))));
-            
+
         }
     }
 
@@ -1052,10 +821,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             this.hash = hash;
 
         }
-
-
-
-
 
 
         abstract public long start();
@@ -1073,10 +838,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             Event e = (Event) obj;
             return (hash == e.hash) && (start() == e.start()) && (end() == e.end()) && id.equals(e.id);
         }
-
-        
-
-
 
 
         @Override
@@ -1117,35 +878,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * absolutely specified event
      */
@@ -1157,11 +889,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         protected Absolute(Term t, long start, int hashCode) {
             super(t, hashCode);
 
-            
+
             assert (start != TIMELESS);
-            if (!((start == ETERNAL || start > 0 || start > ETERNAL + SAFETY_PAD))) 
+            if (!((start == ETERNAL || start > 0 || start > ETERNAL + SAFETY_PAD)))
                 throw new MathArithmeticException();
-            if (!((start < 0 || start < TIMELESS - SAFETY_PAD))) 
+            if (!((start < 0 || start < TIMELESS - SAFETY_PAD)))
                 throw new MathArithmeticException();
 
             this.start = start;
@@ -1250,18 +982,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             Iterator<Event> x = byTerm.get(n.id.id).iterator();
             return x.hasNext() ?
                     Iterators.transform(
-                        Iterators.filter(Iterators.transform(
-                            x,
-                            
-                            TimeGraph.this::node),
-                    e -> e!=null && e != n && !log.hasVisited(e)),
-                    that -> new ImmutableDirectedEdge<>(n, that, TS_ZERO) 
-            ) : null;
+                            Iterators.filter(Iterators.transform(
+                                    x,
+
+                                    TimeGraph.this::node),
+                                    e -> e != null && e != n && !log.hasVisited(e)),
+                            that -> new ImmutableDirectedEdge<>(n, that, TS_ZERO)
+                    ) : null;
         }
-
-
-
-
 
 
     }
@@ -1272,12 +1000,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         protected Iterable<ImmutableDirectedEdge<Event, TimeSpan>> next(Node<TimeGraph.Event, TimeGraph.TimeSpan> n) {
             Iterable<ImmutableDirectedEdge<Event, TimeSpan>> e = n.edges(true, true);
 
-            
+
             Iterator<ImmutableDirectedEdge<Event, TimeSpan>> d = dynamicLink(n);
 
             return (d != null && d.hasNext()) ? Iterables.concat(e, new FasterList<>(d)) : e;
         }
     }
+
     protected static Event pathStart(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
         BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> step = path.get(0);
         return step.getTwo().from(step.getOne()).id;
@@ -1329,9 +1058,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     dt = endTime - startTime;
                 } else {
 
-                    
-                    
-                    
 
                     dt = pathTime(path, true);
                 }
@@ -1354,16 +1080,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 } else {
 
                     if (a.equals(b))
-                        rev = random().nextBoolean(); 
+                        rev = random().nextBoolean();
 
                     if (rev) {
-                        dt = -dt; 
+                        dt = -dt;
                         long s = startTime;
                         startTime = endTime;
                         endTime = s;
                     }
-
-                    
 
 
                     return new long[]{
@@ -1394,7 +1118,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     static long pathTime(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path, boolean eternalAsZero) {
 
         long t = 0;
-        
+
         for (BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> r : path) {
 
 
@@ -1403,10 +1127,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             long spanDT = event.id.dt;
 
             if (spanDT == ETERNAL) {
-                
+
                 if (!eternalAsZero)
-                    return ETERNAL; 
-                
+                    return ETERNAL;
+
 
             } else if (spanDT != 0) {
                 t += (spanDT) * (r.getOne() ? +1 : -1);

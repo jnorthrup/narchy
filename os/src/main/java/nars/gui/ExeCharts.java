@@ -96,7 +96,7 @@ public class ExeCharts {
                             @Override
                             protected void paintWidget(GL2 gl, RectFloat2D bounds) {
                                 if (auto.on()) {
-                                    value(want[w]);
+                                    set(want[w]);
                                 }
 
                             }

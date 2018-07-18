@@ -44,7 +44,7 @@ public class Impiler {
 
         @Override
         protected boolean preFilter(Task next) {
-            return next.isQuestionOrQuest() && !next.term().hasVars() && !next.hasXternal();
+            return (next.isGoal() || next.isQuestionOrQuest()) && !next.term().hasVars() && !next.hasXternal();
         }
 
         @Override

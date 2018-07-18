@@ -60,7 +60,7 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             super.paint(gl, surfaceRender);
-            Draw.bounds(gl, bounds, ggl->{
+            Draw.bounds(bounds, gl, ggl->{
                 renderWaveLine((start +  end)/2L /*hack*/, start, end, ggl, wave, (f,c)->f, colorize);
             });
         }

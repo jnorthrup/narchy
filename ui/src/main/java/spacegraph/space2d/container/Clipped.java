@@ -15,7 +15,7 @@ public class Clipped extends UnitContainer {
     @Override
     protected void paintBelow(GL2 gl) {
         Draw.stencilStart(gl);
-        Draw.rect(gl, bounds);
+        Draw.rect(bounds, gl);
         Draw.stencilUse(gl, true);
     }
 

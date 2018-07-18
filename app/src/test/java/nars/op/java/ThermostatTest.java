@@ -23,10 +23,10 @@ public class ThermostatTest {
 
     public static void main(String[] args) {
 
-        final int DUR = 10;
+        final int DUR = 3;
 
-        final int subTrainings = 2;
-        final int thinkDurs = 3;
+        final int subTrainings = 1;
+        final int thinkDurs = 1;
 
         NAR n = NARS.tmp();
 
@@ -36,7 +36,7 @@ public class ThermostatTest {
         n.dtDither.set(2);
         n.timeFocus.set(4);
 
-        n.termVolumeMax.set(25);
+        n.termVolumeMax.set(22);
         n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
         //n.activateConceptRate.set(0.1f);

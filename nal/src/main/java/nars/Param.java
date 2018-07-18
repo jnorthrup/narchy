@@ -47,6 +47,7 @@ public abstract class Param {
 
     public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 5;
     public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
+
     //5;
 
 
@@ -54,6 +55,8 @@ public abstract class Param {
      * warning: can interfere with expected test results
      */
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
+
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = true;
 
 
     /**

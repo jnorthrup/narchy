@@ -8,6 +8,7 @@ import nars.task.Tasked;
 import nars.test.condition.NARCondition;
 import nars.test.condition.TaskMatch;
 import nars.time.Tense;
+import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,19 +300,22 @@ public class TestNAR {
     }
 
 
-    public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occTimeAbsolute) {
-        return mustOutput(cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, occTimeAbsolute, occTimeAbsolute);
-    }
+
 
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate occ) {
-        mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, occ, occ);
-        return this;
+        return mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s,e)-> (s==e) && occ.test(s));
     }
 
 
+    public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occ) {
+        return mustOutput(cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, occ, occ);
+    }
+
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long start, long end) {
-        mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (l) -> l == start, (l) -> l == end);
-        return this;
+        return mustOutput(cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s,e)->start==s && end==e);
+    }
+    public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) {
+        return mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time);
     }
 
 
@@ -324,23 +328,22 @@ public class TestNAR {
     }
 
 
-    private TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) {
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) {
         try {
-            return mustEmit(c, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax,
-                    start, end, true);
+            return mustEmit(c, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, true);
         } catch (Narsese.NarseseException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    private TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end, boolean must) throws Narsese.NarseseException {
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
         long now = time();
         cyclesAhead = Math.round(cyclesAhead * Param.TEST_TIME_MULTIPLIER);
-        return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, start, end, must);
+        return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, must);
     }
 
-    private TestNAR mustEmit(Topic<Tasked>[] c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end, boolean must) throws Narsese.NarseseException {
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
 
 
         if (freqMin == -1)
@@ -355,7 +358,7 @@ public class TestNAR {
         TaskMatch tc =
                 new TaskMatch(nar,
                         cycleStart, cycleEnd,
-                        sentenceTerm, punc, freqMin - hf, freqMax + hf, confMin - hc, confMax + hc, start, end);
+                        sentenceTerm, punc, freqMin - hf, freqMax + hf, confMin - hc, confMax + hc, time);
 
 
         for (Topic<Tasked> cc: c) {
@@ -395,7 +398,7 @@ public class TestNAR {
             freq = conf = NaN;
         }
 
-        return mustEmit(c, cyclesAhead, termString, t.punc(), freq, freq, conf, conf, (l) -> l == t.start(), (l) -> l == t.end());
+        return mustEmit(c, cyclesAhead, termString, t.punc(), freq, freq, conf, conf, (s, e) -> s == t.start() && e == t.end());
     }
 
 
@@ -450,8 +453,9 @@ public class TestNAR {
         try {
             return mustEmit(outputEvents,
                     cyclesAhead,
-                    term, punc, freqMin, freqMax, confMin,
-                    confMax, badTimes, badTimes, false);
+                    term, punc,
+                    freqMin, freqMax, confMin, confMax,
+                    (s,e)->badTimes.test(s) || badTimes.test(e), false);
         } catch (Narsese.NarseseException e) {
             throw new RuntimeException(e);
         }
@@ -512,6 +516,9 @@ public class TestNAR {
     }
 
     public TestNAR mustBelieve(long cyclesAhead, String goalTerm, float freq, float conf, LongPredicate occ) {
+        return mustOutput(cyclesAhead, goalTerm, BELIEF, freq, freq, conf, conf, occ);
+    }
+    public TestNAR mustBelieve(long cyclesAhead, String goalTerm, float freq, float conf, LongLongPredicate occ) {
         return mustOutput(cyclesAhead, goalTerm, BELIEF, freq, freq, conf, conf, occ);
     }
 

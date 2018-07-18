@@ -175,7 +175,7 @@ public class BagLab {
 //        if (!bag.isEmpty())
 //            return; //assume done already
 
-        float totalInputs = (float) inputSliders.stream().mapToDouble(x -> x.value()).sum();
+        float totalInputs = (float) inputSliders.stream().mapToDouble(x -> x.get()).sum();
         if (totalInputs < 0.01f)
             return;
 
@@ -185,7 +185,7 @@ public class BagLab {
         int r = 0;
         for (int i = 0; i < cap && currentSlider < n; i++) {
             if (sliderRemain == -1) {
-                r = sliderRemain = Math.round((inputSliders.get(currentSlider++).value()/totalInputs)  * cap);
+                r = sliderRemain = Math.round((inputSliders.get(currentSlider++).get()/totalInputs)  * cap);
             }
             bag.put(new PLink<>(i, (((float)currentSlider) / (n-1)) + (((float)sliderRemain)/r) * (1f/n))) ;
             sliderRemain--;
@@ -197,7 +197,7 @@ public class BagLab {
         int inputRate = n*n;
         for (int j = 0; j < inputRate; j++) {
             for (int i = 0; i < n; i++) {
-                if (Math.random() < inputSliders.get(i).value()) {
+                if (Math.random() < inputSliders.get(i).get()) {
                     float p = 0.1f;
                             //(i /* + (float) Math.random()*/) / (n - 1);
 

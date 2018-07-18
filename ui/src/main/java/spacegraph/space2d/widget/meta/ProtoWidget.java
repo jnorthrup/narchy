@@ -214,7 +214,7 @@ public class ProtoWidget extends Widget {
 
                 @Override
                 protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                    Draw.bounds(gl, bounds, this::paint);
+                    Draw.bounds(bounds, gl, this::paint);
                 }
 
                 void paint(GL2 gl) {

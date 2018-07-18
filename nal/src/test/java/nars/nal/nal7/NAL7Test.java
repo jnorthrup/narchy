@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL7Test extends NALTest {
 
-    public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
+    public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
     private int cycles = 200;
 
     @BeforeEach
@@ -64,14 +64,22 @@ public class NAL7Test extends NALTest {
     void temporal_analogy() {
 
         test
+            .believe("( open($x, door) ==>+5 enter($x, room) )", 0.95f, 0.9f)
+            .believe("( enter($x, room) =|> leave($x, corridor_100) )", 1.0f, 0.9f)
+            .believe("( leave($x, corridor_100) =|> enter($x, room) )", 1.0f, 0.9f)
+            .mustBelieve(cycles, "( open($1, door) ==>+5 leave($1, corridor_100) )", 0.95f, 0.77f /*0.81f*/)
+            .mustNotOutput(cycles, "( open($1, door) ==>-5 leave($1, corridor_100) )", BELIEF, ETERNAL);
 
-                .believe("( open($x, door) ==>+5 enter($x, room) )", 0.95f, 0.9f)
+    }
 
-                .believe("( enter($x, room) =|> leave($x, corridor_100) )", 1.0f, 0.9f)
-                .believe("( leave($x, corridor_100) =|> enter($x, room) )", 1.0f, 0.9f)
-                .mustBelieve(cycles, "( open($1, door) ==>+5 leave($1, corridor_100) )", 0.95f, 0.77f /*0.81f*/)
-                .mustNotOutput(cycles, "( open($1, door) ==>-5 leave($1, corridor_100) )", BELIEF, ETERNAL);
-
+    /**
+     * tests that although the task and belief do not temporally intersect, the belief can still be used to derive the projected result
+     * adapted from: NAL1Test
+     */
+    @Test void temporalAnalogyNonIntersecting() throws Narsese.NarseseException {
+        test.nar.believe("<gull <-> swan>", 1f, 0.9f, 0, 1);
+        test.nar.believe("<swan --> swimmer>", 1f, 0.9f, 4, 5);
+        test.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, /*<*/0.81f , (s,e)->s==4 && e==5);
     }
 
     @Test
