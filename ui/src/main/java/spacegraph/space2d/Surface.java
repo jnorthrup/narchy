@@ -3,6 +3,7 @@ package spacegraph.space2d;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
+import jcog.Util;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
@@ -166,6 +167,10 @@ abstract public class Surface implements SurfaceBase {
         return bounds.h;
     }
 
+    public Surface pos(float x, float y) {
+        pos(bounds.pos(x, y, Spatialization.EPSILONf));
+        return this;
+    }
     public Surface move(float dx, float dy) {
         pos(bounds.move(dx, dy, Spatialization.EPSILONf));
         return this;
@@ -242,5 +247,13 @@ abstract public class Surface implements SurfaceBase {
 
     public void posX0Y0WH(float x, float y, float w, float h) {
         pos(RectFloat2D.X0Y0WH(x,y,w,h));
+    }
+
+    /** keeps this rectangle within the given bounds */
+    public void fence(RectFloat2D bounds) {
+        float x = left();
+        float y = top();
+        pos(Util.clamp(x, bounds.left(), bounds.right()-w()),
+                Util.clamp(y, bounds.top(), bounds.bottom()-h()));
     }
 }

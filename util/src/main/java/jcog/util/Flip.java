@@ -16,13 +16,20 @@ public class Flip<X> extends AtomicInteger {
     }
 
     public X write() { return (getOpaque() & 1) == 0 ? a : b;   }
+
     public X read() {
-        return (getOpaque() & 1) == 0 ? b : a;
+        return read(getOpaque());
+    }
+    public X read(int v) {
+        return (v & 1) == 0 ? b : a;
     }
 
-    public X commit() {
-        incrementAndGet();
-        return read();
+    public X commitAndGet() {
+        return read(commit());
+    }
+
+    public int commit() {
+        return incrementAndGet();
     }
 
 }

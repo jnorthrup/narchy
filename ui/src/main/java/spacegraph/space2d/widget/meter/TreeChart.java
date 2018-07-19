@@ -94,7 +94,7 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
         left = 0;
         top = 0;
 
-        CircularArrayList<ItemVis<X>> display = phase.commit();
+        CircularArrayList<ItemVis<X>> display = phase.commitAndGet();
 
 
 

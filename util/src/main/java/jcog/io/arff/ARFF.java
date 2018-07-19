@@ -47,10 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
@@ -141,6 +138,10 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         relation = "data";
         comment = null;
         this.data = data;
+    }
+
+    public ARFF(File f) throws IOException, ARFFParseError {
+        this(new BufferedReader(new FileReader(f)), new ArrayHashSet<>());
     }
 
     /**
@@ -507,8 +508,8 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         }
     }
 
-    public Stream<ImmutableList> stream() {
-        return data.stream();
+    public Stream<Instance> stream() {
+        return data.stream().map(x -> new Instance(this, x));
     }
 
     public boolean addAll(ARFF incoming) {

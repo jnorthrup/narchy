@@ -730,7 +730,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(1, "(--x ==>-1 x).")
                 .inputAt(2, "x! :|:")
-                .mustGoal(cycles, "x", 0f, 0.45f, 3);
+                .mustGoal(cycles, "x", 0f, 0.45f, (t)-> t>=2);
     }
 
     @Test

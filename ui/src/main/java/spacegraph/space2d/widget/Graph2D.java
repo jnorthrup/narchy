@@ -19,19 +19,22 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.video.Draw;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static jcog.Util.sqr;
 
 /**
  * 2D directed/undirected graph widget
+ * TODO generify for use in Dynamics3D
  */
 public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
-
-    
     private final AtomicBoolean busy = new AtomicBoolean(false);
     private final List<Graph2DLayer<X>> layers = new FasterList<>();
 
@@ -64,8 +67,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     }
 
-    public Graph2D<X> layer(Graph2DLayer<X> layout) {
-        layers.add(layout);
+    public Graph2D<X> layer(Graph2DLayer<X> l) {
+        layers.add(l);
         return this;
     }
 
@@ -111,25 +114,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         });
     }
 
-    public Graph2D<X> add(Iterable<X> nodes) {
-        if (!busy.getAcquire())
-            return add(nodes.iterator());
-        return this;
+    public final Graph2D<X> add(Stream<X> nodes) {
+        return add(nodes::iterator);
     }
-
-    private Graph2D<X> add(Iterator<X> nodes) {
+    public final Graph2D<X> set(Stream<X> nodes) {
+        return set(nodes::iterator);
+    }
+    public final Graph2D<X> add(Iterable<X> nodes) {
         return update(nodes, true);
     }
-
-    public Graph2D<X> set(Iterable<X> nodes) {
-        if (!busy.getAcquire())
-            return set(nodes.iterator());
-        return this;
-    }
-
-    
-
-    private Graph2D<X> set(Iterator<X> nodes) {
+    public final Graph2D<X> set(Iterable<X> nodes) {
         return update(nodes, false);
     }
 
@@ -139,15 +133,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         set(List.of());
     }
 
-    private Graph2D<X> update(Iterator<X> nodes, boolean addOrReplace) {
+    private Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {
 
         if (!busy.compareAndSet(false, true)) {
-            
             return this;
         }
         try {
 
-            updateNodes(nodes, addOrReplace);
+            updateNodes(nodes.iterator(), addOrReplace);
 
             updateEdges();
 
@@ -216,7 +209,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         //cellMap.forEachValue((NodeVis<X> nv) -> layers.forEach(layer -> layer.node(nv, builder)));
         layers.forEach(layer -> cellMap.forEachValue((NodeVis<X> nv) -> layer.node(nv, builder)));
 
-        cellMap.forEachValue((NodeVis<X> nv) -> nv.edgeOut.commit());
+        cellMap.forEachValue((NodeVis<X> nv) -> nv.edgeOut.commitAndGet());
     }
 
     /** hard limit on # nodes */

@@ -285,7 +285,7 @@ public class Box2DTests extends JComponent implements Runnable {
                     mj = null;
                     destroyMj = false;
                 }
-                if (mjdef != null && mj == null) {
+                if (mjdef != null && mj == null && mjdef.bodyA!=mjdef.bodyB) {
                     mj = (MouseJoint) w.addJoint(mjdef);
                     mjdef.bodyA.setAwake(true);
                     mjdef = null;

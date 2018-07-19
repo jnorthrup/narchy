@@ -12,6 +12,7 @@ import nars.term.Term;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -136,7 +137,8 @@ public class NALSchema {
     }
 
     public static Stream<Term> terms(ARFF a, Function<Term[],Term> generator) {
-        return a.stream().map(point->{
+        return a.stream().map(instance->{
+            ImmutableList point = instance.data;
             int n = point.size();
             Term[] t = new Term[n];
             for (int i = 0; i < n; i++) {

@@ -2,6 +2,7 @@ package jcog.io;
 
 import jcog.data.list.FasterList;
 import jcog.io.arff.ARFF;
+import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,10 +35,10 @@ public class Schema {
     public boolean equalSchema(Schema other) {
         return (this == other) ||
 
-               ( attribute_names.equals(other.attribute_names) &&
-                 attrTypes.equals(other.attrTypes) &&
-                 nominalCats.equals(other.nominalCats)
-        );
+                (attribute_names.equals(other.attribute_names) &&
+                        attrTypes.equals(other.attrTypes) &&
+                        nominalCats.equals(other.nominalCats)
+                );
     }
 
     /**
@@ -54,7 +55,9 @@ public class Schema {
         return attribute_names.get(idx);
     }
 
-    public boolean hasAttr(String name) { return attribute_names.contains(name); }
+    public boolean hasAttr(String name) {
+        return attribute_names.contains(name);
+    }
 
     /**
      * Get the type of an attribute. Currently, the attribute types are
@@ -68,6 +71,7 @@ public class Schema {
     public ARFF.AttributeType attrType(int n) {
         return attrTypes.get(attrName(n));
     }
+
     public String[] attrNames() {
         return attribute_names.toArray(new String[0]);
     }
@@ -80,7 +84,7 @@ public class Schema {
     public Schema define(String name, ARFF.AttributeType type) {
 
         assert (type != Nominal);
-        if (attrTypes.put(name, type)!=null)
+        if (attrTypes.put(name, type) != null)
             throw new RuntimeException("column name collision");
 
         attrTypes.put(name, type);
@@ -109,4 +113,53 @@ public class Schema {
     }
 
 
+    public static class Instance {
+        public final Schema schema;
+        public final ImmutableList data;
+
+        public Instance(Schema schema, ImmutableList data) {
+            this.schema = schema;
+            this.data = data;
+        }
+
+        @Override
+        public String toString() {
+            return schema + " " + data;
+        }
+
+        @Override
+        public int hashCode() {
+            return data.hashCode();
+        }
+
+        public double[] toDoubleArray() {
+            return toDoubleArray(0, data.size());
+        }
+        public double[] toDoubleArray(int from, int to) {
+            double[] x = new double[to-from];
+            int j = 0;
+            for (int i = from; i < to; i++) {
+                Object o = data.get(i);
+                double v;
+                if (o instanceof Number) {
+                    v = ((Number) o).doubleValue();
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+                x[j++] = v;
+            }
+            return x;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof Instance)) return false;
+
+            Instance i = (Instance) obj;
+            return i.data.equals(data) && i.schema.equals(schema);
+        }
+
+
+    }
 }

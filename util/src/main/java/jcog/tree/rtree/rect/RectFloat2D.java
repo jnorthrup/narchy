@@ -90,9 +90,12 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     }
 
     public RectFloat2D move(float dx, float dy, float epsilon) {
-        return Math.abs(dx) < epsilon && Math.abs(dy) < epsilon ?
-                this :
+        return Math.abs(dx) < epsilon && Math.abs(dy) < epsilon ? this :
                 XYXY(x + dx, y + dy, x + w + dx, y + h + dy);
+    }
+    public RectFloat2D pos(float x, float y, float epsilon) {
+        return Util.equals(this.x, x, epsilon) && Util.equals(this.y, y, epsilon) ? this :
+                XYXY(x , y , x + w, y + h);
     }
 
     public RectFloat2D size(float ww, float hh) {

@@ -25,30 +25,27 @@ public class NARio extends NAgentX {
 
     private final MarioComponent mario;
 
-    public NARio(NAR nar)  {
+    public NARio(NAR nar) {
         super("nario", nar);
-        
+
 
 //        nar.freqResolution.set(0.1f);
-        
-        
 
-        
+
         mario = new MarioComponent(
-                
+
                 640, 480
         );
         JFrame frame = new JFrame("Infinite NARio");
         frame.setIgnoreRepaint(true);
 
         frame.setContentPane(mario);
-        
+
         frame.pack();
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocation(0, 0);
 
-        
 
         frame.setVisible(true);
 
@@ -58,9 +55,7 @@ public class NARio extends NAgentX {
         PixelBag cc = PixelBag.of(() -> mario.image, 32, 24);
         cc.addActions(id, this, false, false, true);
         cc.actions.forEach(a -> a.resolution.set(0.25f));
-        
 
-        
 
         Bitmap2DSensor ccb;
         addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.03f);
@@ -92,22 +87,8 @@ public class NARio extends NAgentX {
         }
 
 
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
         onFrame((z) -> {
-            
+
 
             Scene scene1 = mario.scene;
 
@@ -120,49 +101,19 @@ public class NARio extends NAgentX {
                 float y = (M.y - yCam) / 240f;
                 cc.setXRelative(x);
                 cc.setYRelative(y);
-                
+
             }
-            
+
         });
 
-        
 
-
-
-        
-
-
-
-
-
-
-
-
-
-        
         initButton();
-        
 
 
         Signal dvx = senseNumberDifference($$("vx(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.02f);
         Signal dvy = senseNumberDifference($$("vy(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.02f);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -172,7 +123,7 @@ public class NARio extends NAgentX {
         if (this.mario.scene instanceof LevelScene) {
             LevelScene s = (LevelScene) mario.scene;
             Level ll = s.level;
-            if (ll!=null) {
+            if (ll != null) {
                 //System.out.println(s.mario.x + " " + s.mario.y);
                 byte block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
                 byte t = Level.TILE_BEHAVIORS[block & 0xff];
@@ -248,17 +199,18 @@ public class NARio extends NAgentX {
                     throw new RuntimeException();
             }
             mario.scene.key(Mario.KEY_DOWN, n);
-            
+
             mario.scene.key(Mario.KEY_JUMP, p);
             return true;
         });
 
 
     }
+
     public void initBipolar() {
         float thresh = 0.33f;
 
-        
+
         actionBipolarFrequencyDifferential($.the("x"), false, true, (x) -> {
 
             float boostThresh = 0.66f;
@@ -266,23 +218,22 @@ public class NARio extends NAgentX {
                 mario.scene.key(Mario.KEY_LEFT, true);
                 mario.scene.key(Mario.KEY_RIGHT, false);
                 mario.scene.key(Mario.KEY_SPEED, x <= -boostThresh);
-                
+
                 return x <= -boostThresh ? -1 : -boostThresh;
             } else if (x >= +thresh) {
                 mario.scene.key(Mario.KEY_RIGHT, true);
                 mario.scene.key(Mario.KEY_LEFT, false);
                 mario.scene.key(Mario.KEY_SPEED, x >= +boostThresh);
-                
+
                 return x >= +boostThresh ? +1 : +boostThresh;
             } else {
                 mario.scene.key(Mario.KEY_LEFT, false);
                 mario.scene.key(Mario.KEY_RIGHT, false);
                 mario.scene.key(Mario.KEY_SPEED, false);
-                
-                
-                
+
+
                 return 0f;
-                
+
             }
         });
         actionBipolarFrequencyDifferential($.the("y"), false, true, (y) -> {
@@ -291,18 +242,18 @@ public class NARio extends NAgentX {
                 mario.scene.key(Mario.KEY_DOWN, true);
                 mario.scene.key(Mario.KEY_JUMP, false);
                 return -1f;
-                
+
             } else if (y >= +thresh) {
                 mario.scene.key(Mario.KEY_JUMP, true);
                 mario.scene.key(Mario.KEY_DOWN, false);
                 return +1f;
-                
+
             } else {
                 mario.scene.key(Mario.KEY_JUMP, false);
                 mario.scene.key(Mario.KEY_DOWN, false);
-                
+
                 return 0f;
-                
+
             }
         });/*.forEach(g -> {
             g.resolution(0.1f);
@@ -323,10 +274,9 @@ public class NARio extends NAgentX {
         lastCoins = coins;
 
 
-
         float curX = mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).mario.x : Float.NaN;
         if (lastX == lastX && lastX < curX) {
-            reward += unitize(Math.max(0, (curX - lastX))/16f * MoveRight.floatValue());
+            reward += unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
         }
         lastX = curX;
 
@@ -340,67 +290,22 @@ public class NARio extends NAgentX {
     public static void main(String[] args) {
 
 
-        
-
         TimeAware timeAware = runRT((NAR n) -> {
 
 
             NARio x;
-                x = new NARio(n);
-                n.freqResolution.set(0.02f);
-                n.confResolution.set(0.01f);
-                
-
-                
-                
-                x.trace = true;
+            x = new NARio(n);
+            n.freqResolution.set(0.02f);
+            n.confResolution.set(0.01f);
 
 
+            x.trace = true;
 
 
-
-
-
-
-
-
-
-
-                return x;
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return x;
 
 
         }, 24);
-
-
-
-
-
-
-
-
-
-
 
 
     }

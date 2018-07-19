@@ -31,34 +31,25 @@ public abstract class Spatial<X> implements Active {
      * order = -1: inactive
      * order > =0: live
      */
-    public short order;
-
-
-
-    Spatial() {
-        this(null);
-    }
+    @Deprecated public short order;
 
     Spatial(X k) {
-        this.id = k!=null ? k : (X) this;
-        this.hash = k!=null ? k.hashCode() : super.hashCode();
+        this.id = k != null ? k : (X) this;
+        this.hash = k != null ? k.hashCode() : super.hashCode();
     }
+
 
     @Override
     public String toString() {
 
         return id + "<" +
-                
+
                 '>';
     }
 
-
-
-
     @Override
     public final boolean equals(Object obj) {
-
-        return this == obj || id.equals(((Spatial) obj).id);
+        return this == obj; // || id.equals(((Spatial) obj).id);
     }
 
     @Override
@@ -67,19 +58,8 @@ public abstract class Spatial<X> implements Active {
     }
 
 
-
-
-
     public void update(Dynamics3D world) {
-        
     }
-
-
-
-
-
-
-
 
 
     @Override
@@ -99,22 +79,25 @@ public abstract class Spatial<X> implements Active {
         return true;
     }
 
-    /** returns true if the event has been absorbed, false if it should continue propagating */
+    /**
+     * returns true if the event has been absorbed, false if it should continue propagating
+     */
     public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraphPhys3D space) {
         return null;
     }
 
-    /** returns true if the event has been absorbed, false if it should continue propagating */
+    /**
+     * returns true if the event has been absorbed, false if it should continue propagating
+     */
     public boolean onKey(Collidable body, v3 hitPoint, char charCode, boolean pressed) {
         return false;
     }
 
 
-
-    
     abstract public void forEachBody(Consumer<Collidable> c);
 
-    @Nullable abstract public List<TypedConstraint> constraints();
+    @Nullable
+    abstract public List<TypedConstraint> constraints();
 
     public abstract void renderAbsolute(GL2 gl, int dtMS);
 
@@ -126,12 +109,12 @@ public abstract class Spatial<X> implements Active {
     }
 
     public void stabilize(v3 boundsMin, v3 boundsMax) {
-        
+
 
         forEachBody(b -> {
             v3 t = b.transform;
-            
-            
+
+
             t.clamp(boundsMin, boundsMax);
         });
     }

@@ -34,11 +34,17 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
             Signal x = sensors.get(i);
             Truth g = x.goals().truth(start, end, nar);
 
-            exp[i] = g != null ? g.expectation() : EXP_IF_UNKNOWN;
+            exp[i] = g != null ? q(g) : EXP_IF_UNKNOWN;
         }
 
         return decider.decide(exp, -1);
 
+    }
+
+    /** truth -> decidability */
+    public float q(Truth g) {
+        //return g.expectation();
+        return g.freq();
     }
 
     @Override

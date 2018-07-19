@@ -110,6 +110,16 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        return set.equals(((ArrayHashSet)o).set);
+    }
+
+    @Override
+    public int hashCode() {
+        return set.hashCode();
+    }
+
     public static <X> ArrayHashSet<X> of(X... x) {
         ArrayHashSet a = new ArrayHashSet(x.length);
         Collections.addAll(a, x);

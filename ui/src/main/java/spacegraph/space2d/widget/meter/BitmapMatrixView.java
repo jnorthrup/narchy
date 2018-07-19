@@ -28,7 +28,7 @@ public class BitmapMatrixView extends Surface {
 
     public final int w;
     private final int h;
-    private final ViewFunction2D view;
+    private volatile ViewFunction2D view;
     private final Tex bmp;
     protected Tuple2f touchPos;
     protected Point2i touchPixel;
@@ -196,6 +196,8 @@ public class BitmapMatrixView extends Surface {
         final int h = this.h;
         final int w = this.w;
         int i = 0;
+
+        ViewFunction2D view = this.view;
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 pix[i++] = view.update(x, y);

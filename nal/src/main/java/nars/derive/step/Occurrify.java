@@ -700,12 +700,16 @@ public class Occurrify extends TimeGraph {
 //
 //                //pretend in present
 //                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
-                o[0] = NOW;  o[1] = NOW + d.dur;
+                o[0] = NOW;  o[1] = NOW + Math.max(0,d.dur-1);
                 //o[0] = NOW-d.dur/2;  o[1] = NOW + d.dur/2;
                 return true;
             }
 
-            if (o[0] < NOW) {
+            if (o[0] >= NOW) {
+
+            }
+
+            if (o[0] < NOW && o[1] < NOW) {
             //if (o[0] != NOW) {
                 long range = o[1] - o[0];
 
@@ -714,16 +718,18 @@ public class Occurrify extends TimeGraph {
                     // shift and project to present, "as-if" past-perfect/subjunctive tense
 
                     //discount for projection
-                    long deltaStart = Math.abs(NOW - o[0]);
-                    float eStartFactor = (float) Param.evi(1, deltaStart, d.dur);
+                    //long deltaT = Math.abs(NOW - o[0]);
+                    long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
+                    float eStartFactor = (float) Param.evi(1, deltaT, d.dur);
                     if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
                         return false; //insufficient evidence
 
 
                 }
 
-                o[0] = NOW;
-                o[1] = NOW + range;
+                //o[0] = NOW; o[1] = NOW + range;
+                o[0] = NOW;  o[1] = NOW + Math.min(range, Math.max(0,d.dur-1));
+
 
             }
 

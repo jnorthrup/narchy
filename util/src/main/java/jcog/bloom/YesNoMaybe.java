@@ -83,7 +83,7 @@ public class YesNoMaybe<X> extends Flip<Twin<LongBitsetBloomFilter>> {
             pw.getOne().clear();
             pw.getTwo().clear();
 
-            pw = commit();
+            pw = commitAndGet();
             ny = pw.getOne();
             nn = pw.getTwo();
 

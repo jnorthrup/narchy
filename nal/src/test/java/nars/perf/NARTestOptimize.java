@@ -63,11 +63,11 @@ class NARTestOptimize {
                 (TestNARSuite t) -> (float) t.score()
             );
 
-            o
-            .sense("numConcepts",
-                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
-            .sense("derivedTask",
-                (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()));
+//            o
+//            .sense("numConcepts",
+//                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
+//            .sense("derivedTask",
+//                (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()));
 
             o.runSync().print();
 

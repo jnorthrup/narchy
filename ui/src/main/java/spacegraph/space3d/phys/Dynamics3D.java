@@ -67,7 +67,7 @@ public class Dynamics3D<X> extends Collisions<X> {
 
 
     private final Flip<List<Collidable>> coll = new Flip(FasterList::new);
-    private List<Collidable> collidable = coll.read();
+    private volatile List<Collidable> collidable = coll.read();
 
     public final FasterList<BroadConstraint> broadConstraints = new FasterList<>(0);
     private final FasterList<TypedConstraint> sortedConstraints = new FasterList<>(0);
@@ -77,8 +77,8 @@ public class Dynamics3D<X> extends Collisions<X> {
 
     
     @Deprecated protected float localTime = 1f / 60f;
-    private boolean ownsIslandManager;
-    private boolean ownsConstrainer;
+
+
 
 
 
@@ -92,14 +92,11 @@ public class Dynamics3D<X> extends Collisions<X> {
     private Dynamics3D(Intersecter intersecter, Broadphase broadphase, Iterable<Spatial<X>> spatials, Constrainer constrainer) {
         super(intersecter, broadphase);
         this.spatials = spatials;
-        islands = new Islands();
-        ownsIslandManager = true;
+        this.islands = new Islands();
         if (constrainer == null) {
             this.constrainer = new SequentialImpulseConstrainer();
-            this.ownsConstrainer = true;
         } else {
             this.constrainer = constrainer;
-            this.ownsConstrainer = false;
         }
 
     }
@@ -238,22 +235,10 @@ public class Dynamics3D<X> extends Collisions<X> {
             List<TypedConstraint> cc = s.constraints();
             if (cc!=null)
                 cc.forEach(this::addConstraint);
-
-
-
-
-
-
-
-
-
         });
 
-        
 
-
-        
-        this.collidable = coll.commit();
+        this.collidable = coll.commitAndGet();
 
     }
 

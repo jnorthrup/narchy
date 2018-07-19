@@ -6,7 +6,6 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
-import nars.agent.util.Impiler;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -608,7 +607,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             reset();
         }
 
-        public void reset() {
+        protected void reset() {
             currentX = width / 2 - 1;
             currentY = 0;
             score = 0;
@@ -618,8 +617,14 @@ public class Tetris extends NAgentX implements Bitmap2D {
             currentRotation = 0;
             is_game_over = false;
 
-            spawnBlock();
             running = true;
+            restart();
+
+            spawnBlock();
+        }
+
+        /** do nothing method for signaling to NAR restart occurred, but not to allow it to trigger an actual restart */
+        public void restart() {
 
         }
 

@@ -58,7 +58,7 @@ public abstract class Param {
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
 
     /**
@@ -195,7 +195,7 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 1f;
+    public static float TEST_TIME_MULTIPLIER = 1.5f;
 
 
     @Range(min = 1, max = 32)

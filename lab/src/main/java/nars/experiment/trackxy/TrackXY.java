@@ -52,7 +52,7 @@ public class TrackXY extends NAgent2 {
 
     public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.1f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.05f, 0, 2f);
 
     public final FloatRange visionContrast = new FloatRange(0.9f, 0, 1f);
 
@@ -67,16 +67,9 @@ public class TrackXY extends NAgent2 {
     protected TrackXY(NAR nar, int W, int H) {
         super("trackXY", nar);
 
-
-
-
         senseNumber($.inh("sx", id), new FloatNormalized(() -> sx, 0, W));
         if (H > 1)
             senseNumber($.inh("sy", id), new FloatNormalized(() -> sy, 0, H));
-
-        //actionPushButtonMutex();
-        actionSwitch();
-        //actionTriState();
 
 
         if (targetNumerics) {
@@ -93,6 +86,10 @@ public class TrackXY extends NAgent2 {
             this.cam = null;
         }
 
+        actionPushButtonMutex();
+        //actionSwitch();
+        //actionTriState();
+
 
         reward(this::act);
 
@@ -104,7 +101,7 @@ public class TrackXY extends NAgent2 {
         boolean nars = true;
         boolean rl = false;
 
-        int dur = 20;
+        int dur = 10;
 
         NARS nb = new NARS()
                 .exe(new UniExec())
