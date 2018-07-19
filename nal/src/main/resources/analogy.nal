@@ -3,15 +3,15 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
-  X, (X<->Y)                        |- Y, (Belief:Analogy, Goal:Desire, Time:TaskImmediate)
-  X, (--X<->Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN, Time:TaskImmediate)
-  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:Desire, Time:TaskImmediate)
-  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:DesireWeak, Time:TaskImmediate)
-  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Belief:AnalogyN, Goal:DesireWeakN, Time:TaskImmediate)
+  X, (X<->Y)                        |- Y, (Belief:Analogy, Goal:Desire)
+  X, (--X<->Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:Desire)
+  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:DesireWeak)
+  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Belief:AnalogyN, Goal:DesireWeakN)
 
-  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralStrong, Time:TaskImmediate)
+  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralStrong)
   //chain:
-  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralStrong, Time:TaskImmediate)
+  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralStrong)
 
 
 

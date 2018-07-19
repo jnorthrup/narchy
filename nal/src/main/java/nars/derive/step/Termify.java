@@ -119,17 +119,9 @@ public final class Termify extends AbstractPred<Derivation> {
             }
 
 
-            if (d.concPunc == GOAL) {
-                if (occ[0] == ETERNAL && d.task.isEternal() && (d.concSingle || !d.belief.isEternal())) {
-
-                    occ = d.concOcc = nar.timeFocus();
-                }
-            }
-
             if (occ[0] == ETERNAL && !d.occ.validEternal()) {
                 throw new RuntimeException("illegal eternal temporalization");
             }
-
 
             if (unwrapNeg)
                 c2 = c2.neg();

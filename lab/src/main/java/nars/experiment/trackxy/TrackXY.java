@@ -18,6 +18,7 @@ import nars.exe.UniExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.time.clock.CycleTime;
@@ -58,7 +59,7 @@ public class TrackXY extends NAgent2 {
     public final MutableEnum<TrackXYMode> mode =
             new MutableEnum<TrackXYMode>(TrackXYMode.class).set(TrackXYMode.CircleTarget);
 
-    static boolean targetNumerics = true, targetCam = true;
+    static boolean targetNumerics = false, targetCam = true;
 
     private transient float lastDistance = Float.POSITIVE_INFINITY;
 
@@ -66,14 +67,15 @@ public class TrackXY extends NAgent2 {
     protected TrackXY(NAR nar, int W, int H) {
         super("trackXY", nar);
 
-        this.view = new ArrayBitmap2D(this.W = W, this.H = H);
+
+
 
         senseNumber($.inh("sx", id), new FloatNormalized(() -> sx, 0, W));
         if (H > 1)
             senseNumber($.inh("sy", id), new FloatNormalized(() -> sy, 0, H));
 
-        actionPushButtonMutex();
-        //actionSwitch();
+        //actionPushButtonMutex();
+        actionSwitch();
         //actionTriState();
 
 
@@ -82,8 +84,11 @@ public class TrackXY extends NAgent2 {
             if (H > 1)
                 senseNumber($.inh("ty", id), new FloatNormalized(() -> ty, 0, H));
         }
+
+        this.view = new ArrayBitmap2D(this.W = W, this.H = H);
         if (targetCam) {
             this.cam = sense(new Bitmap2DSensor<>(id /* (Term) null*/, view, nar));
+            cam.resolution(0.1f);
         } else {
             this.cam = null;
         }
@@ -99,21 +104,21 @@ public class TrackXY extends NAgent2 {
         boolean nars = true;
         boolean rl = false;
 
-        int dur = 10;
+        int dur = 20;
 
         NARS nb = new NARS()
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
 
-                        new CaffeineIndex(8 * 1024)
+                        new CaffeineIndex(2 * 1024)
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 
 
         NAR n = nb.get();
         n.dtDither.set(dur / 2);
-        n.timeFocus.set(8);
+        n.timeFocus.set(2);
         n.freqResolution.set(0.02f);
 //        n.goalPriDefault.set(0.9f);
 //        n.beliefPriDefault.set(0.3f);
@@ -121,7 +126,7 @@ public class TrackXY extends NAgent2 {
 //        n.questPriDefault.set(0.1f);
 
 
-        n.termVolumeMax.set(22);
+        n.termVolumeMax.set(18);
 
 
 
@@ -149,8 +154,10 @@ public class TrackXY extends NAgent2 {
                     ,"motivation.nal"
             ));
 
-            ((MatrixDeriver) d).conceptsPerIteration.set(8);
+            ((MatrixDeriver) d).conceptsPerIteration.set(4);
 
+
+            new STMLinkage(n, 1, false);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
                     x -> true,

@@ -5,8 +5,8 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,19 +16,22 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     final T[] emptyArray;
 
-    final Map<X, T> map = new ConcurrentOpenHashMap<>();
+    final Map<X, T> map =
+            //new ConcurrentOpenHashMap<>();
+            new ConcurrentHashMap();
 
     /** double buffer live copy */
     private volatile T[] list;
 
-    /** double buffer backup copy */
-    final AtomicReference<T[]> lists = new AtomicReference<>();
+//    /** double buffer backup copy */
+//    final AtomicReference<T[]> lists = new AtomicReference<>();
 
     private final AtomicBoolean invalid = new AtomicBoolean(true);
 
 
     public ConcurrentFastIteratingHashMap(T[] emptyArray) {
-        lists.set(this.list = this.emptyArray = emptyArray);
+        this.emptyArray = emptyArray;
+        //lists.set(this.list = this.emptyArray = emptyArray);
     }
 
     /**
@@ -91,8 +94,10 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
      */
     public void forEachValue(Consumer<? super T> action) {
         T[] x = valueArray();
-        for (T t : x)
-            action.accept(t);
+        for (T t : x) {
+            if (t!=null)
+                action.accept(t);
+        }
     }
 
     @Override
@@ -125,7 +130,8 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
     public boolean whileEachValue(Predicate<? super T> action) {
         T[] x = valueArray();
         for (int i = 0, xLength = x.length; i < xLength; i++) {
-            if (!action.test(x[i]))
+            T xi = x[i];
+            if (xi!=null && !action.test(xi))
                 return false;
         }
         return true;
@@ -134,7 +140,8 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
     public boolean whileEachValueReverse(Predicate<? super T> action) {
         T[] x = valueArray();
         for (int i = x.length - 1; i >= 0; i--) {
-            if (!action.test(x[i]))
+            T xi = x[i];
+            if (xi!=null && !action.test(xi))
                 return false;
         }
         return true;
@@ -177,16 +184,30 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
 
     public final T[] valueArray() {
-        T[] curLive = list;
+        T[] cur = list;
         if (invalid.weakCompareAndSetAcquire(true, false)) {
-            T[] prevNext = lists.getAcquire();
-            T[] next = ((ConcurrentOpenHashMap<?, T>) map).values(prevNext, i -> Arrays.copyOf(emptyArray, i));
-            if (lists.weakCompareAndSetRelease(prevNext, curLive)) {
-                return this.list = next;
-            }
+//            T[] prevNext = lists.getAcquire();
+//            T[] next = _valueArray(prevNext);
+//            if (lists.weakCompareAndSetRelease(prevNext, curLive)) {
+//                return this.list = next;
+//            }
+
+            //TODO buffer to a ringbuffer and atomically switch to the next segment on finish iterating through the map
+            //resize ring buffer to at least 2x map size() if necessary
+            return list = _valueArray(null);
         }
 
-        return curLive;
+        return cur;
+    }
+
+    private T[] _valueArray(T[] prev) {
+        T[] next;
+        if (map instanceof ConcurrentOpenHashMap) {
+            next = ((ConcurrentOpenHashMap<?, T>) map).values(prev, i -> Arrays.copyOf(emptyArray, i));
+        } else {
+            next = map.values().toArray(prev);
+        }
+        return next;
     }
 
 

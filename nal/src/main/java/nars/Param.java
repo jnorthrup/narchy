@@ -188,7 +188,7 @@ public abstract class Param {
      * TTL = 'time to live'
      */
 
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, 0, TTL_MIN * 16);
 
 
     /**
@@ -243,7 +243,7 @@ public abstract class Param {
      * cost of a failed/aborted task derivation
      */
     @Range(min = 0, max = 64)
-    public static int TTL_DERIVE_TASK_FAIL = 5;
+    public static int TTL_DERIVE_TASK_FAIL = 4;
 
 
     /**

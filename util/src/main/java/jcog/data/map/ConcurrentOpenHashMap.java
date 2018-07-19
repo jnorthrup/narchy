@@ -51,10 +51,10 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     private static final Object DeletedKey = new Object();
 
-    private static final float MapFillFactor = 0.9f;
+    private static final float MapFillFactor = 0.66f;
 
     private static final int DefaultExpectedItems = 1024;
-    private static final int DefaultConcurrencyLevel = 4;
+    private static final int DefaultConcurrencyLevel = Runtime.getRuntime().availableProcessors();
 
     private final Section<K, V>[] sections;
 
@@ -501,17 +501,17 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         return (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(n - 1));
     }
 
-    private static class MyFasterList<V> extends FasterList<V> {
-        private final V[] emptyArray;
-
-        public MyFasterList(int size, V[] emptyArray) {
-            super(emptyArray);
-            this.emptyArray = emptyArray;
-        }
-
-        @Override
-        protected V[] newArray(int newCapacity) {
-            return Arrays.copyOf(emptyArray, newCapacity);
-        }
-    }
+//    private static class MyFasterList<V> extends FasterList<V> {
+//        private final V[] emptyArray;
+//
+//        public MyFasterList(int size, V[] emptyArray) {
+//            super(emptyArray);
+//            this.emptyArray = emptyArray;
+//        }
+//
+//        @Override
+//        protected V[] newArray(int newCapacity) {
+//            return Arrays.copyOf(emptyArray, newCapacity);
+//        }
+//    }
 }

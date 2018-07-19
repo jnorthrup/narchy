@@ -4,9 +4,9 @@
 
 //Conj and Disj Question Decomposition
     C, X, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
-        //X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
+        X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
     C, X, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
-        //X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
+        X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
 
     (C ==> X), X, task("?"), is(C,"&&")   |- (dropAnyEvent(C) ==> X), (Punctuation:Question)
     (X ==> C), X, task("?"), is(C,"&&")   |- (X ==> dropAnyEvent(C)), (Punctuation:Question)

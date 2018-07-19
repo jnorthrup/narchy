@@ -368,11 +368,10 @@ class NAL8EternalMixTest extends NALTest {
     void temporal_goal_detachment_1() {
 
         test
-
                 .input("hold. :|:")
                 .input("( hold &&+5 (at &&+5 open) )!")
-                .mustGoal(cycles, "(at &&+5 open)", 1.0f, 0.5f, 5, 10)
-        
+                .mustGoal(cycles, "(at &&+5 open)", 1.0f, 0.5f, 5)
+                //.mustNotOutput(cycles, "(at &&+5 open)", GOAL, (t)->t!=5 && t!=ETERNAL);
         ;
     }
 
@@ -487,29 +486,29 @@ class NAL8EternalMixTest extends NALTest {
     void testDesiredConjDelayed() {
 
         test
-                .believe("(x)", Tense.Present, 1f, 0.9f)
-                .goal("((x) &&+3 (y))")
-                .mustGoal(cycles, "(y)", 1f, 0.81f, (t) -> t >= 3)
-                .mustNotOutput(cycles, "(y)", GOAL, ETERNAL);
+                .believe("x", Tense.Present, 1f, 0.9f)
+                .goal("(x &&+3 y)")
+                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t >= 3)
+                .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
     @Test
     void testDesiredConjDelayedNeg() {
 
         test
-                .believe("(x)", Tense.Present, 0f, 0.9f)
-                .goal("(--(x) &&+3 (y))")
-                .mustGoal(cycles, "(y)", 1f, 0.81f, (x)->x>=3)
-                .mustNotOutput(cycles, "(y)", GOAL, ETERNAL);
+                .believe("x", Tense.Present, 0f, 0.9f)
+                .goal("(--x &&+3 y)")
+                .mustGoal(cycles, "y", 1f, 0.81f, x->x>=3)
+                .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
     @Test
     void testBelievedImplOfDesireDelayed() {
 
         test
-                .goal("(x)", Tense.Present, 1f, 0.9f)
-                .believe("((x)==>+3(y))")
-                .mustGoal(cycles, "(y)", 1f, 0.81f, 3)
+                .goal("x", Tense.Present, 1f, 0.9f)
+                .believe("(x==>+3y)")
+                .mustGoal(cycles, "y", 1f, 0.81f, 3)
         
         ;
     }
@@ -518,10 +517,10 @@ class NAL8EternalMixTest extends NALTest {
     void testGoalConjunctionDecomposeSuffix() {
 
         test
-                .goal("((x) &&+3 (y))", Tense.Eternal, 1f, 0.9f)
-                .inputAt(4, "(x). :|:")
-                .mustGoal(cycles, "(y)", 1f, 0.81f, (4 + 3))
-                .mustNotOutput(cycles, "(y)", GOAL, 3)
+                .goal("(x &&+3 y)", Tense.Eternal, 1f, 0.9f)
+                .inputAt(4, "x. :|:")
+                .mustGoal(cycles, "y", 1f, 0.81f, (4 + 3))
+                .mustNotOutput(cycles, "y", GOAL, 3)
         
         ;
     }
@@ -570,9 +569,9 @@ class NAL8EternalMixTest extends NALTest {
     void disjunctionBackwardsQuestionTemporal() {
 
         test
-                .inputAt(0, "(||, (x), (y))?")
-                .believe("(x)", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "(&&, (--,(x)), (--,(y)))", 0f, 0.81f, 0);
+                .inputAt(0, "(||, x, y)?")
+                .believe("x", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "(&&, (--,x), (--,y))", 0f, 0.81f, 0);
     }
 
     @Test
@@ -597,10 +596,10 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("((a($x) &&+4 b($x)) ==>-3 c($x)).")
-                .inputAt(0, "c(x)! :|:")
+                .inputAt(0, "cx! :|:")
                 
-                .mustGoal(cycles * 5, "b(x)", 1f, 0.73f,
-                        (t) -> t >= 3 /* early since c(x) is alrady active when this gets derived */);
+                .mustGoal(cycles * 5, "bx", 1f, 0.73f,
+                        (t) -> t >= 3 /* early since cx is alrady active when this gets derived */);
     }
 
     @Test
@@ -640,10 +639,10 @@ class NAL8EternalMixTest extends NALTest {
     void testStrongUnificationDeductionPN() {
         
         test
-                .input("((--,Y) ==>+1 (X)).")
+                .input("((--,Y) ==>+1 x).")
                 .input("(--,Y). :|:")
-                .mustBelieve(cycles, "(X)", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(X)", BELIEF, ETERNAL)
+                .mustBelieve(cycles, "x", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "x", BELIEF, ETERNAL)
         ;
     }
 

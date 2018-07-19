@@ -281,7 +281,7 @@ public class NAgent2 extends DurService implements NSense, NAct {
 
 
     protected void always(float activation) {
-        in.input(always.stream().map(x -> x.get()).peek(x -> {
+        in.input(always.stream().map(Supplier::get).peek(x -> {
             x.pri(
                     activation * nar.priDefault(x.punc())
             );
@@ -289,6 +289,7 @@ public class NAgent2 extends DurService implements NSense, NAct {
     }
 
     public Off reward(FloatSupplier rewardfunc) {
+        Term r = $.func("reward", id);
         return new Ons(
                 onFrame(new Runnable() {
 
@@ -302,17 +303,17 @@ public class NAgent2 extends DurService implements NSense, NAct {
 
                             nar,
 
-                            pair(id, ///$.inh(id, "happy"),
+                            pair(r,
                                     new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
 
-                            pair($.func("chronic", id), compose(
+                            pair($.func("chronic", r), compose(
                                     new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
                                     new FloatExpMovingAverage(0.02f)
                             )),
 
 
-                            pair($.func("acute", id), compose(
+                            pair($.func("acute", r), compose(
                                     new FloatExpMovingAverage(0.1f, false),
                                     new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
                             ))

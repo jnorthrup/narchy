@@ -58,8 +58,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class Occurrify extends TimeGraph {
 
     public static final TaskTimeMerge mergeDefault =
-            TaskTimeMerge.Intersect;
-    //TaskTimeMerge.Union;
+            //TaskTimeMerge.Intersect;
+            TaskTimeMerge.TaskImmediate;
 
 
     public static final ImmutableMap<Term, TaskTimeMerge> merge;
@@ -592,7 +592,6 @@ public class Occurrify extends TimeGraph {
         Intersect() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                //return solveOccDTWithGoalOverride(d, x);
                 return solveOccDT(d, x, d.occ.reset(x));
             }
 
@@ -701,8 +700,8 @@ public class Occurrify extends TimeGraph {
 //
 //                //pretend in present
 //                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
-                o[0] = NOW;
-                o[1] = NOW + d.dur;
+                o[0] = NOW;  o[1] = NOW + d.dur;
+                //o[0] = NOW-d.dur/2;  o[1] = NOW + d.dur/2;
                 return true;
             }
 
