@@ -2,22 +2,14 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
-import nars.$;
 import nars.NAR;
 import nars.NARLoop;
-import nars.agent.NAgent;
-import nars.control.Cause;
 import nars.control.DurService;
 import nars.control.MetaGoal;
-import nars.control.Traffic;
-import nars.exe.Causable;
 import nars.exe.UniExec;
 import nars.time.clock.RealTime;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ForceDirected2D;
 import spacegraph.space2d.container.Scale;
@@ -29,16 +21,12 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
-import spacegraph.space2d.widget.meter.TreeChart;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
 
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.sqrt;
@@ -95,7 +83,7 @@ public class ExeCharts {
 
                             @Override
                             protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-                                if (auto.on()) {
+                                if (auto.get()) {
                                     set(want[w]);
                                 }
 
@@ -104,7 +92,7 @@ public class ExeCharts {
                                 .text(MetaGoal.values()[w].name())
                                 .type(SliderModel.KnobHoriz)
                                 .on((s, v) -> {
-                                    if (!auto.on())
+                                    if (!auto.get())
                                         want[w] = v;
                                 })
                 ).toArray(Surface[]::new));
@@ -171,104 +159,6 @@ public class ExeCharts {
             });
     }
 
-    public static Surface causePanel(NAR nar) {
-
-        TreeChart<Causable> tc = new TreeChart();
-        List<Causable> s = $.newArrayList();
-        Function<Causable, TreeChart.ItemVis<Causable>> updater = TreeChart.cached();
-
-        return DurSurface.get(tc, nar, () -> {
-
-            s.clear();
-            nar.services.stream().filter(Causable.class::isInstance)
-                    .map(x -> (Causable) x)
-                    .collect(Collectors.toCollection(() -> s));
-
-            tc.update(s, (x, y) -> {
-                float v = x.value();
-                y.updateMomentum(x.can.sumPrev() / 1000000f,
-                        0.1f, v < 0 ? -v : 0, 0, v > 0 ? +v : 0);
-
-            }, updater);
-
-
-        });
-
-    }
-
-    private static Surface metaGoalChart(NAgent a) {
-
-        return new TreeChart<Cause>() {
-            DurService on;
-
-            final FasterList<ItemVis<Cause>> cache = new FasterList();
-
-            final Function<Cause, TreeChart.ItemVis<Cause>> builder = ((i) -> {
-                short id = i.id;
-                ItemVis<Cause> item;
-                if (cache.capacity() - 1 < id)
-                    cache.ensureCapacity(id + 16);
-                else {
-                    item = cache.get(id);
-                    if (item != null)
-                        return item;
-                }
-
-
-                String str = i.toString();
-                if (str.startsWith("class nars."))
-                    str = str.substring("class nars.".length()); 
-
-                if (str.startsWith("class "))
-                    str = str.substring(5); 
-
-                item = new CauseVis(i, str);
-                cache.set(id, item);
-                return item;
-            });
-
-            {
-
-                on = a.onFrame(() -> {
-                    update(a.nar().causes, (c, i) -> {
-                        float v = c.value();
-                        float r, g, b;
-                        if (v < 0) {
-                            r = 0.75f * Math.max(0.1f, Math.min(1f, -v));
-                            g = 0;
-                        } else {
-                            g = 0.75f * Math.max(0.1f, Math.min(1f, +v));
-                            r = 0;
-                        }
-
-                        float t = Util.sum(((FloatFunction<Traffic>) (p -> Math.abs(p.last))), c.goal);
-
-                        b = Math.max(r, g) / 2f * Util.unitize(t);
-
-                        i.update(v, r, g, b);
-
-
-
-
-
-
-
-
-                    }, builder);
-                });
-            }
-
-            @Override
-            public boolean stop() {
-                if (super.stop()) {
-                    on.off();
-                    on = null;
-                    return true;
-                }
-                return false;
-            }
-        };
-    }
 
     /** adds duration control */
     static class NARLoopPanel extends LoopPanel {
@@ -315,16 +205,6 @@ public class ExeCharts {
         return DurSurface.get(p, n, control::update);
     }
 
-    private static class CauseVis extends TreeChart.ItemVis<Cause> {
-        public CauseVis(Cause i, String str) {
-            super(i, StringUtils.abbreviate(str, 26));
-        }
-
-        @Override
-        public float requestedArea() {
-            return 0.01f + super.requestedArea();
-        }
-    }
 
 
 }

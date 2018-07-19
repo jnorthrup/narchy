@@ -1,7 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.data.NumberX;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -60,29 +59,28 @@ public interface DerivedTasks {
          */
         final PriArrayBag<Task> tasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
 
-            @Override
-            public Task put(Task incoming, NumberX overflow) {
-                //fast merge intercept: avoids synchronization in normal insert procedure
-                Task existing = map.get(incoming);
-                if (existing!=null) {
-                    DERIVATION_MERGE.apply(existing, incoming);
-                    return existing;
-                }
-
-
-                return super.put(incoming, overflow);
-            }
-
-
-            /** returning null elides lookup which was already performed on the intercept */
-            @Override protected Task getExisting(Task key) {
-                return null;
-            }
-
-            @Override
-            protected float merge(Task existing, Task incoming) {
-                throw new UnsupportedOperationException("should not reach here");
-            }
+//            @Override
+//            public Task put(Task incoming, NumberX overflow) {
+//                //fast merge intercept: avoids synchronization in normal insert procedure
+//                Task existing = map.get(incoming);
+//                if (existing!=null) {
+//                    DERIVATION_MERGE.apply(existing, incoming);
+//                    //TODO sort if order changed
+//                    return existing;
+//                }
+//
+//
+//                return super.put(incoming, overflow);
+//            }
+//
+//            /** returning null elides lookup which was already performed on the intercept */
+//            @Override protected Task getExisting(Task key) {
+//                return null;
+//            }
+//            @Override
+//            protected float merge(Task existing, Task incoming) {
+//                throw new UnsupportedOperationException("should not reach here");
+//            }
 
 
         };

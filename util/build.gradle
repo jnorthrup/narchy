@@ -5,7 +5,7 @@ dependencies {
 
     compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.2.0'
 
-    compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.12') {
+    compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.13') {
         exclude(module:'slf4j-api')
     }
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
@@ -13,7 +13,7 @@ dependencies {
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
     compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10'
     compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.16'
-    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.14') {
+    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.15') {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }

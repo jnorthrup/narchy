@@ -1,6 +1,5 @@
 package spacegraph.video;
 
-import boofcv.struct.image.InterleavedU8;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamEventType;
@@ -122,30 +121,30 @@ public class WebCam {
 
     }
 
-    public static void convertFromInterleaved(BufferedImage src, InterleavedU8 dst) {
-
-        final int width = src.getWidth();
-        final int height = src.getHeight();
-
-        if (dst.getNumBands() == 3) {
-
-            byte[] dd = dst.data;
-            for (int y = 0; y < height; y++) {
-                int indexDst = dst.startIndex + y * dst.stride;
-                for (int x = 0; x < width; x++) {
-                    int argb = src.getRGB(x, y);
-
-                    dd[indexDst++] = (byte) (argb >>> 16);
-                    dd[indexDst++] = (byte) (argb >>> 8);
-                    dd[indexDst++] = (byte) argb;
-                }
-            }
-        } else if (dst.getNumBands() == 1) {
-            
-            
-            throw new IllegalArgumentException("Unsupported number of input bands");
-        }
-    }
+//    public static void convertFromInterleaved(BufferedImage src, InterleavedU8 dst) {
+//
+//        final int width = src.getWidth();
+//        final int height = src.getHeight();
+//
+//        if (dst.getNumBands() == 3) {
+//
+//            byte[] dd = dst.data;
+//            for (int y = 0; y < height; y++) {
+//                int indexDst = dst.startIndex + y * dst.stride;
+//                for (int x = 0; x < width; x++) {
+//                    int argb = src.getRGB(x, y);
+//
+//                    dd[indexDst++] = (byte) (argb >>> 16);
+//                    dd[indexDst++] = (byte) (argb >>> 8);
+//                    dd[indexDst++] = (byte) argb;
+//                }
+//            }
+//        } else if (dst.getNumBands() == 1) {
+//
+//
+//            throw new IllegalArgumentException("Unsupported number of input bands");
+//        }
+//    }
 
 
     private Ons webcamListeners = new Ons();

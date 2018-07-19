@@ -6,10 +6,10 @@ import jcog.math.*;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
-import nars.Op;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
+import nars.sensor.Bitmap2DSensor;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -17,7 +17,6 @@ import nars.term.atom.Atomic;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Map;
 import java.util.function.*;
 
 import static nars.$.*;
@@ -43,14 +42,13 @@ public interface NSense {
         return $.prop(a,b);
     }
 
-    Map<Signal, CauseChannel<ITask>> sensors();
-
     NAR nar();
 
     
     default Signal sense(Term term, BooleanSupplier value) {
         return sense(term, () -> value.getAsBoolean() ? 1f : 0f);
     }
+
 
 
 
@@ -68,22 +66,13 @@ public interface NSense {
         return s;
     }
 
-    default void addSensor(Signal s, CauseChannel cause) {
-        CauseChannel<ITask> existing = sensors().put(s, cause);
-        assert (existing == null);
-    }
+    void addSensor(Signal s, CauseChannel cause);
 
     default void addSensor(Signal c) {
         CauseChannel<ITask> cause = nar().newChannel(c);
         addSensor(c, cause);
     }
 
-    /**
-     * learning rate
-     */
-    default float alpha() {
-        return nar().confDefault(Op.BELIEF);
-    }
 
     /**
      * interpret an int as a selector between enumerated values

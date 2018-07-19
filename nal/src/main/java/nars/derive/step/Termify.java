@@ -43,7 +43,9 @@ public final class Termify extends AbstractPred<Derivation> {
 
         NAR nar = d.nar;
 
-        d.derivedTerm = null;
+        d.concTerm = null;
+        d.concOcc = null;
+
         nar.emotion.deriveTermify.increment();
 
         d.untransform.clear();
@@ -81,7 +83,6 @@ public final class Termify extends AbstractPred<Derivation> {
                 d.concTruth = d.concTruth.neg();
         }
 
-        d.concOcc = new long[] { ETERNAL, ETERNAL };
 
         Term c2;
         if (d.temporal) {
@@ -146,9 +147,10 @@ public final class Termify extends AbstractPred<Derivation> {
             } else {
                 c2 = c1;
             }
+            d.concOcc = null;
         }
 
-        d.derivedTerm = c2;
+        d.concTerm = c2;
         return true;
     }
 

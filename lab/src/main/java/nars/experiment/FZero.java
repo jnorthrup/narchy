@@ -110,21 +110,21 @@ public class FZero extends NAgentX {
             actionUnipolar($.func("aware", id, cam), (a) -> {
                 c.pixelPri.set(lerp(a, 0, 0.25f));
                 //c.resolution(lerp(camAware, 0.1f, 0.02f));
-            }).resolution(0.05f);
+            }).resolution(0.2f);
 
             float angPri[] = {0};
             actionUnipolar($.func("aware", id, ang.id), (a) -> {
                 angPri[0] = lerp(a, 0, 1f);
-            }).resolution(0.5f);
+            }).resolution(0.2f);
             ang.pri(() -> angPri[0]);
 
             actionUnipolar($.func("curious", id), (cur) -> {
                 curiosity.set(lerp(cur, 0.01f, 0.5f));
-            }).resolution(0.05f);
+            }).resolution(0.2f);
 
             actionUnipolar($.func("timeFocus", id), (f) -> {
                 nar.timeFocus.set(lerp(f, 1f, 16));
-            }).resolution(0.05f);
+            }).resolution(0.2f);
         }
 
     }

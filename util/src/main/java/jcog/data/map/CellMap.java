@@ -42,14 +42,14 @@ public class CellMap<K, V> {
     }
 
     protected CacheCell<K,V> newCell() {
-        return new CacheCell();
+        return new CacheCell<>();
     }
 
-    public void forEachCell(Consumer<? super CacheCell<K,V>> each) {
+    public final void forEachCell(Consumer<? super CacheCell<K,V>> each) {
         cache.forEachValue(each);
     }
 
-    public void forEachValue(Consumer<? super V> each) {
+    public final void forEachValue(Consumer<? super V> each) {
         forEachCell(e -> {
             V s = e.value;
             if (s != null)
@@ -129,7 +129,6 @@ public class CellMap<K, V> {
     }
 
     protected void invalidated() {
-        
         cache.invalidate();
     }
 
@@ -155,10 +154,7 @@ public class CellMap<K, V> {
 
     @Nullable public V get(Object from) {
         CacheCell<K, V> v = cache.get(from);
-        if (v!=null)
-            return v.value;
-        else
-            return null;
+        return v != null ? v.value : null;
     }
 
     /**
@@ -202,16 +198,16 @@ public class CellMap<K, V> {
                         create = true; 
                     }
                 }
-            } else { 
-                if (next != null)
-                    create = true;
-                else
+            } else {
+                if (next == null) {
                     delete = true;
+                } else {
+                    create = true;
+                }
             }
 
             if (delete) {
                 clear();
-                return false;
             }
 
             if (create) {

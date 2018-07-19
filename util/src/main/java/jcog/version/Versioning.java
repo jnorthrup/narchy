@@ -36,7 +36,8 @@ public class Versioning<X>
     /** hard clear; use with caution  */
     public void reset() {
 
-        for (int i = 0; i < size; i++) {
+        int s = this.size;
+        for (int i = 0; i < s; i++) {
             items[i].clear();
             items[i] = null;
         }

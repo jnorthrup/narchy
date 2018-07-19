@@ -24,7 +24,7 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
 /**
  * @author Tadas Subonis <tadas.subonis@gmail.com>
  */
-public class TreeChart<X> extends Surface {
+@Deprecated public class TreeChart<X> extends Surface {
 
 
 

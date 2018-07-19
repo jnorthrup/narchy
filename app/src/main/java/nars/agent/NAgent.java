@@ -14,6 +14,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
+import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
@@ -29,11 +30,11 @@ import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.TimeAware;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,8 +151,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now(),
                 ETERNAL, ETERNAL,
-                nar.evidence()
-                //Stamp.UNSTAMPED
+                //nar.evidence()
+                Stamp.UNSTAMPED
                 
         );
 
@@ -166,7 +167,6 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             long next = Tense.dither(this.now() + nar.dur(), nar);
             return new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
                     now, next,
-                    //evidenceShared
                     nar.evidence()
                     //Stamp.UNSTAMPED
 
@@ -204,8 +204,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
                 ETERNAL, ETERNAL,
                 //evidenceShared
-                nar.evidence()
-                //Stamp.UNSTAMPED
+                //nar.evidence()
+                Stamp.UNSTAMPED
 
         );
         always.add(()-> etq);
@@ -234,13 +234,9 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         return curiosity;
     }
 
-    @NotNull
-    @Override
-    public final Map<Signal, CauseChannel<ITask>> sensors() {
-        return sensors;
-    }
 
-    @NotNull
+
+    
     @Override
     public final Map<ActionConcept, CauseChannel<ITask>> actions() {
         return actions;
@@ -263,7 +259,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         return timeAware !=null ? timeAware.random() : ThreadLocalRandom.current();
     }
 
-    @NotNull
+    
     public String summary() {
 
         
@@ -332,11 +328,11 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
         }
 
-//        actions.keySet().forEach(a -> {
-//            alwaysQuest(a, true);
-//            //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
-//            //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
-//        });
+        actions.keySet().forEach(a -> {
+            alwaysQuest(a, true);
+            //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
+            //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
+        });
 
         concepts.addAll(actions.keySet());
         concepts.addAll(sensors.keySet());
@@ -400,7 +396,14 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
         ArrayUtils.shuffle(aa, random());
         for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
-            Stream<ITask> s = ac.getKey().update(last, now, sensorDur, NAgent.this);
+
+            ActionConcept acc = ac.getKey();
+
+            //HACK temporary
+            if (acc instanceof GoalActionConcept)
+                ((GoalActionConcept)acc).curiosity(curiosity.get());
+
+            Stream<ITask> s = acc.update(last, now, sensorDur, nar);
             if (s != null)
                 ac.getValue().input(s);
         }
@@ -689,15 +692,15 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
         }
 
-        public Supplier<Task> question(@NotNull Term term) {
+        public Supplier<Task> question( Term term) {
             return prediction(term, QUESTION, null);
         }
 
-        public Supplier<Task> quest(@NotNull Term term) {
+        public Supplier<Task> quest( Term term) {
             return prediction(term, QUEST, null);
         }
 
-        Supplier<Task> prediction(@NotNull Term _term, byte punct, Truth truth) {
+        Supplier<Task> prediction( Term _term, byte punct, Truth truth) {
             Term term = _term.normalize();
 
             long now = nar.time();
@@ -774,53 +777,12 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
-    public final float alpha() {
-        return nar.confDefault(BELIEF);
+    public void addSensor(Signal s, CauseChannel cause) {
+        CauseChannel<ITask> existing = sensors.put(s, cause);
+        assert (existing == null);
     }
+
 
 
     @Override
@@ -831,8 +793,9 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         return frame.on(each);
     }
 
-    public DurService onFrame(Runnable each) {
-        return DurService.on(nar, ()->{ if (enabled.get()) each.run(); });
+    public On onFrame(Runnable each) {
+        //return DurService.on(nar, ()->{ if (enabled.get()) each.run(); });
+        return frame.on((x)->each.run());
     }
 
 

@@ -126,22 +126,8 @@ public class Derivation extends PreDerivation {
             return y;
         }
     };
-    public long[] concOcc;
-    /**
-     * mutable state
-     */
-    public Truth concTruth;
-    public byte concPunc;
-    public Term derivedTerm;
-    public Task _task;
-    public Task _belief;
-    /**
-     * cached values ==========================================
-     */
-    public int termVolMax;
-    public float confMin;
-    public Task task;
-    public Task belief;
+
+
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
@@ -149,11 +135,11 @@ public class Derivation extends PreDerivation {
     /**
      * current NAR time, set at beginning of derivation
      */
-    public long time = ETERNAL;
-    /**
-     * evidential overlap
-     */
-    public boolean overlapDouble, overlapSingle;
+    public transient long time = ETERNAL;
+    public transient float confMin;
+    public transient int termVolMax;
+
+
     /**
      * the base priority determined by the task and/or belief (tasks) of the premise.
      * note: this is not the same as the premise priority, which is determined by the links
@@ -162,38 +148,39 @@ public class Derivation extends PreDerivation {
      * parent task(s) NOT the links.  this allows the different budget 'currencies' to remain
      * separate.
      */
-    public float pri;
-    public short[] parentCause;
-    public boolean concSingle;
-    public float parentComplexitySum;
-    public float premiseEviSingle;
-    public float premiseEviDouble;
-    public Occurrify occ = new Occurrify(this);
+    public final Occurrify occ = new Occurrify(this);
     /**
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
-    public boolean temporal;
 
+    private transient boolean eternal;
+    public transient boolean temporal;
+    public transient TruthFunc truthFunction;
+    public transient int ditherTime;
 
-    private boolean eternal;
-    /**
-     * original non-anonymized tasks
-     */
-    public TruthFunc truthFunction;
-    public int ditherTime;
     public Deriver deriver;
+    private ImmutableMap<Term, Termed> derivationFunctors;
+
     /**
      * precise time that the task and belief truth are sampled
      */
-    public long taskStart, beliefStart;
-    public boolean taskBeliefTimeIntersects;
-    //private ImmutableMap<Term, Termed> staticFunctors;
-    private ImmutableMap<Term, Termed> derivationFunctors;
-    private Term _beliefTerm;
-    private long[] evidenceDouble, evidenceSingle;
-    private int taskUniques;
-    private ImmutableLongSet taskStamp;
-
+    public transient long taskStart, beliefStart; //TODO taskEnd, beliefEnd
+    public transient boolean taskBeliefTimeIntersects;
+    private transient Term _beliefTerm;
+    private transient long[] evidenceDouble, evidenceSingle;
+    private transient int taskUniques;
+    private transient ImmutableLongSet taskStamp;
+    public transient boolean overlapDouble, overlapSingle;
+    public transient float pri;
+    public transient short[] parentCause;
+    public transient boolean concSingle;
+    public transient float parentComplexitySum;
+    public transient float premiseEviSingle, premiseEviDouble;
+    public transient long[] concOcc;
+    public transient Truth concTruth;
+    public transient byte concPunc;
+    public transient Term concTerm;
+    public transient Task _task, task, _belief, belief;
 
     /**
      * if using this, must set: nar, index, random, DerivationBudgeting
@@ -312,11 +299,9 @@ public class Derivation extends PreDerivation {
      */
     public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
 
-        this.termutes.clear();
 
-        reset();
 
-        this.derivedTerm = null;
+
 
 
         if (taskUniques > 0 && this._task != null && this._task.term().equals(_task.term())) {
@@ -340,41 +325,39 @@ public class Derivation extends PreDerivation {
         if (this._task == null || !Arrays.equals(this._task.stamp(), _task.stamp())) {
             this.taskStamp = Stamp.toSet(_task);
         }
-
         if (this._task == null || this._task != _task) {
-
-
-            this._task = _task;
-
             this.task = new TaskWithTerm(taskTerm, _task);
-
         }
 
         long taskStart = _task.start();
 
         assert (taskStart != TIMELESS);
 
-        this.taskStart = taskStart;
-        this.taskPunc = _task.punc();
 
+        this._task = _task;
+
+        this.taskPunc = _task.punc();
         if ((taskPunc == BELIEF || taskPunc == GOAL)) {
-            if ((this.taskTruth = _task.truth()) == null)
-                return false;
+            this.taskTruth = _task.truth();
+            assert(taskTruth!=null);
         } else {
             this.taskTruth = null;
         }
 
+        this.taskStart = taskStart;
 
         long taskEnd = _task.end();
         if (_belief != null) {
-            this.beliefTruthDuringTask = _belief.truth(taskStart, taskEnd, dur);
             this.beliefTruthRaw = _belief.truth();
+            this.beliefTruthDuringTask = _belief.truth(taskStart, taskEnd, dur);
+            this.beliefStart = _belief.start();
 
-            if (beliefTruthRaw != null || beliefTruthDuringTask != null) {
-                this._belief = _belief;
-            } else {
-                this._belief = null;
+            if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(taskStart==ETERNAL || beliefStart==ETERNAL)) {
+                Truth beliefEte = beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, nar);
+                this.beliefTruthDuringTask = Truth.stronger(beliefTruthDuringTask, beliefEte);
             }
+
+            this._belief = beliefTruthRaw != null || beliefTruthDuringTask != null ? _belief : null;
         } else {
             this._belief = null;
         }
@@ -383,7 +366,6 @@ public class Derivation extends PreDerivation {
 
             beliefTerm = anon.put(this._beliefTerm = _belief.term());
             this.belief = new TaskWithTerm(beliefTerm, _belief);
-            this.beliefStart = _belief.start();
         } else {
 
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
@@ -397,20 +379,6 @@ public class Derivation extends PreDerivation {
         assert (beliefTerm != null) : (_beliefTerm + " could not be anonymized");
 
 
-        this.taskBeliefTimeIntersects =
-                this._belief == null
-                ||
-                this._belief.intersects(taskStart, taskEnd)
-                ||
-                this.taskTerm.op()==CONJ &&
-                      _belief.intersects(taskStart, taskStart + taskTerm.dtRange()); //to be safe
-
-        this.forEachMatch = null;
-        this.concTruth = null;
-        this.concPunc = 0;
-        this.truthFunction = null;
-        this.concSingle = false;
-        this.evidenceDouble = evidenceSingle = null;
 
 
         return true;
@@ -421,15 +389,33 @@ public class Derivation extends PreDerivation {
      */
     public void derive(int ttl) {
 
+        this.taskBeliefTimeIntersects =
+                this._belief == null
+                        ||
+                        this._belief.intersects(taskStart, _task.end());
+
+
+
+
+        this.termutes.clear();
+
+        reset();
+
+        this.forEachMatch = null;
+        this.concTruth = null;
+        this.concPunc = 0;
+        this.concTerm = null;
+        this.concSingle = false;
+        this.truthFunction = null;
+        this.evidenceDouble = evidenceSingle = null;
 
         this.parentComplexitySum =
                 Util.sum(
-
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 
 
-        this.overlapSingle = task.isCyclic();
+        this.overlapSingle = _task.isCyclic();
 
         if (_belief != null) {
 
@@ -438,8 +424,7 @@ public class Derivation extends PreDerivation {
              */
 
 
-            long[] beliefStamp = _belief.stamp();
-            this.overlapDouble = Stamp.overlapsAny(this.taskStamp, beliefStamp);
+            this.overlapDouble = Stamp.overlapsAny(this.taskStamp, _belief.stamp());
 
 
         } else {
@@ -447,7 +432,7 @@ public class Derivation extends PreDerivation {
         }
 
 
-        this.eternal = task.isEternal() && (_belief == null || _belief.isEternal());
+        this.eternal = (taskStart==ETERNAL) && (_belief == null || _belief.isEternal());
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
 
         this.parentCause = _belief != null ?
@@ -605,7 +590,7 @@ public class Derivation extends PreDerivation {
 
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {
-        float e = c2wSafe(concTruth.conf()) * ratio;
+        float e = ratio * c2wSafe(concTruth.conf());
         if (eternalize)
             e = Math.max(concTruth.eviEternalized(), e);
         return concTruthEvi(e);

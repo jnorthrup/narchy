@@ -7,7 +7,7 @@ import java.util.function.Function;
 /**
  * TreeChart visualization of items in a collection
  */
-public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart.ItemVis<X>> {
+@Deprecated public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart.ItemVis<X>> {
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
 

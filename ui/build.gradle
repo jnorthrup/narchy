@@ -4,6 +4,7 @@
 //        maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 //    }
 //}
+
 dependencies {
     compile project(':util')
 
@@ -38,19 +39,23 @@ dependencies {
             name: 'jogl-all-noawt-main',
             version: '2.3.2')
 
-    compile(group: 'org.boofcv', name: 'boofcv-ip', version: '0.30')
+    def boofVersion =
+            //'0.31-SNAPSHOT'
+            '0.30'
 
+    compile(group: 'org.boofcv', name: 'boofcv-ip', version: boofVersion)
 
-    compile(group: 'org.boofcv', name: 'boofcv-io', version: '0.30') {
+    compile(group: 'org.boofcv', name: 'boofcv-io', version: boofVersion) {
         exclude(module: 'snakeyaml')
         exclude(module: 'xstream')
 //        exclude(module: 'georegression')
     }
-    compile(group: 'org.boofcv', name: 'boofcv-WebcamCapture', version: '0.30'){
+    compile(group: 'org.boofcv', name: 'boofcv-WebcamCapture', version: boofVersion){
         exclude(module: 'boofcv-visualize')
         exclude(module: 'boofcv-lo')
         exclude(module: 'boofcv-swing')
     }
+    compile group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.12'
 
 //    compile group: 'org.jfxvnc', name: 'jfxvnc-net', version: '1.2.0'
 

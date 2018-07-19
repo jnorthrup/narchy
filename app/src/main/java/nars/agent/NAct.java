@@ -18,7 +18,6 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -38,7 +37,7 @@ public interface NAct {
     Term PLUS = $.the("\"+\"");
     Term NEG = $.the("\"-\"");
 
-    @NotNull Map<ActionConcept, CauseChannel<ITask>> actions();
+    @Deprecated Map<ActionConcept, CauseChannel<ITask>> actions();
 
     NAR nar();
 
@@ -50,7 +49,7 @@ public interface NAct {
     /**
      * TODO make BooleanPredicate version for feedback
      */
-    default void actionToggle(@NotNull Term t, float thresh, float defaultValue /* 0 or NaN */, float momentumOn, @NotNull Runnable on, @NotNull Runnable off) {
+    default void actionToggle(Term t, float thresh, float defaultValue /* 0 or NaN */, float momentumOn, Runnable on, Runnable off) {
 
 
         final float[] last = {0};
@@ -79,7 +78,7 @@ public interface NAct {
 
 
     @Nullable
-    default Truth toggle(@Nullable Truth d, @NotNull Runnable on, @NotNull Runnable off, boolean next) {
+    default Truth toggle(@Nullable Truth d, Runnable on, Runnable off, boolean next) {
         float freq;
         if (next) {
             freq = +1;
@@ -98,7 +97,7 @@ public interface NAct {
      * selects one of 2 states until it shifts to the other one. suitable for representing
      * push-buttons like keyboard keys. by default with no desire the state is off.   the off procedure will not be called immediately.
      */
-    default void actionTriState(@NotNull Term s, @NotNull IntConsumer i) {
+    default void actionTriState(Term s, IntConsumer i) {
         actionTriState(s, (v) -> {
             i.accept(v);
             return true;
@@ -109,7 +108,7 @@ public interface NAct {
      * tri-state implemented as delta version memory of last state.
      * initial state is neutral.
      */
-    default GoalActionAsyncConcept[] actionTriState(@NotNull Term cc, @NotNull IntPredicate i) {
+    default GoalActionAsyncConcept[] actionTriState(Term cc, IntPredicate i) {
 
 
         GoalActionAsyncConcept[] g = actionBipolar(cc, true, (float f) -> {
@@ -161,7 +160,7 @@ public interface NAct {
     }
 
     @Nullable
-    default GoalActionConcept actionTriStateContinuous(@NotNull Term s, @NotNull IntPredicate i) {
+    default GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
 
         GoalActionConcept m = new GoalActionConcept(s, nar(), (b, d) -> {
 
@@ -207,7 +206,7 @@ public interface NAct {
     }
 
     @Nullable
-    default ActionConcept actionTriStatePWM(@NotNull Term s, @NotNull IntConsumer i) {
+    default ActionConcept actionTriStatePWM(Term s, IntConsumer i) {
         ActionConcept m = new GoalActionConcept(s, nar(), (b, d) -> {
 
 
@@ -258,7 +257,7 @@ public interface NAct {
     }
 
 
-    default void actionToggle(@NotNull Term s, @NotNull Runnable r) {
+    default void actionToggle(Term s, Runnable r) {
         actionToggle(s, (b) -> {
             if (b) {
                 r.run();
@@ -266,7 +265,7 @@ public interface NAct {
         });
     }
 
-    default void actionPushButton(@NotNull Term s, @NotNull Runnable r) {
+    default void actionPushButton(Term s, Runnable r) {
         actionPushButton(s, (b) -> {
             if (b) {
                 r.run();
@@ -274,14 +273,14 @@ public interface NAct {
         });
     }
 
-    default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
+    default void actionToggle(Term s, BooleanProcedure onChange) {
 
 
         actionPushButton(s, onChange);
 
     }
 
-    default void actionPushReleaseButton(@NotNull Term t, @NotNull BooleanProcedure on) {
+    default void actionPushReleaseButton(Term t, BooleanProcedure on) {
 
         float thresh = 0.1f;
         action(t, (b, g) -> {
@@ -298,7 +297,7 @@ public interface NAct {
         });
     }
 
-    default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
+    default void actionPushButton(Term t, BooleanProcedure on) {
         actionPushButton(t, (x) -> {
             on.value(x);
             return x;
@@ -337,7 +336,7 @@ public interface NAct {
 
         float thresh =
                 0.5f;
-                //0.66f;
+        //0.66f;
 
         float[] lr = new float[2];
 
@@ -374,11 +373,11 @@ public interface NAct {
 
     }
 
-    default void actionPushButton(@NotNull Term t, @NotNull BooleanToBooleanFunction on) {
+    default void actionPushButton(Term t, BooleanToBooleanFunction on) {
         actionPushButton(t, () -> 0.5f /*+ nar().freqResolution.get()*/, on);
     }
 
-    default void actionPushButton(@NotNull Term t, FloatSupplier thresh, @NotNull BooleanToBooleanFunction on) {
+    default void actionPushButton(Term t, FloatSupplier thresh, BooleanToBooleanFunction on) {
 
 
         GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
@@ -398,31 +397,31 @@ public interface NAct {
      * <p>
      * TODO make a FloatToFloatFunction variation in which a returned value in 0..+1.0 proportionally decreasese the confidence of any feedback
      */
-    @NotNull
-    default GoalActionConcept action(@NotNull String s, @NotNull GoalActionConcept.MotorFunction update) throws Narsese.NarseseException {
+
+    default GoalActionConcept action(String s, GoalActionConcept.MotorFunction update) throws Narsese.NarseseException {
         return action($.$(s), update);
     }
 
 
-    default GoalActionConcept action(@NotNull Term s, @NotNull GoalActionConcept.MotorFunction update) {
+    default GoalActionConcept action(Term s, GoalActionConcept.MotorFunction update) {
         return addAction(new GoalActionConcept(s, nar(), update));
     }
 
-//    default BeliefActionConcept react(@NotNull Term s, @NotNull Consumer<Truth> update) {
+//    default BeliefActionConcept react( Term s,  Consumer<Truth> update) {
 //        return addAction(new BeliefActionConcept(s, nar(), update));
 //    }
 
-    default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+    default GoalActionAsyncConcept[] actionBipolar(Term s, FloatToFloatFunction update) {
         return actionBipolar(s, false, update);
     }
 
-    default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
+    default GoalActionAsyncConcept[] actionBipolar(Term s, boolean fair, FloatToFloatFunction update) {
         return actionBipolarFrequencyDifferential(s, fair, false, update);
 
 
     }
 
-    default void actionBipolarSteering(@NotNull Term s, FloatConsumer act) {
+    default void actionBipolarSteering(Term s, FloatConsumer act) {
         final float[] amp = new float[1];
         float dt = 0.1f;
         float max = 1f;
@@ -440,7 +439,7 @@ public interface NAct {
 
     }
 
-    default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, boolean latchPreviousIfUndecided, @NotNull FloatToFloatFunction update) {
+    default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(Term s, boolean fair, boolean latchPreviousIfUndecided, FloatToFloatFunction update) {
 
         Term pt =
 
@@ -461,7 +460,7 @@ public interface NAct {
 
         GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2];
 
-        @NotNull BiConsumer<GoalActionAsyncConcept, Truth> u = (action, gg) -> {
+        BiConsumer<GoalActionAsyncConcept, Truth> u = (action, gg) -> {
 
 
             NAR n = nar();
@@ -606,14 +605,14 @@ public interface NAct {
         return CC;
     }
 
-    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatConsumer update) {
-        return actionUnipolar(s, (x)->{
+    default GoalActionConcept actionUnipolar(Term s, FloatConsumer update) {
+        return actionUnipolar(s, (x) -> {
             update.accept(x);
             return x;
         });
     }
 
-    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+    default GoalActionConcept actionUnipolar(Term s, FloatToFloatFunction update) {
         return actionUnipolar(s, true, (x) -> Float.NaN, update);
     }
 
@@ -621,7 +620,7 @@ public interface NAct {
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency
      */
-    default GoalActionConcept actionUnipolar(@NotNull Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, @NotNull FloatToFloatFunction update) {
+    default GoalActionConcept actionUnipolar(Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, FloatToFloatFunction update) {
 
 
         final float[] lastF = {0.5f};
@@ -647,8 +646,8 @@ public interface NAct {
     /**
      * supplies values in range -1..+1, where 0 ==> expectation=0.5
      */
-    @NotNull
-    default GoalActionConcept actionExpUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+
+    default GoalActionConcept actionExpUnipolar(Term s, FloatToFloatFunction update) {
         final float[] x = {0f}, xPrev = {0f};
 
         return action(s, (b, d) -> {

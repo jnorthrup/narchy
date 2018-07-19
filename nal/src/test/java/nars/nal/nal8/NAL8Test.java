@@ -789,7 +789,7 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "(it<->near)", 0f, 0.45f);
     }
 
-    @Test
+    @Disabled @Test
     void testGoalByConjAssociationPosPos() {
 
         test.goal("a")
@@ -798,7 +798,7 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
     }
 
-    @Test
+    @Disabled @Test
     void testGoalByConjAssociationNegPos() {
 
         test.goal("--a")
@@ -807,7 +807,7 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
     }
 
-    @Test
+    @Disabled @Test
     void testGoalByConjAssociationPosNeg() {
 
         test.goal("a")
@@ -816,7 +816,7 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
     }
 
-    @Test
+    @Disabled @Test
     void testGoalByConjAssociationNegNeg() {
 
         test.goal("--a")

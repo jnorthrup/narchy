@@ -3,7 +3,6 @@ package spacegraph.space2d.dyn2d;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.Util;
 import jcog.event.On;
-import jcog.exe.Every;
 import jcog.math.IntRange;
 import jcog.net.UDPeer;
 import spacegraph.SpaceGraph;
@@ -11,9 +10,6 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.meter.BagChart;
-import spacegraph.space2d.widget.text.Label;
-import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.space2d.widget.windo.Port;
 
@@ -30,8 +26,8 @@ public class MeshChipTest {
 
         final UDPeer peer;
         private final Port in, out;
-        private final BagChart<UDPeer.UDProfile> themChart;
-        private final Every display;
+//        private final BagChart<UDPeer.UDProfile> themChart;
+//        private final Every display;
         private On recv;
 
         public MeshChip(UDPeer peer) {
@@ -46,16 +42,16 @@ public class MeshChipTest {
             });
             this.out = new Port();
 
-            this.themChart = new BagChart<>(peer.them);
-            set(
-                new Gridding(
-                        new Label(peer.name()),
-                        new LabeledPane("I", in),
-                        new LabeledPane("O", out),
-                        new LabeledPane("them", themChart)
-                )
-            );
-            this.display = new Every(themChart::update, 100);
+//            this.themChart = new BagChart<>(peer.them);
+//            set(
+//                new Gridding(
+//                        new Label(peer.name()),
+//                        new LabeledPane("I", in),
+//                        new LabeledPane("O", out),
+//                        new LabeledPane("them", themChart)
+//                )
+//            );
+//            this.display = new Every(themChart::update, 100);
         }
 
         @Override
@@ -88,7 +84,7 @@ public class MeshChipTest {
         @Override
         public void prePaint(int dtMS) {
             super.prePaint(dtMS);
-            display.next();
+//            display.next();
         }
     }
 

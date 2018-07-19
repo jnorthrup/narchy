@@ -19,15 +19,11 @@ public class BagView extends TabPane {
     public BagView(String label, Bag bag, NAR nar) {
         super(Map.of(
                 label, () -> new Label(label),
-                "edit", () -> {
-                    return new Gridding(
-                            new PushButton("clear", () -> bag.clear()),
-                            new PushButton("print", () -> bag.print())
-                    );
-                },
-                "histo", () -> {
-                    return NARui.bagHistogram(bag::iterator, 10, nar);
-                },
+                "edit", () -> new Gridding(
+                        new PushButton("clear", () -> bag.clear()),
+                        new PushButton("print", () -> bag.print())
+                ),
+                "histo", () -> NARui.bagHistogram(bag::iterator, 10, nar),
                 "treechart", () -> {
                     BagChart b = new BagChart(bag) {
                         DurService on;
@@ -35,9 +31,7 @@ public class BagView extends TabPane {
                         @Override
                         public boolean start(SurfaceBase parent) {
                             if (super.start(parent)) {
-                                on = DurService.on(nar, ()->{
-                                    update();
-                                });
+                                on = DurService.on(nar, ()-> update());
                                 return true;
                             }
                             return false;

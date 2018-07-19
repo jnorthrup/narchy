@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 /** be careful about synchronizing to instances of this class
  * because the class synchronizes on itself and not a separate lock object
  * (for efficiency purposes)
+ *
+ * TODO size inherited from FasterList is not volatile
  */
 public class FastCoWList<X> extends FasterList<X> {
 
@@ -24,6 +26,7 @@ public class FastCoWList<X> extends FasterList<X> {
 
     @Nullable
     public volatile X[] copy;
+
 
     public FastCoWList(IntFunction<X[]> arrayBuilder) {
         this(0, arrayBuilder);
@@ -40,8 +43,7 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     protected void commit() {
-        this.copy = 
-                toArrayRecycled(arrayBuilder);
+        this.copy = toArrayCopy(copy, arrayBuilder);
     }
 
     @Override
@@ -65,26 +67,26 @@ public class FastCoWList<X> extends FasterList<X> {
 
     @Override
     public X set(int index, X element) {
-        X old;
+
         synchronized (this) {
             if (size <= index) {
                 ensureCapacity(index + 1);
-                if (element!=null) {
+                if (element != null) {
                     super.setFast(index, element);
-                    size = index+1;
+                    size = index + 1;
                     commit();
                 }
                 return null;
-            } else {
-                old = get(index);
-                if (old!=element) {
-                    super.setFast(index, element);
-                    commit();
-                }
-                return old;
             }
-
         }
+
+        X[] ii = items;
+        X old = ii[index];
+        if (old!=element) {
+            ii[index] = element;
+            commit();
+        }
+        return old;
     }
 
     public void set(Collection<X> newContent) {

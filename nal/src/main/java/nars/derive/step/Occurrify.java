@@ -132,7 +132,6 @@ public class Occurrify extends TimeGraph {
         int ddt = Tense.dither(dt, d.ditherTime);
         Term y = super.dt(x, ddt);
         if (y instanceof Bool && ddt != dt) {
-
             y = super.dt(x, dt);
         }
         return y;
@@ -159,7 +158,7 @@ public class Occurrify extends TimeGraph {
 
 
     public Occurrify reset(Term pattern) {
-        boolean taskDominant = d.concSingle || (d.task.isGoal() && !d.task.isEternal());
+        boolean taskDominant = d.concSingle || (d._task.isGoal() && !d._task.isEternal());
         return reset(pattern, taskDominant);
     }
 
@@ -218,11 +217,11 @@ public class Occurrify extends TimeGraph {
 
 
         boolean reUse =
-                    this.taskDominant == taskDominant &&
-                    Objects.equals(autoNeg, autoNegNext) &&
-                    this.curSingle == single &&
-                    Objects.equals(d.task, curTask) &&
-                    Objects.equals(bb, curBelief);
+                this.taskDominant == taskDominant &&
+                        Objects.equals(autoNeg, autoNegNext) &&
+                        this.curSingle == single &&
+                        Objects.equals(d.task, curTask) &&
+                        Objects.equals(bb, curBelief);
 
         //determine re-usability:
         Map<Term, Term> nextUntransform = d.untransform;
@@ -381,7 +380,9 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    /** requires single premise, or if double premise that there is temporal intersection of task and belief */
+    /**
+     * requires single premise, or if double premise that there is temporal intersection of task and belief
+     */
     private static final PREDICATE<Derivation> intersectFilter = new AbstractPred<>(Atomic.the("TimeIntersects")) {
         @Override
         public boolean test(Derivation d) {
@@ -436,28 +437,23 @@ public class Occurrify extends TimeGraph {
 
         },
 
-        /** Task Dominant. the belief's temporality is secondary, unless task is eternal and belief is temporal
-         * modulating the task. */
+        /**
+         * Task Dominant. the belief's temporality is secondary, unless task is eternal and belief is temporal
+         * modulating the task.
+         */
         TaskImmediate() {
-
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
 
-                if (d.concPunc == GOAL) {
-                    Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x, true));
-                    if (p != null) {
+                Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x, true));
+                if (p != null) {
+                    byte punc = d.concPunc;
+                    if (punc == GOAL || punc == QUEST) {
                         if (!immediatize(p.getTwo(), d))
                             return null;
                     }
-                    return p;
-                } else {
-                    Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x, true));
-                    if (p!=null) {
-                        return p;
-                    }
                 }
-
-                return null;
+                return p;
             }
 
 
@@ -608,7 +604,7 @@ public class Occurrify extends TimeGraph {
             @Override
             long[] occurrence(Derivation d) {
                 if (d.concSingle) {
-                    return new long[] { d.taskStart, d.task.end() };
+                    return new long[]{d.taskStart, d.task.end()};
                 }
 
                 Longerval i = Longerval.intersect(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
@@ -692,27 +688,26 @@ public class Occurrify extends TimeGraph {
             return p;
         }
 
-        /** immanentize */
+        /**
+         * immanentize
+         */
         private static boolean immediatize(long[] o, Derivation d) {
 
             long NOW = d.time;
 
             if (o[0] == ETERNAL) {
-                if (d.belief != null && d.belief.isEternal())
-                    return true; //both task and belief are eternal; keep eternal
-
-                //pretend in present
-                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
+//                if (d.belief != null && d.belief.isEternal())
+//                    return true; //both task and belief are eternal; keep eternal
+//
+//                //pretend in present
+//                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
                 o[0] = NOW;
                 o[1] = NOW + d.dur;
+                return true;
             }
 
-            //if (o[0] < NOW) {
-            if (o[0] != NOW) {
-//                if (NOW <= o[1]) {
-//                    //NOW is contained in the interval - goal is ongoing
-//                } else {
-
+            if (o[0] < NOW) {
+            //if (o[0] != NOW) {
                 long range = o[1] - o[0];
 
                 if (d.concPunc == BELIEF || d.concPunc == GOAL) {

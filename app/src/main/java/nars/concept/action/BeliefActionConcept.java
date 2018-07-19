@@ -1,7 +1,6 @@
 package nars.concept.action;
 
 import nars.NAR;
-import nars.agent.NAgent;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -36,9 +35,8 @@ public class BeliefActionConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long start, long end, int dur, NAgent a) {
+    public Stream<ITask> update(long start, long end, int dur, NAR nar) {
 
-        NAR nar = a.nar();
         long nowStart =
                 
                 start - dur/2;

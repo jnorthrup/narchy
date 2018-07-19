@@ -56,7 +56,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Truth tru = d.concTruth;
 
-        Term x0 = d.derivedTerm;
+        Term x0 = d.concTerm;
 
         Term x1 = d.anon.get(x0);
         if (x1==null)
@@ -67,13 +67,24 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
 
-        long[] occ = d.concOcc;
+
         byte punc = d.concPunc;
         assert (punc != 0) : "no punctuation assigned";
 
-        if (tru != null && tru.conf() < d.confMin) {
-            return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
+        if (punc == BELIEF || punc == GOAL) {
+
+            if (tru.conf() < d.confMin)
+                return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
+
+            //dither truth
+            tru = tru.dither(d.nar);
+            if (tru == null)
+                return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
+
         }
+
+
+        long[] occ = d.concOcc!=null ? d.concOcc : new long[] { ETERNAL, ETERNAL };
 
         if (same(x, punc, tru, occ, d._task, d.nar) ||
                 (d._belief != null && same(x, punc, tru, occ, d._belief, d.nar))) {
@@ -87,6 +98,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
             assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
 
+
+
             //dither time
             if (start != ETERNAL) {
                 int dither = d.ditherTime;
@@ -94,12 +107,7 @@ public class Taskify extends AbstractPred<Derivation> {
                 end = Tense.dither(end, dither);
             }
 
-            //dither truth
-            if (tr!=null) {
-                tr = tr.dither(d.nar);
-                if (tr == null)
-                    return null;
-            }
+
 
             return Param.DEBUG ?
                     new DebugDerivedTask(C, punc, tr, start, end, d) :
@@ -151,7 +159,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
             if (parent.punc() == punc) {
                 if (parent.term().equals(derived.term())) {
-                    if (sameTime(occ, parent, n)) {
+                    if (sameTime(occ, parent)) {
 
                         if ((punc == QUESTION || punc == QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
@@ -172,7 +180,7 @@ public class Taskify extends AbstractPred<Derivation> {
         return false;
     }
 
-    private static boolean sameTime(long[] occ, Task parent, NAR n) {
+    private static boolean sameTime(long[] occ, Task parent) {
 //        if (parent.isEternal()) {
 //            return true;
 //        } else {

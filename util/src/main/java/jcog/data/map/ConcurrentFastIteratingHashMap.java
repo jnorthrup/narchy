@@ -5,6 +5,8 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -16,11 +18,17 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     final Map<X, T> map = new ConcurrentOpenHashMap<>();
 
-    private volatile T[] list = null;
+    /** double buffer live copy */
+    private volatile T[] list;
+
+    /** double buffer backup copy */
+    final AtomicReference<T[]> lists = new AtomicReference<>();
+
+    private final AtomicBoolean invalid = new AtomicBoolean(true);
 
 
     public ConcurrentFastIteratingHashMap(T[] emptyArray) {
-        this.emptyArray = emptyArray;
+        lists.set(this.list = this.emptyArray = emptyArray);
     }
 
     /**
@@ -66,17 +74,18 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     @Override
     public int size() {
-        return map.size();
+        return invalid.getOpaque() ? map.size() : list.length;
     }
 
     @Override
     public boolean isEmpty() {
-        return map.isEmpty();
+        return size()==0;
     }
 
     public List<T> asList() {
         return new MyAbstractList();
     }
+
     /**
      * this is the fast value iterating method
      */
@@ -108,8 +117,9 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
         return prev;
     }
 
+
     public void invalidate() {
-        list = null;
+        invalid.setRelease(true);
     }
 
     public boolean whileEachValue(Predicate<? super T> action) {
@@ -166,19 +176,17 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
     }
 
 
-    public T[] valueArray() {
-        T[] x = list;
-        if (x == null) {
-            return this.list = updateValues();
-        } else {
-            return x;
+    public final T[] valueArray() {
+        T[] curLive = list;
+        if (invalid.weakCompareAndSetAcquire(true, false)) {
+            T[] prevNext = lists.getAcquire();
+            T[] next = ((ConcurrentOpenHashMap<?, T>) map).values(prevNext, i -> Arrays.copyOf(emptyArray, i));
+            if (lists.weakCompareAndSetRelease(prevNext, curLive)) {
+                return this.list = next;
+            }
         }
-    }
 
-    public T[] updateValues() {
-        return ((FasterList<T>)(((ConcurrentOpenHashMap<?, T>)map)
-                .values(this.emptyArray)))
-                .toArrayRecycled(i -> Arrays.copyOf(emptyArray, i));
+        return curLive;
     }
 
 

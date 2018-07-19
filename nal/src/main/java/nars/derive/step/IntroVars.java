@@ -18,7 +18,7 @@ public final class IntroVars extends AbstractPred<Derivation> {
 
     @Override
     public boolean test(Derivation d) {
-        final Term x = d.derivedTerm;
+        final Term x = d.concTerm;
 
 
         @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, d.random);
@@ -34,7 +34,7 @@ public final class IntroVars extends AbstractPred<Derivation> {
 
 //        Map<Term, Term> changes = xy.getTwo();
 //        changes.forEach((cx,cy)->d.untransform.put(cy, cx));
-        d.derivedTerm = y;
+        d.concTerm = y;
 
         return true;
     }

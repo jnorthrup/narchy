@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.agent.NAgent;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
@@ -47,7 +46,7 @@ public abstract class ActionConcept extends Sensor {
         }
     }
 
-    abstract public Stream<ITask> update(long start, long end, int dur, NAgent nar);
+    abstract public Stream<ITask> update(long start, long end, int dur, NAR nar);
 
     @Override
     public void value(Task t, float activation, NAR n) {

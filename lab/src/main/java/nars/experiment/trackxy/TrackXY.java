@@ -2,15 +2,13 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.ql.HaiQae;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
-import nars.agent.NAgent;
-import nars.agent.util.RLBooster;
+import nars.agent.NAgent2;
 import nars.concept.action.SwitchAction;
 import nars.control.DurService;
 import nars.derive.Deriver;
@@ -40,7 +38,7 @@ import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 /* 1D and 2D grid tracking */
-public class TrackXY extends NAgent {
+public class TrackXY extends NAgent2 {
 
     final Bitmap2DSensor cam;
     final ArrayBitmap2D view;
@@ -74,8 +72,8 @@ public class TrackXY extends NAgent {
         if (H > 1)
             senseNumber($.inh("sy", id), new FloatNormalized(() -> sy, 0, H));
 
-        //actionPushButtonMutex();
-        actionSwitch();
+        actionPushButtonMutex();
+        //actionSwitch();
         //actionTriState();
 
 
@@ -85,12 +83,13 @@ public class TrackXY extends NAgent {
                 senseNumber($.inh("ty", id), new FloatNormalized(() -> ty, 0, H));
         }
         if (targetCam) {
-            this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
-            sensorCam.add(cam);
+            this.cam = sense(new Bitmap2DSensor<>(id /* (Term) null*/, view, nar));
         } else {
             this.cam = null;
         }
 
+
+        reward(this::act);
 
         randomize();
     }
@@ -133,12 +132,12 @@ public class TrackXY extends NAgent {
 
 
         if (rl) {
-            new RLBooster(t,
-
-                    HaiQae::new,
-
-                    1);
-            t.curiosity.set(0);
+//            new RLBooster(t,
+//
+//                    HaiQae::new,
+//
+//                    1);
+//            t.curiosity.set(0);
         }
         if (nars) {
 
@@ -177,7 +176,7 @@ public class TrackXY extends NAgent {
 
         n.runLater(() -> {
             window(NARui.top(n), 800, 250);
-            NARui.agentWindow(t);
+//            NARui.agentWindow(t);
             if (t.cam!=null) {
                 window(new CameraSensorView(t.cam, n) {
                     @Override
@@ -339,7 +338,6 @@ public class TrackXY extends NAgent {
         }
     }
 
-    @Override
     protected float act() {
 
 

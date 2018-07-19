@@ -339,9 +339,7 @@ public class ExampleStereoTwoViewsOneCamera {
 
 		if (!epipolarMotion.process(matchedCalibrated))
 			return null;
-			
 
-		
 		inliers.clear();
 		inliers.addAll(epipolarMotion.getMatchSet());
 

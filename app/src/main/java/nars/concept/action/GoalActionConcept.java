@@ -2,14 +2,12 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
-import nars.agent.NAgent;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -27,8 +25,10 @@ public class GoalActionConcept extends ActionConcept {
 
     private final MotorFunction motor;
 
+    private volatile float curiosity = 0;
 
-    public GoalActionConcept(@NotNull Term c, @NotNull NAR n, @NotNull MotorFunction motor) {
+
+    public GoalActionConcept(Term c, NAR n, MotorFunction motor) {
         super(c, n);
 
 
@@ -42,15 +42,10 @@ public class GoalActionConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long pPrev, long pNow, int dur, NAgent a) {
-
-
+    public Stream<ITask> update(long pPrev, long pNow, int dur, NAR nar) {
 
 
         Truth goal;
-
-
-        NAR nar = a.nar();
 
         long gStart, gEnd;
 //        gStart = pNow; gEnd = pNow;
@@ -58,13 +53,14 @@ public class GoalActionConcept extends ActionConcept {
 //        if (goal == null) {
 //            //HACK expand radius - this should be done by the truthpolation impl
         //gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
-        gStart = pNow; gEnd = pNow + dur;
+        gStart = pNow;
+        gEnd = pNow + dur;
         goal = this.goals().truth(gStart, gEnd, nar);
 //        }
 
 
         boolean curi;
-        if (a.random().nextFloat() < a.curiosity.floatValue()) { // * (1f - (goal != null ? goal.conf() : 0))) {
+        if (nar.random().nextFloat() < curiosity) { // * (1f - (goal != null ? goal.conf() : 0))) {
 
 
 //            float curiConf =
@@ -96,7 +92,7 @@ public class GoalActionConcept extends ActionConcept {
         Truth feedback = this.motor.apply(belief, goal);
 
         Task feedbackBelief = feedback != null ?
-                this.feedback.add(feedback, gStart, gEnd, dur, this,nar) : null;
+                this.feedback.add(feedback, gStart, gEnd, dur, this, nar) : null;
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief != null) {
@@ -126,4 +122,7 @@ public class GoalActionConcept extends ActionConcept {
     }
 
 
+    public void curiosity(float c) {
+        this.curiosity = c;
+    }
 }

@@ -1,5 +1,6 @@
 package spacegraph.video;
 
+
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayU8;
 import com.jogamp.opengl.GL2;

@@ -2,7 +2,6 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
-import nars.agent.NAgent;
 import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
@@ -29,44 +28,22 @@ public class GoalActionAsyncConcept extends ActionConcept {
         super(c, nar);
 
         this.in = cause;
-        
+
 
         this.motor = motor;
     }
 
 
     @Override
-    public Stream<ITask> update(long pPrev, long pNow, int dur, NAgent a) {
-
-
-
-
-
-        NAR nar = a.nar();
-
+    public Stream<ITask> update(long pPrev, long pNow, int dur, NAR nar) {
 
 
         long gStart, gEnd;
         //gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
-        gStart = pNow; gEnd = pNow + dur;
-        
+        gStart = pNow;
+        gEnd = pNow + dur;
+
         Truth goal = this.goals().truth(gStart, gEnd, nar);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         this.motor.accept(this, goal);
@@ -78,21 +55,15 @@ public class GoalActionAsyncConcept extends ActionConcept {
     public void feedback(@Nullable Truth f, @Nullable Truth g, long lastUpdate, long now, NAR nar) {
 
 
-
-
-
-
         long start = lastUpdate;
         long end = now;
 
         Task fg;
-        if (g!=null) {
-
+        if (g != null) {
 
 
             fg = null;
-        }
-        else
+        } else
             fg = null;
 
         int dur = nar.dur();
@@ -100,266 +71,12 @@ public class GoalActionAsyncConcept extends ActionConcept {
         SignalTask fb = beliefs.add(f, start, end, dur, this, nar);
 
         in.input(
-            fg,
-            fb
+                fg,
+                fb
         );
 
         beliefs.clean(nar);
     }
-
-    
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

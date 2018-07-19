@@ -343,14 +343,7 @@ public class FasterList<X> extends FastList<X> {
         return false;
     }
 
-    /**
-     * try to use toArrayRecycled where possible
-     */
-    public X[] toArrayWith(IntFunction<X[]> arrayBuilder) {
-        return fillArray(arrayBuilder.apply(size));
-    }
-
-//    public final X[] fillArrayNullPadded(X[] array) {
+    //    public final X[] fillArrayNullPadded(X[] array) {
 //        int s = size;
 //        int l = array.length;
 //        if (array == null || array.length < (s + 1)) {
@@ -362,11 +355,12 @@ public class FasterList<X> extends FastList<X> {
 //        return array;
 //    }
 
-    public final X[] fillArray(X[] array) {
-        int s = size;
+    public final X[] fillArray(X[] array, boolean nullRemainder) {
+
         int l = array.length;
+        int s = Math.min(l, size);
         System.arraycopy(items, 0, array, 0, s);
-        if (s < l)
+        if (nullRemainder && s < l)
             Arrays.fill(array, s, l, null);
         return array;
     }
@@ -548,8 +542,17 @@ public class FasterList<X> extends FastList<X> {
         if (s == a.length && a.getClass() != Object[].class)
             return a;
         else
-            return toArrayWith(ii);
+            return fillArray(ii.apply(size), false);
     }
+
+    public X[] toArrayCopy(@Nullable X[] target, IntFunction<X[]> ii) {
+        int s = size;
+        if (s != target.length) {
+            target = ii.apply(s);
+        }
+        return fillArray(target, false);
+    }
+
 
     /**
      * after procedure executes on a cell, it nullifies the cell. equivalent to:

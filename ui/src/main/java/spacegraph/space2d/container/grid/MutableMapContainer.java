@@ -11,7 +11,7 @@ import java.util.function.*;
 
 public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
-    protected final CellMap<K,V> cellMap = new CellMap<>() {
+    protected final CellMap<K, V> cellMap = new CellMap<>() {
         @Override
         protected CacheCell<K, V> newCell() {
             return new SurfaceCacheCell<>();
@@ -20,7 +20,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         @Override
         protected void added(CacheCell<K, V> entry) {
             if (parent != null) {
-                Surface es = ((SurfaceCacheCell)entry).surface;
+                Surface es = ((SurfaceCacheCell) entry).surface;
                 if (es != null && es.parent == null)
                     es.start(MutableMapContainer.this);
             }
@@ -36,7 +36,10 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     @Override
     public void forEach(Consumer<Surface> each) {
         cellMap.forEachCell(e -> {
-            Surface s = ((SurfaceCacheCell)e).surface;
+            if (e == null)
+                throw new NullPointerException();
+
+            Surface s = ((SurfaceCacheCell) e).surface;
             if (s != null)
                 each.accept(s);
         });
@@ -51,9 +54,9 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     }
 
     public void forEachKeySurface(BiConsumer<? super K, Surface> each) {
-        cellMap.forEachCell((cell)->{
-            Surface ss = ((SurfaceCacheCell)cell).surface;
-            if (ss!=null)
+        cellMap.forEachCell((cell) -> {
+            Surface ss = ((SurfaceCacheCell) cell).surface;
+            if (ss != null)
                 each.accept(cell.key, ss);
         });
     }
@@ -63,17 +66,9 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     }
 
 
-
-
-
-
-
-
-
-
     @Override
     public int childrenCount() {
-        return Math.max(1, cellMap.size()); 
+        return Math.max(1, cellMap.size());
     }
 
     @Override
@@ -85,25 +80,21 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         cellMap.removeAll(x);
     }
 
-    @Nullable public V getValue(K x) {
+    @Nullable
+    public V getValue(K x) {
         return cellMap.getValue(x);
     }
 
-    public CellMap.CacheCell<K, V> compute(K key, Function<V,V> builder) {
+    public CellMap.CacheCell<K, V> compute(K key, Function<V, V> builder) {
         return cellMap.compute(key, builder);
     }
 
     CellMap.CacheCell put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
 
-        CellMap.CacheCell entry = cellMap.cache.computeIfAbsent(key, k-> cellMap.cellPool.get());
-        return cellMap.update(key, entry, ((SurfaceCacheCell)entry).update(key, nextValue, renderer));
+        CellMap.CacheCell entry = cellMap.cache.computeIfAbsent(key, k -> cellMap.cellPool.get());
+        return cellMap.update(key, entry, ((SurfaceCacheCell) entry).update(key, nextValue, renderer));
 
     }
-
-
-
-
-
 
 
     public boolean remove(K key) {
@@ -125,7 +116,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         return cellMap.whileEach(e -> {
-            Surface s = ((SurfaceCacheCell)e).surface;
+            Surface s = ((SurfaceCacheCell) e).surface;
             return s == null || o.test(s);
         });
     }
@@ -133,13 +124,13 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
         return cellMap.whileEachReverse(e -> {
-            Surface s = ((SurfaceCacheCell)e).surface;
+            Surface s = ((SurfaceCacheCell) e).surface;
             return s == null || o.test(s);
         });
     }
 
 
-    public static class SurfaceCacheCell<K,V> extends CellMap.CacheCell<K,V> {
+    public static class SurfaceCacheCell<K, V> extends CellMap.CacheCell<K, V> {
 
         transient Surface surface = null;
 
@@ -151,7 +142,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         protected void set(V next) {
 
             if (next instanceof Surface)
-                surface = (Surface)next;
+                surface = (Surface) next;
 
             super.set(next);
         }
@@ -168,6 +159,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
             }
 
         }
+
         /**
          * return true to keep or false to remove from the map
          */
@@ -184,16 +176,16 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
                     delete = true;
                 } else {
                     if (Objects.equals(value, nextValue)) {
-                        
+
                     } else {
-                        create = true; 
+                        create = true;
                     }
                 }
                 if (delete || create) {
-                    
+
                     existingSurface.stop();
                 }
-            } else { 
+            } else {
                 if (nextValue != null)
                     create = true;
                 else

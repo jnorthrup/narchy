@@ -50,7 +50,7 @@ public class ToggleButton extends AbstractButton {
     }
 
     public boolean get() {
-        return on.get();
+        return on.getOpaque();
     }
 
     public ToggleButton on(BooleanProcedure a) {
@@ -62,9 +62,7 @@ public class ToggleButton extends AbstractButton {
         return this;
     }
 
-    public boolean on() {
-        return on.get();
-    }
+
 
     @Override
     protected void onClick(Finger f) {

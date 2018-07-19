@@ -21,15 +21,18 @@ package jcog.data.map;
 import com.google.common.collect.Lists;
 import jcog.TODO;
 import jcog.data.list.FasterList;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -109,7 +112,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public V get(Object key) {
         checkNotNull(key);
         long h = hash(key);
-        return getSection(h).get((K)key, (int) h);
+        return section(h).get((K)key, (int) h);
     }
 
     public boolean containsKey(Object key) {
@@ -120,37 +123,37 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         checkNotNull(key);
         checkNotNull(value);
         long h = hash(key);
-        return getSection(h).put(key, value, (int) h, false, null);
+        return section(h).put(key, value, (int) h, false, null);
     }
 
     public V putIfAbsent(K key, V value) {
         checkNotNull(key);
         checkNotNull(value);
         long h = hash(key);
-        return getSection(h).put(key, value, (int) h, true, null);
+        return section(h).put(key, value, (int) h, true, null);
     }
 
     public V computeIfAbsent(K key, Function<? super K, ? extends V> provider) {
         checkNotNull(key);
         checkNotNull(provider);
         long h = hash(key);
-        return getSection(h).put(key, null, (int) h, true, provider);
+        return section(h).put(key, null, (int) h, true, provider);
     }
 
     public V remove(Object key) {
         checkNotNull(key);
         long h = hash(key);
-        return getSection(h).remove((K)key, null, (int) h);
+        return section(h).remove((K)key, null, (int) h);
     }
 
     @Override public boolean remove(Object key, Object value) {
         checkNotNull(key);
         checkNotNull(value);
         long h = hash(key);
-        return getSection(h).remove((K)key, value, (int) h) != null;
+        return section(h).remove((K)key, value, (int) h) != null;
     }
 
-    private Section<K, V> getSection(long hash) {
+    private Section<K, V> section(long hash) {
         
         final int sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
         return sections[sectionIdx];
@@ -177,10 +180,29 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         return keys;
     }
 
-    public List<V> values(V[] emptyArray) {
-        List<V> values = new MyFasterList<V>(size(), emptyArray);
-        forEach((key, value) -> values.add(value));
-        return values;
+    public V[] values(V[] target, IntFunction<V[]> arrayBuilder) {
+        int s = size();
+        if (s == 0)
+            return (V[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+
+        if (target == null || target.length!=s) {
+            target = arrayBuilder.apply(s);
+        }
+
+        final int[] i = {0};
+        V[] t = target;
+        forEach((k, v) -> {
+            if (v!=null) {
+                if (i[0] < s)
+                    t[i[0]++] = v;
+            }
+        });
+
+        if (i[0] < s) {
+            return Arrays.copyOf(t, i[0]); //dont leave suffix nulls; create new list
+        } else {
+            return t;
+        }
     }
 
     public List<V> values() {
@@ -198,41 +220,41 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     @SuppressWarnings("serial")
     private static final class Section<K, V> extends StampedLock {
         
-        private Object[] table;
+        private AtomicReferenceArray table;
 
         private int capacity;
         private final AtomicInteger size = new AtomicInteger();
-        private int usedBuckets;
+        private final AtomicInteger usedBuckets = new AtomicInteger();
         private int resizeThreshold;
 
         Section(int capacity) {
             this.capacity = alignToPowerOfTwo(capacity);
-            this.table = new Object[2 * this.capacity];
+            this.table = new AtomicReferenceArray(2 * this.capacity);
             this.size.setRelease(0);
-            this.usedBuckets = 0;
+            this.usedBuckets.set(0);
             this.resizeThreshold = (int) (this.capacity * MapFillFactor);
         }
 
         V get(K key, int keyHash) {
-            long stamp = tryOptimisticRead();
             boolean acquiredLock = false;
             int bucket = signSafeMod(keyHash, capacity);
+            long stamp = tryOptimisticRead();
 
             try {
                 while (true) {
-                    
-                    Object[] table = this.table;
-                    K storedKey = (K) table[bucket];
-                    V storedValue = (V) table[bucket + 1];
+
+                    AtomicReferenceArray table = this.table;
+                    K storedKey = (K) table.getOpaque(bucket);
+                    V storedValue = (V) table.getOpaque(bucket + 1);
 
                     if (!acquiredLock && validate(stamp)) {
                         
                         if (key.equals(storedKey)) {
                             return storedValue;
                         } else if (storedKey == null) {
-                            
                             return null;
                         }
+
                     } else {
 
                         
@@ -242,19 +264,18 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             table = this.table; 
 
                             bucket = signSafeMod(keyHash, capacity);
-                            storedKey = (K) table[bucket];
-                            storedValue = (V) table[bucket + 1];
+                            storedKey = (K) table.getOpaque(bucket);
+                            storedValue = (V) table.getOpaque(bucket + 1);
                         }
 
                         if (key.equals(storedKey)) {
                             return storedValue;
                         } else if (storedKey == null) {
-                            
                             return null;
-                    }
+                        }
                     }
 
-                    bucket = (bucket + 2) & (table.length - 1);
+                    bucket = (bucket + 2) & (table.length() - 1);
                 }
             } finally {
                 if (acquiredLock) {
@@ -272,14 +293,14 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
                 while (true) {
-                    Object[] table = this.table;
-                    K storedKey = (K) table[bucket];
-                    V storedValue = (V) table[bucket + 1];
+                    AtomicReferenceArray table = this.table;
+                    K storedKey = (K) table.getOpaque(bucket);
+                    V storedValue = (V) table.getAcquire(bucket + 1);
 
                     if (storedKey!=null && key.equals(storedKey)) {
                         if (!onlyIfAbsent) {
-                            
-                            table[bucket + 1] = value;
+                            if (value!=storedValue)
+                                table.set(bucket + 1, value);
                             return storedValue;
                         } else {
                             return storedValue;
@@ -290,7 +311,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         if (firstDeletedKey != -1) {
                             bucket = firstDeletedKey;
                         } else {
-                            ++usedBuckets;
+                            usedBuckets.incrementAndGet();
                         }
 
                         if (value == null) {
@@ -298,8 +319,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         }
 
                         size.incrementAndGet();
-                        table[bucket] = key;
-                        table[bucket + 1] = value;
+                        table.set(bucket, key);
+                        table.set(bucket + 1, value);
                         return valueProvider != null ? value : null;
                     } else if (storedKey == DeletedKey) {
 
@@ -308,10 +329,10 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         }
                     }
 
-                    bucket = (bucket + 2) & (table.length - 1);
+                    bucket = (bucket + 2) & (table.length() - 1);
                 }
             } finally {
-                if (usedBuckets > resizeThreshold) {
+                if (usedBuckets.get() > resizeThreshold) {
                     try {
                         rehash();
                     } finally {
@@ -329,21 +350,21 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
                 while (true) {
-                    Object[] table = this.table;
-                    K storedKey = (K) table[bucket];
-                    V storedValue = (V) table[bucket + 1];
+                    AtomicReferenceArray table = this.table;
+                    K storedKey = (K) table.getOpaque(bucket);
+                    V storedValue = (V) table.getOpaque(bucket + 1);
                     if (key.equals(storedKey)) {
                         if (value == null || value.equals(storedValue)) {
                             size.decrementAndGet();
 
-                            int nextInArray = (bucket + 2) & (table.length - 1);
-                            if (table[nextInArray] == null) {
-                                table[bucket] = null;
-                                table[bucket + 1] = null;
-                                --usedBuckets;
+                            int nextInArray = (bucket + 2) & (table.length() - 1);
+                            if (table.get(nextInArray) == null) {
+                                table.set(bucket, null);
+                                table.set(bucket + 1,  null);
+                                usedBuckets.decrementAndGet();
                             } else {
-                                table[bucket] = DeletedKey;
-                                table[bucket + 1] = null;
+                                table.set(bucket, DeletedKey);
+                                table.set(bucket + 1, null);
                             }
 
                             return storedValue;
@@ -355,7 +376,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         return null;
                     }
 
-                    bucket = (bucket + 2) & (table.length - 1);
+                    bucket = (bucket + 2) & (table.length() - 1);
                 }
 
             } finally {
@@ -367,42 +388,47 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             long stamp = writeLock();
 
             try {
-                Arrays.fill(table, null);
+                int l = table.length();
+                for (int i = 0; i < l; i++)
+                    table.setRelease(i, null);
                 this.size.setRelease(0);
-                this.usedBuckets = 0;
+                this.usedBuckets.setRelease(0);
             } finally {
                 unlockWrite(stamp);
             }
         }
 
+        //TODO whileEach
+
         public void forEach(BiConsumer<? super K, ? super V> processor) {
             long stamp = tryOptimisticRead();
 
-            Object[] table = this.table;
+            AtomicReferenceArray table = this.table;
             boolean acquiredReadLock = false;
 
             try {
 
-                
+
                 if (!validate(stamp)) {
-                    
+
                     stamp = readLock();
                     acquiredReadLock = true;
                     table = this.table;
                 }
 
-                
-                for (int bucket = 0; bucket < table.length; bucket += 2) {
-                    K storedKey = (K) table[bucket];
-                    V storedValue = (V) table[bucket + 1];
+
+                int l = table.length();
+                for (int bucket = 0; bucket < l; bucket += 2) {
+                    K storedKey = (K) table.getOpaque(bucket);
+                    V storedValue = (V) table.getOpaque(bucket + 1);
 
                     if (!acquiredReadLock && !validate(stamp)) {
-                        
+
                         stamp = readLock();
                         acquiredReadLock = true;
 
-                        storedKey = (K) table[bucket];
-                        storedValue = (V) table[bucket + 1];
+                        storedKey = (K) table.getOpaque(bucket);
+                        storedValue = (V) table.getOpaque(bucket + 1);
                     }
 
                     if (storedKey != DeletedKey && storedKey != null) {
@@ -419,13 +445,14 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         private void rehash() {
             
             int newCapacity = capacity * 2;
-            Object[] newTable = new Object[2 * newCapacity];
+            AtomicReferenceArray newTable = new AtomicReferenceArray(2 * newCapacity);
 
-            
-            Object[] table = this.table;
-            for (int i = 0; i < table.length; i += 2) {
-                K storedKey = (K) table[i];
-                V storedValue = (V) table[i + 1];
+
+            AtomicReferenceArray table = this.table;
+            int l = table.length();
+            for (int i = 0; i < l; i += 2) {
+                K storedKey = (K) table.getOpaque(i);
+                V storedValue = (V) table.getOpaque(i + 1);
                 if (storedKey != null && storedKey != DeletedKey) {
                     insertKeyValueNoLock(newTable, newCapacity, storedKey, storedValue);
                 }
@@ -433,24 +460,25 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             this.table = newTable;
             capacity = newCapacity;
-            usedBuckets = size.getOpaque();
+            usedBuckets.set(size.getOpaque());
             resizeThreshold = (int) (capacity * MapFillFactor);
         }
 
-        private static <K, V> void insertKeyValueNoLock(Object[] table, int capacity, K key, V value) {
+        private static <K, V> void insertKeyValueNoLock(AtomicReferenceArray table, int capacity, K key, V value) {
             int bucket = signSafeMod(hash(key), capacity);
 
+            int ll = (table.length() - 1);
+
             while (true) {
-                K storedKey = (K) table[bucket];
+                K storedKey = (K) table.getOpaque(bucket);
 
                 if (storedKey == null) {
-                    
-                    table[bucket] = key;
-                    table[bucket + 1] = value;
+                    table.setRelease(bucket, key);
+                    table.setRelease(bucket + 1, value);
                     return;
                 }
 
-                bucket = (bucket + 2) & (table.length - 1);
+                bucket = (bucket + 2) & ll;
             }
         }
     }
