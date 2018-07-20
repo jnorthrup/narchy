@@ -1,6 +1,5 @@
 package nars.agent;
 
-import jcog.Util;
 import jcog.math.FloatExpMovingAverage;
 import jcog.math.FloatNormalizer;
 import jcog.math.FloatPolarNormalizer;
@@ -13,7 +12,6 @@ import nars.table.DefaultBeliefTable;
 import nars.term.Term;
 
 import static jcog.Util.compose;
-import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -29,7 +27,7 @@ public class DetailedReward extends Reward {
         concept = new FilteredScalar( () -> reward,
 
                 //(prev,next) -> next==next ? $.t(Util.unitize(next), Math.max(nar.confMin.floatValue(),  Math.abs(next-0.5f)*2f * nar.confDefault(BELIEF))) : null,
-                (prev, next) -> next == next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null,
+                truther(),
 
                 nar,
 
@@ -64,6 +62,8 @@ public class DetailedReward extends Reward {
         }
 
     }
+
+
 
     @Override
     public void run() {

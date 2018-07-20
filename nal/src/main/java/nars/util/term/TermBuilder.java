@@ -564,11 +564,9 @@ public abstract class TermBuilder {
             if (term2 == null)
                 return Null;
 
-            assert (term2.op() == op): term2 + " not a normal normalization of " + term;
+            //assert (term2.op() == op): term2 + " not a normal normalization of " + term; //<- allowed to happen when image normalization is involved
 
-
-
-            term = term2;
+            term = term2.unneg();
         }
 
 

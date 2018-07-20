@@ -101,9 +101,9 @@ public class TrackXY extends NAgent {
     public static void main(String[] args) {
 
         boolean nars = true;
-        boolean rl = false;
+//        boolean rl = false;
 
-        int dur = 4;
+        int dur = 16;
 
         NARS nb = new NARS()
                 .exe(new UniExec())
@@ -130,14 +130,14 @@ public class TrackXY extends NAgent {
         TrackXY t = new TrackXY(n, 4, 4);
 
 
-        if (rl) {
+//        if (rl) {
 //            new RLBooster(t,
 //
 //                    HaiQae::new,
 //
 //                    1);
 //            t.curiosity.set(0);
-        }
+//        }
         if (nars) {
 
 
@@ -148,7 +148,7 @@ public class TrackXY extends NAgent {
                     , "motivation.nal"
             ));
 
-            ((MatrixDeriver) d).conceptsPerIteration.set(8);
+//            ((MatrixDeriver) d).conceptsPerIteration.set(8);
 
 
             new STMLinkage(n, 1, false);

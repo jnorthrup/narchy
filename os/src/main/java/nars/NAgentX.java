@@ -2,6 +2,8 @@ package nars;
 
 import jcog.Util;
 import jcog.exe.Loop;
+import jcog.math.FloatExpMovingAverage;
+import jcog.math.FloatFirstOrderDifference;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
@@ -11,6 +13,7 @@ import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.Attention;
 import nars.exe.BufferedExec;
+import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
@@ -40,6 +43,7 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
+import static jcog.Util.compose;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 
@@ -138,6 +142,9 @@ abstract public class NAgentX extends NAgent {
 
             a.curiosity.set(0.25f);
 
+            if (a instanceof NAgentX)
+                ((NAgentX)a).rewardDexterity();
+
             n.on(a);
 
             n.runLater(() -> {
@@ -148,7 +155,8 @@ abstract public class NAgentX extends NAgent {
 
                 Gridding aa = new Gridding(
                         NARui.agent(a),
-                        NARui.top(n)
+                        NARui.top(n),
+                        new EmotionPlot(128, a)
                 );
 
                 SpaceGraph.window(aa, 1200, 900);
@@ -278,6 +286,13 @@ abstract public class NAgentX extends NAgent {
             c.readAdaptively(this);
         });
         return c;
+    }
+
+    protected void rewardDexterity() {
+        reward($.func("dex", id), compose(
+                new FloatFirstOrderDifference(nar::time, this::dexterity),
+                new FloatExpMovingAverage(0.02f)
+        ));
     }
 
     /**

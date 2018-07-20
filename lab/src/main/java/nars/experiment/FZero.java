@@ -2,6 +2,8 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
+import jcog.math.FloatExpMovingAverage;
+import jcog.math.FloatFirstOrderDifference;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -22,6 +24,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static jcog.Util.compose;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.INH;
@@ -35,6 +38,7 @@ public class FZero extends NAgentX {
 
     public static final double DRAG = 0.98;
     private final FZeroGame fz;
+    public final Bitmap2DSensor<Scale> c;
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
@@ -52,7 +56,7 @@ public class FZero extends NAgentX {
         this.fz = new FZeroGame();
 
         Term cam = $.the("cam");
-        Bitmap2DSensor<Scale> c = senseCamera(cam, new Scale(() -> fz.image,
+        c = senseCamera(cam, new Scale(() -> fz.image,
                 //24, 24
                 16, 16
 
@@ -62,13 +66,13 @@ public class FZero extends NAgentX {
                 ;
 
 
-        //initToggle();
+        initToggle();
 
 
-        initUnipolarLinear(3f);
+        //initUnipolarLinear(3f);
+        //initBipolarRotateDirect(true, 0.5f);
 
         //initBipolarRotateRelative(fair, rotFactor);
-        initBipolarRotateDirect(true, 0.5f);
         //initBipolarRotateAbsolute(fair);
 
 
@@ -82,15 +86,17 @@ public class FZero extends NAgentX {
                 DigitizedScalar.FuzzyNeedle
         ).resolution(0.05f);
 
-        fz.update();
 
-        double distance = fz.vehicleMetrics[0][1];
-        double deltaDistance = (distance - lastDistance);
-
-
-        lastDistance = distance;
 
         reward(()->{
+            double distance = fz.vehicleMetrics[0][1];
+            double deltaDistance = (distance - lastDistance);
+
+
+            lastDistance = distance;
+
+            fz.update();
+
             float r = Util.clamp(
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +

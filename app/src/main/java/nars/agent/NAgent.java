@@ -49,7 +49,8 @@ public class NAgent extends NARService implements NSense, NAct {
     public final FrameTrigger frameTrigger;
 
     public final FloatRange curiosity = new FloatRange(0.10f, 0f, 1f);
-    public final FloatRange motivation = new FloatRange(1f, 0, 2f);
+
+    public final FloatRange pri = new FloatRange(1f, 0, 2f);
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean busy = new AtomicBoolean(false);
@@ -59,6 +60,8 @@ public class NAgent extends NARService implements NSense, NAct {
     public final List<Sensor> sensors = new FastCoWList<>(Sensor[]::new);
 
     public final List<ActionConcept> actions = new FastCoWList<>(ActionConcept[]::new);
+
+    public final List<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
     @Deprecated
     private final List<Supplier<Task>> always = $.newArrayList();
@@ -287,7 +290,8 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     /** default reward module */
-    public Off reward(Reward r) {
+    final public Off reward(Reward r) {
+        rewards.add(r);
         return new Ons( onFrame(r) );
     }
 
@@ -306,7 +310,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
             eventFrame.emit(nar);
 
-            always(motivation.floatValue());
+            always(pri.floatValue());
 
             sensors.forEach(s -> s.update(last, now, nar));
 

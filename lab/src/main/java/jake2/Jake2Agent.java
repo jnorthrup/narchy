@@ -111,7 +111,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         qcam.resolution(0.01f);
 
 
-        senseFields("q", player);
+//        senseFields("q", player);
 
         actionToggle($("q(move,fore)"), (x) -> CL_input.in_forward.state = x ? 1 : 0);
         actionToggle($("q(move,back)"), (x) -> CL_input.in_back.state = x ? 1 : 0);

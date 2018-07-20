@@ -17,6 +17,7 @@ import com.google.common.primitives.Primitives;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
+import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
 import jcog.math.OneDHaar;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -2074,6 +2075,13 @@ public enum Util {
             s[i++] = (short) xx;
         }
         return s;
+    }
+
+    public static FloatSupplier compose(FloatSupplier f, FloatToFloatFunction g) {
+        return () -> {
+            float fx = f.asFloat();
+            return g.valueOf(fx);
+        };
     }
 
     public static FloatToFloatFunction compose(FloatToFloatFunction f, FloatToFloatFunction g) {

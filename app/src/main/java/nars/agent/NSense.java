@@ -12,8 +12,6 @@ import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.function.*;
 
@@ -97,7 +95,7 @@ public interface NSense {
         }
     }
 
-
+    /*
     default void senseFields(String id, Object o) {
         Field[] ff = o.getClass().getDeclaredFields();
         for (Field f : ff) {
@@ -108,10 +106,37 @@ public interface NSense {
     }
 
 
+
     default void sense(String id, Object o, String exp) {
 
+        try {
+            //Object x = Ognl.parseExpression(exp);
+            Object initialValue = Ognl.getValue(exp, o);
 
-    }
+
+            String classString = initialValue.getClass().toString().substring(6);
+            switch (classString) {
+                case "java.lang.Double":
+                case "java.lang.Float":
+                case "java.lang.Long":
+                case "java.lang.Integer":
+                case "java.lang.Short":
+                case "java.lang.Byte":
+                case "java.lang.Boolean":
+                    senseNumber(id, o, exp);
+                    break;
+
+                //TODO String
+
+                default:
+                    throw new RuntimeException("not handled: " + classString);
+            }
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
+    }*/
 
     
     default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
@@ -151,9 +176,8 @@ public interface NSense {
                 model, nar(),
                 states
         );
-
-
         onFrame(fs);
+        addSensor(fs);
         return fs;
     }
 
