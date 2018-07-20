@@ -60,30 +60,27 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
 
     public static final Logger logger = LoggerFactory.getLogger(NAgent.class);
-    
+
 
     public final Map<Signal, CauseChannel<ITask>> sensors = new LinkedHashMap();
 
-    @Deprecated public final Set<DigitizedScalar> senseNums = new LinkedHashSet<>();
-    @Deprecated public final Set<Bitmap2DSensor<?>> sensorCam = new LinkedHashSet<>();
+    @Deprecated
+    public final Set<DigitizedScalar> senseNums = new LinkedHashSet<>();
+    @Deprecated
+    public final Set<Bitmap2DSensor<?>> sensorCam = new LinkedHashSet<>();
 
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
     final Topic<NAR> frame = new ListTopic();
 
-    /** list of concepts involved in this agent */
+    /**
+     * list of concepts involved in this agent
+     */
     public final ArrayHashSet<Concept> concepts = new ArrayHashSet();
-
-
-
-
-
-
 
 
     /**
      * lookahead time in durations (multiples of duration)
      */
-
 
 
     /**
@@ -99,7 +96,6 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     public boolean trace;
 
 
-
     /**
      * range: -1..+1
      */
@@ -110,9 +106,6 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     public final List<Supplier<Task>> always = $.newArrayList();
 
-    /** non-null if an independent loop process has started */
-
-    public int sensorDur;
 
     private volatile long last;
 
@@ -125,7 +118,8 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         this(id.isEmpty() ? null : Atomic.the(id), nar);
     }
 
-    @Deprecated protected NAgent(Term id, NAR nar) {
+    @Deprecated
+    protected NAgent(Term id, NAR nar) {
         super(id);
         this.nar = nar;
 
@@ -153,16 +147,17 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                 ETERNAL, ETERNAL,
                 //nar.evidence()
                 Stamp.UNSTAMPED
-                
+
         );
 
-        always.add(()->t);
+        always.add(() -> t);
         return t;
     }
+
     public void alwaysWant(Termed x, float confFactor) {
         //long[] evidenceShared = nar.evidence();
 
-        always.add(()-> {
+        always.add(() -> {
             long now = Tense.dither(this.now(), nar);
             long next = Tense.dither(this.now() + nar.dur(), nar);
             return new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
@@ -174,9 +169,11 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         });
 
     }
+
     public void alwaysQuestion(Termed x, boolean stamped) {
-        alwaysQuestion(x, true, stamped );
+        alwaysQuestion(x, true, stamped);
     }
+
     public void alwaysQuest(Termed x, boolean stamped) {
         alwaysQuestion(x, false, stamped);
     }
@@ -208,7 +205,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                 Stamp.UNSTAMPED
 
         );
-        always.add(()-> etq);
+        always.add(() -> etq);
     }
 
 
@@ -235,8 +232,6 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     }
 
 
-
-    
     @Override
     public final Map<ActionConcept, CauseChannel<ITask>> actions() {
         return actions;
@@ -256,17 +251,16 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
     public Random random() {
         TimeAware timeAware = this.nar;
-        return timeAware !=null ? timeAware.random() : ThreadLocalRandom.current();
+        return timeAware != null ? timeAware.random() : ThreadLocalRandom.current();
     }
 
-    
+
     public String summary() {
 
-        
 
         return id + " rwrd=" + n2(reward) +
                 " dex=" + /*n4*/(dexterity(now(), now())) +
-                
+
                 /*" var=" + n4(varPct(nar)) + */ "\t" + nar.concepts.summary() + " " +
                 nar.emotion.summary();
     }
@@ -279,7 +273,6 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     protected void starting(NAR nar) {
 
 
-
         Term id = (this.id == null) ? nar.self() : this.id;
 
         this.last = nar.time();
@@ -287,26 +280,26 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         this.happy =
 
                 new FilteredScalar(
-                        new FloatCached( () -> reward, nar::time ),
+                        new FloatCached(() -> reward, nar::time),
 
                         //(prev,next) -> next==next ? $.t(Util.unitize(next), Math.max(nar.confMin.floatValue(),  Math.abs(next-0.5f)*2f * nar.confDefault(BELIEF))) : null,
-                        (prev,next) -> next==next ? $.t(Util.unitize(next),nar.confDefault(BELIEF)) : null,
+                        (prev, next) -> next == next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null,
 
                         nar,
 
                         pair(id, ///$.inh(id, "happy"),
-                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
+                                new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
 
                         pair($.func("chronic", id), compose(
-                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-                            new FloatExpMovingAverage(0.02f)
+                                new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+                                new FloatExpMovingAverage(0.02f)
                         )),
 
 
                         pair($.func("acute", id), compose(
-                            new FloatExpMovingAverage(0.1f, false),
-                            new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
+                                new FloatExpMovingAverage(0.1f, false),
+                                new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
                         ))
                 );
 
@@ -321,7 +314,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         alwaysWantEternally(happy.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
         alwaysWantEternally(happy.filter[2].term, nar.confDefault(GOAL) * 0.5f); //acute
         for (FilteredScalar.Filter x : happy.filter) {
-            ((DefaultBeliefTable)x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
+            ((DefaultBeliefTable) x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
 
             //should normally be able to create these beliefs but if you want to filter more broadly:
             //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table
@@ -358,7 +351,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
 
     protected void always(float activation) {
-        in.input(always.stream().map(x->x.get()).peek(x->{
+        in.input(always.stream().map(x -> x.get()).peek(x -> {
             x.pri(
                     activation * nar.priDefault(x.punc())
             );
@@ -377,22 +370,20 @@ abstract public class NAgent extends DurService implements NSense, NAct {
         if (now <= last)
             return;
 
-        this.sensorDur = Math.max(nar.dur(), (int)(now - last)); 
-
         reward = act();
 
         frame.emit(nar);
 
 
-        happy.update(last, now, sensorDur, nar);
+        happy.update(last, now, nar);
 
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
-        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, sensorDur, nar)));
+        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, nar)));
 
-        
-        always( motivation.floatValue() );
 
-        
+        always(motivation.floatValue());
+
+
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
         ArrayUtils.shuffle(aa, random());
         for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
@@ -401,9 +392,9 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
             //HACK temporary
             if (acc instanceof GoalActionConcept)
-                ((GoalActionConcept)acc).curiosity(curiosity.get());
+                ((GoalActionConcept) acc).curiosity(curiosity.get());
 
-            Stream<ITask> s = acc.update(last, now, sensorDur, nar);
+            Stream<ITask> s = acc.update(last, now, nar);
             if (s != null)
                 ac.getValue().input(s);
         }
@@ -417,8 +408,9 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     }
 
 
-
-    /** creates an activator specific to this agent context */
+    /**
+     * creates an activator specific to this agent context
+     */
     public Consumer<Predicate<Activate>> fire() {
 
         return p -> {
@@ -428,26 +420,29 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             int remainMissing = numConcepts;
             if (remainMissing == 0) return;
 
-            
+
             Random rng = nar.random();
             do {
                 Concept cc = concepts.get(rng.nextInt(numConcepts));
                 //Concept cc = nar.conceptualize(cc);
-                if (cc!=null) {
+                if (cc != null) {
                     a = new Activate(cc, 0f);
                     //nar.activate(cc, 1f);
                     ///a = new Activate(cc, 0);
                     //a.delete();
                 } else {
                     a = null;
-                    if (remainMissing-- <= 0) 
+                    if (remainMissing-- <= 0)
                         break;
 
                 }
-            } while (a==null || p.test(a));
+            } while (a == null || p.test(a));
         };
     }
-    /** creates an activator specific to this agent context */
+
+    /**
+     * creates an activator specific to this agent context
+     */
     public Consumer<Predicate<Activate>> fireActions() {
 
         Concept[] ac = this.actions.keySet().toArray(Concept.EmptyArray);
@@ -463,7 +458,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             do {
                 Concept cc = ac[rng.nextInt(numConcepts)];
                 //Concept cc = nar.conceptualize(cc);
-                if (cc!=null) {
+                if (cc != null) {
                     a = new Activate(cc, 0f);
                     //nar.activate(cc, 1f);
                     ///a = new Activate(cc, 0);
@@ -474,12 +469,15 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                         break;
 
                 }
-            } while (a==null || p.test(a));
+            } while (a == null || p.test(a));
         };
     }
 
-    /** default rate = 1 dur/ 1 frame */
-    @Deprecated public void runSynch(int frames) {
+    /**
+     * default rate = 1 dur/ 1 frame
+     */
+    @Deprecated
+    public void runSynch(int frames) {
 //        DurService d = DurService.on(nar, this);
         nar.run(frames * nar.dur() + 1);
 //        d.off();
@@ -508,55 +506,10 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             this.predict = nar.newChannel(a.id + " predict");
 
 
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-            
-            
-            
-            
-
-
-            
-            
-
             Variable what = $.varQuery(1);
 
             predictors.add(question($.impl(what, a.happy.term())));
-            
+
 
             for (Concept c : a.actions.keySet()) {
                 Term action = c.term();
@@ -567,145 +520,27 @@ abstract public class NAgent extends DurService implements NSense, NAct {
 
                         question($.impl(CONJ.the(what, a.happy.term()), action)),
                         question($.impl(CONJ.the(what, a.happy.term().neg()), action))
-                        
 
 
-
-
-                        
-
-
-
-
-
-
-                        
-                        
-
-                        
-                        
-
-                        
-                        
-
-                        
-
-                        
-
-                        
-
-                        
-
-
-                        
-                        
-
-                        
-                        
-
-                        
-                        
-                        
-                        
-                        
-                        
-
-                        
-
-                        
-                        
-
-                        
-                        
-
-
-                        
-                        
-                        
-                        
-
-
-                        
-                        
-
-
-                        
-                        
-                        
-                        
-                        
-                        
-
-                        
-                        
-                        
-                        
-                        
-                        
-
-
-                        
-                        
-
-                        
-                        
                 );
 
             }
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-
-
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-
-            
-            
-            
-            
-            
-            
-
-
-            
 
         }
 
-        public Supplier<Task> question( Term term) {
+        public Supplier<Task> question(Term term) {
             return prediction(term, QUESTION, null);
         }
 
-        public Supplier<Task> quest( Term term) {
+        public Supplier<Task> quest(Term term) {
             return prediction(term, QUEST, null);
         }
 
-        Supplier<Task> prediction( Term _term, byte punct, Truth truth) {
+        Supplier<Task> prediction(Term _term, byte punct, Truth truth) {
             Term term = _term.normalize();
 
             long now = nar.time();
-
-
 
 
             long start = ETERNAL, end = ETERNAL;
@@ -721,7 +556,7 @@ abstract public class NAgent extends DurService implements NSense, NAct {
                     u = t;
                 } else {
                     long nownow = nar.time();
-                    
+
                     u = new NALTask(t.term(), t.punc(), t.truth(), nownow, nownow, nownow, new long[]{nar.time.nextStamp()});
                 }
 
@@ -765,14 +600,14 @@ abstract public class NAgent extends DurService implements NSense, NAct {
             Truth g = nar.goalTruth(a, start, end);
             float c;
             if (g != null) {
-                
+
                 c = g.conf();
             } else {
                 c = 0;
             }
             m[0] += c;
         });
-        
+
         return m[0] > 0 ? m[0] / n /* avg */ : 0;
     }
 
@@ -784,45 +619,18 @@ abstract public class NAgent extends DurService implements NSense, NAct {
     }
 
 
-
     @Override
     public On onFrame(Consumer/*<NAR>*/ each) {
         if (each instanceof DigitizedScalar) {
-            senseNums.add((DigitizedScalar)each);
+            senseNums.add((DigitizedScalar) each);
         }
         return frame.on(each);
     }
 
     public On onFrame(Runnable each) {
         //return DurService.on(nar, ()->{ if (enabled.get()) each.run(); });
-        return frame.on((x)->each.run());
+        return frame.on((x) -> each.run());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

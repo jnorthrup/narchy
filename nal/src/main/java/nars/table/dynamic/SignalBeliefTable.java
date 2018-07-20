@@ -409,11 +409,11 @@ public class SignalBeliefTable extends DynamicBeliefTable {
         this.res = res;
     }
 
-    public SignalTask add(Truth value, long start, long end, int dur, Concept c, NAR nar) {
+    public SignalTask add(Truth value, long start, long end, Concept c, NAR nar) {
 
         value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
         ScalarSignalTask x = series.add(term, punc(), start, end,
-                value, dur, nar);
+                value, nar.dur(), nar);
 
         if (x!=null) {
             x.pri(pri.asFloat());

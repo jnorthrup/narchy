@@ -35,13 +35,13 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long pPrev, long pNow, int dur, NAR nar) {
+    public Stream<ITask> update(long pPrev, long pNow, NAR nar) {
 
 
         long gStart, gEnd;
-        //gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
-        gStart = pNow;
-        gEnd = pNow + dur;
+        int dur = nar.dur();
+        gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
+        //gStart = pNow; gEnd = pNow + dur;
 
         Truth goal = this.goals().truth(gStart, gEnd, nar);
 
@@ -68,7 +68,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
         int dur = nar.dur();
         SignalBeliefTable beliefs = (SignalBeliefTable) beliefs();
-        SignalTask fb = beliefs.add(f, start, end, dur, this, nar);
+        SignalTask fb = beliefs.add(f, start, end, this, nar);
 
         in.input(
                 fg,

@@ -15,8 +15,9 @@
     (K --> B), ((L --> $X) ==> (&&,(K --> #Y),A..+)) |- substitute(((L --> $X) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
         (K --> B), ((L --> $X) ==> (&&,--(K --> #Y),A..+)) |- substitute(((L --> $X) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
 
-    Y, (&&,X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+),X,Y), (Belief:Deduction)
-        Y, (&&,--X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y), (Belief:DeductionN)
+//    Y, (&&,X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+),X,Y), (Belief:Deduction)
+//        Y, (&&,--X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y), (Belief:DeductionN)
+
 //    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:Deduction)
 //        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:DeductionN)
 

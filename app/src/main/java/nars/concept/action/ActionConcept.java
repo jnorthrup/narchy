@@ -46,7 +46,7 @@ public abstract class ActionConcept extends Sensor {
         }
     }
 
-    abstract public Stream<ITask> update(long start, long end, int dur, NAR nar);
+    abstract public Stream<ITask> update(long start, long end, NAR nar);
 
     @Override
     public void value(Task t, float activation, NAR n) {

@@ -73,11 +73,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     }
 
     public Bitmap2DReader readAdaptively(NAgent agent) {
-        return new Bitmap2DReader(mode) {
-            protected int dur() {
-                return Math.max(super.dur(), agent.sensorDur);
-            }
-        };
+        return new Bitmap2DReader(mode);
     }
 
     public DurService readDirectEachDuration() {

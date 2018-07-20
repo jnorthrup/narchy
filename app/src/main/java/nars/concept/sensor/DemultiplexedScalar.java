@@ -67,19 +67,19 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
             long now = n.time();
 
             
-            update(last, now, Math.max((int) (now - last), 1), n);
+            update(last, now, n);
 
             this.last = now;
         }
     }
 
-    public void update(long start, long end, int dur, NAR n) {
+    public void update(long start, long end, NAR n) {
 
         if (input!=null)
             value.set(input.asFloat());
 
         in.input(StreamSupport.stream(this.spliterator(), false)
-                .map(x -> x.update(start, end, truther, dur, n)));
+                .map(x -> x.update(start, end, truther, n)));
     }
 
     public void pri(FloatSupplier p) {

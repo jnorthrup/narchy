@@ -106,11 +106,11 @@ public class Signal extends Sensor implements FloatFunction<Term>, FloatSupplier
     @Nullable
     @Deprecated
     public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
-        return update(time - dur / 2, time + dur / 2, truther, dur, n);
+        return update(time - dur / 2, time + Math.max(0, (dur / 2 - 1)), truther, n);
     }
 
     @Nullable
-    public Task update(long start, long end, FloatFloatToObjectFunction<Truth> truther, int dur, NAR n) {
+    public Task update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
 
         float prevValue = currentValue;
         float nextValue = floatValueOf(term);
@@ -120,7 +120,7 @@ public class Signal extends Sensor implements FloatFunction<Term>, FloatSupplier
 
 
                 return ((SignalBeliefTable) beliefs()).add(nextTruth,
-                        start, end, dur, this, n);
+                        start, end, this, n);
             }
         }
         return null;

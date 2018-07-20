@@ -9,23 +9,15 @@ public class FloatNormalized implements FloatSupplier {
 
     private final FloatNormalizer normalizer;
 
-    public FloatNormalized(DoubleSupplier in) {
-        this(()->(float)in.getAsDouble());
-    }
-
     public FloatNormalized(FloatSupplier in) {
         this(in, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY);
-    }
-
-    public FloatNormalized(FloatSupplier in, float polarRadius) {
-        this(in, polarRadius, Float.NaN /* ignored */, true);
     }
 
     public FloatNormalized(FloatSupplier in, float minStart, float maxStart) {
         this(in, minStart, maxStart, false);
     }
 
-    private FloatNormalized(FloatSupplier in, float minStart, float maxStart, boolean polar) {
+    public FloatNormalized(FloatSupplier in, float minStart, float maxStart, boolean polar) {
         normalizer =
                 polar ?
                     new FloatPolarNormalizer(minStart) :

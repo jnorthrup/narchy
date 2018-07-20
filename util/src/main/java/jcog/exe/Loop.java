@@ -39,7 +39,7 @@ abstract public class Loop implements Runnable {
      * 0: loop at full speed
      * > 0: delay in milliseconds
      */
-    public final AtomicInteger periodMS = new AtomicInteger(-1);
+    public final AtomicInteger periodMS;
 
 
     /**
@@ -56,13 +56,22 @@ abstract public class Loop implements Runnable {
         this(fps >= 0 ? fpsToMS(fps) : -1);
     }
 
+    public Loop(int periodMS) {
+        this(new AtomicInteger(periodMS));
+    }
     /**
      * create and auto-start
      */
-    public Loop(int periodMS) {
+    public Loop(AtomicInteger periodMS) {
         super();
         logger = getLogger(getClass());
-        setPeriodMS(periodMS);
+
+        int p = periodMS.intValue();
+
+        //HACK trigger change in period value to trigger start
+        periodMS.set(-1);
+        this.periodMS = periodMS;
+        setPeriodMS(p);
     }
 
     public boolean isRunning() {

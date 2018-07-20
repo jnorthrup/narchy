@@ -16,63 +16,27 @@ public class BeliefActionConcept extends ActionConcept {
 
     private final Consumer<Truth> action;
 
-    
-
-    
-
 
     public BeliefActionConcept(@NotNull Term term, @NotNull NAR n, Consumer<Truth> action) {
         super(term, n);
 
-        
 
         this.action = action;
     }
 
 
-
-
-
-
     @Override
-    public Stream<ITask> update(long start, long end, int dur, NAR nar) {
+    public Stream<ITask> update(long start, long end, NAR nar) {
 
+        int dur = nar.dur();
         long nowStart =
-                
-                start - dur/2;
+
+                start - dur / 2;
         long nowEnd =
-                
-                start + dur/2;
+
+                start + dur / 2;
 
         Truth belief = this.beliefs().truth(nowStart, nowEnd, nar);
-
-
-
-
-
-
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-            
-
-
 
 
         action.accept(belief == null ? null : belief.truth());

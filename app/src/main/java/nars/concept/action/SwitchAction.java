@@ -48,7 +48,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     }
 
     @Override
-    public void update(long start, long end, int dur, NAR n) {
+    public void update(long start, long end, NAR n) {
         int d = decide(start, end);
 
         if (d!=-1 && action.test(d))
@@ -56,6 +56,6 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         else
             value.set(Float.NaN);
 
-        super.update(start, end, dur, n);
+        super.update(start, end, n);
     }
 }

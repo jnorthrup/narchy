@@ -60,6 +60,16 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
         }
         return count;
     }
+    public void forEach(Consumer<X> each) {
+        int s = size();
+        X next;
+        int i = 0;
+        while (s-- > 0) {
+            next = peek(i++);
+            if (next!=null)
+                each.accept(next);
+        }
+    }
 
 
 
@@ -239,6 +249,10 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     @Override
     public final X peek() {
         return buffer[head.getOpaque()&mask];
+    }
+
+    public final X peek(int delta) {
+        return buffer[(head.getOpaque()+delta)&mask];
     }
 
     @Override

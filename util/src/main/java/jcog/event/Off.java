@@ -1,5 +1,5 @@
 package jcog.event;
 
-public interface Off {
-    public void off();
+@FunctionalInterface public interface Off {
+    void off();
 }

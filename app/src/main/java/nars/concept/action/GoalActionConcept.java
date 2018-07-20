@@ -42,7 +42,7 @@ public class GoalActionConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long pPrev, long pNow, int dur, NAR nar) {
+    public Stream<ITask> update(long pPrev, long pNow, NAR nar) {
 
 
         Truth goal;
@@ -53,8 +53,9 @@ public class GoalActionConcept extends ActionConcept {
 //        if (goal == null) {
 //            //HACK expand radius - this should be done by the truthpolation impl
 
-        //gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
-        gStart = pNow; gEnd = pNow + Math.max(0, dur-1);
+        int dur = nar.dur();
+        gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
+        //gStart = pNow; gEnd = pNow + Math.max(0, dur-1);
 
         goal = this.goals().truth(gStart, gEnd, nar);
 //        }
@@ -93,7 +94,7 @@ public class GoalActionConcept extends ActionConcept {
         Truth feedback = this.motor.apply(belief, goal);
 
         Task feedbackBelief = feedback != null ?
-                this.feedback.add(feedback, gStart, gEnd, dur, this, nar) : null;
+                this.feedback.add(feedback, gStart, gEnd, this, nar) : null;
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief != null) {

@@ -5,6 +5,7 @@ import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.NAgent;
+import nars.agent.NAgent2;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
@@ -15,6 +16,7 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
@@ -30,6 +32,9 @@ import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.meta.AutoSurface;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -54,7 +59,108 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-    public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
+    public static NAR runRT2(Function<NAR, NAgent2> init, float narFPS) {
+        /*
+        try {
+            Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
+
+
+        float clockFPS = narFPS;
+
+        RealTime clock =
+                new RealTime.MS();
+
+
+        clock.durFPS(clockFPS);
+
+
+        NAR n = new NARS()
+
+                .attention(()->new Attention(256))
+
+                //.exe(new UniExec() {
+                .exe(new BufferedExec.WorkerExec(Util.concurrency(), false /* true */))
+
+//                .exe(MixMultiExec.get(
+//                            1024,
+//                             Util.concurrency()))
+//                .exe(new WorkerMultiExec(
+//
+//                             new Focus.AERevaluator(new SplitMix64Random(1)),
+//                             Util.concurrencyDefault(2),
+//                             1024, 1024) {
+//
+//                         {
+//                             //Exe.setExecutor(this);
+//                         }
+//                     }
+//                )
+
+
+                .time(clock)
+                .index(
+
+
+                        //new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(64 * 1024, 4)
+
+
+                )
+                .get();
+
+
+        config(n);
+
+
+        initPlugins(n);
+
+
+
+
+        n.runLater(() -> {
+
+            NAgent2 a = init.apply(n);
+            //a.durs(2f); //nyquist?
+
+            a.curiosity.set(0.25f);
+
+            n.on(a);
+
+            n.runLater(() -> {
+                //TODO
+//                MatrixDeriver motivation = new MatrixDeriver(a.fire(),
+//                        Derivers.nal(n, 1, 6, "motivation.nal"));
+
+                Gridding aa = new Gridding(
+                        new AutoSurface<>(a, 4)
+                                .on(Bitmap2DSensor.class, (Bitmap2DSensor b) -> new AspectAlign(
+                                        new CameraSensorView(b, a.nar()).withControls(),
+                                        AspectAlign.Align.Center, b.width, b.height)),
+                                //.on(Loop.class, LoopPanel::new),
+
+                        NARui.top(n)
+                );
+
+                SpaceGraph.window(aa, 1200, 900);
+
+
+                //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
+
+                //System.gc();
+            });
+        });
+
+        Loop loop = n.startFPS(narFPS);
+
+        return n;
+    }
+
+    @Deprecated public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
 
         /*
         try {
@@ -110,34 +216,7 @@ abstract public class NAgentX extends NAgent {
                 .get();
 
 
-
-        new MatrixDeriver(Derivers.nal(n, 1, 8, /*"curiosity.nal",*/ "motivation.nal"));
-
-        n.dtDither.set(10);
-        n.timeFocus.set(10);
-
-        n.confMin.set(0.01f);
-        n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(46);
-
-        n.forgetRate.set(0.8f);
-        n.activateConceptRate.set(0.9f);
-
-
-        n.beliefConfDefault.set(0.99f);
-        n.goalConfDefault.set(0.9f);
-
-        n.beliefPriDefault.set(0.4f);
-        n.goalPriDefault.set(0.8f);
-
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.08f);
-
-        n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
-        n.emotion.want(MetaGoal.Believe, +0.05f);
-        n.emotion.want(MetaGoal.Answer, +0.10f);
-        n.emotion.want(MetaGoal.Desire, +0.50f);
-        n.emotion.want(MetaGoal.Action, +0.75f);
+        config(n);
 
 //        try {
 //            InterNAR i = new InterNAR(n, 8, 0);
@@ -147,13 +226,7 @@ abstract public class NAgentX extends NAgent {
 //        }
 
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 128);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
-
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
-
-        Inperience inp = new Inperience(n, 64);
-
+        initPlugins(n);
 
 
 //        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
@@ -234,6 +307,56 @@ abstract public class NAgentX extends NAgent {
         Loop loop = n.startFPS(narFPS);
 
         return n;
+    }
+
+    public static void config(NAR n) {
+        n.dtDither.set(10);
+        n.timeFocus.set(10);
+
+        n.confMin.set(0.01f);
+        n.freqResolution.set(0.01f);
+        n.termVolumeMax.set(46);
+
+        n.forgetRate.set(0.8f);
+        n.activateConceptRate.set(0.9f);
+
+
+        n.beliefConfDefault.set(0.99f);
+        n.goalConfDefault.set(0.9f);
+
+        n.beliefPriDefault.set(0.4f);
+        n.goalPriDefault.set(0.8f);
+
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.08f);
+
+        n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+        n.emotion.want(MetaGoal.Believe, +0.25f);
+        n.emotion.want(MetaGoal.Answer, +0.10f);
+        n.emotion.want(MetaGoal.Desire, +0.50f);
+        n.emotion.want(MetaGoal.Action, +0.75f);
+    }
+
+    public static void initPlugins(NAR n) {
+        new MatrixDeriver(Derivers.nal(n, 1, 8, /*"curiosity.nal",*/ "motivation.nal"));
+
+        new STMLinkage(n, 1, true);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 128);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
+
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
+
+        Inperience inp = new Inperience(n, 64);
+
+
+//        try {
+//            InterNAR i = new InterNAR(n, 8, 0);
+//            i.runFPS(4);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+//        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
     }
 
 

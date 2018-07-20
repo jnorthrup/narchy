@@ -10,8 +10,8 @@
 
     B, A, task("."), --is(A,"==>"), --is(B,"==>")   |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
 
-    B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(B,task) ~ polarize(A,belief)), (Belief:DifferenceDepolarized, Also:VarIntro)
-    B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(A,belief) ~ polarize(B,task)), (Belief:DifferenceReverseDepolarized, Also:VarIntro)
+    B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(B,task) ~ polarize(A,belief)), (Belief:DifferenceDepolarized, Also:VarIntro, Time:Intersect)
+    B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(A,belief) ~ polarize(B,task)), (Belief:DifferenceReverseDepolarized, Also:VarIntro, Time:Intersect)
 
 
 

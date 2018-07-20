@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
+import nars.agent.NAgent2;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -19,13 +20,13 @@ import static nars.experiment.Tetris.TetrisState.*;
 /**
  * Created by me on 7/28/16.
  */
-public class Tetris extends NAgentX implements Bitmap2D {
+public class Tetris extends NAgent2 implements Bitmap2D {
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     static boolean easy;
     public final FloatRange timePerFall = new FloatRange(2f, 1f, 32f);
-    private final Bitmap2DSensor<Bitmap2D> pixels;
+    public final Bitmap2DSensor<Bitmap2D> pixels;
     private TetrisState state;
 
     public Tetris(NAR nar) {
@@ -42,27 +43,25 @@ public class Tetris extends NAgentX implements Bitmap2D {
      * @param timePerFall larger is slower gravity
      */
     public Tetris(NAR nar, int width, int height, int timePerFall) {
-        super("tetris", nar);
+        super("tetris", FrameTrigger.fps(20f), nar);
 
         state = new TetrisState(width, height, timePerFall) {
             @Override
             protected int nextBlock() {
-
-
                 if (easy) {
-
-                    return 1;
-
+                    return 1; //square
                 } else {
                     return super.nextBlock();
                 }
             }
-
-
         };
 
+        reward(() -> {
+            state.timePerFall = Math.round(this.timePerFall.floatValue());
+            return state.next();
+        });
 
-        addCamera(
+        sense(
                 pixels = new Bitmap2DSensor<>(
                         (x, y) -> $.p(id, $.the(x), $.the(y))
                         , this, nar)
@@ -75,138 +74,11 @@ public class Tetris extends NAgentX implements Bitmap2D {
         actionsToggle();
 
         state.reset();
-
-
     }
 
     public static void main(String[] args) {
 
-
-        NAgentX.runRT((n) -> {
-            Tetris a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-
-
-
-
-            //Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
-            //n.freqResolution.set(0.05f);
-            //n.confResolution.set(0.01f);
-            //n.dtDither.set(5); //for fine-grain Opjects timing
-
-
-            return a;
-        }, 30f);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        nar.onCycle((n)->{
-            FloatSummaryReusableStatistics inputPri = new FloatSummaryReusableStatistics();
-            FloatSummaryReusableStatistics derivPri = new FloatSummaryReusableStatistics();
-            FloatSummaryReusableStatistics otherPri = new FloatSummaryReusableStatistics();
-            n.tasks.forEach(t -> {
-                float tp = t.pri();
-                if (tp != tp)
-                    return;
-                if (t.isInput()) {
-                    inputPri.accept(tp);
-                } else if (t instanceof DerivedTask) {
-                    derivPri.accept(tp);
-                } else {
-                    otherPri.accept(tp);
-                }
-            });
-
-            System.out.println("input=" + inputPri);
-            System.out.println("deriv=" + derivPri);
-            System.out.println("other=" + otherPri);
-            System.out.println();
-        });
-        */
-
+        NAgentX.runRT2((n) -> new Tetris(n, Tetris.tetris_width, Tetris.tetris_height), 30f);
 
     }
 
@@ -271,13 +143,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
         return state.seen[index] > 0 ? 1f : 0f;
     }
 
-    @Override
-    public float act() {
-
-        state.timePerFall = Math.round(timePerFall.floatValue());
-        return state.next();
-
-    }
 
     public static class OfflineTetris {
         public static void main(String[] args) {
@@ -623,7 +488,9 @@ public class Tetris extends NAgentX implements Bitmap2D {
             spawnBlock();
         }
 
-        /** do nothing method for signaling to NAR restart occurred, but not to allow it to trigger an actual restart */
+        /**
+         * do nothing method for signaling to NAR restart occurred, but not to allow it to trigger an actual restart
+         */
         public void restart() {
 
         }

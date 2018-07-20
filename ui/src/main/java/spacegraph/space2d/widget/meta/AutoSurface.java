@@ -3,9 +3,9 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.Sets;
 import jcog.data.list.FasterList;
 import jcog.event.Ons;
-import jcog.math.MutableEnum;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.math.MutableEnum;
 import jcog.service.Service;
 import jcog.service.Services;
 import jcog.util.Reflect;
@@ -25,14 +25,16 @@ import spacegraph.space2d.widget.windo.Widget;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 /**
  * Created by me on 2/28/17.
  */
 public class AutoSurface<X> extends Gridding {
 
-    private final static int MAX_DEPTH = 1;
+    private final int maxDepth;
     private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
     /**
      * root
@@ -41,7 +43,12 @@ public class AutoSurface<X> extends Gridding {
     private Ons ons = null;
 
     public AutoSurface(X x) {
+        this(x, 1);
+    }
+
+    public AutoSurface(X x, int maxDepth) {
         super();
+        this.maxDepth = maxDepth;
         this.obj = x;
     }
 
@@ -80,6 +87,20 @@ public class AutoSurface<X> extends Gridding {
             return;
         }
 
+        {
+            Class cx = x.getClass();
+            Function o = onClass.get(cx); //TODO check subtypes/supertypes etc
+            if (o != null) {
+                Surface s = (Surface) o.apply(x);
+                if (s != null) {
+                    target.add(s);
+                    return;
+                }
+            }
+        }
+
+        //TODO rewrite these as pluggable onClass handlers
+
         if (x instanceof Services) {
             target.add(new AutoServices((Services) x));
             return;
@@ -107,7 +128,7 @@ public class AutoSurface<X> extends Gridding {
             target.add(newSwitch((MutableEnum) x));
         }
 
-        if (depth < MAX_DEPTH) {
+        if (depth < maxDepth) {
             collectFields(x, target, depth + 1);
         }
     }
@@ -209,6 +230,13 @@ public class AutoSurface<X> extends Gridding {
 //        }
 
 
+    }
+
+    final Map<Class,Function<?,Surface>> onClass = new ConcurrentHashMap<>();
+
+    public <Y> AutoSurface<X> on(Class<? extends Y> c, Function<? extends Y, Surface> each) {
+        onClass.put(c, each);
+        return this;
     }
 
     private static class MySlider extends FloatSlider {

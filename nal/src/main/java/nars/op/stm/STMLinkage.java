@@ -1,6 +1,6 @@
 package nars.op.stm;
 
-import jcog.Util;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import nars.NAR;
@@ -10,8 +10,6 @@ import nars.control.Cause;
 import nars.control.TaskService;
 import nars.term.Termed;
 
-import java.util.concurrent.BlockingQueue;
-
 
 /**
  * Short-term Memory Belief Event Induction.
@@ -20,7 +18,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class STMLinkage extends TaskService {
 
-    public final BlockingQueue<Task> stm;
+    public final MetalConcurrentQueue<Task> stm;
 
     final FloatRange strength = new FloatRange(1f, 0f, 1f);
     private final boolean allowNonInput;
@@ -33,7 +31,8 @@ public final class STMLinkage extends TaskService {
         this.allowNonInput = allowNonInput;
         strength.set(1f / capacity);
 
-        stm = Util.blockingQueue(capacity + 1 /* extra slot for good measure */);
+        stm = //Util.blockingQueue(capacity + 1 );
+                new MetalConcurrentQueue<>(capacity+1 /* extra slot for good measure */);
 
 
 
@@ -67,6 +66,7 @@ public final class STMLinkage extends TaskService {
 
     }
 
+
     boolean stmLinkable(Task newEvent) {
         return (!newEvent.isEternal() && (allowNonInput || newEvent.isInput()));
     }
@@ -87,10 +87,7 @@ public final class STMLinkage extends TaskService {
 
 
         float p = strength * tPri;
-        for (Task u : stm) {
-//            if (u == null) continue;
-            link(t, p * u.priElseZero(), u/*, cause.id*/, nar);
-        }
+        stm.forEach(u -> link(t, p * u.priElseZero(), u/*, cause.id*/, nar));
 
         stm.poll();
         stm.offer(t);

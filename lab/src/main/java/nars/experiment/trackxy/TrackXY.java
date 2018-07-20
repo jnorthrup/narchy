@@ -10,13 +10,12 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
 import nars.agent.NAgent2;
 import nars.concept.action.SwitchAction;
-import nars.control.DurService;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.UniExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
@@ -65,7 +64,10 @@ public class TrackXY extends NAgent2 {
 
 
     protected TrackXY(NAR nar, int W, int H) {
-        super("trackXY", nar);
+        super("trackXY",
+                FrameTrigger.durs(1),
+                //FrameTrigger.fps(1),
+                nar);
 
         senseNumber($.inh("sx", id), new FloatNormalized(() -> sx, 0, W));
         if (H > 1)
@@ -94,6 +96,8 @@ public class TrackXY extends NAgent2 {
         reward(this::act);
 
         randomize();
+
+        nar.on(this);
     }
 
     public static void main(String[] args) {
@@ -107,9 +111,8 @@ public class TrackXY extends NAgent2 {
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
-
-                        new CaffeineIndex(2 * 1024)
-                        //new HijackConceptIndex(4 * 1024, 4)
+                        //new CaffeineIndex(2 * 1024)
+                        new HijackConceptIndex(4 * 1024, 4)
                 );
 
 
@@ -123,14 +126,13 @@ public class TrackXY extends NAgent2 {
 //        n.questPriDefault.set(0.1f);
 
 
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(24);
 
 
 
         TrackXY t = new TrackXY(n, 4, 4);
 
-        DurService.on(n, t);
-        n.on(t);
+
 
 
         if (rl) {

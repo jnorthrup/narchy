@@ -451,7 +451,7 @@ public class Builtin {
 //        }));
 
         /** drops a random contained event, whether at first layer or below */
-        nar.on(Functor.f1((Atom) $.the("dropAnyEvent"), (Term t) -> {
+        nar.on(Functor.f1Inline("dropAnyEvent", (Term t) -> {
             Op oo = t.op();
             boolean negated = (oo == NEG);
             if (negated) {

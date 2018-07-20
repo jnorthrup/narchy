@@ -339,18 +339,38 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         //extract passive term and verify they all match (could differ temporally, for example)
         Term[] common = new Term[1];
         if (!((FasterList<TaskRegion>) components).allSatisfy(tr -> {
-            Term t = tr.task().term();
+            Term tt = subSubjPredWithNegRewrap(subjOrPred, tr);
             Term p = common[0];
             if (p == null) {
-                common[0] = t.sub(subjOrPred ? 1 : 0 /* reverse */);
+                common[0] = tt;
                 return true;
             } else {
-                return p.equals(t.sub(subjOrPred ? 1 : 0 /* reverse */));
+                return p.equals(tt);
             }
         }) || (common[0] == null))
             return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts
 
-        return Util.map(0, components.size(), c -> components.get(c).task().term().sub(subjOrPred ? 0 : 1), Term[]::new);
+        return Util.map(0, components.size(), tr ->
+                //components.get(tr).task().term().sub(subjOrPred ? 0 : 1)
+                subSubjPredWithNegRewrap(!subjOrPred, components.get(tr))
+                , Term[]::new);
+    }
+
+    private static Term subSubjPredWithNegRewrap(boolean subjOrPred, TaskRegion tr) {
+        Term t = tr.task().term();
+        boolean neg = t.op() == NEG;
+        if (neg) {
+            t = t.unneg();
+        }
+
+        Term tt = t.sub(subjOrPred ? 1 : 0 /* reverse */);
+        if (neg) {
+
+            //assert(!subjOrPred && t.op()==IMPL); //impl predicate
+
+            tt = tt.neg();
+        }
+        return tt;
     }
 
     @Nullable
@@ -388,19 +408,36 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             for (TaskRegion x : components) {
                 Term t = ((Task)x).term();
 
-                if (t.subs()!=2) {
-                    if (t.op()==NEG && superterm.op()==IMPL) {
-                        if (!subjOrPred)
-                            t = t.unneg(); //negated predicate of implication. which means negate it
-                        //assert(t.op()==IMPL);
+                boolean forceNegate = false;
+                if (op==IMPL && t.op()!=IMPL) {
+                    if (t.unneg().op()==IMPL) {
+                        t = t.unneg();
+                        if (!subjOrPred) {
+                            forceNegate = true;
+                        } else {
+                            //dont force negae
+                        }
                     } else {
                         throw new WTF();
-                        //return null; //fail ???
                     }
                 }
 
+//                if (t.subs()!=2) {
+//                    if (t.op() == NEG) {
+//                        //                    if (t.op()==NEG && superterm.op()==IMPL) {
+//                        //                        if (!subjOrPred)
+//                        //                            t = t.unneg(); //negated predicate of implication. which means negate it
+//                        //                        //assert(t.op()==IMPL);
+//                        //                    } else {
+//                        t = t.unneg();
+//                        //throw new WTF();
+//                        //return null; //fail ???
+//                        //                    }
+//                    }
+//                }
+
                 int tdt = t.dt();
-                if (!c.add(tdt==DTERNAL ? ETERNAL : -tdt, t.sub(subjOrPred ? 0 : 1).negIf(union)))
+                if (!c.add(tdt==DTERNAL ? ETERNAL : -tdt, t.sub(subjOrPred ? 0 : 1).negIf(union ^ forceNegate)))
                     break;
             }
 

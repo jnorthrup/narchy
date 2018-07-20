@@ -1,7 +1,9 @@
 package nars.agent;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.event.*;
+import jcog.exe.Loop;
 import jcog.math.*;
 import nars.$;
 import nars.NAR;
@@ -13,6 +15,7 @@ import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
 import nars.control.DurService;
+import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.sensor.Bitmap2DSensor;
 import nars.table.DefaultBeliefTable;
@@ -22,6 +25,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
+import nars.time.clock.RealTime;
 import nars.truth.Truth;
 import nars.util.TimeAware;
 import org.apache.commons.lang3.ArrayUtils;
@@ -44,7 +48,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * an integration of sensor concepts and motor functions
  */
-public class NAgent2 extends DurService implements NSense, NAct {
+public class NAgent2 extends NARService implements NSense, NAct {
 
 
     final Topic<NAR> eventFrame = new ListTopic();
@@ -62,6 +66,7 @@ public class NAgent2 extends DurService implements NSense, NAct {
 
     private final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
 
+    public final FrameTrigger frameTrigger;
 
     public FloatRange curiosity = new FloatRange(0.10f, 0f, 1f);
     public FloatRange motivation = new FloatRange(1f, 0, 2f);
@@ -78,32 +83,96 @@ public class NAgent2 extends DurService implements NSense, NAct {
     @Deprecated
     public final List<Supplier<Task>> always = $.newArrayList();
 
-    /**
-     * non-null if an independent loop process has started
-     */
 
-    public int sensorLag;
+
 
     private volatile long last;
 
 
-    protected NAgent2(NAR nar) {
-        this("", nar);
+    abstract public static class FrameTrigger  {
+
+        private volatile Off on = null;
+
+        abstract protected Off install(NAgent2 a);
+
+        public void start(NAgent2 a) {
+            synchronized (this) {
+                assert(on == null);
+                on = install(a);
+            }
+        }
+
+        public void stop() {
+            synchronized (this) {
+                if (on != null) {
+                    on.off();
+                    on = null;
+                }
+            }
+        }
+
+        /** measured in realtime */
+        public static class FPS extends FrameTrigger {
+
+            private transient final float initialFPS;
+
+            public final Loop loop;
+            private NAgent2 agent = null;
+
+            public FPS(float fps) {
+                this.initialFPS = fps;
+                loop = new Loop(-1) {
+                    @Override public boolean next() {
+                        agent.frame();
+                        return true;
+                    }
+                };
+            }
+
+            @Override protected Off install(NAgent2 a) {
+                if (!(a.nar.time instanceof RealTime))
+                    throw new UnsupportedOperationException("realtime clock required");
+
+                agent = a;
+
+                loop.setFPS(initialFPS);
+
+                return () -> loop.stop();
+            }
+        }
+
+        /** measured in # of perceptual durations */
+        public static class Durs extends FrameTrigger {
+
+            private transient final float initialDurs;
+
+            public DurService loop = null;
+
+            public Durs(float initialDurs) {
+                this.initialDurs = initialDurs;
+            }
+            @Override protected Off install(NAgent2 a) {
+                loop = DurService.on(a.nar, a::frame);
+                loop.durs(initialDurs);
+                return loop;
+            }
+        }
+
+        public static FPS fps(float fps) { return new FPS(fps); }
+        public static Durs durs(float durs) { return new Durs(durs); }
     }
 
-    protected NAgent2(String id, NAR nar) {
-        this(id.isEmpty() ? null : Atomic.the(id), nar);
+
+
+    public NAgent2(String id, FrameTrigger frameTrigger, NAR nar) {
+        this(id.isEmpty() ? null : Atomic.the(id), frameTrigger, nar);
     }
 
-    @Deprecated
-    protected NAgent2(Term id, NAR nar) {
+    public NAgent2(Term id, FrameTrigger frameTrigger, NAR nar) {
         super(id);
         this.nar = nar;
-
-
-//        if (nar!=null) {
-//            nar.on(this);
-//        }
+        this.frameTrigger = frameTrigger;
+        last = nar.time();
     }
 
 
@@ -115,6 +184,7 @@ public class NAgent2 extends DurService implements NSense, NAct {
 
     public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {
         sensorCam.add(bmp);
+        onFrame(bmp::input); //TODO support adaptive input mode
         return bmp;
     }
 
@@ -244,15 +314,12 @@ public class NAgent2 extends DurService implements NSense, NAct {
     protected void starting(NAR nar) {
 
 
-        Term id = (this.id == null) ? nar.self() : this.id;
+        //Term id = (this.id == null) ? nar.self() : this.id;
 
         this.last = nar.time();
 
 
         this.in = nar.newChannel(this);
-
-
-        init(nar);
 
 
         actions.keySet().forEach(a -> {
@@ -261,20 +328,25 @@ public class NAgent2 extends DurService implements NSense, NAct {
             //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
         });
 
-
         super.starting(nar);
+
+
+        this.frameTrigger.start(this);
 
         enabled.set(true);
     }
 
-    protected void init(NAR nar) {
-
-
-    }
 
     @Override
     protected void stopping(NAR nar) {
+
         enabled.set(false);
+
+        if (frameTrigger!=null) {
+            frameTrigger.stop();
+        } else {
+            throw new WTF(this + " stopped twice");
+        }
 
         super.stopping(nar);
     }
@@ -288,69 +360,132 @@ public class NAgent2 extends DurService implements NSense, NAct {
         }));
     }
 
-    public Off reward(FloatSupplier rewardfunc) {
-        Term r = $.func("reward", id);
-        return new Ons(
-                onFrame(new Runnable() {
+    public abstract static class Reward implements Runnable {
 
-                    volatile float reward = Float.NaN;
+        protected final NAgent2 agent;
+        private final FloatSupplier rewardFunc;
+        volatile float reward = Float.NaN;
 
-                    final FilteredScalar happy = new FilteredScalar(
-                            new FloatCached(() -> reward, nar::time),
+        public Reward(NAgent2 a, FloatSupplier r) {
+            this.agent = a;
+            this.rewardFunc = r;
+        }
 
-                            //(prev,next) -> next==next ? $.t(Util.unitize(next), Math.max(nar.confMin.floatValue(),  Math.abs(next-0.5f)*2f * nar.confDefault(BELIEF))) : null,
-                            (prev, next) -> next == next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null,
+        public NAR nar() { return agent.nar(); }
 
-                            nar,
+        @Override
+        public void run() {
+            reward = rewardFunc.asFloat();
+        }
 
-                            pair(r,
-                                    new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
+    }
+
+    public static class SimpleReward extends Reward {
+
+        public final Signal concept;
+        private final FloatFloatToObjectFunction<Truth> truther;
+
+        public SimpleReward(Term id, FloatSupplier r, NAgent2 a) {
+            super(a, r);
+            concept = new Signal(id, new FloatNormalized(() -> reward, -1, +1, true), a.nar);
+            truther = ((prev, next) -> next == next ? $.t(next, nar().confDefault(BELIEF)) : null);
+            agent.alwaysWantEternally(concept.term, nar().confDefault(GOAL));
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            concept.update(agent.last, agent.now(), truther, nar());
+        }
+    }
+
+    public static class DetailedReward extends Reward {
+
+        public final FilteredScalar concept;
+
+        public DetailedReward(Term id, FloatSupplier r, NAgent2 a) {
+            super(a, r);
+
+            NAR nar = a.nar;
+
+            concept = new FilteredScalar( () -> reward,
+
+                    //(prev,next) -> next==next ? $.t(Util.unitize(next), Math.max(nar.confMin.floatValue(),  Math.abs(next-0.5f)*2f * nar.confDefault(BELIEF))) : null,
+                    (prev, next) -> next == next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null,
+
+                    nar,
+
+                    pair(id,
+                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
 
-                            pair($.func("chronic", r), compose(
-                                    new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-                                    new FloatExpMovingAverage(0.02f)
-                            )),
+                    pair($.func("chronic", id), compose(
+                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+                            new FloatExpMovingAverage(0.02f)
+                    )),
 
 
-                            pair($.func("acute", r), compose(
-                                    new FloatExpMovingAverage(0.1f, false),
-                                    new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
-                            ))
-                    );
+                    pair($.func("acute", id), compose(
+                            new FloatExpMovingAverage(0.1f, false),
+                            new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
+                    ))
+            );
 
-                    {
-                        alwaysWantEternally(happy.filter[0].term, nar.confDefault(GOAL));
-                        alwaysWantEternally(happy.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
-                        alwaysWantEternally(happy.filter[2].term, nar.confDefault(GOAL) * 0.5f); //acute
-                        for (FilteredScalar.Filter x : happy.filter) {
-                            ((DefaultBeliefTable) x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
+            {
+                 //TODO add these to On/Off
+                agent.alwaysWantEternally(concept.filter[0].term, nar.confDefault(GOAL));
+                agent.alwaysWantEternally(concept.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
+                agent.alwaysWantEternally(concept.filter[2].term, nar.confDefault(GOAL) * 0.5f); //acute
+                for (FilteredScalar.Filter x : concept.filter) {
+                    ((DefaultBeliefTable) x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
 
-                            //should normally be able to create these beliefs but if you want to filter more broadly:
-                            //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table
+                    //should normally be able to create these beliefs but if you want to filter more broadly:
+                    //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table
 
-                        }
-                    }
+                }
+            }
 
-                    @Override
-                    public void run() {
-                        long now = nar.time();
+        }
 
-                        reward = rewardfunc.asFloat();
+        @Override
+        public void run() {
+            super.run();
 
-                        happy.update(last, now, sensorLag, nar);
+            NAR nar = nar();
 
-                        Truth happynowT = nar.beliefTruth(happy, last, now);
-                        float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;
-                        nar.emotion.happy(/* motivation.floatValue() * */ dexterity(last, now) * happynow /* /nar.confDefault(GOAL) */);
-                    }
-                })
-        ) /* { off... } */;
+            concept.update(agent.last, agent.now(), nar);
+
+//            Truth happynowT = nar.beliefTruth(concept, last, now);
+//            float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;
+//            nar.emotion.happy(/* motivation.floatValue() * */ dexterity(last, now) * happynow /* /nar.confDefault(GOAL) */);
+
+        }
     }
 
 
-    @Override
-    protected void run(NAR n, long dt) {
+
+    public Off reward(FloatSupplier rewardfunc) {
+        return reward($.func("reward", id), rewardfunc);
+    }
+
+    /** set a default reward supplier */
+    public Off reward(Term reward, FloatSupplier rewardfunc) {
+        return reward(new SimpleReward(reward, rewardfunc, this));
+    }
+
+    @Deprecated public Off rewardDetailed(Term reward, FloatSupplier rewardfunc) {
+        DetailedReward r = new DetailedReward(reward, rewardfunc, this);
+        return reward(r);
+    }
+
+    /** default reward module */
+    public Off reward(Reward r) {
+        return new Ons( onFrame((Runnable)r) );
+    }
+
+
+    /** runs a frame */
+    protected void frame() {
         if (!enabled.getOpaque())
             return;
 
@@ -360,13 +495,11 @@ public class NAgent2 extends DurService implements NSense, NAct {
         if (now <= last)
             return;
 
-        this.sensorLag = Math.max(nar.dur(), (int) (now - last));
-
         eventFrame.emit(nar);
 
 
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
-        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, sensorLag, nar)));
+        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, nar)));
 
 
         always(motivation.floatValue());
@@ -382,7 +515,7 @@ public class NAgent2 extends DurService implements NSense, NAct {
             if (acc instanceof GoalActionConcept)
                 ((GoalActionConcept) acc).curiosity(curiosity.get());
 
-            Stream<ITask> s = acc.update(last, now, sensorLag, nar);
+            Stream<ITask> s = acc.update(last, now, nar);
             if (s != null)
                 ac.getValue().input(s);
         }
@@ -392,24 +525,9 @@ public class NAgent2 extends DurService implements NSense, NAct {
             logger.info(summary());
     }
 
-
-
-    /**
-     * default rate = 1 dur/ 1 frame
-     */
-    @Deprecated
-    public void runSynch(int frames) {
-//        DurService d = DurService.on(nar, this);
-        nar.run(frames * nar.dur() + 1);
-//        d.off();
-    }
-
     public long now() {
         return nar.time();
     }
-
-
-
 
     public float dexterity() {
         return dexterity(nar.time());

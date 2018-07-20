@@ -381,8 +381,8 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("hold! :|:")
-                .inputAt(2, "( hold &&+5 (eat) ).") 
-                .mustGoal(cycles, "(eat)", 1f, 0.81f, 5)
+                .inputAt(2, "( hold &&+5 eat ).") 
+                .mustGoal(cycles, "eat", 1f, 0.81f, 5)
         ;
     }
 
@@ -390,10 +390,10 @@ class NAL8EternalMixTest extends NALTest {
     void temporal_goal_detachment_3_valid() {
 
         test
-                .input("(use)! :|:")
-                .inputAt(2, "( hold &&+5 (use) ).") 
+                .input("use! :|:")
+                .inputAt(2, "( hold &&+5 use ).") 
                 .mustGoal(cycles, "hold", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "(use)", GOAL, ETERNAL) 
+                .mustNotOutput(cycles, "use", GOAL, ETERNAL) 
                 .mustNotOutput(cycles, "hold", GOAL, ETERNAL)
         ;
     }
@@ -402,10 +402,10 @@ class NAL8EternalMixTest extends NALTest {
     void temporal_goal_detachment_3_valid_negate() {
 
         test
-                .input("--(use)! :|:")
-                .inputAt(1, "( hold &&+5 --(use) ).")
+                .input("--use! :|:")
+                .inputAt(1, "( hold &&+5 --use ).")
                 .mustGoal(cycles, "hold", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "(use)", GOAL, ETERNAL) 
+                .mustNotOutput(cycles, "use", GOAL, ETERNAL) 
         ;
     }
 
@@ -529,8 +529,8 @@ class NAL8EternalMixTest extends NALTest {
     void testNegatedImplicationS() {
 
         test
-                .goal("(R)")
-                .input("((--,a:b) ==>+0 (R)). :|:")
+                .goal("R")
+                .input("((--,a:b) ==>+0 R). :|:")
                 .mustGoal(cycles, "a:b", 0.0f, 0.43f, WHEN_REALIZED);
     }
 
@@ -539,8 +539,8 @@ class NAL8EternalMixTest extends NALTest {
 
         test
 
-                .input("(R)! :|:")
-                .input("((S) ==>+0 --(R)).") 
+                .input("R! :|:")
+                .input("((S) ==>+0 --R).") 
                 .mustGoal(cycles, "(S)", 0.0f, 0.81f, WHEN_REALIZED);
     }
 
@@ -548,8 +548,8 @@ class NAL8EternalMixTest extends NALTest {
     void testNegatedImplicationTerm2() {
 
         test
-                .input("(R)! :|:")
-                .input("((--,a:b) ==>+0 (R)).")
+                .input("R! :|:")
+                .input("((--,a:b) ==>+0 R).")
                 .mustGoal(cycles, "a:b", 0.0f, 0.81f, WHEN_REALIZED);
 
     }
@@ -558,8 +558,8 @@ class NAL8EternalMixTest extends NALTest {
     void testNegatedImplicationTerm3() {
 
         test
-                .input("(R). :|:")
-                .input("((--,a:b) &&+0 (R))!")
+                .input("R. :|:")
+                .input("((--,a:b) &&+0 R)!")
                 .mustGoal(cycles, "a:b", 0.0f, 0.81f, WHEN_REALIZED);
     }
 
@@ -578,9 +578,9 @@ class NAL8EternalMixTest extends NALTest {
     void testGoalImplComponentTemporal() {
 
         test
-                .input("(happy)! :|:")
-                .input("((--,(in)) ==>+1 ((happy) &&-1 (--,(out)))).")
-                .mustGoal(cycles, "(in)", 0f, 0.42f, 0);
+                .input("happy! :|:")
+                .input("((--,in) ==>+1 (happy &&-1 (--,out))).")
+                .mustGoal(cycles, "in", 0f, 0.42f, 0);
     }
 
     @Test
@@ -606,20 +606,20 @@ class NAL8EternalMixTest extends NALTest {
     void testPredictiveImplicationTemporalEternal() {
 
         test
-                .inputAt(0, "((out) ==>-3 (happy)).")
-                .inputAt(13, "(happy)! :|:")
-                .mustGoal(cycles, "(out)", 1f, 0.81f, 16)
-                .mustNotOutput(cycles, "(out)", GOAL, 3);
+                .inputAt(0, "(out ==>-3 happy).")
+                .inputAt(13, "happy! :|:")
+                .mustGoal(cycles, "out", 1f, 0.81f, 16)
+                .mustNotOutput(cycles, "out", GOAL, 3);
     }
 
     @Test
     void testPredictiveImplicationEternalTemporal() {
 
         test
-                .inputAt(0, "((out) ==>-3 (happy)). :|:")
-                .inputAt(13, "(happy)!")
-                .mustGoal(cycles, "(out)", 1f, 0.81f, 3)
-                .mustNotOutput(cycles, "(out)", GOAL, 13);
+                .inputAt(0, "(out ==>-3 happy). :|:")
+                .inputAt(13, "happy!")
+                .mustGoal(cycles, "out", 1f, 0.81f, 3)
+                .mustNotOutput(cycles, "out", GOAL, 13);
     }
 
 

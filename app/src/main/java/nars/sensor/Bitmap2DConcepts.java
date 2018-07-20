@@ -122,11 +122,13 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         long now = nar.time();
 
         long tStart = now - dur/2;
-        long tEnd = now + dur/2;
-        return IntStream.range(start, end)
-                .mapToObj(i -> get(i).update(tStart, tEnd, truther, dur, nar))
-                
-        ;
+        long tEnd = now + Math.max(0, dur/2 - 1);
+        return pixels(start, end).map(p -> p.update(tStart, tEnd, truther, nar));
+    }
+
+    /** range of pixels, selected by the sequential 1-d ID */
+    public final Stream<Signal> pixels(int from, int to) {
+        return IntStream.range(from, to).mapToObj(this::get);
     }
 
     public Signal getSafe(int i, int j) {

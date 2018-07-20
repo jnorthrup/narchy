@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.WTF;
 import jcog.pri.Priority;
 import jcog.sort.Top;
 import nars.NAR;
@@ -13,6 +12,7 @@ import nars.control.Cause;
 import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
 import nars.time.Tense;
@@ -67,9 +67,11 @@ public class Revision {
     /*@NotNull*/
     static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
-        if (a.equals(b) && bOffset == 0) {
+        if (a.equals(b) && bOffset == 0)
             return a;
-        }
+
+        if (a instanceof Atomic || b instanceof Atomic)
+            return null; //atomics differ
 
         Op ao = a.op();
         Op bo = b.op();
@@ -78,12 +80,13 @@ public class Revision {
 
 
         int len = a.subs();
-        if (len == 0) {
-            //WTF
-            if (a.op() == PROD) return a;
-            else
-                throw new WTF();
-        }
+        assert(len > 0);
+//        if (len == 0) {
+//            //WTF
+//            if (a.op() == PROD) return a;
+////            else
+////                throw new WTF();
+//        }
 
 
         if (ao.temporal) {
