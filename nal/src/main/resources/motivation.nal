@@ -18,6 +18,16 @@
     X, Y, task("!") |-           (X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
     X, Y, task("!") |-           (--X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
 
+//- ---
+    X, Y, task("@") |-          (polarize(Y,belief) ==>+- X), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-                           (X ==>+- Y), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-                         (--X ==>+- Y), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-           (X &&+- polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+    X, Y, task("@") |-         (--X &&+- polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+
+    X, Y, task("@") |-           (X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-           (--X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+
 //goal induction
 //G, A, task("!")  |- (polarize(G,task) &&+- polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
     //G, A, task("!")  |- (polarize(G,task) &&+- --polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)

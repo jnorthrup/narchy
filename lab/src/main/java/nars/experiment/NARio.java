@@ -1,16 +1,19 @@
 package nars.experiment;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
+import nars.op.AutoConceptualizer;
 import nars.sensor.Bitmap2DSensor;
 import nars.util.TimeAware;
 import nars.video.PixelBag;
@@ -24,6 +27,7 @@ import static nars.experiment.mario.level.Level.*;
 public class NARio extends NAgentX {
 
     private final MarioComponent mario;
+    private final AbstractSensor cam;
 
     public NARio(NAR nar) {
         super("nario", nar);
@@ -58,7 +62,9 @@ public class NARio extends NAgentX {
 
 
         Bitmap2DSensor ccb;
-        addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.03f);
+        this.cam = addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.03f);
+
+        addSensor(new AutoConceptualizer(new FasterList(ccb.concepts), true, 8 , this.nar));
 
         try {
             final int tileMax = 3; //0..4

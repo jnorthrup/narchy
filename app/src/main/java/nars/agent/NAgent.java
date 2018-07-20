@@ -90,8 +90,17 @@ public class NAgent extends NARService implements NSense, NAct {
     @Override
     public <A extends ActionConcept> A addAction(A c) {
         actions.add(c);
+
+        actionAdded(c);
+
         nar().on(c);
         return c;
+    }
+
+    protected <A extends ActionConcept> void actionAdded(A c) {
+        alwaysQuest(c, true);
+        //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
+        //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
     }
 
     @Override
@@ -236,11 +245,6 @@ public class NAgent extends NARService implements NSense, NAct {
         this.in = nar.newChannel(this);
 
 
-        actions.forEach(a -> {
-            alwaysQuest(a, true);
-            //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
-            //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
-        });
 
         super.starting(nar);
 
@@ -277,6 +281,9 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public Off reward(FloatSupplier rewardfunc) {
         return reward($.func("reward", id), rewardfunc);
+    }
+    @Deprecated public Off rewardDetailed(FloatSupplier rewardfunc) {
+        return rewardDetailed($.func("reward", id), rewardfunc);
     }
 
     /** set a default reward supplier */

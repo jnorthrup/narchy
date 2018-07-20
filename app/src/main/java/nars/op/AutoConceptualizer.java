@@ -3,6 +3,7 @@ package nars.op;
 import jcog.learn.Autoencoder;
 import nars.NAR;
 import nars.concept.Concept;
+import nars.concept.sensor.AbstractSensor;
 import nars.control.DurService;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -19,9 +20,12 @@ import static nars.Op.*;
  * decompiles a continuously trained autoencoding of an input concept vector
  * TODO make DurService
  */
-public class AutoConceptualizer {
+public class AutoConceptualizer extends AbstractSensor {
+
     public final Autoencoder ae;
-    public final List<? extends Concept> in;
+
+    private final List<? extends Concept> in;
+
     private final DurService on;
     private final boolean beliefOrGoal;
     private final float[] x;
@@ -29,11 +33,17 @@ public class AutoConceptualizer {
     float noiseLevel = 0.001f;
 
     public AutoConceptualizer(List<? extends Concept> in, boolean beliefOrGoal, int features, NAR n) {
+        super(n);
         this.in = in;
         this.beliefOrGoal = beliefOrGoal;
         this.ae = new Autoencoder(in.size(), features, n.random());
         this.x = new float[in.size()];
         this.on = DurService.on(n, this::update);
+    }
+
+    @Override
+    public void update(long last, long now, NAR nar) {
+        update(nar);
     }
 
     protected void update(NAR n) {
@@ -112,5 +122,6 @@ public class AutoConceptualizer {
             return null;
         return CONJ.the(0, x);
     }
+
 
 }

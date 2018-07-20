@@ -88,7 +88,7 @@ public class FZero extends NAgentX {
 
 
 
-        reward(()->{
+        rewardDetailed(()->{
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 

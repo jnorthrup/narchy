@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
 import nars.agent.FrameTrigger;
-import nars.agent.NAgent;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -21,7 +20,7 @@ import static nars.experiment.Tetris.TetrisState.*;
 /**
  * Created by me on 7/28/16.
  */
-public class Tetris extends NAgent implements Bitmap2D {
+public class Tetris extends NAgentX implements Bitmap2D {
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;

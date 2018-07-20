@@ -8,6 +8,7 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.concept.sensor.FilteredScalar;
+import nars.concept.sensor.Signal;
 import nars.table.DefaultBeliefTable;
 import nars.term.Term;
 
@@ -49,10 +50,10 @@ public class DetailedReward extends Reward {
 
         {
              //TODO add these to On/Off
-            agent.alwaysWantEternally(concept.filter[0].term, nar.confDefault(GOAL));
-            agent.alwaysWantEternally(concept.filter[1].term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
-            agent.alwaysWantEternally(concept.filter[2].term, nar.confDefault(GOAL) * 0.5f); //acute
-            for (FilteredScalar.Filter x : concept.filter) {
+            agent.alwaysWantEternally(concept.filter.get(0).term, nar.confDefault(GOAL));
+            agent.alwaysWantEternally(concept.filter.get(1).term, nar.confDefault(GOAL) /* * 0.5f */); //chronic
+            agent.alwaysWantEternally(concept.filter.get(2).term, nar.confDefault(GOAL) * 0.5f); //acute
+            for (Signal x : concept.filter) {
                 ((DefaultBeliefTable) x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
 
                 //should normally be able to create these beliefs but if you want to filter more broadly:
