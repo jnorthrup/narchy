@@ -3,6 +3,7 @@ package nars.experiment.bomberman;
 /**
  * File:         BomberBGM
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -19,16 +20,6 @@ public class BomberSndEffect extends Thread {
         /** if Java 2 is available */
         if (Main.J2) {
             SoundPlayer sound = null;
-
-
-
-
-
-
-
-
-
-
 
 
         }

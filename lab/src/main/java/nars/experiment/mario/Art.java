@@ -11,8 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 
-public class Art
-{
+public class Art {
     public static final int SAMPLE_BREAK_BLOCK = 0;
     public static final int SAMPLE_GET_COIN = 1;
     public static final int SAMPLE_MARIO_JUMP = 2;
@@ -49,10 +48,8 @@ public class Art
     private static Sequencer sequencer;
 
 
-    public static void init(GraphicsConfiguration gc)
-    {
-        try
-        {
+    public static void init(GraphicsConfiguration gc) {
+        try {
             mario = cutImage(gc, "mariosheet.png", 32, 32);
             smallMario = cutImage(gc, "smallmariosheet.png", 16, 16);
             fireMario = cutImage(gc, "firemariosheet.png", 32, 32);
@@ -69,47 +66,14 @@ public class Art
             gameOver = cutImage(gc, "gameovergost.gif", 96, 64);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
-    private static Image getImage(GraphicsConfiguration gc, String imageName) throws IOException
-    {
+    private static Image getImage(GraphicsConfiguration gc, String imageName) throws IOException {
         BufferedImage source = ImageIO.read(Art.class.getResourceAsStream(imageName));
         Image image = gc.createCompatibleImage(source.getWidth(), source.getHeight(), Transparency.BITMASK);
         Graphics2D g = (Graphics2D) image.getGraphics();
@@ -119,14 +83,11 @@ public class Art
         return image;
     }
 
-    private static Image[][] cutImage(GraphicsConfiguration gc, String imageName, int xSize, int ySize) throws IOException
-    {
+    private static Image[][] cutImage(GraphicsConfiguration gc, String imageName, int xSize, int ySize) throws IOException {
         Image source = getImage(gc, imageName);
         Image[][] images = new Image[source.getWidth(null) / xSize][source.getHeight(null) / ySize];
-        for (int x = 0; x < source.getWidth(null) / xSize; x++)
-        {
-            for (int y = 0; y < source.getHeight(null) / ySize; y++)
-            {
+        for (int x = 0; x < source.getWidth(null) / xSize; x++) {
+            for (int y = 0; y < source.getHeight(null) / ySize; y++) {
                 Image image = gc.createCompatibleImage(xSize, ySize, Transparency.BITMASK);
                 Graphics2D g = (Graphics2D) image.getGraphics();
                 g.setComposite(AlphaComposite.Src);
@@ -139,36 +100,18 @@ public class Art
         return images;
     }
 
-    public static void startMusic(int song)
-    {
+    public static void startMusic(int song) {
         stopMusic();
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
 
-    public static void stopMusic()
-    {
-        if (sequencer != null)
-        {
-            try
-            {
+    public static void stopMusic() {
+        if (sequencer != null) {
+            try {
                 sequencer.stop();
                 sequencer.close();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
             }
         }
     }

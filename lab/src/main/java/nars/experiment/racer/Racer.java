@@ -17,13 +17,9 @@ import static nars.experiment.racer.Vehicle2D.Wheel.PIXEL_TO_METER_RATIO_DEFAULT
  * http:
  *
  * @author Florian Knoll (myfknoll(at)gmail.com)
- *
  */
 public class Racer {
 
-    
-    
-    
 
     private static final int RACETRACK_WIDTH = 128;
 
@@ -32,16 +28,16 @@ public class Racer {
     private static final int CAMERA_WIDTH = RACETRACK_WIDTH * 5;
     private static final int CAMERA_HEIGHT = RACETRACK_WIDTH * 3;
 
-	public static final float DEGTORAD = 0.0174532925199432957f;
-	public static final float RADTODEG = 57.295779513082320876f;
+    public static final float DEGTORAD = 0.0174532925199432957f;
+    public static final float RADTODEG = 57.295779513082320876f;
 
-	public static final int ACCELERATE = 1;
-	public static final int ACCELERATE_NONE = 0;
-	public static final int BREAK = -1;
+    public static final int ACCELERATE = 1;
+    public static final int ACCELERATE_NONE = 0;
+    public static final int BREAK = -1;
 
-	public static final int STEER_RIGHT = 1;
-	public static final int STEER_NONE = 0;
-	public static final int STEER_LEFT = -1;
+    public static final int STEER_RIGHT = 1;
+    public static final int STEER_NONE = 0;
+    public static final int STEER_LEFT = -1;
 
     float m_currentTraction = 1;
 
@@ -50,68 +46,34 @@ public class Racer {
     float m_maxDriveForce;
     float m_maxLateralImpulse;
 
-	
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private final Dynamics2D mPhysicsWorld;
 
     private IVehicleControl control;
     private Vehicle2D vehicle;
 
-    
-    
-    
-
-    
-    
-    
-
-    
-    
-    
-
 
     public static void main(String[] args) {
         new Racer();
     }
+
     public Racer() {
-        
-
-
 
 
         Dyn2DSurface p = SpaceGraph.wall(800, 800);
 
         this.mPhysicsWorld =
                 p.W;
-                
 
 
-        
         this.initCar();
-        
+
         vehicle.steerLeft();
-        p.root().onUpdate(j->{
-            vehicle.onUpdate(j.dtMS()/1000f);
-            
+        p.root().onUpdate(j -> {
+            vehicle.onUpdate(j.dtMS() / 1000f);
+
         });
-        ((Ortho)p.root()).window.addKeyListener(new KeyListener() {
+        ((Ortho) p.root()).window.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyChar()) {
@@ -122,7 +84,7 @@ public class Racer {
                         vehicle.steerRight();
                         break;
                     case 's':
-                        
+
                         vehicle.pedalAccelerate();
                         break;
                     case 'x':
@@ -138,72 +100,17 @@ public class Racer {
         });
 
 
-        
-
-
-        
-
-        
-
-
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     protected void initCar() {
-	    float maxForwardSpeed = 250;
+        float maxForwardSpeed = 250;
         float maxBackwardSpeed = -40;
         float frontTireMaxDriveForce = 20;
         float frontTireMaxLateralImpulse = 0.0f;
 
         vehicle = new Vehicle2D(mPhysicsWorld);
-        vehicle.setCharacteristics(maxForwardSpeed/PIXEL_TO_METER_RATIO_DEFAULT, maxBackwardSpeed/PIXEL_TO_METER_RATIO_DEFAULT, frontTireMaxDriveForce, frontTireMaxLateralImpulse);
+        vehicle.setCharacteristics(maxForwardSpeed / PIXEL_TO_METER_RATIO_DEFAULT, maxBackwardSpeed / PIXEL_TO_METER_RATIO_DEFAULT, frontTireMaxDriveForce, frontTireMaxLateralImpulse);
         control = vehicle;
     }
 
@@ -219,65 +126,16 @@ public class Racer {
 
         final FixtureDef boxFixtureDef = new FixtureDef(PolygonShape.box(pX, pY), 0.1f, 0.5f);
         boxFixtureDef.restitution = 0.5f;
-        final Body2D boxBody = mPhysicsWorld.addDynamic(boxFixtureDef); 
+        final Body2D boxBody = mPhysicsWorld.addDynamic(boxFixtureDef);
         boxBody.setLinearDamping(10);
         boxBody.setAngularDamping(10);
-
-
 
 
     }
 
 
+    protected void controlChange(final float pValueX, final float pValueY) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	protected void controlChange(final float pValueX, final float pValueY) {
-		
 
         if (pValueY < -0.1f) {
             control.pedalAccelerate();
@@ -296,8 +154,8 @@ public class Racer {
         }
     }
 
-	private void initRacetrackBorders() {
-        
+    private void initRacetrackBorders() {
+
 
         final PolygonShape bottomOuter = PolygonShape.box(0, CAMERA_HEIGHT - 2, CAMERA_WIDTH, 2);
         final PolygonShape topOuter = PolygonShape.box(0, 0, CAMERA_WIDTH, 2);
@@ -308,7 +166,6 @@ public class Racer {
         final PolygonShape topInner = PolygonShape.box(RACETRACK_WIDTH, RACETRACK_WIDTH, CAMERA_WIDTH - 2 * RACETRACK_WIDTH, 2);
         final PolygonShape leftInner = PolygonShape.box(RACETRACK_WIDTH, RACETRACK_WIDTH, 2, CAMERA_HEIGHT - 2 * RACETRACK_WIDTH);
         final PolygonShape rightInner = PolygonShape.box(CAMERA_WIDTH - 2 - RACETRACK_WIDTH, RACETRACK_WIDTH, 2, CAMERA_HEIGHT - 2 * RACETRACK_WIDTH);
-
 
 
         this.mPhysicsWorld.addStatic(new FixtureDef(bottomOuter, 0, 0.5f));
@@ -322,14 +179,11 @@ public class Racer {
 
     }
 
-    
-    
-    
 
     /**
      * Interface for car controlling
-     * @author Knoll
      *
+     * @author Knoll
      */
     public interface IVehicleControl {
 

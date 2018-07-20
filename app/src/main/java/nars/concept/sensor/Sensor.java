@@ -1,41 +1,18 @@
 package nars.concept.sensor;
 
 import jcog.math.FloatRange;
-import nars.Param;
-import nars.concept.PermanentConcept;
-import nars.concept.TaskConcept;
-import nars.table.BeliefTable;
-import nars.term.Term;
-import nars.util.concept.ConceptBuilder;
+import nars.NAR;
+import nars.term.Termed;
 
-/**
- * base class for concepts which are sensors
- * providing some form of belief feedback
- * and may also support some type of actuation
- * (via goals or otherwise)
- * <p>
- * this usually requires some specific management of
- * beliefs to prevent influence from derivations that the reasoner may form
- * in contradiction with provided values.
- * <p>
- * warning: using action and sensor concepts with a term that can be structurally transformed
- * culd have unpredictable results because their belief management policies
- * may not be consistent with the SensorConcept.  one solution may be to
- * create dummy placeholders for all possible transforms of a sensorconcept term
- * to make them directly reflect the sensor concept as the authority.
- */
-public class Sensor extends TaskConcept implements PermanentConcept {
+/** base interface for a sensor that consists of one or a group of concepts, sharing:
+ *          resolution
+ *          priority
+ *          cause channel
+ *  */
+public interface Sensor extends Termed {
 
-    public final FloatRange resolution = new FloatRange(Param.TRUTH_EPSILON, 0f, 1f);
+    FloatRange resolution();
+    FloatRange pri();
 
-
-    protected Sensor(Term term, ConceptBuilder b) {
-        super(term, b);
-    }
-
-    protected Sensor(Term term, BeliefTable beliefs, BeliefTable goals, ConceptBuilder b) {
-        super(term, beliefs, goals, b);
-    }
-
-
+    void update(long last, long now, NAR nar);
 }

@@ -8,14 +8,15 @@ import jcog.math.MutableEnum;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
-import nars.agent.NAgent2;
+import nars.agent.FrameTrigger;
+import nars.agent.NAgent;
 import nars.concept.action.SwitchAction;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.UniExec;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
@@ -25,8 +26,6 @@ import nars.video.CameraSensorView;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -38,7 +37,7 @@ import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 /* 1D and 2D grid tracking */
-public class TrackXY extends NAgent2 {
+public class TrackXY extends NAgent {
 
     final Bitmap2DSensor cam;
     final ArrayBitmap2D view;
@@ -65,7 +64,7 @@ public class TrackXY extends NAgent2 {
 
     protected TrackXY(NAR nar, int W, int H) {
         super("trackXY",
-                FrameTrigger.durs(1),
+                FrameTrigger.durs(2),
                 //FrameTrigger.fps(1),
                 nar);
 
@@ -83,7 +82,7 @@ public class TrackXY extends NAgent2 {
         this.view = new ArrayBitmap2D(this.W = W, this.H = H);
         if (targetCam) {
             this.cam = sense(new Bitmap2DSensor<>(id /* (Term) null*/, view, nar));
-            cam.resolution(0.1f);
+            this.cam.resolution(0.2f);
         } else {
             this.cam = null;
         }
@@ -97,7 +96,6 @@ public class TrackXY extends NAgent2 {
 
         randomize();
 
-        nar.on(this);
     }
 
     public static void main(String[] args) {
@@ -105,21 +103,21 @@ public class TrackXY extends NAgent2 {
         boolean nars = true;
         boolean rl = false;
 
-        int dur = 10;
+        int dur = 4;
 
         NARS nb = new NARS()
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
-                        //new CaffeineIndex(2 * 1024)
-                        new HijackConceptIndex(4 * 1024, 4)
+                        new CaffeineIndex(2 * 1024*20)
+                        //new HijackConceptIndex(4 * 1024, 4)
                 );
 
 
         NAR n = nb.get();
-        n.dtDither.set(dur / 2);
+        n.dtDither.set(1);
         n.timeFocus.set(2);
-        n.freqResolution.set(0.02f);
+//        n.freqResolution.set(0.02f);
 //        n.goalPriDefault.set(0.9f);
 //        n.beliefPriDefault.set(0.3f);
 //        n.questionPriDefault.set(0.1f);
@@ -129,10 +127,7 @@ public class TrackXY extends NAgent2 {
         n.termVolumeMax.set(24);
 
 
-
         TrackXY t = new TrackXY(n, 4, 4);
-
-
 
 
         if (rl) {
@@ -149,11 +144,11 @@ public class TrackXY extends NAgent2 {
             Deriver d = new MatrixDeriver(Derivers.nal(n,
                     1,
                     8
-            //,"curiosity.nal"
-                    ,"motivation.nal"
+                    //,"curiosity.nal"
+                    , "motivation.nal"
             ));
 
-            ((MatrixDeriver) d).conceptsPerIteration.set(4);
+            ((MatrixDeriver) d).conceptsPerIteration.set(8);
 
 
             new STMLinkage(n, 1, false);
@@ -164,11 +159,11 @@ public class TrackXY extends NAgent2 {
                     4, 16);
 
 
-            window(new Gridding(
-                    new AutoSurface(d),
-                    new AutoSurface(cjB)
-
-            ), 400, 300);
+//            window(new Gridding(
+//                    new AutoSurface(d),
+//                    new AutoSurface(cjB)
+//
+//            ), 400, 300);
 
             Param.DEBUG = true;
             n.onTask(tt -> {
@@ -181,9 +176,12 @@ public class TrackXY extends NAgent2 {
 
 
         n.runLater(() -> {
+            window(NARui.agent(t), 800, 800);
+
             window(NARui.top(n), 800, 250);
+
 //            NARui.agentWindow(t);
-            if (t.cam!=null) {
+            if (t.cam != null) {
                 window(new CameraSensorView(t.cam, n) {
                     @Override
                     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
@@ -195,7 +193,6 @@ public class TrackXY extends NAgent2 {
                 }.withControls(), 800, 800);
             }
         });
-
 
 
         int experimentTime = 35000;
@@ -333,6 +330,7 @@ public class TrackXY extends NAgent2 {
                 sx = Util.clamp(sx - this.controlSpeed.floatValue(), 0, view.width() - 1);
         });
     }
+
     protected void randomize() {
         this.tx = random().nextInt(view.width());
         //this.sx = random().nextInt(view.width());
@@ -390,8 +388,8 @@ public class TrackXY extends NAgent2 {
             @Override
             public void accept(TrackXY t) {
                 x += t.targetSpeed.floatValue();
-                t.tx = t.W/2;
-                t.ty = t.H/2;
+                t.tx = t.W / 2;
+                t.ty = t.H / 2;
             }
         },
 

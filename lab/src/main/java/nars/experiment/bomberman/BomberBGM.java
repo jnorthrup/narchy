@@ -5,6 +5,7 @@ import java.io.File;
 /**
  * File:         BomberBGM
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -22,14 +23,15 @@ public class BomberBGM {
     static {
         /** if Java2 available */
         if (Main.J2) {
-           /** create the SoundPlayer object and load the music files */
-           try {
-               player = new SoundPlayer(
-           new File(BomberMain.RP + "Sounds/BomberBGM/").
-           getCanonicalPath());
-           }
-           catch (Exception e) { new ErrorDialog(e); }
-           ((SoundPlayer)player).open();
+            /** create the SoundPlayer object and load the music files */
+            try {
+                player = new SoundPlayer(
+                        new File(BomberMain.RP + "Sounds/BomberBGM/").
+                                getCanonicalPath());
+            } catch (Exception e) {
+                new ErrorDialog(e);
+            }
+            ((SoundPlayer) player).open();
         }
     }
 
@@ -45,13 +47,13 @@ public class BomberBGM {
              * the specified music
              */
             int i = 0;
-            while (i < ((SoundPlayer)player).sounds.size() &&
-            ((SoundPlayer)player).sounds.elementAt(i).
-            toString().indexOf(arg) < 0) i += 1;
+            while (i < ((SoundPlayer) player).sounds.size() &&
+                    ((SoundPlayer) player).sounds.elementAt(i).
+                            toString().indexOf(arg) < 0) i += 1;
             if (i != lastSelection && i <
-               ((SoundPlayer)player).sounds.size()) {
+                    ((SoundPlayer) player).sounds.size()) {
                 lastSelection = i;
-                ((SoundPlayer)player).change(lastSelection, true);
+                ((SoundPlayer) player).change(lastSelection, true);
             }
         }
     }
@@ -59,33 +61,30 @@ public class BomberBGM {
     /**
      * Stop playing the BGM.
      */
-    public static void stop()
-    {
+    public static void stop() {
         /** if Java 2 available */
         if (Main.J2) {
-           ((SoundPlayer)player).controlStop();
+            ((SoundPlayer) player).controlStop();
         }
     }
 
     /**
      * Mute the BGM.
      */
-    public static void mute()
-    {
+    public static void mute() {
         /** if Java 2 available */
         if (Main.J2) {
-           ((SoundPlayer)player).mute();
+            ((SoundPlayer) player).mute();
         }
     }
 
     /**
      * Unmute the BGM.
      */
-    public static void unmute()
-    {
+    public static void unmute() {
         /** if Java 2 available */
         if (Main.J2) {
-            ((SoundPlayer)player).unmute();
+            ((SoundPlayer) player).unmute();
         }
     }
 }

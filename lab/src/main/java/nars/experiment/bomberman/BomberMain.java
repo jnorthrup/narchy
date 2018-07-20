@@ -10,6 +10,7 @@ import java.awt.event.WindowEvent;
 /**
  * File:         BomberMain.java
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -79,12 +80,6 @@ public class BomberMain extends JFrame {
         setTitle("Bomberman 1.0 by Sammy Leong");
 
 
-
-
-
-
-
-
         /** create and add the menu to the frame */
         getContentPane().add(menu = new BomberMenu(this));
 
@@ -111,8 +106,7 @@ public class BomberMain extends JFrame {
      * Creates a new game.
      * @param players total number of players
      */
-    public void newGame(int players)
-    {
+    public void newGame(int players) {
         JDialog dialog = new JDialog(this, "Loading Game...", false);
         dialog.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         dialog.setSize(new Dimension(200, 0));
@@ -138,10 +132,6 @@ public class BomberMain extends JFrame {
         dialog.dispose();
         /** show the frame */
         show();
-
-
-
-
 
 
     }

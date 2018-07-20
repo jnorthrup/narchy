@@ -21,45 +21,71 @@ import java.util.Vector;
  * @author Sammy Leong
  * @version 1.0
  */
-public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaEventListener, ActionListener
-{
-    /** sound object list */
+public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaEventListener, ActionListener {
+    /**
+     * sound object list
+     */
     public Vector sounds = new Vector();
-    /** thread used to play the sound */
+    /**
+     * thread used to play the sound
+     */
     private Thread thread;
-    /** sound sequencer */
+    /**
+     * sound sequencer
+     */
     private Sequencer sequencer;
-    /** flag: playing midi or audio file */
+    /**
+     * flag: playing midi or audio file
+     */
     private boolean midiEOM, audioEOM;
-    /** sound synthesizer */
+    /**
+     * sound synthesizer
+     */
     private Synthesizer synthesizer;
-    /** channel objects for playing midi */
+    /**
+     * channel objects for playing midi
+     */
     private MidiChannel channels[];
-    /** current playing sound */
+    /**
+     * current playing sound
+     */
     private Object currentSound;
-    /** current sound name */
+    /**
+     * current sound name
+     */
     private String currentName;
-    /** sound list offset */
+    /**
+     * sound list offset
+     */
     private int num = -1;
-    /** flag: change of sound */
+    /**
+     * flag: change of sound
+     */
     private boolean bump;
-    /** flag: paused or not */
+    /**
+     * flag: paused or not
+     */
     private boolean paused;
-    /** flag: loop or not */
+    /**
+     * flag: loop or not
+     */
     public boolean loop = true;
-    /** volumn */
+    /**
+     * volumn
+     */
     private int volumn = 100;
-    /** control buttons */
+    /**
+     * control buttons
+     */
     JButton startB, pauseB, prevB, nextB;
 
     /**
      * Construct a sound player with directory name of music files.
+     *
      * @param dirName directory with sound files
      */
-    public SoundPlayer(String dirName)
-    {
-        if (dirName != null)
-        {
+    public SoundPlayer(String dirName) {
+        if (dirName != null) {
             /** load the sound files */
             loadFile(dirName);
         }
@@ -75,12 +101,12 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
 
     /**
      * Create a button.
-     * @param name name of button
+     *
+     * @param name  name of button
      * @param panel container of button
      * @param state enabled or disabled
      */
-    private JButton addButton(String name, JPanel panel, boolean state)
-    {
+    private JButton addButton(String name, JPanel panel, boolean state) {
         /** create the button */
         JButton b = new JButton(name);
         /** add action handler */
@@ -88,7 +114,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         /** set state */
         b.setEnabled(state);
         if (panel != null)
-            /** add it to the container */
+        /** add it to the container */
             panel.add(b);
         /** return the button */
         return b;
@@ -97,21 +123,16 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * Create and open the sequencer.
      */
-    public void open()
-    {
-        try
-        {
+    public void open() {
+        try {
             /** get the system sequencer */
             sequencer = MidiSystem.getSequencer();
-            if (sequencer instanceof Synthesizer)
-            {
-                synthesizer = (Synthesizer)sequencer;
+            if (sequencer instanceof Synthesizer) {
+                synthesizer = (Synthesizer) sequencer;
                 /** get the system channels */
                 channels = synthesizer.getChannels();
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return;
         }
         /** add the meta event listener */
@@ -121,17 +142,14 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * Close the sequencer.
      */
-    public void close()
-    {
+    public void close() {
         /** if a sound is playing */
-        if (thread != null && startB != null)
-        {
+        if (thread != null && startB != null) {
             /** stop playing */
             startB.doClick(0);
         }
         /** if the sequencer is opened */
-        if (sequencer != null)
-        {
+        if (sequencer != null) {
             /** close it */
             sequencer.close();
         }
@@ -139,62 +157,53 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
 
     /**
      * Loads all sound files ina directory.
+     *
      * @param name directory name
      */
-    public void loadFile(String name)
-    {
-        try
-        {
+    public void loadFile(String name) {
+        try {
             /** create the file object */
             File file = new File(name);
             /** if the object is a directory */
-            if (file != null && file.isDirectory())
-            {
+            if (file != null && file.isDirectory()) {
                 /** get the list of files in the directory */
                 String files[] = file.list();
                 /** iterate through the list */
-                for (int i = 0; i < files.length; i++)
-                {
+                for (int i = 0; i < files.length; i++) {
                     /** get the path */
                     File leafFile = new File(file.getAbsolutePath(), files[i]);
                     /** if it's a directory */
-                    if (leafFile.isDirectory())
-                    {
+                    if (leafFile.isDirectory()) {
                         /** recurse into the directory */
                         loadFile(leafFile.getAbsolutePath());
                     }
                     /** if it's a file */
-                    else
-                    {
+                    else {
                         /** load the file */
                         addSound(leafFile);
                     }
                 }
             }
             /** if the object is a file and it exists */
-            else if (file != null && file.exists())
-            {
+            else if (file != null && file.exists()) {
                 /** load the file */
                 addSound(file);
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
         }
     }
 
     /**
      * Attemps to add a sound file.
+     *
      * @param file file object to add
      */
-    private void addSound(File file)
-    {
+    private void addSound(File file) {
         String s = file.getName();
         /** if the file has right extension */
         if (s.endsWith(".au") || s.endsWith(".rmf") ||
-        s.endsWith(".mid") || s.endsWith(".wav") ||
-        s.endsWith(".aif") || s.endsWith(".aiff"))
-        {
+                s.endsWith(".mid") || s.endsWith(".wav") ||
+                s.endsWith(".aif") || s.endsWith(".aiff")) {
             /** add the file */
             sounds.add(file);
         }
@@ -202,71 +211,53 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
 
     /**
      * Loads a sound object.
+     *
      * @param object sound object to load
      */
-    public boolean loadSound(Object object)
-    {
+    public boolean loadSound(Object object) {
         /** if the object is a URL object */
-        if (object instanceof URL)
-        {
+        if (object instanceof URL) {
             /** get the file name */
             currentName = ((URL) object).getFile();
-            try
-            {
+            try {
                 /** try to create an audio sound object */
                 currentSound = AudioSystem.getAudioInputStream((URL) object);
             }
-            /** if it's not an audio sound object */
-            catch(Exception e)
-            {
-                try
-                {
+            /** if it's not an audio sound object */ catch (Exception e) {
+                try {
                     /** try to create a midi sound object */
                     currentSound = MidiSystem.getSequence((URL) object);
                 }
-                /** if it's not a midi sound object neither */
-                catch (InvalidMidiDataException e1)
-                {
-                }
-                catch (Exception e2)
-                {
+                /** if it's not a midi sound object neither */ catch (InvalidMidiDataException e1) {
+                } catch (Exception e2) {
                 }
             }
         }
         /** if the object is a File object */
-        else if (object instanceof File)
-        {
+        else if (object instanceof File) {
             /** get the file name */
             currentName = ((File) object).getName();
-            try
-            {
+            try {
                 /** try to create an audio sound object */
                 currentSound = AudioSystem.getAudioInputStream((File) object);
             }
-            /** if it's not an audio sound object */
-            catch(Exception e)
-            {
+            /** if it's not an audio sound object */ catch (Exception e) {
                 /** load midi & rmf as inputstreams for now */
-                
-                
-                
-                try
-                {
+
+
+                try {
                     /** open the file */
                     FileInputStream is = new FileInputStream((File) object);
                     /** try to create a midi sound object */
                     currentSound = new BufferedInputStream(is, 1024);
+                } catch (Exception e1) {
                 }
-                catch (Exception e1)
-                {
-                }
-                
+
             }
         }
 
         /** if no sequencer available */
-        if (sequencer == null)
-        {
+        if (sequencer == null) {
             /** set sound object to null */
             currentSound = null;
             /** and otta here */
@@ -274,10 +265,8 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         }
 
         /** if the sound object is an AudioInputStream object */
-        if (currentSound instanceof AudioInputStream)
-        {
-            try
-            {
+        if (currentSound instanceof AudioInputStream) {
+            try {
                 /** create the stream */
                 AudioInputStream stream = (AudioInputStream) currentSound;
                 /** create the file format object */
@@ -288,23 +277,22 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                  * convert ALAW/ULAW to PCM
                  */
                 if ((format.getEncoding() == AudioFormat.Encoding.ULAW) ||
-                (format.getEncoding() == AudioFormat.Encoding.ALAW))
-                {
+                        (format.getEncoding() == AudioFormat.Encoding.ALAW)) {
                     /** setup the format */
                     AudioFormat tmp = new AudioFormat(
-                    AudioFormat.Encoding.PCM_SIGNED,
-                    format.getSampleRate(), format.getSampleSizeInBits() * 2,
-                    format.getChannels(), format.getFrameSize() * 2,
-                    format.getFrameRate(), true);
+                            AudioFormat.Encoding.PCM_SIGNED,
+                            format.getSampleRate(), format.getSampleSizeInBits() * 2,
+                            format.getChannels(), format.getFrameSize() * 2,
+                            format.getFrameRate(), true);
                     /** open the stream with specified format */
                     stream = AudioSystem.getAudioInputStream(tmp, stream);
                     /** store the formst for later use */
                     format = tmp;
                 }
                 /** create the line to play the sound */
-                DataLine.Info info = new DataLine.Info( Clip.class,
-                stream.getFormat(), ((int) stream.getFrameLength() *
-                format.getFrameSize()));
+                DataLine.Info info = new DataLine.Info(Clip.class,
+                        stream.getFormat(), ((int) stream.getFrameLength() *
+                        format.getFrameSize()));
 
                 /** convert the sound into a clip */
                 Clip clip = (Clip) AudioSystem.getLine(info);
@@ -312,38 +300,28 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                 clip.open(stream);
                 /** store the clip */
                 currentSound = clip;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
             }
         }
         /** if the sound object is a sequence */
         else if (currentSound instanceof Sequence ||
-        currentSound instanceof BufferedInputStream)
-        {
-            try
-            {
+                currentSound instanceof BufferedInputStream) {
+            try {
                 /** open the sequencer */
                 sequencer.open();
                 /** if the object is a sequence */
-                if (currentSound instanceof Sequence)
-                {
+                if (currentSound instanceof Sequence) {
                     /** set the sequence to the sequencer */
                     sequencer.setSequence((Sequence) currentSound);
                 }
                 /** if the object is a buffered input stream */
-                else
-                {
+                else {
                     /** set the stream to the sequencer */
                     sequencer.setSequence((BufferedInputStream) currentSound);
                 }
-            }
-            catch (InvalidMidiDataException imde)
-            {
+            } catch (InvalidMidiDataException imde) {
                 return false;
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 return false;
             }
         }
@@ -363,19 +341,14 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         midiEOM = audioEOM = bump = false;
         /** if object is a sequencer */
         if (currentSound instanceof Sequence
-        || currentSound instanceof BufferedInputStream && thread != null)
-        {
+                || currentSound instanceof BufferedInputStream && thread != null) {
             /** play the sound */
             sequencer.start();
             /** iterate */
-            while (!midiEOM && thread != null && !bump)
-            {
-                try
-                {
+            while (!midiEOM && thread != null && !bump) {
+                try {
                     Thread.sleep(99);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     break;
                 }
             }
@@ -385,27 +358,20 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             sequencer.close();
         }
         /** if the current sound object is a clip */
-        else if (currentSound instanceof Clip && thread != null)
-        {
+        else if (currentSound instanceof Clip && thread != null) {
             /** get the clip */
             Clip clip = (Clip) currentSound;
             /** play the clip */
             clip.start();
-            try
-            {
+            try {
                 Thread.sleep(99);
+            } catch (Exception e) {
             }
-            catch (Exception e)
-            { }
             /** iterate */
-            while ((paused || clip.isActive()) && thread != null && !bump)
-            {
-                try
-                {
+            while ((paused || clip.isActive()) && thread != null && !bump) {
+                try {
                     Thread.sleep(99);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     break;
                 }
             }
@@ -419,27 +385,25 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
 
     /**
      * Must have method.
+     *
      * @param event line event
      */
     @Override
-    public void update(LineEvent event)
-    {
-        if (event.getType() == LineEvent.Type.STOP && !paused)
-        {
+    public void update(LineEvent event) {
+        if (event.getType() == LineEvent.Type.STOP && !paused) {
             audioEOM = true;
         }
     }
 
     /**
      * Must have method.
+     *
      * @param message meta message
      */
     @Override
-    public void meta(MetaMessage message)
-    {
+    public void meta(MetaMessage message) {
         /** 47 is end of track */
-        if (message.getType() == 47)
-        {
+        if (message.getType() == 47) {
             midiEOM = true;
         }
     }
@@ -447,8 +411,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * @return current thread
      */
-    public Thread getThread()
-    {
+    public Thread getThread() {
         return thread;
     }
 
@@ -456,8 +419,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * Creates the thread and start it.
      */
-    public void start()
-    {
+    public void start() {
         /** create the thread */
         thread = new Thread(this);
         /** name the thread */
@@ -469,11 +431,9 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * Stops then destroys the thread.
      */
-    public void stop()
-    {
+    public void stop() {
         /** if thread is alive */
-        if (thread != null)
-        {
+        if (thread != null) {
             /** destroy it */
             thread.interrupt();
         }
@@ -487,11 +447,9 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     @Override
     public void run() {
         /** iterate */
-        do
-        {
+        do {
             /** if the sound object exists */
-            if( loadSound(sounds.elementAt(num)) == true )
-            {
+            if (loadSound(sounds.elementAt(num)) == true) {
                 /** play the sound */
                 playSound();
             }
@@ -500,8 +458,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         while (loop && thread != null);
 
         /** if the thread isn't dead */
-        if (thread != null)
-        {
+        if (thread != null) {
             /** kill it */
             startB.doClick();
         }
@@ -518,71 +475,59 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         /** default value of 0: pan left / right evenly */
         int value = 0;
         /** if the sound object is a clip */
-        if (currentSound instanceof Clip)
-        {
-            try
-            {
+        if (currentSound instanceof Clip) {
+            try {
                 /** get the clip */
                 Clip clip = (Clip) currentSound;
                 /** get the current pane value */
                 FloatControl panControl =
-                (FloatControl) clip.getControl(FloatControl.Type.PAN);
+                        (FloatControl) clip.getControl(FloatControl.Type.PAN);
                 /** set the pan value */
-                panControl.setValue(value/100.0f);
-            }
-            catch (Exception ex)
-            {
+                panControl.setValue(value / 100.0f);
+            } catch (Exception ex) {
             }
         }
         /** if the sound object is a sequence */
         else if (currentSound instanceof Sequence ||
-        currentSound instanceof BufferedInputStream)
-        {
+                currentSound instanceof BufferedInputStream) {
             /** iterate through all the channels */
-            for (int i = 0; i < channels.length; i++)
-            {
+            for (int i = 0; i < channels.length; i++) {
                 /** and set the pan values */
                 channels[i].controlChange(10,
-                (int)(((double)value + 100.0) / 200.0 *  127.0));
+                        (int) (((double) value + 100.0) / 200.0 * 127.0));
             }
         }
     }
 
     /**
      * Set gain (volumn).
+     *
      * @param value volumn value
      */
-    public void setGain(double value)
-    {
+    public void setGain(double value) {
         /** if current sound object is a clip */
-        if (currentSound instanceof Clip)
-        {
-            try
-            {
+        if (currentSound instanceof Clip) {
+            try {
                 /** get the clip */
                 Clip clip = (Clip) currentSound;
                 /** get the current gain */
                 FloatControl gainControl =
-                (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                        (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                 /** create and calculate the gain value */
                 float dB = (float)
-                (Math.log(value==0.0?0.0001:value)/Math.log(10.0)*20.0);
+                        (Math.log(value == 0.0 ? 0.0001 : value) / Math.log(10.0) * 20.0);
                 /** set the gain value */
                 gainControl.setValue(dB);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
             }
         }
         /** if current sound object is a sequence */
         else if (currentSound instanceof Sequence ||
-        currentSound instanceof BufferedInputStream)
-        {
+                currentSound instanceof BufferedInputStream) {
             /** iterate through all the channels */
-            for (int i = 0; i < channels.length; i++)
-            {
+            for (int i = 0; i < channels.length; i++) {
                 /** set gain */
-                channels[i].controlChange(7, (int)(value * 127.0));
+                channels[i].controlChange(7, (int) (value * 127.0));
             }
         }
     }
@@ -590,8 +535,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * Set gain to 0.
      */
-    public void mute()
-    {
+    public void mute() {
         volumn = 0;
         setGain(volumn);
         /** pause the sound for a mili second */
@@ -601,8 +545,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * Set gainto 100.
      */
-    public void unmute()
-    {
+    public void unmute() {
         volumn = 100;
         setGain(volumn);
         /** pause the sound for a mili second */
@@ -611,11 +554,11 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
 
     /**
      * Change to different sound.
+     *
      * @param n new sound offset
      * @param l loop or not
      */
-    public void change(int n, boolean l)
-    {
+    public void change(int n, boolean l) {
         paused = false;
         /** change text of pause button */
         pauseB.setText("Pause");
@@ -626,48 +569,44 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         bump = true;
         /** if no sound is playing */
         if (startB.getText().equals("Start"))
-            /** play the sound */
+        /** play the sound */
             startB.doClick();
     }
 
     /**
      * Play the current sound.
      */
-    public void controlPlay()
-    {
+    public void controlPlay() {
         startB.doClick();
     }
 
     /**
      * Stop the current sound.
      */
-    public void controlStop()
-    {
+    public void controlStop() {
         startB.doClick();
     }
 
     /**
      * Play the previous sound.
      */
-    public void controlBack()
-    {
+    public void controlBack() {
         prevB.doClick();
     }
 
     /**
      * Play the next sound.
      */
-    public void controlNext()
-    {
+    public void controlNext() {
         nextB.doClick();
     }
 
     /**
      * Set buttons states.
+     *
      * @param state enabl or disable
      */
-    public void setComponentsEnabled(boolean state)
-    {
+    public void setComponentsEnabled(boolean state) {
         pauseB.setEnabled(state);
         prevB.setEnabled(state);
         nextB.setEnabled(state);
@@ -676,22 +615,21 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * @return whether something is playing or not
      */
-     public boolean isPlaying() {
+    public boolean isPlaying() {
         return (!startB.getText().equals("Start"));
-     }
+    }
 
     /**
      * Action listener.
+     *
      * @param e action event
      */
     @Override
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         /** get source of event */
         JButton button = (JButton) e.getSource();
         /** if the start button is clicked */
-        if (button.getText().equals("Start"))
-        {
+        if (button.getText().equals("Start")) {
             /** not paused */
             paused = false;
             /** if offset is out of range than set it to 0 */
@@ -704,8 +642,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             setComponentsEnabled(true);
         }
         /** if the stop button is clicked */
-        else if (button.getText().equals("Stop"))
-        {
+        else if (button.getText().equals("Stop")) {
             /** not paused */
             paused = false;
             /** stop playing */
@@ -717,40 +654,33 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             setComponentsEnabled(false);
         }
         /** if the pause button is clicked */
-        else if (button.getText().equals("Pause"))
-        {
+        else if (button.getText().equals("Pause")) {
             /** paused */
             paused = true;
             /** if the sound object is a clip */
-            if (currentSound instanceof Clip)
-            {
+            if (currentSound instanceof Clip) {
                 /** stop the clip */
                 ((Clip) currentSound).stop();
             }
             /** if the sound object is a sequence */
             else if (currentSound instanceof Sequence ||
-            currentSound instanceof BufferedInputStream)
-            {
+                    currentSound instanceof BufferedInputStream) {
                 /** stop the sequence */
                 sequencer.stop();
             }
             /** change the button text */
             pauseB.setText("Resume");
-        }
-        else if (button.getText().equals("Resume"))
-        {
+        } else if (button.getText().equals("Resume")) {
             /** not paused anymore */
             paused = false;
             /** if sound is a clip */
-            if (currentSound instanceof Clip)
-            {
+            if (currentSound instanceof Clip) {
                 /** start the clip */
                 ((Clip) currentSound).start();
             }
             /** if sound is a sequence */
             else if (currentSound instanceof Sequence ||
-            currentSound instanceof BufferedInputStream)
-            {
+                    currentSound instanceof BufferedInputStream) {
                 /** start the sequence */
                 sequencer.start();
             }
@@ -758,24 +688,22 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             pauseB.setText("Pause");
         }
         /** if the back button is clicked */
-        else if (button.getText().equals("<<"))
-        {
+        else if (button.getText().equals("<<")) {
             paused = false;
             /** change button text */
             pauseB.setText("Pause");
             /** go to previous sound */
-            num = num-1 < 0 ? sounds.size()-1 : num-2;
+            num = num - 1 < 0 ? sounds.size() - 1 : num - 2;
             /** change sound */
             bump = true;
         }
         /** if the next button is clicked */
-        else if (button.getText().equals(">>"))
-        {
+        else if (button.getText().equals(">>")) {
             paused = false;
             /** change button text */
             pauseB.setText("Pause");
             /** go to next sound */
-            num = num+1 == sounds.size() ? -1 : num;
+            num = num + 1 == sounds.size() ? -1 : num;
             /** change sound */
             bump = true;
         }

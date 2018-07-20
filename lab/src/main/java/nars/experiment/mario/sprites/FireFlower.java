@@ -4,10 +4,9 @@ import nars.experiment.mario.Art;
 import nars.experiment.mario.LevelScene;
 
 
-public class FireFlower extends Sprite
-{
+public class FireFlower extends Sprite {
     @SuppressWarnings("unused")
-	private final int width = 4;
+    private final int width = 4;
     int height = 24;
 
     private final LevelScene world;
@@ -16,8 +15,7 @@ public class FireFlower extends Sprite
     public boolean avoidCliffs;
     private int life;
 
-    public FireFlower(LevelScene world, int x, int y)
-    {
+    public FireFlower(LevelScene world, int x, int y) {
         sheet = Art.items;
 
         this.x = x;
@@ -30,20 +28,17 @@ public class FireFlower extends Sprite
         yPic = 0;
         height = 12;
         facing = 1;
-        wPic  = hPic = 16;
+        wPic = hPic = 16;
         life = 0;
     }
 
     @Override
-    public void collideCheck()
-    {
+    public void collideCheck() {
         float xMarioD = world.mario.x - x;
         float yMarioD = world.mario.y - y;
         float w = 16;
-        if (xMarioD > -w && xMarioD < w)
-        {
-            if (yMarioD > -height && yMarioD < world.mario.height)
-            {
+        if (xMarioD > -w && xMarioD < w) {
+            if (yMarioD > -height && yMarioD < world.mario.height) {
                 world.mario.getFlower();
                 spriteContext.removeSprite(this);
             }
@@ -51,10 +46,8 @@ public class FireFlower extends Sprite
     }
 
     @Override
-    public void move()
-    {
-        if (life<9)
-        {
+    public void move() {
+        if (life < 9) {
             layer = 0;
             y--;
             life++;

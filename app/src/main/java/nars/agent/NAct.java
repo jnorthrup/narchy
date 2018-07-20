@@ -20,7 +20,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
@@ -37,7 +36,6 @@ public interface NAct {
     Term PLUS = $.the("\"+\"");
     Term NEG = $.the("\"-\"");
 
-    @Deprecated Map<ActionConcept, CauseChannel<ITask>> actions();
 
     NAR nar();
 
@@ -147,17 +145,12 @@ public interface NAct {
 
         });
         float res = 0.5f;
-        g[0].resolution.set(res);
-        g[1].resolution.set(res);
+        g[0].resolution(res);
+        g[1].resolution(res);
         return g;
     }
 
-    default <A extends ActionConcept> A addAction(A c) {
-        CauseChannel existing = actions().put(c, nar().newChannel(c));
-        assert (existing == null);
-        nar().on(c);
-        return c;
-    }
+    <A extends ActionConcept> A addAction(A c);
 
     @Nullable
     default GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
@@ -368,8 +361,8 @@ public interface NAct {
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, nar().confDefault(BELIEF));
         });
-        LA.resolution.set(1f);
-        RA.resolution.set(1f);
+        LA.resolution(1f);
+        RA.resolution(1f);
 
     }
 
@@ -384,9 +377,7 @@ public interface NAct {
             boolean posOrNeg = f > thresh.asFloat();
             return on.valueOf(posOrNeg) ? 1f : 0f;
         });
-        b.resolution.set(1f);
-
-
+        b.resolution(1f);
     }
 
 

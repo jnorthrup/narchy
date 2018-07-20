@@ -21,8 +21,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
     public void startGame() {
 
 
-
-
         startLevel((int) (Math.random() * 50000), 1,
                 Math.random() > 0.5f ? LevelGenerator.TYPE_UNDERGROUND
                         :
@@ -56,17 +54,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         setMaximumSize(size);
 
 
-
-
-
-
-
-
-
-        
-
-
-
         setFocusable(true);
     }
 
@@ -92,16 +79,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         if (isPressed && keyCode == KeyEvent.VK_ESCAPE) {
 
 
-
-
-
-
             toTitle();
-
-
-
-
-
 
 
         }
@@ -133,11 +111,11 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
         mapScene = new MapScene(graphicsConfiguration, this, new Random().nextLong());
         scene = mapScene;
-        
+
 
         Art.init(graphicsConfiguration);
 
-        image = new BufferedImage(320, 240, BufferedImage.TYPE_4BYTE_ABGR); 
+        image = new BufferedImage(320, 240, BufferedImage.TYPE_4BYTE_ABGR);
         image.setAccelerationPriority(1f);
         Graphics g = getGraphics();
         Graphics og = image.getGraphics();
@@ -158,7 +136,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             scene.tick();
 
             //float alpha = (float) (System.currentTimeMillis() - lTick);
-            
+
 
             @SuppressWarnings("unused")
             int x = (int) (Math.sin(now) * 16 + 160);
@@ -187,7 +165,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             if (delay > 0)
 
                 tm += delay;
-                Util.sleep(Math.max(0, tm - System.currentTimeMillis()));
+            Util.sleep(Math.max(0, tm - System.currentTimeMillis()));
 
         }
 
@@ -213,18 +191,12 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     public void startLevel(long seed, int difficulty, int type) {
         scene = new LevelScene(graphicsConfiguration, this, seed, difficulty, type);
-        
+
         scene.init();
     }
 
     public void levelFailed() {
         startGame();
-
-
-
-
-
-
 
 
     }
@@ -251,7 +223,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     public void win() {
         scene = new WinScene(this);
-        
+
         scene.init();
     }
 
@@ -259,13 +231,12 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         Mario.resetStatic();
 
 
-
         startGame();
     }
 
     public void lose() {
         scene = new LoseScene(this);
-        
+
         scene.init();
     }
 

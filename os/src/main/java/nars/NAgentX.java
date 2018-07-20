@@ -4,8 +4,8 @@ import jcog.Util;
 import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
+import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
-import nars.agent.NAgent2;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
@@ -32,9 +32,7 @@ import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.meta.AutoSurface;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -53,13 +51,24 @@ import static nars.Op.BELIEF;
  */
 abstract public class NAgentX extends NAgent {
 
-    public NAgentX(String id, NAR nar) {
-        super(id, nar);
 
+    @Deprecated public NAgentX(String id, NAR nar) {
+        this(id, FrameTrigger.durs(1), nar);
+    }
+    @Deprecated public NAgentX(Term id, NAR nar) {
+        this(id, FrameTrigger.durs(1), nar);
     }
 
 
-    public static NAR runRT2(Function<NAR, NAgent2> init, float narFPS) {
+    public NAgentX(String id, FrameTrigger frameTrigger, NAR nar) {
+        super(id, frameTrigger, nar);
+    }
+
+    public NAgentX(Term id, FrameTrigger frameTrigger, NAR nar) {
+        super(id, frameTrigger, nar);
+    }
+
+    public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
         /*
         try {
             Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
@@ -124,7 +133,7 @@ abstract public class NAgentX extends NAgent {
 
         n.runLater(() -> {
 
-            NAgent2 a = init.apply(n);
+            NAgent a = init.apply(n);
             //a.durs(2f); //nyquist?
 
             a.curiosity.set(0.25f);
@@ -136,13 +145,9 @@ abstract public class NAgentX extends NAgent {
 //                MatrixDeriver motivation = new MatrixDeriver(a.fire(),
 //                        Derivers.nal(n, 1, 6, "motivation.nal"));
 
-                Gridding aa = new Gridding(
-                        new AutoSurface<>(a, 4)
-                                .on(Bitmap2DSensor.class, (Bitmap2DSensor b) -> new AspectAlign(
-                                        new CameraSensorView(b, a.nar()).withControls(),
-                                        AspectAlign.Align.Center, b.width, b.height)),
-                                //.on(Loop.class, LoopPanel::new),
 
+                Gridding aa = new Gridding(
+                        NARui.agent(a),
                         NARui.top(n)
                 );
 
@@ -160,154 +165,6 @@ abstract public class NAgentX extends NAgent {
         return n;
     }
 
-    @Deprecated public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
-
-        /*
-        try {
-            Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-
-
-        float clockFPS = narFPS;
-
-        RealTime clock =
-                new RealTime.MS();
-
-
-        clock.durFPS(clockFPS);
-
-
-        NAR n = new NARS()
-
-                .attention(()->new Attention(256))
-
-                //.exe(new UniExec() {
-                .exe(new BufferedExec.WorkerExec(Util.concurrency(), false /* true */))
-
-//                .exe(MixMultiExec.get(
-//                            1024,
-//                             Util.concurrency()))
-//                .exe(new WorkerMultiExec(
-//
-//                             new Focus.AERevaluator(new SplitMix64Random(1)),
-//                             Util.concurrencyDefault(2),
-//                             1024, 1024) {
-//
-//                         {
-//                             //Exe.setExecutor(this);
-//                         }
-//                     }
-//                )
-
-
-                .time(clock)
-                .index(
-
-
-                        //new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(64 * 1024, 4)
-
-
-                )
-                .get();
-
-
-        config(n);
-
-//        try {
-//            InterNAR i = new InterNAR(n, 8, 0);
-//            i.runFPS(4);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
-        initPlugins(n);
-
-
-//        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
-
-
-        n.runLater(() -> {
-
-            NAgent a = init.apply(n);
-            //a.durs(2f); //nyquist?
-
-            a.curiosity.set(0.25f);
-
-            n.on(a);
-
-            n.runLater(() -> {
-                MatrixDeriver motivation = new MatrixDeriver(a.fire(),
-                        Derivers.nal(n, 1, 6, "motivation.nal"));
-
-
-//                SimpleDeriver curiosityDeriver = new SimpleDeriver(a.fireActions(),
-//                        Derivers.nal(n, 0, 0, "curiosity.nal"),
-//                        SimpleDeriver.GlobalTermLinker) {
-//
-//                    @Override
-//                    public boolean singleton() {
-//                        return true;
-//                    }
-//
-//
-//                    long last;
-//
-//                    @Override
-//                    protected void starting(NAR nar) {
-//                        last = nar.time();
-//                        super.starting(nar);
-//                    }
-//
-//                    @Override
-//                    protected int next(NAR n, int iterations) {
-//                        long now = n.time();
-//                        if (last + a.dur() > now)
-//                            return 0; //already called for this duration
-//                        last = now;
-//
-//                        int numActions = a.actions.size();
-//
-//                        //iterations = numActions; //override
-////                        if (iterations == 1) {
-////                            if (n.random().nextFloat() >= a.curiosity.floatValue())
-////                                return 0;
-////
-////                        } else {
-//                            //iterations = (int) Math.ceil(a.curiosity.floatValue() * iterations);
-//                            //iterations = Math.min(iterations, numActions);
-////                            if (iterations < 1)
-////                                return 0;
-////                        }
-//                        iterations = (int) Math.ceil(a.curiosity.floatValue() * numActions);
-//
-//                        return super.next(n, iterations);
-//                    }
-//                };
-
-
-
-                //new MatrixDeriver(a.fire(), n::input, Derivers.nal(n, 1, 8, "curiosity.nal"), n);
-
-                NARui.agentWindow(a);
-
-                SpaceGraph.window(NARui.top(n), 800, 800);
-
-                //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
-
-                //System.gc();
-            });
-        });
-
-        Loop loop = n.startFPS(narFPS);
-
-        return n;
-    }
 
     public static void config(NAR n) {
         n.dtDither.set(10);
@@ -378,8 +235,7 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
-            Narsese.NarseseException {
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) {
         return senseCameraRetina($$(id), w, pw, ph);
     }
 
@@ -418,7 +274,6 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
-        sensorCam.add(c);
         nar().runLater(() -> {
             c.readAdaptively(this);
         });

@@ -1,10 +1,9 @@
 package nars.experiment.checkers;
 
 /**
- * 
  * @author Arjen Hoogesteger
  * @version 0.1
  */
 public interface PlayerListener {
-	void finishedTurn(Player p);
+    void finishedTurn(Player p);
 }

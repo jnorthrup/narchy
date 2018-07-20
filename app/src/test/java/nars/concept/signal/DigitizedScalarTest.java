@@ -5,7 +5,6 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -37,7 +36,7 @@ class DigitizedScalarTest {
         NAR n = NARS.shell();
         AtomicFloat m = new AtomicFloat(0f);
 
-        FloatNormalized range = new FloatPolarNormalized(m::floatValue, 1f);
+        FloatNormalized range = new FloatNormalized(m::floatValue, -1, 1f, true);
         DigitizedScalar f = new DigitizedScalar(range, DigitizedScalar.FuzzyNeedle, n,
                 $.p("low"), $.p("mid"), $.p("hih"));
 
@@ -99,7 +98,7 @@ class DigitizedScalarTest {
 
 
             x.set(v);
-            xc.update(n.time() - n.dur() / 2, n.time() + n.dur() / 2, n.dur(), n);
+            xc.update(n.time() - n.dur() / 2, n.time() + n.dur() / 2, n);
             n.run(1);
 
             System.out.println("\n" + n.time() + " x=" + x);

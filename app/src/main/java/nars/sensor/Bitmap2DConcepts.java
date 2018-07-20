@@ -6,8 +6,11 @@ import jcog.math.FloatSupplier;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.NAR;
-import nars.Task;
 import nars.concept.sensor.Signal;
+import nars.control.channel.BufferedCauseChannel;
+import nars.control.channel.CauseChannel;
+import nars.exe.Causable;
+import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -31,8 +34,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     public final Array2DIterable<Signal> iter;
 
-    /** each pixel's belief task priority for next input */
-    public final FloatRange pixelPri = new FloatRange(0, 0, 1f);
+    /** shared pixel belief task priority and resolution */
+    public final FloatRange pri, res;
 
     protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, NAR n) {
 
@@ -42,7 +45,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         assert(area > 0);
 
         this.src = src;
-        this.pixelPri.set( n.priDefault(BELIEF)*(1/Math.sqrt(area) ));
+        this.pri = FloatRange.unit((float) (n.priDefault(BELIEF)*(1/Math.sqrt(area) )));
+        this.res = FloatRange.unit(n.freqResolution);
 
         this.matrix = new Signal[width][height];
 
@@ -73,7 +77,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 //                    public TermlinkTemplates templates() {
 //                        return super.templates();
 //                    }
-                }.pri(pixelPri);
+                }.setPri(pri).setResolution(res);
 
                 matrix[x][y] = sss;
             }
@@ -107,17 +111,17 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
     public Bitmap2DConcepts resolution(float resolution) {
-        forEach(p -> p.resolution.set(resolution));
+        res.set(resolution);
         return this;
     }
 
     /** streams (potentially) all pixels */
-    public final Stream<Task> stream(FloatFloatToObjectFunction<Truth> truther, int dur, NAR nar) {
+    public final Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int dur, NAR nar) {
         return stream(truther, 0, area, dur, nar);
     }
 
     /** stream of tasks containing changes in all updated pixels */
-    public Stream<Task> stream(FloatFloatToObjectFunction<Truth> truther, int start, int end, int dur, NAR nar) {
+    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int start, int end, int dur, NAR nar) {
 
         long now = nar.time();
 
@@ -139,5 +143,142 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
                 return null;
         return getSafe(i, j);
     }
+
+    public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
+        return new Bitmap2DReader(in, mode, nar);
+    }
+
+    /** service for progressively (AIKR) reading this sensor */
+    protected class Bitmap2DReader extends Causable {
+
+        private int lastPixel;
+        private long lastUpdate;
+
+        private int pixelsRemainPerUpdate;
+
+        final BufferedCauseChannel<ITask> in;
+
+        static final int minUpdateDurs = 1;
+
+
+        float conf = Float.NaN;
+
+        FloatFloatToObjectFunction<Truth> mode;
+
+        public Bitmap2DReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
+            super(nar);
+            lastUpdate = nar.time();
+            pixelsRemainPerUpdate = area;
+
+            int maxPendingHistory = 8;
+            this.in = in.buffered(maxPendingHistory * width*height /* plus extra? */);
+
+
+            this.mode = mode;
+            //(p, v) -> mode.apply(() -> conf).value(p, v);
+        }
+
+        @Override
+        public float value() {
+            return in.value();
+        }
+
+        @Override
+        protected int next(NAR nar, int work) {
+
+            if (in == null)
+                return 0; //return -1;
+
+            int dur = nar.dur();
+
+            int totalPixels = area;
+
+
+            //conf = Math.max(nar.confMin.floatValue(), w2cSafe(c2wSafe(nar.confDefault(BELIEF)) / totalPixels)); //evidence divided equally among pixels
+            conf = nar.confDefault(BELIEF);
+
+            long now = nar.time();
+            if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
+                Bitmap2DConcepts.this.update();
+                pixelsRemainPerUpdate = totalPixels;
+                this.lastUpdate = now;
+            } else {
+                if (pixelsRemainPerUpdate <= 0)
+                    return 0; //return -1;
+            }
+
+
+
+
+
+
+
+
+
+
+            int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
+
+
+
+
+
+
+
+
+
+
+
+
+
+            if (pixelsToProcess <= 0) //0 or -1
+                return pixelsToProcess;
+
+            pixelsRemainPerUpdate -= pixelsToProcess;
+
+            int start, end;
+
+
+
+
+
+
+
+
+            start = this.lastPixel;
+            end = (start + pixelsToProcess);
+            Stream<ITask> s;
+
+            if (end > totalPixels) {
+
+                int extra = end - totalPixels;
+                s = Stream.concat(
+                        stream(mode, start, totalPixels, dur, nar),
+                        stream(mode, 0, extra, dur, nar)
+                );
+                this.lastPixel = extra;
+            } else {
+                s = Bitmap2DConcepts.this.stream(mode, start, end, dur, nar);
+                this.lastPixel = end;
+            }
+
+            //TODO stop using Stream<> its not necessary here
+            int pixelsGenerated = (int) in.input(s);
+            if (pixelsGenerated > 0)
+                in.commit();
+
+            return pixelsGenerated;
+        }
+
+        /**
+         * how many pixels to process for the given work amount
+         * can be 1:1 or some other amount
+         */
+        protected int workToPixels(int work) {
+            return work;
+        }
+
+
+    }
+
 
 }

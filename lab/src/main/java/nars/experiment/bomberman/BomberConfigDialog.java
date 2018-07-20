@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 /**
  * File:         BomberConfigDialog
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -19,11 +20,11 @@ import java.awt.event.KeyEvent;
  * configure the game.
  */
 public class BomberConfigDialog extends JDialog
-implements ActionListener {
+        implements ActionListener {
     /** temporary key datas used for manipulation */
     private final int[][] keys;
     /** keys being set offset values */
-    private final int[] keysBeingSet = { -1, -1 };
+    private final int[] keysBeingSet = {-1, -1};
     /** waiting for key flag */
     private boolean waitingForKey;
     /** the buttons that allow the user to set the keys */
@@ -42,8 +43,9 @@ implements ActionListener {
         /** create the temporary key objects */
         keys = new int[4][5];
         /** set the object's data from the currently configurations */
-        for (int i = 0; i < 4; i++) for (int j = 0; j < 5; j++)
-            keys[i][j] = BomberKeyConfig.keys[i][j];
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 5; j++)
+                keys[i][j] = BomberKeyConfig.keys[i][j];
 
         /** create the panel that holds the config. stuff */
         JPanel centerPanel = new JPanel(new GridLayout(2, 2));
@@ -66,7 +68,7 @@ implements ActionListener {
         helpPanel.setBorder(BorderFactory.createEtchedBorder());
         /** add a label to it */
         helpPanel.add(new JLabel("Click on the buttons to edit the keys.",
-        JLabel.CENTER));
+                JLabel.CENTER));
         /** add the help panel to the north side of the dialog */
         getContentPane().add(helpPanel, "North");
         /** add the key setup panels to the center */
@@ -108,8 +110,7 @@ implements ActionListener {
      * @param p player's panel
      * @param fields key fields
      */
-    private void setupPanel(int pn, JPanel m, JPanel p, JTextField[] fields)
-    {
+    private void setupPanel(int pn, JPanel m, JPanel p, JTextField[] fields) {
         /** create the left and right panels, 5 rows each */
         JPanel left = new JPanel(new GridLayout(5, 1));
         JPanel right = new JPanel(new GridLayout(5, 1));
@@ -122,11 +123,21 @@ implements ActionListener {
             fields[i] = new JTextField(10);
             /** setup the button */
             switch (i) {
-                case 0: buttons[pn][i].setText("Up"); break;
-                case 1: buttons[pn][i].setText("Down"); break;
-                case 2: buttons[pn][i].setText("Left"); break;
-                case 3: buttons[pn][i].setText("Right"); break;
-                case 4: buttons[pn][i].setText("Bomb"); break;
+                case 0:
+                    buttons[pn][i].setText("Up");
+                    break;
+                case 1:
+                    buttons[pn][i].setText("Down");
+                    break;
+                case 2:
+                    buttons[pn][i].setText("Left");
+                    break;
+                case 3:
+                    buttons[pn][i].setText("Right");
+                    break;
+                case 4:
+                    buttons[pn][i].setText("Bomb");
+                    break;
             }
             /** add action handler to the button */
             buttons[pn][i].addActionListener(this);
@@ -144,7 +155,7 @@ implements ActionListener {
         p = new JPanel(new GridLayout(1, 2));
         /** set the border */
         p.setBorder(BorderFactory.createTitledBorder(BorderFactory.
-        createEtchedBorder(), "Player " + (pn + 1) + " Keys Configuration"));
+                createEtchedBorder(), "Player " + (pn + 1) + " Keys Configuration"));
         /** add the buttons and the keys to the panel */
         p.add(left);
         p.add(right);
@@ -161,8 +172,9 @@ implements ActionListener {
         /** if save configuration button is clicked */
         if (evt.getActionCommand().equals("Save Configurations")) {
             /** copy new keys back to glocal variables */
-            for (int i = 0; i < 4; i++) for (int j = 0; j < 5; j++)
-                BomberKeyConfig.keys[i][j] = keys[i][j];
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 5; j++)
+                    BomberKeyConfig.keys[i][j] = keys[i][j];
             /** write the file */
             BomberKeyConfig.writeFile();
             /** destroy this dialog */
@@ -199,6 +211,7 @@ implements ActionListener {
     private class GetKeyDialog extends JDialog {
         /** points to itself */
         private final JDialog me;
+
         /**
          * Constructs a new dialog.
          * @param owner dialog's owner
@@ -236,8 +249,8 @@ implements ActionListener {
                                 if (keys[p][k] == newKey) {
                                     /** if it isn't the key being set */
                                     if (!(p == i && j == k))
-                                       /** set key used flag to true */
-                                       keyUsed = true;
+                                    /** set key used flag to true */
+                                        keyUsed = true;
                                 }
                                 /** if key used flag is true, then exit loop */
                                 if (keyUsed) break;
@@ -251,7 +264,7 @@ implements ActionListener {
                             keys[i][j] = newKey;
                             /** reset the key field */
                             keyFields[i][j].setText(
-                            KeyEvent.getKeyText(keys[i][j]));
+                                    KeyEvent.getKeyText(keys[i][j]));
                             /** set waiting for key to false */
                             waitingForKey = false;
                             /** destroy the dialog */
@@ -262,8 +275,8 @@ implements ActionListener {
                             /** then show an error dialog */
                             /** create the dialog content */
                             JOptionPane pane = new JOptionPane(
-                            "Key: [" + KeyEvent.getKeyText(newKey) +
-                            "] is used already.  Pick a different key.");
+                                    "Key: [" + KeyEvent.getKeyText(newKey) +
+                                            "] is used already.  Pick a different key.");
                             /** setup the dialog controls */
                             pane.setOptionType(-JOptionPane.NO_OPTION);
                             pane.setMessageType(JOptionPane.ERROR_MESSAGE);
@@ -284,9 +297,9 @@ implements ActionListener {
             setSize(300, 0);
 
             int x = owner.getLocation().x + (owner.getSize().width -
-            getSize().width) / 2;
+                    getSize().width) / 2;
             int y = owner.getLocation().y + (owner.getSize().width -
-            getSize().height) / 2;
+                    getSize().height) / 2;
             /** center the dialog relative to the owner */
             setLocation(x, y);
 

@@ -14,4 +14,10 @@ public class FloatRange extends AtomicFloat {
         this.max = max;
     }
 
+    public static FloatRange unit(float initialValue) {
+        return new FloatRange(initialValue, 0, 1);
+    }
+    public static FloatRange unit(FloatSupplier initialValue) {
+        return unit(initialValue.asFloat());
+    }
 }

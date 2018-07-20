@@ -4,11 +4,12 @@ import jcog.math.Quantiler;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
-import nars.NAgentX;
 import nars.Narsese;
 import nars.agent.NAgent;
+import nars.concept.Concept;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.gui.graph.run.ConceptGraph2D;
+import nars.sensor.Bitmap2DSensor;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import nars.video.CameraSensorView;
@@ -31,10 +32,7 @@ import spacegraph.util.math.Color3f;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
@@ -147,14 +145,29 @@ public class NARui {
         SpaceGraph.window(new ConceptSurface(t, n), 500, 500, true);
     }
 
-    public static void agentWindow(NAgent a) {
+    public static AutoSurface<NAgent> agent(NAgent a) {
+        return new AutoSurface<>(a, 4)
+            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) -> new AspectAlign(
+                    new CameraSensorView(b, a.nar()).withControls(),
+                    AspectAlign.Align.Center, b.width, b.height))
+            .on(x -> x instanceof Concept,
+                    (Concept x) -> new MetaFrame(new BeliefTableChart2(x.term(), a.nar())))
+//            .on(x -> x instanceof LinkedHashMap, (LinkedHashMap x)->{
+//                return new AutoSurface<>(x.keySet());
+//            })
+                ;
+            //.on(Loop.class, LoopPanel::new),
+
+    }
+
+    @Deprecated public static void agentOld(NAgent a) {
         NAR nar = a.nar();
         //nar.runLater(() -> {
             SpaceGraph.window(
                     grid(
                             new AutoSurface(a),
 
-                            beliefCharts(nar.dur() * 64, a.actions.keySet(), a.nar()),
+                            beliefCharts(nar.dur() * 64, a.actions(), a.nar()),
 
                             new EmotionPlot(64, a),
                             grid(
@@ -243,7 +256,7 @@ public class NARui {
 
                                         s.camPos(0, 0, 90);
                                         return s;
-                                    }),
+                                    })
 
 
 
@@ -258,12 +271,12 @@ public class NARui {
 
 
 
-
-                                    a instanceof NAgentX ?
-                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(
-                                                    new CameraSensorView(cs, a).withControls(), AspectAlign.Align.Center, cs.width, cs.height))
-                                                    .toArray(Surface[]::new))
-                                            ) : grid()
+//
+//                                    a instanceof NAgentX ?
+//                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(
+//                                                    new CameraSensorView(cs, a).withControls(), AspectAlign.Align.Center, cs.width, cs.height))
+//                                                    .toArray(Surface[]::new))
+//                                            ) : grid()
                             )
                     ),
 
@@ -326,7 +339,7 @@ public class NARui {
 
             List<Surface> s = StreamSupport.stream(ii.spliterator(), false)
                     .map(x -> x instanceof Termed ? (Termed) x : null).filter(Objects::nonNull)
-                    .map(c -> new MetaFrame(new BeliefTableChart2(nar, c))).collect(toList());
+                    .map(c -> new MetaFrame(new BeliefTableChart2(c, nar))).collect(toList());
 
             if (!s.isEmpty()) {
                 set(s);

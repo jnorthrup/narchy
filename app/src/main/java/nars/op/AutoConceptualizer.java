@@ -1,4 +1,4 @@
-package nars.agent;
+package nars.op;
 
 import jcog.learn.Autoencoder;
 import nars.NAR;

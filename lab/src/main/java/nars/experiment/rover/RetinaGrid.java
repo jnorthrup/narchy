@@ -24,7 +24,7 @@ public class RetinaGrid extends SimpleSpatial {
             for (int y = 0; y < h; y++) {
                 RetinaPixel r = new RetinaPixel(this);
 
-                r.localPosition = src; 
+                r.localPosition = src;
 
                 r.localDirection = v(fwd);
                 r.localDirection.addScaled(left, 2f * (((float) x) / (w - 1) - 0.5f));

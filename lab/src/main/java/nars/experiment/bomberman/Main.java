@@ -1,38 +1,40 @@
 package nars.experiment.bomberman;/*
-* Main.java
-* Created on February 17, 2001, 12:51 AM
-*/
+ * Main.java
+ * Created on February 17, 2001, 12:51 AM
+ */
 
 import javax.swing.*;
 
 /**
-* This class is the starting proint of the program.
-*
-* @author Sammy Leong
-* @version 1.0
-*/
-public class Main
-{
+ * This class is the starting proint of the program.
+ *
+ * @author Sammy Leong
+ * @version 1.0
+ */
+public class Main {
     public static BomberMain bomberMain;
 
-    /** relative path */
+    /**
+     * relative path
+     */
     public static final String RP = "./";
-    /** flag: whether current machine's java runtime is version 2 or not */
+    /**
+     * flag: whether current machine's java runtime is version 2 or not
+     */
     public static boolean J2;
 
 
-      /**
-       * Starts Bomberman
-       */
-       public static void startBomberman() {
+    /**
+     * Starts Bomberman
+     */
+    public static void startBomberman() {
         bomberMain = new BomberMain();
-       }
+    }
 
     /**
-    * Starts the program by creating an instance of MainFrame.
-    */
-    public static void main(String[] args)
-    {
+     * Starts the program by creating an instance of MainFrame.
+     */
+    public static void main(String[] args) {
         boolean bombermanMode = false;
         boolean badArg = false;
         /** default look and feel: metal */
@@ -41,14 +43,14 @@ public class Main
         for (int i = 0; i < args.length; i++) {
             /** if "bomberman" parameter is supplied */
             if (args[i].equals("Bomberman") || args[i].equals("bomberman"))
-               bombermanMode = true;
+                bombermanMode = true;
             /** if look and feel parameter is supplied */
             if (args[i].startsWith("-l")) {
-               if (args[i].substring(2).equals("System")) lookAndFeel = 0;
-               else if (args[i].substring(2).equals("Metal")) lookAndFeel = 1;
-               else if (args[i].substring(2).equals("Windows")) lookAndFeel = 2;
-               else if (args[i].substring(2).equals("Mac")) lookAndFeel = 3;
-               else if (args[i].substring(2).equals("Motif")) lookAndFeel = 4;
+                if (args[i].substring(2).equals("System")) lookAndFeel = 0;
+                else if (args[i].substring(2).equals("Metal")) lookAndFeel = 1;
+                else if (args[i].substring(2).equals("Windows")) lookAndFeel = 2;
+                else if (args[i].substring(2).equals("Mac")) lookAndFeel = 3;
+                else if (args[i].substring(2).equals("Motif")) lookAndFeel = 4;
             }
         }
         /** if look and feel isn't default: metal */
@@ -64,18 +66,17 @@ public class Main
                  */
                 String laf = "javax.swing.plaf.metal.MetalLookAndFeel";
                 if (lookAndFeel == 0)
-                   laf = UIManager.getSystemLookAndFeelClassName();
+                    laf = UIManager.getSystemLookAndFeelClassName();
                 else if (lookAndFeel == 1)
-                     laf = "javax.swing.plaf.metal.MetalLookAndFeel";
+                    laf = "javax.swing.plaf.metal.MetalLookAndFeel";
                 else if (lookAndFeel == 2)
-                     laf = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+                    laf = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
                 else if (lookAndFeel == 3)
-                     laf = "javax.swing.plaf.mac.MacLookAndFeel";
+                    laf = "javax.swing.plaf.mac.MacLookAndFeel";
                 else if (lookAndFeel == 4)
-                     laf = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+                    laf = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
                 UIManager.setLookAndFeel(laf);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 new ErrorDialog(e);
             }
         }

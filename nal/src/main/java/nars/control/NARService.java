@@ -23,9 +23,12 @@ public class NARService extends Service<NAR> implements Termed {
         this((NAR)null);
     }
 
-    @Deprecated
     protected NARService(NAR nar) {
-        this((Term) null);
+        this((Term)null, nar);
+    }
+
+    protected NARService(Term id, NAR nar) {
+        this(id);
 
         if (nar != null) {
             (this.nar = nar).on(this);

@@ -2,7 +2,7 @@ package nars.table.dynamic;
 
 import com.google.common.collect.Iterators;
 import jcog.data.list.FasterList;
-import jcog.math.FloatSupplier;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -41,9 +41,17 @@ public class SignalBeliefTable extends DynamicBeliefTable {
     /**
      * prioritizes generated tasks
      */
-    private FloatSupplier pri;
+    private FloatRange pri;
 
-    private FloatSupplier res;
+    private FloatRange res;
+
+    public FloatRange pri() {
+        return pri;
+    }
+
+    public FloatRange resolution() {
+        return res;
+    }
 
 
     /**
@@ -402,10 +410,10 @@ public class SignalBeliefTable extends DynamicBeliefTable {
         series.forEach(s, e, false, c);
     }
 
-    public void pri(FloatSupplier pri) {
+    public void setPri(FloatRange pri) {
         this.pri = pri;
     }
-    public void res(FloatSupplier res) {
+    public void resolution(FloatRange res) {
         this.res = res;
     }
 

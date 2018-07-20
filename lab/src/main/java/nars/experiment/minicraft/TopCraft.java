@@ -27,20 +27,14 @@ public class TopCraft extends NAgentX {
 
         this.craft = new TopDownMinicraft();
 
-
         PixelBag p = PixelBag.of(() -> craft.image, 64, 64).addActions(id, this);
         int nx = 8;
         camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
 
 
             return new float[]{p.X, p.Y, p.Z};
-        }, 8, this) {
-            @Override
-            public void accept(NAR n) {
-                p.update();
-                super.accept(n);
-            }
-        };
+        }, 8, this);
+        onFrame(p::update); //<- this necessary?
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
@@ -69,6 +63,13 @@ public class TopCraft extends NAgentX {
         });
         actionToggle($.func("menu", id), input.menu::pressIfUnpressed);
 
+        reward(() -> {
+            float nextScore = craft.frameImmediate();
+            float ds = nextScore - prevScore;
+            this.prevScore = nextScore;
+            float r = ((ds / 2f)) + 2f * (craft.player.health / ((float) craft.player.maxHealth) - 0.5f);
+            return r;
+        });
 
         TopDownMinicraft.start(craft);
     }
@@ -85,16 +86,6 @@ public class TopCraft extends NAgentX {
                 return null;
             }
         }, 20);
-    }
-
-    @Override
-    protected float act() {
-
-        float nextScore = craft.frameImmediate();
-        float ds = nextScore - prevScore;
-        this.prevScore = nextScore;
-        float r = ((ds / 2f)) + 2f * (craft.player.health / ((float) craft.player.maxHealth) - 0.5f);
-        return r;
     }
 
 

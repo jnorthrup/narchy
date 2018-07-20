@@ -30,20 +30,20 @@ public class Gradius extends NAgentX {
 
         g.updateMS =
                 25; //TODO coordinate with fps
-                //10;
+        //10;
 
 
         int dx = 2, dy = 2;
         int px = 20, py = 20;
 
-        assert(px%dx==0 && py%dy ==0);
+        assert (px % dx == 0 && py % dy == 0);
         for (int i = 0; i < dx; i++)
             for (int j = 0; j < dy; j++) {
                 int ii = i;
                 int jj = j;
                 //Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
-                                $.func((Atomic)id, $.the(ii), $.the(jj), $.p($.the(x), $.the(y)) ),
+                                $.func((Atomic) id, $.the(ii), $.the(jj), $.p($.the(x), $.the(y))),
                         //$.p(
                         //$.inh(
 //                                        $.p(x, y),
@@ -51,8 +51,8 @@ public class Gradius extends NAgentX {
 //                                ),
                         new Scale(() -> g.image, px, py)
                                 .window(
-                                        (((float)i) / dx), (((float)j) / dy),
-                                        ((float)(i + 1)) / dx, ((float)(j + 1)) / dy))
+                                        (((float) i) / dx), (((float) j) / dy),
+                                        ((float) (i + 1)) / dx, ((float) (j + 1)) / dy))
                         .resolution(0.04f);
             }
 
@@ -74,7 +74,7 @@ public class Gradius extends NAgentX {
 //        actionToggle($.inh("pause", id),
 //                (b) -> g.paused = b);
 
-        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d)->{
+        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
             if (d == d) {
                 //deep incrases both duration and max term volume
                 this.nar.time.dur(Util.lerp(d * d, 20, 120));
@@ -97,6 +97,25 @@ public class Gradius extends NAgentX {
 
         initToggle();
 
+        reward(()->{
+            if (g == null) {
+                new WTF().printStackTrace();
+                return 0;
+            }
+            if (g.paused)
+                return 0;
+
+            int nextScore = g.score;
+
+            float r = (nextScore - lastScore);
+
+            lastScore = nextScore;
+
+            if (g.playerDead > 1)
+                return -1f;
+            else
+                return r;
+       });
 
     }
 
@@ -152,27 +171,5 @@ public class Gradius extends NAgentX {
         });
     }
 
-    @Override
-    protected float act() {
-
-        if (g == null) {
-            new WTF().printStackTrace();
-            return 0;
-        }
-        if (g.paused)
-            return 0;
-
-        int nextScore = g.score;
-
-        float r = (nextScore - lastScore);
-
-
-        lastScore = nextScore;
-
-        if (g.playerDead > 1)
-            return -1f;
-        else
-            return r;
-    }
 
 }

@@ -14,7 +14,7 @@ public class Undo {
     public int count;
 
     public Point[] pos;
-    
+
     public Undo(int x, int y) {
         this.x = x;
         this.y = y;

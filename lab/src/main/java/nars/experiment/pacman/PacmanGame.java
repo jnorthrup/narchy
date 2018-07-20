@@ -12,349 +12,329 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PacmanGame {
 
-	public static final double GHOST_SPEED_SCARED = 0.3;
-	public static final float GHOST_SPEED = 0.2f;
-	public static final int UPDATES = -25;
-	public static int periodMS = 50;
-	private final float playerSpeed = GHOST_SPEED;
+    public static final double GHOST_SPEED_SCARED = 0.3;
+    public static final float GHOST_SPEED = 0.2f;
+    public static final int UPDATES = -25;
+    public static int periodMS = 50;
+    private final float playerSpeed = GHOST_SPEED;
 
-	public void resetGhosts() {
+    public void resetGhosts() {
 
-		ghosts = new Ghost[]{
-				new Ghost(maze, maze.playerStart().x, maze.playerStart().y - 3, Color.red)
+        ghosts = new Ghost[]{
+                new Ghost(maze, maze.playerStart().x, maze.playerStart().y - 3, Color.red)
 
 
+        };
 
-		};
+    }
 
-	}
+    static final boolean running = true;
+    public final PacComponent view;
+    Maze maze;
+    boolean doubled;
+    Player player;
+    public boolean[] keys;
+    boolean started = true;
+    Ghost[] ghosts;
+    int updates;
+    public String text;
+    public int score;
+    private int previousDotCount;
+    int ghostEatCount;
+    CopyOnWriteArrayList<PacComponent.SplashModel> splashes;
+    int fruitTime;
 
-	static final boolean running = true;
-	public final PacComponent view;
-	Maze maze;
-	boolean doubled;
-	Player player;
-	public boolean[] keys;
-	boolean started = true;
-	Ghost[] ghosts;
-	int updates;
-	public String text;
-	public int score;
-	private int previousDotCount;
-	int ghostEatCount;
-	CopyOnWriteArrayList<PacComponent.SplashModel> splashes;
-	int fruitTime;
+    public PacmanGame() {
 
-	public PacmanGame() {
+        updates = UPDATES;
+        maze = Maze.create(13, 13);
+        player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
+        keys = new boolean[4];
+        resetGhosts();
+        text = "";
+        score = 0;
+        previousDotCount = maze.dotCount;
+        splashes = new CopyOnWriteArrayList<>();
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Pacman");
+        frame.setVisible(true);
+        frame.setResizable(false);
 
-		updates = UPDATES;
-		maze = Maze.create(13, 13);
-		player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
-		keys = new boolean[4];
-		resetGhosts();
-		text = "";
-		score = 0;
-		previousDotCount = maze.dotCount;
-		splashes = new CopyOnWriteArrayList<>();
-		JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("Pacman");
-		frame.setVisible(true);
-		frame.setResizable(false);
+        frame.addKeyListener(new KeyListener() {
 
-		frame.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
 
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
+            @Override
+            public void keyReleased(KeyEvent e) {
 
-			@Override
-			public void keyReleased(KeyEvent e) {
+                processRelease(e);
 
-				processRelease(e);
+            }
 
-			}
+            @Override
+            public void keyPressed(KeyEvent e) {
+                processPress(e);
+            }
+        });
 
-			@Override
-			public void keyPressed(KeyEvent e) {
-				processPress(e);
-			}
-		});
+        view = new PacComponent(this);
+        frame.add(view);
+        frame.pack();
 
-		view = new PacComponent(this);
-		frame.add(view);
-		frame.pack();
 
+    }
 
 
+    public void update() {
+        view.repaint();
 
+        if (started) {
 
+            if (updates == -99)
+                text = "";
+            if (updates == -50)
+                text = "Ready?";
+            if (updates == -25)
+                text = "";
 
+            updates++;
 
+            if (updates < 0)
+                return;
 
+            ghosts[0].target(new Point((int) player.x, (int) player.y));
 
+            if (ghosts.length > 1) {
+                switch (player.dir) {
 
+                    case up:
+                        ghosts[1].target(new Point((int) player.x, (int) player.y - 4));
+                        break;
 
+                    case down:
+                        ghosts[1].target(new Point((int) player.x, (int) player.y + 4));
+                        break;
 
+                    case left:
+                        ghosts[1].target(new Point((int) player.x - 4, (int) player.y));
+                        break;
 
+                    case right:
+                        ghosts[1].target(new Point((int) player.x + 4, (int) player.y));
+                        break;
 
+                }
 
+                ghosts[2].target(new Point((int) (3 * player.x - 2 * ghosts[0].x), (int) (3 * player.x - 2 * ghosts[0].x)));
+                ghosts[3].random = true;
+            }
 
+            if (player.power == 0)
+                ghostEatCount = 0;
 
+            for (Ghost g : ghosts) {
 
+                if (updates >= 3500 && updates % 3500 == 0) {
 
+                    g.dir = g.dir.opposite();
+                    g.relaxed = true;
 
-	}
+                }
 
+                if (updates >= 3500 && updates % 3500 == 500) {
 
+                    g.dir = g.dir.opposite();
+                    g.relaxed = false;
 
-	public void update() {
-		view.repaint();
+                }
 
-		if(started) {
 
-			if(updates == -99)
-				text = "";
-			if(updates == -50)
-				text = "Ready?";
-			if(updates == -25)
-				text = "";
+                if (Math.abs(g.x - player.x) + Math.abs(g.y - player.y) < 0.5) {
 
-			updates++;
+                    if (g.scared) {
 
-			if(updates < 0)
-				return;
+                        ghostEatCount++;
+                        score += 4;
+                        splashes.add(new PacComponent.SplashModel("" + 100 * Math.pow(2, ghostEatCount), g.x, g.y, Color.white));
+                        g.reset();
 
-			ghosts[0].target(new Point((int)player.x, (int)player.y));
+                    } else {
 
-			if (ghosts.length > 1) {
-				switch (player.dir) {
+                        if (!player.deathAnimation()) return;
+                        else {
 
-					case up:
-						ghosts[1].target(new Point((int) player.x, (int) player.y - 4));
-						break;
+                            splashes.add(new PacComponent.SplashModel("-100", player.x, player.y, Color.red));
+                            score -= 10;
 
-					case down:
-						ghosts[1].target(new Point((int) player.x, (int) player.y + 4));
-						break;
+                            maze.fruit = Maze.Fruit.none;
+                            fruitTime = 0;
 
-					case left:
-						ghosts[1].target(new Point((int) player.x - 4, (int) player.y));
-						break;
+                            resetGhosts();
+                            updates = UPDATES;
+                            if (player.die())
+                                text = "You Lose!";
 
-					case right:
-						ghosts[1].target(new Point((int) player.x + 4, (int) player.y));
-						break;
+                        }
 
-				}
+                    }
 
-				ghosts[2].target(new Point((int) (3 * player.x - 2 * ghosts[0].x), (int) (3 * player.x - 2 * ghosts[0].x)));
-				ghosts[3].random = true;
-			}
 
-			if(player.power == 0)
-				ghostEatCount = 0;
+                }
 
-			for(Ghost g : ghosts) {
+                if (g.scared)
+                    g.scared = player.power > 0;
+                else
+                    g.scared = player.power > Player.MAX_POWER - 5;
 
-				if(updates >= 3500 && updates % 3500 == 0) {
+                if (g.scared) g.target(new Point((int) player.x, (int) player.y));
 
-					g.dir = g.dir.opposite();
-					g.relaxed = true;
+                g.update();
 
-				}
+            }
 
-				if(updates >= 3500 && updates % 3500 == 500) {
+            if (maze.fruit != Maze.Fruit.none) {
 
-					g.dir = g.dir.opposite();
-					g.relaxed = false;
+                if (Math.abs(player.x - maze.playerStart().x) < 1 && Math.abs(player.y - maze.playerStart().y) < 1) {
 
-				}
+                    switch (maze.fruit) {
 
+                        case red:
+                            score += 5;
+                            splashes.add(new PacComponent.SplashModel("500", player.x, player.y, Color.white));
+                            break;
 
-				if(Math.abs(g.x - player.x) + Math.abs(g.y - player.y) < 0.5) {
+                        case yellow:
+                            score += 10;
+                            splashes.add(new PacComponent.SplashModel("1000", player.x, player.y, Color.white));
+                            break;
 
-					if(g.scared) {
+                        case blue:
+                            score += 20;
+                            splashes.add(new PacComponent.SplashModel("5000", player.x, player.y, Color.cyan));
+                            break;
 
-						ghostEatCount++;
-						score += 4;
-						splashes.add(new PacComponent.SplashModel("" + 100 * Math.pow(2, ghostEatCount), g.x, g.y, Color.white));
-						g.reset();
+                        default:
+                            break;
 
-					} else {
+                    }
 
-						if(!player.deathAnimation()) return;
-						else {
+                    fruitTime = 0;
+                    maze.fruit = Maze.Fruit.none;
 
-							splashes.add(new PacComponent.SplashModel("-100", player.x, player.y, Color.red));
-							score -= 10;
+                } else if (fruitTime > (1500 + Math.random() * 30000)) {
 
-							maze.fruit = Maze.Fruit.none;
-							fruitTime = 0;
+                    maze.fruit = Maze.Fruit.none;
+                    fruitTime = 0;
 
-							resetGhosts();
-							updates = UPDATES;
-							if(player.die())
-								text = "You Lose!";
+                }
 
-						}
+            } else {
 
-					}
+                if (fruitTime > 500) {
 
+                    if (Math.random() < 0.0005) {
 
-				}
+                        maze.fruit = Maze.Fruit.red;
+                        fruitTime = 0;
 
-				if(g.scared)
-					g.scared = player.power > 0;
-				else
-					g.scared = player.power > Player.MAX_POWER - 5;
+                    }
 
-				if(g.scared) g.target(new Point((int)player.x, (int)player.y));
+                    if (Math.random() < 0.0003) {
 
-				g.update();
+                        maze.fruit = Maze.Fruit.yellow;
+                        fruitTime = 0;
 
-			}
+                    }
 
-			if(maze.fruit != Maze.Fruit.none) {
+                    if (Math.random() < 0.0001) {
 
-				if(Math.abs(player.x - maze.playerStart().x) < 1 && Math.abs(player.y - maze.playerStart().y) < 1) {
+                        maze.fruit = Maze.Fruit.blue;
+                        fruitTime = 0;
 
-					switch(maze.fruit) {
+                    }
 
-					case red:
-						score += 5;
-						splashes.add(new PacComponent.SplashModel("500", player.x, player.y, Color.white));
-						break;
+                }
 
-					case yellow:
-						score += 10;
-						splashes.add(new PacComponent.SplashModel("1000", player.x, player.y, Color.white));
-						break;
+            }
+            fruitTime++;
 
-					case blue:
-						score += 20;
-						splashes.add(new PacComponent.SplashModel("5000", player.x, player.y, Color.cyan));
-						break;
+            if (maze.dotCount != previousDotCount) {
 
-					default:
-						break;
+                if (maze.dotCount == 0) {
 
-					}
+                    text = "You Won!";
+                    PacmanGame.win();
 
-					fruitTime = 0;
-					maze.fruit = Maze.Fruit.none;
+                }
 
-				} else if(fruitTime > (1500 + Math.random() * 30000)) {
+                previousDotCount = maze.dotCount;
+                score += 1;
 
-					maze.fruit = Maze.Fruit.none;
-					fruitTime = 0;
+            }
 
-				}
+            if (keys[0]) player.turn(Maze.Direction.left);
+            if (keys[1]) player.turn(Maze.Direction.right);
+            if (keys[2]) player.turn(Maze.Direction.up);
+            if (keys[3]) player.turn(Maze.Direction.down);
+            player.update();
 
-			} else {
+            if (updates == 100) ghosts[0].free = true;
+            if (ghosts.length > 1) {
+                if (updates == 500) ghosts[1].free = true;
+                if (updates == 1000) ghosts[2].free = true;
+                if (updates == 1500) ghosts[3].free = true;
+            }
 
-				if(fruitTime > 500) {
+        } else {
 
-					if(Math.random() < 0.0005) {
+            text = "Press Space to Start";
 
-						maze.fruit = Maze.Fruit.red;
-						fruitTime = 0;
+        }
 
-					}
+    }
 
-					if(Math.random() < 0.0003) {
+    public void processPress(KeyEvent e) {
 
-						maze.fruit = Maze.Fruit.yellow;
-						fruitTime = 0;
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && !started) started = true;
 
-					}
+        if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT) keys[0] = true;
+        if (e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT) keys[1] = true;
+        if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP) keys[2] = true;
+        if (e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN) keys[3] = true;
 
-					if(Math.random() < 0.0001) {
+    }
 
-						maze.fruit = Maze.Fruit.blue;
-						fruitTime = 0;
+    public void processRelease(KeyEvent e) {
 
-					}
+        if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT) keys[0] = false;
+        if (e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT) keys[1] = false;
+        if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP) keys[2] = false;
+        if (e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN) keys[3] = false;
 
-				}
+    }
 
-			}
-			fruitTime++;
+    public static void main(String[] args) {
 
-			if(maze.dotCount != previousDotCount) {
+        PacmanGame game = new PacmanGame();
 
-				if(maze.dotCount == 0) {
 
-					text = "You Won!";
-					PacmanGame.win();
+    }
 
-				}
+    public static void win() {
 
-				previousDotCount = maze.dotCount;
-				score += 1;
+        System.out.println("You Win!");
 
-			}
 
-			if(keys[0]) player.turn(Maze.Direction.left);
-			if(keys[1]) player.turn(Maze.Direction.right);
-			if(keys[2]) player.turn(Maze.Direction.up);
-			if(keys[3]) player.turn(Maze.Direction.down);
-			player.update();
+    }
 
-			if(updates == 100) ghosts[0].free = true;
-			if (ghosts.length > 1) {
-				if (updates == 500) ghosts[1].free = true;
-				if (updates == 1000) ghosts[2].free = true;
-				if (updates == 1500) ghosts[3].free = true;
-			}
+    public static void lose() {
 
-		} else {
+        System.out.println("You Lose!");
 
-			text = "Press Space to Start";
 
-		}
+    }
 
-	}
-
-	public void processPress(KeyEvent e) {
-
-		if(e.getKeyCode() == KeyEvent.VK_SPACE && !started) started = true;
-
-		if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT) keys[0] = true;
-		if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT) keys[1] = true;
-		if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP) keys[2] = true;
-		if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN) keys[3] = true;
-
-	}
-
-	public void processRelease(KeyEvent e) {
-
-		if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT) keys[0] = false;
-		if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT) keys[1] = false;
-		if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP) keys[2] = false;
-		if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN) keys[3] = false;
-
-	}
-
-	public static void main(String[] args) {
-		
-		PacmanGame game = new PacmanGame();
-
-
-	}
-	
-	public static void win() {
-		
-		System.out.println("You Win!");
-		
-		
-	}
-	
-	public static void lose() {
-		
-		System.out.println("You Lose!");
-		
-		
-	}
-	
 }

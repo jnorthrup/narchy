@@ -8,39 +8,39 @@ import nars.experiment.minicraft.top.gfx.Font;
 import nars.experiment.minicraft.top.gfx.Screen;
 
 public class PowerGloveItem extends Item {
-	@Override
+    @Override
     public int getColor() {
-		return Color.get(-1, 100, 320, 430);
-	}
+        return Color.get(-1, 100, 320, 430);
+    }
 
-	@Override
+    @Override
     public int getSprite() {
-		return 7 + 4 * 32;
-	}
+        return 7 + 4 * 32;
+    }
 
-	@Override
+    @Override
     public void renderIcon(Screen screen, int x, int y) {
-		screen.render(x, y, getSprite(), getColor(), 0);
-	}
+        screen.render(x, y, getSprite(), getColor(), 0);
+    }
 
-	@Override
+    @Override
     public void renderInventory(Screen screen, int x, int y) {
-		screen.render(x, y, getSprite(), getColor(), 0);
-		Font.draw(getName(), screen, x + 8, y, Color.get(-1, 555, 555, 555));
-	}
+        screen.render(x, y, getSprite(), getColor(), 0);
+        Font.draw(getName(), screen, x + 8, y, Color.get(-1, 555, 555, 555));
+    }
 
-	@Override
+    @Override
     public String getName() {
-		return "Pow glove";
-	}
+        return "Pow glove";
+    }
 
-	@Override
+    @Override
     public boolean interact(Player player, Entity entity, int attackDir) {
-		if (entity instanceof Furniture) {
-			Furniture f = (Furniture) entity;
-			f.take(player);
-			return true;
-		}
-		return false;
-	}
+        if (entity instanceof Furniture) {
+            Furniture f = (Furniture) entity;
+            f.take(player);
+            return true;
+        }
+        return false;
+    }
 }

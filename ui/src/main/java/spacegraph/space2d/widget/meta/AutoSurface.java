@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Created by me on 2/28/17.
@@ -88,10 +89,21 @@ public class AutoSurface<X> extends Gridding {
         }
 
         {
-            Class cx = x.getClass();
-            Function o = onClass.get(cx); //TODO check subtypes/supertypes etc
-            if (o != null) {
-                Surface s = (Surface) o.apply(x);
+            if (!onIf.isEmpty()) {
+                onIf.forEach((Predicate test, Function builder)->{
+                   if (test.test(x)) {
+                       Surface s = (Surface) builder.apply(x);
+                       if (s != null)
+                           target.add(s);
+                   }
+                });
+            }
+        }
+
+        {
+            Function builder = onClass.get(x.getClass()); //TODO check subtypes/supertypes etc
+            if (builder != null) {
+                Surface s = (Surface) builder.apply(x);
                 if (s != null) {
                     target.add(s);
                     return;
@@ -233,9 +245,14 @@ public class AutoSurface<X> extends Gridding {
     }
 
     final Map<Class,Function<?,Surface>> onClass = new ConcurrentHashMap<>();
+    final Map<Predicate,Function<?,Surface>> onIf = new ConcurrentHashMap<>();
 
     public <Y> AutoSurface<X> on(Class<? extends Y> c, Function<? extends Y, Surface> each) {
         onClass.put(c, each);
+        return this;
+    }
+    public <Y> AutoSurface<X> on(Predicate test, Function<Y, Surface> each) {
+        onIf.put(test, each);
         return this;
     }
 

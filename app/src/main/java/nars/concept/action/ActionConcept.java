@@ -1,36 +1,47 @@
 package nars.concept.action;
 
-import jcog.Util;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.concept.PermanentConcept;
+import nars.concept.TaskConcept;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
 import nars.table.dynamic.SignalBeliefTable;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
-import java.util.stream.Stream;
-
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 
-public abstract class ActionConcept extends Sensor {
+public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
 
     protected ActionConcept(Term term, NAR n) {
         super(term,
                 new SignalBeliefTable(term, true, n.conceptBuilder),
                 n.conceptBuilder.newTable(term, false),
                 n.conceptBuilder);
-        ((SignalBeliefTable)beliefs()).pri(() -> Util.or(n.priDefault(BELIEF), n.priDefault(GOAL)));
-        ((SignalBeliefTable)beliefs()).res(resolution);
+
+        ((SignalBeliefTable) beliefs()).setPri(
+                FloatRange.unit(
+                        //Util.or(n.priDefault(BELIEF), n.priDefault(GOAL))
+                        n.goalPriDefault //even though the tasks are beliefs
+                )
+        );
+        ((SignalBeliefTable) beliefs()).resolution(FloatRange.unit(n.freqResolution));
     }
 
+    @Override
+    public FloatRange resolution() {
+        return ((SignalBeliefTable) beliefs()).resolution();
+    }
+    @Override
+    public FloatRange pri() {
+        return ((SignalBeliefTable) beliefs()).pri();
+    }
 
     @Override
     public void add(Remember r, NAR n) {
@@ -46,7 +57,7 @@ public abstract class ActionConcept extends Sensor {
         }
     }
 
-    abstract public Stream<ITask> update(long start, long end, NAR nar);
+    abstract public void update(long start, long end, NAR nar);
 
     @Override
     public void value(Task t, float activation, NAR n) {
@@ -55,16 +66,17 @@ public abstract class ActionConcept extends Sensor {
 
         if (t.isGoal()) {
             long now = n.time();
-            if (!t.isBefore(now - n.dur()/2)) { 
+            if (!t.isBefore(now - n.dur() / 2)) {
                 MetaGoal.Action.learn(t.cause(), Param.beliefValue(t) * activation, n.causes);
             }
         }
     }
 
     public ActionConcept resolution(float v) {
-        resolution.set(v);
+        resolution().set(v);
         return this;
     }
+
 
 
     /**
@@ -73,24 +85,16 @@ public abstract class ActionConcept extends Sensor {
      * normally the result of the feedback will be equal to the input desired value
      * although this may be reduced to indicate that the motion has hit a limit or
      * experienced resistence
-
+     *
      * @param desired  current desire - null if no desire Truth can be determined
      * @param believed current belief - null if no belief Truth can be determined
      * @return truth of a new feedback belief, or null to disable the creation of any feedback this iteration
      */
     @FunctionalInterface
-    public interface MotorFunction extends BiFunction<Truth,Truth,Truth> {
+    public interface MotorFunction extends BiFunction<Truth, Truth, Truth> {
 
 
         @Nullable Truth apply(@Nullable Truth believed, @Nullable Truth desired);
-
-
-
-
-
-
-
-
 
 
     }

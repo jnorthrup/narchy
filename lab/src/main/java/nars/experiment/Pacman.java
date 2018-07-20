@@ -15,31 +15,25 @@ public class Pacman extends NAgentX {
 
     private final PacmanGame g;
 
-    public Pacman(NAR nar)  {
+    public Pacman(NAR nar) {
         super("G", nar);
 
         this.g = new PacmanGame();
 
 
+        Scale camScale = new Scale(new SwingBitmap2D(g.view), 28, 28);
+        for (BufferedImageBitmap2D.ColorMode cm : new BufferedImageBitmap2D.ColorMode[]{
+                BufferedImageBitmap2D.ColorMode.R,
+                BufferedImageBitmap2D.ColorMode.G,
+                BufferedImageBitmap2D.ColorMode.B
+        }) {
+            senseCamera("(G,c" + cm.name() + ")",
+                    camScale.filter(cm)
+            )
+                    .resolution(0.1f);
 
 
-
-
-
-
-         Scale camScale = new Scale( new SwingBitmap2D(g.view), 28, 28);
-            for (BufferedImageBitmap2D.ColorMode cm : new BufferedImageBitmap2D.ColorMode[] {
-                    BufferedImageBitmap2D.ColorMode.R,
-                    BufferedImageBitmap2D.ColorMode.G,
-                    BufferedImageBitmap2D.ColorMode.B
-            }) {
-                    senseCamera("(G,c" + cm.name() + ")",
-                            camScale.filter(cm)
-                    )
-                            .resolution(0.1f);
-
-
-            }
+        }
 
         actionTriState($.p(id, Atomic.the("x")), (dh) -> {
             switch (dh) {
@@ -57,7 +51,7 @@ public class Pacman extends NAgentX {
             }
         });
 
-       actionTriState($.p(id, Atomic.the("y")), (dh) -> {
+        actionTriState($.p(id, Atomic.the("y")), (dh) -> {
             switch (dh) {
                 case +1:
                     g.keys[2] = true;
@@ -74,26 +68,24 @@ public class Pacman extends NAgentX {
         });
 
 
+        reward(()->{
+            g.update();
+
+            int nextScore = g.score;
+
+            float r = (nextScore - lastScore);
+
+
+            lastScore = nextScore;
+
+
+            return 2f * (Util.sigmoid(r) - 0.5f);
+        });
     }
 
 
     int lastScore;
 
-    @Override
-    protected float act() {
-
-        g.update();
-
-        int nextScore = g.score;
-
-        float r = (nextScore - lastScore);
-
-
-        lastScore = nextScore;
-
-
-            return 2f * (Util.sigmoid(r) - 0.5f);
-    }
 
     public static void main(String[] args) {
         NAgentX.runRT((n) -> {
@@ -101,7 +93,7 @@ public class Pacman extends NAgentX {
             Pacman a = new Pacman(n);
             return a;
 
-        }, 1000f/PacmanGame.periodMS);
+        }, 1000f / PacmanGame.periodMS);
     }
 
 }

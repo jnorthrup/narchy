@@ -5,8 +5,8 @@ package nars.experiment.othello10;/*
 
 /**
  * �Ֆʂ̐΂̐��𐔂���̂Ɏg��
- * @author mori
  *
+ * @author mori
  */
 public class Counter {
     public int blackCount;

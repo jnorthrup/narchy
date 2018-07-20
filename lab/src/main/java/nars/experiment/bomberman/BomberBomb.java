@@ -3,6 +3,7 @@ package nars.experiment.bomberman;
 /**
  * File:         BomberBomb
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -38,15 +39,15 @@ public class BomberBomb extends Thread {
             RenderingHints h = null;
             h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
-             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
-             RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON);
             h.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
-             RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
             h.put(RenderingHints.KEY_ANTIALIASING,
-             RenderingHints.VALUE_ANTIALIAS_ON);
+                    RenderingHints.VALUE_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_COLOR_RENDERING,
-             RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                    RenderingHints.VALUE_COLOR_RENDER_QUALITY);
             hints = h;
         }
     }
@@ -67,7 +68,7 @@ public class BomberBomb extends Thread {
         images = BomberMap.bombImages;
 
         map.grid[x >> BomberMain.shiftCount][y >> BomberMain.shiftCount] =
-        BomberMap.BOMB;
+                BomberMap.BOMB;
         setPriority(Thread.MAX_PRIORITY);
         start();
     }
@@ -79,12 +80,15 @@ public class BomberBomb extends Thread {
     public synchronized void run() {
         while (alive) {
             /** draw the bomb */
-            
+
             map.paintImmediately(x, y, BomberMain.size, BomberMain.size);
             /** rotate frame */
             frame = (frame + 1) % 2;
             /** sleep for 130 ms */
-            try { sleep(130); } catch (Exception e) {}
+            try {
+                sleep(130);
+            } catch (Exception e) {
+            }
             if (!alive) break;
             /** decrease count down */
             countDown -= 130;
@@ -94,13 +98,13 @@ public class BomberBomb extends Thread {
         }
         /** remove it from the grid */
         map.grid[x >> BomberMain.shiftCount][y >> BomberMain.shiftCount] =
-        BomberMap.NOTHING;
+                BomberMap.NOTHING;
         /** give the bomb back to the player */
         BomberGame.players[owner].usedBombs -= 1;
         map.bombGrid[x >> BomberMain.shiftCount][y >> BomberMain.shiftCount] =
-        null;
+                null;
         BomberGame.players[owner].bombGrid
-        [x >> BomberMain.shiftCount][y >> BomberMain.shiftCount] = false;
+                [x >> BomberMain.shiftCount][y >> BomberMain.shiftCount] = false;
         map.removeBomb(x, y);
         BomberMain.sndEffectPlayer.playSound("Explosion");
         /** create the fire */
@@ -120,11 +124,13 @@ public class BomberBomb extends Thread {
      */
     public void paint(Graphics g) {
         /** if java runtime is Java 2 */
-        if (Main.J2) { paint2D(g); }
+        if (Main.J2) {
+            paint2D(g);
+        }
         /** if java runtime isn't Java 2 */
         else {
-             g.drawImage(images[frame], x, y,
-             BomberMain.size, BomberMain.size, null);
+            g.drawImage(images[frame], x, y,
+                    BomberMain.size, BomberMain.size, null);
         }
     }
 
@@ -133,10 +139,10 @@ public class BomberBomb extends Thread {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        Graphics2D g2 = (Graphics2D)graphics;
+        Graphics2D g2 = (Graphics2D) graphics;
         /** set the rendering hints */
-        g2.setRenderingHints((RenderingHints)hints);
+        g2.setRenderingHints((RenderingHints) hints);
         g2.drawImage(images[frame], x, y,
-        BomberMain.size, BomberMain.size, null);
+                BomberMain.size, BomberMain.size, null);
     }
 }

@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 
 
 /**
@@ -35,7 +34,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long pPrev, long pNow, NAR nar) {
+    public void update(long pPrev, long pNow, NAR nar) {
 
 
         long gStart, gEnd;
@@ -48,7 +47,6 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
         this.motor.accept(this, goal);
 
-        return null;
     }
 
 
@@ -66,7 +64,6 @@ public class GoalActionAsyncConcept extends ActionConcept {
         } else
             fg = null;
 
-        int dur = nar.dur();
         SignalBeliefTable beliefs = (SignalBeliefTable) beliefs();
         SignalTask fb = beliefs.add(f, start, end, this, nar);
 

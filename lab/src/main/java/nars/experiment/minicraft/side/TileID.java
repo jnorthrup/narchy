@@ -8,7 +8,7 @@ public enum TileID {
             110), IRON_ORE(105), COAL_ORE(99), DIAMOND_ORE(109), COBBLE(98), CRAFTING_BENCH(102), ADMINITE(
             0), SAPLING(83), LADDER(76), TORCH(106), NONE(0);
 
-    
+
     public final int breaksInto;
 
     TileID(int id) {

@@ -59,11 +59,11 @@ abstract public class CauseChannel<X extends Priority> implements Consumer<X> {
         input(x);
     }
 
-    public BufferedCauseChannel buffered() {
+    public BufferedCauseChannel<X> buffered() {
         return buffered(8*1024);
     }
 
-    public BufferedCauseChannel buffered(int capacity) {
+    public BufferedCauseChannel<X> buffered(int capacity) {
         return new BufferedCauseChannel(this, capacity);
     }
 

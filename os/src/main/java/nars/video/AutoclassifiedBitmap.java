@@ -1,11 +1,14 @@
 package nars.video;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
 import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.agent.NAgent;
+import nars.concept.sensor.AbstractSensor;
+import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
@@ -14,20 +17,23 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
 
+import static nars.$.$$;
 import static nars.truth.TruthFunctions.w2c;
 
 /**
  * Created by me on 9/22/16.
  */
-public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
+public class AutoclassifiedBitmap extends AbstractSensor {
 
+    final Autoencoder ae;
+    private final FasterList<Signal> signals;
+    private final CauseChannel<ITask> input;
     float alpha = 0.02f; 
     float noise = alpha/2;
 
     public static final MetaBits NoMetaBits = (x, y) -> Util.EmptyFloatArray;
-    private final NAR nar;
+
     private final MetaBits metabits;
     
 
@@ -50,7 +56,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
     public Surface newChart() {
 
         return new Gridding(
-            new BitmapMatrixView(W),
+            new BitmapMatrixView(ae.W),
             new BitmapMatrixView(pixRecon)
         ) {
             {
@@ -59,6 +65,10 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
         };
     }
 
+    @Override
+    public void update(long last, long now, NAR nar) {
+        update(last, now, signals, input);
+    }
 
     public interface MetaBits {
         float[] get(int subX, int subY);
@@ -79,10 +89,12 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
     public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
-        super(sw * sh + metabits.get(0, 0).length, states, agent.random());
+        super($$(root), agent.nar());
+        ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, states, agent.random());
+
         this.metabits = metabits;
         this.agent = agent;
-        this.nar = agent.nar();
+
         this.pixIn = pixIn;
         this.sw = sw; 
         this.sh = sh; 
@@ -90,37 +102,36 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
         pw = pixIn.length;
         this.nw = (int) Math.ceil(pw / ((float) sw)); 
         this.nh = (int) Math.ceil(ph / ((float) sh)); 
-        this.in = new float[x.length];
+        this.in = new float[ae.x.length];
         this.pixRecon = new float[pw][ph];
 
         this.pixEnable = new boolean[nw][nh][states];
         this.pixConf = new float[nw][nh];
 
-        
+
+        this.signals = new FasterList(nw * nh);
 
         Term r = $.the(root);
-        CauseChannel<ITask> c = nar.newChannel(this);
+        this.input = nar.newChannel(this);
         for (int i = 0; i< nw; i++) {
             for (int j = 0; j < nh; j++) {
                 Term coord = coord(r, i, j);
                 for (int k = 0; k < states; k++) {
                     Term term = $.prop(coord, $.the(k));
                     int ii = i;  int jj = j; int kk = k;
-                    agent.sense(c, term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN);
+                    signals.add(
+                        new Signal(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, nar)
+                    );
                 }
             }
         }
-
-        agent.onFrame(this);
-
     }
 
     public Term coord(Term root, int i, int j) {
-        
         return $.inh($.p($.the(i), $.the(j)), root);
     }
 
-    @Override public void accept(NAR n) {
+    public void update(NAR n) {
         
 
         float minConf = nar.confMin.floatValue();
@@ -131,15 +142,10 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
         int regionPixels = sw * sh;
         float sumErr = 0;
 
-        int states = y.length;
+        int states = ae.y.length;
         float outputThresh = 1f - (1f / (states - 1));
         
 
-        
-
-        
-
-        int dur = nar.dur();
 
         for (int i = 0; i < nw; ) {
             for (int j = 0; j < nh; ) {
@@ -169,7 +175,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = put(in, alpha, noise, 0, true, false, true);
+                    float regionError = ae.put(in, alpha, noise, 0, true, false, true);
                     sumErr += regionError;
 
                     
@@ -177,7 +183,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
                     
                     float evi;
                     if ((evi = 1f - (regionError / regionPixels)) > 0) {
-                        short[] features = max(outputThresh);
+                        short[] features = ae.max(outputThresh);
                         if (features != null) {
                             
                                 evi /= features.length;
@@ -190,7 +196,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
                     
                 } else {
                     
-                    recode(in, true, false, true);
+                    ae.recode(in, true, false, true);
                 }
 
                 float mult;
@@ -210,7 +216,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
                 if (reconstruct) {
 
 
-                    float z[] = this.z;
+                    float z[] = this.ae.z;
                     p = 0;
                     for (int si = 0; si < sw; si++) {
                         int d = si + oi;

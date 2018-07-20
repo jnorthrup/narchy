@@ -28,13 +28,10 @@ public class PredictDemo {
                 .get();
 
 
-
-
-
         float[] xf = new float[1];
-        @Nullable Signal X = new Signal($.the("x"), ()-> xf[0], n);
+        @Nullable Signal X = new Signal($.the("x"), () -> xf[0], n);
         n.on(X);
-        
+
 
         final FloatFloatToObjectFunction<Truth> truther =
                 (prev, next) -> $.t(next, n.confDefault(BELIEF));
@@ -43,17 +40,16 @@ public class PredictDemo {
             long rt = n.time();
             float t = ((float) rt) / n.dur();
             xf[0] = (float) (0.5f + 0.5f * Math.sin(t / 6f));
-            
+
 
             X.update(truther, n);
 
-            
+
         }).setFPS(15f);
 
-        
 
-        new BeliefPredict(List.of(X), 8, n.dur()*8, 8,
-                
+        new BeliefPredict(List.of(X), 8, n.dur() * 8, 8,
+
                 new LivePredictor.LSTMPredictor(0.15f, 1),
                 n
         );
@@ -61,7 +57,7 @@ public class PredictDemo {
         SpaceGraph.window(new Gridding(Gridding.VERTICAL,
 
                 NARui.beliefCharts(64, List.of(X), n),
-                
+
                 NARui.beliefCharts(256, List.of(X), n),
                 NARui.beliefCharts(2048, List.of(X), n)
 

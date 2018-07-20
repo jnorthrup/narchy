@@ -12,7 +12,9 @@ import spacegraph.video.Draw;
 
 import static spacegraph.util.math.v3.v;
 
-/** one retina pixel */
+/**
+ * one retina pixel
+ */
 public class RetinaPixel extends Collisions.RayResultCallback {
     public v3 localPosition, worldPosition;
     public v3 localDirection, worldTarget, worldHit = v();
@@ -31,7 +33,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
         worldPosition = x.transform(v(localPosition));
 
         worldTarget = v(localDirection);
-        worldTarget.scale(rangeMax); 
+        worldTarget.scale(rangeMax);
         worldTarget.add(localPosition);
         x.transform(worldTarget);
 
@@ -58,7 +60,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
         Object target = rayResult.collidable.data();
         if (target != parent) {
             float dist = v3.dist(worldPosition, rayResult.hitNormal);
-            
+
             worldHit.set(rayResult.hitNormal);
             if (target instanceof SimpleSpatial) {
                 SimpleSpatial ss = ((SimpleSpatial) target);
@@ -72,7 +74,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
     }
 
     float distanceToAlpha(float dist) {
-        
+
         return Util.unitize(1f - (dist / rangeMax)) * 0.5f + 0.5f;
     }
 }

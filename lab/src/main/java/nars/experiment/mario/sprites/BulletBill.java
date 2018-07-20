@@ -4,10 +4,9 @@ import nars.experiment.mario.Art;
 import nars.experiment.mario.LevelScene;
 
 
-public class BulletBill extends Sprite
-{
+public class BulletBill extends Sprite {
     @SuppressWarnings("unused")
-	private final int width = 4;
+    private final int width = 4;
     int height = 24;
 
     private final LevelScene world;
@@ -20,8 +19,7 @@ public class BulletBill extends Sprite
     private int deadTime;
 
 
-    public BulletBill(LevelScene world, float x, float y, int dir)
-    {
+    public BulletBill(LevelScene world, float x, float y, int dir) {
         sheet = Art.enemies;
 
         this.x = x;
@@ -41,28 +39,22 @@ public class BulletBill extends Sprite
     }
 
     @Override
-    public void collideCheck()
-    {
+    public void collideCheck() {
         if (dead) return;
 
         float xMarioD = world.mario.x - x;
         float yMarioD = world.mario.y - y;
         float w = 16;
-        if (xMarioD > -w && xMarioD < w)
-        {
-            if (yMarioD > -height && yMarioD < world.mario.height)
-            {
-                if (world.mario.ya > 0 && yMarioD <= 0 && (!world.mario.onGround || !world.mario.wasOnGround))
-                {
+        if (xMarioD > -w && xMarioD < w) {
+            if (yMarioD > -height && yMarioD < world.mario.height) {
+                if (world.mario.ya > 0 && yMarioD <= 0 && (!world.mario.onGround || !world.mario.wasOnGround)) {
                     world.mario.stomp(this);
                     dead = true;
 
                     xa = 0;
                     ya = 1;
                     deadTime = 100;
-                }
-                else
-                {
+                } else {
                     world.mario.getHurt();
                 }
             }
@@ -70,17 +62,13 @@ public class BulletBill extends Sprite
     }
 
     @Override
-    public void move()
-    {
-        if (deadTime > 0)
-        {
+    public void move() {
+        if (deadTime > 0) {
             deadTime--;
 
-            if (deadTime == 0)
-            {
+            if (deadTime == 0) {
                 deadTime = 1;
-                for (int i = 0; i < 8; i++)
-                {
+                for (int i = 0; i < 8; i++) {
                     world.addSprite(new Sparkle((int) (x + Math.random() * 16 - 8) + 4, (int) (y - Math.random() * 8) + 4, (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
                 }
                 spriteContext.removeSprite(this);
@@ -101,40 +89,34 @@ public class BulletBill extends Sprite
         move(xa, 0);
     }
 
-    private boolean move(float xa, float ya)
-    {
+    private boolean move(float xa, float ya) {
         x += xa;
         return true;
     }
-    
+
     @Override
-    public boolean fireballCollideCheck(Fireball fireball)
-    {
+    public boolean fireballCollideCheck(Fireball fireball) {
         if (deadTime != 0) return false;
 
         float xD = fireball.x - x;
         float yD = fireball.y - y;
 
-        if (xD > -16 && xD < 16)
-        {
+        if (xD > -16 && xD < 16) {
             return yD > -height && yD < fireball.height;
         }
         return false;
-    }      
+    }
 
     @Override
-    public boolean shellCollideCheck(Shell shell)
-    {
+    public boolean shellCollideCheck(Shell shell) {
         if (deadTime != 0) return false;
 
         float xD = shell.x - x;
         float yD = shell.y - y;
 
-        if (xD > -16 && xD < 16)
-        {
-            if (yD > -height && yD < shell.height)
-            {
-                
+        if (xD > -16 && xD < 16) {
+            if (yD > -height && yD < shell.height) {
+
 
                 dead = true;
 
@@ -146,5 +128,5 @@ public class BulletBill extends Sprite
             }
         }
         return false;
-    }      
+    }
 }

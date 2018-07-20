@@ -1,22 +1,22 @@
 package nars.sensor;
 
+import jcog.math.FloatRange;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.agent.NAgent;
+import nars.concept.TaskConcept;
+import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
 import nars.control.DurService;
-import nars.control.channel.BufferedCauseChannel;
-import nars.exe.Causable;
+import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
 
@@ -24,9 +24,13 @@ import static nars.Op.BELIEF;
  * manages reading a camera to a pixel grid of SensorConcepts
  * monochrome
  */
-public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> implements Iterable<Signal> {
+public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
 
+    public final Bitmap2DConcepts<P> concepts;
+    public final P src;
     private final NAR nar;
+    private final CauseChannel<ITask> in;
+    public final int width, height;
     private FloatFloatToObjectFunction<Truth> mode;
 
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
@@ -37,7 +41,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     }
 
     public Bitmap2DSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
-        super(src, pixelTerm, n);
+        super(n);
+        this.width = src.width();
+        this.height = src.height();
+        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, n);
+        this.src = concepts.src;
         this.nar = n;
 
         /** modes */
@@ -50,9 +58,14 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
                         nar.confDefault(BELIEF)).value(p, v);
 
         mode = SET;
+        this.in = nar.newChannel(this);
     }
 
 
+    @Override
+    public void update(long last, long now, NAR nar) {
+        //..
+    }
 
     public void input() {
         input(dur(), mode);
@@ -60,20 +73,15 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
     /** manually inputs the contents of the current frame */
     public void input(int dur, FloatFloatToObjectFunction<Truth> mode) {
-        nar.input( stream(mode, dur, nar) );
-    }
-
-    /** attaches a reading service to the NAR */
-    public Bitmap2DReader readAdaptively() {
-        return new Bitmap2DReader(mode);
+        nar.input( concepts.stream(mode, dur, nar) );
     }
 
     protected int dur() {
         return nar.dur();
     }
 
-    public Bitmap2DReader readAdaptively(NAgent agent) {
-        return new Bitmap2DReader(mode);
+    public Bitmap2DConcepts.Bitmap2DReader readAdaptively(NAgent agent) {
+        return concepts.newReader(in, mode, nar);
     }
 
     public DurService readDirectEachDuration() {
@@ -173,144 +181,20 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         return this;
     }
 
-
-    /** service for progressively (AIKR) reading this sensor */
-    private class Bitmap2DReader extends Causable {
-
-        private int lastPixel;
-        private long lastUpdate;
-
-        private int pixelsRemainPerUpdate; 
-
-        final BufferedCauseChannel in;
-
-        static final int minUpdateDurs = 1;
-
-
-        float conf = Float.NaN;
-
-        FloatFloatToObjectFunction<Truth> mode;
-
-        public Bitmap2DReader(FloatFloatToObjectFunction<Truth> mode) {
-            super(Bitmap2DSensor.this.nar);
-            lastUpdate = Bitmap2DSensor.this.nar.time();
-            pixelsRemainPerUpdate = area;
-
-            int maxPendingHistory = 8;
-            in = nar.newChannel(Bitmap2DSensor.this).buffered(maxPendingHistory * width*height /* plus extra? */);
-
-            this.mode = mode;
-                    //(p, v) -> mode.apply(() -> conf).value(p, v);
-        }
-
-        @Override
-        public float value() {
-            return in.value();
-        }
-
-
-        protected int dur() {
-            return Bitmap2DSensor.this.dur();
-        }
-
-
-
-        @Override
-        protected int next(NAR nar, int work) {
-
-            if (in == null)
-                return 0; //return -1;
-
-            int dur = this.dur();
-
-            int totalPixels = area;
-
-
-            //conf = Math.max(nar.confMin.floatValue(), w2cSafe(c2wSafe(nar.confDefault(BELIEF)) / totalPixels)); //evidence divided equally among pixels
-            conf = nar.confDefault(BELIEF);
-
-            long now = nar.time();
-            if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
-                Bitmap2DSensor.this.update();
-                pixelsRemainPerUpdate = totalPixels;
-                this.lastUpdate = now;
-            } else {
-                if (pixelsRemainPerUpdate <= 0)
-                    return 0; //return -1;
-            }
-
-
-            
-
-
-
-            
-            
-
-            
-            int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
-
-            
-            
-
-
-
-
-
-
-            
-
-            
-
-            if (pixelsToProcess <= 0) //0 or -1
-                return pixelsToProcess;
-
-            pixelsRemainPerUpdate -= pixelsToProcess;
-
-            int start, end;
-
-            
-            
-                
-                
-                
-
-
-            start = this.lastPixel;
-            end = (start + pixelsToProcess);
-            Stream<Task> s;
-
-            if (end > totalPixels) {
-                
-                int extra = end - totalPixels;
-                s = Stream.concat(
-                        stream(mode, start, totalPixels, dur, nar), 
-                        stream(mode, 0, extra, dur, nar) 
-                );
-                this.lastPixel = extra;
-            } else {
-                s = Bitmap2DSensor.this.stream(mode, start, end, dur, nar);
-                this.lastPixel = end;
-            }
-
-            //TODO stop using Stream<> its not necessary here
-            int pixelsGenerated = (int) in.input(s);
-            if (pixelsGenerated > 0)
-                in.commit();
-
-            return pixelsGenerated;
-        }
-
-        /**
-         * how many pixels to process for the given work amount
-         * can be 1:1 or some other amount
-         */
-        protected int workToPixels(int work) {
-            return work;
-        }
-
-
+    @Override
+    public FloatRange resolution() {
+        return null;
     }
+
+    @Override
+    public FloatRange pri() {
+        return null;
+    }
+
+    public final TaskConcept get(int x, int y) {
+        return concepts.get(x, y);
+    }
+
 
 
 

@@ -9,7 +9,7 @@ import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
 import spacegraph.util.math.v2;
 
-public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
+public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */ {
 
     protected static final int WHEEL_HEIGHT = 20;
     protected static final int WHEEL_WIDTH = 10;
@@ -28,7 +28,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     public final float height;
 
     float m_currentTraction = 1;
-    
+
     float m_maxForwardSpeed = 1;
     float m_maxBackwardSpeed = 1;
     float m_maxDriveForce = 10000;
@@ -47,20 +47,18 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     private int steer = STEER_NONE;
     private int accelerate = ACCELERATE_NONE;
 
-    
+
     Dynamics2D mPhysicsWorld;
-    
+
 
     public Vehicle2D(Dynamics2D physicWorld) {
 
         this.mPhysicsWorld = physicWorld;
 
 
-
         this.width = 30;
         this.height = 50;
-        mCarShape = this.makeColoredRectangle(0, 0, width,height);
-
+        mCarShape = this.makeColoredRectangle(0, 0, width, height);
 
 
         final float pDensity = 0.1f;
@@ -70,25 +68,16 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         final FixtureDef carFixtureDef = new FixtureDef(mCarShape, pDensity, pFriction);
         carFixtureDef.restitution = pElasticity;
         this.mCarBody = mPhysicsWorld.addDynamic(carFixtureDef);
-        
-        
 
 
-
-
-
-
-
-        
-
-        rightFront = new Wheel(mPhysicsWorld,this,Wheel.WheelPosition.FRONT_RIGHT);
-        leftFront = new Wheel(mPhysicsWorld,this,Wheel.WheelPosition.FRONT_LEFT);
-        rightBack = new Wheel(mPhysicsWorld,this,Wheel.WheelPosition.BACK_RIGHTs);
-        leftBack = new Wheel(mPhysicsWorld,this,Wheel.WheelPosition.BACK_LEFT);
+        rightFront = new Wheel(mPhysicsWorld, this, Wheel.WheelPosition.FRONT_RIGHT);
+        leftFront = new Wheel(mPhysicsWorld, this, Wheel.WheelPosition.FRONT_LEFT);
+        rightBack = new Wheel(mPhysicsWorld, this, Wheel.WheelPosition.BACK_RIGHTs);
+        leftBack = new Wheel(mPhysicsWorld, this, Wheel.WheelPosition.BACK_LEFT);
     }
 
     protected void setCharacteristics(final float maxForwardSpeed, final float maxBackwardSpeed,
-            final float backTireMaxDriveForce, final float backTireMaxLateralImpulse) {
+                                      final float backTireMaxDriveForce, final float backTireMaxLateralImpulse) {
         this.m_maxForwardSpeed = maxForwardSpeed;
         this.m_maxBackwardSpeed = maxBackwardSpeed;
         this.m_maxDriveForce = backTireMaxDriveForce;
@@ -126,24 +115,24 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     }
 
     public void onUpdate(final float pSecondsElapsed) {
-        
+
         updateDrive();
 
-        
+
         float lockAngle = 35f * DEGTORAD;
         float turnSpeedPerSec = 160f * DEGTORAD;
         float turnPerTimeStep = turnSpeedPerSec / 60.0f;
 
         float desiredAngle = 0f;
         switch (steer) {
-        case STEER_LEFT:
-            desiredAngle = -lockAngle;
-            break;
-        case STEER_RIGHT:
-            desiredAngle = lockAngle;
-            break;
-        default:
-            
+            case STEER_LEFT:
+                desiredAngle = -lockAngle;
+                break;
+            case STEER_RIGHT:
+                desiredAngle = lockAngle;
+                break;
+            default:
+
         }
 
         RevoluteJoint leftJoint = (RevoluteJoint) leftFront.getJoint();
@@ -158,22 +147,22 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         rightJoint.setLimits(newAngle, newAngle);
     }
 
-    protected void updateDrive(){
+    protected void updateDrive() {
 
-        
+
         float desiredSpeed = 0;
         switch (accelerate) {
-        case ACCELERATE:
-            desiredSpeed = m_maxForwardSpeed;
-            break;
-        case BREAK:
-            desiredSpeed = m_maxBackwardSpeed;
-            break;
-        default:
-            return;
+            case ACCELERATE:
+                desiredSpeed = m_maxForwardSpeed;
+                break;
+            case BREAK:
+                desiredSpeed = m_maxBackwardSpeed;
+                break;
+            default:
+                return;
         }
 
-        
+
         v2 localPoint = new v2(0, 1);
         v2 currentForwardNormal = new v2(leftFront.getBody().getWorldVector(localPoint));
 
@@ -181,18 +170,16 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         float currentSpeed = b2Dot(forwardVelocity, currentForwardNormal);
 
 
-        
-        
         float force = 0;
-        if ( desiredSpeed > currentSpeed ) {
+        if (desiredSpeed > currentSpeed) {
             force = m_maxDriveForce;
-        } else if ( desiredSpeed < currentSpeed ) {
+        } else if (desiredSpeed < currentSpeed) {
             force = -m_maxDriveForce;
         } else {
             return;
         }
 
-        v2 forceVector = currentForwardNormal.scale(m_currentTraction * force*-1) ;
+        v2 forceVector = currentForwardNormal.scale(m_currentTraction * force * -1);
 
 
         leftFront.getBody().applyForce(forceVector, leftFront.getBody().getWorldCenter());
@@ -235,7 +222,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
                                                 final float width, final float height) {
 
 
-        return new PolygonShape(4).setAsBox(width/2, height/2, new v2(pX-width/2, pY-height/2), 0);
+        return new PolygonShape(4).setAsBox(width / 2, height / 2, new v2(pX - width / 2, pY - height / 2), 0);
     }
 
     public PolygonShape getShape() {
@@ -245,7 +232,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     public static class Wheel {
         static final float PIXEL_TO_METER_RATIO_DEFAULT = 32.0f;
 
-        protected enum WheelPosition{
+        protected enum WheelPosition {
             FRONT_LEFT,
             FRONT_RIGHT,
             BACK_LEFT,
@@ -253,7 +240,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         }
 
         private final Dynamics2D mDynamics2D;
-        
+
 
         private Joint joint;
 
@@ -272,55 +259,50 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
             PolygonShape shape = vehicle.getShape();
 
             switch (position) {
-            case FRONT_RIGHT:
-                mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x+vehicle.width- WHEEL_WIDTH, shape.centroid.y);
-                break;
-            case FRONT_LEFT:
-                mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x, shape.centroid.y);
-                break;
-            case BACK_LEFT:
-                mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x, shape.centroid.y+vehicle.height- WHEEL_HEIGHT);
-                break;
-            case BACK_RIGHTs:
-                mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x+vehicle.width- WHEEL_WIDTH, shape.centroid.y+vehicle.height- WHEEL_HEIGHT);
-                break;
-            default:
-                throw new IllegalArgumentException("Wheel position invalid");
+                case FRONT_RIGHT:
+                    mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x + vehicle.width - WHEEL_WIDTH, shape.centroid.y);
+                    break;
+                case FRONT_LEFT:
+                    mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x, shape.centroid.y);
+                    break;
+                case BACK_LEFT:
+                    mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x, shape.centroid.y + vehicle.height - WHEEL_HEIGHT);
+                    break;
+                case BACK_RIGHTs:
+                    mWheelShape = vehicle.makeColoredRectangle(shape.centroid.x + vehicle.width - WHEEL_WIDTH, shape.centroid.y + vehicle.height - WHEEL_HEIGHT);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Wheel position invalid");
             }
-            
 
 
             final FixtureDef wheelFixtureDef = new FixtureDef(mWheelShape, 1, 0.5f);
             wheelFixtureDef.restitution = 0.5f;
             wheelFixtureDef.isSensor = false;
 
-            this.mWheelBody = mDynamics2D.addDynamic( wheelFixtureDef);
+            this.mWheelBody = mDynamics2D.addDynamic(wheelFixtureDef);
 
-            
-            
-
-            
 
             createJoint(WHEEL_WIDTH, WHEEL_HEIGHT);
         }
 
-        private void createJoint(float wheelWidth, float wheelHeight){
+        private void createJoint(float wheelWidth, float wheelHeight) {
             Body2D body = vehicle.getBody();
 
-            
-            float xCar = vehicle.mCarBody.getWorldCenter().x + vehicle.width/2.0f;
-            float xWheel = mWheelBody.getWorldCenter().x + wheelWidth/2.0f;
 
-            float yCar = vehicle.mCarBody.getWorldCenter().y + vehicle.height/2.0f;
-            float yWheel = mWheelBody.getWorldCenter().y + wheelHeight/2.0f;
+            float xCar = vehicle.mCarBody.getWorldCenter().x + vehicle.width / 2.0f;
+            float xWheel = mWheelBody.getWorldCenter().x + wheelWidth / 2.0f;
+
+            float yCar = vehicle.mCarBody.getWorldCenter().y + vehicle.height / 2.0f;
+            float yWheel = mWheelBody.getWorldCenter().y + wheelHeight / 2.0f;
 
             RevoluteJointDef revoluteJointDefLeft = new RevoluteJointDef();
             revoluteJointDefLeft.initialize(body, mWheelBody, mWheelBody.getWorldCenter());
             revoluteJointDefLeft.collideConnected = false;
             configureJoint(revoluteJointDefLeft);
 
-            
-            revoluteJointDefLeft.localAnchorA.set((xWheel-xCar)/PIXEL_TO_METER_RATIO_DEFAULT,(yWheel-yCar)/PIXEL_TO_METER_RATIO_DEFAULT);
+
+            revoluteJointDefLeft.localAnchorA.set((xWheel - xCar) / PIXEL_TO_METER_RATIO_DEFAULT, (yWheel - yCar) / PIXEL_TO_METER_RATIO_DEFAULT);
 
             joint = this.mDynamics2D.addJoint(revoluteJointDefLeft);
         }

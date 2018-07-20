@@ -1,9 +1,8 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.learn.MLPMap;
 import nars.$;
 import nars.NAR;
@@ -12,6 +11,7 @@ import nars.Param;
 import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.concept.sensor.Sensor;
 import nars.gui.BeliefTableChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -26,7 +26,6 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.video.Draw;
 
 import java.awt.*;
@@ -84,76 +83,62 @@ public class Recog2D extends NAgentX {
         g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-        
         sp = senseCamera(
                 $.the("x")
-                
-                
-                
+
+
                 ,
                 /*new Blink*/(new Scale(() -> canvas, w, h)/*, 0.8f*/));
 
-        
 
         outs = new BeliefVector(ii ->
                 //$.inst($.the( ii), $.the("x"))
                 $.p(ii)
                 , maxImages, this);
         train = new Training(
-                
-                Lists.newArrayList(
-                        sp.src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) sp.src).actions ) :
-                                sensors.keySet()
-                ),
+                sp.src instanceof PixelBag ?
+                    new FasterList(sensors).with(((PixelBag) sp.src).actions) : sensors,
                 outs, nar);
 
-        
+        reward(()->{
+            float error = 0;
+            for (int i = 0; i < maxImages; i++) {
+
+                this.outs.neurons[i].update();
+                error += this.outs.neurons[i].error;
+
+
+            }
+
+            return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
+        });
+
         SpaceGraph.window(conceptTraining(outs, nar), 800, 600);
-        
+
 
     }
 
     Surface conceptTraining(BeliefVector tv, NAR nar) {
 
-        
 
-        Plot2D p;
+        //Plot2D p;
 
         int history = 256;
 
         Gridding g = new Gridding(
 
-                p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
-                                reward
-                        
-                ),
-                
+//                p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
+//                        reward
+//
+//                ),
+
 
                 new AspectAlign(new CameraSensorView(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 
-                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i-> new spacegraph.space2d.widget.text.Label(String.valueOf(i)) {
+                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i -> new spacegraph.space2d.widget.text.Label(String.valueOf(i)) {
                     @Override
                     protected void paintBelow(GL2 gl) {
                         Concept c = tv.concepts[i];
@@ -168,16 +153,16 @@ public class Recog2D extends NAgentX {
                         } else {
                             conf = nar.confMin.floatValue();
                             float defaultFreq =
-                                    0.5f; 
-                            
+                                    0.5f;
+
                             freq = defaultFreq;
                         }
 
 
                         Draw.colorBipolar(gl,
                                 2f * (freq - 0.5f)
-                                
-                                
+
+
                         );
 
                         float m = 0.5f * conf;
@@ -188,17 +173,8 @@ public class Recog2D extends NAgentX {
                             float error = nn.error;
                             if (error != error) {
 
-                                
-                                
+
                             } else {
-
-                                
-
-                                
-                                
-
-
-
 
 
                             }
@@ -217,22 +193,16 @@ public class Recog2D extends NAgentX {
 
             redraw();
 
-            
-                
-                outs.expect(image);
-            
-            
-            
-            
-            
+
+            outs.expect(image);
 
 
             if (neural.get()) {
                 train.update(mlpLearn, mlpSupport);
             }
 
-            p.update();
-            
+            //p.update();
+
         });
 
         return g;
@@ -249,40 +219,6 @@ public class Recog2D extends NAgentX {
         return terms.stream().map(c -> new BeliefTableChart(nar, c, btRange)).collect(toList());
     }
 
-
-    @Override
-    protected float act() {
-
-        float error = 0;
-        for (int i = 0; i < maxImages; i++) {
-
-            this.outs.neurons[i].update();
-            error += this.outs.neurons[i].error;
-
-
-
-
-
-
-
-
-
-
-        }
-
-        return Util.clamp( 2 * -(error/maxImages - 0.5f), -1, +1);
-
-
-
-
-
-
-        
-
-
-    }
-
-
     protected int nextImage() {
 
         image = nar.random().nextInt(maxImages);
@@ -296,12 +232,9 @@ public class Recog2D extends NAgentX {
         FontMetrics fontMetrics = g.getFontMetrics();
 
         String s = String.valueOf((char) ('0' + image));
-        
+
         Rectangle2D sb = fontMetrics.getStringBounds(s, g);
 
-        
-
-        
 
         g.drawString(s, Math.round(w / 2f - sb.getCenterX()), Math.round(h / 2f - sb.getCenterY()));
     }
@@ -312,11 +245,6 @@ public class Recog2D extends NAgentX {
 
             Recog2D a = new Recog2D(n);
 
-            
-            
-
-            
-            
 
             return a;
 
@@ -324,7 +252,7 @@ public class Recog2D extends NAgentX {
     }
 
     public static class Training {
-        private final List<Concept> ins;
+        private final List<Sensor> ins;
         private final BeliefVector outs;
         private final MLPMap trainer;
         private final NAR nar;
@@ -340,7 +268,7 @@ public class Recog2D extends NAgentX {
          */
         private final float momentum = 0.6f;
 
-        public Training(java.util.List<Concept> ins, BeliefVector outs, NAR nar) {
+        public Training(java.util.List<Sensor> ins, BeliefVector outs, NAR nar) {
 
             this.nar = nar;
             this.ins = ins;
@@ -360,7 +288,7 @@ public class Recog2D extends NAgentX {
                 i = new float[s];
             for (int j = 0, insSize = ins.size(); j < insSize; j++) {
                 float b = nar.beliefTruth(ins.get(j), when).freq();
-                if (b != b) 
+                if (b != b)
                     b = 0.5f;
                 i[j] = b;
             }
@@ -374,7 +302,7 @@ public class Recog2D extends NAgentX {
             float errSum;
             if (train) {
                 float[] err = trainer.put(i, outs.expected(null), learningRate, momentum);
-                
+
                 errSum = Util.sumAbs(err) / err.length;
                 System.err.println("  error sum=" + errSum);
             } else {
@@ -385,7 +313,7 @@ public class Recog2D extends NAgentX {
                 float[] o = trainer.get(i);
                 for (int j = 0, oLength = o.length; j < oLength; j++) {
                     float y = o[j];
-                    
+
                     float c = nar.confDefault(BELIEF) * (1f - errSum);
                     if (c > 0) {
                         nar.believe(
@@ -394,7 +322,7 @@ public class Recog2D extends NAgentX {
                     }
 
                 }
-                
+
             }
         }
     }
@@ -404,9 +332,6 @@ public class Recog2D extends NAgentX {
      * Created by me on 10/15/16.
      */
     public static class BeliefVector {
-
-
-
 
 
         static class Neuron {
@@ -468,12 +393,10 @@ public class Recog2D extends NAgentX {
         }
 
 
-
         Neuron[] neurons;
         TaskConcept[] concepts;
 
         final int states;
-
 
 
         boolean verify;
@@ -488,92 +411,23 @@ public class Recog2D extends NAgentX {
 
                         Neuron n = neurons[i] = new Neuron();
 
-                        return a.action(tt, (bb, x)-> {
-                            
-
-                            float predictedFreq = x!=null ? x.expectation() : 0.5f;
-
-                                
+                        return a.action(tt, (bb, x) -> {
 
 
+                            float predictedFreq = x != null ? x.expectation() : 0.5f;
 
 
+                            n.actual(predictedFreq, x != null ? x.conf() : 0);
 
 
-
-
-
-
-
-
-
-
-                            
-                            n.actual(predictedFreq, x!=null ? x.conf() : 0);
-
-                            
                             return x;
                         });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 
             ).toArray(TaskConcept[]::new);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         }
@@ -586,12 +440,10 @@ public class Recog2D extends NAgentX {
         public float actual(int state) {
             return neurons[state].predictedFreq;
         }
-    
-    
-    
+
 
         void expect(IntToFloatFunction stateValue) {
-            
+
             for (int i = 0; i < states; i++)
                 neurons[i].expect(stateValue.valueOf(i));
         }
@@ -599,24 +451,10 @@ public class Recog2D extends NAgentX {
         public void expect(int onlyStateToBeOn) {
             float offValue =
                     0f;
-            
-            
-            
+
 
             expect(ii -> ii == onlyStateToBeOn ? 1f : offValue);
         }
-
-    
-    
-    
-    
-
-    
-    
-    
-    
-
-
 
 
     }

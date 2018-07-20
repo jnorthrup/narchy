@@ -2,6 +2,7 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
+import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -24,6 +25,7 @@ public class GoalActionConcept extends ActionConcept {
     private final SignalBeliefTable feedback;
 
     private final MotorFunction motor;
+    private final CauseChannel<ITask> in;
 
     private volatile float curiosity = 0;
 
@@ -31,18 +33,16 @@ public class GoalActionConcept extends ActionConcept {
     public GoalActionConcept(Term c, NAR n, MotorFunction motor) {
         super(c, n);
 
-
         this.feedback = (SignalBeliefTable) beliefs();
-
 
         this.motor = motor;
 
-
+        in = n.newChannel(this);
     }
 
 
     @Override
-    public Stream<ITask> update(long pPrev, long pNow, NAR nar) {
+    public void update(long pPrev, long pNow, NAR nar) {
 
 
         Truth goal;
@@ -91,6 +91,7 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth belief = this.beliefs().truth(gStart, gEnd, nar);
 
+
         Truth feedback = this.motor.apply(belief, goal);
 
         Task feedbackBelief = feedback != null ?
@@ -106,9 +107,9 @@ public class GoalActionConcept extends ActionConcept {
 
         this.feedback.clean(nar);
 
-        return Stream.of(feedbackBelief, (ITask) curiosityGoal).filter(Objects::nonNull);
-
-
+        in.input(
+            Stream.of(feedbackBelief, (ITask) curiosityGoal).filter(Objects::nonNull)
+        );
     }
 
 

@@ -58,43 +58,25 @@ public abstract class ConsoleAgent extends NAgentX {
     public ConsoleAgent(NAR nar) {
         super("term", nar);
 
-        
-        
-
-
-
-
-
-
-
-
-
-
-
         W = new TestConsole(
                 nar.self(),
                 true,
                 R.W(), R.H()).write('a', 'b', ' ');
 
-        
-        
-        
+
         SpaceGraph.window(Rlabel, 400, 200);
         SpaceGraph.window(R, 600, 600);
         SpaceGraph.window(W, 600, 600);
 
 
-
-
-
-
-
-
-        
-
         CauseChannel<ITask> s = nar.newChannel(this + "_HumanKeys");
         onFrame(() -> {
-            
+
+            nar.input(Stream.concat(
+                    W.input(),
+                    R.input()
+            ));
+
             List<Task> q = $.newArrayList(queue.size());
             Iterator<Task> qq = queue.iterator();
             while (qq.hasNext()) {
@@ -106,40 +88,23 @@ public abstract class ConsoleAgent extends NAgentX {
         });
     }
 
-    @Override
-    protected void run(NAR n, long dt) {
-        super.run(n, dt);
-        nar.input(Stream.concat(
-                W.input(),
-                R.input()
-        ));
-    }
-
-    @Override
-    abstract protected float act();
-
     public static void main(String[] args) {
 
         NAgentX.runRT((n) -> {
             @NotNull ConsoleAgent a = new ConsoleAgent(n) {
                 float prevSim;
 
-                @Override
-                protected float act() {
-                    
-                    float s = similarity(R.chars, W.chars);
-                    float d = s - prevSim;
-                    prevSim = s;
-                    return d;
+                {
+                    reward(() -> {
 
-
-
-
-
+                        float s = similarity(R.chars, W.chars);
+                        float d = s - prevSim;
+                        prevSim = s;
+                        return d;
+                    });
                 }
             };
 
-            a.trace = true;
             return a;
         }, 16f);
 
@@ -164,7 +129,6 @@ public abstract class ConsoleAgent extends NAgentX {
         private final Signal[][] beliefs;
         int c[] = new int[2];
         private boolean write;
-        
 
 
         public TestConsole(Term id, boolean read, int w, int h) {
@@ -173,7 +137,6 @@ public abstract class ConsoleAgent extends NAgentX {
             this.terms = new Compound[w][h];
             this.beliefs = new Signal[w][h];
 
-            
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
@@ -213,19 +176,10 @@ public abstract class ConsoleAgent extends NAgentX {
                         Down();
                         break;
 
-                    
+
                 }
             });
             for (char c : vocabulary) {
-
-
-
-
-
-
-
-
-
 
 
                 actionToggle($.func(Atomic.the("write"), $.the(String.valueOf(c)), agentID), d -> {
@@ -242,9 +196,6 @@ public abstract class ConsoleAgent extends NAgentX {
         }
 
 
-
-        
-
         @Override
         public TextCharacter charAt(int col, int row) {
             char c = chars[col][row];
@@ -253,26 +204,26 @@ public abstract class ConsoleAgent extends NAgentX {
 
         @Override
         public Appendable append(char c) {
-            
+
             return this;
         }
 
         @Override
         public Appendable append(CharSequence csq) {
-            
+
             return this;
         }
 
         @Override
         public Appendable append(CharSequence csq, int start, int end) {
-            
+
             return this;
         }
 
 
         @Override
         protected boolean setBackgroundColor(GL2 gl, TextCharacter c, int col, int row) {
-            float cc = 1f; 
+            float cc = 1f;
             if (cc == cc) {
                 float s = 0.3f * cc;
                 gl.glColor4f(s, 0, 0, 0.95f);
@@ -319,7 +270,7 @@ public abstract class ConsoleAgent extends NAgentX {
             if (prev == 0 || (value != prev)) {
                 Task prevBelief = beliefs[cx][cy] != null ? beliefs[cx][cy].get() : null;
                 if (prevBelief != null) {
-                    
+
                 }
 
                 beliefs[cx][cy].set(
@@ -332,12 +283,12 @@ public abstract class ConsoleAgent extends NAgentX {
 
         @Override
         protected void doLayout(int dtMS) {
-            
+
         }
 
         @Override
         public boolean tryKey(KeyEvent e, boolean pressed) {
-            if (write) return false; 
+            if (write) return false;
 
             if (pressed) {
                 if (!e.isPrintableKey()) {
@@ -377,7 +328,7 @@ public abstract class ConsoleAgent extends NAgentX {
         }
 
         public Stream<SignalTask> input() {
-            
+
             return IntStream.range(0, rows() * cols()).mapToObj(i -> {
                 int x = i % cols();
                 int y = (i - x) / cols();
@@ -387,48 +338,6 @@ public abstract class ConsoleAgent extends NAgentX {
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

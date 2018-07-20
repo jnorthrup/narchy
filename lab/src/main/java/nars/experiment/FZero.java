@@ -6,27 +6,26 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.action.SwitchAction;
-import nars.concept.sensor.DemultiplexedScalar;
+import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
 import nars.gui.NARui;
-import nars.sensor.Bitmap2DConcepts;
+import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static com.google.common.collect.Iterables.concat;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.INH;
+import static nars.agent.FrameTrigger.fps;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -44,37 +43,23 @@ public class FZero extends NAgentX {
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
     public static void main(String[] args) {
-
-
-        NAgentX.runRT((n) -> {
-
-            FZero a = new FZero(n);
-
-            a.trace = true;
-
-            return a;
-
-        }, fps);
-
-
+        NAgentX.runRT(FZero::new, fps);
     }
 
     public FZero(NAR nar) {
-        super("fz", nar);
+        super("fz", fps(fps), nar);
 
         this.fz = new FZeroGame();
 
         Term cam = $.the("cam");
-        Bitmap2DConcepts<Scale> c = senseCamera(cam, new Scale(() -> fz.image,
-
+        Bitmap2DSensor<Scale> c = senseCamera(cam, new Scale(() -> fz.image,
                 //24, 24
                 16, 16
 
 
-        )/*.blur()*/)
-                //.diff()
+        )/*.blur()*/);//.diff()
                 //.resolution(0.02f);
-        ;
+                ;
 
 
         //initToggle();
@@ -91,15 +76,35 @@ public class FZero extends NAgentX {
         Signal dVelY = senseNumberDifference($.inh(id, $.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
         Signal dAccel = senseNumberDifference($.inh(id, "accel"), () -> (float) fz.vehicleMetrics[0][6]);
         Signal dAngVel = senseNumberDifference($.func("ang", $.the("vel")), () -> (float) fz.playerAngle);
-        DemultiplexedScalar ang = senseNumber(angle -> $.func( "ang",  $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+        AbstractSensor ang = senseNumber(angle -> $.func("ang", $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 6,
                 DigitizedScalar.FuzzyNeedle
         ).resolution(0.05f);
 
+        fz.update();
 
-        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
-                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
+        double distance = fz.vehicleMetrics[0][1];
+        double deltaDistance = (distance - lastDistance);
+
+
+        lastDistance = distance;
+
+        reward(()->{
+            float r = Util.clamp(
+                    ((float)
+                            //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
+                            deltaDistance / (fps * 0.2f)), -1f, +1f) - 0.5f;
+
+//        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
+
+            fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
+
+            return r;
+        });
+
+//        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
+//                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
 
         //hypervisor
@@ -108,7 +113,7 @@ public class FZero extends NAgentX {
 
             //eyelid
             actionUnipolar($.func("aware", id, cam), (a) -> {
-                c.pixelPri.set(lerp(a, 0, 0.25f));
+                c.pri(lerp(a, 0, 0.25f));
                 //c.resolution(lerp(camAware, 0.1f, 0.02f));
             }).resolution(0.2f);
 
@@ -116,7 +121,7 @@ public class FZero extends NAgentX {
             actionUnipolar($.func("aware", id, ang.id), (a) -> {
                 angPri[0] = lerp(a, 0, 1f);
             }).resolution(0.2f);
-            ang.pri(() -> angPri[0]);
+            ang.pri(angPri[0]);
 
             actionUnipolar($.func("curious", id), (cur) -> {
                 curiosity.set(lerp(cur, 0.01f, 0.5f));
@@ -128,7 +133,6 @@ public class FZero extends NAgentX {
         }
 
     }
-
 
 
     private void actionSwitch() {
@@ -233,7 +237,7 @@ public class FZero extends NAgentX {
 
                             * fwdSpeed / 2f;
             return x;
-        }).resolution.set(res);
+        }).resolution(res);
 
         actionUnipolar($.inh("right", id), (x) -> {
             float power = (x - 0.5f) * 2f * powerScale;
@@ -245,7 +249,7 @@ public class FZero extends NAgentX {
 
                             * fwdSpeed / 2f;
             return x;
-        }).resolution.set(res);
+        }).resolution(res);
 
     }
 
@@ -263,6 +267,7 @@ public class FZero extends NAgentX {
             return r0;
         });
     }
+
     public void initBipolarRotateDirect(boolean fair, float rotFactor) {
 
         final float[] heading = {0};
@@ -300,7 +305,7 @@ public class FZero extends NAgentX {
 
     public void initUnipolarLinear(float fwdFactor) {
         final float[] _a = {0};
-        actionUnipolar(/*$.inh(id,*/ $$( "linear"), true, (x) -> 0.5f, (a0) -> {
+        actionUnipolar(/*$.inh(id,*/ $$("linear"), true, (x) -> 0.5f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a >= 0.5f) {
                 float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);
@@ -320,30 +325,6 @@ public class FZero extends NAgentX {
 
     double lastDistance;
 
-    @Override
-    protected float act() {
-
-        fz.update();
-
-        double distance = fz.vehicleMetrics[0][1];
-        double deltaDistance = (distance - lastDistance);
-
-
-        lastDistance = distance;
-
-
-        float r = Util.clamp(
-                ((float)
-                        //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                        deltaDistance / (fps*0.2f)), -1f, +1f) - 0.5f;
-
-//        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
-
-        fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
-
-        return r;
-
-    }
 
 
     static class FZeroGame extends JFrame {

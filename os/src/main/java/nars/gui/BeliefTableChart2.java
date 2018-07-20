@@ -71,7 +71,7 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
         }
     }
 
-    public BeliefTableChart2(NAR n, Termed term) {
+    public BeliefTableChart2(Termed term, NAR n) {
         super(new Stacking(), n);
         this.term = term.term();
         the.add(beliefGrid = new TruthGrid(16, 10, true));
@@ -81,7 +81,7 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
     @Override
     public void update() {
 
-        Concept ccd = nar.conceptualize(term/* lookup by term, not the termed which could be a dead instance */);
+        Concept ccd = nar.conceptualizeDynamic(term/* lookup by term, not the termed which could be a dead instance */);
         if (ccd == null)
             return;
 

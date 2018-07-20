@@ -322,7 +322,6 @@ public class Sokoban extends Applet {
     static final char goal = '.';
     Image[] tiles = new Image[128];
 
-    
 
     char[] level;
     int currlevel, w, h, push, move;
@@ -339,27 +338,21 @@ public class Sokoban extends Applet {
 
     @SuppressWarnings("HardcodedFileSeparator")
     public Sokoban() throws HeadlessException {
-        
-        
-        
-        
-        
 
-        
-        
+
         String tile = "# @$.&*";
         for (int i = 0; i < tile.length(); i++) {
             BufferedImage t = (BufferedImage) (tiles[tile.charAt(i)] = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB));
             Graphics g = tiles[tile.charAt(i)].getGraphics();
 
-            float h =  (((float) i) / ((float)(tile.length()-1)));
+            float h = (((float) i) / ((float) (tile.length() - 1)));
 
             g.setColor(Color.getHSBColor(h, 0.8f, 0.8f));
             g.fillRect(0, 0, t.getWidth(), t.getHeight());
 
-            
+
         }
-        
+
         newLevel(0);
         requestFocus();
     }
@@ -373,29 +366,12 @@ public class Sokoban extends Applet {
     @Override
     public synchronized void update(Graphics g) {
         Dimension d = size();
-        if (d.width * d.height == 0) return; 
+        if (d.width * d.height == 0) return;
         Rectangle r = g.getClipRect();
 
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, d.width, d.height);
 
-        
-            
-            
-            
-
-
-
-
-
-
-
-
-
-
-
-
-        
 
         int y = -16 + h, x = -16 + w;
         for (char aLevel : level)
@@ -405,27 +381,22 @@ public class Sokoban extends Applet {
             } else {
                 x += 16;
                 if (aLevel == blank) continue;
-                
-                    g.drawImage(tiles[aLevel], x+225, y+225, this);
+
+                g.drawImage(tiles[aLevel], x + 225, y + 225, this);
             }
 
-        
+
     }
 
     public void drawStatus(Graphics g) {
-
-
-
-
-
 
 
     }
 
     public void drawMove() {
         Graphics g = getGraphics();
-        drawStatus(g); 
-        
+        drawStatus(g);
+
         repaint();
     }
 
@@ -569,7 +540,7 @@ public class Sokoban extends Applet {
                 boolean b = true;
                 for (char aLevel : level) if (aLevel == dollar) b = false;
                 if (b) {
-                    
+
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -581,7 +552,7 @@ public class Sokoban extends Applet {
                 pos1 = savepos1;
                 pos2 = savepos2;
                 pos3 = savepos3;
-                
+
             }
         } while (uc);
     }

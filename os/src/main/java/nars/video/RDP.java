@@ -16,24 +16,28 @@ package nars.video;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
+import nars.agent.FrameTrigger;
+import nars.agent.NAgent;
 import net.propero.rdp.Rdesktop;
 import net.propero.rdp.RdesktopException;
 import net.propero.rdp.RdesktopFrame;
 import org.slf4j.LoggerFactory;
 
+import static nars.$.$$;
+
 
 /**
  * Remote Desktop Protocol
  */
-public class RDP extends NAgentX {
+public class RDP extends NAgent {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RDP.class);
 
     public RDP(NAR n, String host, int port) throws RdesktopException, Narsese.NarseseException {
-        super("rdp(\"" + host + "\", " + port + ")", n);
+        super($$("rdp(\"" + host + "\", " + port + ")"), FrameTrigger.durs(1), n);
         RdesktopFrame w = Rdesktop.RDPwindow(host + ":" + port);
 
-        senseCameraRetina(("video"), ()->w.canvas.backstore.getBufferedImage(), 64, 64);
+        //senseCameraRetina(("video"), ()->w.canvas.backstore.getBufferedImage(), 64, 64);
 
     }
 
@@ -144,13 +148,6 @@ public class RDP extends NAgentX {
 
 
 
-
-
-
-    @Override
-    protected float act() {
-        return 0;
-    }
 
 
 

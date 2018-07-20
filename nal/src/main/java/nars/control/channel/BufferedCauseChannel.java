@@ -3,6 +3,7 @@ package nars.control.channel;
 import com.google.common.collect.AbstractIterator;
 import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
+import jcog.pri.Priority;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -11,19 +12,19 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 
-public class BufferedCauseChannel implements Consumer {
+public class BufferedCauseChannel<X extends Priority> implements Consumer<X> {
 
-    final MetalConcurrentQueue buffer;
-    private final CauseChannel target;
+    final MetalConcurrentQueue<X> buffer;
+    private final CauseChannel<X> target;
 
 
-    public BufferedCauseChannel(CauseChannel c, int capacity) {
+    public BufferedCauseChannel(CauseChannel<X> c, int capacity) {
         target = c;
         buffer = new MetalConcurrentQueue(capacity);
     }
 
 
-    public final void input(Object x) {
+    public final void input(X x) {
         while (!buffer.offer(x)) {
             //TODO on overflow it can optionally begin batching the previous items into compound tasks
             throw new TODO();
@@ -32,31 +33,28 @@ public class BufferedCauseChannel implements Consumer {
     }
 
     /** returns false if the input was denied */
-    public final boolean inputIfCapacity(Object x) {
+    public final boolean inputIfCapacity(X x) {
         return buffer.offer(x);
     }
 
     /** returns # input */
-    public long input(Stream x) {
+    public long input(Stream<X> x) {
         return //Math.min(buffer.capacity(),
                 x.filter(Objects::nonNull).peek(this::input).count()
                 //)
         ;
     }
 
-    public void input(Object... xx) {
-        for (Object x :xx)
+    public void input(X... xx) {
+        for (X x :xx)
             input(x);
     }
 
-
-
-
-    public void input(Iterator xx) {
+    public void input(Iterator<X> xx) {
         xx.forEachRemaining(this::input);
     }
 
-    public void input(Iterable xx) {
+    public void input(Iterable<X> xx) {
         xx.forEach(this::input);
     }
 
@@ -67,7 +65,7 @@ public class BufferedCauseChannel implements Consumer {
     }
 
     @Override
-    public final void accept(Object o) {
+    public final void accept(X o) {
         input(o);
     }
 

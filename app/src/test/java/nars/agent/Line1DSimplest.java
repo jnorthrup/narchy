@@ -3,7 +3,10 @@ package nars.agent;
 import jcog.Util;
 import jcog.math.FloatRange;
 import nars.$;
+import nars.NAR;
 import nars.concept.sensor.Signal;
+
+import static nars.agent.FrameTrigger.durs;
 
 
 /**
@@ -11,7 +14,6 @@ import nars.concept.sensor.Signal;
  */
 public class Line1DSimplest extends NAgent {
 
-    
 
     /**
      * the target value
@@ -22,8 +24,6 @@ public class Line1DSimplest extends NAgent {
     public final FloatRange speed = new FloatRange(0.25f, 0f, 0.5f);
 
 
-
-
     /**
      * the current value
      */
@@ -31,85 +31,40 @@ public class Line1DSimplest extends NAgent {
     public final Signal in;
 
 
-    public Line1DSimplest() {
-        super( );
-
+    public Line1DSimplest(NAR n) {
+        super("", durs(1), n);
 
         in = senseNumber(
                 $.the("x"),
-                
+
                 this.i
         );
         senseNumber(
                 $.the("y"),
-                
+
                 this.o
         );
 
-        
-        
+
         initBipolar();
 
+        reward(()->{
+            float dist = Math.abs(
+                    i.floatValue() -
+                            o.floatValue()
+            );
 
 
+            float h = ((1f - dist) - 0.5f) * 2f;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return h;
+        });
 
     }
 
     private void initDualToggle() {
         actionToggle($.$$("y:up"), (b) -> {
-            if(b) {
+            if (b) {
                 o.set(Util.unitize(o.floatValue() + speed.floatValue()));
                 System.out.println(o);
             }
@@ -130,44 +85,26 @@ public class Line1DSimplest extends NAgent {
             this.o.set(Util.unitize(o.floatValue() + d * speed.floatValue()));
         });
         actionUnipolar($.p("up"), d -> {
-            
+
             synchronized (o) {
-                
-                
-                
 
 
-
-
-
-
-                    
                 return x[0] = d;
-
 
 
             }
         });
 
         actionUnipolar($.p("down"), d -> {
-            
+
             synchronized (o) {
-                
-                
-                
-                
-                    
-
-
 
 
                 return x[1] = d;
 
 
-
             }
         });
-
 
 
     }
@@ -180,48 +117,14 @@ public class Line1DSimplest extends NAgent {
                 );
 
 
-
             }
 
             return v;
 
-            
 
-            
-
-
-
-
-
-
-            
-            
         });
     }
 
-    @Override
-    protected float act() {
-        float dist = Math.abs(
-                i.floatValue() -
-                        o.floatValue()
-        );
-
-        
-
-        float h = ((1f - dist)-0.5f)*2f;
-        
-        return h;
-        
-        
-
-
-
-
-
-
-        
-        
-    }
 
 
     public float target() {

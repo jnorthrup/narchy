@@ -1,13 +1,11 @@
 package nars.concept.action;
 
 import nars.NAR;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * Action Concept which acts on belief state directly (no separate feedback involved)
@@ -19,14 +17,12 @@ public class BeliefActionConcept extends ActionConcept {
 
     public BeliefActionConcept(@NotNull Term term, @NotNull NAR n, Consumer<Truth> action) {
         super(term, n);
-
-
         this.action = action;
     }
 
 
     @Override
-    public Stream<ITask> update(long start, long end, NAR nar) {
+    public void update(long start, long end, NAR nar) {
 
         int dur = nar.dur();
         long nowStart =
@@ -41,7 +37,6 @@ public class BeliefActionConcept extends ActionConcept {
 
         action.accept(belief == null ? null : belief.truth());
 
-        return Stream.empty();
     }
 
 

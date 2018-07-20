@@ -5,15 +5,15 @@ import nars.experiment.minicraft.top.item.ResourceItem;
 import nars.experiment.minicraft.top.item.resource.Resource;
 
 public class ResourceRecipe extends Recipe {
-	private final Resource resource;
+    private final Resource resource;
 
-	public ResourceRecipe(Resource resource) {
-		super(new ResourceItem(resource, 1));
-		this.resource = resource;
-	}
+    public ResourceRecipe(Resource resource) {
+        super(new ResourceItem(resource, 1));
+        this.resource = resource;
+    }
 
-	@Override
-	public void craft(Player player) {
-		player.inventory.add(0, new ResourceItem(resource, 1));
-	}
+    @Override
+    public void craft(Player player) {
+        player.inventory.add(0, new ResourceItem(resource, 1));
+    }
 }

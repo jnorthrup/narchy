@@ -23,7 +23,9 @@ import spacegraph.space2d.container.Splitting;
 import javax.swing.*;
 import java.util.List;
 
-/** connect-4 experiments */
+/**
+ * connect-4 experiments
+ */
 public class C4 {
 
     static class NARPlayer {
@@ -34,20 +36,13 @@ public class C4 {
 
         public NARPlayer(int whoAmI, ConnectFour.ConnectFourState game) {
             NAR n = NARchy.core();
-            ((RealTime)n.time).durFPS(10f);
+            ((RealTime) n.time).durFPS(10f);
 
             n.beliefPriDefault.set(0.5f);
             n.goalPriDefault.set(0.75f);
             this.n = n;
 
-            Deriver.derivers(n).forEach(d -> ((MatrixDeriver)d).conceptsPerIteration.set(4));
-
-
-            
-
-            
-
-
+            Deriver.derivers(n).forEach(d -> ((MatrixDeriver) d).conceptsPerIteration.set(4));
 
 
             Opjects o = new Opjects(n);
@@ -63,18 +58,18 @@ public class C4 {
             try {
                 n.input("$1.0 whoWon(c," + play.player + ")!");
                 n.input("$1.0 --whoWon(c," + opponent + ")!");
-                n.input("$1.0 --whoWon(c,0)! %1.0;0.05%"); 
+                n.input("$1.0 --whoWon(c,0)! %1.0;0.05%");
                 n.input("$1.0 (whoWon(c,1) =|> drop(c,#x,true)).");
                 n.input("$1.0 (whoWon(c,2) =|> drop(c,#x,true)).");
                 n.input("$1.0 (whoWon(c,1) =|> --whoWon(c,2)).");
                 n.input("$1.0 (whoWon(c,2) =|> --whoWon(c,1)).");
-                
-                
+
+
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }
 
-            SpaceGraph.window(new Splitting(NARui.top(n), beliefCharts(), 0.3f), 800,800);
+            SpaceGraph.window(new Splitting(NARui.top(n), beliefCharts(), 0.3f), 800, 800);
         }
 
         void inputAssumptions() {
@@ -83,16 +78,12 @@ public class C4 {
                 n.input("$1.0 --whoWon(c," + opponent + ")! |..+1s");
 
 
-
-                
-                for (int i =0; i < play.game.cols; i++) {
-                    for (boolean c : new boolean[] { true/*, false */}) {
+                for (int i = 0; i < play.game.cols; i++) {
+                    for (boolean c : new boolean[]{true/*, false */}) {
                         n.input(dropConcept(i, c) + "@ |..+500ms");
                     }
                 }
 
-                
-                
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -101,8 +92,8 @@ public class C4 {
 
 
         public void moving(int who) {
-            play.moving("red", who==1);
-            play.moving("yel", who==2);
+            play.moving("red", who == 1);
+            play.moving("yel", who == 2);
 
             play.see();
 
@@ -111,7 +102,6 @@ public class C4 {
             if (play.player == who) {
 
 
-                
                 try {
                     n.input(dropConcept(n.random().nextInt(play.game.cols), true) + "! |..+1sec %1.0;0.02%");
                 } catch (Narsese.NarseseException e) {
@@ -120,7 +110,7 @@ public class C4 {
 
                 int triesRemain = 7;
                 IntHashSet tried = new IntHashSet();
-                while (triesRemain-->0 && play.game.moving()==play.player) {
+                while (triesRemain-- > 0 && play.game.moving() == play.player) {
 
                     int which;
                     float max = Float.NEGATIVE_INFINITY;
@@ -130,8 +120,8 @@ public class C4 {
                         if (tried.contains(i))
                             continue;
                         Concept d = dropConcept(i, true);
-                        Truth gd = d.goals().truth(n.time(),n.time()+n.dur(), n);
-                        
+                        Truth gd = d.goals().truth(n.time(), n.time() + n.dur(), n);
+
                         if (gd != null && gd.expectation() > max) {
                             which = i;
                             max = gd.expectation();
@@ -141,14 +131,15 @@ public class C4 {
                         tried.add(which);
 
                         play.tryDrop(n, which);
-                        Util.sleep(50); 
+                        Util.sleep(50);
                     } else {
                         break;
                     }
                 }
 
-                
-                while (play.game.moving()==play.player && !play.game.drop(randomCol(), play.player)) { }
+
+                while (play.game.moving() == play.player && !play.game.drop(randomCol(), play.player)) {
+                }
 
             }
         }
@@ -158,13 +149,13 @@ public class C4 {
         }
 
         public Concept dropConcept(int col, boolean commandlike) {
-            return C4.dropConcept( col, n, commandlike, play.game, play.player);
+            return C4.dropConcept(col, n, commandlike, play.game, play.player);
         }
 
         public Surface beliefCharts() {
 
             List<Term> c = new FasterList();
-            for (int i =0; i < play.game.cols; i++)
+            for (int i = 0; i < play.game.cols; i++)
                 c.add(dropConcept(i, true).term());
 
             c.add($.$$("whoWon(c,1)"));
@@ -187,12 +178,6 @@ public class C4 {
         NARPlayer B = new NARPlayer(2, game);
 
 
-
-
-        
-        
-
-
         while (true) {
 
 
@@ -211,19 +196,19 @@ public class C4 {
 
 
             int winner = A.play.whoWon();
-            B.play.whoWon(); 
+            B.play.whoWon();
 
-            if (winner!=0) {
+            if (winner != 0) {
 
-                int loser = winner==1 ? 2 : 1;
+                int loser = winner == 1 ? 2 : 1;
 
                 System.err.println("winner: " + winner);
 
-                
+
                 for (int i = 0; i < 10; i++) {
                     A.play.whoWon();
                     B.play.whoWon();
-                    
+
                     try {
                         A.n.input("--whoWon(c," + loser + "). |");
                         B.n.input("--whoWon(c," + loser + "). |");
@@ -244,10 +229,9 @@ public class C4 {
     }
 
 
-
-    static Concept dropConcept(int col, NAR n, boolean commandlike, ConnectFour.ConnectFourState game, int player)  {
+    static Concept dropConcept(int col, NAR n, boolean commandlike, ConnectFour.ConnectFourState game, int player) {
         try {
-            return n.conceptualize("drop(c," + col + "," + (commandlike ? "_" : "true")+ ")");
+            return n.conceptualize("drop(c," + col + "," + (commandlike ? "_" : "true") + ")");
         } catch (Narsese.NarseseException e) {
             throw new WTF();
         }

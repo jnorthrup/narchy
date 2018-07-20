@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.NAR;
 import nars.agent.NAgent;
 import nars.concept.TaskConcept;
-import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
@@ -44,9 +43,9 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private long start, end;
     int dur;
 
-    private Signal touchConcept;
+    private TaskConcept touchConcept;
 
-    private Consumer<Signal> touchMode = (x) -> { };
+    private Consumer<TaskConcept> touchMode = (x) -> { };
 
     public CameraSensorView(Bitmap2DSensor cam, NAgent a) {
         this(cam, a.nar());
@@ -59,7 +58,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         this.dur = n.dur();
     }
 
-    public void onConceptTouch(Consumer<Signal> c) {
+    public void onConceptTouch(Consumer<TaskConcept > c) {
         touchMode = c;
     }
 
@@ -77,7 +76,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         }
 
         if (finger.clickedNow(OPEN_CONCEPT_BUTTON, this)) {
-            Signal c = this.touchConcept;
+            TaskConcept c = this.touchConcept;
             if (c != null)
                 NARui.conceptWindow(c, nar);
         }
@@ -86,7 +85,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
             @Override
             protected boolean drag(Finger f) {
                 updateTouch(finger);
-                Signal c = touchConcept;
+                TaskConcept c = touchConcept;
                 if (c!=null)
                     onTouch(touchConcept);
                 return true;
@@ -98,7 +97,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
 
-    void onTouch(Signal touchConcept) {
+    void onTouch(TaskConcept touchConcept) {
         touchMode.accept(touchConcept);
     }
 
@@ -227,7 +226,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 goalCheckBox(view, "Goal+", 1f),
                 goalCheckBox(view, "Goal+-", 0.5f),
                 goalCheckBox(view, "Goal-", 0f)
-            ), new FloatSlider("Pri", view.cam.pixelPri));
+            ), new FloatSlider("Pri", view.cam.concepts.pri));
         }
 
         @NotNull

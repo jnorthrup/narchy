@@ -6,7 +6,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.sensor.Bitmap2DConcepts;
+import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
 import nars.util.TimeAware;
 import nars.video.Scale;
@@ -28,13 +28,11 @@ public class Arkancide extends NAgentX {
     static boolean cam = true;
 
     public final FloatRange ballSpeed = new FloatRange(0.75f, 0.04f, 6f);
-    
 
 
     final int visW = 48;
     final int visH = 32;
 
-    
 
     static float paddleSpeed;
 
@@ -44,27 +42,13 @@ public class Arkancide extends NAgentX {
     private float prevScore;
 
     public static void main(String[] args) {
-        
 
-        
-        
 
         TimeAware timeAware = runRT((NAR n) -> {
 
             n.dtDither.set(25); //50fps resolution
 
             Arkancide a = new Arkancide(n, cam, numeric);
-                
-
-                
-                
-                
-
-
-
-            
-
-            
 
 
             return a;
@@ -72,20 +56,6 @@ public class Arkancide extends NAgentX {
         }, 40);
 
 
-
-
-
-
-
-
-        
-
-        
-
-        
-
-        
-        
     }
 
 
@@ -93,48 +63,33 @@ public class Arkancide extends NAgentX {
         this(nar, true, true);
     }
 
-    public Arkancide(NAR nar, boolean cam, boolean numeric)  {
+    public Arkancide(NAR nar, boolean cam, boolean numeric) {
         super("noid", nar);
-        
 
 
         noid = new Arkanoid(true);
 
 
-
-
-
-
-
-
-
         paddleSpeed = 50 * noid.BALL_VELOCITY;
 
-        
-        
-        
+
         initToggle();
 
-        float resX = 0.01f; 
-        float resY = 0.01f; 
+        float resX = 0.01f;
+        float resY = 0.01f;
 
         if (cam) {
 
-            Bitmap2DConcepts<Scale> cc = senseCamera(id /*$.the("cam")*/, new Scale(
+            Bitmap2DSensor<Scale> cc = senseCamera(id /*$.the("cam")*/, new Scale(
                     new SwingBitmap2D(noid)
-                    
+
                     , visW, visH
-                    
-                    
-            )/*.blur()*/).resolution(0.02f);
 
 
+            )/*.blur()*/);
+            cc.resolution(0.02f);
 
 
-
-
-            
-            
         }
 
 
@@ -143,35 +98,6 @@ public class Arkancide extends NAgentX {
             senseNumber($.the("dx"), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
             senseNumber($.the("bx"), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
             senseNumber($.the("by"), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
-            
-            
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         }
@@ -185,67 +111,16 @@ public class Arkancide extends NAgentX {
 
 
 
+        reward(()->{
+            noid.BALL_VELOCITY = ballSpeed.floatValue();
+            float nextScore = noid.next();
+            float reward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
+            this.prevScore = nextScore;
+
+            return reward;
+        });
 
         /*actionTriState*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
 
 
     }
@@ -253,41 +128,39 @@ public class Arkancide extends NAgentX {
     private void initBipolarRelative() {
         actionBipolar($.the("X"), false, (dx) -> {
 
-            
+
             if (noid.paddle.move(dx * paddleSpeed))
                 return dx;
             else
                 return 0;
         });
     }
+
     private void initBipolarDirect() {
         actionBipolar($.the("X"), true, (dx) -> {
-            noid.paddle.set(dx/2f+0.5f);
+            noid.paddle.set(dx / 2f + 0.5f);
             return dx;
         });
     }
+
     private void initToggle() {
         actionPushButtonMutex(Atomic.the("L"), Atomic.the("R"),
-                (b) -> { if (b) noid.paddle.move(-paddleSpeed); },
-                (b) -> { if (b) noid.paddle.move(+paddleSpeed); }
-                );
+                (b) -> {
+                    if (b) noid.paddle.move(-paddleSpeed);
+                },
+                (b) -> {
+                    if (b) noid.paddle.move(+paddleSpeed);
+                }
+        );
 
 
     }
+
     private void initUnipolar() {
-        actionUnipolar($.the("L"), (u)-> noid.paddle.move(-paddleSpeed*u) ? u : 0);
-        actionUnipolar($.the("R"), (u)-> noid.paddle.move(+paddleSpeed*u) ? u : 0);
+        actionUnipolar($.the("L"), (u) -> noid.paddle.move(-paddleSpeed * u) ? u : 0);
+        actionUnipolar($.the("R"), (u) -> noid.paddle.move(+paddleSpeed * u) ? u : 0);
     }
 
-    @Override
-    protected float act() {
-        noid.BALL_VELOCITY = ballSpeed.floatValue();
-        float nextScore = noid.next();
-        float reward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
-        this.prevScore = nextScore;
-        
-        return reward;
-    }
 
 
     /**
@@ -329,9 +202,6 @@ public class Arkancide extends NAgentX {
             this.setResizable(false);
 
 
-
-            
-
             if (visible)
                 this.setVisible(true);
 
@@ -340,8 +210,8 @@ public class Arkancide extends NAgentX {
 
             setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-            new Timer(1000/FPS, (e)->{
-               repaint();
+            new Timer(1000 / FPS, (e) -> {
+                repaint();
             }).start();
 
             reset();
@@ -364,8 +234,6 @@ public class Arkancide extends NAgentX {
         public final Ball ball = new Ball(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
         public final Collection<Brick> bricks = Collections.newSetFromMap(new ConcurrentHashMap());
 
-        
-        
 
         abstract class GameObject {
             abstract float left();
@@ -424,7 +292,6 @@ public class Arkancide extends NAgentX {
         class Paddle extends Rectangle {
 
 
-
             public Paddle(float x, float y) {
                 this.x = x;
                 this.y = y;
@@ -440,29 +307,6 @@ public class Arkancide extends NAgentX {
                 x = Util.clamp(x + dx, sizeX, SCREEN_WIDTH - sizeX);
                 return !Util.equals(px, x, 1f);
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             void draw(Graphics g) {
@@ -524,7 +368,7 @@ public class Arkancide extends NAgentX {
             public float x, y;
             float radius = BALL_RADIUS;
 
-            
+
             public float velocityX;
             public float velocityY;
 
@@ -535,7 +379,7 @@ public class Arkancide extends NAgentX {
             }
 
             public void setVelocityRandom() {
-                this.setVelocity(BALL_VELOCITY, (float) (Math.random() * -Math.PI * (2 / 3f) + -Math.PI - Math.PI / 6)); 
+                this.setVelocity(BALL_VELOCITY, (float) (Math.random() * -Math.PI * (2 / 3f) + -Math.PI - Math.PI / 6));
             }
 
             public void setVelocity(float speed, float angle) {
@@ -633,8 +477,8 @@ public class Arkancide extends NAgentX {
         }
 
         void initializeBricks(Collection<Brick> bricks) {
-            
-            
+
+
             bricks.clear();
 
             for (int iX = 0; iX < COUNT_BLOCKS_X; ++iX) {
@@ -643,7 +487,7 @@ public class Arkancide extends NAgentX {
                             (iY + 2) * (BLOCK_HEIGHT + 3) + BLOCK_TOP_MARGIN));
                 }
             }
-            
+
         }
 
 
@@ -654,33 +498,14 @@ public class Arkancide extends NAgentX {
             ball.setVelocityRandom();
         }
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
         public float next() {
 
-            
-
-            
 
             ball.update(paddle);
             testCollision(paddle, ball);
 
-            
+
             Iterator<Brick> it = bricks.iterator();
             while (it.hasNext()) {
                 Brick brick = it.next();
@@ -689,13 +514,10 @@ public class Arkancide extends NAgentX {
                     it.remove();
                 }
             }
-            
 
-            
 
             return score;
         }
-
 
 
         @Override

@@ -4,6 +4,7 @@ import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.op.AutoConceptualizer;
 import nars.sensor.Bitmap2DSensor;
 import org.junit.jupiter.api.Test;
 
@@ -31,13 +32,13 @@ public class AutoConceptualizerTest {
         }, n);
 
         AutoConceptualizer ac = new AutoConceptualizer(
-                c.iter.order /* HACK */, true, 2, n);
+                c.concepts.iter.order /* HACK */, true, 2, n);
 
 
 
         for (int i =0; i< 155; i++) {
             c.input();
-            c.print(System.out);
+//            c.print(System.out);
             n.run(1);
 
             System.out.println();

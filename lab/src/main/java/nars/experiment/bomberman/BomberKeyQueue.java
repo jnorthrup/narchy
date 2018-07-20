@@ -1,6 +1,7 @@
 package nars.experiment.bomberman; /**
  * File:         BomberKeyQueue.java
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -97,9 +98,9 @@ public class BomberKeyQueue {
     /**
      * Removes all elements
      */
-     public void removeAll() {
+    public void removeAll() {
         head = tail = null;
-     }
+    }
 
     /**
      * @return size of the list
@@ -131,7 +132,10 @@ public class BomberKeyQueue {
         /** loop till end of list is reached */
         while (temp != null) {
             /** if data found then get otta here */
-            if (temp.data == b) { result = true; break; }
+            if (temp.data == b) {
+                result = true;
+                break;
+            }
             /** get next item in the list */
             temp = temp.next;
         }
@@ -144,15 +148,14 @@ public class BomberKeyQueue {
      */
     private class Node {
         /** the key data */
-        public  byte data;
+        public byte data;
         /** pointers / links */
         public Node prev, next;
 
         /**
          * Construct with data
          */
-        public Node(byte b)
-        {
+        public Node(byte b) {
             /** set data */
             data = b;
         }
@@ -161,8 +164,7 @@ public class BomberKeyQueue {
          * Copy constructor.
          * @param n node to be copied
          */
-        public Node(Node n)
-        {
+        public Node(Node n) {
             /** copy data */
             data = n.data;
             /** copy the links */

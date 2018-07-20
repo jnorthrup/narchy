@@ -15,14 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static nars.experiment.connect4.C4.dropConcept;
 
 
-
-
-
-
-
-
-
-
 /**
  * Simple graphical Connect Four game application. It demonstrates the Minimax
  * algorithm with alpha-beta pruning, iterative deepening, and action ordering.
@@ -239,53 +231,6 @@ public class ConnectFour {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public boolean isTerminal() {
             return utility() != -1;
         }
@@ -303,38 +248,6 @@ public class ConnectFour {
             return result;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
 
         private static class WinPositionInfo {
             int row = -1;
@@ -373,12 +286,12 @@ public class ConnectFour {
             public boolean drop(int which) {
 
                 int moving = game.moving();
-                    if (moving != player) {
-                        notMoving(player);
-                        return false;
-                    } else {
-                        return game.drop(which, player);
-                    }
+                if (moving != player) {
+                    notMoving(player);
+                    return false;
+                } else {
+                    return game.drop(which, player);
+                }
 
             }
 
@@ -405,16 +318,16 @@ public class ConnectFour {
             }
 
             public void see() {
-                
-                    
-                    for (int r = 0; r < game.rows; r++)
-                        for (int c = 0; c < game.cols; c++) {
-                            int x = game.get(r, c);
-                            board(r, c, "emt", 0==x);
-                            board(r, c, "red", 1==x);
-                            board(r, c, "yel", 2==x);
-                        }
-                
+
+
+                for (int r = 0; r < game.rows; r++)
+                    for (int c = 0; c < game.cols; c++) {
+                        int x = game.get(r, c);
+                        board(r, c, "emt", 0 == x);
+                        board(r, c, "red", 1 == x);
+                        board(r, c, "yel", 2 == x);
+                    }
+
 
             }
 
@@ -434,7 +347,7 @@ public class ConnectFour {
                 try {
                     nar.input(dropConcept(which, nar, true, game, player) +
                             "! |"
-                            
+
                     );
                 } catch (Narsese.NarseseException e) {
                     e.printStackTrace();
@@ -445,71 +358,16 @@ public class ConnectFour {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Simple panel to control the game.
      */
     private static class ConnectFourPanel extends JPanel implements ActionListener {
         final JButton clearButton;
-        
+
         final JLabel statusBar;
 
         final ConnectFourState game;
-        
+
 
         /**
          * Standard constructor.
@@ -556,18 +414,7 @@ public class ConnectFour {
         public void actionPerformed(ActionEvent e) {
 
 
-
-
-
-
-
-
-
-
-
-
-
-            repaint(); 
+            repaint();
 
 
         }
@@ -577,32 +424,6 @@ public class ConnectFour {
          */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-
-
         /**
          * Updates the status bar.
          */
@@ -610,7 +431,7 @@ public class ConnectFour {
             int won = 0;
             String statusText;
             if (!game.isTerminal()) {
-                String toMove = ConnectFourState.players[game.moving()-1];
+                String toMove = ConnectFourState.players[game.moving() - 1];
                 statusText = "Next move: " + toMove;
                 statusBar.setForeground(toMove.equals("red") ? Color.RED
                         : Color.YELLOW);
@@ -649,11 +470,11 @@ public class ConnectFour {
             }
 
             public void paintComponent(Graphics g) {
-                super.paintComponent(g); 
-                
+                super.paintComponent(g);
+
                 int playerNum = game.get(row, col);
                 if (playerNum != 0) {
-                    drawDisk(g, playerNum); 
+                    drawDisk(g, playerNum);
                 }
                 for (int pNum = 1; pNum <= 2; pNum++)
                     if (game.isWinPositionFor(row, col, pNum))

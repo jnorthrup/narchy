@@ -3,12 +3,10 @@ package nars.experiment.mario.sprites;
 import nars.experiment.mario.Art;
 
 
-public class CoinAnim extends Sprite
-{
+public class CoinAnim extends Sprite {
     private int life = 10;
 
-    public CoinAnim(int xTile, int yTile)
-    {
+    public CoinAnim(int xTile, int yTile) {
         sheet = Art.level;
         wPic = hPic = 16;
 
@@ -21,14 +19,12 @@ public class CoinAnim extends Sprite
     }
 
     @Override
-    public void move()
-    {
-        if (life-- < 0)
-        {
+    public void move() {
+        if (life-- < 0) {
             Sprite.spriteContext.removeSprite(this);
             for (int xx = 0; xx < 2; xx++)
                 for (int yy = 0; yy < 2; yy++)
-                    Sprite.spriteContext.addSprite(new Sparkle((int)x + xx * 8 + (int) (Math.random() * 8), (int)y + yy * 8 + (int) (Math.random() * 8), 0, 0, 0, 2, 5));
+                    Sprite.spriteContext.addSprite(new Sparkle((int) x + xx * 8 + (int) (Math.random() * 8), (int) y + yy * 8 + (int) (Math.random() * 8), 0, 0, 0, 2, 5));
         }
 
         xPic = life & 3;

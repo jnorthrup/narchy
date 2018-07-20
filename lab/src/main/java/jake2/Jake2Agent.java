@@ -66,8 +66,8 @@ public class Jake2Agent extends NAgentX implements Runnable {
             edict_t p = PlayerView.current_player;
             if (p == null) return;
             if (p.deadflag > 0) {
-                
-                
+
+
                 Key.Event(Key.K_ENTER, true, 0);
                 return;
             }
@@ -107,21 +107,8 @@ public class Jake2Agent extends NAgentX implements Runnable {
                 "q", screenshotter, 32, 24);
         qcam.src.setMinZoomOut(0.5f);
         qcam.src.setMaxZoomOut(1f);
-        qcam.resolution(0.01f);
         qcam.src.vflip = true;
-
-
-
-
-
-
-
-
-
-
-
-
-
+        qcam.resolution(0.01f);
 
 
         senseFields("q", player);
@@ -129,8 +116,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         actionToggle($("q(move,fore)"), (x) -> CL_input.in_forward.state = x ? 1 : 0);
         actionToggle($("q(move,back)"), (x) -> CL_input.in_back.state = x ? 1 : 0);
 
-        
-        
+
         actionToggle($("q(move,left)"), (x) -> CL_input.in_moveleft.state = x ? 1 : 0);
         actionToggle($("q(move,right)"), (x) -> CL_input.in_moveright.state = x ? 1 : 0);
         actionToggle($("q(jump)"), (x) -> CL_input.in_up.state = x ? 1 : 0);
@@ -139,23 +125,28 @@ public class Jake2Agent extends NAgentX implements Runnable {
         float yawSpeed = 20;
         float pitchSpeed = 5;
         actionToggle($("q(look,left)"), (x) ->
-                cl.viewangles[Defines.YAW] += yawSpeed );
+                cl.viewangles[Defines.YAW] += yawSpeed);
         actionToggle($("q(look,right)"), (x) ->
-                cl.viewangles[Defines.YAW] -= yawSpeed );
+                cl.viewangles[Defines.YAW] -= yawSpeed);
         actionToggle($("q(look,up)"), (x) ->
-                cl.viewangles[Defines.PITCH] = Math.min(30, cl.viewangles[Defines.PITCH] + pitchSpeed) );
+                cl.viewangles[Defines.PITCH] = Math.min(30, cl.viewangles[Defines.PITCH] + pitchSpeed));
         actionToggle($("q(look,down)"), (x) ->
-                cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed) );
+                cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed));
 
         actionToggle($("q(attak)"), (x) -> CL_input.in_attack.state = x ? 1 : 0);
 
 
+        reward(()->{
+            player.update();
 
+            float nextState = player.health * 4f + player.speed / 2f + player.frags * 2f;
 
+            float delta = nextState - state;
 
+            state = nextState;
 
-
-        
+            return delta;
+        });
 
         new Thread(this).start();
     }
@@ -163,43 +154,21 @@ public class Jake2Agent extends NAgentX implements Runnable {
     float state;
 
     @Override
-    protected float act() {
-
-        player.update();
-
-        float nextState = player.health * 4f + player.speed / 2f + player.frags * 2f;
-
-        float delta = nextState - state;
-
-        state = nextState;
-
-        return delta;
-    }
-
-    @Override
     public void run() {
 
-        
-        
-        
-        
+
         IN.mouse_avail = false;
         Jake2.run(new String[]{
                 "+god",
-                
-                
-                
-                
-                
-                
-                
-                "+dmflags 1024", 
-                "+cl_gun 0", 
+
+
+                "+dmflags 1024",
+                "+cl_gun 0",
                 "+timescale 0.5",
-                
-                
+
+
                 "+map " + nextMap()
-                
+
         }, this::onDraw);
 
 

@@ -9,8 +9,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 
-public class MapScene extends Scene
-{
+public class MapScene extends Scene {
     private static final int TILE_GRASS = 0;
     private static final int TILE_WATER = 1;
     private static final int TILE_LEVEL = 2;
@@ -25,7 +24,7 @@ public class MapScene extends Scene
 
     private int tick;
     @SuppressWarnings("unused")
-	private final GraphicsConfiguration graphicsConfiguration;
+    private final GraphicsConfiguration graphicsConfiguration;
     private final Image staticBg;
     private final Graphics staticGr;
     private Random random = new Random();
@@ -39,8 +38,7 @@ public class MapScene extends Scene
     private int xFarthestCap;
     private int yFarthestCap;
 
-    public MapScene(GraphicsConfiguration graphicsConfiguration, MarioComponent marioComponent, long seed)
-    {
+    public MapScene(GraphicsConfiguration graphicsConfiguration, MarioComponent marioComponent, long seed) {
         this.graphicsConfiguration = graphicsConfiguration;
         this.marioComponent = marioComponent;
         this.seed = seed;
@@ -51,22 +49,19 @@ public class MapScene extends Scene
     }
 
     @Override
-    public void init()
-    {
+    public void init() {
         worldNumber = -1;
         nextWorld();
     }
 
-    private void nextWorld()
-    {
+    private void nextWorld() {
         worldNumber++;
 
-        if (worldNumber==8)
-        {
+        if (worldNumber == 8) {
             marioComponent.win();
             return;
         }
-        
+
         moveTime = 0;
         levelId = 0;
         farthest = 0;
@@ -81,13 +76,11 @@ public class MapScene extends Scene
         renderStatic(staticGr);
     }
 
-    public void startMusic()
-    {
+    public void startMusic() {
         Art.startMusic(0);
     }
 
-    private boolean generateLevel()
-    {
+    private boolean generateLevel() {
         random = new Random(seed);
         ImprovedNoise n0 = new ImprovedNoise(random.nextLong());
         ImprovedNoise n1 = new ImprovedNoise(random.nextLong());
@@ -101,14 +94,12 @@ public class MapScene extends Scene
         double yo0 = random.nextDouble() * 512;
         double xo1 = random.nextDouble() * 512;
         double yo1 = random.nextDouble() * 512;
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 double xd = ((x + 1) / (double) width - 0.5) * 2;
                 double yd = ((y + 1) / (double) height - 0.5) * 2;
                 @SuppressWarnings("unused")
-				double d = Math.sqrt(xd * xd + yd * yd) * 2;
+                double d = Math.sqrt(xd * xd + yd * yd) * 2;
                 if (x == 0 || y == 0 || x >= width - 3 || y >= height - 3) d = 100;
                 double t0 = n0.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
                 double t1 = n1.perlinNoise(x * 10.0 + xo1, y * 10.0 + yo1);
@@ -121,14 +112,11 @@ public class MapScene extends Scene
         int lowestX = 9999;
         int lowestY = 9999;
         int t = 0;
-        for (int i = 0; i < 100 && t < 12; i++)
-        {
+        for (int i = 0; i < 100 && t < 12; i++) {
             int x = random.nextInt((width - 1) / 3) * 3 + 2;
             int y = random.nextInt((height - 1) / 3) * 3 + 1;
-            if (level[x][y] == TILE_GRASS)
-            {
-                if (x < lowestX)
-                {
+            if (level[x][y] == TILE_GRASS) {
+                if (x < lowestX) {
                     lowestX = x;
                     lowestY = y;
                 }
@@ -151,12 +139,9 @@ public class MapScene extends Scene
         data[xMario / 16][yMario / 16] = -11;
 
 
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (level[x][y] == TILE_GRASS && (x != xFarthestCap || y != yFarthestCap - 1))
-                {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (level[x][y] == TILE_GRASS && (x != xFarthestCap || y != yFarthestCap - 1)) {
                     double t0 = dec.perlinNoise(x * 10.0 + xo0, y * 10.0 + yo0);
                     if (t0 > 0) level[x][y] = TILE_DECORATION;
                 }
@@ -166,36 +151,25 @@ public class MapScene extends Scene
         return true;
     }
 
-    private void travel(int x, int y, int dir, int depth)
-    {
-        if (level[x][y] != TILE_ROAD && level[x][y] != TILE_LEVEL)
-        {
+    private void travel(int x, int y, int dir, int depth) {
+        if (level[x][y] != TILE_ROAD && level[x][y] != TILE_LEVEL) {
             return;
         }
-        if (level[x][y] == TILE_ROAD)
-        {
+        if (level[x][y] == TILE_ROAD) {
             if (data[x][y] == 1) return;
             else data[x][y] = 1;
         }
 
-        if (level[x][y] == TILE_LEVEL)
-        {
-            if (data[x][y] > 0)
-            {
-                if (levelId != 0 && random.nextInt(4) == 0)
-                {
+        if (level[x][y] == TILE_LEVEL) {
+            if (data[x][y] > 0) {
+                if (levelId != 0 && random.nextInt(4) == 0) {
                     data[x][y] = -3;
-                }
-                else
-                {
+                } else {
                     data[x][y] = ++levelId;
                 }
-            }
-            else if (depth > 0)
-            {
+            } else if (depth > 0) {
                 data[x][y] = -1;
-                if (depth > farthest)
-                {
+                if (depth > farthest) {
                     farthest = depth;
                     xFarthestCap = x;
                     yFarthestCap = y;
@@ -209,35 +183,26 @@ public class MapScene extends Scene
         if (dir != 1) travel(x, y + 1, 3, depth++);
     }
 
-    private void findCaps(int width, int height)
-    {
+    private void findCaps(int width, int height) {
         int xCap = -1;
         int yCap = -1;
 
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (level[x][y] == TILE_LEVEL)
-                {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (level[x][y] == TILE_LEVEL) {
                     int roads = 0;
                     for (int xx = x - 1; xx <= x + 1; xx++)
-                        for (int yy = y - 1; yy <= y + 1; yy++)
-                        {
+                        for (int yy = y - 1; yy <= y + 1; yy++) {
                             if (level[xx][yy] == TILE_ROAD) roads++;
                         }
 
-                    if (roads == 1)
-                    {
-                        if (xCap == -1)
-                        {
+                    if (roads == 1) {
+                        if (xCap == -1) {
                             xCap = x;
                             yCap = y;
                         }
                         data[x][y] = 0;
-                    }
-                    else
-                    {
+                    } else {
                         data[x][y] = 1;
                     }
                 }
@@ -250,14 +215,10 @@ public class MapScene extends Scene
         travel(xCap, yCap, -1, 0);
     }
 
-    private boolean findConnection(int width, int height)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (level[x][y] == TILE_LEVEL && data[x][y] == -1)
-                {
+    private boolean findConnection(int width, int height) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (level[x][y] == TILE_LEVEL && data[x][y] == -1) {
                     connect(x, y, width, height);
                     return true;
                 }
@@ -266,22 +227,17 @@ public class MapScene extends Scene
         return false;
     }
 
-    private void connect(int xSource, int ySource, int width, int height)
-    {
+    private void connect(int xSource, int ySource, int width, int height) {
         int maxDist = 10000;
         int xTarget = 0;
         int yTarget = 0;
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (level[x][y] == TILE_LEVEL && data[x][y] == -2)
-                {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (level[x][y] == TILE_LEVEL && data[x][y] == -2) {
                     int xd = Math.abs(xSource - x);
                     int yd = Math.abs(ySource - y);
                     int d = xd * xd + yd * yd;
-                    if (d < maxDist)
-                    {
+                    if (d < maxDist) {
                         xTarget = x;
                         yTarget = y;
                         maxDist = d;
@@ -296,112 +252,79 @@ public class MapScene extends Scene
         return;
     }
 
-    private void drawRoad(int x0, int y0, int x1, int y1)
-    {
+    private void drawRoad(int x0, int y0, int x1, int y1) {
         boolean xFirst = random.nextBoolean();
 
-        if (xFirst)
-        {
-            while (x0 > x1)
-            {
+        if (xFirst) {
+            while (x0 > x1) {
                 data[x0][y0] = 0;
                 level[x0--][y0] = TILE_ROAD;
             }
-            while (x0 < x1)
-            {
+            while (x0 < x1) {
                 data[x0][y0] = 0;
                 level[x0++][y0] = TILE_ROAD;
             }
         }
-        while (y0 > y1)
-        {
+        while (y0 > y1) {
             data[x0][y0] = 0;
             level[x0][y0--] = TILE_ROAD;
         }
-        while (y0 < y1)
-        {
+        while (y0 < y1) {
             data[x0][y0] = 0;
             level[x0][y0++] = TILE_ROAD;
         }
-        if (!xFirst)
-        {
-            while (x0 > x1)
-            {
+        if (!xFirst) {
+            while (x0 > x1) {
                 data[x0][y0] = 0;
                 level[x0--][y0] = TILE_ROAD;
             }
-            while (x0 < x1)
-            {
+            while (x0 < x1) {
                 data[x0][y0] = 0;
                 level[x0++][y0] = TILE_ROAD;
             }
         }
     }
 
-    public void renderStatic(Graphics g)
-    {
+    public void renderStatic(Graphics g) {
         Image[][] map = Art.map;
 
-        for (int x = 0; x < 320 / 16; x++)
-        {
-            for (int y = 0; y < 240 / 16; y++)
-            {
+        for (int x = 0; x < 320 / 16; x++) {
+            for (int y = 0; y < 240 / 16; y++) {
                 g.drawImage(map[worldNumber / 4][0], x * 16, y * 16, null);
-                if (level[x][y] == TILE_LEVEL)
-                {
+                if (level[x][y] == TILE_LEVEL) {
                     int type = data[x][y];
-                    if (type == 0)
-                    {
+                    if (type == 0) {
                         g.drawImage(map[0][7], x * 16, y * 16, null);
-                    }
-                    else if (type == -1)
-                    {
+                    } else if (type == -1) {
                         g.drawImage(map[3][8], x * 16, y * 16, null);
-                    }
-                    else if (type == -3)
-                    {
+                    } else if (type == -3) {
                         g.drawImage(map[0][8], x * 16, y * 16, null);
-                    }
-                    else if (type == -10)
-                    {
+                    } else if (type == -10) {
                         g.drawImage(map[1][8], x * 16, y * 16, null);
-                    }
-                    else if (type == -11)
-                    {
+                    } else if (type == -11) {
                         g.drawImage(map[1][7], x * 16, y * 16, null);
-                    }
-                    else if (type == -2)
-                    {
+                    } else if (type == -2) {
                         g.drawImage(map[2][7], x * 16, y * 16 - 16, null);
                         g.drawImage(map[2][8], x * 16, y * 16, null);
-                    }
-                    else
-                    {
+                    } else {
                         g.drawImage(map[type - 1][6], x * 16, y * 16, null);
                     }
-                }
-                else if (level[x][y] == TILE_ROAD)
-                {
+                } else if (level[x][y] == TILE_ROAD) {
                     int p0 = isRoad(x - 1, y) ? 1 : 0;
                     int p1 = isRoad(x, y - 1) ? 1 : 0;
                     int p2 = isRoad(x + 1, y) ? 1 : 0;
                     int p3 = isRoad(x, y + 1) ? 1 : 0;
                     int s = p0 + p1 * 2 + p2 * 4 + p3 * 8;
                     g.drawImage(map[s][2], x * 16, y * 16, null);
-                }
-                else if (level[x][y] == TILE_WATER)
-                {
-                    for (int xx = 0; xx < 2; xx++)
-                    {
-                        for (int yy = 0; yy < 2; yy++)
-                        {
+                } else if (level[x][y] == TILE_WATER) {
+                    for (int xx = 0; xx < 2; xx++) {
+                        for (int yy = 0; yy < 2; yy++) {
                             int p0 = isWater(x * 2 + (xx - 1), y * 2 + (yy - 1)) ? 0 : 1;
                             int p1 = isWater(x * 2 + (xx + 0), y * 2 + (yy - 1)) ? 0 : 1;
                             int p2 = isWater(x * 2 + (xx - 1), y * 2 + (yy + 0)) ? 0 : 1;
                             int p3 = isWater(x * 2 + (xx + 0), y * 2 + (yy + 0)) ? 0 : 1;
                             int s = p0 + p1 * 2 + p2 * 4 + p3 * 8 - 1;
-                            if (s >= 0 && s < 14)
-                            {
+                            if (s >= 0 && s < 14) {
                                 g.drawImage(map[s][4 + ((xx + yy) & 1)], x * 16 + xx * 8, y * 16 + yy * 8, null);
                             }
                         }
@@ -412,89 +335,68 @@ public class MapScene extends Scene
     }
 
     private final DecimalFormat df = new DecimalFormat("00");
+
     @Override
-    public void render(Graphics g, float alpha)
-    {
+    public void render(Graphics g, float alpha) {
         g.drawImage(staticBg, 0, 0, null);
         Image[][] map = Art.map;
 
-        for (int y = 0; y <= 240 / 16; y++)
-        {
-            for (int x = 320 / 16; x >= 0; x--)
-            {
-                if (level[x][y] == TILE_WATER)
-                {
-                    if (isWater(x * 2 - 1, y * 2 - 1))
-                    {
+        for (int y = 0; y <= 240 / 16; y++) {
+            for (int x = 320 / 16; x >= 0; x--) {
+                if (level[x][y] == TILE_WATER) {
+                    if (isWater(x * 2 - 1, y * 2 - 1)) {
                         g.drawImage(map[15][4 + (tick / 6 + y) % 4], x * 16 - 8, y * 16 - 8, null);
                     }
-                }
-                else if (level[x][y] == TILE_DECORATION)
-                {
+                } else if (level[x][y] == TILE_DECORATION) {
                     g.drawImage(map[(tick + y * 12) / 6 % 4][10 + worldNumber % 4], x * 16, y * 16, null);
-                }
-                else if (level[x][y] == TILE_LEVEL && data[x][y] == -2 && tick / 12 % 2 == 0)
-                {
+                } else if (level[x][y] == TILE_LEVEL && data[x][y] == -2 && tick / 12 % 2 == 0) {
                     g.drawImage(map[3][7], x * 16 + 16, y * 16 - 16, null);
                 }
             }
         }
-        if (!Mario.large)
-        {
+        if (!Mario.large) {
             g.drawImage(map[(tick) / 6 % 2][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
-        }
-        else
-        {
-            if (!Mario.fire)
-            {
-                g.drawImage(map[(tick) / 6 % 2+2][0], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6-16, null);
-                g.drawImage(map[(tick) / 6 % 2+2][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
-            }
-            else
-            {
-                g.drawImage(map[(tick) / 6 % 2+4][0], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6-16, null);
-                g.drawImage(map[(tick) / 6 % 2+4][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
+        } else {
+            if (!Mario.fire) {
+                g.drawImage(map[(tick) / 6 % 2 + 2][0], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6 - 16, null);
+                g.drawImage(map[(tick) / 6 % 2 + 2][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
+            } else {
+                g.drawImage(map[(tick) / 6 % 2 + 4][0], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6 - 16, null);
+                g.drawImage(map[(tick) / 6 % 2 + 4][1], xMario + (int) (xMarioA * alpha), yMario + (int) (yMarioA * alpha) - 6, null);
             }
         }
-        
+
         drawStringDropShadow(g, "MARIO " + df.format(Mario.lives), 0, 0, 7);
 
-        drawStringDropShadow(g, "WORLD "+(worldNumber+1), 32, 0, 7);
+        drawStringDropShadow(g, "WORLD " + (worldNumber + 1), 32, 0, 7);
     }
 
 
-    private void drawStringDropShadow(Graphics g, String text, int x, int y, int c)
-    {
-        drawString(g, text, x*8+5, y*8+5, 0);
-        drawString(g, text, x*8+4, y*8+4, c);
+    private void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
+        drawString(g, text, x * 8 + 5, y * 8 + 5, 0);
+        drawString(g, text, x * 8 + 4, y * 8 + 4, c);
     }
-    
-    private void drawString(Graphics g, String text, int x, int y, int c)
-    {
+
+    private void drawString(Graphics g, String text, int x, int y, int c) {
         char[] ch = text.toCharArray();
-        for (int i = 0; i < ch.length; i++)
-        {
+        for (int i = 0; i < ch.length; i++) {
             g.drawImage(Art.font[ch[i] - 32][c], x + i * 8, y, null);
         }
     }
 
-    private boolean isRoad(int x, int y)
-    {
+    private boolean isRoad(int x, int y) {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
         if (level[x][y] == TILE_ROAD) return true;
         return level[x][y] == TILE_LEVEL;
     }
 
-    private boolean isWater(int x, int y)
-    {
+    private boolean isWater(int x, int y) {
         if (x < 0) x = 0;
         if (y < 0) y = 0;
 
-        for (int xx = 0; xx < 2; xx++)
-        {
-            for (int yy = 0; yy < 2; yy++)
-            {
+        for (int xx = 0; xx < 2; xx++) {
+            for (int yy = 0; yy < 2; yy++) {
                 if (level[(x + xx) / 2][(y + yy) / 2] != TILE_WATER) return false;
             }
         }
@@ -505,63 +407,44 @@ public class MapScene extends Scene
     private boolean canEnterLevel;
 
     @Override
-    public void tick()
-    {
+    public void tick() {
         xMario += xMarioA;
         yMario += yMarioA;
         tick++;
         int x = xMario / 16;
         int y = yMario / 16;
-        if (level[x][y] == TILE_ROAD)
-        {
+        if (level[x][y] == TILE_ROAD) {
             data[x][y] = 0;
         }
 
-        if (moveTime > 0)
-        {
+        if (moveTime > 0) {
             moveTime--;
-        }
-        else
-        {
+        } else {
             xMarioA = 0;
             yMarioA = 0;
-            if (canEnterLevel && keys[Mario.KEY_JUMP])
-            {
-                if (level[x][y] == TILE_LEVEL && data[x][y] == -11)
-                {
-                }
-                else
-                {
-                    if (level[x][y] == TILE_LEVEL && data[x][y] != 0 && data[x][y] > -10)
-                    {
+            if (canEnterLevel && keys[Mario.KEY_JUMP]) {
+                if (level[x][y] == TILE_LEVEL && data[x][y] == -11) {
+                } else {
+                    if (level[x][y] == TILE_LEVEL && data[x][y] != 0 && data[x][y] > -10) {
                         Mario.levelString = (worldNumber + 1) + "-";
-                        int difficulty = worldNumber+1;
+                        int difficulty = worldNumber + 1;
                         int type = LevelGenerator.TYPE_OVERGROUND;
-                        if (data[x][y] > 1 && new Random(seed + x * 313211 + y * 534321).nextInt(3) == 0)
-                        {
+                        if (data[x][y] > 1 && new Random(seed + x * 313211 + y * 534321).nextInt(3) == 0) {
                             type = LevelGenerator.TYPE_UNDERGROUND;
                         }
-                        if (data[x][y] < 0)
-                        {
-                            if (data[x][y] == -2)
-                            {
+                        if (data[x][y] < 0) {
+                            if (data[x][y] == -2) {
                                 Mario.levelString += "X";
                                 difficulty += 2;
-                            }
-                            else if (data[x][y] == -1)
-                            {
+                            } else if (data[x][y] == -1) {
                                 Mario.levelString += "?";
-                            }
-                            else
-                            {
+                            } else {
                                 Mario.levelString += "#";
                                 difficulty += 1;
                             }
 
                             type = LevelGenerator.TYPE_CASTLE;
-                        }
-                        else
-                        {
+                        } else {
                             Mario.levelString += data[x][y];
                         }
 
@@ -572,40 +455,33 @@ public class MapScene extends Scene
             }
             canEnterLevel = !keys[Mario.KEY_JUMP];
 
-            if (keys[Mario.KEY_LEFT])
-            {
+            if (keys[Mario.KEY_LEFT]) {
                 keys[Mario.KEY_LEFT] = false;
                 tryWalking(-1, 0);
             }
-            if (keys[Mario.KEY_RIGHT])
-            {
+            if (keys[Mario.KEY_RIGHT]) {
                 keys[Mario.KEY_RIGHT] = false;
                 tryWalking(1, 0);
             }
-            if (keys[Mario.KEY_UP])
-            {
+            if (keys[Mario.KEY_UP]) {
                 keys[Mario.KEY_UP] = false;
                 tryWalking(0, -1);
             }
-            if (keys[Mario.KEY_DOWN])
-            {
+            if (keys[Mario.KEY_DOWN]) {
                 keys[Mario.KEY_DOWN] = false;
                 tryWalking(0, 1);
             }
         }
     }
 
-    public void tryWalking(int xd, int yd)
-    {
+    public void tryWalking(int xd, int yd) {
         int x = xMario / 16;
         int y = yMario / 16;
         int xt = xMario / 16 + xd;
         int yt = yMario / 16 + yd;
 
-        if (level[xt][yt] == TILE_ROAD || level[xt][yt] == TILE_LEVEL)
-        {
-            if (level[xt][yt] == TILE_ROAD)
-            {
+        if (level[xt][yt] == TILE_ROAD || level[xt][yt] == TILE_LEVEL) {
+            if (level[xt][yt] == TILE_ROAD) {
                 if ((data[xt][yt] != 0) && (data[x][y] != 0 && data[x][y] > -10)) return;
             }
             xMarioA = xd * 8;
@@ -614,11 +490,9 @@ public class MapScene extends Scene
         }
     }
 
-    private int calcDistance(int x, int y, int xa, int ya)
-    {
+    private int calcDistance(int x, int y, int xa, int ya) {
         int distance = 0;
-        while (true)
-        {
+        while (true) {
             x += xa;
             y += ya;
             if (level[x][y] != TILE_ROAD) return distance;
@@ -629,23 +503,19 @@ public class MapScene extends Scene
     }
 
     @Override
-    public float getX(float alpha)
-    {
+    public float getX(float alpha) {
         return 160;
     }
 
     @Override
-    public float getY(float alpha)
-    {
+    public float getY(float alpha) {
         return 120;
     }
 
-    public void levelWon()
-    {
+    public void levelWon() {
         int x = xMario / 16;
         int y = yMario / 16;
-        if (data[x][y] == -2)
-        {
+        if (data[x][y] == -2) {
             nextWorld();
             return;
         }

@@ -6,8 +6,7 @@ import nars.experiment.mario.LevelScene;
 import java.awt.*;
 
 
-public class Enemy extends Sprite
-{
+public class Enemy extends Sprite {
     public static final int ENEMY_RED_KOOPA = 0;
     public static final int ENEMY_GREEN_KOOPA = 1;
     public static final int ENEMY_GOOMBA = 2;
@@ -20,13 +19,13 @@ public class Enemy extends Sprite
     private float runTime;
     private boolean onGround;
     @SuppressWarnings("unused")
-	private boolean mayJump;
+    private boolean mayJump;
     @SuppressWarnings("unused")
-	private int jumpTime;
+    private int jumpTime;
     @SuppressWarnings("unused")
-	private float xJumpSpeed;
+    private float xJumpSpeed;
     @SuppressWarnings("unused")
-	private float yJumpSpeed;
+    private float yJumpSpeed;
 
     int width = 4;
     int height = 24;
@@ -41,11 +40,10 @@ public class Enemy extends Sprite
 
     public boolean winged = true;
     private int wingTime;
-    
+
     public boolean noFireballDeath;
 
-    public Enemy(LevelScene world, int x, int y, int dir, int type, boolean winged)
-    {
+    public Enemy(LevelScene world, int x, int y, int dir, int type, boolean winged) {
         this.type = type;
         sheet = Art.enemies;
         this.winged = winged;
@@ -57,7 +55,7 @@ public class Enemy extends Sprite
         yPicO = 31;
 
         avoidCliffs = type == Enemy.ENEMY_RED_KOOPA;
-        
+
         noFireballDeath = type == Enemy.ENEMY_SPIKY;
 
         yPic = type;
@@ -68,49 +66,36 @@ public class Enemy extends Sprite
     }
 
     @Override
-    public void collideCheck()
-    {
-        if (deadTime != 0)
-        {
+    public void collideCheck() {
+        if (deadTime != 0) {
             return;
         }
 
         float xMarioD = world.mario.x - x;
         float yMarioD = world.mario.y - y;
         @SuppressWarnings("unused")
-		float w = 16;
-        if (xMarioD > -width*2-4 && xMarioD < width*2+4)
-        {
-            if (yMarioD > -height && yMarioD < world.mario.height)
-            {
-                if (type != Enemy.ENEMY_SPIKY && world.mario.ya > 0 && yMarioD <= 0 && (!world.mario.onGround || !world.mario.wasOnGround))
-                {
+        float w = 16;
+        if (xMarioD > -width * 2 - 4 && xMarioD < width * 2 + 4) {
+            if (yMarioD > -height && yMarioD < world.mario.height) {
+                if (type != Enemy.ENEMY_SPIKY && world.mario.ya > 0 && yMarioD <= 0 && (!world.mario.onGround || !world.mario.wasOnGround)) {
                     world.mario.stomp(this);
-                    if (winged)
-                    {
+                    if (winged) {
                         winged = false;
                         ya = 0;
-                    }
-                    else
-                    {
+                    } else {
                         this.yPicO = 31 - (32 - 8);
                         hPic = 8;
                         if (spriteTemplate != null) spriteTemplate.isDead = true;
                         deadTime = 10;
                         winged = false;
 
-                        if (type == Enemy.ENEMY_RED_KOOPA)
-                        {
+                        if (type == Enemy.ENEMY_RED_KOOPA) {
                             spriteContext.addSprite(new Shell(world, x, y, 0));
-                        }
-                        else if (type == Enemy.ENEMY_GREEN_KOOPA)
-                        {
+                        } else if (type == Enemy.ENEMY_GREEN_KOOPA) {
                             spriteContext.addSprite(new Shell(world, x, y, 1));
                         }
                     }
-                }
-                else
-                {
+                } else {
                     world.mario.getHurt();
                 }
             }
@@ -118,25 +103,20 @@ public class Enemy extends Sprite
     }
 
     @Override
-    public void move()
-    {
+    public void move() {
         wingTime++;
-        if (deadTime > 0)
-        {
+        if (deadTime > 0) {
             deadTime--;
 
-            if (deadTime == 0)
-            {
+            if (deadTime == 0) {
                 deadTime = 1;
-                for (int i = 0; i < 8; i++)
-                {
+                for (int i = 0; i < 8; i++) {
                     world.addSprite(new Sparkle((int) (x + Math.random() * 16 - 8) + 4, (int) (y - Math.random() * 8) + 4, (float) (Math.random() * 2 - 1), (float) Math.random() * -1, 0, 1, 5));
                 }
                 spriteContext.removeSprite(this);
             }
 
-            if (flyDeath)
-            {
+            if (flyDeath) {
                 x += xa;
                 y += ya;
                 ya *= 0.95;
@@ -147,14 +127,12 @@ public class Enemy extends Sprite
 
 
         float sideWaysSpeed = 1.75f;
-        
 
-        if (xa > 2)
-        {
+
+        if (xa > 2) {
             facing = 1;
         }
-        if (xa < -2)
-        {
+        if (xa < -2) {
             facing = -1;
         }
 
@@ -168,8 +146,7 @@ public class Enemy extends Sprite
 
         int runFrame = ((int) (runTime / 20)) % 2;
 
-        if (!onGround)
-        {
+        if (!onGround) {
             runFrame = 1;
         }
 
@@ -179,28 +156,19 @@ public class Enemy extends Sprite
         move(0, ya);
 
         ya *= winged ? 0.95f : 0.85f;
-        if (onGround)
-        {
+        if (onGround) {
             xa *= GROUND_INERTIA;
-        }
-        else
-        {
+        } else {
             xa *= AIR_INERTIA;
         }
 
-        if (!onGround)
-        {
-            if (winged)
-            {
+        if (!onGround) {
+            if (winged) {
                 ya += 0.6f;
-            }
-            else
-            {
+            } else {
                 ya += 2;
             }
-        }
-        else if (winged)
-        {
+        } else if (winged) {
             ya = -10;
         }
 
@@ -209,95 +177,80 @@ public class Enemy extends Sprite
         xPic = runFrame;
     }
 
-    private boolean move(float xa, float ya)
-    {
-        while (xa > 8)
-        {
+    private boolean move(float xa, float ya) {
+        while (xa > 8) {
             if (!move(8, 0)) return false;
             xa -= 8;
         }
-        while (xa < -8)
-        {
+        while (xa < -8) {
             if (!move(-8, 0)) return false;
             xa += 8;
         }
-        while (ya > 8)
-        {
+        while (ya > 8) {
             if (!move(0, 8)) return false;
             ya -= 8;
         }
-        while (ya < -8)
-        {
+        while (ya < -8) {
             if (!move(0, -8)) return false;
             ya += 8;
         }
 
         boolean collide = false;
-        if (ya > 0)
-        {
+        if (ya > 0) {
             if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa - width, y + ya + 1, xa, ya)) collide = true;
             else if (isBlocking(x + xa + width, y + ya + 1, xa, ya)) collide = true;
         }
-        if (ya < 0)
-        {
+        if (ya < 0) {
             if (isBlocking(x + xa, y + ya - height, xa, ya)) collide = true;
             else if (collide || isBlocking(x + xa - width, y + ya - height, xa, ya)) collide = true;
             else if (collide || isBlocking(x + xa + width, y + ya - height, xa, ya)) collide = true;
         }
-        if (xa > 0)
-        {
+        if (xa > 0) {
             if (isBlocking(x + xa + width, y + ya - height, xa, ya)) collide = true;
             if (isBlocking(x + xa + width, y + ya - height / 2, xa, ya)) collide = true;
             if (isBlocking(x + xa + width, y + ya, xa, ya)) collide = true;
 
-            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa + width) / 16), (int) ((y) / 16 + 1), xa, 1)) collide = true;
+            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa + width) / 16), (int) ((y) / 16 + 1), xa, 1))
+                collide = true;
         }
-        if (xa < 0)
-        {
+        if (xa < 0) {
             if (isBlocking(x + xa - width, y + ya - height, xa, ya)) collide = true;
             if (isBlocking(x + xa - width, y + ya - height / 2, xa, ya)) collide = true;
             if (isBlocking(x + xa - width, y + ya, xa, ya)) collide = true;
 
-            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa - width) / 16), (int) ((y) / 16 + 1), xa, 1)) collide = true;
+            if (avoidCliffs && onGround && !world.level.isBlocking((int) ((x + xa - width) / 16), (int) ((y) / 16 + 1), xa, 1))
+                collide = true;
         }
 
-        if (collide)
-        {
-            if (xa < 0)
-            {
+        if (collide) {
+            if (xa < 0) {
                 x = (int) ((x - width) / 16) * 16 + width;
                 this.xa = 0;
             }
-            if (xa > 0)
-            {
+            if (xa > 0) {
                 x = (int) ((x + width) / 16 + 1) * 16 - width - 1;
                 this.xa = 0;
             }
-            if (ya < 0)
-            {
+            if (ya < 0) {
                 y = (int) ((y - height) / 16) * 16 + height;
                 jumpTime = 0;
                 this.ya = 0;
             }
-            if (ya > 0)
-            {
+            if (ya > 0) {
                 y = (int) (y / 16 + 1) * 16 - 1;
                 onGround = true;
             }
             return false;
-        }
-        else
-        {
+        } else {
             x += xa;
             y += ya;
             return true;
         }
     }
 
-    private boolean isBlocking(float _x, float _y, float xa, float ya)
-    {
+    private boolean isBlocking(float _x, float _y, float xa, float ya) {
         int x = (int) (_x / 16);
         int y = (int) (_y / 16);
         if (x == (int) (this.x / 16) && y == (int) (this.y / 16)) return false;
@@ -305,24 +258,21 @@ public class Enemy extends Sprite
         boolean blocking = world.level.isBlocking(x, y, xa, ya);
 
         @SuppressWarnings("unused")
-		byte block = world.level.getBlock(x, y);
+        byte block = world.level.getBlock(x, y);
 
         return blocking;
     }
 
     @Override
-    public boolean shellCollideCheck(Shell shell)
-    {
+    public boolean shellCollideCheck(Shell shell) {
         if (deadTime != 0) return false;
 
         float xD = shell.x - x;
         float yD = shell.y - y;
 
-        if (xD > -16 && xD < 16)
-        {
-            if (yD > -height && yD < shell.height)
-            {
-                
+        if (xD > -16 && xD < 16) {
+            if (yD > -height && yD < shell.height) {
+
 
                 xa = shell.facing * 2;
                 ya = -5;
@@ -339,20 +289,16 @@ public class Enemy extends Sprite
     }
 
     @Override
-    public boolean fireballCollideCheck(Fireball fireball)
-    {
+    public boolean fireballCollideCheck(Fireball fireball) {
         if (deadTime != 0) return false;
 
         float xD = fireball.x - x;
         float yD = fireball.y - y;
 
-        if (xD > -16 && xD < 16)
-        {
-            if (yD > -height && yD < fireball.height)
-            {
+        if (xD > -16 && xD < 16) {
+            if (yD > -height && yD < fireball.height) {
                 if (noFireballDeath) return true;
-                
-                
+
 
                 xa = fireball.facing * 2;
                 ya = -5;
@@ -369,13 +315,11 @@ public class Enemy extends Sprite
     }
 
     @Override
-    public void bumpCheck(int xTile, int yTile)
-    {
+    public void bumpCheck(int xTile, int yTile) {
         if (deadTime != 0) return;
 
-        if (x + width > xTile * 16 && x - width < xTile * 16 + 16 && yTile == (int) ((y - 1) / 16))
-        {
-            
+        if (x + width > xTile * 16 && x - width < xTile * 16 + 16 && yTile == (int) ((y - 1) / 16)) {
+
 
             xa = -world.mario.facing * 2;
             ya = -5;
@@ -389,18 +333,13 @@ public class Enemy extends Sprite
     }
 
     @Override
-    public void render(Graphics og, float alpha)
-    {
-        if (winged)
-        {
+    public void render(Graphics og, float alpha) {
+        if (winged) {
             int xPixel = (int) (xOld + (x - xOld) * alpha) - xPicO;
             int yPixel = (int) (yOld + (y - yOld) * alpha) - yPicO;
 
-            if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA)
-            {
-            }
-            else
-            {
+            if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA) {
+            } else {
                 xFlipPic = !xFlipPic;
                 og.drawImage(sheet[wingTime / 4 % 2][4], xPixel + (xFlipPic ? wPic : 0) + (xFlipPic ? 10 : -10), yPixel + (yFlipPic ? hPic : 0) - 8, xFlipPic ? -wPic : wPic, yFlipPic ? -hPic : hPic, null);
                 xFlipPic = !xFlipPic;
@@ -409,17 +348,13 @@ public class Enemy extends Sprite
 
         super.render(og, alpha);
 
-        if (winged)
-        {
+        if (winged) {
             int xPixel = (int) (xOld + (x - xOld) * alpha) - xPicO;
             int yPixel = (int) (yOld + (y - yOld) * alpha) - yPicO;
 
-            if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA)
-            {
+            if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA) {
                 og.drawImage(sheet[wingTime / 4 % 2][4], xPixel + (xFlipPic ? wPic : 0) + (xFlipPic ? 10 : -10), yPixel + (yFlipPic ? hPic : 0) - 10, xFlipPic ? -wPic : wPic, yFlipPic ? -hPic : hPic, null);
-            }
-            else
-            {
+            } else {
                 og.drawImage(sheet[wingTime / 4 % 2][4], xPixel + (xFlipPic ? wPic : 0) + (xFlipPic ? 10 : -10), yPixel + (yFlipPic ? hPic : 0) - 8, xFlipPic ? -wPic : wPic, yFlipPic ? -hPic : hPic, null);
             }
         }

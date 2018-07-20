@@ -7,6 +7,7 @@ import java.io.File;
 /**
  * File:         BomberPlayer.java
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -88,21 +89,21 @@ public class BomberPlayer extends Thread {
             RenderingHints h = null;
             h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
-             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
-             RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON);
             h.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
-             RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
             h.put(RenderingHints.KEY_ANTIALIASING,
-             RenderingHints.VALUE_ANTIALIAS_ON);
+                    RenderingHints.VALUE_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_COLOR_RENDERING,
-             RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                    RenderingHints.VALUE_COLOR_RENDER_QUALITY);
             hints = h;
         }
 
         /** create the images */
         sprites = new Image[4][5][5];
-        int[] states = { UP, DOWN, LEFT, RIGHT, EXPLODING };
+        int[] states = {UP, DOWN, LEFT, RIGHT, EXPLODING};
         Toolkit tk = Toolkit.getDefaultToolkit();
         String path = new String();
         /** open the files */
@@ -116,12 +117,13 @@ public class BomberPlayer extends Thread {
                         path += states[d] + "" + (f + 1) + ".gif";
                         /** open the file */
                         sprites[p][d][f] = tk.getImage(
-                        new File(path).getCanonicalPath());
+                                new File(path).getCanonicalPath());
                     }
                 }
             }
+        } catch (Exception e) {
+            new ErrorDialog(e);
         }
-        catch (Exception e) { new ErrorDialog(e); }
     }
 
     /**
@@ -137,17 +139,26 @@ public class BomberPlayer extends Thread {
 
         /** create the bomb grid */
         bombGrid = new boolean[17][17];
-        for (int i = 0; i < 17; i++) for (int j = 0; j < 17; j++)
-            bombGrid[i][j] = false;
+        for (int i = 0; i < 17; i++)
+            for (int j = 0; j < 17; j++)
+                bombGrid[i][j] = false;
 
         int r = 0, c = 0;
         /** find player's starting position */
-        switch (this.playerNo)
-        {
-            case 1: r = c = 1; break;
-            case 2: r = c = 15; break;
-            case 3: r = 15; c = 1; break;
-            case 4: r = 1; c = 15;
+        switch (this.playerNo) {
+            case 1:
+                r = c = 1;
+                break;
+            case 2:
+                r = c = 15;
+                break;
+            case 3:
+                r = 15;
+                c = 1;
+                break;
+            case 4:
+                r = 1;
+                c = 15;
         }
         /** calculate position */
         x = r << BomberMain.shiftCount;
@@ -166,8 +177,9 @@ public class BomberPlayer extends Thread {
             }
             /** wait for images to finish loading */
             tracker.waitForAll();
+        } catch (Exception e) {
+            new ErrorDialog(e);
         }
-        catch (Exception e) { new ErrorDialog(e); }
 
         /** create the key queue */
         keyQueue = new BomberKeyQueue();
@@ -186,57 +198,54 @@ public class BomberPlayer extends Thread {
      * Key pressed event handler.
      * @param evt key event
      */
-    public void keyPressed(KeyEvent evt)
-    {
+    public void keyPressed(KeyEvent evt) {
         /** assume no new key is pressed */
         byte newKey = 0x00;
         /** if player isn't exploding or dead and key pressed is in player's */
         /** key list */
         if (!isExploding && !isDead &&
-        evt.getKeyCode() == keys[UP] ||
-        evt.getKeyCode() == keys[DOWN] ||
-        evt.getKeyCode() == keys[LEFT] ||
-        evt.getKeyCode() == keys[RIGHT])
-        {
+                evt.getKeyCode() == keys[UP] ||
+                evt.getKeyCode() == keys[DOWN] ||
+                evt.getKeyCode() == keys[LEFT] ||
+                evt.getKeyCode() == keys[RIGHT]) {
             /** if down key pressed */
             if (evt.getKeyCode() == keys[DOWN]) {
                 newKey = BDOWN;
                 /** if only the up key is pressed */
                 if ((currentDirKeyDown & BUP) > 0 ||
-                ((currentDirKeyDown & BLEFT) == 0 &&
-                (currentDirKeyDown & BRIGHT) == 0))
-                currentDirKeyDown = BDOWN;
+                        ((currentDirKeyDown & BLEFT) == 0 &&
+                                (currentDirKeyDown & BRIGHT) == 0))
+                    currentDirKeyDown = BDOWN;
             }
             /** if up key is pressed */
             else if (evt.getKeyCode() == keys[UP]) {
                 newKey = BUP;
                 /** if only the down key is pressed */
                 if ((currentDirKeyDown & BDOWN) > 0 ||
-                ((currentDirKeyDown & BLEFT) == 0 &&
-                (currentDirKeyDown & BRIGHT) == 0))
-                currentDirKeyDown = BUP;
+                        ((currentDirKeyDown & BLEFT) == 0 &&
+                                (currentDirKeyDown & BRIGHT) == 0))
+                    currentDirKeyDown = BUP;
             }
             /** if left key is pressed */
             else if (evt.getKeyCode() == keys[LEFT]) {
                 newKey = BLEFT;
                 /** if only the right key is pressed */
                 if ((currentDirKeyDown & BRIGHT) > 0 ||
-                ((currentDirKeyDown & BUP) == 0 &&
-                (currentDirKeyDown & BDOWN) == 0))
-                currentDirKeyDown = BLEFT;
+                        ((currentDirKeyDown & BUP) == 0 &&
+                                (currentDirKeyDown & BDOWN) == 0))
+                    currentDirKeyDown = BLEFT;
             }
             /** if right key is pressed */
             else if (evt.getKeyCode() == keys[RIGHT]) {
                 newKey = BRIGHT;
                 /** if only the left is pressed */
                 if ((currentDirKeyDown & BLEFT) > 0 ||
-                ((currentDirKeyDown & BUP) == 0 &&
-                (currentDirKeyDown & BDOWN) == 0))
-                currentDirKeyDown = BRIGHT;
+                        ((currentDirKeyDown & BUP) == 0 &&
+                                (currentDirKeyDown & BDOWN) == 0))
+                    currentDirKeyDown = BRIGHT;
             }
             /** if new key isn't in the key queue */
-            if (!keyQueue.contains(newKey))
-            {
+            if (!keyQueue.contains(newKey)) {
                 /** then push it on top */
                 keyQueue.push(newKey);
                 /** reset keys pressed buffer */
@@ -249,8 +258,7 @@ public class BomberPlayer extends Thread {
         /** if no direction key is pressed */
         /** and bomb key is pressed */
         if (!isExploding && !isDead &&
-        evt.getKeyCode() == keys[BOMB] && !bombKeyDown && isActive)
-        {
+                evt.getKeyCode() == keys[BOMB] && !bombKeyDown && isActive) {
             bombKeyDown = true;
             interrupt();
         }
@@ -260,15 +268,13 @@ public class BomberPlayer extends Thread {
      * Key released handler.
      * @param evt key event
      */
-    public void keyReleased(KeyEvent evt)
-    {
+    public void keyReleased(KeyEvent evt) {
         /** if a direction key is released */
         if (!isExploding && !isDead && (
-        evt.getKeyCode() == keys[UP] ||
-        evt.getKeyCode() == keys[DOWN] ||
-        evt.getKeyCode() == keys[LEFT] ||
-        evt.getKeyCode() == keys[RIGHT]))
-        {
+                evt.getKeyCode() == keys[UP] ||
+                        evt.getKeyCode() == keys[DOWN] ||
+                        evt.getKeyCode() == keys[LEFT] ||
+                        evt.getKeyCode() == keys[RIGHT])) {
             /** if down key is released */
             if (evt.getKeyCode() == keys[DOWN]) {
                 /** remove key from the all keys down buffer */
@@ -306,8 +312,7 @@ public class BomberPlayer extends Thread {
                 keyQueue.removeItems(BRIGHT);
             }
             /** if no key is currently down */
-            if (currentDirKeyDown == 0)
-            {
+            if (currentDirKeyDown == 0) {
                 /** see if last key pressed is still pressed or not */
                 boolean keyFound = false;
                 /** search for last key pressed */
@@ -322,8 +327,7 @@ public class BomberPlayer extends Thread {
                     else keyQueue.pop();
                 }
                 /** if no key found */
-                if (!keyFound)
-                {
+                if (!keyFound) {
                     /** remove all keys from queue if not already removed */
                     keyQueue.removeAll();
                     /** reset key buffers */
@@ -335,8 +339,7 @@ public class BomberPlayer extends Thread {
             }
         }
         /** if the bomb key is released */
-        if (!isExploding && !isDead && evt.getKeyCode() == keys[BOMB])
-        {
+        if (!isExploding && !isDead && evt.getKeyCode() == keys[BOMB]) {
             bombKeyDown = false;
             interrupt();
         }
@@ -345,19 +348,16 @@ public class BomberPlayer extends Thread {
     /**
      * Deactivates the player so it can't be controlled.
      */
-    public void deactivate()
-    {
+    public void deactivate() {
         isActive = false;
     }
 
     /**
      * Kills the player
      */
-    public void kill()
-    {
+    public void kill() {
         /** is player isn't dead or isn't dieing already */
-        if (!isDead && !isExploding)
-        {
+        if (!isDead && !isExploding) {
             /** lower players left */
             BomberGame.playersLeft -= 1;
             /** reset frame counter */
@@ -379,24 +379,29 @@ public class BomberPlayer extends Thread {
     /**
      * @return x co-ordinate
      */
-    public int getX() { return x; }
+    public int getX() {
+        return x;
+    }
 
     /**
      * @return y co-ordinate
      */
-    public int getY() { return y; }
+    public int getY() {
+        return y;
+    }
 
     /**
      * @return whether player is (dead or dieing) or not
      */
-    public boolean isDead() { return (isDead | isExploding); }
+    public boolean isDead() {
+        return (isDead | isExploding);
+    }
 
     /**
      * Main loop
      */
     @Override
-    public void run()
-    {
+    public void run() {
         /** can move flat */
         boolean canMove;
         /** keeps track of last key state */
@@ -417,14 +422,14 @@ public class BomberPlayer extends Thread {
             if (!isExploding && !isDead && bombKeyDown && isActive) {
                 /** if bombs are available */
                 if ((totalBombs - usedBombs) > 0 &&
-                /** and a bomb isn't placed there already */
-                map.grid[x >> shiftCount][y >> shiftCount]
-                != BomberMap.BOMB && !bombGrid[(x + halfSize) >>
-                BomberMain.shiftCount][(y + halfSize) >>
-                BomberMain.shiftCount]) {
+                        /** and a bomb isn't placed there already */
+                        map.grid[x >> shiftCount][y >> shiftCount]
+                                != BomberMap.BOMB && !bombGrid[(x + halfSize) >>
+                        BomberMain.shiftCount][(y + halfSize) >>
+                        BomberMain.shiftCount]) {
                     usedBombs += 1;
                     bombGrid[(x + halfSize) >> BomberMain.shiftCount]
-                    [(y + halfSize) >> BomberMain.shiftCount] = true;
+                            [(y + halfSize) >> BomberMain.shiftCount] = true;
                     /** create bomb */
                     map.createBomb(x + halfSize, y + halfSize, playerNo);
                 }
@@ -446,8 +451,8 @@ public class BomberPlayer extends Thread {
                         state = LEFT;
                         /** if west slot is empty then it can move */
                         canMove = (x % size != 0 || (y % size == 0 &&
-                        (map.grid[(x >> shiftCount) - 1][y >> shiftCount]
-                        <= BomberMap.NOTHING)));
+                                (map.grid[(x >> shiftCount) - 1][y >> shiftCount]
+                                        <= BomberMap.NOTHING)));
 
                         /** if it can't move */
                         if (!canMove) {
@@ -456,55 +461,62 @@ public class BomberPlayer extends Thread {
                             for (oy = -offset; oy < 0; oy += (size / 4)) {
                                 /** and west slot is empty */
                                 if ((y + oy) % size == 0 &&
-                                map.grid[(x >> shiftCount) - 1]
-                                [(y + oy) >> shiftCount] <= BomberMap.NOTHING) {
+                                        map.grid[(x >> shiftCount) - 1]
+                                                [(y + oy) >> shiftCount] <= BomberMap.NOTHING) {
                                     /** then move anyway */
-                                    canMove = true; break;
+                                    canMove = true;
+                                    break;
                                 }
                             }
                             /** if it still can't move */
                             if (!canMove) {
                                 /** if it's a little bit south */
                                 for (oy = (size / 4); oy <= offset;
-                                oy += (size / 4)) {
+                                     oy += (size / 4)) {
                                     /** and west slot is empty */
                                     if ((y + oy) % size == 0 &&
-                                    map.grid[(x >> shiftCount) - 1]
-                                    [(y + oy) >> shiftCount]
-                                    <= BomberMap.NOTHING) {
+                                            map.grid[(x >> shiftCount) - 1]
+                                                    [(y + oy) >> shiftCount]
+                                                    <= BomberMap.NOTHING) {
                                         /** move anyway */
-                                        canMove = true; break;
+                                        canMove = true;
+                                        break;
                                     }
                                 }
                             }
                             /** if it can move now */
                             if (canMove) {
                                 /** clear original spot */
-                                clear = true; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = true;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                                 /** move up or down */
                                 y += oy;
                                 /** redraw the sprite */
-                                clear = false; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = false;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                             }
                         }
                         /** if it can move */
                         if (canMove) {
                             /** clear original spot */
-                            clear = true; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = true;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                             /** move left */
                             x -= (size / 4);
                             /** redraw the sprite */
-                            clear = false; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = false;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                         }
                         /** if it can't move */
                         else {
                             /** refresh the sprite */
-                            moving = false; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            moving = false;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                         }
                     }
                     /** if the right key is down */
@@ -513,8 +525,8 @@ public class BomberPlayer extends Thread {
                         canMove = false;
                         /** if east slot is empty */
                         canMove = (x % size != 0 || (y % size == 0 &&
-                        (map.grid[(x >> shiftCount) + 1][y >> shiftCount]
-                        <= BomberMap.NOTHING)));
+                                (map.grid[(x >> shiftCount) + 1][y >> shiftCount]
+                                        <= BomberMap.NOTHING)));
 
                         /** if it can't move */
                         if (!canMove) {
@@ -523,56 +535,62 @@ public class BomberPlayer extends Thread {
                             for (oy = -offset; oy < 0; oy += (size / 4)) {
                                 /** and the east slot is empty */
                                 if ((y + oy) % size == 0 &&
-                                map.grid[(x >> shiftCount) + 1]
-                                [(y + oy) >> shiftCount] <= BomberMap.NOTHING) {
+                                        map.grid[(x >> shiftCount) + 1]
+                                                [(y + oy) >> shiftCount] <= BomberMap.NOTHING) {
                                     /** move it */
-                                    canMove = true; break;
+                                    canMove = true;
+                                    break;
                                 }
                             }
                             /** if it still can't move */
                             if (!canMove) {
                                 /** see if it's a bit north */
                                 for (oy = (size / 4); oy <= offset;
-                                oy += (size / 4)) {
+                                     oy += (size / 4)) {
                                     /** and the east slot if empty */
                                     if ((y + oy) % size == 0 &&
-                                    map.grid[(x >> shiftCount) + 1]
-                                    [(y + oy) >> shiftCount]
-                                    <= BomberMap.NOTHING) {
+                                            map.grid[(x >> shiftCount) + 1]
+                                                    [(y + oy) >> shiftCount]
+                                                    <= BomberMap.NOTHING) {
                                         /** move it */
-                                        canMove = true; break;
+                                        canMove = true;
+                                        break;
                                     }
                                 }
                             }
                             /** if it can move now */
                             if (canMove) {
                                 /** clear original spot */
-                                clear = true; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = true;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                                 /** move up or down */
                                 y += oy;
                                 /** refresh the sprite */
-                                clear = false; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = false;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                             }
                         }
                         /** if it can move */
                         if (canMove) {
                             /** clear original spot */
-                            clear = true; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = true;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                             /** move right */
                             x += (size / 4);
                             /** refresh the sprite */
-                            clear = false; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = false;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                         }
                         /** if it can't move */
                         else {
                             moving = false;
                             /** refresh the sprite */
                             game.paintImmediately(x,
-                            y - halfSize, width, height);
+                                    y - halfSize, width, height);
                         }
                     }
                     /** if up key is down */
@@ -581,8 +599,8 @@ public class BomberPlayer extends Thread {
                         canMove = false;
                         /** if north slot is empty */
                         canMove = (y % size != 0 || (x % size == 0 &&
-                        (map.grid[x >> shiftCount][(y >> shiftCount) - 1]
-                        <= BomberMap.NOTHING)));
+                                (map.grid[x >> shiftCount][(y >> shiftCount) - 1]
+                                        <= BomberMap.NOTHING)));
 
                         /** if it can't move */
                         if (!canMove) {
@@ -591,9 +609,10 @@ public class BomberPlayer extends Thread {
                             for (ox = -offset; ox < 0; ox += (size / 4)) {
                                 /** and the north slot is empty */
                                 if ((x + ox) % size == 0 &&
-                                map.grid[(x + ox) >> shiftCount]
-                                [(y >> shiftCount) - 1] <= BomberMap.NOTHING) {
-                                    canMove = true; break;
+                                        map.grid[(x + ox) >> shiftCount]
+                                                [(y >> shiftCount) - 1] <= BomberMap.NOTHING) {
+                                    canMove = true;
+                                    break;
                                 }
                             }
                             /** if it still can't move */
@@ -602,52 +621,57 @@ public class BomberPlayer extends Thread {
                                 for (ox = (size / 4); ox <= offset; ox += (size / 4)) {
                                     /** and the north block is empty */
                                     if ((x + ox) % size == 0 &&
-                                    map.grid[(x + ox) >> shiftCount]
-                                    [(y >> shiftCount) - 1]
-                                    <= BomberMap.NOTHING) {
-                                        canMove = true; break;
+                                            map.grid[(x + ox) >> shiftCount]
+                                                    [(y >> shiftCount) - 1]
+                                                    <= BomberMap.NOTHING) {
+                                        canMove = true;
+                                        break;
                                     }
                                 }
                             }
                             /** if it can move */
                             if (canMove) {
                                 /** clear original block */
-                                clear = true; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = true;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                                 /** move right */
                                 x += ox;
                                 /** refresh the sprite */
-                                clear = false; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = false;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                             }
                         }
                         /** if it can move */
                         if (canMove) {
                             /** clear original block */
-                            clear = true; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = true;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                             /** move up */
                             y -= (size / 4);
                             /** refresh the sprite */
-                            clear = false; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = false;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                         }
                         /** if it can't move */
                         else {
                             /** refresh the block */
-                            moving = false; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            moving = false;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                         }
                     }
                     /** if the down is is down */
-                    else if ((currentDirKeyDown & BDOWN) > 0)
-                    {
+                    else if ((currentDirKeyDown & BDOWN) > 0) {
                         state = DOWN;
                         canMove = false;
                         /** if the south block is empty */
                         canMove = (y % size != 0 || (x % size == 0 &&
-                        (map.grid[x >> shiftCount][(y >> shiftCount) + 1]
-                        <= BomberMap.NOTHING)));
+                                (map.grid[x >> shiftCount][(y >> shiftCount) + 1]
+                                        <= BomberMap.NOTHING)));
 
                         /** if it can't move */
                         if (!canMove) {
@@ -656,60 +680,66 @@ public class BomberPlayer extends Thread {
                             for (ox = -offset; ox < 0; ox += (size / 4)) {
                                 /** and the south block is empty */
                                 if ((x + ox) % size == 0 &&
-                                map.grid[(x + ox) >> shiftCount]
-                                [(y >> shiftCount) + 1] <= BomberMap.NOTHING) {
-                                    canMove = true; break;
+                                        map.grid[(x + ox) >> shiftCount]
+                                                [(y >> shiftCount) + 1] <= BomberMap.NOTHING) {
+                                    canMove = true;
+                                    break;
                                 }
                             }
                             /** if it still can't move */
                             if (!canMove) {
                                 /** see if it's a bit to the east */
                                 for (ox = (size / 4); ox <= offset;
-                                ox += (size / 4)) {
+                                     ox += (size / 4)) {
                                     /** and the south block is empty */
                                     if ((x + ox) % size == 0 &&
-                                    map.grid[(x + ox) >> shiftCount]
-                                    [(y >> shiftCount) + 1]
-                                    <= BomberMap.NOTHING) {
-                                        canMove = true; break;
+                                            map.grid[(x + ox) >> shiftCount]
+                                                    [(y >> shiftCount) + 1]
+                                                    <= BomberMap.NOTHING) {
+                                        canMove = true;
+                                        break;
                                     }
                                 }
                             }
                             /** if it can move now */
                             if (canMove) {
                                 /** clear orignal block */
-                                clear = true; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = true;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                                 /** move left or right */
                                 x += ox;
                                 /** refresh the sprite */
-                                clear = false; game.paintImmediately(x,
-                                y - halfSize, width, height);
+                                clear = false;
+                                game.paintImmediately(x,
+                                        y - halfSize, width, height);
                             }
                         }
                         /** if it can move now */
                         if (canMove) {
                             /** clear original spot */
-                            clear = true; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = true;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                             /** move down */
                             y += (size / 4);
                             /** refresh the sprite */
-                            clear = false; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            clear = false;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                         }
                         /** if it can't move */
                         else {
                             /** refresh the sprite */
-                            moving = false; game.paintImmediately(x,
-                            y - halfSize, width, height);
+                            moving = false;
+                            game.paintImmediately(x,
+                                    y - halfSize, width, height);
                         }
                     }
                 }
             }
             /** if all keys are up */
-            else if (!isExploding && !isDead && lastState != keyPressed)
-            {
+            else if (!isExploding && !isDead && lastState != keyPressed) {
                 /** reset frame to 0 */
                 frame = 0;
                 moving = false;
@@ -718,8 +748,7 @@ public class BomberPlayer extends Thread {
                 lastState = keyPressed;
             }
             /** if it's exploding */
-            else if (!isDead && isExploding)
-            {
+            else if (!isDead && isExploding) {
                 /** if frame reached 4 then it's dead */
                 if (frame >= 4) isDead = true;
                 /** refresh sprite */
@@ -728,8 +757,7 @@ public class BomberPlayer extends Thread {
                 frame = (frame + 1) % 5;
             }
             /** if it's dead */
-            else if (isDead)
-            {
+            else if (isDead) {
                 /** clear the block */
                 clear = true;
                 game.paintImmediately(x, y - halfSize, width, height);
@@ -738,24 +766,35 @@ public class BomberPlayer extends Thread {
             }
             /** see if the player stepped on any bonuses */
             /** try normal position */
-            if (map.bonusGrid[x >> shiftCount][y >> shiftCount] != null)
-               { bx = x; by = y; }
+            if (map.bonusGrid[x >> shiftCount][y >> shiftCount] != null) {
+                bx = x;
+                by = y;
+            }
             /** try a bit to the north */
             else if (map.bonusGrid[x >> shiftCount][(y + halfSize)
-                 >> shiftCount] != null) { bx = x; by = y + halfSize; }
+                    >> shiftCount] != null) {
+                bx = x;
+                by = y + halfSize;
+            }
             /** try a bit to the left */
             else if (map.bonusGrid[(x + halfSize) >> shiftCount][y
-                 >> shiftCount] != null) { bx = x + halfSize; by = y; }
+                    >> shiftCount] != null) {
+                bx = x + halfSize;
+                by = y;
+            }
             /** if the player did step on a bonus */
             if (bx != 0 && by != 0) {
                 map.bonusGrid[bx >> shiftCount][by >>
-                shiftCount].giveToPlayer(playerNo);
+                        shiftCount].giveToPlayer(playerNo);
                 bx = by = 0;
             }
             /** if it's dead, then exit the loop */
             if (isDead) break;
             /** delay 65 milliseconds */
-            try { sleep(65); } catch (Exception e) { }
+            try {
+                sleep(65);
+            } catch (Exception e) {
+            }
         }
         interrupt();
     }
@@ -763,26 +802,26 @@ public class BomberPlayer extends Thread {
     /**
      * Drawing method.
      */
-    public void paint(Graphics graphics)
-    {
+    public void paint(Graphics graphics) {
         Graphics g = graphics;
         /** if java runtime is Java 2 */
-        if (Main.J2) { paint2D(graphics); }
+        if (Main.J2) {
+            paint2D(graphics);
+        }
         /** if java runtime isn't Java 2 */
         else {
             /** if player isn't dead and clear mode isn't on */
-            if (!isDead && !clear)
-            {
+            if (!isDead && !clear) {
                 /** if moving */
                 if (moving)
-                   /** draw the animating image */
-                   g.drawImage(sprites[playerNo - 1][state][frame],
-                   x, y - (BomberMain.size / 2), width, height, null);
+                /** draw the animating image */
+                    g.drawImage(sprites[playerNo - 1][state][frame],
+                            x, y - (BomberMain.size / 2), width, height, null);
                 /** if not moving */
                 else
-                    /** draw the still image */
+                /** draw the still image */
                     g.drawImage(sprites[playerNo - 1][state][0],
-                    x, y - (BomberMain.size / 2), width, height, null);
+                            x, y - (BomberMain.size / 2), width, height, null);
             }
         }
     }
@@ -792,22 +831,21 @@ public class BomberPlayer extends Thread {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        Graphics2D g2 = (Graphics2D)graphics;
+        Graphics2D g2 = (Graphics2D) graphics;
         /** set the rendering hints */
-        g2.setRenderingHints((RenderingHints)hints);
+        g2.setRenderingHints((RenderingHints) hints);
         /** if player isn't dead and clear mode isn't on */
-        if (!isDead && !clear)
-        {
+        if (!isDead && !clear) {
             /** if moving */
             if (moving)
-               /** draw the animating image */
-               g2.drawImage(sprites[playerNo - 1][state][frame],
-               x, y - (BomberMain.size / 2), width, height, null);
+            /** draw the animating image */
+                g2.drawImage(sprites[playerNo - 1][state][frame],
+                        x, y - (BomberMain.size / 2), width, height, null);
             /** if not moving */
             else
-                /** draw the still image */
+            /** draw the still image */
                 g2.drawImage(sprites[playerNo - 1][state][0],
-                x, y - (BomberMain.size / 2), width, height, null);
+                        x, y - (BomberMain.size / 2), width, height, null);
         }
     }
 }

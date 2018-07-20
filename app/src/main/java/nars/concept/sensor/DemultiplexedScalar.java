@@ -3,10 +3,10 @@ package nars.concept.sensor;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
 import static nars.Op.BELIEF;
 
 /** base class for a multi-concept representation of a real scalar value input */
-abstract public class DemultiplexedScalar extends NARService implements Iterable<Signal>, Consumer<NAR>, FloatSupplier {
+abstract public class DemultiplexedScalar extends AbstractSensor implements Iterable<Signal>, Consumer<NAR>, FloatSupplier {
 
     public final NumberX value = new AtomicFloat();
 
@@ -45,7 +45,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
     }
 
     protected DemultiplexedScalar(@Nullable FloatSupplier input, @Nullable Term id, NAR nar, FloatFloatToObjectFunction<Truth> truther) {
-        super(id);
+        super(id, nar);
 
         this.term = id;
 
@@ -55,10 +55,6 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
         this.truther = truther;
     }
 
-    public DemultiplexedScalar resolution(float r) {
-        forEach(s -> s.resolution(r));
-        return this;
-    }
 
 
     @Override
@@ -82,7 +78,15 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
                 .map(x -> x.update(start, end, truther, n)));
     }
 
-    public void pri(FloatSupplier p) {
-        forEach(x -> x.pri(p));
+    @Override
+    public void setResolution(FloatRange r) {
+        super.setResolution(r);
+        forEach(s -> s.setResolution(r));
+    }
+
+    @Override
+    public void setPri(FloatRange p) {
+        super.setPri(p);
+        forEach(x -> x.setPri(p));
     }
 }

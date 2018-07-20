@@ -1,10 +1,8 @@
 package nars.agent;
 
-import jcog.learn.ql.HaiQae;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.agent.util.RLBooster;
 import nars.control.MetaGoal;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -27,29 +25,16 @@ public class NAgentTest {
         n.confResolution.set(0.01f);
         n.time.dur(1);
 
-        
-        
 
         n.emotion.want(MetaGoal.Perceive, -0.1f);
         n.emotion.want(MetaGoal.Desire, +0.1f);
-
-
-
-        
-
-
-
-
-
-
-
 
 
         return n;
     }
 
     @ParameterizedTest
-    @ValueSource(strings={/*"tt", "tf", */"t", "f"})
+    @ValueSource(strings = {/*"tt", "tf", */"t", "f"})
     public void testSame(String x) {
 
         boolean posOrNeg = x.charAt(0) == 't';
@@ -57,20 +42,12 @@ public class NAgentTest {
 
         System.out.println((posOrNeg ? "positive" : " negative"));
         MiniTest a = new ToggleSame(nar(), $.the("t"),
-                
+
                 $.$$("(t,y)"),
                 posOrNeg);
 
 
-
-
-
-
-
-
-
-
-        a.runSynch(1000);
+        a.nar().run(1000);
 
         assertTrue(a.avgReward() > 0.01f);
         assertTrue(a.dex.getMean() > 0f);
@@ -80,38 +57,27 @@ public class NAgentTest {
     public void testOscillate() {
 
         NAR n = nar();
-        assertOscillatesAction(n, (a)->{});
-    }
-
-    @Test
-    public void testOscillate_RLBoost_only() {
-
-        NAR n = NARS.shell();
-
-        assertOscillatesAction(n, (a)->{
-            new RLBooster(a, HaiQae::new, 2);
+        assertOscillatesAction(n, (a) -> {
         });
-
     }
+
 
     static void assertOscillatesAction(NAR n, Consumer<NAgent> init) {
 
 
-
         MiniTest a = new ToggleOscillate(n, $.the("t"),
                 $.$$("t:y"),
-                
+
                 true);
-                
+
 
         init.accept(a);
 
-        a.runSynch(500);
+        n.run(500);
 
-        assertTrue(-(-1-a.avgReward()) > 0.2f); 
+        assertTrue(-(-1 - a.avgReward()) > 0.2f);
         assertTrue(a.dex.getMean() > 0.1f);
     }
-
 
 
     abstract static class MiniTest extends NAgent {
@@ -124,31 +90,25 @@ public class NAgentTest {
         }
 
         public MiniTest(Term id, NAR n) {
-            super(id, n);
+            super(id, FrameTrigger.durs(1), n);
             statPrint = n.emotion.printer(System.out);
+
+            reward(() -> {
+                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
+                statPrint.run();
+                nar.stats(System.out);
+
+                float yy = reward();
+
+                rewardSum += yy;
+                dex.addValue(dexterity());
+
+                return yy;
+            });
+
+
             n.on(this);
         }
-
-
-
-        @Override
-        public void runSynch(int frames) {
-            super.runSynch(frames);
-            System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
-            statPrint.run();
-            nar.stats(System.out);
-        }
-
-        @Override
-        protected float act() {
-            float yy = reward();
-
-            rewardSum += yy;
-            dex.addValue(dexterity());
-
-            return yy;
-        }
-
 
         abstract float reward();
 
@@ -166,7 +126,7 @@ public class NAgentTest {
             reward = 0;
 
             BooleanProcedure pushed = (v) -> {
-                
+
                 if (posOrNeg) {
                     this.reward = v ? 1 : 0;
                 } else {
@@ -175,20 +135,21 @@ public class NAgentTest {
             };
 
 
-
-                actionPushButton(action, pushed);
+            actionPushButton(action, pushed);
         }
 
         @Override
         float reward() {
             float r = reward;
-            reward = 0; 
+            reward = 0;
             return r;
         }
 
     }
 
-    /** reward for rapid inversion/oscillation of input action */
+    /**
+     * reward for rapid inversion/oscillation of input action
+     */
     static class ToggleOscillate extends MiniTest {
 
         private int y;
@@ -199,7 +160,7 @@ public class NAgentTest {
             y = 0;
 
             BooleanProcedure pushed = (v) -> {
-                
+
                 this.y = v ? 1 : -1;
             };
             if (toggleOrPush)
@@ -212,69 +173,12 @@ public class NAgentTest {
         float reward() {
             float r = y == prev ? -1 : 1;
             prev = y;
-            y = 0; 
-            
+            y = 0;
+
             return r;
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

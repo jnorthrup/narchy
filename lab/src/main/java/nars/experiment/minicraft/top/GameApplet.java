@@ -4,23 +4,23 @@ import java.applet.Applet;
 import java.awt.*;
 
 public class GameApplet extends Applet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final TopDownMinicraft game = new TopDownMinicraft();
+    private final TopDownMinicraft game = new TopDownMinicraft();
 
-	@Override
-	public void init() {
-		setLayout(new BorderLayout());
-		add(game, BorderLayout.CENTER);
-	}
+    @Override
+    public void init() {
+        setLayout(new BorderLayout());
+        add(game, BorderLayout.CENTER);
+    }
 
-	@Override
-	public void start() {
-		game.start();
-	}
+    @Override
+    public void start() {
+        game.start();
+    }
 
-	@Override
-	public void stop() {
-		game.stop();
-	}
+    @Override
+    public void stop() {
+        game.stop();
+    }
 }

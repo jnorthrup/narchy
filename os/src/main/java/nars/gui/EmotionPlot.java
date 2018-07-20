@@ -2,8 +2,6 @@ package nars.gui;
 
 import nars.NAR;
 import nars.agent.NAgent;
-import nars.concept.Concept;
-import nars.truth.Truth;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.Plot2D;
 
@@ -39,15 +37,15 @@ public class EmotionPlot extends DurSurface<Gridding> {
                         .add("Busy", nar.emotion.busyVol::getSum),
                 plot3 = new Plot2D(plotHistory, Plot2D.Line));
 
-        nar.runLater(()->{
-            a.happy.forEach(h -> {
-                Concept hc = nar.concept(h);
-                plot3.add(h.toString(), () -> {
-                    Truth t = hc.beliefs().truth(a.now(), a.nar());
-                    return t == null ? Float.NaN : t.freq();
-                }, 0, 1f);
-            });
-        });
+//        nar.runLater(()->{
+//            a.happy.forEach(h -> {
+//                Concept hc = nar.concept(h);
+//                plot3.add(h.toString(), () -> {
+//                    Truth t = hc.beliefs().truth(a.now(), a.nar());
+//                    return t == null ? Float.NaN : t.freq();
+//                }, 0, 1f);
+//            });
+//        });
     }
 
     @Override

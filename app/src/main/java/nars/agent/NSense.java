@@ -7,10 +7,8 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.sensor.DigitizedScalar;
+import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
-import nars.control.channel.CauseChannel;
-import nars.sensor.Bitmap2DSensor;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
@@ -59,20 +57,10 @@ public interface NSense {
         return s;
     }
 
-    
-    default Signal sense(CauseChannel c, Term term, FloatSupplier value) {
-        Signal s = new Signal(term, value, nar());
-        addSensor(s, c);
-        return s;
-    }
 
-    void addSensor(Signal s, CauseChannel cause);
 
-    default void addSensor(Signal c) {
-        CauseChannel<ITask> cause = nar().newChannel(c);
-        addSensor(c, cause);
-    }
 
+    <S extends Sensor> S addSensor(S s);
 
     /**
      * interpret an int as a selector between enumerated values
@@ -148,8 +136,7 @@ public interface NSense {
     }
 
     default Signal senseNumber(Term id, FloatSupplier v) {
-        Signal c = new Signal(id, v, nar()
-        );
+        Signal c = new Signal(id, v, nar());
         addSensor(c);
         return c;
     }

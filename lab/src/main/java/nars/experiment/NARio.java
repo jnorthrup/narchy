@@ -54,7 +54,7 @@ public class NARio extends NAgentX {
 
         PixelBag cc = PixelBag.of(() -> mario.image, 32, 24);
         cc.addActions(id, this, false, false, true);
-        cc.actions.forEach(a -> a.resolution.set(0.25f));
+        cc.actions.forEach(a -> a.resolution(0.25f));
 
 
         Bitmap2DSensor ccb;
@@ -116,6 +116,23 @@ public class NARio extends NAgentX {
                 mario.y : 0).resolution(0.02f);
 
 
+        reward(() -> {
+            int coins = Mario.coins;
+            float reward = (coins - lastCoins) * EarnCoin.floatValue();
+            lastCoins = coins;
+
+
+            float curX = mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).mario.x : Float.NaN;
+            if (lastX == lastX && lastX < curX) {
+                reward += unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
+            }
+            lastX = curX;
+
+
+            float r = Util.clamp(reward, -1, +1);
+
+            return r;
+        });
     }
 
 
@@ -267,25 +284,6 @@ public class NARio extends NAgentX {
 
     float lastX;
 
-    @Override
-    protected float act() {
-        int coins = Mario.coins;
-        float reward = (coins - lastCoins) * EarnCoin.floatValue();
-        lastCoins = coins;
-
-
-        float curX = mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).mario.x : Float.NaN;
-        if (lastX == lastX && lastX < curX) {
-            reward += unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
-        }
-        lastX = curX;
-
-
-        float r = Util.clamp(reward, -1, +1);
-
-
-        return r;
-    }
 
     public static void main(String[] args) {
 
@@ -297,10 +295,6 @@ public class NARio extends NAgentX {
             x = new NARio(n);
             n.freqResolution.set(0.02f);
             n.confResolution.set(0.01f);
-
-
-            x.trace = true;
-
 
             return x;
 

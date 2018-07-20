@@ -20,15 +20,15 @@ public class RoverMaze1 {
     public static void main(String[] args) {
         Rover r = new Rover(new NARS().get()) {
 
-            @Override protected void create(Dynamics3D world) {
+            @Override
+            protected void create(Dynamics3D world) {
 
                 SimpleSpatial torso;
                 add(torso = new SimpleSpatial("torso") {
                     @Override
                     protected CollisionShape newShape() {
-                        
-                        
-                        
+
+
                         return new BoxShape(v(1.6f, 0.1f, 1f));
                     }
 
@@ -43,7 +43,7 @@ public class RoverMaze1 {
                 add(neck = new SimpleSpatial("neck") {
                     @Override
                     protected CollisionShape newShape() {
-                        
+
                         return new CylinderShape(v(0.25f, 0.75f, 0.25f));
                     }
 
@@ -74,16 +74,10 @@ public class RoverMaze1 {
 
                         Body3D l = super.create(world);
 
-                        
-                        
 
                         l.clearForces();
                         HingeConstraint p = new HingeConstraint(neck.body, body, v(0, 0.6f, 0), v(0, -0.6f, 0), v(0, 1, 0), v(0, 1, 0));
                         p.setLimit(-0.75f, 0.75f);
-
-
-
-
 
 
                         add(p);
@@ -96,13 +90,6 @@ public class RoverMaze1 {
                 add(rg);
             }
         };
-
-
-
-
-
-
-
 
 
     }

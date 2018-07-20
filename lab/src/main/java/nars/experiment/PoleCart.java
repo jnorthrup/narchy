@@ -1,8 +1,6 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.learn.LivePredictor;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -12,7 +10,6 @@ import nars.NAgentX;
 import nars.agent.NAgent;
 import nars.agent.util.Impiler;
 import nars.concept.Concept;
-import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -36,7 +33,7 @@ public class PoleCart extends NAgentX {
     private final Concept xVel;
     private final Concept x;
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
-    
+
 
     public static void main(String[] arg) {
 
@@ -47,7 +44,7 @@ public class PoleCart extends NAgentX {
 
                 new Impiler.ImpilerTracker(96, 32, n);
                 new Impiler.ImpilerSolver(64, 16, n);
-                
+
                 return a;
             } catch (Exception e) {
 
@@ -59,31 +56,31 @@ public class PoleCart extends NAgentX {
 
     private final JPanel panel;
 
-    
+
     Dimension offDimension;
     Image offImage;
     Graphics offGraphics;
 
-    
+
     double pos, posDot, angle, angleDot;
 
     float posMin = -2f, posMax = +2f;
     float velMax = 10;
     boolean manualOverride;
 
-    
-    static final double cartMass = 1.; 
-    static final double poleMass = 0.1; 
-    static final double poleLength = 1f; 
-    static final double gravity = 9.8; 
+
+    static final double cartMass = 1.;
+    static final double poleMass = 0.1;
+    static final double poleLength = 1f;
+    static final double gravity = 9.8;
     static final double forceMag = 100.;
     public final FloatRange tau = new FloatRange(0.01f, 0.001f, 0.02f);
-            //0.01;
-            //0.005;
-            //0.0025f;
+    //0.01;
+    //0.005;
+    //0.0025f;
     static final double fricCart = 0.00005;
     static final double fricPole =
-            
+
             0.01f;
     static final double totalMass = cartMass + poleMass;
     static final double halfPole = 0.5 * poleLength;
@@ -91,32 +88,25 @@ public class PoleCart extends NAgentX {
     static final double fourthirds = 4. / 3.;
 
 
-    
-    
     @NotNull Concept angX;
     @NotNull Concept angY;
-    
-    Concept angVel;
-    
 
-    
+    Concept angVel;
+
+
     double action;
 
     public PoleCart(NAR nar) {
-        
+
         super("cart", nar);
 
 
-
-
-        
         pos = 0.;
         posDot = 0.;
-        angle = 0.2; 
+        angle = 0.2;
         angleDot = 0.;
         action = 0;
 
-        
 
         /**
          returnObs.doubleArray[0] = theState.getX();
@@ -124,16 +114,15 @@ public class PoleCart extends NAgentX {
          returnObs.doubleArray[2] = theState.getTheta();
          returnObs.doubleArray[3] = theState.getThetaDot();
          */
-        
+
 
         this.x = senseNumber($.the("x"),
                 new FloatPolarNormalized(() -> (float) pos));
         this.xVel = senseNumber($.the("dx"),
-                
+
                 new FloatPolarNormalized(() -> (float) posDot)
         );
 
-        
 
         FloatSupplier angXval = () -> (float) (0.5f + 0.5f * (Math.sin(angle)));
         FloatSupplier angYval = () -> (float) (0.5f + 0.5f * (Math.cos(angle)));
@@ -152,34 +141,11 @@ public class PoleCart extends NAgentX {
         this.angY = senseNumber($.the("angY"),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
-        
+
         this.angVel = senseNumber($.the("angVel"),
-                
+
                 new FloatPolarNormalized(() -> (float) angleDot)
         );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         actionUnipolar($.the("L"), (a) -> {
@@ -194,42 +160,21 @@ public class PoleCart extends NAgentX {
         });
 
 
-        new BeliefPredict(
-                java.util.List.of(angX, angY, angVel, xVel ),
-                8,
-                1,
-                4,
-                new LivePredictor.LSTMPredictor(0.1f, 2),
-                nar
-        );
 
-
-        Iterable<Concept> sensors = Iterables.concat(java.util.List.of(
-                x, xVel,
-
-                angVel
-                
-        ), angX, angY);
-
-
-
-
-
-
-
-
-
-
-
-
-
+//        new BeliefPredict(
+//                java.util.List.of(angX, angY, angVel, xVel),
+//                8,
+//                1,
+//                4,
+//                new LivePredictor.LSTMPredictor(0.1f, 2),
+//                nar
+//        );
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,
 //                sensors,
 //                nar), 900, 900);
 
-        
 
         this.panel = new JPanel(new BorderLayout()) {
             public Stroke stroke = new BasicStroke(4);
@@ -246,7 +191,7 @@ public class PoleCart extends NAgentX {
                 Color arrowColor = Color.WHITE;
                 Color trackColor = Color.GRAY;
 
-                
+
                 if ((offGraphics == null)
                         || (d.width != offDimension.width)
                         || (d.height != offDimension.height)) {
@@ -255,11 +200,11 @@ public class PoleCart extends NAgentX {
                     offGraphics = offImage.getGraphics();
                 }
 
-                
+
                 offGraphics.setColor(new Color(0, 0, 0, 0.25f));
                 offGraphics.fillRect(0, 0, d.width, d.height);
 
-                
+
                 double xs[] = {-2.5, 2.5, 2.5, 2.3, 2.3, -2.3, -2.3, -2.5};
                 double ys[] = {-0.4, -0.4, 0., 0., -0.2, -0.2, 0, 0};
                 int pixxs[] = new int[8], pixys[] = new int[8];
@@ -270,23 +215,22 @@ public class PoleCart extends NAgentX {
                 offGraphics.setColor(trackColor);
                 offGraphics.fillPolygon(pixxs, pixys, 8);
 
-                
-                
+
                 String msg = "Position = " + n2(pos) + " Angle = " + n2(angle) + " angleDot = " + n2(angleDot);
                 offGraphics.drawString(msg, 20, d.height - 20);
 
-                
+
                 offGraphics.setColor(cartColor);
                 offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
 
                 ((Graphics2D) offGraphics).setStroke(stroke);
-                
-                
+
+
                 offGraphics.drawLine(pixX(d, pos), pixY(d, 0),
                         pixX(d, pos + Math.sin(angle) * poleLength),
                         pixY(d, poleLength * Math.cos(angle)));
 
-                
+
                 if (action != 0) {
                     int signAction = (action > 0 ? 1 : (action < 0) ? -1 : 0);
                     int tipx = pixX(d, pos + 0.2 * signAction);
@@ -298,7 +242,6 @@ public class PoleCart extends NAgentX {
                 }
 
 
-                
                 g.drawImage(offImage, 0, 0, panel);
 
                 drawFinished.set(true);
@@ -306,10 +249,6 @@ public class PoleCart extends NAgentX {
 
         };
 
-        
-        
-        
-        
 
         JFrame f = new JFrame();
         f.setContentPane(panel);
@@ -330,21 +269,22 @@ public class PoleCart extends NAgentX {
                     action = 1;
                 else if (e.getKeyChar() == ' ') {
                     action = 0;
-                    
+
                 }
             }
         });
 
-        
+
+        reward(this::update);
     }
 
 
-    @Override
-    protected float act() {
-        
-        
+
+    protected float update() {
+
+
         double force = forceMag * action;
-        
+
         double sinangle = Math.sin(angle);
         double cosangle = Math.cos(angle);
         double angleDotSq = angleDot * angleDot;
@@ -364,17 +304,13 @@ public class PoleCart extends NAgentX {
 
 
         if ((pos >= posMax) || (pos <= posMin)) {
-            
+
             pos = Util.clamp((float) pos, posMin, posMax);
 
-            
-            
 
             posDot = -1f /* restitution */ * posDot;
 
-            
-            
-            
+
         }
 
         posDot += posDDot * tau;
@@ -384,37 +320,16 @@ public class PoleCart extends NAgentX {
         angleDot += angleDDot * tau;
 
         /**TODO
-         
-         
-         
-         
-         
          **/
 
-
-        
 
         if (drawFinished.compareAndSet(true, false))
             SwingUtilities.invokeLater(panel::repaint);
 
 
-
-
-
-
-
-
-
-        
-
         float rewardLinear = (float) (Math.cos(angle));
         //return rewardLinear;
-        return rewardLinear*rewardLinear*rewardLinear;
-
-        
-        
-
-
+        return rewardLinear * rewardLinear * rewardLinear;
 
 
     }

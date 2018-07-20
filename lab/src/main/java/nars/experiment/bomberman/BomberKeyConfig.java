@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 /**
  * File:         BomberKeyConfig.java
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -35,8 +36,7 @@ public abstract class BomberKeyConfig {
     /** open the key configuration file */
     static {
         /** try to open the file and if can't open file then */
-        if (!openFile())
-        {
+        if (!openFile()) {
             /** create the default configuration file */
             createDefaultFile();
             /** then try to open it again */
@@ -54,14 +54,13 @@ public abstract class BomberKeyConfig {
         try {
             /** create the file stream object */
             ObjectInputStream inputStream =
-            new ObjectInputStream(new FileInputStream("BomberKeyConfig.dat"));
+                    new ObjectInputStream(new FileInputStream("BomberKeyConfig.dat"));
             /** read the file into memory */
-            keys = (int[][])inputStream.readObject();
+            keys = (int[][]) inputStream.readObject();
             /** close the file */
             inputStream.close();
         }
-        /** if anything goes wrong, set result to to false */
-        catch (Exception e) {
+        /** if anything goes wrong, set result to to false */ catch (Exception e) {
             result = false;
         }
         /** return the result */
@@ -76,13 +75,14 @@ public abstract class BomberKeyConfig {
         try {
             /** create the file object, overwrite the file if needs to */
             ObjectOutputStream outputStream =
-            new ObjectOutputStream(new FileOutputStream("BomberKeyConfig.dat"));
+                    new ObjectOutputStream(new FileOutputStream("BomberKeyConfig.dat"));
             /** write the file */
             outputStream.writeObject(keys);
             /** close the file */
             outputStream.close();
+        } catch (Exception e) {
+            new ErrorDialog(e);
         }
-        catch (Exception e) { new ErrorDialog(e); }
     }
 
     /**

@@ -8,6 +8,7 @@ import java.io.File;
 /**
  * File:         BomberMenu.java
  * Copyright:    Copyright (c) 2001
+ *
  * @author Sammy Leong
  * @version 1.0
  */
@@ -44,15 +45,15 @@ public class BomberMenu extends JPanel {
             RenderingHints h = null;
             h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
-             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,
-             RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON);
             h.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
-             RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
             h.put(RenderingHints.KEY_ANTIALIASING,
-             RenderingHints.VALUE_ANTIALIAS_ON);
+                    RenderingHints.VALUE_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_COLOR_RENDERING,
-             RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                    RenderingHints.VALUE_COLOR_RENDER_QUALITY);
             hints = h;
         }
 
@@ -76,12 +77,13 @@ public class BomberMenu extends JPanel {
                 else if (i == CONTROL_SETUP) file = path + "Control Setup";
                 else if (i == EXIT) file = path + "Exit";
                 buttonImagesDown[i] = tk.getImage(
-                new File(file + " Down.gif").getCanonicalPath());
+                        new File(file + " Down.gif").getCanonicalPath());
                 buttonImagesUp[i] = tk.getImage(
-                new File(file + " Up.gif").getCanonicalPath());
+                        new File(file + " Up.gif").getCanonicalPath());
             }
+        } catch (Exception e) {
+            new ErrorDialog(e);
         }
-        catch (Exception e) { new ErrorDialog(e); }
     }
 
     /**
@@ -92,7 +94,7 @@ public class BomberMenu extends JPanel {
         this.main = main;
         /** set the menu dimensions */
         setPreferredSize(new Dimension(17 << BomberMain.shiftCount,
-        17 << BomberMain.shiftCount));
+                17 << BomberMain.shiftCount));
         /** turn on double buffer */
         setDoubleBuffered(true);
 
@@ -110,13 +112,14 @@ public class BomberMenu extends JPanel {
             }
             /** wait for images to finish loading */
             mt.waitForAll();
+        } catch (Exception e) {
+            new ErrorDialog(e);
         }
-        catch (Exception e) { new ErrorDialog(e); }
         /** create the button objects array */
         imageButtons = new BomberImageButton[5];
         for (int i = 0; i < 5; i++) {
             /** setup the images */
-            Image[] images = { buttonImagesDown[i], buttonImagesUp[i] };
+            Image[] images = {buttonImagesDown[i], buttonImagesUp[i]};
             /** create each object */
             imageButtons[i] = new BomberImageButton(this, images);
         }
@@ -138,10 +141,15 @@ public class BomberMenu extends JPanel {
         int newSelection = selection;
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_UP:
-            case KeyEvent.VK_LEFT: newSelection -= 1; break;
+            case KeyEvent.VK_LEFT:
+                newSelection -= 1;
+                break;
             case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_RIGHT: newSelection += 1; break;
-            case KeyEvent.VK_ENTER: doCommand(selection);
+            case KeyEvent.VK_RIGHT:
+                newSelection += 1;
+                break;
+            case KeyEvent.VK_ENTER:
+                doCommand(selection);
         }
         /** if selection is new */
         if (selection != newSelection) {
@@ -166,15 +174,15 @@ public class BomberMenu extends JPanel {
             case P2:
             case P3:
             case P4:
-                 main.newGame(selection + 2);
-                 break;
+                main.newGame(selection + 2);
+                break;
             case CONTROL_SETUP:
-                 new BomberConfigDialog(main);
-                 break;
+                new BomberConfigDialog(main);
+                break;
             case EXIT:
                 /** create the dialog content */
                 JOptionPane pane =
-                new JOptionPane("Are you sure you want to exit Bomberman?");
+                        new JOptionPane("Are you sure you want to exit Bomberman?");
                 /** setup the dialog content */
                 pane.setOptionType(JOptionPane.YES_NO_OPTION);
                 pane.setMessageType(JOptionPane.WARNING_MESSAGE);
@@ -187,7 +195,7 @@ public class BomberMenu extends JPanel {
 
                 /** if user clicked on yes */
                 if (selection != null && selection.toString().equals("0"))
-                    /** terminate the program */
+                /** terminate the program */
                     System.exit(0);
         }
     }
@@ -200,14 +208,17 @@ public class BomberMenu extends JPanel {
     public void paint(Graphics graphics) {
         Graphics g = graphics;
         /** if java runtime is Java 2 */
-        if (Main.J2) { paint2D(graphics); }
+        if (Main.J2) {
+            paint2D(graphics);
+        }
         /** if java runtime isn't Java 2 */
         else {
             g.drawImage(backgroundImg, 0, 0, 17 <<
                     BomberMain.shiftCount, 17 << BomberMain.shiftCount, this);
         }
-        for (int i = 0; i < 5; i++) if (imageButtons[i] != null)
-            imageButtons[i].paint(g);
+        for (int i = 0; i < 5; i++)
+            if (imageButtons[i] != null)
+                imageButtons[i].paint(g);
     }
 
     /**
@@ -215,9 +226,9 @@ public class BomberMenu extends JPanel {
      * @param graphics graphics handle
      */
     public void paint2D(Graphics graphics) {
-        Graphics2D g2 = (Graphics2D)graphics;
+        Graphics2D g2 = (Graphics2D) graphics;
         /** set the rendering hints */
-        g2.setRenderingHints((RenderingHints)hints);
+        g2.setRenderingHints((RenderingHints) hints);
         g2.drawImage(backgroundImg, 0, 0, 17 <<
                 BomberMain.shiftCount, 17 << BomberMain.shiftCount, this);
     }

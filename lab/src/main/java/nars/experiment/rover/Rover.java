@@ -16,8 +16,6 @@ public class Rover extends CompoundSpatial {
         this.timeAware = timeAware;
 
 
-
-
     }
 
 

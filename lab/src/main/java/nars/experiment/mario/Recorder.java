@@ -5,58 +5,42 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 
-public class Recorder
-{
+public class Recorder {
     private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private final DataOutputStream dos = new DataOutputStream(baos);
 
     private byte lastTick;
     private int tickCount;
 
-    public void addLong(long val)
-    {
-        try
-        {
+    public void addLong(long val) {
+        try {
             dos.writeLong(val);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void addTick(byte tick)
-    {
-        try
-        {
-            if (tick == lastTick)
-            {
+    public void addTick(byte tick) {
+        try {
+            if (tick == lastTick) {
                 tickCount++;
-            }
-            else
-            {
+            } else {
                 dos.writeInt(tickCount);
                 dos.write(tick);
                 lastTick = tick;
                 tickCount = 1;
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public byte[] getBytes()
-    {
-        try
-        {
+    public byte[] getBytes() {
+        try {
             dos.writeInt(tickCount);
             dos.write(-1);
             dos.close();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return baos.toByteArray();

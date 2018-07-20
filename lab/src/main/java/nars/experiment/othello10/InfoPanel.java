@@ -7,7 +7,6 @@ import javax.swing.*;
 
 /**
  * @author mori
- *  
  */
 public class InfoPanel extends JPanel {
     private final JLabel blackLabel;
@@ -24,9 +23,8 @@ public class InfoPanel extends JPanel {
 
     /**
      * BLACK���x���ɒl���Z�b�g����B
-     * 
+     *
      * @param count �Z�b�g���鐔���B
-     *  
      */
     public void setBlackLabel(int count) {
         blackLabel.setText(count + "");
@@ -34,9 +32,8 @@ public class InfoPanel extends JPanel {
 
     /**
      * WHITE���x���ɒl���Z�b�g����B
-     * 
+     *
      * @param text �Z�b�g���鐔���B
-     *  
      */
     public void setWhiteLabel(int count) {
         whiteLabel.setText(count + "");

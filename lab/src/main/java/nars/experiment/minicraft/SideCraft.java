@@ -54,15 +54,6 @@ public class SideCraft extends NAgentX {
         pixels = senseCamera("cra", cam);
 
 
-
-
-
-
-
-
-
-
-
         actionToggle($("cra(key,left)"), (b) -> {
             if (b) craft.player.startLeft(false /* slow */);
             else craft.player.stopLeft();
@@ -94,10 +85,15 @@ public class SideCraft extends NAgentX {
         });
 
 
+        reward(() -> {
 
-
-
-
+            float nextScore = 0;
+            for (int i = 0; i < gameFramesPerCycle; i++)
+                nextScore = craft.frame();
+            float ds = nextScore - prevScore;
+            this.prevScore = nextScore;
+            return ds;
+        });
 
         craft.startGame(false, 512);
     }
@@ -106,15 +102,5 @@ public class SideCraft extends NAgentX {
     float prevScore;
     final int gameFramesPerCycle = 1;
 
-    @Override
-    protected float act() {
-
-        float nextScore = 0;
-        for (int i = 0; i < gameFramesPerCycle; i++)
-            nextScore = craft.frame();
-        float ds = nextScore - prevScore;
-        this.prevScore = nextScore;
-        return ds;
-    }
 
 }
