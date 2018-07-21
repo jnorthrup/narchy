@@ -48,13 +48,13 @@ class HttpWebSocketServerTest {
 
         c.connectBlocking();
 
-        Util.sleep(500);
+        Util.sleepMS(500);
 
         assertTrue(c.isOpen());
 
         c.send("abc");
 
-        Util.sleep(500);
+        Util.sleepMS(500);
 
         c.closeBlocking();
         
@@ -102,14 +102,14 @@ class HttpWebSocketServerTest {
 
             c.connectBlocking();
 
-            Util.sleep(500);
+            Util.sleepMS(500);
 
             assertTrue(c.isOpen());
 
             c.send("put(\"x\", 1234)");
             c.send("get(\"x\")");
 
-            Util.sleep(500);
+            Util.sleepMS(500);
 
             c.closeBlocking();
             

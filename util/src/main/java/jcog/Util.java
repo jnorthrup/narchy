@@ -1483,7 +1483,7 @@ public enum Util {
         }
     }
 
-    public static void sleep(long periodMS) {
+    public static void sleepMS(long periodMS) {
         sleepNS(periodMS * 1_000_000);
     }
 

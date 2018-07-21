@@ -24,6 +24,7 @@ import nars.truth.Truthed;
 import nars.util.TimeAware;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -45,11 +46,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     private static float pri(TaskRegion x) {
-        if (x instanceof Prioritized)
-            return ((Prioritized) x).priElseZero();
-
-
-        return 0;
+        return ((Prioritized) x).priElseZero();
     }
 
     @Override
@@ -66,12 +63,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             if (anySatisfy(t -> t.start() == ETERNAL))
                 return meanValue(DynTruth::pri);
 
-            double total = 0;
-            double totalEvi = 0;
+            double total = 0, totalEvi = 0;
 
             for (TaskRegion d : this) {
                 float p = DynTruth.pri(d);
-                float e = ((Truthed) d).conf() /*evi()*/ * d.range();
+                double e = ((Truthed) d).conf() /*evi()*/ * d.range();
                 total += p * e;
                 totalEvi += e;
             }
@@ -93,15 +89,15 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     @Override
+    public double coord(boolean maxOrMin, int dimension) {
+        throw new TODO();
+    }
+
+    @Override
     @Nullable
     public short[] cause() {
         return Cause.sample(Param.causeCapacity.intValue(),
                 Util.map(0, size(), x -> get(x).cause(), short[][]::new));
-    }
-
-    @Override
-    public double coord(boolean maxOrMin, int dimension) {
-        throw new TODO();
     }
 
     /** eval without any specific time or truth dithering */
@@ -111,18 +107,15 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     /**
      * TODO make Task truth dithering optional
      */
-    public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+    private Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
 
         Truth t = truthModel.apply(this, nar);
         if (t == null)
             return null;
 
         float evi = t.evi();
-        if (evi < eviMin)
+        if (evi < Math.min(eviMin, c2wSafe(confRes)))
             return null;
-        if (confRes > 0 && c2wSafe(confRes) > evi)
-            return null;
-
 
         float freq = t.freq();
 
@@ -171,7 +164,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
             if (superterm.op() == NEG) {
                 superterm = superterm.unneg();
-                f = 1f - freq;
+                f = 1.0f - freq;
             } else {
                 f = freq;
             }
@@ -193,13 +186,10 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             if (tr == null)
                 return null; //TODO see if this can be detected earlier, by comparing evi before term construction
 
-            start = Tense.dither(start, nar);
-            end = Tense.dither(end, nar);
-
             NALTask dyn = new DynamicTruthTask(
                     r.getOne(), beliefOrGoal,
                     tr,
-                    nar, start, end,
+                    nar, Tense.dither(start, nar), Tense.dither(end, nar),
                     this.evi.toArray());
 
 
@@ -238,10 +228,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     @Override
-    public boolean add(TaskRegion newItem) {
-
-        if (newItem == null)
-            throw new NullPointerException();
+    public boolean add(@NotNull TaskRegion newItem) {
 
         super.add(newItem);
 
@@ -282,7 +269,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 n);
     }
 
-    public static class DynamicTruthTask extends NALTask {
+    static class DynamicTruthTask extends NALTask {
 
         DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, TimeAware n, long start, long end, long[] stamp) throws InvalidTaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);

@@ -44,7 +44,7 @@ public class SystemTimer {
      */
     public static void sleep(long duration) {
         if (duration <= 0) return;
-        Util.sleep(duration);
+        Util.sleepMS(duration);
 
     }
 }

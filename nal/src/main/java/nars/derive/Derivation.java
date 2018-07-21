@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.ScalarValue;
@@ -297,14 +298,14 @@ public class Derivation extends PreDerivation {
      * <p>
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
-    public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
+    public boolean reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
 
 
 
 
 
-        if (taskUniques > 0 && this._task != null && this._task.term().equals(_task.term())) {
+        if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
 
 
             anon.rollback(taskUniques);
@@ -313,32 +314,32 @@ public class Derivation extends PreDerivation {
         } else {
 
             anon.clear();
-            this.taskTerm = anon.put(_task.term());
+            this.taskTerm = anon.put(nextTask.term());
 
 
             this.taskUniques = anon.uniques();
         }
 
-        assert (taskTerm != null) : (_task + " could not be anonymized: " + _task.term().anon() + " , " + taskTerm);
+        assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTask.term().anon() + " , " + taskTerm);
 
 
-        if (this._task == null || !Arrays.equals(this._task.stamp(), _task.stamp())) {
-            this.taskStamp = Stamp.toSet(_task);
+        if (this._task == null || !Arrays.equals(this._task.stamp(), nextTask.stamp())) {
+            this.taskStamp = Stamp.toSet(nextTask);
         }
-        if (this._task == null || this._task != _task) {
-            this.task = new TaskWithTerm(taskTerm, _task);
+        if (this._task == null || this._task != nextTask) {
+            this.task = new TaskWithTerm(taskTerm, nextTask);
         }
 
-        long taskStart = _task.start();
+        long taskStart = nextTask.start();
 
         assert (taskStart != TIMELESS);
 
 
-        this._task = _task;
+        this._task = nextTask;
 
-        this.taskPunc = _task.punc();
+        this.taskPunc = nextTask.punc();
         if ((taskPunc == BELIEF || taskPunc == GOAL)) {
-            this.taskTruth = _task.truth();
+            this.taskTruth = nextTask.truth();
             assert(taskTruth!=null);
         } else {
             this.taskTruth = null;
@@ -346,37 +347,42 @@ public class Derivation extends PreDerivation {
 
         this.taskStart = taskStart;
 
-        long taskEnd = _task.end();
-        if (_belief != null) {
-            this.beliefTruthRaw = _belief.truth();
-            this.beliefTruthDuringTask = _belief.truth(taskStart, taskEnd, dur);
-            this.beliefStart = _belief.start();
+        long taskEnd = nextTask.end();
+        if (nextBelief != null) {
+            this.beliefTruthRaw = nextBelief.truth();
+            this.beliefTruthDuringTask = nextBelief.truth(taskStart, taskEnd, dur);
+            this.beliefStart = nextBelief.start();
 
             if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(taskStart==ETERNAL || beliefStart==ETERNAL)) {
                 Truth beliefEte = beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, nar);
                 this.beliefTruthDuringTask = Truth.stronger(beliefTruthDuringTask, beliefEte);
             }
 
-            this._belief = beliefTruthRaw != null || beliefTruthDuringTask != null ? _belief : null;
+            this._belief = beliefTruthRaw != null || beliefTruthDuringTask != null ? nextBelief : null;
         } else {
             this._belief = null;
         }
 
         if (this._belief != null) {
 
-            beliefTerm = anon.put(this._beliefTerm = _belief.term());
-            this.belief = new TaskWithTerm(beliefTerm, _belief);
+            beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
+            if (beliefTerm.op() == NEG)
+                throw new WTF(); //temporary
+
+            this.belief = new TaskWithTerm(beliefTerm, nextBelief);
         } else {
 
-            this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
+            this.beliefTerm = anon.put(this._beliefTerm = nextBeliefTerm);
+            if (beliefTerm.op() == NEG)
+                throw new WTF(); //temporary
 
             this.beliefStart = TIMELESS;
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthDuringTask = null;
         }
 
-        assert (beliefTerm != null) : (_beliefTerm + " could not be anonymized");
-        assert (beliefTerm.op() != NEG): _belief + " -> " + beliefTerm + " is invalid NEG op";
+        assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
+        assert (beliefTerm.op() != NEG): nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
 
 
 

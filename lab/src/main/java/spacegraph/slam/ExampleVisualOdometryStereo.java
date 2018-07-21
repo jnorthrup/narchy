@@ -139,7 +139,7 @@ public class ExampleVisualOdometryStereo {
 
 			}
 
-			Util.sleep(10);
+			Util.sleepMS(10);
 		}
 	}
 

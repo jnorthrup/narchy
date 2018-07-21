@@ -34,19 +34,14 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     public final Array2DIterable<Signal> iter;
 
-    /** shared pixel belief task priority and resolution */
-    public final FloatRange pri, res;
-
-    protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, NAR n) {
+    protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange pri, FloatRange res, NAR n) {
 
         this.width = src.width();
         this.height = src.height();
         this.area = width * height;
-        assert(area > 0);
+        assert (area > 0);
 
         this.src = src;
-        this.pri = FloatRange.unit((float) (n.priDefault(BELIEF)*(1/Math.sqrt(area) )));
-        this.res = FloatRange.unit(n.freqResolution);
 
         this.matrix = new Signal[width][height];
 
@@ -86,8 +81,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         this.iter = new Array2DIterable<>(matrix);
     }
 
-    /** iterate columns (x) first, then rows (y) */
-    @Override final public Iterator<Signal> iterator() {
+    /**
+     * iterate columns (x) first, then rows (y)
+     */
+    @Override
+    final public Iterator<Signal> iterator() {
         return iter.iterator();
     }
 
@@ -99,7 +97,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         return iter.order.get(i);
     }
 
-    /** crude ASCII text representation of the current pixel state */
+    /**
+     * crude ASCII text representation of the current pixel state
+     */
     public void print(PrintStream out) {
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
@@ -110,27 +110,29 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         }
     }
 
-    public Bitmap2DConcepts resolution(float resolution) {
-        res.set(resolution);
-        return this;
-    }
 
-    /** streams (potentially) all pixels */
+    /**
+     * streams (potentially) all pixels
+     */
     public final Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int dur, NAR nar) {
         return stream(truther, 0, area, dur, nar);
     }
 
-    /** stream of tasks containing changes in all updated pixels */
+    /**
+     * stream of tasks containing changes in all updated pixels
+     */
     public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int start, int end, int dur, NAR nar) {
 
         long now = nar.time();
 
-        long tStart = now - dur/2;
-        long tEnd = now + Math.max(0, dur/2 - 1);
+        long tStart = now - dur / 2;
+        long tEnd = now + Math.max(0, dur / 2 - 1);
         return pixels(start, end).map(p -> p.update(tStart, tEnd, truther, nar));
     }
 
-    /** range of pixels, selected by the sequential 1-d ID */
+    /**
+     * range of pixels, selected by the sequential 1-d ID
+     */
     public final Stream<Signal> pixels(int from, int to) {
         return IntStream.range(from, to).mapToObj(this::get);
     }
@@ -138,9 +140,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public Signal getSafe(int i, int j) {
         return matrix[i][j];
     }
-    @Nullable public Signal get(int i, int j) {
+
+    @Nullable
+    public Signal get(int i, int j) {
         if ((i < 0) || (j < 0) || (i >= width || j >= height))
-                return null;
+            return null;
         return getSafe(i, j);
     }
 
@@ -148,7 +152,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         return new Bitmap2DReader(in, mode, nar);
     }
 
-    /** service for progressively (AIKR) reading this sensor */
+    /**
+     * service for progressively (AIKR) reading this sensor
+     */
     protected class Bitmap2DReader extends Causable {
 
         private int lastPixel;
@@ -171,7 +177,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             pixelsRemainPerUpdate = area;
 
             int maxPendingHistory = 8;
-            this.in = in.buffered(maxPendingHistory * width*height /* plus extra? */);
+            this.in = in.buffered(maxPendingHistory * width * height /* plus extra? */);
 
 
             this.mode = mode;
@@ -208,26 +214,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             }
 
 
-
-
-
-
-
-
-
-
             int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
-
-
-
-
-
-
-
-
-
-
-
 
 
             if (pixelsToProcess <= 0) //0 or -1
@@ -236,12 +223,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             pixelsRemainPerUpdate -= pixelsToProcess;
 
             int start, end;
-
-
-
-
-
-
 
 
             start = this.lastPixel;

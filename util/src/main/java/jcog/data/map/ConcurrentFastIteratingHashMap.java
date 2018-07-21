@@ -114,18 +114,20 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     @Override
     public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
-        //final boolean[] changed = {false};
-//        Y prev = map.computeIfAbsent(key, (p) -> {
-//            Y next = mappingFunction.apply(p);
-//            if (next != p)
-//                changed[0] = true;
-//            return next;
-//        });
-
-        Y prev = map.computeIfAbsent(key, mappingFunction);
-        //if (changed[0]) {
+        final boolean[] changed = {false};
+        Y prev = map.computeIfAbsent(key, (p) -> {
+            Y next = mappingFunction.apply(p);
+            if (next != p)
+                changed[0] = true;
+            return next;
+        });
+        if (changed[0]) {
             invalidate();
-        //}
+        }
+
+//        Y prev = map.computeIfAbsent(key, mappingFunction);
+//        invalidate();
+
 
         return prev;
     }

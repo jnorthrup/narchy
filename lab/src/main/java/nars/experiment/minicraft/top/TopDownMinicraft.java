@@ -146,7 +146,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
             lastTime = now;
             frame();
 
-            Util.sleep(2);
+            Util.sleepMS(2);
 
             int fpsIntervalMS = 10000;
             if (System.currentTimeMillis() - lastTimer1 > fpsIntervalMS) {

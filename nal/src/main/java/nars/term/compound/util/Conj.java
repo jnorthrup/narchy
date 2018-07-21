@@ -1033,30 +1033,57 @@ public class Conj extends ByteAnonMap {
         } while (!stable);
 
         //2. disj components contradicting non-disjunctive components
-        List<Term> csa = null;
+        {
 
-        for (Term disjNeg : d) {
+            //test for equal positives
+            for (Iterator<Term> iterator = d.iterator(); iterator.hasNext(); ) {
+                Term disj = iterator.next();
+                Term du = disj.unneg();
+                Subterms dd = du.subterms();
 
-            Term disj = disjNeg.unneg();
-            SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
-            int ds = disjSubs.size();
-            if (ds == disj.subs())
-                continue; //no change
-
-            boolean rem = t.remove(disjNeg);
-            assert(rem);
-
-            if (ds > 0) {
-
-                if (csa == null)
-                    csa = new FasterList<>(1);
-
-                csa.add(CONJ.the(disj.dt(), disjSubs).neg());
+                if (dd.OR(ddd->t.contains(ddd.neg()))) {
+//                SortedSet<Term> disjSubs = dd.toSetSorted(ddd -> t.contains(ddd.neg()));
+//                int ds = disjSubs.size();
+//                if (ds > 0) {
+                    //remove the entire disjunctive sub-expression
+                    t.remove(disj);
+                    iterator.remove();
+                }
             }
+
         }
 
-        if (csa != null)
-            t.addAll(csa);
+        {
+            List<Term> csa = null;
+
+            //test for equal negatives
+            for (Term disj : d) {
+
+                Term du = disj.unneg();
+                Subterms dd = du.subterms();
+
+                SortedSet<Term> disjSubs = dd.toSetSortedExcept(t::contains);
+                int ds = disjSubs.size();
+                if (ds < dd.subs()) {
+
+                    boolean rem = t.remove(disj);
+                    assert (rem);
+
+                    if (ds > 0) {
+
+                        if (csa == null)
+                            csa = new FasterList<>(1);
+
+                        csa.add(CONJ.the(du.dt(), disjSubs).neg());
+                    }
+                }
+
+            }
+            if (csa != null)
+                t.addAll(csa);
+
+        }
+
     }
 
     @Nullable private static List<Term> disjComponents(TreeSet<Term> t) {

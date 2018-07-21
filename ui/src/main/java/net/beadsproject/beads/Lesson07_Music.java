@@ -78,7 +78,7 @@ class Lesson07_Music {
             ac.out.dependsOn(clock);
 
             ac.start();
-            Util.sleep(1000000L);
+            Util.sleepMS(1000000L);
         }
     }
 

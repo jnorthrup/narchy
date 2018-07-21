@@ -23,9 +23,6 @@ import static nars.Op.GOAL;
  */
 public class GoalActionConcept extends ActionConcept {
 
-
-    private final SignalBeliefTable feedback;
-
     private final MotorFunction motor;
     private final CauseChannel<ITask> in;
 
@@ -38,8 +35,6 @@ public class GoalActionConcept extends ActionConcept {
                 new CuriosityGoalTable(term, false, n),
                 n);
 
-        this.feedback = (SignalBeliefTable) beliefs();
-
         this.motor = motor;
 
         in = n.newChannel(this);
@@ -48,6 +43,11 @@ public class GoalActionConcept extends ActionConcept {
     @Override
     public CuriosityGoalTable goals() {
         return (CuriosityGoalTable) super.goals();
+    }
+
+    @Override
+    public SignalBeliefTable beliefs() {
+        return (SignalBeliefTable) super.beliefs();
     }
 
     @Override
@@ -104,8 +104,9 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth feedback = this.motor.apply(belief, goal);
 
+        SignalBeliefTable b = beliefs();
         Task feedbackBelief = feedback != null ?
-                this.feedback.add(feedback, gStart, gEnd, this, nar) : null;
+                b.add(feedback, gStart, gEnd, this, nar) : null;
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief != null) {
@@ -114,7 +115,7 @@ public class GoalActionConcept extends ActionConcept {
                     term, gStart, gEnd, nar);
         }
 
-        this.feedback.clean(nar);
+        b.clean(nar);
 
         in.input(
             Stream.of(feedbackBelief, (ITask) curiosityGoal).filter(Objects::nonNull)

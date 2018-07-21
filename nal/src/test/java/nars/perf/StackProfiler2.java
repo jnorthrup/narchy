@@ -170,7 +170,7 @@ public class StackProfiler2 implements InternalProfiler {
             ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
             while (!Thread.interrupted()) {
                 measure(threadBean.dumpAllThreads(false, false));
-                /*if (!*/Util.sleep(periodMsec);//)
+                /*if (!*/Util.sleepMS(periodMsec);//)
                     //break;
             }
         }

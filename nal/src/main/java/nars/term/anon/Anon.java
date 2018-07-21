@@ -1,5 +1,6 @@
 package nars.term.anon;
 
+import jcog.WTF;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -50,7 +51,8 @@ public class Anon extends ByteAnonMap {
     TermTransform newPut() {
 
         //return new DirectTermTransform() {
-        return new TermTransform.NegObliviousTermTransform() {
+        //return new TermTransform.NegObliviousTermTransform() {
+        return new TermTransform() {
             @Override
             public final @Nullable Term transformAtomic(Atomic atomic) {
                 return put(atomic);
@@ -90,7 +92,10 @@ public class Anon extends ByteAnonMap {
             return Anom.the[intern(x)];
 
         } else {
-            return PUT.transformCompound((Compound)x);
+            Term y = PUT.transformCompound((Compound)x);
+            if (y.op()!=x.op())
+                throw new WTF();
+            return y;
         }
     }
 

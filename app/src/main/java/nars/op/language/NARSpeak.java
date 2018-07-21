@@ -101,7 +101,7 @@ public class NARSpeak {
 
         n.input("say(abc)! :|:");
         while (true) {
-            Util.sleep(2500);
+            Util.sleepMS(2500);
             String word;
             switch (n.random().nextInt(3)) {
                 default:

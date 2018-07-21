@@ -131,7 +131,7 @@ public class C4 {
                         tried.add(which);
 
                         play.tryDrop(n, which);
-                        Util.sleep(50);
+                        Util.sleepMS(50);
                     } else {
                         break;
                     }
@@ -215,14 +215,14 @@ public class C4 {
                     } catch (Narsese.NarseseException e) {
                         e.printStackTrace();
                     }
-                    Util.sleep(100);
+                    Util.sleepMS(100);
                 }
 
 
                 A.play.clear();
                 B.play.clear();
             } else {
-                Util.sleep(50);
+                Util.sleepMS(50);
             }
         }
 

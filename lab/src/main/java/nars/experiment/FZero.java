@@ -2,8 +2,6 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
-import jcog.math.FloatExpMovingAverage;
-import jcog.math.FloatFirstOrderDifference;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -24,8 +22,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static jcog.Util.compose;
-import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
@@ -76,11 +72,11 @@ public class FZero extends NAgentX {
         //initBipolarRotateAbsolute(fair);
 
 
-        Signal dVelX = senseNumberDifference($.inh(id, $.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
-        Signal dVelY = senseNumberDifference($.inh(id, $.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
-        Signal dAccel = senseNumberDifference($.inh(id, "accel"), () -> (float) fz.vehicleMetrics[0][6]);
-        Signal dAngVel = senseNumberDifference($.func("ang", $.the("vel")), () -> (float) fz.playerAngle);
-        AbstractSensor ang = senseNumber(angle -> $.func("ang", $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+        Signal dVelX = senseNumberDifference($.func("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]);
+        Signal dVelY = senseNumberDifference($.func("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]);
+        Signal dAccel = senseNumberDifference($.func("accel", id), () -> (float) fz.vehicleMetrics[0][6]);
+        Signal dAngVel = senseNumberDifference($.func("vel", $.func("ang", id)), () -> (float) fz.playerAngle);
+        AbstractSensor ang = senseNumber(angle -> $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 6,
                 DigitizedScalar.FuzzyNeedle
@@ -113,30 +109,6 @@ public class FZero extends NAgentX {
 //                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
 
-        //hypervisor
-        {
-
-
-            //eyelid
-            actionUnipolar($.func("aware", id, cam), (a) -> {
-                c.pri(lerp(a, 0, 0.25f));
-                //c.resolution(lerp(camAware, 0.1f, 0.02f));
-            }).resolution(0.2f);
-
-            float angPri[] = {0};
-            actionUnipolar($.func("aware", id, ang.id), (a) -> {
-                angPri[0] = lerp(a, 0, 1f);
-            }).resolution(0.2f);
-            ang.pri(angPri[0]);
-
-            actionUnipolar($.func("curious", id), (cur) -> {
-                curiosity.set(lerp(cur, 0.01f, 0.5f));
-            }).resolution(0.2f);
-
-            actionUnipolar($.func("timeFocus", id), (f) -> {
-                nar.timeFocus.set(lerp(f, 1f, 16));
-            }).resolution(0.2f);
-        }
 
     }
 

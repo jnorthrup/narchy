@@ -70,7 +70,7 @@ public class arpeggiator_01 {
         keyDown(79);
 
         beatClock.start();
-        Util.sleep(100000L);
+        Util.sleepMS(100000L);
     }
 
     public static float midiPitchToFrequency(int midiPitch) {

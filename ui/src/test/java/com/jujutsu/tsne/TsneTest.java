@@ -119,7 +119,7 @@ public class TsneTest {
                     layout(new TsneModel()).
                     layer(new TsneRenderer()).set((Stream)new ARFF(new File("/tmp/x.arff")).stream()), 800, 800);
 
-            Util.sleep(1000000);
+            Util.sleepMS(1000000);
 
         } catch (Throwable e) {
             e.printStackTrace();

@@ -272,7 +272,7 @@ public class Gradius4K extends GamePanel {
         while (true) {
 
             if (paused) {
-                Util.sleep(updateMS);
+                Util.sleepMS(updateMS);
                 continue;
             }
 
@@ -917,7 +917,7 @@ public class Gradius4K extends GamePanel {
 
 
 
-                Util.sleep(updateMS);
+                Util.sleepMS(updateMS);
             }
         }
     }

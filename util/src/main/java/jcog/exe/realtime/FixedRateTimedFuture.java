@@ -5,23 +5,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
     /** adjustable while running */
-    private volatile long period;
+    private volatile long periodNS;
 
     public FixedRateTimedFuture(int rounds,
                                 Runnable callable,
                                 long recurringTimeout, long resolution, int wheelSize) {
         super(rounds, callable);
-        reset(this.period = recurringTimeout, resolution, wheelSize);
+        reset(this.periodNS = recurringTimeout, resolution, wheelSize);
     }
 
     @Override
     public boolean isCancelled() {
-        return period < 0;
+        return periodNS < 0;
     }
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        period = -1;
+        periodNS = -1;
         return true;
     }
 
@@ -32,7 +32,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         if (!isCancelled()) {
             pending.setRelease(true);
             super.execute(t);
-            reset(period, t.resolution, t.wheels); //TODO time since last
+            reset(periodNS, t.resolution, t.wheels); //TODO time since last
             t._schedule(this);
         }
     }
@@ -58,11 +58,11 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     }
 
     public void setPeriodNS(long periodNS) {
-        this.period = periodNS;
+        this.periodNS = periodNS;
     }
 
     public int getOffset(long resolution) {
-        return (int) Math.round(((double)period)/resolution);
+        return (int) Math.round(Math.max(resolution, ((double) periodNS))/resolution);
     }
 
     public void reset(long period, long resolution, int wheels) {

@@ -305,7 +305,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         if (!async) {
             Thread.yield();
             while (gl == null) {
-                Util.sleep(syncConstructionDelay);
+                Util.sleepMS(syncConstructionDelay);
             }
         }
 

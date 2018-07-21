@@ -68,7 +68,7 @@ abstract public class AbstractTimedCallable<T> extends AbstractTimedFuture<T> {
 
         long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
         while ((r = get()) == null) {
-            Util.sleep(DEFAULT_TIMEOUT_POLL_PERIOD_MS);
+            Util.sleepMS(DEFAULT_TIMEOUT_POLL_PERIOD_MS);
             if (System.currentTimeMillis() >= deadline)
                 break;
         }

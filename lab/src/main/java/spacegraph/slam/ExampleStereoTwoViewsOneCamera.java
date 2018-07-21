@@ -194,7 +194,7 @@ public class ExampleStereoTwoViewsOneCamera {
 					
 				}
 
-				Util.sleep(500);
+				Util.sleepMS(500);
 				e.snap(r.image);
 			}
 

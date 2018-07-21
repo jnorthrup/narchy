@@ -3,7 +3,6 @@ package nars.concept.sensor;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
-import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -78,15 +77,15 @@ abstract public class DemultiplexedScalar extends AbstractSensor implements Iter
                 .map(x -> x.update(start, end, truther, n)));
     }
 
-    @Override
-    public void setResolution(FloatRange r) {
-        super.setResolution(r);
-        forEach(s -> s.setResolution(r));
-    }
+//    @Override
+//    public void setResolution(FloatRange r) {
+//        super.setResolution(r);
+//        forEach(s -> s.setResolution(r));
+//    }
 
-    @Override
-    public void setPri(FloatRange p) {
-        super.setPri(p);
-        forEach(x -> x.setPri(p));
-    }
+//    @Override
+//    public void setPri(FloatRange p) {
+//        super.setPri(p);
+//        forEach(x -> x.setPri(p));
+//    }
 }

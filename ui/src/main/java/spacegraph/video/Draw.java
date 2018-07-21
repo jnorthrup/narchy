@@ -127,7 +127,7 @@ public enum Draw {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Util.sleep(50);
+            Util.sleepMS(50);
         }
         if (lines == null) {
             lines = ArrayUtils.EMPTY_STRING_ARRAY;

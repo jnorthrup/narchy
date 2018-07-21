@@ -226,7 +226,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 goalCheckBox(view, "Goal+", 1f),
                 goalCheckBox(view, "Goal+-", 0.5f),
                 goalCheckBox(view, "Goal-", 0f)
-            ), new FloatSlider("Pri", view.cam.concepts.pri));
+            ), new FloatSlider("Pri", view.cam.pri()));
         }
 
         @NotNull

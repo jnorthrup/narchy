@@ -23,7 +23,7 @@ class UDPeerTest {
         for (int i = 0; i < 8; i++) {
             assertFalse(x.them.contains(x.me));
             assertFalse(x.connected());
-            Util.sleep(100);
+            Util.sleepMS(100);
         }
         x.stop();
     }
@@ -36,7 +36,7 @@ class UDPeerTest {
         x.setFPS(4);
         y.setFPS(4);
 
-        Util.sleep(2000);
+        Util.sleepMS(2000);
 
         assertTrue(x.them.contains(y.me));
         assertFalse(x.them.contains(x.me));

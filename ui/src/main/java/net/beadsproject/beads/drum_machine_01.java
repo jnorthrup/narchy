@@ -86,7 +86,7 @@ public class drum_machine_01 {
 
 
         ac.start();
-        Util.sleep(100000L);
+        Util.sleepMS(100000L);
     }
 
     public void keyDown(int midiPitch) {

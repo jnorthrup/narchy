@@ -1,10 +1,13 @@
 package nars.concept.dynamic;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.*;
 import nars.table.dynamic.DynamicBeliefTable;
 import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.term.Term;
+import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,7 +15,9 @@ import java.util.List;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DynamicImplTest {
 
@@ -90,6 +95,10 @@ class DynamicImplTest {
     void testDynamicImplPredTemporalExact() throws Narsese.NarseseException {
         testDynamicImplSubjPredTemporalExact(2);
     }
+    @Test
+    void testDynamicImplPredNegTemporalExact() throws Narsese.NarseseException {
+        testDynamicImplSubjPredTemporalExact(-2);
+    }
 
     static void testDynamicImplSubjPredTemporalExact(int mode) throws Narsese.NarseseException {
         List<String> todo = new FasterList();
@@ -98,7 +107,6 @@ class DynamicImplTest {
         int[] oo = {1, 0, 2, -2, -1, 3, -3, DTERNAL, XTERNAL};
         for (int outer : oo) {
             for (int inner : ii) {
-                NAR n = NARS.shell();
 
 
                 int XA, YA, XY;
@@ -147,32 +155,25 @@ class DynamicImplTest {
                         y = dtdt("(a ==>" + dtStr(YA) + " y)");
                         xy = dtdt("(a ==>" + dtStr(YA) + " (x &&" + dtStr(XY) + " y))");
                         break;
+                    case -2:
+                        x = dtdt("(a ==>" + dtStr(XA) + " x)");
+                        y = dtdt("(a ==>" + dtStr(YA) + " y)");
+                        xy = dtdt("(a ==>" + dtStr(YA) + " ((--,x) &&" + dtStr(XY) + " (--,y)))");
+                        break;
                     default:
                         throw new UnsupportedOperationException();
                 }
 
-                System.out.println("i=" + inner + " o=" + outer + "\t"
-                        + x + " " + y + " " + xy);
+
 
 
                 Term pt_p = $$(xy);
                 assertEquals(xy, pt_p.toString());
                 assertEquals(x, $$(x).toString());
                 assertEquals(y, $$(y).toString());
-                n.believe(x, 1f, 0.9f);
-                n.believe(y, 1f, 0.9f);
 
-                Task pt_p_Task = n.match(pt_p, BELIEF, 0);
 
-                assertTrue(n.concept(pt_p).beliefs() instanceof DynamicBeliefTable); //match first then concept(), tests if the match was enough to conceptualize
-
-                assertNotNull(pt_p_Task);
-
-                String cccase = inner + " " + outer + "\t" + x + " " + y + " " + xy;
-                assertEquals(pt_p.toString(), pt_p_Task.term().toString(),
-                        cccase);
-                assertEquals(2, pt_p_Task.stamp().length);
-                assertEquals(0.81f, pt_p_Task.conf());
+                testImpl(mode, outer, inner, x, y, xy, pt_p);
             }
         }
 
@@ -185,6 +186,50 @@ class DynamicImplTest {
         //Term pttp = $$("((x &&+1 y) ==>+1 a)");
     }
 
+    static String dts(int dt) {
+        if (dt == DTERNAL)
+            return "ETE";
+        else
+            return String.valueOf(dt);
+    }
+
+    private static void testImpl(int mode, int outer, int inner, String x, String y, String xy, Term pt_p) throws Narsese.NarseseException {
+        String cccase = dts(inner) + "\t" + dts(outer) + "\t\t" + x + "\t" + y + "\t" + xy;
+        System.out.println(cccase);
+
+        for (float xf : new float[] { 1, 0 }) {
+            for (float yf : new float[] { 1, 0 }) {
+                NAR n = NARS.shell();
+                //n.log();
+                n.believe(x, xf, 0.9f);
+                n.believe(y, yf, 0.9f);
+
+                Task task = n.match(pt_p, BELIEF, 0);
+                //System.out.println(task);
+
+                Truth truth = n.truth(pt_p, BELIEF, 0);
+
+                assertTrue(n.concept(pt_p).beliefs() instanceof DynamicBeliefTable); //match first then concept(), tests if the match was enough to conceptualize
+
+                assertNotNull(task);
+
+                assertEquals(pt_p.toString(), task.term().toString(), cccase);
+                assertEquals(2, task.stamp().length);
+                assertEquals(truth, task.truth());
+
+                boolean intersection = mode>0; //else union
+                float fxy = intersection ? Util.and(xf, yf) : Util.or(xf, yf);
+                if (mode == -2) {
+                    //negated pred
+                    fxy = 1f - fxy;
+                }
+                assertEquals(fxy, task.freq(), 0.01f);
+
+                assertEquals(0.81f, task.conf(), 0.01f);
+            }
+        }
+    }
+
 
     static private String dtdt(String xy) {
         xy = xy.replace(" ==>+0 ", "=|>");
@@ -192,6 +237,7 @@ class DynamicImplTest {
         xy = xy.replace("x && y", "x&&y");
         xy = xy.replace(" ==> ", "==>");
         xy = xy.replace("(--,((--,x) && (--,y)))", "(||,x,y)");
+        xy = xy.replace("((--,x) && (--,y))", "((--,x)&&(--,y))");
         return xy;
     }
 
@@ -204,5 +250,25 @@ class DynamicImplTest {
         }
         return (dt >= 0 ? "+" : "") + (dt);
     }
+
+    @Test public void testXternal() throws Narsese.NarseseException {
+
+        for (String s : new String[] {
+                "((a && b) ==>+- x)",
+                "((a &&+- b) ==> x)",
+                "((a &&+- b) ==>+- x)"
+        }) {
+            NAR n = NARS.shell();
+            n.believe("(a ==> x)");
+            n.believe("(b ==> x)");
+            @Nullable Task t = n.match($$(s), BELIEF, ETERNAL);
+            assertEquals("((a&&b)==>x)", t.term().toString());
+            assertEquals(ETERNAL, t.start());
+            assertEquals(2, t.stamp().length);
+            assertEquals(1f, t.truth().freq());
+            assertEquals(0.81f, t.truth().conf(), 0.01f);
+        }
+    }
+
 
 }

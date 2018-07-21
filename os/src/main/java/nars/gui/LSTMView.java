@@ -66,7 +66,7 @@ public class LSTMView extends Gridding {
             double fit = task.scoreSupervised(lstm, lr);
             if (epoch % 10 == 0)
                 System.out.println("["+epoch+"] error = " + (1 - fit));
-            Util.sleep(1);
+            Util.sleepMS(1);
         }
         System.out.println("done.");
     }

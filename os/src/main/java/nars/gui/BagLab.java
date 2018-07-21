@@ -117,7 +117,7 @@ public class BagLab {
         
         while (true) {
             bagLab.update();
-            Util.sleep(delayMS);
+            Util.sleepMS(delayMS);
         }
         
     }

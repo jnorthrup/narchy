@@ -121,19 +121,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         s.start();
 
 
-        Util.sleep(1000);
+        Util.sleepMS(1000);
 
         Client c = new Client();
         c.connect();
 
-        Util.sleep(100);
+        Util.sleepMS(100);
 
         assertTrue(c.isOpen());
 
         c.send("abc");
         s.broadcast( "a" );
 
-        Util.sleep(1000);
+        Util.sleepMS(1000);
 
         s.stop();
     }

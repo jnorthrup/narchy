@@ -48,7 +48,7 @@ public class NARSpeakTest {
 
         NARHear.hear(n, "a b c d e f g", "", 100);
 
-        Util.sleep(2000);
+        Util.sleepMS(2000);
 
         n.stop().tasks(true, false, false, false).forEach(x -> {
             System.out.println(x);

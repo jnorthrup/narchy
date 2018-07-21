@@ -9,11 +9,13 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.Sensor;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
+import nars.link.Activate;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -33,6 +35,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
@@ -73,7 +76,6 @@ public class NAgent extends NARService implements NSense, NAct {
     protected volatile long last;
 
 
-
     public NAgent(String id, FrameTrigger frameTrigger, NAR nar) {
         this(id.isEmpty() ? null : Atomic.the(id), frameTrigger, nar);
     }
@@ -112,6 +114,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {
+        addSensor(bmp);
         onFrame(bmp::input); //TODO support adaptive input mode
         return bmp;
     }
@@ -205,7 +208,6 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
-
     @Override
     public final NAR nar() {
         return nar;
@@ -222,7 +224,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
         return id +
-                " dex=" + /*n4*/(dexterity(now(), now())) +
+                " dex=" + /*n4*/(dexterity()) +
 
                 /*" var=" + n4(varPct(nar)) + */ "\t" + nar.concepts.summary() + " " +
                 nar.emotion.summary();
@@ -244,7 +246,6 @@ public class NAgent extends NARService implements NSense, NAct {
         this.in = nar.newChannel(this);
 
 
-
         super.starting(nar);
 
 
@@ -259,7 +260,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         enabled.set(false);
 
-        if (frameTrigger!=null) {
+        if (frameTrigger != null) {
             frameTrigger.stop();
         } else {
             throw new WTF(this + " stopped twice");
@@ -281,30 +282,39 @@ public class NAgent extends NARService implements NSense, NAct {
     public Off reward(FloatSupplier rewardfunc) {
         return reward($.func("reward", id), rewardfunc);
     }
-    @Deprecated public Off rewardDetailed(FloatSupplier rewardfunc) {
+
+    @Deprecated
+    public Off rewardDetailed(FloatSupplier rewardfunc) {
         return rewardDetailed($.func("reward", id), rewardfunc);
     }
 
-    /** set a default (bi-polar) reward supplier */
+    /**
+     * set a default (bi-polar) reward supplier
+     */
     public Off reward(Term reward, FloatSupplier rewardfunc) {
         return reward(new SimpleReward(reward,
                 new FloatNormalized(rewardfunc, 0, 0, true),
                 this));
     }
 
-    @Deprecated public Off rewardDetailed(Term reward, FloatSupplier rewardfunc) {
+    @Deprecated
+    public Off rewardDetailed(Term reward, FloatSupplier rewardfunc) {
         DetailedReward r = new DetailedReward(reward, rewardfunc, this);
         return reward(r);
     }
 
-    /** default reward module */
+    /**
+     * default reward module
+     */
     final public Off reward(Reward r) {
         rewards.add(r);
-        return new Ons( onFrame(r) );
+        return new Ons(onFrame(r));
     }
 
 
-    /** runs a frame */
+    /**
+     * runs a frame
+     */
     protected void frame() {
         if (!enabled.getOpaque() || !busy.weakCompareAndSetAcquire(false, true))
             return;
@@ -347,11 +357,12 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public float dexterity() {
-        return dexterity(nar.time());
+        return dexterity(now());
     }
 
     public float dexterity(long when) {
-        return dexterity(when, when + nar().dur());
+        int d = nar().dur();
+        return dexterity(when - d / 2, when + Math.max(0, d / 2 - 1));
     }
 
     /**
@@ -363,12 +374,12 @@ public class NAgent extends NARService implements NSense, NAct {
         if (n == 0)
             return 0;
 
-        final float[] m = {0};
+        final double[] m = {0};
         actions.forEach(a -> {
             m[0] += a.dexterity(start, end, nar);
         });
 
-        return m[0] > 0 ? m[0] / n /* avg */ : 0;
+        return (float) (m[0] / n);
     }
 
 
@@ -385,4 +396,39 @@ public class NAgent extends NARService implements NSense, NAct {
     public Collection<ActionConcept> actions() {
         return actions;
     }
+
+    /**
+     * creates an activator specific to this agent context
+     */
+    public Consumer<Predicate<Activate>> sampleActions() {
+
+
+        return p -> {
+            Activate a;
+
+            final int numConcepts = actions.size();
+            int remainMissing = numConcepts;
+            if (remainMissing == 0) return;
+
+
+            Random rng = nar.random();
+            do {
+                Concept cc = actions.get(rng.nextInt(numConcepts));
+                //Concept cc = nar.conceptualize(cc);
+                if (cc != null) {
+                    a = new Activate(cc, 0f);
+                    //nar.activate(cc, 1f);
+                    ///a = new Activate(cc, 0);
+                    //a.delete();
+                } else {
+                    a = null;
+                    if (remainMissing-- <= 0)
+                        break;
+
+                }
+            } while (a == null || p.test(a));
+        };
+    }
+
+
 }

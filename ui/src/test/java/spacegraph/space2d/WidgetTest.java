@@ -85,7 +85,7 @@ public class WidgetTest {
                     text(""); 
                 }
 
-                Util.sleep(400);
+                Util.sleepMS(400);
 
             }
         }

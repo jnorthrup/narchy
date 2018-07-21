@@ -4,11 +4,15 @@ import jcog.Util;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
+import jcog.math.FloatRange;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import nars.agent.SimpleReward;
+import nars.concept.sensor.DigitizedScalar;
+import nars.concept.sensor.Sensor;
+import nars.concept.sensor.Signal;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
@@ -35,7 +39,6 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 
 import java.awt.*;
@@ -44,8 +47,10 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
+import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Extensions to NAgent interface:
@@ -142,15 +147,17 @@ abstract public class NAgentX extends NAgent {
 
             a.curiosity.set(0.25f);
 
-            if (a instanceof NAgentX)
-                ((NAgentX)a).rewardDexterity();
+            if (a instanceof NAgentX) {
+                NAgent m = metavisor(a);
+                window(NARui.agent(m), 400, 400);
+            }
 
             n.on(a);
 
             n.runLater(() -> {
-                //TODO
-//                MatrixDeriver motivation = new MatrixDeriver(a.fire(),
-//                        Derivers.nal(n, 1, 6, "motivation.nal"));
+
+                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
+                        Derivers.nal(n, 1, 6, "motivation.nal"));
 
 
                 Gridding aa = new Gridding(
@@ -159,7 +166,7 @@ abstract public class NAgentX extends NAgent {
                         new EmotionPlot(128, a)
                 );
 
-                SpaceGraph.window(aa, 1200, 900);
+                window(aa, 1200, 900);
 
 
                 //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
@@ -173,6 +180,56 @@ abstract public class NAgentX extends NAgent {
         return n;
     }
 
+    private static NAgent metavisor(NAgent a) {
+
+
+        a.nar().onTask(x -> {
+           if (x.isGoal() && !x.isInput())
+               System.out.println(x);
+        });
+
+        int durs = 4;
+        NAR nar = a.nar();
+        NAgent m = new NAgent($.func("meta", a.id), FrameTrigger.durs(durs), nar);
+
+        dexterityReward(a, m);
+
+        for (Sensor s : a.sensors) {
+            if (!(s instanceof Signal)) { //HACK only if compound sensor
+                Term term = s.term();
+
+                //HACK
+                if (s instanceof DigitizedScalar)
+                    term = $.quote(term.toString()); //throw new RuntimeException("overly complex sensor term");
+
+                //HACK TODO divide by # of contained concepts, reported by Sensor interface
+                float maxPri;
+                if (s instanceof Bitmap2DSensor) {
+                    maxPri = 1f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
+                } else {
+                    maxPri = 1;
+                }
+
+                m.actionUnipolar($.func("aware", term), (p) -> {
+                    FloatRange pp = s.pri();
+                    pp.set(lerp(p, 0f, maxPri* nar.priDefault(BELIEF)));
+                });
+
+            }
+        }
+
+
+        m.actionUnipolar($.func("curious", a.id), (cur) -> {
+            a.curiosity.set(lerp(cur, 0.01f, 0.5f));
+        }).resolution(0.05f);
+
+        m.actionUnipolar($.func("timeFocus", a.id), (f) -> {
+            nar.timeFocus.set(lerp(f, 1f, 16));
+        }).resolution(0.05f);
+
+        return m;
+    }
+
 
     public static void config(NAR n) {
         n.dtDither.set(20);
@@ -180,9 +237,9 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(46);
+        n.termVolumeMax.set(40);
 
-        n.forgetRate.set(0.8f);
+        n.forgetRate.set(0.85f);
         n.activateConceptRate.set(0.9f);
 
 
@@ -192,20 +249,22 @@ abstract public class NAgentX extends NAgent {
         n.beliefPriDefault.set(0.65f);
         n.goalPriDefault.set(0.75f);
 
-        n.questionPriDefault.set(0.25f);
-        n.questPriDefault.set(0.25f);
+        n.questionPriDefault.set(0.1f);
+        n.questPriDefault.set(0.2f);
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
         n.emotion.want(MetaGoal.Believe, +0.01f);
+        n.emotion.want(MetaGoal.Answer, +0.01f);
         n.emotion.want(MetaGoal.Desire, +0.01f);
-        n.emotion.want(MetaGoal.Answer, +0.10f);
-        n.emotion.want(MetaGoal.Action, +0.75f);
+        n.emotion.want(MetaGoal.Action, +0.02f);
     }
 
     public static void initPlugins(NAR n) {
-        new MatrixDeriver(Derivers.nal(n, 1, 8, /*"curiosity.nal",*/ "motivation.nal"));
+        new MatrixDeriver(Derivers.nal(n, 5, 8, /*"curiosity.nal",*/ "motivation.nal"));
+        new MatrixDeriver(Derivers.nal(n, 1, 4));
 
-        new STMLinkage(n, 1, true);
+        new STMLinkage(n, 1, false);
+
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 128);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
 
@@ -289,11 +348,11 @@ abstract public class NAgentX extends NAgent {
         return c;
     }
 
-    protected void rewardDexterity() {
-        reward(new SimpleReward($.func("dex", id),
-            new FloatNormalized(new FloatFirstOrderDifference(nar::time, this::dexterity)).relax(0.01f)
-            , this));
-
+    protected static void dexterityReward(NAgent src, NAgent target) {
+        target.reward(
+            new SimpleReward($.func("dex", src.id),
+                new FloatNormalized(new FloatFirstOrderDifference(src.nar()::time, src::dexterity)).relax(0.01f), target)
+        );
     }
 
     /**

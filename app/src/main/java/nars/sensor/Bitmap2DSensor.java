@@ -1,6 +1,5 @@
 package nars.sensor;
 
-import jcog.math.FloatRange;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
@@ -44,7 +43,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
         super(n);
         this.width = src.width();
         this.height = src.height();
-        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, n);
+        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, pri(), resolution(), n);
         this.src = concepts.src;
         this.nar = n;
 
@@ -164,8 +163,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
 
     @NotNull
     public static Term coord(char prefix, int n, int max) {
-        
-        
         return $.p($.the(prefix), $.p($.radixArray(n, 2, max)));
     }
 
@@ -181,15 +178,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
         return this;
     }
 
-    @Override
-    public FloatRange resolution() {
-        return null;
-    }
-
-    @Override
-    public FloatRange pri() {
-        return null;
-    }
 
     public final TaskConcept get(int x, int y) {
         return concepts.get(x, y);

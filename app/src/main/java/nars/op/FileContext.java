@@ -204,7 +204,7 @@ public class FileContext extends NARService {
         n.startFPS(8f);
 
         while (true) {
-            Util.sleep(100);
+            Util.sleepMS(100);
         }
     }
 

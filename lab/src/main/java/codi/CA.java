@@ -100,7 +100,7 @@ public class CA extends JFrame implements Runnable {
             
             if (!NoStepDelay) {
                 startTime += stepDelayMS;
-                Util.sleep(Math.max(0, startTime - System.currentTimeMillis()));
+                Util.sleepMS(Math.max(0, startTime - System.currentTimeMillis()));
             }
         }
     }

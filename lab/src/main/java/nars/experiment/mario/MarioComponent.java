@@ -165,7 +165,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             if (delay > 0)
 
                 tm += delay;
-            Util.sleep(Math.max(0, tm - System.currentTimeMillis()));
+            Util.sleepMS(Math.max(0, tm - System.currentTimeMillis()));
 
         }
 

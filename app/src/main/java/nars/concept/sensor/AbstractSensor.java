@@ -34,18 +34,18 @@ abstract public class AbstractSensor extends NARService implements Sensor {
         return this;
     }
 
-    public void setPri(FloatRange p) {
-        this.pri = p;
-    }
+//    public void setPri(FloatRange p) {
+//        this.pri = p;
+//    }
 
     public AbstractSensor resolution(float v) {
         this.res.set(v);
         return this;
     }
 
-    public void setResolution(FloatRange r) {
-        this.res = r;
-    }
+//    public void setResolution(FloatRange r) {
+//        this.res = r;
+//    }
 
     @Override
     public FloatRange resolution() {

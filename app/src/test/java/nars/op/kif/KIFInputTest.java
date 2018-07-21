@@ -210,7 +210,7 @@ class KIFInputTest {
 
 
         n.startFPS(10f);
-        Util.sleep(1000 * 40);
+        Util.sleepMS(1000 * 40);
         n.stop();
         
     }

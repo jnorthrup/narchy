@@ -700,6 +700,7 @@ public class Occurrify extends TimeGraph {
 //
 //                //pretend in present
 //                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
+
                 o[0] = NOW;  o[1] = NOW + Math.max(0,d.dur-1);
                 //o[0] = NOW-d.dur/2;  o[1] = NOW + d.dur/2;
                 return true;

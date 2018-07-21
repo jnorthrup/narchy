@@ -29,7 +29,7 @@ public class InterNARTest {
         for (int i = 0; i < 8; i++) {
             assertFalse(x.peer.them.contains(x.peer.me));
             assertFalse(x.peer.connected());
-            Util.sleep(100);
+            Util.sleepMS(100);
         }
         a.stop();
     }
@@ -90,7 +90,7 @@ public class InterNARTest {
 
         boolean connected = false;
         for (int i = 0; !connected && i < MAX_CONNECT_INTERVALS; i++) {
-            Util.sleep(CONNECT_INTERVAL_MS);
+            Util.sleepMS(CONNECT_INTERVAL_MS);
             connected = ai.peer.connected() && bi.peer.connected();
         }
         assertTrue(connected);
@@ -104,7 +104,7 @@ public class InterNARTest {
         a.startFPS(NAR_FPS);
         b.startFPS(NAR_FPS);
 
-        Util.sleep(INTERACT_TIME);
+        Util.sleepMS(INTERACT_TIME);
 
 
         a.pause();

@@ -13,8 +13,10 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Random;
 
 import static nars.$.$$;
+import static nars.Op.CONJ;
 import static nars.Op.False;
 import static nars.Op.True;
+import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,15 +54,15 @@ class ConjTest {
     @Test
     void testRoaringBitmapNeededManyEventsAtSameTime() {
         Conj b = new Conj();
-        for (int i = 0; i < Conj.ROARING_UPGRADE_THRESH-1; i++)
-            b.add(1, $.the(String.valueOf((char)('a' + i))));
+        for (int i = 0; i < Conj.ROARING_UPGRADE_THRESH - 1; i++)
+            b.add(1, $.the(String.valueOf((char) ('a' + i))));
         assertEquals("(&|,a,b,c,d,e,f,g)", b.term().toString());
         assertEquals(1, b.event.size());
         assertEquals(byte[].class, b.event.get(1).getClass());
 
         Conj c = new Conj();
-        for (int i = 0; i < Conj.ROARING_UPGRADE_THRESH+1; i++)
-            c.add(1, $.the(String.valueOf((char)('a' + i))));
+        for (int i = 0; i < Conj.ROARING_UPGRADE_THRESH + 1; i++)
+            c.add(1, $.the(String.valueOf((char) ('a' + i))));
         assertEquals("(&|,a,b,c,d,e,f,g,h,i)", c.term().toString());
         assertEquals(1, c.event.size());
         assertEquals(RoaringBitmap.class, c.event.get(1).getClass());
@@ -81,6 +83,7 @@ class ConjTest {
         assertFalse(c.add(1, $.the("x").neg()));
         assertEquals(False, c.term());
     }
+
     @Test
     void testEventContradictionAmongNonContradictions() {
         Conj c = new Conj();
@@ -90,6 +93,7 @@ class ConjTest {
         assertFalse(c.add(1, $.the("x").neg()));
         assertEquals(False, c.term());
     }
+
     @Test
     void testEventContradictionAmongNonContradictionsRoaring() {
         Conj c = new Conj();
@@ -97,6 +101,7 @@ class ConjTest {
         boolean added = c.add(1, $.the("a").neg());
         assertEquals(False, c.term());
     }
+
     @Test
     void testEventContradictionWithEternal() {
         Conj c = new Conj();
@@ -104,6 +109,7 @@ class ConjTest {
         boolean added = c.add(1, $.the("x").neg());
         assertEquals(False, c.term());
     }
+
     @Test
     void testEventNonContradictionWithEternal() {
         Conj c = new Conj();
@@ -112,6 +118,7 @@ class ConjTest {
         assertTrue(added);
         assertEquals("(x&&y)", c.term().toString());
     }
+
     @Test
     void testEventNonContradictionWithEternal2() {
         Conj c = new Conj();
@@ -133,12 +140,14 @@ class ConjTest {
             assertConsistentConj(3, 0, 7);
         }
     }
+
     @Test
     void testConjEventConsistency4ary() {
         for (int i = 0; i < 100; i++) {
             assertConsistentConj(4, 0, 11);
         }
     }
+
     @Test
     void testConjEventConsistency5ary() {
         for (int i = 0; i < 300; i++) {
@@ -155,7 +164,7 @@ class ConjTest {
 
         System.out.println(x + "\t" + y + "\t" + z);
 
-        
+
         if (!x.equals(z)) {
             Term y2 = Conj.conj(x.clone());
         }
@@ -169,11 +178,11 @@ class ConjTest {
         for (int i = 0; i < variety; i++) {
             long at = (long) rng.nextInt(end - start) + start;
             earliest = Math.min(at, earliest);
-            e.add(pair(at, $.the(String.valueOf((char)('a' + i)))));
+            e.add(pair(at, $.the(String.valueOf((char) ('a' + i)))));
         }
-        
+
         long finalEarliest = earliest;
-        e.replaceAll((x)-> pair(x.getOne()- finalEarliest, x.getTwo()));
+        e.replaceAll((x) -> pair(x.getOne() - finalEarliest, x.getTwo()));
         e.sortThisByLong(LongObjectPair::getOne);
         return e;
     }
@@ -206,7 +215,9 @@ class ConjTest {
                 "((((--,angX)&|y) &&+4 (x&|y)) &&+10244 (y&|angX))",
                 xEternal.toString());
     }
-    @Test @Disabled
+
+    @Test
+    @Disabled
     void testWrappingCommutiveConjunctionX() {
 
         Term xFactored = $$("((x&&y) &&+1 (y&&z))");
@@ -269,12 +280,13 @@ class ConjTest {
         assertEquals(yParallel1, yParallel2);
         assertEquals(yParallel2Str, yParallel1.toString());
     }
+
     @Disabled
     @Test
     void testFactorFromEventParallel() {
         Term yParallelOK = $$("(((a&&x) &| (b&&x)) &| (c&&x))");
         assertEquals("", yParallelOK.toString());
-        
+
 
         Term yParallelContradict = $$("((a&&x) &| (b&&--x))");
         assertEquals(False, yParallelContradict);
@@ -295,8 +307,8 @@ class ConjTest {
                 //"(&&,a,b,c)",
                 "(a&&b)",
                 Conj.withoutAll(
-                $$("(&&,a,b,c)"),
-                $$("(&|,c,d,e)")).toString());
+                        $$("(&&,a,b,c)"),
+                        $$("(&|,c,d,e)")).toString());
 
         assertEquals("(a&&b)", Conj.withoutAll(
                 $$("(&&,a,b,--c)"),
@@ -321,30 +333,35 @@ class ConjTest {
         Conj c = new Conj();
         assertEquals(True, c.term());
     }
+
     @Test
     void testEmptyConjTrueEternal() {
         Conj c = new Conj();
         c.add(ETERNAL, True);
         assertEquals(True, c.term());
     }
+
     @Test
     void testEmptyConjTrueTemporal() {
         Conj c = new Conj();
         c.add(0, True);
         assertEquals(True, c.term());
     }
+
     @Test
     void testEmptyConjFalseEternal() {
         Conj c = new Conj();
         c.add(ETERNAL, False);
         assertEquals(False, c.term());
     }
+
     @Test
     void testEmptyConjFalseTemporal() {
         Conj c = new Conj();
         c.add(0, False);
         assertEquals(False, c.term());
     }
+
     @Test
     void testEmptyConjFalseEternalShortCircuit() {
         Conj c = new Conj();
@@ -365,5 +382,37 @@ class ConjTest {
         assertEquals(False, c.term());
     }
 
+    @Test
+    public void testReducibleDisjunctionConjunction0() {
+        assertEquals("x", $$("((x||y) && x)").toString());
+    }
+    @Test
+    public void testReducibleDisjunctionConjunction1() {
+
+        for (int dt : new int[]{DTERNAL, 0}) {
+            String s0 = "(x||y)";
+            Term x0 = $$(s0);
+            Term x = CONJ.the(dt, x0, $$("x"));
+            assertEquals("x", x.toString());
+        }
+    }
+    @Test
+    public void testReducibleDisjunctionConjunction2() {
+        assertEquals("(x&&y)", $$("((||,x,y,z)&&(x && y))").toString());
+    }
+    @Test
+    public void testReducibleDisjunctionConjunction3() {
+        assertEquals("(--,x)", $$("((||,--x,y)&& --x)").toString());
+    }
+
+
+    @Test
+    public void testInvalidAfterXternalToNonXternalDT() {
+        String s = "((--,((||,dex(fz),reward(fz))&&dex(fz))) &&+- dex(fz))";
+        Term x = $$(s);
+        Term y = x.dt(0);
+        //assertEqualse()
+        //TODO continue
+    }
 }
 
