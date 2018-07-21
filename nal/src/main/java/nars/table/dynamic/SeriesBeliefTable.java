@@ -5,7 +5,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.proto.Remember;
-import nars.control.proto.TaskLinkTask;
+import nars.control.proto.TaskLinkTaskAndEmit;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.ITask;
@@ -130,7 +130,7 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
 
         @Override
         public ITask inputStrategy(Task result, NAR n) {
-            return new TaskLinkTask(this, pri(), concept); //just link
+            return new TaskLinkTaskAndEmit(this, pri(), concept); //just link
         }
 
     }

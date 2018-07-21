@@ -38,6 +38,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
@@ -288,18 +289,22 @@ public class NAgent extends NARService implements NSense, NAct {
         return rewardDetailed($.func("reward", id), rewardfunc);
     }
 
+    public Off reward(String reward, FloatSupplier rewardFunc) {
+        return reward($.inh($$(reward), id), rewardFunc);
+    }
+
     /**
      * set a default (bi-polar) reward supplier
      */
-    public Off reward(Term reward, FloatSupplier rewardfunc) {
+    public Off reward(Term reward, FloatSupplier rewardFunc) {
         return reward(new SimpleReward(reward,
-                new FloatNormalized(rewardfunc, 0, 0, true),
+                new FloatNormalized(rewardFunc, 0, 0, true),
                 this));
     }
 
     @Deprecated
-    public Off rewardDetailed(Term reward, FloatSupplier rewardfunc) {
-        DetailedReward r = new DetailedReward(reward, rewardfunc, this);
+    public Off rewardDetailed(Term reward, FloatSupplier rewardFunc) {
+        DetailedReward r = new DetailedReward(reward, rewardFunc, this);
         return reward(r);
     }
 

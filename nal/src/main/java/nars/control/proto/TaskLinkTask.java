@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TaskLinkTask extends AbstractTask {
 
-    private final Task task;
+    protected final Task task;
     private final Concept concept;
     private final float pri;
 

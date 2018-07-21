@@ -149,6 +149,7 @@ abstract public class NAgentX extends NAgent {
 
             if (a instanceof NAgentX) {
                 NAgent m = metavisor(a);
+                m.pri.set(0.1f);
                 window(NARui.agent(m), 400, 400);
             }
 
@@ -182,14 +183,14 @@ abstract public class NAgentX extends NAgent {
 
     private static NAgent metavisor(NAgent a) {
 
-
-        a.nar().onTask(x -> {
-           if (x.isGoal() && !x.isInput())
-               System.out.println(x);
-        });
+//        a.nar().onTask(x -> {
+//           if (x.isGoal() && !x.isInput())
+//               System.out.println(x);
+//        });
 
         int durs = 4;
         NAR nar = a.nar();
+
         NAgent m = new NAgent($.func("meta", a.id), FrameTrigger.durs(durs), nar);
 
         dexterityReward(a, m);
@@ -239,14 +240,14 @@ abstract public class NAgentX extends NAgent {
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(40);
 
-        n.forgetRate.set(0.85f);
+        n.forgetRate.set(0.75f);
         n.activateConceptRate.set(0.9f);
 
 
         n.beliefConfDefault.set(0.99f);
         n.goalConfDefault.set(0.9f);
 
-        n.beliefPriDefault.set(0.65f);
+        n.beliefPriDefault.set(0.35f);
         n.goalPriDefault.set(0.75f);
 
         n.questionPriDefault.set(0.1f);

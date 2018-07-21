@@ -170,11 +170,11 @@ public class FZero extends NAgentX {
     private void initToggle() {
 
         this.actionPushButtonMutex(
-                $.the("left"), $.the("right"),
+                $.inh($$("left"), id), $.inh($$("right"), id),
                 l -> fz.left = l, r -> fz.right = r
         );
         this.actionPushButtonMutex(
-                $.the("fwd"), $.the("brake"),
+                $.inh($$("fwd"), id), $.inh($$("stop"), id),
                 f -> fz.thrust = f,
                 b -> {
                     if (b) {

@@ -1,6 +1,5 @@
 package nars.experiment;
 
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import nars.$;
@@ -124,11 +123,8 @@ public class NARio extends NAgentX {
                 mario.y : 0).resolution(0.02f);
 
 
-        reward(() -> {
-            int coins = Mario.coins;
-            float reward = (coins - lastCoins) * EarnCoin.floatValue();
-            lastCoins = coins;
-
+        reward("goRight", () -> {
+            float reward = 0;
 
             float curX = mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).mario.x : Float.NaN;
             if (lastX == lastX && lastX < curX) {
@@ -136,10 +132,13 @@ public class NARio extends NAgentX {
             }
             lastX = curX;
 
-
-            float r = Util.clamp(reward, -1, +1);
-
-            return r;
+            return reward;
+        });
+        reward("getCoins", () -> {
+            int coins = Mario.coins;
+            float reward = (coins - lastCoins) * EarnCoin.floatValue();
+            lastCoins = coins;
+            return reward;
         });
     }
 

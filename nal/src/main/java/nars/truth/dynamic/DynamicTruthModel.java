@@ -435,17 +435,22 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 Term t = ((Task) x).term();
 
                 boolean forceNegate = false;
-                if (op == IMPL && t.op() == NEG) {
-                    if (t.unneg().op() == IMPL) {
-                        t = t.unneg();
-                        if (!subjOrPred) {
-                            forceNegate = true;
+                if (t.op() == NEG) {
+                    if (op == IMPL) {
+                        if (t.unneg().op() == IMPL) {
+                            t = t.unneg();
+                            if (!subjOrPred) {
+                                forceNegate = true;
+                            } else {
+                                //dont force negae
+                            }
                         } else {
-                            //dont force negae
+                            throw new WTF();
                         }
                     } else {
                         throw new WTF();
                     }
+
                 }
 
 //                if (t.subs()!=2) {
