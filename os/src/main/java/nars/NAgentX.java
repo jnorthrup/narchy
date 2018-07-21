@@ -2,12 +2,13 @@ package nars;
 
 import jcog.Util;
 import jcog.exe.Loop;
-import jcog.math.FloatExpMovingAverage;
 import jcog.math.FloatFirstOrderDifference;
+import jcog.math.FloatNormalized;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
+import nars.agent.SimpleReward;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
@@ -15,7 +16,7 @@ import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -43,7 +44,6 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
-import static jcog.Util.compose;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 
@@ -119,8 +119,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        //new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(64 * 1024, 4)
+                        new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        //new HijackConceptIndex(64 * 1024, 4)
 
 
                 )
@@ -175,7 +175,7 @@ abstract public class NAgentX extends NAgent {
 
 
     public static void config(NAR n) {
-        n.dtDither.set(10);
+        n.dtDither.set(20);
         n.timeFocus.set(10);
 
         n.confMin.set(0.01f);
@@ -189,16 +189,16 @@ abstract public class NAgentX extends NAgent {
         n.beliefConfDefault.set(0.99f);
         n.goalConfDefault.set(0.9f);
 
-        n.beliefPriDefault.set(0.4f);
-        n.goalPriDefault.set(0.8f);
+        n.beliefPriDefault.set(0.65f);
+        n.goalPriDefault.set(0.75f);
 
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.08f);
+        n.questionPriDefault.set(0.25f);
+        n.questPriDefault.set(0.25f);
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
-        n.emotion.want(MetaGoal.Believe, +0.25f);
+        n.emotion.want(MetaGoal.Believe, +0.01f);
+        n.emotion.want(MetaGoal.Desire, +0.01f);
         n.emotion.want(MetaGoal.Answer, +0.10f);
-        n.emotion.want(MetaGoal.Desire, +0.50f);
         n.emotion.want(MetaGoal.Action, +0.75f);
     }
 
@@ -282,6 +282,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
+        addSensor(c);
         nar().runLater(() -> {
             c.readAdaptively(this);
         });
@@ -289,10 +290,10 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected void rewardDexterity() {
-        reward($.func("dex", id), compose(
-                new FloatFirstOrderDifference(nar::time, this::dexterity),
-                new FloatExpMovingAverage(0.02f)
-        ));
+        reward(new SimpleReward($.func("dex", id),
+            new FloatNormalized(new FloatFirstOrderDifference(nar::time, this::dexterity)).relax(0.01f)
+            , this));
+
     }
 
     /**

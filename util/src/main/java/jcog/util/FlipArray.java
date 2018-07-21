@@ -85,10 +85,12 @@ public class FlipArray<X> extends AtomicInteger {
                 x = commit(writeTransform);
 //                writeClear();
             } finally {
-                valid.setRelease(OK);
+                valid.compareAndSet(BUSY, OK);
             }
 
             return x;
+        } else {
+            valid.compareAndSet(BUSY, INVALID); //set invalid for next read but return current value while busy
         }
         return read();
     }

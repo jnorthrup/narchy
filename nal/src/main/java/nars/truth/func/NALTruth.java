@@ -410,13 +410,19 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             float conf =
+
+
                     Math.min((float)Math.sqrt(n.confMin.floatValue()) + n.confResolution.floatValue(),
                             n.confDefault(GOAL))
 
-                    //n.confMin.floatValue()
+//                    n.confMin.floatValue()
+
 //                    n.confMin.floatValue() * 2;
                         // + m.confResolution.floatValue();
+
                     //Util.lerp(Util.sqr(n.random().nextFloat()) * 0.5f, minConf, n.confDefault(GOAL));
+
+                    //n.confDefault(GOAL);
             ;
 
             if (T==null)

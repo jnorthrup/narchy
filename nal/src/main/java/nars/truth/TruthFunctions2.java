@@ -110,8 +110,8 @@ public enum TruthFunctions2 {
         if (c >= minConf) {
 
 
-            float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
-            //float f = goal.freq();
+            //float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
+            float f = goal.freq();
 
             return $.t(f, c);
 

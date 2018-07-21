@@ -3,6 +3,7 @@ package nars.time.clock;
 import jcog.Texts;
 import jcog.exe.Loop;
 import nars.NAR;
+import nars.time.Tense;
 import nars.time.Time;
 import org.jetbrains.annotations.NotNull;
 import tec.uom.se.quantity.time.TimeQuantities;
@@ -67,7 +68,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public final void cycle(NAR n) {
-        last = t.getAndSet(realtime()-start);
+        last = t.getAndSet(Tense.dither(realtime(),n) - Tense.dither(start, n));
     }
 
     @Override

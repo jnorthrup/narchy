@@ -365,16 +365,23 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatestFiltered(C,X), (Goal:Desire)
-    X, C, eventOfNeg(C,X) |- conjDropIfLatestFiltered(C,--X), (Goal:DesireN)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire)
+        //conjDropIfLatestFiltered
+    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN)
+        //conjDropIfLatestFiltered
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
 
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
-     C, X, eventOf(C,X)    |- conjDropIfEarliestFiltered(C,X), (Goal:Desire)
+     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Desire)
+            //conjDropIfEarliestFiltered
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN)
-     C, X, eventOfNeg(C,X) |- conjDropIfEarliestFiltered(C,--X), (Goal:DesirePN)
+     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN)
+        //conjDropIfEarliestFiltered
 
+    //antigoal in sequence
+    X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak)
+    X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
 
 
 

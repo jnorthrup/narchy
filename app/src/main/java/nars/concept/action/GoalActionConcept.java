@@ -3,6 +3,8 @@ package nars.concept.action;
 import nars.NAR;
 import nars.Task;
 import nars.control.channel.CauseChannel;
+import nars.table.dynamic.CuriosityGoalTable;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -27,11 +29,14 @@ public class GoalActionConcept extends ActionConcept {
     private final MotorFunction motor;
     private final CauseChannel<ITask> in;
 
-    private volatile float curiosity = 0;
+    private volatile float curiosityRate = 0;
 
 
-    public GoalActionConcept(Term c, NAR n, MotorFunction motor) {
-        super(c, n);
+    public GoalActionConcept(Term term, NAR n, MotorFunction motor) {
+        super(term,
+                new SignalBeliefTable(term, true, n.conceptBuilder),
+                new CuriosityGoalTable(term, false, n),
+                n);
 
         this.feedback = (SignalBeliefTable) beliefs();
 
@@ -40,6 +45,16 @@ public class GoalActionConcept extends ActionConcept {
         in = n.newChannel(this);
     }
 
+    @Override
+    public CuriosityGoalTable goals() {
+        return (CuriosityGoalTable) super.goals();
+    }
+
+    @Override
+    public float dexterity(long start, long end, NAR n) {
+        Truth t = goals().truthStored(start, end, null, n);
+        return t!=null ? t.conf() : 0;
+    }
 
     @Override
     public void update(long pPrev, long pNow, NAR nar) {
@@ -47,22 +62,17 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth goal;
 
-        long gStart, gEnd;
-//        gStart = pNow; gEnd = pNow;
-//        goal = this.goals().truth(pNow, pNow, nar);
-//        if (goal == null) {
-//            //HACK expand radius - this should be done by the truthpolation impl
-
         int dur = nar.dur();
-        gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
-        //gStart = pNow; gEnd = pNow + Math.max(0, dur-1);
+        long gStart = pNow - dur / 2, gEnd = pNow + Math.max(0, dur / 2 - 1);
+        //long gStart = pNow, gEnd = pNow + Math.max(0, dur-1);
 
-        goal = this.goals().truth(gStart, gEnd, nar);
-//        }
+        goal =
+                this.goals().truth(gStart, gEnd, nar);
+                //goals().truthStored(gStart, gEnd, null, nar);
 
 
         boolean curi;
-        if (nar.random().nextFloat() < curiosity) { // * (1f - (goal != null ? goal.conf() : 0))) {
+        if (nar.random().nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
 
 
 //            float curiConf =
@@ -99,10 +109,9 @@ public class GoalActionConcept extends ActionConcept {
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief != null) {
-            curiosityGoal = curiosity(nar,
+            curiosityGoal = curiosity(
                     goal,
-
-                    term, gStart, gEnd, nar.time.nextStamp());
+                    term, gStart, gEnd, nar);
         }
 
         this.feedback.clean(nar);
@@ -111,21 +120,29 @@ public class GoalActionConcept extends ActionConcept {
             Stream.of(feedbackBelief, (ITask) curiosityGoal).filter(Objects::nonNull)
         );
     }
+//
+//    @Override
+//    public void add(Remember r, NAR n) {
+//        if (r.punc()==GOAL) {
+//            System.out.println("goal sdfjlsj: " + r);
+//        }
+//        super.add(r, n);
+//    }
 
+    SignalTask curiosity(Truth truth, Term term, long pStart, long pEnd, NAR nar) {
+        //SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, curiosityStamp);
 
-    static SignalTask curiosity(NAR nar, Truth goal, Term term, long pStart, long pEnd, long curiosityStamp) {
-        long now = nar.time();
+        SeriesBeliefTable.SeriesTask curiosity =
+                goals().series.add(term, GOAL, pStart, pEnd, truth, nar.dur(), nar);
 
-        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, pStart, pEnd, curiosityStamp);
-
-        curiosity.pri(nar.priDefault(GOAL));
-
+        if (curiosity!=null)
+            curiosity.pri(nar.priDefault(GOAL));
 
         return curiosity;
     }
 
-
     public void curiosity(float c) {
-        this.curiosity = c;
+        this.curiosityRate = c;
     }
+
 }

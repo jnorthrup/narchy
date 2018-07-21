@@ -9,6 +9,7 @@ import nars.concept.TaskConcept;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
+import nars.table.BeliefTable;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -20,10 +21,14 @@ import java.util.function.BiFunction;
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
 
     protected ActionConcept(Term term, NAR n) {
-        super(term,
+        this(term,
                 new SignalBeliefTable(term, true, n.conceptBuilder),
                 n.conceptBuilder.newTable(term, false),
-                n.conceptBuilder);
+                n);
+    }
+
+    protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
+        super(term, beliefs, goals, n.conceptBuilder);
 
         ((SignalBeliefTable) beliefs()).setPri(
                 FloatRange.unit(
@@ -33,6 +38,10 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
         );
         ((SignalBeliefTable) beliefs()).resolution(FloatRange.unit(n.freqResolution));
     }
+
+    /** estimates the organic (derived, excluding curiosity) goal confidence for the given time interval
+     * TODO exclude input tasks from the calculation */
+    abstract public float dexterity(long start, long end, NAR n);
 
     @Override
     public FloatRange resolution() {

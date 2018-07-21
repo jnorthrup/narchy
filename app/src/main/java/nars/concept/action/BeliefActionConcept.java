@@ -1,5 +1,6 @@
 package nars.concept.action;
 
+import jcog.TODO;
 import nars.NAR;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -20,6 +21,11 @@ public class BeliefActionConcept extends ActionConcept {
         this.action = action;
     }
 
+
+    @Override
+    public float dexterity(long start, long end, NAR n) {
+        throw new TODO();
+    }
 
     @Override
     public void update(long start, long end, NAR nar) {

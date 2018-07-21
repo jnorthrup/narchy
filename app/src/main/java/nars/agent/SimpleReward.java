@@ -1,6 +1,5 @@
 package nars.agent;
 
-import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
@@ -17,8 +16,7 @@ public class SimpleReward extends Reward {
 
     public SimpleReward(Term id, FloatSupplier r, NAgent a) {
         super(a, r);
-        concept = new Signal(id, new FloatNormalized(
-            () -> reward, -1, +1, true), nar());
+        concept = new Signal(id, () -> reward, nar());
         truther = truther();
         agent.alwaysWantEternally(concept.term, nar().confDefault(GOAL));
     }

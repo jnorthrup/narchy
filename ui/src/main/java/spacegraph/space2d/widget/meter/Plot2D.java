@@ -253,10 +253,11 @@ public class Plot2D extends Widget {
 
                 float[] ss = s.toArray();
                 int len = Math.min(s.size(), ss.length);
+                float range = maxValue - minValue;
                 for (int i = 0; i < len; i++) {
                     float v = ss[i];
 
-                    float py = (v - minValue) / (maxValue - minValue);
+                    float py = (v - minValue) / range;
                     if (py < 0) py = 0;
                     if (py > 1.0) py = 1.0f;
 
@@ -310,32 +311,37 @@ public class Plot2D extends Widget {
             int histSize = ss;
 
 
-            gl.glLineWidth(3);
-            gl.glColor3fv(s.color, 0);
-
-            gl.glBegin(
-                    GL.GL_LINE_STRIP
-
-
-            );
             float range = maxValue - minValue;
             float yy = Float.NaN;
-            float x = 0;
-            float dx = (W / histSize);
+            if (range > Float.MIN_NORMAL) {
+
+                gl.glLineWidth(3);
+                gl.glColor3fv(s.color, 0);
+                gl.glBegin(
+                        GL.GL_LINE_STRIP
 
 
-            for (int i = 0; i < ss; i++) {
-
-                float v = ssh[i];
-                float ny = (v == v) ? ypos(minValue, range, v) : mid /*HACK for NaN*/;
-
-
-                gl.glVertex2f(x, yy = ny);
+                );
+                float x = 0;
+                float dx = (W / histSize);
 
 
-                x += dx;
+                for (int i = 0; i < ss; i++) {
+
+                    float v = ssh[i];
+                    float ny = (v == v) ? ypos(minValue, range, v) : mid /*HACK for NaN*/;
+
+
+                    gl.glVertex2f(x, yy = ny);
+
+
+                    x += dx;
+                }
+                gl.glEnd();
             }
-            gl.glEnd();
+
+            if (yy!=yy)
+                yy = 0.5f;
 
             gl.glLineWidth(2);
             Draw.text(gl, s.name, 0.04f, W, yy, 0, Draw.TextAlignment.Right);

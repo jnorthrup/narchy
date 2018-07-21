@@ -7,8 +7,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 public class FloatNormalizer implements FloatToFloatFunction  {
     /** precision threshold */
     private static final float epsilon = Float.MIN_NORMAL;
-    private final float minStart;
-    private final float maxStart;
     protected float min;
     protected float max;
     /** relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables */
@@ -19,9 +17,8 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     }
 
     FloatNormalizer(float minStart, float maxStart) {
-        this.minStart = minStart;
-        this.maxStart = maxStart;
-        reset();
+        this.min = minStart;
+        this.max = maxStart;
     }
 
     public float min() {
@@ -32,10 +29,6 @@ public class FloatNormalizer implements FloatToFloatFunction  {
         return max;
     }
 
-    public void reset() {
-        min = minStart;
-        max = maxStart;
-    }
 
     public float valueOf(float raw) {
         if (raw!=raw)

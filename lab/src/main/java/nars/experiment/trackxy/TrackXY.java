@@ -15,6 +15,7 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.UniExec;
+import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
@@ -26,6 +27,7 @@ import nars.video.CameraSensorView;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -109,7 +111,7 @@ public class TrackXY extends NAgent {
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
-                        new CaffeineIndex(2 * 1024*20)
+                        new CaffeineIndex(2 * 1024 * 20)
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 
@@ -124,10 +126,10 @@ public class TrackXY extends NAgent {
 //        n.questPriDefault.set(0.1f);
 
 
-        n.termVolumeMax.set(17);
+        n.termVolumeMax.set(21);
 
 
-        TrackXY t = new TrackXY(n, 3, 2);
+        TrackXY a = new TrackXY(n, 5, 5);
 
 
 //        if (rl) {
@@ -176,17 +178,18 @@ public class TrackXY extends NAgent {
 
 
         n.runLater(() -> {
-            window(NARui.agent(t), 800, 800);
 
-            window(NARui.top(n), 800, 250);
+            window(NARui.agent(a), 800, 800);
+
+            window(new Gridding(NARui.top(n), new EmotionPlot(128, a)), 800, 250);
 
 //            NARui.agentWindow(t);
-            if (t.cam != null) {
-                window(new CameraSensorView(t.cam, n) {
+            if (a.cam != null) {
+                window(new CameraSensorView(a.cam, n) {
                     @Override
                     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
                         super.paint(gl, surfaceRender);
-                        RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
+                        RectFloat2D at = cellRect(a.sx, a.sy, 0.5f, 0.5f);
                         gl.glColor4f(1, 0, 0, 0.9f);
                         Draw.rect(at.move(x(), y(), 0.01f), gl);
                     }

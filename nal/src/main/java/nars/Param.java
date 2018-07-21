@@ -39,7 +39,9 @@ public abstract class Param {
      * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
      */
     public static final int DerivedTaskBagCapacity = 2048;
-    public static final float DerivedTaskBagDrainRate = 0.5f;
+    public static final float DerivedTaskBagDrainRate =
+            //1f;
+            0.5f;
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
@@ -47,6 +49,9 @@ public abstract class Param {
 
     public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 5;
     public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
+
+    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 256;
+    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 128;
 
 
     //5;
@@ -58,7 +63,7 @@ public abstract class Param {
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = true;
 
 
     /**

@@ -369,7 +369,6 @@ public class Derivation extends PreDerivation {
         } else {
 
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
-            assert (beliefTerm.op() != NEG);
 
             this.beliefStart = TIMELESS;
             this.belief = null;
@@ -377,6 +376,7 @@ public class Derivation extends PreDerivation {
         }
 
         assert (beliefTerm != null) : (_beliefTerm + " could not be anonymized");
+        assert (beliefTerm.op() != NEG): _belief + " -> " + beliefTerm + " is invalid NEG op";
 
 
 

@@ -43,7 +43,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
      * @param timePerFall larger is slower gravity
      */
     public Tetris(NAR nar, int width, int height, int timePerFall) {
-        super("tetris", FrameTrigger.fps(20f), nar);
+        super("tetris", FrameTrigger.fps(10f), nar);
 
         state = new TetrisState(width, height, timePerFall) {
             @Override
@@ -94,9 +94,9 @@ public class Tetris extends NAgentX implements Bitmap2D {
     }
 
     void actionsToggle() {
-        final Term LEFT = $.the("left");
-        final Term RIGHT = $.the("right");
-        final Term ROT = $.the("rotate");
+        final Term LEFT = $.inh($.the("left"), id);
+        final Term RIGHT = $.inh($.the("right"), id);
+        final Term ROT = $.inh($.the("rotate"), id);
 
         actionPushButtonMutex(LEFT, RIGHT,
                 (b) -> state.act(TetrisState.LEFT, b),

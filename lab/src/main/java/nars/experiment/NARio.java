@@ -15,13 +15,13 @@ import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.op.AutoConceptualizer;
 import nars.sensor.Bitmap2DSensor;
-import nars.util.TimeAware;
 import nars.video.PixelBag;
 
 import javax.swing.*;
 
 import static jcog.Util.unitize;
 import static nars.$.$$;
+import static nars.agent.FrameTrigger.fps;
 import static nars.experiment.mario.level.Level.*;
 
 public class NARio extends NAgentX {
@@ -29,8 +29,10 @@ public class NARio extends NAgentX {
     private final MarioComponent mario;
     private final AbstractSensor cam;
 
+    static final float fps = 24;
+
     public NARio(NAR nar) {
-        super("nario", nar);
+        super("nario", fps(fps), nar);
 
 
 //        nar.freqResolution.set(0.1f);
@@ -294,7 +296,7 @@ public class NARio extends NAgentX {
     public static void main(String[] args) {
 
 
-        TimeAware timeAware = runRT((NAR n) -> {
+        runRT((NAR n) -> {
 
 
             NARio x;
@@ -305,7 +307,7 @@ public class NARio extends NAgentX {
             return x;
 
 
-        }, 24);
+        }, fps*2);
 
 
     }

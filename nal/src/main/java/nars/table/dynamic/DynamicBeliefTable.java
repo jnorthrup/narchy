@@ -37,8 +37,12 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Override
     @Nullable
-    public final Truth truth(long start, long end, Term template, NAR nar) {
+    public Truth truth(long start, long end, Term template, NAR nar) {
         Truth d = truthDynamic(start, end, template, nar);
+        if (d!=null && dynamicOverrides()) {
+            return d;
+        }
+
         Truth e = truthStored(start, end, template, nar);
         if (d == null)
             return e;
@@ -109,7 +113,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
 
-    private Truth truthStored(long start, long end, Term template, NAR nar) {
+    public Truth truthStored(long start, long end, Term template, NAR nar) {
         return super.truth(start, end, template, nar);
     }
 
@@ -161,7 +165,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
      * a dynamic match, if exist, to totally override any possible
      * otherwise stored temporal or eternal tasks.
      */
-    boolean dynamicOverrides() {
+    protected boolean dynamicOverrides() {
         return false;
     }
 
@@ -171,14 +175,19 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         if (template!=null && template.op()!=term.op())
             template = null;
 
+        //TODO apply filter to dynamic results
         Task y = taskDynamic(start, end, template, nar);
 
         if (y!=null && dynamicOverrides())
             return y;
 
-        Task x = super.match(start, end, template, filter, nar);
+        Task x = taskStored(start, end, template, filter, nar);
 
         return Revision.mergeOrChoose(x, y, start, end, filter, nar);
+    }
+
+    public final Task taskStored(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
+        return super.match(start, end, template, filter, nar);
     }
 
 

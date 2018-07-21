@@ -104,6 +104,10 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         throw new TODO();
     }
 
+    /** eval without any specific time or truth dithering */
+    public final Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
+        return eval(superterm, truthModel, taskOrJustTruth,  beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
+    }
     /**
      * TODO make Task truth dithering optional
      */
@@ -267,14 +271,14 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     public final Truth truth(Term term, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
-        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, Float.MIN_NORMAL /*Truth.EVI_MIN*/, n);
+        return (Truth) eval(term, o, false, beliefOrGoal, n);
     }
 
     public final Task task(Term term, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
         return (Task) eval(term, o, true, beliefOrGoal,
-                n.freqResolution.floatValue(),
-                n.confResolution.floatValue(),
-                c2wSafe(n.confMin.floatValue()) /*Float.MIN_NORMAL*/ /*Truth.EVI_MIN*/ ,
+//                n.freqResolution.floatValue(),
+//                n.confResolution.floatValue(),
+//                c2wSafe(n.confMin.floatValue()) /*Float.MIN_NORMAL*/ /*Truth.EVI_MIN*/ ,
                 n);
     }
 

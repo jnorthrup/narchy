@@ -3,6 +3,7 @@ package nars.agent;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
 import jcog.event.*;
+import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
@@ -20,7 +21,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
-import nars.truth.Truth;
+import nars.truth.Stamp;
 import nars.util.TimeAware;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -118,9 +119,8 @@ public class NAgent extends NARService implements NSense, NAct {
     public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now(),
                 ETERNAL, ETERNAL,
-                nar.evidence()
-                //Stamp.UNSTAMPED
-
+                //nar.evidence()
+                Stamp.UNSTAMPED
         );
 
         always.add(() -> t);
@@ -175,8 +175,7 @@ public class NAgent extends NARService implements NSense, NAct {
         NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
                 ETERNAL, ETERNAL,
                 //evidenceShared
-                nar.evidence()
-                //Stamp.UNSTAMPED
+                stamped ? nar.evidence() : Stamp.UNSTAMPED
 
         );
         always.add(() -> etq);
@@ -286,9 +285,11 @@ public class NAgent extends NARService implements NSense, NAct {
         return rewardDetailed($.func("reward", id), rewardfunc);
     }
 
-    /** set a default reward supplier */
+    /** set a default (bi-polar) reward supplier */
     public Off reward(Term reward, FloatSupplier rewardfunc) {
-        return reward(new SimpleReward(reward, rewardfunc, this));
+        return reward(new SimpleReward(reward,
+                new FloatNormalized(rewardfunc, 0, 0, true),
+                this));
     }
 
     @Deprecated public Off rewardDetailed(Term reward, FloatSupplier rewardfunc) {
@@ -350,7 +351,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public float dexterity(long when) {
-        return dexterity(when, when);
+        return dexterity(when, when + nar().dur());
     }
 
     /**
@@ -364,15 +365,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         final float[] m = {0};
         actions.forEach(a -> {
-            Truth g = nar.goalTruth(a, start, end);
-            float c;
-            if (g != null) {
-
-                c = g.conf();
-            } else {
-                c = 0;
-            }
-            m[0] += c;
+            m[0] += a.dexterity(start, end, nar);
         });
 
         return m[0] > 0 ? m[0] / n /* avg */ : 0;

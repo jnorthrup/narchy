@@ -1,8 +1,5 @@
 package jcog.math;
 
-import java.util.function.DoubleSupplier;
-
-
 public class FloatNormalized implements FloatSupplier {
 
     private final FloatSupplier in;
@@ -20,7 +17,7 @@ public class FloatNormalized implements FloatSupplier {
     public FloatNormalized(FloatSupplier in, float minStart, float maxStart, boolean polar) {
         normalizer =
                 polar ?
-                    new FloatPolarNormalizer(minStart) :
+                    new FloatPolarNormalizer(Math.max(Math.abs(minStart), Math.abs(maxStart))) :
                     new FloatNormalizer(minStart, maxStart);
 
         this.in = in;
