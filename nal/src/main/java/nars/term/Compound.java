@@ -37,6 +37,7 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -162,13 +163,21 @@ public interface Compound extends Term, IPair, Subterms {
         return new Anon(2).put(this);
     }
 
+
+
     @Override
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term superterm) {
-        return (!aSuperCompoundMust.test(this)) || (subterms().recurseTerms(aSuperCompoundMust, whileTrue, this));
+        return (!aSuperCompoundMust.test(this) && whileTrue.test(this)) || (subterms().recurseTerms(aSuperCompoundMust, whileTrue, this));
     }
+
+    default void recurseTerms(BiConsumer<Term,Compound> each) {
+        each.accept(this, null);
+        recurseTerms(x -> true, (sub, sup)->{ each.accept(sub, sup); return true; } , null);
+    }
+
     @Override
     default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
-        return (!aSuperCompoundMust.test(this)) || (subterms().recurseTerms(aSuperCompoundMust, whileTrue, this));
+        return (!aSuperCompoundMust.test(this) && whileTrue.test(superterm, this)) || (subterms().recurseTerms(aSuperCompoundMust, whileTrue, this));
     }
 
 

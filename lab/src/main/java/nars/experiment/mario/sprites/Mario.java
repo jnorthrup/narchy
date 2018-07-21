@@ -513,7 +513,7 @@ public class Mario extends Sprite {
     }
 
     public void die() {
-        coins -= burial_cost;
+//        coins -= burial_cost;
 
         xDeathPos = (int) x;
         yDeathPos = (int) y;

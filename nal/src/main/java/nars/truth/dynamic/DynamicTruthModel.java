@@ -443,6 +443,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                                 forceNegate = true;
                             } else {
                                 //dont force negae
+                                throw new WTF();
                             }
                         } else {
                             throw new WTF();

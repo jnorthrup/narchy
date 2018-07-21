@@ -42,7 +42,7 @@ class TemporalInductionTest {
 
     @Test
     void inductionDiffEventsNegPos() {
-        testInduction("--x:before", "x:after", 4);
+        testInduction("(--,x:before)", "x:after", 4);
     }
 
     @Test
@@ -71,10 +71,8 @@ class TemporalInductionTest {
      * rather than raw belief truth
      */
     private static void testInduction(String a, String b, int dt) {
-        int cycles = dt * 24;
+        int cycles = dt * 136;
         TestNAR t = new TestNAR(NARS.tmp())
-                
-
                 .input(a + ". :|:")
                 .inputAt(dt, b + ". :|:")
                 .mustBelieve(cycles, "(" + a + " &&+" + dt + " " + b + ")", 1.00f, 0.81f /*intersectionConf*/, 0)

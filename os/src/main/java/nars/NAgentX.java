@@ -157,8 +157,8 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
-                        Derivers.nal(n, 1, 6, "motivation.nal"));
+//                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
+//                        Derivers.nal(n, 1, 6, "motivation.nal"));
 
 
                 Gridding aa = new Gridding(
@@ -206,7 +206,7 @@ abstract public class NAgentX extends NAgent {
                 //HACK TODO divide by # of contained concepts, reported by Sensor interface
                 float maxPri;
                 if (s instanceof Bitmap2DSensor) {
-                    maxPri = 1f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
+                    maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
                 } else {
                     maxPri = 1;
                 }
@@ -219,6 +219,26 @@ abstract public class NAgentX extends NAgent {
             }
         }
 
+//        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
+//            if (d == d) {
+//                //deep incrases both duration and max term volume
+//                this.nar.time.dur(Util.lerp(d * d, 20, 120));
+//                this.nar.termVolumeMax.set(Util.lerp(d, 30, 60));
+//            }
+//            return d;
+//        });
+
+//        actionUnipolar($.inh(this.nar.self(), $.the("awake")), (a)->{
+//            if (a == a) {
+//                this.nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
+//            }
+//            return a;
+//        });
+
+//        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
+//            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
+//            return a;
+//        });
 
         m.actionUnipolar($.func("curious", a.id), (cur) -> {
             a.curiosity.set(lerp(cur, 0.01f, 0.5f));

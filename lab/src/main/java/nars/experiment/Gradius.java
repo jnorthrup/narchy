@@ -1,8 +1,6 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
-import jcog.Util;
-import jcog.WTF;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -13,6 +11,7 @@ import nars.video.Scale;
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.$.$$;
 import static nars.$.p;
+import static nars.agent.FrameTrigger.fps;
 
 /**
  * Created by me on 4/30/17.
@@ -22,10 +21,13 @@ public class Gradius extends NAgentX {
 
     private final Gradius4K g = new Gradius4K();
 
+    private final boolean canPause = false;
+
+
     int lastScore;
 
     public Gradius(NAR nar) {
-        super("g", nar);
+        super("g", fps(10), nar);
 
 
         g.updateMS =
@@ -71,37 +73,25 @@ public class Gradius extends NAgentX {
 
         actionToggle($$("fire"), (b) -> g.keys[VK_SHOOT] = b);
 
-//        actionToggle($.inh("pause", id),
-//                (b) -> g.paused = b);
+        if (canPause) {
+            actionToggle($.inh("pause", id),
+                    (b) -> g.paused = b);
+        }
 
-        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
-            if (d == d) {
-                //deep incrases both duration and max term volume
-                this.nar.time.dur(Util.lerp(d * d, 20, 120));
-                this.nar.termVolumeMax.set(Util.lerp(d, 30, 60));
-            }
-            return d;
-        });
-
-//        actionUnipolar($.inh(this.nar.self(), $.the("awake")), (a)->{
-//            if (a == a) {
-//                this.nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
-//            }
-//            return a;
-//        });
-
-//        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
-//            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
-//            return a;
-//        });
 
         initToggle();
 
-        reward(()->{
-            if (g == null) {
-                new WTF().printStackTrace();
-                return 0;
-            }
+        reward("alive", ()->{
+            if (g.playerDead > 1)
+                return -1f;
+            else if (g.paused)
+                return 0f;
+            else
+                return +1;
+        });
+
+        reward("destroy", ()->{
+
             if (g.paused)
                 return 0;
 
@@ -111,17 +101,14 @@ public class Gradius extends NAgentX {
 
             lastScore = nextScore;
 
-            if (g.playerDead > 1)
-                return -1f;
-            else
-                return r;
+            return r;
        });
 
     }
 
     public static void main(String[] args) {
 
-        NAgentX.runRT(Gradius::new, 40f);
+        NAgentX.runRT(Gradius::new, 30f);
 
     }
 

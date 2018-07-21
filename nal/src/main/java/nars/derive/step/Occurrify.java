@@ -182,25 +182,7 @@ public class Occurrify extends TimeGraph {
 
         if (task.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
 
-            assert (nextPos.isEmpty() && nextNeg.isEmpty());
-
-            UnifiedSet<Term> pp = nextPos;
-            UnifiedSet<Term> nn = nextNeg;
-
-            BiConsumer<Term, Compound> gather = (sub, sup) -> {
-                if (sub.op() == NEG) nn.add(sub.unneg());
-                else if (sup == null || sup.op() != NEG)
-                    pp.add(sub); //dont add the inner positive unneg'd term of a negation
-            };
-            pattern.recurseTerms(gather);
-            taskTerm.recurseTerms(gather);
-            if (!single)
-                beliefTerm.recurseTerms(gather);
-
-            pp.intersectInto(nn, autoNegNext);
-
-            pp.clear();
-            nn.clear();
+            setAutoNeg(pattern, taskTerm, single, beliefTerm);
         }
 
         if (!single) {
@@ -278,6 +260,28 @@ public class Occurrify extends TimeGraph {
         }
 
         return this;
+    }
+
+    private void setAutoNeg(Term pattern, Term taskTerm, boolean single, Term beliefTerm) {
+        assert (nextPos.isEmpty() && nextNeg.isEmpty());
+
+        UnifiedSet<Term> pp = nextPos;
+        UnifiedSet<Term> nn = nextNeg;
+
+        BiConsumer<Term, Compound> gather = (sub, sup) -> {
+            if (sub.op() == NEG) nn.add(sub.unneg());
+            else if (sup == null || sup.op() != NEG)
+                pp.add(sub); //dont add the inner positive unneg'd term of a negation
+        };
+        pattern.recurseTerms(gather);
+        taskTerm.recurseTerms(gather);
+        if (!single)
+            beliefTerm.recurseTerms(gather);
+
+        pp.intersectInto(nn, autoNegNext);
+
+        pp.clear();
+        nn.clear();
     }
 
 
