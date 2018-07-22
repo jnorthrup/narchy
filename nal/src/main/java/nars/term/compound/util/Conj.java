@@ -167,14 +167,20 @@ public class Conj extends ByteAnonMap {
     }
 
     public static Conj from(Term t) {
-        return from(t, t.dt() == DTERNAL ? ETERNAL : 0);
-    }
-
-    private static Conj from(Term t, long rootTime) {
         Conj x = new Conj();
-        x.add(rootTime, t);
+        x.addAuto(t);
         return x;
     }
+
+    public boolean addAuto(Term t) {
+        return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
+    }
+
+//    private static Conj from(Term t, long rootTime) {
+//        Conj x = new Conj();
+//        x.add(rootTime, t);
+//        return x;
+//    }
 
     public static Term conj(FasterList<LongObjectPair<Term>> events) {
         int eventsSize = events.size();
@@ -258,8 +264,14 @@ public class Conj extends ByteAnonMap {
 
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
         Conj c = new Conj();
-        if (c.add(aStart, a)) {
-            c.add(bStart, b);
+        if (aStart == bStart) {
+            if (c.addAuto(a)) {
+                c.addAuto(b);
+            }
+        } else {
+            if (c.add(aStart, a)) {
+                c.add(bStart, b);
+            }
         }
         return c.term();
     }
@@ -357,7 +369,7 @@ public class Conj extends ByteAnonMap {
         }
 
 
-        return Op.theExact(CONJ, dt, left, right);
+        return Op.compoundExact(CONJ, dt, left, right);
     }
 
     /**
@@ -369,10 +381,10 @@ public class Conj extends ByteAnonMap {
 
         if (bOffset == 0 && a.subterms().equals(b.subterms())) {
             //special case: equal subs
-            return a.dt( Revision.choose(a, b, aProp, nar) );
+            return a.dt( Revision.chooseDT(a, b, aProp, nar) );
         }
 
-        return new Conjterpolate(a, b, bOffset, nar).term();
+        return new Conjterpolate(a, b, bOffset, aProp, nar).term();
     }
 
     public void clear() {
@@ -912,7 +924,7 @@ public class Conj extends ByteAnonMap {
                     dt = 0;
                 }
 
-                Term z = t.size() > 1 ? Op.theExact(CONJ,
+                Term z = t.size() > 1 ? Op.compoundExact(CONJ,
                         dt,
                         t.toArray(Op.EmptyTermArray) /* sorted iff t is SortedSet */) : t.first();
 
@@ -1086,7 +1098,7 @@ public class Conj extends ByteAnonMap {
 
     }
 
-    @Nullable private static List<Term> disjComponents(TreeSet<Term> t) {
+    @Nullable private static List<Term> disjComponents(Set<Term> t) {
         List<Term> d = null;
         for (Term x : t) {
             if (x.hasAll(NEG.bit | CONJ.bit)) {
@@ -1133,16 +1145,16 @@ public class Conj extends ByteAnonMap {
         private final Conj aa;
         private final Term b;
         private final NAR nar;
-        private final Random rng;
 
-        Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
+        /** proportion of a vs. b, ie: (a/(a+b)) */
+        private final float aProp;
+
+        Conjterpolate(Term a, Term b, long bOffset, float aProp, NAR nar) {
 
             this.b = b;
             this.nar = nar;
-            this.rng = nar.random();
-            Conj aa = new Conj();
-            aa.add(0, a);
-            this.aa = aa;
+            this.aa = Conj.from(a);
+            this.aProp = aProp;
             add(bOffset, b);
         }
 
@@ -1181,44 +1193,37 @@ public class Conj extends ByteAnonMap {
                     return super.add(bt, what);
                 }
 
-                long theWhen;
+                long at;
                 if (ws > 1) {
                     LongToLongFunction temporalDistance;
                     if (bt == ETERNAL) {
-                        temporalDistance = (at) -> at == ETERNAL ? 0 : 1;
+                        temporalDistance = (a) -> a == ETERNAL ? 0 : Long.MAX_VALUE;
                     } else {
-                        temporalDistance = (at) -> at != ETERNAL ? Math.abs(bt - at) : Long.MAX_VALUE;
+                        temporalDistance = (a) -> a == ETERNAL ? Long.MAX_VALUE : Math.abs(bt - a);
                     }
                     long[] whensArray = whens.toArray();
                     ArrayUtils.sort(whensArray, temporalDistance);
 
-                    theWhen = whensArray[whensArray.length - 1];
+                    at = whensArray[whensArray.length - 1];
                 } else {
-                    theWhen = whens.get(0);
+                    at = whens.get(0);
                 }
 
-                return super.add(Tense.dither(merge(theWhen, bt), nar), what);
+                return super.add(merge(at, bt), what);
             }
 
         }
 
-        static long merge(long x, long y) {
-            if (x == y) return x;
-            if (x == ETERNAL || y == ETERNAL)
+        long merge(long a, long b) {
+            if (a == b) return a;
+            if (a == ETERNAL || b == ETERNAL)
                 return ETERNAL;
-            if (x == XTERNAL || y == XTERNAL)
+            if (a == XTERNAL || b == XTERNAL)
                 throw new RuntimeException("xternal in conjtermpolate");
 
 
-            if (Math.abs(x - y) < 2 /* 1 apart, then choose */) {
-                if (Math.abs(x - y) > 1) {
-                    return (x + y) / 2L;
-                }
-            }
+            return Tense.dither(Revision.merge(a, b, aProp, nar), nar);
 
-
-            //return rng.nextBoolean() ? x : y;
-            return ETERNAL;
         }
 
     }

@@ -3,6 +3,7 @@ package nars.term.compound;
 import jcog.data.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
+import nars.Op;
 import nars.term.Term;
 import nars.term.compound.util.Conj;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -406,11 +407,13 @@ class ConjTest {
 
     @Test
     public void testInvalidAfterXternalToNonXternalDT() {
-        String s = "((--,((||,dex(fz),reward(fz))&&dex(fz))) &&+- dex(fz))";
+        //String s = "((--,((||,dex(fz),reward(fz))&&dex(fz))) &&+- dex(fz))";
+        String s = "((--x &&+1 y) &&+- x)";
         Term x = $$(s);
-        Term y = x.dt(0);
-        //assertEqualse()
-        //TODO continue
+        assertEquals(Op.False, x.dt(0));
+        assertEquals(Op.False, x.dt(DTERNAL));
+        assertEquals("(((--,x) &&+1 y) &&+1 x)", x.dt(1).toString());
+
     }
 }
 

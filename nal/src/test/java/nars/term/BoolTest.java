@@ -267,8 +267,12 @@ class BoolTest {
     @Test void testDisjFactor1() {
         assertEquals(x, or(x, and(x, z)));
     }
+
+    @Test void testDisjFactor1Pos() {
+        assertEquals(x, or(x, and(x, z)));
+    }
     @Test void testDisjFactor1Neg() {
-        assertEquals("???", or(x.neg(), and(x.neg(), z)));
+        assertEquals(x.neg(), or(x.neg(), and(x.neg(), z)));
     }
 
     @Test void testDisjFactor3() {

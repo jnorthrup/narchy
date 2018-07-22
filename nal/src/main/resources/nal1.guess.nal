@@ -17,7 +17,7 @@
 
 //NAL1-------------
 //Conversion
-    (P --> S), (S --> P), task("?") |- (P --> S),   (Belief:Conversion, Punctuation:Belief)
+    (P --> S), (S --> P), task("?") |- (P --> S),   (Belief:Conversion, Punctuation:Belief, Time:Intersect)
     //(P --> S), (S --> P), task("?"), belief(negative) |- (--,(P --> S)),   (Belief:ConversionPN, Punctuation:Belief)
 
 //inheritance transform
@@ -25,9 +25,9 @@
     //X, (S --> P), task("?"), inPosOrNeg(X,S) |- substitute(X,S,P,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 //Inheritance to Similarity
-    (S <-> P), (S --> P), task("?") |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    (S <-> P), (S --> P), task("?") |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief, Time:Intersect)
     //(S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 //Similarity to Inheritance
-    (S --> P), (S <-> P), task("?") |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    (S --> P), (S <-> P), task("?") |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
     //(S --> P), (S <-> P), task("@") |- (S --> P),   (Goal:BeliefStructuralDeduction, Punctuation:Goal)

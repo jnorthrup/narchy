@@ -26,8 +26,14 @@ public class Gradius extends NAgentX {
 
     int lastScore;
 
+    public static void main(String[] args) {
+
+        NAgentX.runRT(Gradius::new, 50f);
+
+    }
+
     public Gradius(NAR nar) {
-        super("g", fps(10), nar);
+        super("g", fps(25), nar);
 
 
         g.updateMS =
@@ -101,16 +107,12 @@ public class Gradius extends NAgentX {
 
             lastScore = nextScore;
 
-            return r;
+            return Math.max(0, r);
        });
 
     }
 
-    public static void main(String[] args) {
 
-        NAgentX.runRT(Gradius::new, 30f);
-
-    }
 
     void initToggle() {
         actionPushButtonMutex($$("left"), $$("right"),

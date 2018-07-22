@@ -8,7 +8,6 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
-import nars.agent.util.Impiler;
 import nars.concept.Concept;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +18,7 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
+import static nars.agent.FrameTrigger.fps;
 
 /**
  * adapted from:
@@ -42,8 +42,8 @@ public class PoleCart extends NAgentX {
             try {
                 NAgent a = new PoleCart(n);
 
-                new Impiler.ImpilerTracker(96, 32, n);
-                new Impiler.ImpilerSolver(64, 16, n);
+//                new Impiler.ImpilerTracker(96, 32, n);
+//                new Impiler.ImpilerSolver(64, 16, n);
 
                 return a;
             } catch (Exception e) {
@@ -98,7 +98,7 @@ public class PoleCart extends NAgentX {
 
     public PoleCart(NAR nar) {
 
-        super("cart", nar);
+        super("cart", fps(15), nar);
 
 
         pos = 0.;

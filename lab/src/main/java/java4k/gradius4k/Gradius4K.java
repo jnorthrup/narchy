@@ -45,7 +45,7 @@ public class Gradius4K extends GamePanel {
     public static final int VK_SHOOT = 0x42;
     public int score;
     public int playerDead = 1;
-    public int SPEED = 3;
+    public int SPEED = 5;
     public float cameraX;
     public float[] player = new float[256];
 

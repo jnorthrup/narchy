@@ -322,7 +322,7 @@ public class RevisionTest {
     void testIntermpolation0() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+3 (b &&+1 c))");
-        permuteChoose(a, b, "((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]");
+        permuteChoose(a, b, "[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]");
     }
 
 

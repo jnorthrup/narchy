@@ -138,7 +138,7 @@ public class NARio extends NAgentX {
             int coins = Mario.coins;
             float reward = (coins - lastCoins) * EarnCoin.floatValue();
             lastCoins = coins;
-            return reward;
+            return Math.max(0,reward);
         });
         reward("alive", () -> {
             int t = mario.scene instanceof LevelScene ? (((LevelScene) mario.scene).mario.deathTime > 0 ? -1 : +1) : 0;

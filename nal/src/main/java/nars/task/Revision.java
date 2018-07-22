@@ -124,7 +124,7 @@ public class Revision {
                 ab[i] = ai;
             }
 
-            return !change ? a : ao.the(choose(a, b, aProp, nar), ab);
+            return !change ? a : ao.the(chooseDT(a, b, aProp, nar), ab);
         }
 
     }
@@ -136,7 +136,7 @@ public class Revision {
 
         depth /= 2f;
 
-        int dt = choose(a, b, aProp, nar);
+        int dt = chooseDT(a, b, aProp, nar);
 
         Term a0 = a.sub(0);
         Term a1 = a.sub(1);
@@ -156,10 +156,15 @@ public class Revision {
 
     }
 
-    public static int choose(Term a, Term b, float aProp, NAR nar) {
+    public static int chooseDT(Term a, Term b, float aProp, NAR nar) {
 
-        int adt = a.dt(), bdt = b.dt(), dt;
+        int adt = a.dt(), bdt = b.dt();
 
+        return chooseDT(adt, bdt, aProp, nar);
+    }
+
+    public static int chooseDT(int adt, int bdt, float aProp, NAR nar) {
+        int dt;
         if (adt == bdt) {
             dt = adt;
         } else if (adt == XTERNAL || bdt == XTERNAL) {
@@ -169,10 +174,21 @@ public class Revision {
 
         } else if (adt == DTERNAL || bdt == DTERNAL) {
 
-            dt = choose(adt, bdt, aProp);
+            dt = choose(adt, bdt, aProp, nar.random());
             //dt = (adt == DTERNAL) ? bdt : adt;
 
-        } else if (((adt >= 0 == bdt >= 0) && ((float)(Math.abs(adt - bdt))/nar.dur() <= nar.intermpolationDurLimit.floatValue()))) {
+        } else {
+            dt = merge(adt, bdt, aProp, nar);
+        }
+
+
+        return Tense.dither(dt, nar);
+    }
+
+    /** merge delta */
+    public static int merge(int adt, int bdt, float aProp, NAR nar) {
+        int dt;
+        if (((adt >= 0 == bdt >= 0) && ((float)(Math.abs(adt - bdt))/nar.dur() <= nar.intermpolationDurLimit.floatValue()))) {
             //merge if they are the same sign or within a some number of durations
 
             long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
@@ -185,16 +201,31 @@ public class Revision {
             //discard temporal information by resorting to eternity
             dt = DTERNAL;
         }
-
-
-        return Tense.dither(dt, nar);
+        return dt;
+    }
+    /** merge occurrence */
+    public static long merge(long at, long bt, float aProp, NAR nar) {
+        long dt;
+        long diff = Math.abs(at - bt);
+        if (diff == 1) {
+            return choose(at, bt, aProp, nar.random());
+        }
+        if (((float) diff /nar.dur() <= nar.intermpolationDurLimit.floatValue())) {
+            //merge if within a some number of durations
+            dt = Util.lerp(aProp, bt, at);
+        } else {
+            dt = ETERNAL;
+        }
+        return dt;
     }
 
-    static int choose(int a, int b, float aProp) {
-        return (aProp >= 0.5f) ? a : b;
+//    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
+//        return (rng.nextFloat() < aProp) ? a : b;
+//    }
+    static int choose(int a, int b, float aProp, /*@NotNull*/ Random rng) {
+        return (rng.nextFloat() < aProp) ? a : b;
     }
-
-    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
+    static long choose(long a, long b, float aProp, /*@NotNull*/ Random rng) {
         return (rng.nextFloat() < aProp) ? a : b;
     }
 

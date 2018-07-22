@@ -8,6 +8,7 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
@@ -298,7 +299,8 @@ public class NAgent extends NARService implements NSense, NAct {
      */
     public Off reward(Term reward, FloatSupplier rewardFunc) {
         return reward(new SimpleReward(reward,
-                new FloatNormalized(rewardFunc, 0, 0, true),
+                //default normalizer
+                new FloatNormalized(rewardFunc, 0, 0, false).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
                 this));
     }
 

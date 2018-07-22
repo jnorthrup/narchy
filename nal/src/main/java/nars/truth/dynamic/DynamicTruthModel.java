@@ -274,13 +274,12 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             @Override
             public Term reconstruct(Term superterm, List<TaskRegion> components) {
 
-                int n = components.size();
-                Conj c = new Conj(n);
+                Conj c = new Conj(components.size());
 
-                for (TaskRegion t : components) {
+                for (TaskRegion t : components)
                     if (!c.add(((Task) t).term(), t.start(), t.end(), 1, 1))
                         break;
-                }
+
                 return c.term();
             }
 

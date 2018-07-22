@@ -140,28 +140,6 @@ public enum Op {
     CONJ("&&", true, 5, Args.GTETwo) {
         @Override
         public Term the(int dt, Term[] u) {
-            final int n = u.length;
-            switch (n) {
-
-                case 0:
-                    return True;
-
-                case 1:
-                    Term only = u[0];
-                    if (only instanceof EllipsisMatch) {
-
-                        return the(dt, only.arrayShared());
-                    } else {
-
-
-                        return only instanceof Ellipsislike ?
-                                theExact(CONJ, dt, only)
-                                :
-                                only;
-                    }
-
-            }
-
             return terms.conj(dt, u);
         }
 
@@ -179,7 +157,7 @@ public enum Op {
 
         @Override
         public final Term the(int dt, Collection<Term> sub) {
-            return theExact(this, dt, Terms.sorted(sub));
+            return compoundExact(this, dt, Terms.sorted(sub));
         }
     },
 
@@ -194,7 +172,7 @@ public enum Op {
 
         @Override
         public final Term the(int dt, Collection<Term> sub) {
-            return theExact(this, dt, Terms.sorted(sub));
+            return compoundExact(this, dt, Terms.sorted(sub));
         }
     },
 
@@ -624,7 +602,7 @@ public enum Op {
                     return differ(op, single.arrayShared());
                 }
                 return single instanceof Ellipsislike ?
-                        theExact(op, DTERNAL, single) :
+                        compoundExact(op, DTERNAL, single) :
                         Null;
             case 2:
                 Term et0 = t[0], et1 = t[1];
@@ -719,7 +697,7 @@ public enum Op {
             }
         }
 
-        return theExact(diffOp, DTERNAL, a, b);
+        return compoundExact(diffOp, DTERNAL, a, b);
     }
 
     /*@NotNull*/
@@ -847,7 +825,7 @@ public enum Op {
                     return intersect(single.arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
-                        theExact(intersection, DTERNAL, single) :
+                        compoundExact(intersection, DTERNAL, single) :
                         single;
 
             case 2:
@@ -912,7 +890,7 @@ public enum Op {
         if (aaa == 1)
             return args.first();
         else {
-            return theExact(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
+            return compoundExact(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
         }
     }
 
@@ -1091,7 +1069,7 @@ public enum Op {
      * - reduction to another term or True/False/Null
      */
     public Term the(int dt, Term... u) {
-        return theExact(this, dt, sortedIfNecessary(dt,u));
+        return compoundExact(this, dt, sortedIfNecessary(dt,u));
     }
 
     /**
@@ -1099,7 +1077,7 @@ public enum Op {
      * no reductions or validations applied
      * use with caution
      */
-    public static Term theExact(Op o, int dt, Term... u) {
+    public static Term compoundExact(Op o, int dt, Term... u) {
         return terms.compound(o, dt, u);
     }
 

@@ -25,33 +25,33 @@
 //// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
 //if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
 //TODO maybe X-S should work like set difference, not 'without(' current semantics
-     (X --> M), (S --> M), is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposePositiveNegativeNegative, Time:Intersect)
+     (X --> M), (S --> M), is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposePositiveNegativeNegative)
          //(X-->M), (S --> N), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((without(S,X) --> N), N, M), (Belief:DecomposePositiveNegativeNegative)
-     (X --> M), (S --> M), is(S,"&"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposeNegativePositivePositive, Time:Intersect)
+     (X --> M), (S --> M), is(S,"&"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposeNegativePositivePositive)
          //(X-->M), (S --> N), is(S,"&"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((without(S,X) --> N), N, M), (Belief:DecomposeNegativePositivePositive)
 
-     (M --> X), (M --> S), is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:DecomposePositiveNegativeNegative, Time:Intersect)
+     (M --> X), (M --> S), is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:DecomposePositiveNegativeNegative)
         //(M --> X), (N --> S), is(S,"&"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((N --> without(S,X)), N, M), (Belief:DecomposePositiveNegativeNegative)
-     (M --> X), (M --> S), is(S,"|"), subOf(S,X) |- (M --> without(S,X)), (Belief:DecomposeNegativePositivePositive, Time:Intersect)
+     (M --> X), (M --> S), is(S,"|"), subOf(S,X) |- (M --> without(S,X)), (Belief:DecomposeNegativePositivePositive)
         //(M --> X), (N --> S), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((N --> without(S,X)), N, M), (Belief:DecomposeNegativePositivePositive)
 
      //DIFFi
-     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositiveNegativePositive, Time:Intersect)
-     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNegativeNegativeNegative, Time:Intersect)
-        (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositivePositiveNegative, Time:Intersect)
-        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNegativePositivePositive, Time:Intersect)
+     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositiveNegativePositive)
+     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNegativeNegativeNegative)
+        (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositivePositiveNegative)
+        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNegativePositivePositive)
 
      //DIFFe
-     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositiveNegativePositive, Time:Intersect)
-     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativeNegativeNegative, Time:Intersect)
-        (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositivePositiveNegative, Time:Intersect)
-        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativePositivePositive, Time:Intersect)
+     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositiveNegativePositive)
+     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativeNegativeNegative)
+        (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositivePositiveNegative)
+        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativePositivePositive)
 
     //Raw DIFFe
-    S, (S ~ P) |- P, (Belief:DecomposePositiveNegativePositive, Time:Intersect)
-        S, (S ~ P) |- P, (Belief:DecomposePositivePositiveNegative, Time:Intersect)
-        P, (S ~ P) |- S, (Belief:DecomposeNegativePositivePositive, Time:Intersect)
-    P, (S ~ P) |- S, (Belief:DecomposeNegativeNegativeNegative, Time:Intersect)
+    S, (S ~ P) |- P, (Belief:DecomposePositiveNegativePositive)
+        S, (S ~ P) |- P, (Belief:DecomposePositivePositiveNegative)
+        P, (S ~ P) |- S, (Belief:DecomposeNegativePositivePositive)
+    P, (S ~ P) |- S, (Belief:DecomposeNegativeNegativeNegative)
 
      //similarity (S==P)! (symmetric: DecomposeNegative....)
      ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativePositivePositive)

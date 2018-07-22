@@ -550,7 +550,7 @@ class TermReductionsTest extends NarseseTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        Term ab = Conj.conjMerge(a, 1, b, 6);
+        Term ab = Conj.conjMerge(a,  b, 5);
         assertEquals("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", ab.toString());
     }
 
@@ -1554,7 +1554,7 @@ class TermReductionsTest extends NarseseTest {
                     "((((a,b) ==>+1 (b,c)) &&+4 c) &&+1 d)",
                     x.toString());
 
-            Term x2 = Conj.conjMerge(a, 0, b, 4);
+            Term x2 = Conj.conjMerge(a,  b, 4);
             assertEquals(x, x2);
         }
     }

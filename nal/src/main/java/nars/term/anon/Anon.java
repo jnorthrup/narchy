@@ -12,10 +12,13 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * term anonymization context, for canonicalization and generification of compounds
+ *         //return new DirectTermTransform() {
+ *         //return new TermTransform.NegObliviousTermTransform() {
  */
-public class Anon extends ByteAnonMap {
+public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermTransform {
 
-    private final TermTransform PUT, GET;
+
+    private boolean putOrGet = true;
 
     public Anon() {
         this(1);
@@ -23,8 +26,6 @@ public class Anon extends ByteAnonMap {
 
     public Anon(int estSize) {
         super(estSize);
-        this.PUT = newPut();
-        this.GET = newGet();
     }
 
     public int uniques() {
@@ -32,56 +33,34 @@ public class Anon extends ByteAnonMap {
     }
 
     /** returns true if anything changed */
-    public boolean rollback(int uniques) {
-        if (uniques == 0) {
+    public boolean rollback(int toUniques) {
+        if (toUniques == 0) {
             clear();
             return true;
         }
 
         int max;
-        if (uniques < (max = uniques())) {
-            for (int i = uniques; i < max; i++)
+        if (toUniques < (max = uniques())) {
+            for (int i = toUniques; i < max; i++)
                 termToId.removeKey(idToTerm.get(i));
-            idToTerm.removeAbove(uniques);
+            idToTerm.removeAbove(toUniques);
             return true;
         }
         return false;
     }
 
-    TermTransform newPut() {
 
-        //return new DirectTermTransform() {
-        //return new TermTransform.NegObliviousTermTransform() {
-        return new TermTransform() {
-            @Override
-            public final @Nullable Term transformAtomic(Atomic atomic) {
-                return put(atomic);
-            }
-            @Override
-            public boolean eval() {
-                return false;
-            }
-        };
+    @Override
+    public final @Nullable Term transformAtomic(Atomic atomic) {
+        return putOrGet ? put(atomic) : get(atomic);
     }
 
-    TermTransform newGet() {
-
-        //return new TermTransform.NegObliviousTermTransform() {
-        return new TermTransform() {
-            @Override
-            public final @Nullable Term transformAtomic(Atomic atomic) {
-                return get(atomic);
-            }
-
-            @Override
-            public boolean eval() {
-                return false;
-            }
-        };
+    @Override
+    public boolean eval() {
+        return false;
     }
 
-
-    public Term put(Term x) {
+    public final Term put(Term x) {
         if (x instanceof AnonID) {
             return x;
         } else if (x instanceof Atomic) {
@@ -92,18 +71,24 @@ public class Anon extends ByteAnonMap {
             return Anom.the[intern(x)];
 
         } else {
-            Term y = PUT.transformCompound((Compound)x);
-            if (y.op()!=x.op())
-                throw new WTF();
+            putOrGet = true;
+            Term y = transformCompound((Compound)x);
+            validate(x, y);
             return y;
         }
     }
 
-    public Term get(Term x) {
+    public static void validate(Term x, Term y) {
+        if (y.op()!=x.op() || y.volume()!=x.volume())
+            throw new WTF();
+    }
+
+    public final Term get(Term x) {
         if (x instanceof Anom) {
             return interned((byte) ((Int) x).id);
         } else if (x instanceof Compound) {
-            return GET.transformCompound((Compound) x);
+            putOrGet = false;
+            return transformCompound((Compound) x);
         } else {
             return x; 
         }

@@ -29,7 +29,6 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.Terms.sorted;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -385,7 +384,26 @@ public abstract class TermBuilder {
     }
 
     public Term conj(int dt, Term[] u) {
-        int n = u.length;
+        switch (u.length) {
+
+            case 0:
+                return True;
+
+            case 1:
+                Term only = u[0];
+                if (only instanceof EllipsisMatch) {
+
+                    return conj(dt, only.arrayShared());
+                } else {
+
+
+                    return only instanceof Ellipsislike ?
+                            compoundExact(CONJ, dt, only)
+                            :
+                            only;
+                }
+
+        }
 
         int trues = 0;
         for (Term t : u) {
@@ -430,10 +448,11 @@ public abstract class TermBuilder {
 
         switch (dt) {
             case DTERNAL:
-            case 0:
+            case 0: {
                 if (u.length == 2) {
 
 
+                    //quick test
                     Term a = u[0];
                     Term b = u[1];
                     if (Term.commonStructure(a, b)) {
@@ -443,11 +462,11 @@ public abstract class TermBuilder {
                             return False;
                     }
 
-                    if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
-
-
-                        return theExact(CONJ, dt, sorted(u[0], u[1]));
-                    }
+//                    if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
+//
+//
+//                        return theExact(CONJ, dt, sorted(u[0], u[1]));
+//                    }
 
                 }
 
@@ -460,6 +479,7 @@ public abstract class TermBuilder {
                         break;
                 }
                 return c.term();
+            }
 
             case XTERNAL:
 
@@ -516,7 +536,7 @@ public abstract class TermBuilder {
 
                                     Term[] xu = {CONJ.the(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
                                     Arrays.sort(xu);
-                                    return theExact(CONJ, XTERNAL, xu);
+                                    return compound(CONJ, XTERNAL, xu);
                                 }
                             }
 
@@ -529,13 +549,13 @@ public abstract class TermBuilder {
                 }
 
                 if (u.length > 1) {
-                    return theExact(CONJ, XTERNAL, u);
+                    return compoundExact(CONJ, XTERNAL, u);
                 } else {
                     return u[0];
                 }
 
             default: {
-                if (n != 2) {
+                if (u.length != 2) {
                     if (Param.DEBUG_EXTRA)
                         throw new RuntimeException("temporal conjunction with n!=2 subterms");
                     return Null;

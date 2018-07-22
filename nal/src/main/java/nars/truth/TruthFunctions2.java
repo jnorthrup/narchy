@@ -97,10 +97,11 @@ public enum TruthFunctions2 {
     @Nullable
     public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
-        float c = and(
-                        and(goal.conf(), belief.conf()),
-                        belief.freq()
-                );
+        float c = //and(
+                        and(goal.conf(), belief.conf())
+                        //,belief.freq()
+                //)
+        ;
 
 
         if (!strong) {
@@ -110,8 +111,8 @@ public enum TruthFunctions2 {
         if (c >= minConf) {
 
 
-            //float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
-            float f = goal.freq();
+            float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
+            //float f = goal.freq();
 
             return $.t(f, c);
 
