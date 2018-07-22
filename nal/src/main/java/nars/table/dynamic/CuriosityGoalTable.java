@@ -59,6 +59,7 @@ public class CuriosityGoalTable extends SeriesBeliefTable<SeriesBeliefTable.Seri
         return truthDynamic(start, end, template, nar);
     }
 
+
     //    @Override
 //    public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 //        Task stored = taskStored(start, end, template, filter, nar);

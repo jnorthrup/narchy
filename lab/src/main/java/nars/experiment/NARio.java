@@ -141,7 +141,10 @@ public class NARio extends NAgentX {
             return reward;
         });
         reward("alive", () -> {
-            return mario.scene instanceof LevelScene ? (((LevelScene) mario.scene).mario.deathTime > 0 ? -1 : +1) : 0;
+            int t = mario.scene instanceof LevelScene ? (((LevelScene) mario.scene).mario.deathTime > 0 ? -1 : +1) : 0;
+            if (t == -1)
+                System.out.println("Dead");
+            return t;
         });
     }
 

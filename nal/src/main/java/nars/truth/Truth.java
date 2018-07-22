@@ -22,7 +22,6 @@ package nars.truth;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.WTF;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -31,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
 
 import static jcog.WTF.WTF;
 import static nars.truth.TruthFunctions.w2cSafe;

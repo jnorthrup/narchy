@@ -13,9 +13,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Random;
 
 import static nars.$.$$;
-import static nars.Op.CONJ;
-import static nars.Op.False;
-import static nars.Op.True;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;

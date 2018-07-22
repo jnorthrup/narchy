@@ -70,7 +70,7 @@
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
-    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Desire, Time:Intersect)
+    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Desire, Time:TaskRange)
 
     //(X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
     //(X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)

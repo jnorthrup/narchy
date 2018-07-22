@@ -12,7 +12,10 @@ import nars.term.ProxyTerm;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.Clipped;
+import spacegraph.space2d.container.ForceDirected2D;
+import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
@@ -201,7 +204,10 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         public void node(NodeVis<Concept> node, GraphBuilder<Concept> graph) {
             if (!tasklinks.get())
                 return;
-            node.id.tasklinks().forEach(l -> {
+            Concept n = node.id;
+            if (n==null)
+                return;
+            n.tasklinks().forEach(l -> {
 
                 Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.term()));
                 if (e != null) {

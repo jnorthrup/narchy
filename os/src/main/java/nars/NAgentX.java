@@ -24,7 +24,6 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
@@ -50,6 +49,7 @@ import java.util.function.Supplier;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -157,8 +157,13 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-//                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
-//                        Derivers.nal(n, 1, 6, "motivation.nal"));
+                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
+                        Derivers.nal(n, 6, 8, "motivation.nal")) {
+                    @Override
+                    public float puncFactor(byte conclusion) {
+                        return conclusion==GOAL ? 1 : 0.1f;
+                    }
+                };
 
 
                 Gridding aa = new Gridding(
@@ -281,17 +286,22 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static void initPlugins(NAR n) {
-        new MatrixDeriver(Derivers.nal(n, 5, 8, /*"curiosity.nal",*/ "motivation.nal"));
-        new MatrixDeriver(Derivers.nal(n, 1, 4));
 
-        new STMLinkage(n, 1, false);
+        new MatrixDeriver(Derivers.nal(n, 1, 1));
+        new MatrixDeriver(Derivers.nal(n, 2, 3));
+        new MatrixDeriver(Derivers.nal(n, 4, 4));
+        new MatrixDeriver(Derivers.nal(n, 5, 6));
+        new MatrixDeriver(Derivers.nal(n, 7, 8));
+        new MatrixDeriver(Derivers.nal(n, 0, 0, "motivation.nal"));
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 128);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
+        //new STMLinkage(n, 1, false);
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
 
-        Inperience inp = new Inperience(n, 64);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(32, n);
+
+        Inperience inp = new Inperience(n, 32);
 
 
 //        try {

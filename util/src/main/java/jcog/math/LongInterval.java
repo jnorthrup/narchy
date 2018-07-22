@@ -265,7 +265,13 @@ public interface LongInterval {
 
     default boolean contains(long rangeStart, long rangeEnd) {
         long start = start();
-        return (start == ETERNAL) || (rangeStart >= start && rangeEnd <= end());
+        boolean isEternal = start == ETERNAL;
+        //only contains if both are eternal
+        if (rangeStart != ETERNAL) {
+            return isEternal || (rangeStart >= start && rangeEnd <= end());
+        } else {
+            return isEternal;
+        }
     }
 
     default boolean containedBy(long start, long end) {

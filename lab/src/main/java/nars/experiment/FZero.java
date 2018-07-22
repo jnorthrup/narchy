@@ -11,7 +11,6 @@ import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
-import nars.term.Term;
 import nars.time.Tense;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
@@ -47,26 +46,26 @@ public class FZero extends NAgentX {
     }
 
     public FZero(NAR nar) {
-        super("fz", fps(fps), nar);
+        super("fz", fps(fps/2), nar);
 
         this.fz = new FZeroGame();
 
-        Term cam = $.the("cam");
-        c = senseCamera(cam, new Scale(() -> fz.image,
+
+        c = senseCamera($.func("cam", id), new Scale(() -> fz.image,
                 //24, 24
-                16, 16
+                8, 8
 
 
         )/*.blur()*/);//.diff()
-                //.resolution(0.02f);
+                //.resolution(0.05f);
                 ;
 
 
-        initToggle();
+        //initToggle();
 
 
-        //initUnipolarLinear(3f);
-        //initBipolarRotateDirect(true, 0.5f);
+        initUnipolarLinear(3f);
+        initBipolarRotateDirect(true, 0.5f);
 
         //initBipolarRotateRelative(fair, rotFactor);
         //initBipolarRotateAbsolute(fair);
@@ -264,7 +263,7 @@ public class FZero extends NAgentX {
 
             return dHeading;
         };
-        actionBipolarFrequencyDifferential($.p(/*id, */$.the("ang")), fair, false, d);
+        actionBipolarFrequencyDifferential($.func("ang", id, $.the("rotate")), fair, false, d);
         //actionUnipolar($.the("heading"), d);
     }
 
@@ -283,7 +282,7 @@ public class FZero extends NAgentX {
 
     public void initUnipolarLinear(float fwdFactor) {
         final float[] _a = {0};
-        actionUnipolar(/*$.inh(id,*/ $$("linear"), true, (x) -> 0.5f, (a0) -> {
+        actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> 0.5f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a >= 0.5f) {
                 float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);

@@ -375,11 +375,7 @@ public class TrackXY extends NAgent {
 
         this.lastDistance = distance;
 
-        float distRatio = distance / maxDist;
-
-
-        return -distRatio;
-
+        return (-2 * distance / maxDist) + 1;
     }
 
 

@@ -17,12 +17,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FocusingLinearTruthPolation extends TruthPolation {
 
-    static final boolean durShrink = true;
 
     private final static int minDur =
             0;
-            //1;
-            
+    //1;
+
 
     public FocusingLinearTruthPolation(long start, long end, int dur) {
         super(start, end, dur);
@@ -32,19 +31,13 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     public TruthPolation add(Task t) {
         super.add(t);
 
-        if (durShrink) {
-            if (dur > minDur) {
-                if (!t.isEternal()) {
-                    long dd = t.minTimeTo(start, end);
-                    if (dd < dur)
-                        dur = Math.max(minDur, (int) dd);
-                }
+        if (dur > minDur) {
+            if (!t.isEternal()) {
+                dur = Math.max(minDur, Math.min(dur, (int) t.minTimeTo(start, end)));
             }
         }
-
         return this;
     }
-
 
 
     @Override
@@ -52,22 +45,23 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     public Truth truth(NAR nar) {
 
         float eviFactor = 1f;
-        if (nar!=null) {
+        if (nar != null) {
             eviFactor *= intermpolate(nar);
             if (eviFactor < Param.TRUTH_MIN_EVI)
-                return null; 
-        } 
+                return null;
+        }
 
 
         int s = size();
         float eAvg, f;
         switch (s) {
-            case 0: return null;
+            case 0:
+                return null;
             case 1: {
-                
+
                 TaskComponent x = update(0);
                 if (x == null)
-                    return null; 
+                    return null;
                 eAvg = x.evi;
                 if (eAvg < Param.TRUTH_MIN_EVI)
                     return null;
@@ -81,20 +75,18 @@ public class FocusingLinearTruthPolation extends TruthPolation {
                 for (int i = 0; i < s; i++) {
                     TaskComponent x = update(i);
                     if (x == null)
-                        continue;  
+                        continue;
 
                     float ee = x.evi;
 
                     eAvg += ee;
 
-
-                    
                     wFreqSum += ee * x.freq;
                 }
                 if (eAvg < Param.TRUTH_MIN_EVI)
                     return null;
 
-                
+
                 f = (wFreqSum / eAvg);
                 break;
             }

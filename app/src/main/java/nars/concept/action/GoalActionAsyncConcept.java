@@ -1,6 +1,5 @@
 package nars.concept.action;
 
-import jcog.TODO;
 import nars.NAR;
 import nars.Task;
 import nars.control.channel.CauseChannel;
@@ -35,7 +34,8 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
     @Override
     public float dexterity(long start, long end, NAR n) {
-        throw new TODO();
+        Truth t = goals().truth(start, end, null, n);
+        return t!=null ? t.conf() : 0;
     }
 
     @Override

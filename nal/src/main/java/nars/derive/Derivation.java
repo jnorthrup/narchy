@@ -396,9 +396,9 @@ public class Derivation extends PreDerivation {
     public void derive(int ttl) {
 
         this.taskBeliefTimeIntersects =
-                this._belief == null
+                this.belief == null
                         ||
-                        this._belief.intersects(taskStart, _task.end());
+                        this.belief.intersects(taskStart, task.end());
 
 
 

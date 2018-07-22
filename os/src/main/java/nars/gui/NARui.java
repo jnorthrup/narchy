@@ -32,7 +32,10 @@ import spacegraph.util.math.Color3f;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 

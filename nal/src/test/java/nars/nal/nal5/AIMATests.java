@@ -63,7 +63,7 @@ class AIMATests {
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(12);
+        n.termVolumeMax.set(13);
         n.freqResolution.set((float) truthRes);
 
         n.believe("(P ==> Q)",
@@ -74,7 +74,7 @@ class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", 1500);
+        assertBelief(n, true, "Q", 2500);
 
     }
 
@@ -82,13 +82,13 @@ class AIMATests {
     void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.1f);
-        n.confMin.set(0.05f);
+        n.freqResolution.set(0.05f);
+        n.confMin.set(0.01f);
 
-        n.beliefPriDefault.set(0.1f);
+        n.beliefPriDefault.set(0.3f);
         n.questionPriDefault.set(0.5f);
 
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(28);
 //        n.log();
 
 

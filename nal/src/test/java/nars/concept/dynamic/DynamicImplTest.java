@@ -15,9 +15,7 @@ import java.util.List;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DynamicImplTest {
 

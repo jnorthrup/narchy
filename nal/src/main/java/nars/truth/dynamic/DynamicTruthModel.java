@@ -409,7 +409,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 if (op == CONJ || op == IMPL /* will be subj only, pred is auto unnegated */)
                     superSect = superSect.unneg();
                 else {
-                    throw new WTF("maybe ok");
+                    throw new WTF();
                 }
 
             }
@@ -428,48 +428,41 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         Term sect;
         int outerDT;
-        if (superterm.isTemporal()) {
+        if (op==IMPL) {
             //IMPL: compute innerDT for the conjunction
             Conj c = new Conj();
             for (TaskRegion x : components) {
-                Term t = ((Task) x).term();
+                Term xx = ((Task) x).term();
 
                 boolean forceNegate = false;
-                if (t.op() == NEG) {
-                    if (op == IMPL) {
-                        if (t.unneg().op() == IMPL) {
-                            t = t.unneg();
+                if (xx.op() == NEG) {
+
+//                    if (op == IMPL) {
+                        if (xx.unneg().op() == IMPL) {
+                            xx = xx.unneg();
+                            forceNegate = true;
+                        } else {
                             if (!subjOrPred) {
-                                forceNegate = true;
+                                //assume this is the reduced (true ==> --x)
+                                c.add(ETERNAL, xx.neg());
+                                continue;
                             } else {
-                                //dont force negae
                                 throw new WTF();
                             }
-                        } else {
-                            throw new WTF();
                         }
+                } else if (xx.op()!=IMPL){
+                    if (!subjOrPred) {
+                        //assume this is the reduced (true ==> x)
+                        c.add(ETERNAL, xx);
+                        continue;
                     } else {
-                        throw new WTF();
+                        //throw new WTF();
+                        return null;
                     }
-
                 }
 
-//                if (t.subs()!=2) {
-//                    if (t.op() == NEG) {
-//                        //                    if (t.op()==NEG && superterm.op()==IMPL) {
-//                        //                        if (!subjOrPred)
-//                        //                            t = t.unneg(); //negated predicate of implication. which means negate it
-//                        //                        //assert(t.op()==IMPL);
-//                        //                    } else {
-//                        t = t.unneg();
-//                        //throw new WTF();
-//                        //return null; //fail ???
-//                        //                    }
-//                    }
-//                }
-
-                int tdt = t.dt();
-                if (!c.add(tdt == DTERNAL ? ETERNAL : -tdt, t.sub(subjOrPred ? 0 : 1).negIf(union ^ forceNegate)))
+                int tdt = xx.dt();
+                if (!c.add(tdt == DTERNAL ? ETERNAL : -tdt, xx.sub(subjOrPred ? 0 : 1).negIf(union ^ forceNegate)))
                     break;
             }
 

@@ -19,30 +19,26 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 
-/** TODO
- *
+/**
+ * TODO
+ * <p>
  * event listeners:
- *      onClose - destroy surfaces
+ * onClose - destroy surfaces
  */
 
 public class WebCam {
 
     public int width;
     public int height;
-    
-    
+
+
     private com.github.sarxos.webcam.Webcam webcam;
 
     private final Topic<WebcamEvent> eventChange = new ListTopic();
 
 
-
-
-
-
     private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
     public BufferedImage image;
-    
 
 
     public WebCam() {
@@ -53,7 +49,7 @@ public class WebCam {
 
         logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
 
-        
+
         webcam = wc;
 
         if (!webcam.open(true))
@@ -64,7 +60,6 @@ public class WebCam {
         height = (int) dim.getHeight();
 
 
-        
         webcam.addWebcamListener(new WebcamListener() {
 
             @Override
@@ -92,22 +87,12 @@ public class WebCam {
                     height = (int) viewSize.getHeight();
 
 
-
                     BufferedImage nextImage = we.getImage();
                     if (nextImage != null) {
-                        
-                        
-
-
-                        
-
-                        
-
-                        
 
 
                         WebCam.this.image = nextImage;
-                        
+
 
                         eventChange.emit(we);
                     }
@@ -148,94 +133,20 @@ public class WebCam {
 
 
     private Ons webcamListeners = new Ons();
+
     public void on(WebcamListener wl) {
         webcamListeners.add(new On() {
             {
                 webcam.addWebcamListener(wl);
             }
-            @Override public void off() {
+
+            @Override
+            public void off() {
                 webcam.removeWebcamListener(wl);
             }
         });
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public class WebCamSurface extends AspectAlign {
@@ -245,18 +156,17 @@ public class WebCam {
         private On on;
 
         WebCamSurface(Tex ts) {
-            super(ts.view(), ((float)webcam.getViewSize().getHeight()) / ((float)webcam.getViewSize().getWidth()));
+            super(ts.view(), ((float) webcam.getViewSize().getHeight()) / ((float) webcam.getViewSize().getWidth()));
             this.ts = ts;
-            layout();
         }
 
         @Override
         public boolean start(SurfaceBase parent) {
             if (super.start(parent)) {
                 on = eventChange.on(x -> {
-                    if (x.getType()==WebcamEventType.CLOSED || x.getType()==WebcamEventType.DISPOSED) {
+                    if (x.getType() == WebcamEventType.CLOSED || x.getType() == WebcamEventType.DISPOSED) {
                         this.stop();
-                    } else if (x.getType()==WebcamEventType.NEW_IMAGE) {
+                    } else if (x.getType() == WebcamEventType.NEW_IMAGE) {
                         ts.update(image);
                     }
                 });
@@ -282,13 +192,6 @@ public class WebCam {
         return new WebCamSurface(new Tex());
 
 
-
-
-
-
-
-
-
     }
 
 
@@ -296,26 +199,8 @@ public class WebCam {
 
         final WebCam w = new WebCam();
         SpaceGraph.window(
-                
+
                 w.view(), 1200, 1200);
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -330,312 +215,6 @@ public class WebCam {
     public void stop() {
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

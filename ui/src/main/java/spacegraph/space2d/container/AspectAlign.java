@@ -9,7 +9,7 @@ public class AspectAlign extends UnitContainer {
     /**
      * not used unless aspect ratio is set to non-NaN value
      */
-    private Align align = Align.Center;
+    private Align align;
 
     /**
      * height/width target aspect ratio; if aspect is NaN, no adjustment applied
@@ -105,8 +105,7 @@ public class AspectAlign extends UnitContainer {
 
 
 
-            }
-            if (tw/aspect > th) {
+            } else if (tw/aspect > th) {
                 
                 tw = th * aspect;
             }

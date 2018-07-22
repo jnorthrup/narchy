@@ -3,7 +3,6 @@ package nars.nal.nal6;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Param;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.BeforeEach;

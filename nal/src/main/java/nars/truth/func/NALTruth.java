@@ -412,8 +412,8 @@ public enum NALTruth implements TruthFunc {
             float conf =
 
 
-                    Math.min((float)Math.sqrt(n.confMin.floatValue()) + n.confResolution.floatValue(),
-                            n.confDefault(GOAL))
+//                    Math.min((float)Math.sqrt(n.confMin.floatValue()) + n.confResolution.floatValue(),
+//                            n.confDefault(GOAL))
 
 //                    n.confMin.floatValue()
 
@@ -421,6 +421,8 @@ public enum NALTruth implements TruthFunc {
                         // + m.confResolution.floatValue();
 
                     //Util.lerp(Util.sqr(n.random().nextFloat()) * 0.5f, minConf, n.confDefault(GOAL));
+
+                    n.confDefault(GOAL) * 0.5f;
 
                     //n.confDefault(GOAL);
             ;

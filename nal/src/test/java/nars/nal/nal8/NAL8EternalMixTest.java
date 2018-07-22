@@ -392,7 +392,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("use! :|:")
                 .inputAt(2, "( hold &&+5 use ).") 
-                .mustGoal(cycles, "hold", 1f, 0.81f, 0)
+                .mustGoal(cycles, "hold", 1f, 0.81f, t -> (t >= 2))
                 .mustNotOutput(cycles, "use", GOAL, ETERNAL) 
                 .mustNotOutput(cycles, "hold", GOAL, ETERNAL)
         ;

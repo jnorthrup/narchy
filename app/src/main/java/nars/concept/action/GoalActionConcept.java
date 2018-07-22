@@ -56,6 +56,7 @@ public class GoalActionConcept extends ActionConcept {
         return t!=null ? t.conf() : 0;
     }
 
+
     @Override
     public void update(long pPrev, long pNow, NAR nar) {
 
