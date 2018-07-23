@@ -13,10 +13,6 @@ public class Stacking extends MutableContainer {
     @Override
     protected void doLayout(int dtMS) {
         forEach(c -> c.pos(bounds));
-
-        super.doLayout(dtMS);
     }
-
-
 
 }

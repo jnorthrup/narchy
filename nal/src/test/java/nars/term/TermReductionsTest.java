@@ -206,6 +206,10 @@ class TermReductionsTest extends NarseseTest {
 
         
         assertEquals("((--,(x&|y)) &&+1 (--,y))", $$("((--,(x &| y)) &&+1 (--,y))").toString());
+
+    }
+    @Test
+    void testConjParallelWithNegMix2() {
         assertEquals("((--,(x &&+1 y))&|(--,y))", $$("((--,(x &&+1 y)) &| (--,y))").toString());
     }
 
@@ -550,7 +554,7 @@ class TermReductionsTest extends NarseseTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        Term ab = Conj.conjMerge(a,  b, 5);
+        Term ab = Conj.conjMerge(a,  0, b, 5);
         assertEquals("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", ab.toString());
     }
 

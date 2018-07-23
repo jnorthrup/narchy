@@ -78,7 +78,7 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
         }
     }
 
-    public static void validate(Term x, Term y) {
+    static void validate(Term x, Term y) {
         if (y.op()!=x.op() || y.volume()!=x.volume())
             throw new WTF();
     }

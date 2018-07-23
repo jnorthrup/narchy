@@ -430,9 +430,6 @@ public class ScrollGrid<X> extends Bordering {
                 }
             }
 
-
-            super.doLayout(dtMS);
-
         }
 
 

@@ -143,6 +143,9 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
             this.dt = dt;
+
+//            //TEMPORARY
+//            anon();
         }
 
         @Override

@@ -415,5 +415,16 @@ class ConjTest {
         assertEquals("(((--,x) &&+1 y) &&+1 x)", x.dt(1).toString());
 
     }
+
+    @Test public void testInvalidSubsequenceComponent() {
+        /*
+        $.38 (--,((--,(((--,x) &&+6 x) &&+1 x))&|(--,x))). 0 %.74;.52%
+        $.50 (--,x). 0⋈1 %.48;.87%
+         */
+        Conj a = new Conj();
+        a.add(0, $$("(--,((--,(((--,x) &&+6 x) &&+1 x))&|(--,x)))"));
+        a.add(0, $$("(--,x)"));
+        assertEquals("(--,x)", a.term().toString()); //TODO check
+    }
 }
 

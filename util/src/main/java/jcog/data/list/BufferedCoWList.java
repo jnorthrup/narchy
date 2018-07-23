@@ -18,7 +18,7 @@ public class BufferedCoWList<X> extends FastCoWList<X> {
 
     public BufferedCoWList(int initialCap, IntFunction<X[]> arrayBuilder) {
         super(initialCap, arrayBuilder);
-        q = new ConcurrentLinkedQueue<ObjectBooleanPair<X>>();
+        q = new ConcurrentLinkedQueue<>();
     }
 
     @Override

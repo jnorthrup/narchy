@@ -38,10 +38,10 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.container.grid.Gridding;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -51,6 +51,7 @@ import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.widget.tab.TabPane.TabWall;
 
 /**
  * Extensions to NAgent interface:
@@ -61,10 +62,13 @@ import static spacegraph.SpaceGraph.window;
 abstract public class NAgentX extends NAgent {
 
 
-    @Deprecated public NAgentX(String id, NAR nar) {
+    @Deprecated
+    public NAgentX(String id, NAR nar) {
         this(id, FrameTrigger.durs(1), nar);
     }
-    @Deprecated public NAgentX(Term id, NAR nar) {
+
+    @Deprecated
+    public NAgentX(Term id, NAR nar) {
         this(id, FrameTrigger.durs(1), nar);
     }
 
@@ -99,7 +103,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(()->new Attention(256))
+                .attention(() -> new Attention(256))
 
                 //.exe(new UniExec() {
                 .exe(new BufferedExec.WorkerExec(Util.concurrency(), false /* true */))
@@ -138,8 +142,6 @@ abstract public class NAgentX extends NAgent {
         initPlugins(n);
 
 
-
-
         n.runLater(() -> {
 
             NAgent a = init.apply(n);
@@ -147,11 +149,6 @@ abstract public class NAgentX extends NAgent {
 
             a.curiosity.set(0.25f);
 
-            if (a instanceof NAgentX) {
-                NAgent m = metavisor(a);
-                m.pri.set(0.1f);
-                window(NARui.agent(m), 400, 400);
-            }
 
             n.on(a);
 
@@ -161,18 +158,25 @@ abstract public class NAgentX extends NAgent {
                         Derivers.nal(n, 6, 8, "motivation.nal")) {
                     @Override
                     public float puncFactor(byte conclusion) {
-                        return conclusion==GOAL ? 1 : 0.1f;
+                        return conclusion == GOAL ? 1 : 0.1f;
                     }
                 };
 
 
-                Gridding aa = new Gridding(
-                        NARui.agent(a),
-                        NARui.top(n),
-                        new EmotionPlot(128, a)
-                );
+                //Gridding aa = new Gridding(
+                TabWall aa = new TabWall(Map.of(
+                    a.toString(), () -> NARui.agent(a),
+                    "nar", () -> NARui.top(n),
+                    "emotion", () -> new EmotionPlot(128, a)
+                ) );
 
                 window(aa, 1200, 900);
+
+                if (a instanceof NAgentX) {
+                    NAgent m = metavisor(a);
+                    m.pri.set(0.1f);
+                    window(NARui.agent(m), 400, 400);
+                }
 
 
                 //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
@@ -218,7 +222,7 @@ abstract public class NAgentX extends NAgent {
 
                 m.actionUnipolar($.func("aware", term), (p) -> {
                     FloatRange pp = s.pri();
-                    pp.set(lerp(p, 0f, maxPri* nar.priDefault(BELIEF)));
+                    pp.set(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
                 });
 
             }
@@ -381,8 +385,8 @@ abstract public class NAgentX extends NAgent {
 
     protected static void dexterityReward(NAgent src, NAgent target) {
         target.reward(
-            new SimpleReward($.func("dex", src.id),
-                new FloatNormalized(new FloatFirstOrderDifference(src.nar()::time, src::dexterity)).relax(0.01f), target)
+                new SimpleReward($.func("dex", src.id),
+                        new FloatNormalized(new FloatFirstOrderDifference(src.nar()::time, src::dexterity)).relax(0.01f), target)
         );
     }
 

@@ -45,7 +45,7 @@ public class ExamplePoseOfCalibrationTarget {
 		
 		CameraPinholeRadial intrinsic =
 				
-				ExampleStereoTwoViewsOneCamera.intrinsic;
+				ExampleStereoTwoViewsOneCamera2.intrinsic;
 		LensDistortionNarrowFOV lensDistortion = new LensDistortionRadialTangential(intrinsic);
 
 		

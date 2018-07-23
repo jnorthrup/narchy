@@ -162,15 +162,18 @@ public class CellMap<K, V> {
      */
     public static class CacheCell<K, V> {
 
-        public K key;
-        public transient volatile V value = null;
+        public transient volatile K key;
+        public transient volatile V value;
 
         protected CacheCell() {
 
         }
 
+        protected void set(V next) {
+            this.value = next;
+        }
+
         public void clear() {
-            
             value = null;
         }
 
@@ -217,8 +220,5 @@ public class CellMap<K, V> {
             return !delete;
         }
 
-        protected void set(V next) {
-            this.value = next;
-        }
     }
 }

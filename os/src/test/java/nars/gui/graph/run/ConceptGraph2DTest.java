@@ -27,7 +27,7 @@ class ConceptGraph2DTest {
                 , 1200, 800
         );
 
-        n.startFPS(4f);
+        n.startFPS(8f);
     }
 
 

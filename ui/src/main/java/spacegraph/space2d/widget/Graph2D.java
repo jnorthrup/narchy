@@ -106,11 +106,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
     @Override
+    protected void doLayout(int dtMS) {
+
+    }
+
+    @Override
     protected void paintBelow(GL2 gl) {
         cellMap.forEachValue(n -> {
-            if (n.visible()) {
+            //if (n.visible()) {
                 n.paintEdges(gl);
-            }
+            //}
         });
     }
 
@@ -238,11 +243,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         /** adds a visible edge between two nodes, if they exist and are visible */
         public @Nullable EdgeVis<X> edge(NodeVis<X> from, Object to) {
-            if (!from.visible())
-                return null;
+//            if (!from.visible())
+//                return null;
 
             @Nullable NodeVis<X> t = graph.cellMap.getValue(to);
-            if (t == null || !t.visible())
+            if (t == null/* || !t.visible()*/)
                 return null;
 
             EdgeVis<X> result = graph.edgePool.get();
@@ -330,7 +335,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public static class NodeVis<X> extends Windo {
 
-        public X id;
+        public transient X id;
         public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(FasterList::new);
 
         /** optional priority component */
@@ -355,7 +360,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         @Override
         public boolean stop() {
             if (super.stop()) {
-                this.id = null;
+                reset(null);
                 return true;
             }
             return false;

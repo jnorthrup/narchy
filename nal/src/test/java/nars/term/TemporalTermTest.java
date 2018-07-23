@@ -425,7 +425,7 @@ class TemporalTermTest {
 
     @Test
     void testRetemporalization1() throws Narsese.NarseseException {
-        assertEquals("a(x,(--,((--,((6-->ang) &&+1384 (6-->ang)))&&(6-->ang))))",
+        assertEquals("a(x,true)",
                 $("a(x,(--,((--,((6-->ang) &&+1384 (6-->ang))) &&+- (6-->ang))))").temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).toString()
         );
     }

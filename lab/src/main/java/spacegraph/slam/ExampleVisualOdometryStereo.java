@@ -95,7 +95,7 @@ public class ExampleVisualOdometryStereo {
 		GrayU8 left = null, right = null;
 
 		StereoParameters stereoParam = new StereoParameters(
-				ExampleStereoTwoViewsOneCamera.intrinsic, ExampleStereoTwoViewsOneCamera.intrinsic,
+				ExampleStereoTwoViewsOneCamera2.intrinsic, ExampleStereoTwoViewsOneCamera2.intrinsic,
 				new Se3_F64());
 
 		
@@ -117,7 +117,7 @@ public class ExampleVisualOdometryStereo {
 
 			
 
-			Se3_F64 cameraMotion = estimateCameraMotion(ExampleStereoTwoViewsOneCamera.intrinsic, matchedFeatures);
+			Se3_F64 cameraMotion = estimateCameraMotion(ExampleStereoTwoViewsOneCamera2.intrinsic, matchedFeatures);
 			if (cameraMotion == null) {
 				
 			} else {
@@ -159,8 +159,8 @@ public class ExampleVisualOdometryStereo {
 		ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
 		AssociateDescription<BrightFeature> associate = FactoryAssociation.greedy(scorer, 1, true);
 
-		ExampleStereoTwoViewsOneCamera.ExampleAssociatePoints<GrayU8,BrightFeature> findMatches =
-				new ExampleStereoTwoViewsOneCamera.ExampleAssociatePoints<>(detDesc, associate, GrayF32.class);
+		ExampleStereoTwoViewsOneCamera2.ExampleAssociatePoints<GrayU8,BrightFeature> findMatches =
+				new ExampleStereoTwoViewsOneCamera2.ExampleAssociatePoints<>(detDesc, associate, GrayF32.class);
 
 		findMatches.associate(left,right);
 

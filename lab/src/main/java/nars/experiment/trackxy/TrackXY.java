@@ -105,13 +105,13 @@ public class TrackXY extends NAgent {
         boolean nars = true;
 //        boolean rl = false;
 
-        int dur = 16;
+        int dur = 8;
 
         NARS nb = new NARS()
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
-                        new CaffeineIndex(2 * 1024 * 20)
+                        new CaffeineIndex(4 * 1024 * 20)
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 
@@ -126,10 +126,10 @@ public class TrackXY extends NAgent {
 //        n.questPriDefault.set(0.1f);
 
 
-        n.termVolumeMax.set(21);
+        n.termVolumeMax.set(24);
 
 
-        TrackXY a = new TrackXY(n, 5, 5);
+        TrackXY a = new TrackXY(n, 4, 4);
 
 
 //        if (rl) {
@@ -156,8 +156,8 @@ public class TrackXY extends NAgent {
             new STMLinkage(n, 1, false);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    x -> true,
-                    //Task::isInput,
+                    //x -> true,
+                    Task::isInput,
                     4, 16);
 
 

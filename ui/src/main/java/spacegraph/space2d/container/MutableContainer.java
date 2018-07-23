@@ -13,16 +13,14 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-public class MutableContainer extends AbstractMutableContainer {
+abstract public class MutableContainer extends AbstractMutableContainer {
 
 
     private final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
     private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
     private final FastCoWList<Surface> children;
 
-
-
-    public MutableContainer(Surface... children) {
+    protected MutableContainer(Surface... children) {
         this(false, children);
     }
 

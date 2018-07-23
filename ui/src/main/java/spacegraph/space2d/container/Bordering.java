@@ -155,7 +155,6 @@ public class Bordering extends MutableContainer {
             c.pos(X + x1, Y + y1, X + x2, Y + y2);
         }
 
-        super.doLayout(dtMS);
     }
 
     /**

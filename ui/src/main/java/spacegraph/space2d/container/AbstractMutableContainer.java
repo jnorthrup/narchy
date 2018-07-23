@@ -23,11 +23,6 @@ public abstract class AbstractMutableContainer extends Container {
     }
 
     @Override
-    protected void doLayout(int dtMS) {
-
-    }
-
-    @Override
     public boolean stop() {
         if (super.stop()) {
             clear();

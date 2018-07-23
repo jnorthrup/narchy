@@ -121,6 +121,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         v2 total = new v2();
         for (Graph2D.EdgeVis<?> edge : read) {
+            if (edge == null)
+                continue; //wtf
 
             MovingRectFloat2D to = edge.to.mover;
             if (to == null)

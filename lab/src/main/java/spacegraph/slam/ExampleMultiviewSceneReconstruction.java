@@ -154,7 +154,7 @@ public class ExampleMultiviewSceneReconstruction {
                 
         );
 
-        CameraPinholeRadial intrinsic = ExampleStereoTwoViewsOneCamera.intrinsic;
+        CameraPinholeRadial intrinsic = ExampleStereoTwoViewsOneCamera2.intrinsic;
         
         
 

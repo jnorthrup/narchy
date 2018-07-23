@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.*;
 
-public class MutableMapContainer<K, V> extends AbstractMutableContainer {
+abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
     protected final CellMap<K, V> cellMap = new CellMap<>() {
         @Override
@@ -132,11 +132,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
     public static class SurfaceCacheCell<K, V> extends CellMap.CacheCell<K, V> {
 
-        transient Surface surface = null;
-
-        SurfaceCacheCell() {
-            super();
-        }
+        transient volatile Surface surface = null;
 
         @Override
         protected void set(V next) {
@@ -155,7 +151,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
             surface = null;
             if (es != null) {
                 es.stop();
-                es.hide();
+//                es.hide();
             }
 
         }
@@ -164,6 +160,10 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
          * return true to keep or false to remove from the map
          */
         boolean update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer) {
+
+            if (this.key!=nextKey && this.key!=null) {
+                clear();
+            }
 
             this.key = nextKey;
 
@@ -195,9 +195,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
             if (delete) {
                 return false;
             } else if (create) {
-                Surface newSurface = renderer.apply(key, this.value = nextValue);
-                this.surface = newSurface;
-
+                this.surface = renderer.apply(key, this.value = nextValue);
             }
 
             return true;

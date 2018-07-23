@@ -45,7 +45,7 @@ import static jcog.Texts.n4;
 import static nars.Op.*;
 
 public interface Concept extends Termed, MetaMap {
-    Concept[] EmptyArray = new Concept[0];
+//    Concept[] EmptyArray = new Concept[0];
 
     Bag<?,TaskLink> tasklinks();
 

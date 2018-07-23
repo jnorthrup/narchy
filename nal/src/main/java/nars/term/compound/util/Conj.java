@@ -884,8 +884,7 @@ public class Conj extends ByteAnonMap {
         }
 
         if (negatives[0]) {
-            //TODO factor
-            factorDisj(t);
+            factorDisj(t, when);
         }
 
         int ts = t.size();
@@ -986,7 +985,7 @@ public class Conj extends ByteAnonMap {
 //            t.addAll(csa);
 //    }
 
-    private static void factorDisj(TreeSet<Term> t) {
+    private static void factorDisj(TreeSet<Term> t, long when) {
 
         List<Term> d;
         boolean stable;
@@ -1050,10 +1049,7 @@ public class Conj extends ByteAnonMap {
             //test for equal positives
             for (Iterator<Term> iterator = d.iterator(); iterator.hasNext(); ) {
                 Term disj = iterator.next();
-                Term du = disj.unneg();
-                Subterms dd = du.subterms();
-
-                if (dd.OR(ddd->t.contains(ddd.neg()))) {
+                if (hasEvent(disj.unneg(), t, when, true)) {
 //                SortedSet<Term> disjSubs = dd.toSetSorted(ddd -> t.contains(ddd.neg()));
 //                int ds = disjSubs.size();
 //                if (ds > 0) {
@@ -1072,28 +1068,75 @@ public class Conj extends ByteAnonMap {
             for (Term disj : d) {
 
                 Term du = disj.unneg();
-                Subterms dd = du.subterms();
 
-                SortedSet<Term> disjSubs = dd.toSetSortedExcept(t::contains);
-                int ds = disjSubs.size();
-                if (ds < dd.subs()) {
 
-                    boolean rem = t.remove(disj);
-                    assert (rem);
+                Term e = matchingEventsRemoved(du, t, when);
+                if (e!=du) {
+                    t.remove(disj);
+                    if (csa == null)
+                        csa = new FasterList<>(1);
 
-                    if (ds > 0) {
-
-                        if (csa == null)
-                            csa = new FasterList<>(1);
-
-                        csa.add(CONJ.the(du.dt(), disjSubs).neg());
+                    Term f = e.neg();
+                    if (f == False || f == Null) {
+                        //short-circuit
+                        t.clear();
+                        t.add(f);
+                        return;
                     }
+
+                    csa.add(f);
                 }
+
 
             }
             if (csa != null)
                 t.addAll(csa);
 
+        }
+
+    }
+
+    private static Term matchingEventsRemoved(Term d, TreeSet<Term> t, long at) {
+        if (commute(d.dt(), d.subs())) {
+            SortedSet<Term> s = d.subterms().toSetSortedExcept(t::contains);
+            if (s.size() < d.subs()) {
+                return CONJ.the(d.dt(), s.toArray(EmptyTermArray));
+            }
+            return d;
+        } else {
+            Conj remain = new Conj();
+            d.eventsWhile((when,what)->{
+                if (at == ETERNAL || when == at) {
+                    if (!t.contains(what)) {
+                        if (!remain.add(when, what))
+                            return false;
+                    }
+                }
+                return true;
+            }, 0, false, true, false, 0);
+            Term e = remain.term();
+            if (e.equals(d)) {
+                return d;
+            }
+            return e;
+        }
+    }
+
+    private static boolean hasEvent(Term du, TreeSet<Term> t, long at, boolean neg) {
+        if (commute(du.dt(), du.subs())) {
+            return du.subterms().OR(ddd->t.contains(ddd.negIf(neg)));
+        } else {
+            final boolean[] found = new boolean[1];
+            du.eventsWhile((when,what)->{
+                if (at == ETERNAL || when == at) {
+                    if (t.contains(what.negIf(neg))) {
+                        found[0] = true;
+                        return false;
+                    }
+                }
+                return true;
+            }, 0, false, true, false, 0);
+            return found[0];
         }
 
     }
@@ -1104,12 +1147,11 @@ public class Conj extends ByteAnonMap {
             if (x.hasAll(NEG.bit | CONJ.bit)) {
                 if (x.op() == NEG) {
                     Term disj = x.unneg();
-                    if (disj.op() == CONJ && commute(disj.dt(), disj.subs())) {
+                    if (disj.op() == CONJ) {
                         if (d == null)
                             d = new FasterList<>(t.size());
                         d.add(x);
                     }
-                    //TODO handle non-commutive sub-disjunctive sequences
                 }
             }
         }

@@ -9,55 +9,24 @@ import spacegraph.space2d.container.Stacking;
  * <p>
  * TODO move active window to top of child stack
  */
-public class Wall extends Stacking  {
+public class Wall extends Stacking {
 
 
-    
-
-    Wall() {
+    public Wall() {
 
         clipBounds = false;
     }
 
 
-
-    
-
-
-
-
-
-
-
-
-    
-
-
-
-
     @Override
     public void doLayout(int dtMS) {
-        
 
-        
 
-        for (Surface c : children())
+        for (Surface c : children()) {
+            c.fence(bounds);
             c.layout();
+        }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

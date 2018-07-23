@@ -25,7 +25,7 @@ import static java.lang.Math.PI;
 import static nars.time.Tense.ETERNAL;
 
 
-public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
+@Deprecated public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
     private static final float taskHeight = 0.04f;
     private static final float CROSSHAIR_THICK = 3;
