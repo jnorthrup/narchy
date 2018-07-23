@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermTransform {
 
-
     private boolean putOrGet = true;
 
     public Anon() {
@@ -49,7 +48,6 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
         return false;
     }
 
-
     @Override
     public final @Nullable Term transformAtomic(Atomic atomic) {
         return putOrGet ? put(atomic) : get(atomic);
@@ -71,30 +69,37 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
             return Anom.the[intern(x)];
 
         } else {
-            putOrGet = true;
-            Term y = transformCompound((Compound)x);
-            validate(x, y);
-            return y;
+            return putCompound((Compound) x);
         }
     }
 
-    static void validate(Term x, Term y) {
-        if (y.op()!=x.op() || y.volume()!=x.volume())
-            throw new WTF();
+
+    void validate(Term x, Term y) {
+        if (y.op()!=x.op())
+            throw new WTF("anon changed op: " + x + " -> " + y);
+        if (y.volume()!=x.volume())
+            throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
     }
 
     public final Term get(Term x) {
         if (x instanceof Anom) {
             return interned((byte) ((Int) x).id);
         } else if (x instanceof Compound) {
-            putOrGet = false;
-            return transformCompound((Compound) x);
+            return getCompound((Compound) x);
         } else {
             return x; 
         }
     }
 
+    protected Term getCompound(Compound c) {
+        putOrGet = false;
+        return transformCompound(c);
+    }
 
-
-
+    protected Term putCompound(Compound x) {
+        putOrGet = true;
+        Term y = transformCompound(x);
+        validate(x, y);
+        return y;
+    }
 }

@@ -1238,4 +1238,5 @@ class TemporalTermTest {
         assertTrue(Task.taskConceptTerm(ss));
 
     }
+
 }

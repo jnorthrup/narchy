@@ -12,6 +12,7 @@ import nars.table.BeliefTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
 import nars.time.Tense;
 import nars.util.term.transform.Retemporalize;
@@ -117,20 +118,11 @@ public class Inperience extends LeakBack {
     private static Term reifyQuestion(Term x, byte punc, NAR nar) {
         x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
-        if (x == Null) return Null;
+        if (x instanceof Bool) return Null;
 
         return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), x);
     }
 
-//    @Override
-//    protected float pri(Task t) {
-//        float p = super.pri(t);
-//        if (t.term().isTemporal()) {
-//
-//            p /= t.volume();
-//        }
-//        return p;
-//    }
 
     @Override
     public boolean preFilter(Task next) {

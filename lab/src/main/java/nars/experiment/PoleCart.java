@@ -35,6 +35,8 @@ public class PoleCart extends NAgentX {
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
 
 
+    static final float fps = 60;
+
     public static void main(String[] arg) {
 
         runRT((n) -> {
@@ -51,7 +53,7 @@ public class PoleCart extends NAgentX {
                 e.printStackTrace();
                 return null;
             }
-        }, 30);
+        }, fps);
     }
 
     private final JPanel panel;
@@ -98,7 +100,7 @@ public class PoleCart extends NAgentX {
 
     public PoleCart(NAR nar) {
 
-        super("cart", fps(15), nar);
+        super("cart", fps(fps/2), nar);
 
 
         pos = 0.;

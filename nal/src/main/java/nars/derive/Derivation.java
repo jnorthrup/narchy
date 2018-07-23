@@ -1,7 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.ScalarValue;
@@ -366,16 +365,10 @@ public class Derivation extends PreDerivation {
         if (this._belief != null) {
 
             beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
-            if (beliefTerm.op() == NEG)
-                throw new WTF(); //temporary
-
             this.belief = new TaskWithTerm(beliefTerm, nextBelief);
         } else {
 
             this.beliefTerm = anon.put(this._beliefTerm = nextBeliefTerm);
-            if (beliefTerm.op() == NEG)
-                throw new WTF(); //temporary
-
             this.beliefStart = TIMELESS;
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthDuringTask = null;

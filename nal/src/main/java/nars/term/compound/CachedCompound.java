@@ -144,7 +144,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
             super(op, dt, subterms);
             this.dt = dt;
 
-//            //TEMPORARY
+//            //TEMPORARY for debug
 //            anon();
         }
 

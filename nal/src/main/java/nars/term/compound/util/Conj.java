@@ -774,6 +774,8 @@ public class Conj extends ByteAnonMap {
             }
         }
 
+        if (ci == null)
+            return True;
 
         if (ci.op() == CONJ && ci.hasAny(NEG)) {
             Subterms cci;
@@ -923,9 +925,35 @@ public class Conj extends ByteAnonMap {
                     dt = 0;
                 }
 
-                Term z = t.size() > 1 ? Op.compoundExact(CONJ,
-                        dt,
-                        t.toArray(Op.EmptyTermArray) /* sorted iff t is SortedSet */) : t.first();
+                Term z;/* sorted iff t is SortedSet */
+                if (t.size() > 1) {
+                    Term[] tt = t.toArray(Op.EmptyTermArray); /* sorted iff t is SortedSet */
+                    if (theSequence == null) {
+                        if (when == ETERNAL && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()==DTERNAL, tt)) {
+                            z = CONJ.the(dt, tt);
+                        } else {
+                            if (when == 0 && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()!=DTERNAL))
+                                z = CONJ.the(dt, tt);
+                            else
+                                z = Op.compoundExact(CONJ, dt, tt);
+                        }
+                    } else {
+//                        boolean complex = false;
+//                        for (Term x : t) {
+//                            if (x.hasAny(Op.CONJ)) {
+//                                complex = true;
+//                                break;
+//                            }
+//                        }
+//                        if (complex) {
+                            z = CONJ.the(dt, tt);
+//                        } else {
+//                            z = Op.compoundExact(CONJ, dt, tt);
+//                        }
+                    }
+                } else {
+                    z = t.first();
+                }
 
                 if (theSequence!=null) {
                     //Unfactor z to each component of the sequence

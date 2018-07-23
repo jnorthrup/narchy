@@ -426,5 +426,10 @@ class ConjTest {
         a.add(0, $$("(--,x)"));
         assertEquals("(--,x)", a.term().toString()); //TODO check
     }
+    @Test public void testInvalidSubsequenceComponent2() {
+        Term s = $$("(--,((||,x,y)&&z))");
+        assertEquals("(&&,(--,x),(--,y),z)", CONJ.the(s, DTERNAL, $$("z")).toString()); //TODO check
+    }
+
 }
 
