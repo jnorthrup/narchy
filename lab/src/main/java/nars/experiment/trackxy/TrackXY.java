@@ -129,7 +129,7 @@ public class TrackXY extends NAgent {
         n.termVolumeMax.set(24);
 
 
-        TrackXY a = new TrackXY(n, 4, 4);
+        TrackXY a = new TrackXY(n, 4, 1);
 
 
 //        if (rl) {

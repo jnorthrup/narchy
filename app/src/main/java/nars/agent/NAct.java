@@ -474,6 +474,7 @@ public interface NAct {
             CC[ip] = action;
             g[ip] = gg != null ?
                     gg.freq()
+                    //gg.exp()
 
                     :
 

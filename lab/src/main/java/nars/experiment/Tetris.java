@@ -24,7 +24,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-    static boolean easy;
+    static boolean easy = false;
     public final FloatRange timePerFall = new FloatRange(2f, 1f, 32f);
     public final Bitmap2DSensor<Bitmap2D> pixels;
     private TetrisState state;
@@ -43,7 +43,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
      * @param timePerFall larger is slower gravity
      */
     public Tetris(NAR nar, int width, int height, int timePerFall) {
-        super("tetris", FrameTrigger.fps(10f), nar);
+        super("tetris",
+                //FrameTrigger.fps(10f),
+                FrameTrigger.durs(1),
+                nar);
 
         state = new TetrisState(width, height, timePerFall) {
             @Override

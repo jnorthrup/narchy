@@ -874,8 +874,8 @@ public class NAL6Test extends NALTest {
                 .believe("num(x)", 1.0f, 0.9f)
                 .believe("( num($1) ==> num(($1)) )", 1.0f, 0.9f)
                 .ask("num(((x)))")
-                .mustBelieve(cycles * 2, "num((x))", 1.0f, 1.0f, 0.8f, 1.0f)
-                .mustBelieve(cycles * 2, "num(((x)))", 1.0f, 1.0f, 0.1f /*0.66f*/, 1.0f);
+                .mustBelieve(cycles * 3, "num((x))", 1.0f, 1.0f, 0.8f, 1.0f)
+                .mustBelieve(cycles * 3, "num(((x)))", 1.0f, 1.0f, 0.1f /*0.66f*/, 1.0f);
 
 
     }

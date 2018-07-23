@@ -37,7 +37,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
-    static float fps = 30f;
+    static float fps = 50f;
 
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
@@ -61,11 +61,11 @@ public class FZero extends NAgentX {
                 ;
 
 
-        //initToggle();
-
+        initToggleLeftRight();
+        //initToggleFwdStop();
 
         initUnipolarLinear(3f);
-        initBipolarRotateDirect(true, 0.5f);
+        //initBipolarRotateDirect(true, 0.5f);
 
         //initBipolarRotateRelative(fair, rotFactor);
         //initBipolarRotateAbsolute(fair);
@@ -166,12 +166,14 @@ public class FZero extends NAgentX {
         window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 
-    private void initToggle() {
+    private void initToggleLeftRight() {
 
         this.actionPushButtonMutex(
                 $.inh($$("left"), id), $.inh($$("right"), id),
                 l -> fz.left = l, r -> fz.right = r
         );
+    }
+    private void initToggleFwdStop() {
         this.actionPushButtonMutex(
                 $.inh($$("fwd"), id), $.inh($$("stop"), id),
                 f -> fz.thrust = f,

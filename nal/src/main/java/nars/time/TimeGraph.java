@@ -731,10 +731,24 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 }
 
                 long endTime;
-                if (startTime != ETERNAL && startTime != XTERNAL && x.id.op() != CONJ) {
-                    long startDur = pathStart(path).dur();
-                    long endDur = pathEnd(path).dur();
-                    long dur = Math.min(startDur, endDur);
+                if (startTime != ETERNAL && startTime != XTERNAL/* && x.id.op() != CONJ*/) {
+                    Event s = pathStart(path);
+                    Event e = pathEnd(path);
+                    long dur;
+                    if (s instanceof Absolute && e instanceof Absolute) {
+                        long startDur = s.dur();
+                        long endDur = e.dur();
+                        dur =
+                                Math.min(startDur, endDur);
+                                //Math.max(startDur, endDur);
+                    } else if (s instanceof Absolute) {
+                        dur = s.dur();
+                    } else if (e instanceof Absolute) {
+                        dur = e.dur();
+                    } else {
+                        dur = 0; //??
+                    }
+
                     endTime = startTime + dur;
                 } else {
                     endTime = startTime;

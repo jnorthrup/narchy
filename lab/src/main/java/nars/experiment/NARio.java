@@ -28,10 +28,10 @@ public class NARio extends NAgentX {
     private final MarioComponent mario;
     private final AbstractSensor cam;
 
-    static final float fps = 24;
+    static final float fps = 48;
 
     public NARio(NAR nar) {
-        super("nario", fps(fps), nar);
+        super("nario", fps(fps/2), nar);
 
 
 //        nar.freqResolution.set(0.1f);

@@ -114,7 +114,7 @@ class ArithmeticTest {
         NAR n = NARS.tmp(2);
         //n.termVolumeMax.set(14);
         TestNAR t = new TestNAR(n);
-        t.mustBelieve(16, a, 1f,1f, 0.5f,0.9f);
+        t.mustBelieve(16, a, 1f,1f, 0.35f,0.9f);
         n.input(q + ".");
         t.test();
     }

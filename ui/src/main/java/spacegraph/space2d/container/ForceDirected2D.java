@@ -120,13 +120,13 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         //int neighbors = read.size();
 
         v2 total = new v2();
-        for (Graph2D.EdgeVis<?> edge : read) {
+        read.forEach(edge -> {
             if (edge == null)
-                continue; //wtf
+                return; //wtf
 
             MovingRectFloat2D to = edge.to.mover;
             if (to == null)
-                continue;
+                return;
 
             v2 delta = new v2(to.cx(), to.cy());
             delta.subbed(px, py);
@@ -140,7 +140,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
             float s = attractSpeed * len * weightToVelocity(edge.weight);
             total.add(delta.x * s, delta.y * s);
-        }
+        });
 
         b.move(total.x, total.y);
     }
