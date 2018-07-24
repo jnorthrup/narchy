@@ -59,9 +59,21 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
         };
 
-        reward(() -> {
+        onFrame(()->{
             state.timePerFall = Math.round(this.timePerFall.floatValue());
-            return state.next();
+            state.next();
+        });
+        reward("height", () -> state.score());
+        reward("density", () -> {
+            return ((float)state.rowsFilled)/state.height;
+//            int filled = 0;
+//            for (float s : state.grid) {
+//                if (s > 0) {
+//                    filled++;
+//                }
+//            }
+//
+//            return 0.5f - ((float)filled)/state.grid.length;
         });
 
         sense(
@@ -451,7 +463,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         public boolean is_game_over;/*have we reached the end state yet*/
 
 
-        public float[] worldState;/*what the world looks like without the current block*/
+        public float[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
         Vector<TetrisPiece> possibleBlocks = new Vector<>();
@@ -470,7 +482,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             possibleBlocks.add(TetrisPiece.makeLShape());
             possibleBlocks.add(TetrisPiece.makeJShape());
 
-            worldState = new float[this.height * this.width];
+            grid = new float[this.height * this.width];
             seen = new float[width * height];
             reset();
         }
@@ -479,8 +491,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
             currentX = width / 2 - 1;
             currentY = 0;
             score = 0;
-            for (int i = 0; i < worldState.length; i++) {
-                worldState[i] = 0;
+            for (int i = 0; i < grid.length; i++) {
+                grid[i] = 0;
             }
             currentRotation = 0;
             is_game_over = false;
@@ -504,7 +516,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             Arrays.fill(target, -1);
 
             int x = 0;
-            for (double i : worldState) {
+            for (double i : grid) {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else
@@ -662,7 +674,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
                             int linearArrayIndex = i(checkX + x, checkY + y);
-                            if (worldState[linearArrayIndex] != 0) {
+                            if (grid[linearArrayIndex] != 0) {
                                 return true;
                             }
                         }
@@ -695,7 +707,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
                                 int linearArrayIndex = i(checkX + x, checkY + y);
-                                if (worldState[linearArrayIndex] != 0) {
+                                if (grid[linearArrayIndex] != 0) {
                                     return true;
                                 }
                             }
@@ -785,7 +797,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
             if (onSomething) {
                 running = false;
-                writeCurrentBlock(worldState, -1);
+                writeCurrentBlock(grid, -1);
             } else {
 
                 if (time % timePerFall == 0)
@@ -876,7 +888,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
          */
         public boolean isRow(int y, boolean filledOrClear) {
             for (int x = 0; x < width; ++x) {
-                float s = worldState[i(x, y)];
+                float s = grid[i(x, y)];
                 if (filledOrClear ? (s == 0) : (s != 0)) {
                     return false;
                 }
@@ -900,7 +912,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
             for (int x = 0; x < width; ++x) {
                 int linearIndex = i(x, y);
-                worldState[linearIndex] = 0;
+                grid[linearIndex] = 0;
             }
 
 
@@ -908,14 +920,14 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 for (int x = 0; x < width; ++x) {
                     int linearIndexTarget = i(x, ty);
                     int linearIndexSource = i(x, ty - 1);
-                    worldState[linearIndexTarget] = worldState[linearIndexSource];
+                    grid[linearIndexTarget] = grid[linearIndexSource];
                 }
             }
 
 
             for (int x = 0; x < width; ++x) {
                 int linearIndex = i(x, 0);
-                worldState[linearIndex] = 0;
+                grid[linearIndex] = 0;
             }
 
         }
@@ -941,7 +953,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             int index = 0;
             for (int i = 0; i < height - 1; i++) {
                 for (int j = 0; j < width; j++) {
-                    System.out.print(worldState[i * width + j]);
+                    System.out.print(grid[i * width + j]);
                 }
                 System.out.print("\n");
             }
@@ -951,7 +963,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         }
 
 
-        protected float next() {
+        protected void next() {
             if (running) {
                 update();
             } else {
@@ -966,7 +978,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 die();
             }
 
-            return score();
 
         }
 

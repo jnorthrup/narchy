@@ -362,6 +362,7 @@ public class Derivation extends PreDerivation {
             this._belief = null;
         }
 
+try {
         if (this._belief != null) {
 
             beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
@@ -373,6 +374,11 @@ public class Derivation extends PreDerivation {
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthDuringTask = null;
         }
+} catch (Throwable w) {
+	//HACK
+	if (Param.DEBUG) throw w;
+	if (nextBelief!=null) nextBelief.delete();
+}
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
         assert (beliefTerm.op() != NEG): nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";

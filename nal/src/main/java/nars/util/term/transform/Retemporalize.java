@@ -4,16 +4,13 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.IMPL;
-import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
-public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
+public interface Retemporalize extends TermTransform/*.NegObliviousTermTransform*/ {
 
     
     
@@ -37,48 +34,51 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
         @Override
         public Term transformTemporal(Compound x, int dtNext) {
-            Term y = Retemporalize.super.transformTemporal(x, dtNext);
-            return y != x ? xternalIfNecessary(x, y, dtNext) : x;
+            Op xo = x.op();
+            return Retemporalize.super.transformCompound(x, xo, xo.temporal ? XTERNAL : DTERNAL); // && dtNext == DTERNAL ? XTERNAL : DTERNAL);
+
+            //Term y = Retemporalize.super.transformTemporal(x, dtNext);
+            //return y != x ? xternalIfNecessary(x, y, dtNext) : x;
         }
 
-        Term xternalIfNecessary(Compound x, Term y, int dtNext) {
-            if (corrupted(x, y, dtNext)) {
-
-                Op xo = x.op();
-                return Retemporalize.super.transformCompound(x, xo, xo.temporal && dtNext == DTERNAL ? XTERNAL : DTERNAL);
-            }
-            return y;
-        }
-
-        /** verifies events remain unchanged */
-        private boolean corrupted(Term x, Term y, int dtNext) {
-
-            if (y == null || y instanceof Bool || (y.dt() != dtNext))
-                return true;
-
-            Op xop;
-            if ((xop = x.op()) != y.op())
-                return true;
-
-            if (xop == NEG) {
-                //neg oblivious
-                x = x.unneg();
-                y = y.unneg();
-            }
-
-            if (x.subterms().equals(y.subterms()))
-                return false; 
-
-            switch (xop) {
-                case CONJ:
-                    return !conjStructurallySimilar(x, y);
-                case IMPL:
-                    return (y.op() != IMPL || x.structure() != y.structure() || x.volume() != y.volume());
-                default:
-                    return (x.subs() != y.subs()) || (y.volume() != x.volume()) || y.structure() != x.structure();
-            }
-
-        }
+//        Term xternalIfNecessary(Compound x, Term y, int dtNext) {
+//            if (corrupted(x, y, dtNext)) {
+//
+//                Op xo = x.op();
+//                return Retemporalize.super.transformCompound(x, xo, xo.temporal && dtNext == DTERNAL ? XTERNAL : DTERNAL);
+//            }
+//            return y;
+//        }
+//
+//        /** verifies events remain unchanged */
+//        private boolean corrupted(Term x, Term y, int dtNext) {
+//
+//            if (y == null || y instanceof Bool || (y.dt() != dtNext))
+//                return true;
+//
+//            Op xop;
+//            if ((xop = x.op()) != y.op())
+//                return true;
+//
+//            if (xop == NEG) {
+//                //neg oblivious
+//                x = x.unneg();
+//                y = y.unneg();
+//            }
+//
+//            if (x.subterms().equals(y.subterms()))
+//                return false;
+//
+//            switch (xop) {
+//                case CONJ:
+//                    return !conjStructurallySimilar(x, y);
+//                case IMPL:
+//                    return (y.op() != IMPL || x.structure() != y.structure() || x.volume() != y.volume());
+//                default:
+//                    return (x.subs() != y.subs()) || (y.volume() != x.volume()) || y.structure() != x.structure();
+//            }
+//
+//        }
 
         @Override
         public int dt(Compound x) {
@@ -86,35 +86,35 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
         }
     };
 
-    static boolean conjStructurallySimilar(Term x, Term y) {
-        if (y.structure() != x.structure()) {
-            return false;
-        } else {
-
-            switch (x.dt()) {
-                case 0:
-                case DTERNAL:
-                case XTERNAL:
-                    return !((x.subs() != y.subs() || x.volume() != y.volume()));
-
-                default:
-                    return recursiveEvents(x) == recursiveEvents(y);
-            }
-        }
-    }
-
-    /** counts total events (individual 'leaf' terms), even inside negations */
-    static int recursiveEvents(Term x) {
-        return x.intifyShallow((s, t) -> {
-            t = t.unneg();
-            switch (t.op()) {
-                case CONJ:
-                    return s + recursiveEvents(t);
-                default:
-                    return s + 1;
-            }
-        }, 0);
-    }
+//    static boolean conjStructurallySimilar(Term x, Term y) {
+//        if (y.structure() != x.structure()) {
+//            return false;
+//        } else {
+//
+//            switch (x.dt()) {
+//                case 0:
+//                case DTERNAL:
+//                case XTERNAL:
+//                    return !((x.subs() != y.subs() || x.volume() != y.volume()));
+//
+//                default:
+//                    return recursiveEvents(x) == recursiveEvents(y);
+//            }
+//        }
+//    }
+//
+//    /** counts total events (individual 'leaf' terms), even inside negations */
+//    static int recursiveEvents(Term x) {
+//        return x.intifyShallow((s, t) -> {
+//            t = t.unneg();
+//            switch (t.op()) {
+//                case CONJ:
+//                    return s + recursiveEvents(t);
+//                default:
+//                    return s + 1;
+//            }
+//        }, 0);
+//    }
 
 
     int dt(Compound x);
@@ -140,7 +140,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
             return x; 
         else {
             Op op = x.op();
-            return NegObliviousTermTransform.super.transformCompound(x, op, op.temporal ? dtNext : DTERNAL);
+            return /*NegOblivious*/TermTransform.super.transformCompound(x, op, op.temporal ? dtNext : DTERNAL);
         }
     }
 

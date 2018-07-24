@@ -1125,7 +1125,7 @@ public class Conj extends ByteAnonMap {
     }
 
     private static Term matchingEventsRemoved(Term d, TreeSet<Term> t, long at) {
-        if (commute(d.dt(), d.subs())) {
+        if (d.dt()==DTERNAL /*commute(d.dt(), d.subs())*/) {
             SortedSet<Term> s = d.subterms().toSetSortedExcept(t::contains);
             if (s.size() < d.subs()) {
                 return CONJ.the(d.dt(), s.toArray(EmptyTermArray));
@@ -1141,7 +1141,7 @@ public class Conj extends ByteAnonMap {
                     }
                 }
                 return true;
-            }, 0, false, true, false, 0);
+            }, 0, true, true, true, 0);
             Term e = remain.term();
             if (e.equals(d)) {
                 return d;
