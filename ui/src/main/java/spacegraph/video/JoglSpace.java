@@ -285,8 +285,8 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
 
     private void clear() {
-        clearMotionBlur(0.5f);
-        
+        //clearMotionBlur(0.5f);
+        clearComplete();
 
     }
 

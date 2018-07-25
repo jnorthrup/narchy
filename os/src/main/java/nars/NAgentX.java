@@ -208,7 +208,13 @@ abstract public class NAgentX extends NAgent {
                                 a::dexterity)).relax(0.01f), m)
         );
 
-        m.senseNumber("busy", new FloatNormalized(()->
+        m.actionUnipolar($.func("forget", a.id), (f)->{
+            nar.forgetRate.set(Util.lerp(f, 0.5f, 0.99f));
+        });
+        m.actionUnipolar($.func("awake", a.id), (f)->{
+            nar.activateConceptRate.set(Util.lerp(f, 0.1f, 0.99f));
+        });
+        m.senseNumber($.func("busy", a.id), new FloatNormalized(()->
                 (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1) {
             @Override
             public float asFloat() {

@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.Label;
 
@@ -27,7 +28,7 @@ public class MetaFrame extends Bordering {
                 
 
 
-        borderWest = 0;
+        borderWest = borderEast = 0;
         set(N, n);
 
 //        Surface m = grid(
@@ -37,7 +38,7 @@ public class MetaFrame extends Bordering {
 //        set(E, m);
 
         PushButton hideButton = PushButton.awesome("times");
-        set(NE, hideButton);
+        set(NE, new Scale(hideButton, 0.8f));
 
         
         

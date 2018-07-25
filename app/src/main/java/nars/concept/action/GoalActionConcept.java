@@ -114,7 +114,7 @@ public class GoalActionConcept extends ActionConcept {
         if (curi && feedbackBelief != null) {
             curiosityGoal = curiosity(
                     goal,
-                    term, gStart, gEnd, nar);
+                    term, pNow-dur/2, pNow+Math.max(0,dur/2-1), nar);
         }
 
         b.clean(nar);

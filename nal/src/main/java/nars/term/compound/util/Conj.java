@@ -987,13 +987,15 @@ public class Conj extends ByteAnonMap {
                 }
 
                 if (theSequence != null) {
-                    if (theSequence.dt()==0) {
-                        return CONJ.the(0, theSequence, z); //concatenate in parallel
+                    if (theSequence.dt()==dt) {
+                        SortedSet<Term> x =theSequence.subterms().toSetSorted();
+                        x.add(z);
+                        return Op.compoundExact(CONJ, dt, theSequence, z); //concatenate in parallel
                     } else {
                         //Distribute (un-factor) z to each component of the sequence
                         Conj c = new Conj();
                         theSequence.eventsWhile((whn, wht) -> {
-                            return c.add(whn, CONJ.the(dt, wht, z));
+                            return c.add(whn, CONJ.the(0, wht, z));
                         }, 0, true /*false*/, false, true, 0);
                         return c.term();
                     }

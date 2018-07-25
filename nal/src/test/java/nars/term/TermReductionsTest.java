@@ -1454,10 +1454,8 @@ class TermReductionsTest extends NarseseTest {
 
     @Test
     void testPromoteEternalToParallelDont() {
-        String s =
-                //"(a&&(b&|c))";
-                "(&|,a,b,c)";
-        assertEq("((b&|c)&&a)", s);
+        assertEq("((b&|c)&&a)"
+                , "(a&&(b&|c))");
     }
 
     @Test

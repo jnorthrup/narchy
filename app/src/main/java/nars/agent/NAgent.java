@@ -333,9 +333,9 @@ public class NAgent extends NARService implements NSense, NAct {
             if (now <= last)
                 return;
 
-            eventFrame.emit(nar);
-
             always(pri.floatValue());
+
+            eventFrame.emit(nar);
 
             sensors.forEach(s -> s.update(last, now, nar));
 

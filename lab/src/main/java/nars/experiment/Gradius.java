@@ -115,10 +115,10 @@ public class Gradius extends NAgentX {
 
 
     void initToggle() {
-        actionPushButtonMutex($$("left"), $$("right"),
+        actionPushButtonMutex($.inh("left", id), $.inh("right", id),
                 (b) -> g.keys[VK_LEFT] = b,
                 (b) -> g.keys[VK_RIGHT] = b);
-        actionPushButtonMutex($$("up"), $$("down"),
+        actionPushButtonMutex($.inh("up", id), $.inh("down", id),
                 (b) -> g.keys[VK_UP] = b,
                 (b) -> g.keys[VK_DOWN] = b);
     }

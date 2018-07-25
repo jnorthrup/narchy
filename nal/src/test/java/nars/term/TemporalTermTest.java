@@ -122,7 +122,7 @@ class TemporalTermTest {
         Term t = $$(s);
         assertEquals(s,t.toString());
         assertEquals("(--,((--,(right &&+24 #1)) &&+24 #1))",t.normalize().toString());
-        assertEquals("(--,((--,(right&&#1)) &&+- #1))",t.root().toString());
+        assertEquals("(--,((--,(right &&+- #1)) &&+- #1))",t.root().toString());
         assertEquals("((--,(right&&#1)) &&+- #1)",t.concept().toString());
     }
 
@@ -238,13 +238,13 @@ class TemporalTermTest {
     @Test
     void testStableConceptualization4() throws Narsese.NarseseException {
         Term c1 = ceptualStable("((--,((#1-->happy)&|(#1-->neutral)))&|(--,(#1-->sad)))");
-        assertEquals("((--,((#1-->happy)&&(#1-->neutral)))&&(--,(#1-->sad)))", c1.toString());
+        assertEquals("((--,((#1-->happy) &&+- (#1-->neutral))) &&+- (--,(#1-->sad)))", c1.toString());
     }
 
 
     @Test
     void testStableConceptualization6() throws Narsese.NarseseException {
-        assertEquals("(&&,(--,(\"-\"-->move)),(--,(joy-->cart)),(happy-->cart),(\"+\"-->move))",
+        assertEquals("(&&+- ,(--,(\"-\"-->move)),(--,(joy-->cart)),(happy-->cart),(\"+\"-->move))",
                 ceptualStable("((((--,(\"-\"-->move))&|(happy-->cart)) &&+334 (\"+\"-->move)) &&+5 (--,(joy-->cart)))").toString());
     }
 
@@ -264,9 +264,7 @@ class TemporalTermTest {
 
     @Test
     void testAtemporalization() throws Narsese.NarseseException {
-        Term t = $("(x ==>+10 y)");
-        Concept c = n.conceptualize(t);
-        assertEquals("(x==>y)", c.toString());
+        assertEquals("(x ==>+- y)", n.conceptualize($("(x ==>+10 y)")).toString());
     }
 
     @Test
@@ -713,7 +711,7 @@ class TemporalTermTest {
 
     @Test
     void testEmbeddedChangedRoot() throws Narsese.NarseseException {
-        assertEquals("(a==>(b&&c))",
+        assertEquals("(a ==>+- (b &&+- c))",
                 $("(a ==> (b &&+1 c))").root().toString());
     }
 
@@ -897,8 +895,8 @@ class TemporalTermTest {
         n.conceptsActive().forEach(x -> d.add(x.id));
 
         
-        assertTrue(d.contains($("(x==>y)")));
-        assertTrue(d.contains($("(y==>x)")));
+        assertTrue(d.contains($("(x ==>+- y)")));
+        assertTrue(d.contains($("(y ==>+- x)")));
     }
 
     @Test
@@ -941,7 +939,7 @@ class TemporalTermTest {
         Term a = $("(x && y)");
 
         Term b = $("(x &&+1 y)");
-        assertEquals("(x&&y)", b.root().toString());
+        assertEquals("(x &&+- y)", b.root().toString());
 
         Term c = $("(x &&+1 x)");
         assertEquals("(x &&+- x)", c.root().toString());

@@ -22,9 +22,9 @@ public class Bordering extends MutableContainer {
      * in percent of the half total size of the corresponding dimension
      */
     protected float borderWest = 0.25f;
-    private float borderEast = 0.25f;
+    protected float borderEast = 0.25f;
     protected float borderSouth = 0.25f;
-    private float borderNorth = 0.25f;
+    protected float borderNorth = 0.25f;
 
     private boolean autocollapse = true;
 

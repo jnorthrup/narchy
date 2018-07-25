@@ -126,7 +126,7 @@ class ConjTest {
         c.add(2, $.the("z"));
         assertEquals(
                 //"((y &&+1 z)&&x)",
-                "((x&|y) &&+1 (x&|z))",
+                "((x&&y) &&+1 (x&&z))",
                 c.term().toString());
 
     }
@@ -211,7 +211,7 @@ class ConjTest {
         Term xEternal = $$("((((--,angX) &&+4 x) &&+10244 angX) && y)");
         assertEquals(
                 //"((((--,angX) &&+4 x) &&+10244 angX)&&y)",
-                "((((--,angX)&|y) &&+4 (x&|y)) &&+10244 (y&|angX))",
+                "((((--,angX)&&y) &&+4 (x&&y)) &&+10244 (y&&angX))",
                 xEternal.toString());
     }
 
