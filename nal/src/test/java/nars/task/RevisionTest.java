@@ -439,7 +439,7 @@ public class RevisionTest {
     void testIntermpolationImplDirectionDternalAndTemporal() throws Narsese.NarseseException {
         Compound a = $.$("(a ==>+1 b)");
         Compound b = $.$("(a ==> b))");
-        permuteChoose(a, b, "[(a==>b)]");
+        permuteChoose(a, b, "[(a==>b), (a ==>+1 b)]");
     }
 
     @Test
@@ -510,6 +510,7 @@ public class RevisionTest {
         Term a = $$("(a, (b ==>+2 c))");
         Term b = $$("(a, (b ==>+10 c))");
         NAR nar = NARS.shell();
+        nar.time.dur(6);
         {
             Term c = Revision.intermpolate(a, b, 0.5f, nar);
             assertEquals("(a,(b ==>+6 c))", c.toString());

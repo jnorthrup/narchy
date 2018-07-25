@@ -531,7 +531,7 @@ public class IO {
                                 String s;
                                 switch (dt) {
                                     case XTERNAL:
-                                        s = Op.DISJstr + "+-";
+                                        s = Op.DISJstr + "+- ";
                                         break;
                                     case DTERNAL:
                                         s = Op.DISJstr;
