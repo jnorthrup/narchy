@@ -245,15 +245,17 @@ abstract public class Surface implements SurfaceBase {
         return showing;
     }
 
-    public void posX0Y0WH(float x, float y, float w, float h) {
+    public void posxyWH(float x, float y, float w, float h) {
         pos(RectFloat2D.X0Y0WH(x,y,w,h));
     }
 
     /** keeps this rectangle within the given bounds */
     public void fence(RectFloat2D bounds) {
-        float x = left();
-        float y = top();
-        pos(Util.clamp(x, bounds.left(), bounds.right()-w()),
-                Util.clamp(y, bounds.top(), bounds.bottom()-h()));
+        //if (bounds.contains(this.bounds)) {
+            float x = left();
+            float y = top();
+            pos(Util.clamp(x, bounds.left(), bounds.right() - w()),
+                    Util.clamp(y, bounds.top(), bounds.bottom() - h()));
+        //}
     }
 }

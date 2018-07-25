@@ -11,7 +11,7 @@ import nars.link.Activate;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,8 +35,8 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
 
 
         sg.add(new SubOrtho(grid(
-                new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
-                new AutoSurface<>(vis)
+                new ObjectSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
+                new ObjectSurface<>(vis)
         )).posWindow(0, 0, 1f, 0.2f));
 
         Surface inputPanel =

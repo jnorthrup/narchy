@@ -8,7 +8,7 @@ import spacegraph.util.math.v3;
 
 public class AnimVector3f extends v3 implements Animated {
 
-    private final v3 target = new v3();
+    protected final v3 target = new v3();
     protected final NumberX speed;
     private boolean running = true;
 
@@ -54,7 +54,7 @@ public class AnimVector3f extends v3 implements Animated {
     }
 
     /** d is the maximum distance to move the current state to the target, linearly */
-    private void moveDirect(float d, float proportion) {
+    protected void moveDirect(float d, float proportion) {
         if (d < Float.MIN_NORMAL)
             return;
 
@@ -131,36 +131,30 @@ public class AnimVector3f extends v3 implements Animated {
     }
 
 
-
     @Override
     public void set(float x, float y, float z) {
-
-
-
-
-        target.set(x, y, z); 
+         target.set(x, y, z);
     }
 
     @Override
     public void add(float dx, float dy, float dz) {
-        
         target.add( dx,  dy,  dz);
     }
 
     @Override
     public void add(float dx, float dy) {
-        
         target.add( dx,  dy,  0);
     }
 
-    private void setDirect(v3 v) {
-        super.set(v);
+    protected final void setDirect(v3 v) {
+        setDirect(v.x, v.y, v.z);
     }
 
     public void setDirect(float x, float y, float z) {
         super.set(x, y, z);
     }
-    private void addDirect(float x, float y, float z) {
+
+    protected final void addDirect(float x, float y, float z) {
         setDirect(this.x + x, this.y + y, this.z + z);
     }
 }

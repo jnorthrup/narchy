@@ -65,7 +65,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         });
         reward("height", () -> state.score());
         reward("density", () -> {
-            return ((float)state.rowsFilled)/state.height;
+            return 1 - ((float)state.rowsFilled)/state.height;
 //            int filled = 0;
 //            for (float s : state.grid) {
 //                if (s > 0) {

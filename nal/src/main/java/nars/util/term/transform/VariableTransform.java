@@ -4,16 +4,16 @@ import nars.term.Compound;
 import nars.term.Term;
 
 
-public abstract class VariableTransform implements TermTransform {
+public abstract class VariableTransform implements TermTransform.NegObliviousTermTransform {
 
     @Override
     public Term transform(Term x) {
-        return x.hasVars() ? TermTransform.super.transform(x) : x;
+        return x.hasVars() ? TermTransform.NegObliviousTermTransform.super.transform(x) : x;
     }
 
     @Override
     public Term transformCompound(Compound x) {
-        return x.hasVars() ? TermTransform.super.transformCompound((Compound)x) : x;
+        return x.hasVars() ? TermTransform.NegObliviousTermTransform.super.transformCompound((Compound)x) : x;
     }
 
     @Override

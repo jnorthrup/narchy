@@ -1,20 +1,18 @@
 package nars.experiment;
 
-import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
-import nars.op.AutoConceptualizer;
-import nars.sensor.Bitmap2DSensor;
+import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
+import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 
@@ -26,7 +24,7 @@ import static nars.experiment.mario.level.Level.*;
 public class NARio extends NAgentX {
 
     private final MarioComponent mario;
-    private final AbstractSensor cam;
+//    private final AbstractSensor cam;
 
     static final float fps = 48;
 
@@ -59,13 +57,30 @@ public class NARio extends NAgentX {
 
         PixelBag cc = PixelBag.of(() -> mario.image, 32, 24);
         cc.addActions(id, this, false, false, true);
-        cc.actions.forEach(a -> a.resolution(0.25f));
+        cc.actions.forEach(a -> a.resolution(0.5f));
 
 
-        Bitmap2DSensor ccb;
-        this.cam = addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.03f);
+//        Bitmap2DSensor ccb;
+//        addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.02f);
+//
+//        AutoConceptualizer ac;
+//        addSensor(ac = new AutoConceptualizer(new FasterList(ccb.concepts), true, 8 , this.nar));
+//        nar.runLater(()->{
+//            SpaceGraph.window(            new BitmapMatrixView(ac.ae.W) {
+//                {
+//                    onFrame(()-> update());
+//                }
+//            }, 500, 500);
+//        });
 
-        addSensor(new AutoConceptualizer(new FasterList(ccb.concepts), true, 8 , this.nar));
+
+        onFrame(()->cc.update());
+        int nx = 4;
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
+            return new float[]{/*cc.X, cc.Y, */cc.Z};
+        }, 24, this);
+        camAE.alpha(0.05f);
+        SpaceGraph.window(camAE.newChart(), 500, 500);//
 
         try {
             final int tileMax = 3; //0..4

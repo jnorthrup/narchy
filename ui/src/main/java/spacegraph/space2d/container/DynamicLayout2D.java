@@ -56,7 +56,7 @@ public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements
      * default impl: copy directly
      * */
     protected void put(M mover, Graph2D.NodeVis node) {
-        node.posX0Y0WH(mover.x, mover.y, mover.w, mover.h);
+        node.posxyWH(mover.x, mover.y, mover.w, mover.h);
     }
 
 }

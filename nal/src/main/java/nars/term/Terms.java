@@ -155,7 +155,7 @@ public enum Terms {
     public static int countNegated(Subterms subterms) {
         return subterms.hasAny(Op.NEG) ? subterms.subs(NEG) : 0;
     }
-    public static int countNegatedNonConj(Subterms subterms) {
+    public static int negatedNonConjCount(Subterms subterms) {
         return subterms.hasAny(Op.NEG) ? subterms.subs(x->x.op()==NEG && !x.hasAny(CONJ)) : 0;
     }
 

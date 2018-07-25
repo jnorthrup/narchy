@@ -31,23 +31,28 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Created by me on 2/28/17.
+ * constructs a representative surface for an object by reflection analysis
  */
-public class AutoSurface<X> extends Gridding {
+public class ObjectSurface<X> extends Gridding {
 
     private final int maxDepth;
     private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
+
+
+    final Map<Class,Function<?,Surface>> onClass = new ConcurrentHashMap<>();
+    final Map<Predicate,Function<?,Surface>> onIf = new ConcurrentHashMap<>();
+
     /**
      * root
      */
     private final X obj;
     private Ons ons = null;
 
-    public AutoSurface(X x) {
+    public ObjectSurface(X x) {
         this(x, 1);
     }
 
-    public AutoSurface(X x, int maxDepth) {
+    public ObjectSurface(X x, int maxDepth) {
         super();
         this.maxDepth = maxDepth;
         this.obj = x;
@@ -244,14 +249,11 @@ public class AutoSurface<X> extends Gridding {
 
     }
 
-    final Map<Class,Function<?,Surface>> onClass = new ConcurrentHashMap<>();
-    final Map<Predicate,Function<?,Surface>> onIf = new ConcurrentHashMap<>();
-
-    public <Y> AutoSurface<X> on(Class<? extends Y> c, Function<? extends Y, Surface> each) {
+    public <Y> ObjectSurface<X> on(Class<? extends Y> c, Function<? extends Y, Surface> each) {
         onClass.put(c, each);
         return this;
     }
-    public <Y> AutoSurface<X> on(Predicate test, Function<Y, Surface> each) {
+    public <Y> ObjectSurface<X> on(Predicate test, Function<Y, Surface> each) {
         onIf.put(test, each);
         return this;
     }
@@ -299,7 +301,7 @@ public class AutoSurface<X> extends Gridding {
 
                     l.add(
                             new PushButton(IconBuilder.simpleBuilder.apply(s)).click(() -> SpaceGraph.window(
-                                    new LabeledPane(label, new AutoSurface(s)),
+                                    new LabeledPane(label, new ObjectSurface(s)),
                                     500, 500))
 
 

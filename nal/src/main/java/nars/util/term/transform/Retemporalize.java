@@ -10,7 +10,7 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
-public interface Retemporalize extends TermTransform/*.NegObliviousTermTransform*/ {
+public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
     
     
@@ -27,7 +27,7 @@ public interface Retemporalize extends TermTransform/*.NegObliviousTermTransform
 
         @Override
         public boolean requiresTransform(Termlike x) {
-            return x.isTemporal();
+            return x.hasAny(Op.Temporal);
         }
 
 
@@ -82,7 +82,7 @@ public interface Retemporalize extends TermTransform/*.NegObliviousTermTransform
 
         @Override
         public int dt(Compound x) {
-            return DTERNAL;
+            return x.op().temporal ? XTERNAL : DTERNAL;
         }
     };
 
@@ -140,7 +140,7 @@ public interface Retemporalize extends TermTransform/*.NegObliviousTermTransform
             return x; 
         else {
             Op op = x.op();
-            return /*NegOblivious*/TermTransform.super.transformCompound(x, op, op.temporal ? dtNext : DTERNAL);
+            return /*NegOblivious*/TermTransform.NegObliviousTermTransform.super.transformCompound(x, op, op.temporal ? dtNext : DTERNAL);
         }
     }
 

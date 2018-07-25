@@ -196,7 +196,7 @@ public class OmniBox extends Widget {
         if (x instanceof String || x.getClass().isPrimitive() || x instanceof Number) {
             surface = new Label(x.toString());
         } else {
-            surface = new AutoSurface<>(x);
+            surface = new ObjectSurface<>(x);
         }
 
         SpaceGraph.window(new LabeledPane(src, surface), 800, 800, true);

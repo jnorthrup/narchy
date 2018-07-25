@@ -2,7 +2,6 @@ package nars.table.dynamic;
 
 import nars.NAR;
 import nars.Param;
-import nars.Task;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
@@ -12,7 +11,6 @@ import nars.util.task.series.TaskSeries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.function.Predicate;
 
 /** goal belief table with side-table for curiosity tasks.  this is so they can be overridden
  * by weaker derivations, and so that they dont interfere with weaker derivations once
@@ -62,12 +60,12 @@ public class CuriosityGoalTable extends SeriesBeliefTable<SeriesBeliefTable.Seri
     }
 
 
-        @Override
-    public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-        Task stored = taskStored(start, end, template, filter, nar);
-        if (stored!=null)
-            return stored;
-
-        return taskDynamic(start, end, template, nar);
-    }
+//        @Override
+//    public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
+//        Task stored = taskStored(start, end, template, filter, nar);
+//        if (stored!=null)
+//            return stored;
+//
+//        return taskDynamic(start, end, template, nar);
+//    }
 }

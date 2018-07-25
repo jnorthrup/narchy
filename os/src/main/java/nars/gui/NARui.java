@@ -104,7 +104,7 @@ public class NARui {
                 new Bordering(
                         new TabPane(Map.of(
                                 "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
-                                "nar", () -> new AutoSurface<>(n),
+                                "nar", () -> new ObjectSurface<>(n),
                                 "exe", () -> ExeCharts.exePanel(n),
                                 "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
                                 "grp", () -> new ConceptGraph2D(n).widget(),
@@ -148,8 +148,8 @@ public class NARui {
         SpaceGraph.window(new ConceptSurface(t, n), 500, 500, true);
     }
 
-    public static AutoSurface<NAgent> agent(NAgent a) {
-        return new AutoSurface<>(a, 4)
+    public static ObjectSurface<NAgent> agent(NAgent a) {
+        return new ObjectSurface<>(a, 4)
             .on(Bitmap2DSensor.class, (Bitmap2DSensor b) -> new AspectAlign(
                     new CameraSensorView(b, a.nar()).withControls(),
                     AspectAlign.Align.Center, b.width, b.height))
@@ -168,7 +168,7 @@ public class NARui {
         //nar.runLater(() -> {
             SpaceGraph.window(
                     grid(
-                            new AutoSurface(a),
+                            new ObjectSurface(a),
 
                             beliefCharts(nar.dur() * 64, a.actions(), a.nar()),
 
@@ -250,7 +250,7 @@ public class NARui {
 
                                         s.add(new SubOrtho(
 
-                                                grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
+                                                grid(new ObjectSurface<>(fd), new ObjectSurface<>(sg.vis))) {
 
                                         }.posWindow(0, 0, 1f, 0.2f));
 

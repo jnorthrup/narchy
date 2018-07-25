@@ -202,8 +202,8 @@ public interface NSense {
         return senseNumber(v, DigitizedScalar.Needle, p(id, LOW), p(id, MID), p(id, HIH));
     }
 
-    default Signal senseNumber(String id, FloatSupplier v) throws Narsese.NarseseException {
-        return senseNumber($(id), v);
+    default Signal senseNumber(String id, FloatSupplier v) {
+        return senseNumber($$(id), v);
     }
 
 

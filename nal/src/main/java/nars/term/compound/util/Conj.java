@@ -87,7 +87,6 @@ public class Conj extends ByteAnonMap {
 
     /**
      * returns null if wasnt contained, Null if nothing remains after removal
-     *
      */
     @Nullable
     public static Term conjDrop(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
@@ -124,7 +123,7 @@ public class Conj extends ByteAnonMap {
             } else if (earlyOrLate) {
                 Object eternalTemporarilyRemoved = c.event.remove(ETERNAL); //HACK
                 targetTime = c.event.keysView().min();
-                if (eternalTemporarilyRemoved != null)  c.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
+                if (eternalTemporarilyRemoved != null) c.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
             } else {
                 targetTime = c.event.keysView().max();
             }
@@ -141,9 +140,9 @@ public class Conj extends ByteAnonMap {
                         return; //HACK should return early via predicate method
 
                     if ((wh instanceof byte[] && ArrayUtils.indexOf((byte[]) wh, idNeg) != -1)
-                         ||
-                       (wh instanceof RoaringBitmap && ((RoaringBitmap) wh).contains(idNeg)))
-                            contradiction[0] = true;
+                            ||
+                            (wh instanceof RoaringBitmap && ((RoaringBitmap) wh).contains(idNeg)))
+                        contradiction[0] = true;
                 });
                 if (contradiction[0])
                     return Null;
@@ -341,12 +340,9 @@ public class Conj extends ByteAnonMap {
         if (right == Null) return Null;
         if (right == True) return left;
 
-        if (dt == 0 || dt == DTERNAL) {
-            if (left.equals(right)) return left;
-            if (left.equalsNeg(right)) return False;
-
-
-        }
+//        if (dt == 0 || dt == DTERNAL) {
+//            return CONJ.the(left, dt, right);
+//        }
 
 
         if (left.compareTo(right) > 0) {
@@ -381,7 +377,7 @@ public class Conj extends ByteAnonMap {
 
         if (bOffset == 0 && a.subterms().equals(b.subterms())) {
             //special case: equal subs
-            return a.dt( Revision.chooseDT(a, b, aProp, nar) );
+            return a.dt(Revision.chooseDT(a, b, aProp, nar));
         }
 
         return new Conjterpolate(a, b, bOffset, aProp, nar).term();
@@ -703,7 +699,7 @@ public class Conj extends ByteAnonMap {
 
         IntPredicate validator = null;
         Object eternalWhat = event.get(ETERNAL);
-        final Term eternal = eternalWhat!=null ? term(ETERNAL, eternalWhat) : null;
+        final Term eternal = eternalWhat != null ? term(ETERNAL, eternalWhat) : null;
         if (eternal != null) {
 
             if (eternal instanceof Bool)
@@ -867,27 +863,34 @@ public class Conj extends ByteAnonMap {
             return sub(b[0], null, validator);
         }
 
-        final boolean[] negatives = {false};
-        TreeSet<Term> t = new TreeSet<>();
-        if (b != null) {
-            for (byte x : b) {
-                if (x == 0)
-                    break;
-                Term s = sub(x, negatives, validator);
-                if (s == Null || s == False) {
-                    return s;
+        TreeSet<Term> pt = null, t = null;
+//        do {
+            pt = t;
+            t = new TreeSet<>();
+            final boolean[] negatives = {false};
+            if (b != null) {
+                for (byte x : b) {
+                    if (x == 0)
+                        break;
+                    Term s = sub(x, negatives, validator);
+                    if (s == Null || s == False) {
+                        return s;
+                    }
+                    t.add(s);
                 }
-                t.add(s);
+            } else {
+                TreeSet<Term> tt = t;
+                rb.forEach((int termIndex) ->
+                        tt.add(sub(termIndex, negatives, validator))
+                );
             }
-        } else {
-            rb.forEach((int termIndex) ->
-                    t.add(sub(termIndex, negatives, validator))
-            );
-        }
 
-        if (negatives[0]) {
-            factorDisj(t, when);
-        }
+            if (negatives[0]) {
+                factorDisj(t, when);
+            }
+
+//        } while (!t.equals(pt));
+
 
         int ts = t.size();
         switch (ts) {
@@ -896,47 +899,75 @@ public class Conj extends ByteAnonMap {
             case 1:
                 return t.first();
             default: {
-                int dt;
                 Term theSequence = null;
-                if (when == ETERNAL) {
-                    int sequences = 0;
+                {
+                    List<Term> sequences = new FasterList(1);
                     for (Term x : t) {
-                        if (x.op()==CONJ) {
-                            switch (x.dt())  {
-                                case 0:
+                        if (x.op() == CONJ) {
+                            switch (x.dt()) {
                                 case DTERNAL:
-                                    break; //dont
+                                    if (when == ETERNAL)
+                                        sequences.add(x);
+                                    break;
+                                case 0:
                                 case XTERNAL:
                                 default:
-                                    //assert(x.dtRange()!=0);
-                                    theSequence = x;
-                                    sequences++;
+                                    sequences.add(x);
                                     break;
                             }
                         }
                     }
-                    if (sequences == 1) {
-                        t.remove(theSequence); //handled below
+                    t.removeAll(sequences);
+                    int sn = sequences.size();
+                    if (sn > 1) {
+                        Conj a = new Conj();
+                        for (Term s : sequences) {
+                            if (!a.add(0, s))
+                                break;
+                        }
+                        theSequence = a.term();
+
+                    } else if (sn == 1) {
+                        theSequence = sequences.get(0);
                     } else {
                         theSequence = null; //dont do anything
                     }
+                    if (theSequence == Null || theSequence == False)
+                        return theSequence;
+                    else {
+                        if (theSequence == True)
+                            theSequence = null;
+                    }
+                }
+
+                if (t.isEmpty())
+                    return theSequence;
+
+                int dt;
+                if (when == ETERNAL) {
                     dt = DTERNAL;
                 } else {
                     dt = 0;
                 }
 
-                Term z;/* sorted iff t is SortedSet */
+
+
+                Term z;
                 if (t.size() > 1) {
                     Term[] tt = t.toArray(Op.EmptyTermArray); /* sorted iff t is SortedSet */
                     if (theSequence == null) {
-                        if (when == ETERNAL && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()==DTERNAL, tt)) {
-                            z = CONJ.the(dt, tt);
-                        } else {
-                            if (when == 0 && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()!=DTERNAL))
-                                z = CONJ.the(dt, tt);
-                            else
-                                z = Op.compoundExact(CONJ, dt, tt);
-                        }
+//                        if (tt.length == 2) {
+//                            assert (dt == 0 || dt == DTERNAL);
+//                            return conjSeqFinal(dt, tt[0], tt[1]);
+//                        } else {
+////                        if (when == ETERNAL && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()==DTERNAL, tt)) {
+////                            z = CONJ.the(dt, tt);
+////                        } else {
+////                            if (when == 0 && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()!=DTERNAL))
+//                            //return CONJ.the(dt, tt);
+////                            else
+                                return Op.compoundExact(CONJ, dt, tt);
+//                        }
                     } else {
 //                        boolean complex = false;
 //                        for (Term x : t) {
@@ -946,7 +977,7 @@ public class Conj extends ByteAnonMap {
 //                            }
 //                        }
 //                        if (complex) {
-                            z = CONJ.the(dt, tt);
+                        z = CONJ.the(dt, tt);
 //                        } else {
 //                            z = Op.compoundExact(CONJ, dt, tt);
 //                        }
@@ -955,31 +986,23 @@ public class Conj extends ByteAnonMap {
                     z = t.first();
                 }
 
-                if (theSequence!=null) {
-                    //Unfactor z to each component of the sequence
-                    if (theSequence.dt()!=XTERNAL) {
-                        Conj cs = Conj.from(theSequence);
-                        assert(cs.event.size() > 1);
-                        LongIterator ii = cs.event.keysView().longIterator();
-                        while (ii.hasNext() && cs.add(ii.next(), z)) { }
-//                        cs.event.keysView().allSatisfy(csw ->
-//                                cs.add(csw, z) //short-circuits if non-valid
-//                        );
-                        return cs.term();
+                if (theSequence != null) {
+                    if (theSequence.dt()==0) {
+                        return CONJ.the(0, theSequence, z); //concatenate in parallel
                     } else {
-                        //special handling for XTERNAL which is not decomposed by Conj
-                        SortedSet<Term> xs = new TreeSet();
-                        theSequence.eventsWhile((whn,wht)->{
-                            xs.add(CONJ.the(DTERNAL, wht, z));
-                            return true;
-                        }, 0, false, false, true, 0);
-                        return CONJ.the(XTERNAL, xs);
+                        //Distribute (un-factor) z to each component of the sequence
+                        Conj c = new Conj();
+                        theSequence.eventsWhile((whn, wht) -> {
+                            return c.add(whn, CONJ.the(dt, wht, z));
+                        }, 0, true /*false*/, false, true, 0);
+                        return c.term();
                     }
                 }
 
                 return z;
             }
         }
+
     }
 
 //    private void factorDisj0(TreeSet<Term> t) {
@@ -1016,116 +1039,126 @@ public class Conj extends ByteAnonMap {
     private static void factorDisj(TreeSet<Term> t, long when) {
 
         List<Term> d;
-        boolean stable;
+        boolean stable, stable2;
         do {
+            stable2 = true;
+            do {
 
-            d = disjComponents(t);
-            if (d == null)
-                return; //no change
+                d = disjComponents(t);
+                if (d == null)
+                    return; //no change
 
-            stable = true;
+                stable = true;
 
-            //1. disj components sharing components that need factored out
-            if (d.size() > 1) {
-                UnifiedMap<Term, MetalBitSet> components = new UnifiedMap();
-                final boolean[] hasMultiAppearance = {false};
-                for (int i = 0, dSize = d.size(); i < dSize; i++) {
-                    Term dd = d.get(i);
-                    int ii = i;
-                    dd.unneg().subterms().forEach(ddd -> {
-                        MetalBitSet ap = components.computeIfAbsent(ddd, dddd -> MetalBitSet.bits(dSize));
-                        ap.set(ii);
-                        if (ap.cardinality() > 1) {
-                            hasMultiAppearance[0] = true;
+                //1. disj components sharing components that need factored out
+                if (d.size() > 1) {
+                    UnifiedMap<Term, MetalBitSet> components = new UnifiedMap();
+                    final boolean[] hasMultiAppearance = {false};
+                    for (int i = 0, dSize = d.size(); i < dSize; i++) {
+                        Term dd = d.get(i);
+                        int ii = i;
+                        dd.unneg().subterms().forEach(ddd -> {
+                            MetalBitSet ap = components.computeIfAbsent(ddd, dddd -> MetalBitSet.bits(dSize));
+                            ap.set(ii);
+                            if (ap.cardinality() > 1) {
+                                hasMultiAppearance[0] = true;
+                            }
+                        });
+                    }
+                    if (hasMultiAppearance[0]) {
+                        //select most commonly appearing, and process first.  then proceed to next until none left
+                        Pair<Term, MetalBitSet> factorable = components.keyValuesView().select(p -> p.getTwo().cardinality() > 1).maxBy(p -> p.getTwo().cardinality());
+                        Term f = factorable.getOne();
+                        MetalBitSet b = factorable.getTwo();
+                        SortedSet<Term> ff = new TreeSet<>(/*cardinality*/);
+                        for (int i = 0; i < d.size(); i++) {
+                            if (b.get(i)) {
+                                Term di = d.get(i);
+                                ff.add(Conj.without(di.unneg(), f, false));
+                                boolean rdi = t.remove(di);
+                                assert (rdi);
+                            }
                         }
-                    });
-                }
-                if (hasMultiAppearance[0]) {
-                    //select most commonly appearing, and process first.  then proceed to next until none left
-                    Pair<Term, MetalBitSet> factorable = components.keyValuesView().select(p -> p.getTwo().cardinality() > 1).maxBy(p -> p.getTwo().cardinality());
-                    Term f = factorable.getOne();
-                    MetalBitSet b = factorable.getTwo();
-                    SortedSet<Term> ff = new TreeSet<>(/*cardinality*/);
-                    for (int i = 0; i < d.size(); i++) {
-                        if (b.get(i)) {
-                            Term di = d.get(i);
-                            ff.add(Conj.without(di.unneg(), f, false));
-                            boolean rdi = t.remove(di);
-                            assert(rdi);
+
+                        stable = false;
+
+                        Term fff = CONJ.the(DTERNAL, f, CONJ.the(DTERNAL, ff).neg()).neg();
+                        if (fff != True) {
+                            if ((fff == False) || (fff == Null)) {
+                                t.clear();
+                                t.add(fff);
+                                return;
+                            } else {
+                                t.add(fff);
+                            }
                         }
                     }
-
-                    stable = false;
-
-                    Term fff = CONJ.the(DTERNAL, f, CONJ.the(DTERNAL, ff).neg()).neg();
-                    if (fff != True) {
-                        if ((fff == False) || (fff == Null)) {
-                            t.clear();
-                            t.add(fff);
-                            return;
-                        } else {
-                            t.add(fff);
-                        }
-                    }
                 }
-            }
-        } while (!stable);
+            } while (!stable);
 
-        //2. disj components contradicting non-disjunctive components
-        {
+            //2. disj components contradicting non-disjunctive components
+            {
 
-            //test for equal positives
-            for (Iterator<Term> iterator = d.iterator(); iterator.hasNext(); ) {
-                Term disj = iterator.next();
-                if (hasEvent(disj.unneg(), t, when, true)) {
+                //test for equal positives
+                for (Iterator<Term> iterator = d.iterator(); iterator.hasNext(); ) {
+                    Term disj = iterator.next();
+                    if (hasEvent(disj.unneg(), t, when, true)) {
 //                SortedSet<Term> disjSubs = dd.toSetSorted(ddd -> t.contains(ddd.neg()));
 //                int ds = disjSubs.size();
 //                if (ds > 0) {
-                    //remove the entire disjunctive sub-expression
-                    t.remove(disj);
-                    iterator.remove();
+                        //remove the entire disjunctive sub-expression
+                        t.remove(disj);
+                        iterator.remove();
+                        stable2 = false;
+
+                    }
                 }
+
             }
 
-        }
+            {
+                List<Term> csa = null;
 
-        {
-            List<Term> csa = null;
+                //test for equal negatives
+                for (Term disj : d) {
 
-            //test for equal negatives
-            for (Term disj : d) {
-
-                Term du = disj.unneg();
+                    Term du = disj.unneg();
 
 
-                Term e = matchingEventsRemoved(du, t, when);
-                if (e!=du) {
-                    t.remove(disj);
-                    if (csa == null)
-                        csa = new FasterList<>(1);
+                    Term e = matchingEventsRemoved(du, t, when);
+                    if (e != du) {
+                        stable2 = false;
 
-                    Term f = e.neg();
-                    if (f == False || f == Null) {
-                        //short-circuit
-                        t.clear();
-                        t.add(f);
-                        return;
+                        t.remove(disj);
+                        if (csa == null)
+                            csa = new FasterList<>(1);
+
+                        Term f = e.neg();
+                        if (f == False || f == Null) {
+                            //short-circuit
+                            t.clear();
+                            t.add(f);
+                            return;
+                        }
+
+                        if (f!=True)
+                            csa.add(f);
                     }
 
-                    csa.add(f);
+
+                }
+                if (csa != null) {
+                    t.addAll(csa);
+
                 }
 
-
             }
-            if (csa != null)
-                t.addAll(csa);
-
-        }
+        } while (!stable2);
 
     }
 
     private static Term matchingEventsRemoved(Term d, TreeSet<Term> t, long at) {
-        if (d.dt()==DTERNAL /*commute(d.dt(), d.subs())*/) {
+        if (d.dt() == DTERNAL /*commute(d.dt(), d.subs())*/) {
             SortedSet<Term> s = d.subterms().toSetSortedExcept(t::contains);
             if (s.size() < d.subs()) {
                 return CONJ.the(d.dt(), s.toArray(EmptyTermArray));
@@ -1133,7 +1166,7 @@ public class Conj extends ByteAnonMap {
             return d;
         } else {
             Conj remain = new Conj();
-            d.eventsWhile((when,what)->{
+            d.eventsWhile((when, what) -> {
                 if (at == ETERNAL || when == at) {
                     if (!t.contains(what)) {
                         if (!remain.add(when, what))
@@ -1152,10 +1185,10 @@ public class Conj extends ByteAnonMap {
 
     private static boolean hasEvent(Term du, TreeSet<Term> t, long at, boolean neg) {
         if (commute(du.dt(), du.subs())) {
-            return du.subterms().OR(ddd->t.contains(ddd.negIf(neg)));
+            return du.subterms().OR(ddd -> t.contains(ddd.negIf(neg)));
         } else {
             final boolean[] found = new boolean[1];
-            du.eventsWhile((when,what)->{
+            du.eventsWhile((when, what) -> {
                 if (at == ETERNAL || when == at) {
                     if (t.contains(what.negIf(neg))) {
                         found[0] = true;
@@ -1169,7 +1202,8 @@ public class Conj extends ByteAnonMap {
 
     }
 
-    @Nullable private static List<Term> disjComponents(Set<Term> t) {
+    @Nullable
+    private static List<Term> disjComponents(Set<Term> t) {
         List<Term> d = null;
         for (Term x : t) {
             if (x.hasAll(NEG.bit | CONJ.bit)) {
@@ -1216,7 +1250,9 @@ public class Conj extends ByteAnonMap {
         private final Term b;
         private final NAR nar;
 
-        /** proportion of a vs. b, ie: (a/(a+b)) */
+        /**
+         * proportion of a vs. b, ie: (a/(a+b))
+         */
         private final float aProp;
 
         Conjterpolate(Term a, Term b, long bOffset, float aProp, NAR nar) {

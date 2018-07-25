@@ -113,7 +113,7 @@ public class Revision {
                 Term bi = bb.sub(i);
                 if (!ai.equals(bi)) {
                     Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
-                    if (y instanceof Bool && (!(ai instanceof Bool)))
+                    if (y == null || y instanceof Bool && (!(ai instanceof Bool)))
                         return Null;
 
                     if (!ai.equals(y)) {
@@ -148,9 +148,11 @@ public class Revision {
             return a.dt(dt);
         } else {
             Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
-            if (na == Null) return Null;
+            if (na == null) return Null; //HACK
+            if (na == Null || na == False) return na;
             Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
-            if (nb == Null) return Null;
+            if (nb == null) return Null; //HACK
+            if (nb == Null || nb == False) return nb;
             return a.op().the(dt, na, nb);
         }
 

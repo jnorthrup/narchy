@@ -52,7 +52,7 @@ public class BitmapMatrixView extends Surface {
     }
 
 
-    BitmapMatrixView(float[] f) {
+    public BitmapMatrixView(float[] f) {
         this(f.length, 1, arrayRenderer(f));
     }
 

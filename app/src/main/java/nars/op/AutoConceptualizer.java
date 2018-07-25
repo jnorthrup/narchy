@@ -29,8 +29,8 @@ public class AutoConceptualizer extends AbstractSensor {
     private final DurService on;
     private final boolean beliefOrGoal;
     private final float[] x;
-    float learningRate = 0.01f;
-    float noiseLevel = 0.001f;
+    float learningRate = 0.05f;
+    float noiseLevel = 0.0002f;
 
     public AutoConceptualizer(List<? extends Concept> in, boolean beliefOrGoal, int features, NAR n) {
         super(n);
@@ -80,7 +80,7 @@ public class AutoConceptualizer extends AbstractSensor {
 
             float[] a = ae.decode(b, true);
             
-            Term feature = conj(order, a /* threshold, etc */, 5 /*a.length/2*/,
+            Term feature = conj(order, a /* threshold, etc */, 3 /*a.length/2*/,
                     thresh);
             if (feature != null) {
                 

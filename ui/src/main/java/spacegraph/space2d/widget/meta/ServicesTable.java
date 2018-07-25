@@ -89,7 +89,7 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
                     return new PushButton(s.toString());
                 }
                 case 1: {
-                    return new AutoSurface<>(s);
+                    return new ObjectSurface<>(s);
                 }
             }
         } catch (Exception e) {

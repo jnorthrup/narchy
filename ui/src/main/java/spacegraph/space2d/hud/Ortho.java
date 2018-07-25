@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static java.lang.Math.sin;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -41,20 +40,21 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private final static float focusAngle = (float) Math.toRadians(45);
     private static final int ZOOM_STACK_MAX = 8;
     public final Finger finger;
-    public final v3 cam;
+    public final Camera cam;
     /**
      * current view area, in absolute world coords
      */
     public final v2 scale = new v2(1, 1);
     private final AtomicBoolean focused = new AtomicBoolean(false);
     private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
-    private final Deque<Supplier<RectFloat2D>> zoomStack = new ArrayDeque();
+    private final Deque<v3> zoomStack = new ArrayDeque();
     private final Runnable fingerUpdate;
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
     Surface surface;
     public JoglSpace window;
-    private float camZmin = 5;
-    private float camZmax = 640000;
+    private volatile float camZmin = 5, camZmax = 640000;
+    private volatile float camXmin = -1, camXmax = +1;
+    private volatile float camYmin = -1, camYmax = +1;
     private float zoomMargin = 0.25f;
 
 
@@ -67,38 +67,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         this.finger = new Finger();
 
 
-        this.cam = new AnimVector3f(1) {
-
-            float CAM_RATE = 2f;
-
-            {
-                setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
-            }
-
-            @Override
-            public boolean animate(float dt) {
-                //System.out.println(this);
-                if (super.animate(dt)) {
-                    //System.out.println(z);
-                    float W = bounds.w;
-                    float H = bounds.h;
-                    speed.set(Math.max(W, H) * CAM_RATE);
-                    return true;
-                }
-                return false;
-            }
-
-
-            @Override
-            public void set(float x, float y, float z) {
-                super.set(x, y, Util.clamp(z, camZmin, camZmax));
-            }
-
-            @Override
-            public void setDirect(float x, float y, float z) {
-                super.setDirect(x, y, Util.clamp(z, camZmin, camZmax));
-            }
-        };
+        this.cam = new Camera();
 
 
         this.surface = content;
@@ -109,9 +78,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         };
     }
 
+
     @Override
     public void windowResized(WindowEvent e) {
-
 
 
         //doLayout(0);
@@ -131,9 +100,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             layout();
         }
 
-            float scale = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-            float s = Math.max(W, H) * scale;
-            this.scale.set(s, s);
+        float scale = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+        float s = Math.max(W, H) * scale;
+        this.scale.set(s, s);
 
         //}
         super.prePaint(dtMS);
@@ -142,10 +111,16 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     protected void doLayout(int dtMS) {
 
-        if (autoresize())
+        float camZ = targetDepth(Math.max(bounds.w, bounds.h));
+
+        if (autoresize()) {
             surface.pos(bounds);
 
-        cam.set(bounds.w / 2f, bounds.h / 2f, targetDepth(Math.max(bounds.w, bounds.h)));
+            camZmax = camZ;
+
+        }
+
+        cam.set(bounds.w / 2f, bounds.h / 2f, camZ);
 
     }
 
@@ -236,31 +211,64 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     public void zoom(Surface su) {
 
+        //TODO not right
         synchronized (zoomStack) {
 
-
-
-            /*                } else */
-            RectFloat2D target;
-
-
-            {
-                if (zoomStack.size() > ZOOM_STACK_MAX) {
-                    zoomStack.removeFirst();
-                }
-
-                float s = scale.x;
-                RectFloat2D curZoom = RectFloat2D.XYXY(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
-                zoomStack.addLast(() -> curZoom);
-
-                target = su.bounds;
+            //System.out.println("before: " + zoomStack);
+            if (zoomStack.isEmpty()) {
+                zoomStack.add( cam.snapshot() );
             }
 
-            zoom(target);
+            float epsilon = Math.min(h() / scale.y, w() / scale.x);
+            v3 x0 = cam.snapshot();
+            if (zoomStack.size() > 1 && su.bounds.contains(x0.x, x0.y) && zoomStack.peekLast().equals(x0, epsilon)) {
 
 
+                unzoom(su);
+
+
+            } else {
+
+
+                {
+                    v3 x = cam.snapshot();
+
+                    { //if (zoomStack.isEmpty() || !zoomStack.peekLast().equals(x, epsilon)) {
+                        if (zoomStack.size() >= ZOOM_STACK_MAX)
+                            zoomStack.removeFirst();
+
+                        zoomStack.addLast(x);
+                    }
+                }
+
+                zoom(su.bounds);
+
+                {
+                    v3 x = cam.snapshot();
+
+                    { //if (zoomStack.isEmpty() || !zoomStack.peekLast().equals(x, epsilon)) {
+
+                        if (zoomStack.size() >= ZOOM_STACK_MAX)
+                            zoomStack.removeFirst();
+
+                        zoomStack.addLast(x);
+                    }
+                }
+
+                //System.out.println("zoom " + su + " " + cam.snapshot());
+            }
+
+            //System.out.println("after: " + zoomStack);
         }
 
+    }
+
+    void unzoom(Surface su) {
+        zoomStack.removeLast();
+        v3 prev = zoomStack.peekLast();
+        zoom(prev);
+
+        System.out.println("unzoom " + prev + " " + su);
     }
 
     public void zoom(RectFloat2D b) {
@@ -268,27 +276,19 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     private float targetDepth(float viewDiameter) {
-        float targetDepth = (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
-
-        return targetDepth;
+        return (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
     }
-
-    public void zoom(float diameter) {
-        zoom(cam.x, cam.y, diameter);
-    }
-
 
     private void zoom(float x, float y, float sx, float sy, float margin) {
-        zoom(x, y, Math.max(sx, sy) * (1 + margin));
+        zoom(x, y, targetDepth(Math.max(sx, sy) * (1 + margin)));
     }
 
-    public void zoom(float x, float y, float viewDiameter) {
+    public final void zoom(v3 v) {
+        zoom(v.x, v.y, v.z);
+    }
 
-
-        float z = targetDepth(viewDiameter);
+    public void zoom(float x, float y, float z) {
         cam.set(x, y, z);
-
-
     }
 
 
@@ -456,7 +456,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
 
             finger.posPixel.set(pmx, pmy);
-            finger.posScreen.set(w.getX() + pmx, w.getScreenY() - (e.getY()+w.getY()));
+            finger.posScreen.set(w.getX() + pmx, w.getScreenY() - (e.getY() + w.getY()));
             finger.pos.set(wmx, wmy);
         }
 
@@ -558,4 +558,73 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
 
+    protected class Camera extends AnimVector3f {
+
+        float CAM_RATE = 2f;
+
+        {
+            setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
+        }
+
+        public Camera() {
+            super(1);
+        }
+
+        public v3 snapshot() {
+            return new v3(target.x, target.y, target.z);
+        }
+
+        @Override
+        public boolean animate(float dt) {
+            //System.out.println(this);
+            if (super.animate(dt)) {
+                update();
+                return true;
+            }
+            return false;
+        }
+
+        protected void update() {
+            //System.out.println(z);
+            float W = bounds.w;
+            float H = bounds.h;
+            speed.set(Math.max(W, H) * CAM_RATE);
+
+            float visW = W / scale.x / 2, visH = H / scale.y / 2; //TODO optional extra margin
+            camXmin = 0 + visW;
+            camYmin = 0 + visH;
+            camXmax = bounds.w - visW;
+            camYmax = bounds.h - visH;
+        }
+
+
+//            @Override
+//            public void set(float x, float y, float z) {
+//                super.set(camX(x), camY(y), camZ(z));
+//            }
+
+        @Override
+        public void setDirect(float x, float y, float z) {
+            super.setDirect(camX(x), camY(y), camZ(z));
+
+        }
+
+        public float camZ(float z) {
+            return Util.clamp(z, camZmin, camZmax);
+        }
+
+        public float camY(float y) {
+            return Util.clamp(y, camYmin, camYmax);
+        }
+
+        public float camX(float x) {
+            return Util.clamp(x, camXmin, camXmax);
+        }
+
+        public float motionSq() {
+            v3 t = new v3(target);
+            t.add(-x,-y,-z);
+            return t.lengthSquared();
+        }
+    }
 }

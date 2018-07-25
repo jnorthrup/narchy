@@ -5,7 +5,7 @@ import org.slf4j.event.Level;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.ZoomOrtho;
-import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
@@ -45,7 +45,7 @@ public enum SpaceGraph { ;
         } else if (o instanceof Surface) {
             return window(((Surface) o), w, h, async);
         } else {
-            return window(new AutoSurface<>(o), w, h, async);
+            return window(new ObjectSurface<>(o), w, h, async);
         }
     }
 

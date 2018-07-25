@@ -4,7 +4,7 @@ import jcog.data.graph.MapNodeGraph;
 import nars.$;
 import nars.time.TimeGraph;
 import spacegraph.space2d.hud.SubOrtho;
-import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.widget.SimpleGraph3D;
 import spacegraph.space3d.widget.SpaceWidget;
@@ -47,7 +47,7 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
 
         sg.add(new SubOrtho(grid(
                 
-                new AutoSurface<>(cs.vis)
+                new ObjectSurface<>(cs.vis)
         )).posWindow(0, 0, 1f, 0.2f));
 
         cs.commit(dt(/*..*/));

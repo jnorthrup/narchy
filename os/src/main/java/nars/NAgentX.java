@@ -20,7 +20,7 @@ import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -128,8 +128,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        //new CaffeineIndex(80 * 1024, (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(128 * 1024, 4)
+                        new CaffeineIndex(32 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        //new HijackConceptIndex(128 * 1024, 4)
 
 
                 )
@@ -202,7 +202,19 @@ abstract public class NAgentX extends NAgent {
 
         NAgent m = new NAgent($.func("meta", a.id), FrameTrigger.durs(durs), nar);
 
-        dexterityReward(a, m);
+        m.reward(
+                new SimpleReward($.func("dex", a.id),
+                        new FloatNormalized(new FloatFirstOrderDifference(a.nar()::time,
+                                a::dexterity)).relax(0.01f), m)
+        );
+
+        m.senseNumber("busy", new FloatNormalized(()->
+                (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1) {
+            @Override
+            public float asFloat() {
+                return super.asFloat();
+            }
+        }.relax(0.05f));
 
         for (Sensor s : a.sensors) {
             if (!(s instanceof Signal)) { //HACK only if compound sensor
@@ -250,12 +262,12 @@ abstract public class NAgentX extends NAgent {
 //        });
 
         m.actionUnipolar($.func("curious", a.id), (cur) -> {
-            a.curiosity.set(lerp(cur, 0.01f, 0.5f));
-        }).resolution(0.05f);
+            a.curiosity.set(lerp(cur, 0.01f, 0.3f));
+        });//.resolution(0.05f);
 
         m.actionUnipolar($.func("timeFocus", a.id), (f) -> {
             nar.timeFocus.set(lerp(f, 1f, 16));
-        }).resolution(0.05f);
+        });//.resolution(0.05f);
 
         return m;
     }
@@ -365,12 +377,12 @@ abstract public class NAgentX extends NAgent {
         return addCamera(new Bitmap2DSensor(id, bc, nar()));
     }
 
-    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCameraReduced(@Nullable Term
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term
                                                                                 id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
         return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), nar()));
     }
 
-    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCameraReduced(@Nullable Term id, C bc, int sx, int sy,
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term id, C bc, int sx, int sy,
                                                                         int ox, int oy) {
         return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), nar()));
     }
@@ -381,13 +393,6 @@ abstract public class NAgentX extends NAgent {
             c.readAdaptively(this);
         });
         return c;
-    }
-
-    protected static void dexterityReward(NAgent src, NAgent target) {
-        target.reward(
-                new SimpleReward($.func("dex", src.id),
-                        new FloatNormalized(new FloatFirstOrderDifference(src.nar()::time, src::dexterity)).relax(0.01f), target)
-        );
     }
 
     /**

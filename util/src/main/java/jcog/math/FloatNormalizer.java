@@ -63,15 +63,6 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     }
 
     FloatNormalizer updateRange(float raw) {
-        if (relax > 0) {
-            float range = max - min;
-            if (range > ScalarValue.EPSILON) {
-                float mid = (max+min)/2;
-                max = Util.lerp(relax, max, mid);
-                min = Util.lerp(relax, min, mid);
-            }
-        }
-
 
         if (min > raw) {
             min = raw;
@@ -81,6 +72,14 @@ public class FloatNormalizer implements FloatToFloatFunction  {
             max = raw;
         }
 
+        if (relax > 0) {
+            float range = max - min;
+            if (range > ScalarValue.EPSILON) {
+                float mid = (max+min)/2;
+                max = Util.lerp(relax, max, mid);
+                min = Util.lerp(relax, min, mid);
+            }
+        }
         return this;
     }
 

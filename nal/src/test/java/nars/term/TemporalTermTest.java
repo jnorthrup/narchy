@@ -200,7 +200,7 @@ class TemporalTermTest {
     void testConceptualizationWithoutConjReduction2a() throws Narsese.NarseseException {
         String s = "((x &&+1 y) &&+1 z)";
         assertEquals(
-                "(&&,x,y,z)",
+                "( &&+- ,x,y,z)",
                 $(s).concept().toString());
     }
 
@@ -404,7 +404,7 @@ class TemporalTermTest {
         
         assertEquals(
                 
-                "(((a)&&(b)) &&+- do(that))",
+                "( &&+- ,do(that),(a),(b))",
                 n.conceptualize(nt).toString(), () -> nt + " conceptualized");
 
         
@@ -683,15 +683,15 @@ class TemporalTermTest {
 
         Term t = $("(x==>y)");
         Term x = t.root();
-        assertEquals(DTERNAL, x.dt());
-        assertEquals("(x==>y)", x.toString());
+        assertEquals(XTERNAL, x.dt());
+        assertEquals("(x ==>+- y)", x.toString());
 
         n.input("(x ==>+0 y).", "(x ==>+1 y).").run(2);
 
         TaskConcept xImplY = (TaskConcept) n.conceptualize(t);
         assertNotNull(xImplY);
 
-        assertEquals("(x==>y)", xImplY.toString());
+        assertEquals("(x ==>+- y)", xImplY.toString());
 
         assertEquals(3, xImplY.beliefs().size());
 
@@ -708,7 +708,7 @@ class TemporalTermTest {
         n.concepts.print(System.out);
         assertEquals(indexSize, n.concepts.size()); 
 
-        n.conceptualize("(x==>y)").print();
+        //n.conceptualize("(x==>y)").print();
     }
 
     @Test

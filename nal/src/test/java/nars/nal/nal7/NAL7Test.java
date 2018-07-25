@@ -1318,7 +1318,7 @@ public class NAL7Test extends NALTest {
          */
         test.inputAt(1, "(a &&+5 (--,a)). |");
         test.inputAt(1, "((a &&+5 (--,a))=|>(b &&+5 (--,b))). |");
-        test.mustNotOutput(cycles , "(b &&+5 (--,b))", BELIEF, 0f, 1f, 0f, 1f, (t) -> t!=6);
+        test.mustNotOutput(cycles , "(b &&+5 (--,b))", BELIEF, 0f, 1f, 0f, 1f, (t) -> t==6);
     }
 
 }

@@ -3,6 +3,7 @@ package nars.video;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
+import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -14,6 +15,7 @@ import nars.task.ITask;
 import nars.term.Term;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.Arrays;
@@ -26,11 +28,12 @@ import static nars.truth.TruthFunctions.w2c;
  */
 public class AutoclassifiedBitmap extends AbstractSensor {
 
-    final Autoencoder ae;
+    public final Autoencoder ae;
     private final FasterList<Signal> signals;
     private final CauseChannel<ITask> input;
-    float alpha = 0.02f; 
-    float noise = alpha/2;
+    public final FloatRange alpha = new FloatRange(1f, 0, 1);
+    public final FloatRange noise = new FloatRange(0.01f, 0, 1);;
+
 
     public static final MetaBits NoMetaBits = (x, y) -> Util.EmptyFloatArray;
 
@@ -57,12 +60,22 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
         return new Gridding(
             new BitmapMatrixView(ae.W),
-            new BitmapMatrixView(pixRecon)
-        ) {
+
+            new ObjectSurface(this),
+
+            new BitmapMatrixView(pixRecon)) {
             {
-                agent.onFrame(()-> forEach(x -> ((BitmapMatrixView)x).update()));
+                agent.onFrame(()-> forEach(x -> {
+                    if(x instanceof BitmapMatrixView)
+                        ((BitmapMatrixView) x).update();
+                }));
             }
         };
+    }
+
+    public AutoclassifiedBitmap alpha(float alpha) {
+        this.alpha.set(alpha);
+        return this;
     }
 
     @Override
@@ -85,11 +98,14 @@ public class AutoclassifiedBitmap extends AbstractSensor {
         this(root, pixIn, sw, sh, NoMetaBits, states, agent);
     }
 
+    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+        this($$(root), pixIn, sw, sh, metabits, states, agent);
+    }
     /**
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
-    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
-        super($$(root), agent.nar());
+    public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+        super(root, agent.nar());
         ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, states, agent.random());
 
         this.metabits = metabits;
@@ -125,13 +141,14 @@ public class AutoclassifiedBitmap extends AbstractSensor {
                 }
             }
         }
+        agent.onFrame(this::update);
     }
 
     public Term coord(Term root, int i, int j) {
         return $.inh($.p($.the(i), $.the(j)), root);
     }
 
-    public void update(NAR n) {
+    public void update() {
         
 
         float minConf = nar.confMin.floatValue();
@@ -175,7 +192,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = ae.put(in, alpha, noise, 0, true, false, true);
+                    float regionError = ae.put(in, alpha.floatValue(), noise.floatValue(), 0, true, false, true);
                     sumErr += regionError;
 
                     

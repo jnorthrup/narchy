@@ -14,7 +14,7 @@ import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.MutableMapContainer;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.video.Draw;
@@ -84,9 +84,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public Gridding configWidget() {
         Gridding g = new Gridding();
-        g.add(new AutoSurface(layout));
+        g.add(new ObjectSurface(layout));
         for (Graph2DLayer l : layers) {
-            g.add(new AutoSurface(l));
+            g.add(new ObjectSurface(l));
         }
         return g;
     }

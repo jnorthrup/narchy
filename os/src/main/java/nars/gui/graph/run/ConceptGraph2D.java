@@ -19,7 +19,7 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -151,7 +151,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
     public Surface widget() {
         Gridding cfg = configWidget();
-        cfg.add(new AutoSurface(controls));
+        cfg.add(new ObjectSurface(controls));
 
         return new Splitting(new Clipped(
                 this

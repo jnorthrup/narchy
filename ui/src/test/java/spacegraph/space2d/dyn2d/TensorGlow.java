@@ -21,7 +21,7 @@ import spacegraph.space2d.phys.fracture.materials.Uniform;
 import spacegraph.space2d.phys.particle.ParticleColor;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
 import spacegraph.space2d.phys.particle.ParticleType;
-import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.Label;
@@ -147,7 +147,7 @@ public class TensorGlow {
     public static Gridding haiQWindow(HaiQae q, float[] in) {
         return new Gridding(
                 new Label("HaiQ"),
-                new AutoSurface(q),
+                new ObjectSurface(q),
                 new Gridding(VERTICAL,
                         new AutoUpdateMatrixView(in),
                         new AutoUpdateMatrixView(q.ae.x),

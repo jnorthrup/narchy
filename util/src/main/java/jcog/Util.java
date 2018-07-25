@@ -1370,14 +1370,15 @@ public enum Util {
     }
 
     public static float clamp(float f, float min, float max) {
-        assertFinite(f); //assertFinite(min); assertFinite(max);
+        assertFinite(f); assertFinite(min); assertFinite(max);
+        //assert(min <= max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;
     }
 
     public static double clamp(double f, double min, double max) {
-        assertFinite(f); //assertFinite(min); assertFinite(max);
+        assertFinite(f); assertFinite(min); assertFinite(max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;

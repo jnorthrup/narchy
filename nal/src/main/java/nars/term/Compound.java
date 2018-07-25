@@ -160,7 +160,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default Term anon() {
-        return new Anon(2).put(this);
+        return new Anon(/* TODO size estimate */).put(this);
     }
 
 

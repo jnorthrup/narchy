@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
-import static jcog.Texts.n2;
+import static jcog.Texts.n4;
 
 public class Plot2D extends Widget {
     private final List<Series> series;
@@ -295,8 +295,8 @@ public class Plot2D extends Widget {
         float H = 1.0f;
         Draw.line(gl, 0, H, W, H);
 
-        Draw.text(gl, n2(minValue), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
-        Draw.text(gl, n2(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
+        Draw.text(gl, n4(minValue), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
+        Draw.text(gl, n4(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
 
         for (Series s : series) {

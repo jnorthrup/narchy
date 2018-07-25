@@ -32,8 +32,8 @@
 package spacegraph.util.math;
 
 import jcog.Util;
+import jcog.tree.rtree.Spatialization;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space3d.phys.BulletGlobals;
 
 import static jcog.Util.notNaN;
 
@@ -382,28 +382,26 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
      * @param t1 the vector with which the comparison is made
      * @return true or false
      */
-    @Deprecated
-    public boolean equals(@Nullable Tuple3f t1) { 
-        
-        
-        return (this==t1) ||
-                ((t1 != null) &&
-                Util.equals(x, t1.x, BulletGlobals.SIMD_EPSILON) &&
-                Util.equals(y, t1.y, BulletGlobals.SIMD_EPSILON) &&
-                Util.equals(z, t1.z, BulletGlobals.SIMD_EPSILON));
-        /*} catch (NullPointerException e2) {
-            return false;
-        }*/
+    public boolean equals(@Nullable Tuple3f t1) {
+        return equals(t1, Spatialization.EPSILONf);
     }
 
-    /**
-     * Returns true if the Object t1 is of type Tuple3f and all of the
-     * data members of t1 are equal to the corresponding data members in
-     * this Tuple3f.
-     *
-     * @param t1 the Object with which the comparison is made
-     * @return true or false
-     */
+    public boolean equals(@Nullable Tuple3f t1, float epsilon) {
+        return (this==t1) ||
+                ((t1 != null) &&
+                        Util.equals(x, t1.x, epsilon) &&
+                        Util.equals(y, t1.y, epsilon) &&
+                        Util.equals(z, t1.z, epsilon));
+    }
+
+        /**
+         * Returns true if the Object t1 is of type Tuple3f and all of the
+         * data members of t1 are equal to the corresponding data members in
+         * this Tuple3f.
+         *
+         * @param t1 the Object with which the comparison is made
+         * @return true or false
+         */
     public boolean equals(Object t1) {
         
         Tuple3f t2 = (Tuple3f) t1;

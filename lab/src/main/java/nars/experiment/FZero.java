@@ -52,8 +52,8 @@ public class FZero extends NAgentX {
 
 
         c = senseCamera($.func("cam", id), new Scale(() -> fz.image,
-                //24, 24
-                8, 8
+                24, 24
+                //8, 8
 
 
         )/*.blur()*/);//.diff()
@@ -83,7 +83,8 @@ public class FZero extends NAgentX {
 
 
 
-        rewardDetailed(()->{
+
+        rewardDetailed( ()->{
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 

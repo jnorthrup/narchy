@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.task.RevisionTest.x;
 import static nars.time.Tense.*;
@@ -42,7 +43,7 @@ class BeliefTableTest {
     }
 
     private static float dtDiff(String x, String y) {
-        return Revision.dtDiff($.$$(x), $.$$(y));
+        return Revision.dtDiff($$(x), $$(y));
     }
 
     @Test
@@ -232,15 +233,22 @@ class BeliefTableTest {
     void testConceptualizationIntermpolation() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present, Eternal}) {
             NAR n = NARS.tmp();
+            n.log();
+            n.time.dur(8);
 
             n.believe("((a ==>+2 b)-->[pill])", t, 1f, 0.9f);
             n.believe("((a ==>+6 b)-->[pill])", t, 1f, 0.9f);
+            n.run(1);
 
-            
+
             
 
             String abpill = "((a==>b)-->[pill])";
-            TaskConcept cc = (TaskConcept) n.conceptualize(abpill); 
+
+            assertEquals("((a ==>+- b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
+            assertEquals("((a ==>+- b)-->[pill])", $$(abpill).concept().toString());
+
+            TaskConcept cc = (TaskConcept) n.conceptualize(abpill);
             assertNotNull(cc);
 
             String correctMerge = "((a ==>+4 b)-->[pill])";
@@ -248,7 +256,9 @@ class BeliefTableTest {
 
             
             long when = t == Present ? 0 : ETERNAL;
-            assertEquals(correctMerge, cc.beliefs().match(when, null, n).term().toString());
+            Task m = cc.beliefs().match(when, null, n);
+            assertNotNull(m);
+            assertEquals(correctMerge, m.term().toString());
 
 
             

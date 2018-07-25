@@ -27,6 +27,7 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Created by me on 5/29/16.
@@ -521,14 +522,32 @@ public class IO {
                      * (--, (&&, --A, --B, .., --Z) )
                      */
 
-                    if (c.hasAny(CONJ)) {
+                    if (c.hasAll(CONJ.bit|NEG.bit)) {
                         Term cx = c.unneg();
-                        if (cx.op() == CONJ && cx.dt() == DTERNAL) {
+                        int dt = cx.dt();
+                        if (cx.op() == CONJ) {
                             Subterms cxx = cx.subterms();
-                            //if (Terms.allNegated(cxx)) {
-                            if (Terms.countNegatedNonConj(cxx) >= cxx.subs()/2) {
-                                compoundAppend(Op.DISJstr, cxx, Term::neg, p);
-                                return;
+                            if (Terms.negatedNonConjCount(cxx) >= cxx.subs()/2) {
+                                String s;
+                                switch (dt) {
+                                    case XTERNAL:
+                                        s = Op.DISJstr + "+-";
+                                        break;
+                                    case DTERNAL:
+                                        s = Op.DISJstr;
+                                        break;
+                                    default:
+                                        s = null;
+                                        break;
+                                }
+                                if (s != null) {
+//                                    if (cxx.subs() == 2) {
+//                                        statementAppend(cx, op, p); //infix
+//                                    } else {
+                                        compoundAppend(s, cxx, Term::neg, p);
+//                                    }
+                                    return;
+                                }
                             }
                         }
                     }
@@ -549,7 +568,7 @@ public class IO {
                     }
                 }
 
-                statementAppend(c, p, op);
+                statementAppend(c, op, p);
 
             } else {
                 compoundAppend(c, p, op);
@@ -557,7 +576,8 @@ public class IO {
         }
 
 
-        static void statementAppend(Compound c, Appendable p, /*@NotNull*/ Op op) throws IOException {
+
+        static void statementAppend(Term c, Op op, Appendable p /*@NotNull*/) throws IOException {
 
 
             p.append(Op.COMPOUND_TERM_OPENER);

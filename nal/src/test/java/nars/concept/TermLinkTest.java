@@ -109,24 +109,27 @@ class TermLinkTest {
     @Test
     void testConjEventsNotInternalDternals() {
         testTemplates("((a&&b) &&+- (b&&c))",
-                "[(a&&b), (b&&c)]"
-                //"[a, b, c]"
+                //"[(a&&b), (b&&c)]"
+                "[a, b, c]"
         );
     }
 
     @Test
     void testConjEventsNotInternalDternals2() {
-        assertEquals("((a&&b) &&+- (c&&d))", $$("(&&,(a&|b),(c&|d))").concept().toString());
+        assertEquals("( &&+- ,a,b,c,d)",
+                $$("(&&,(a&|b),(c&|d))").concept().toString());
         testTemplates("(&&,(a&|b),(c&|d))",
-                "[(a&&b), (c&&d)]");
+                "[a, b, c, d]"
+                );
+                //"( &&+- ,a,b,c,d)");
+                //"[(a&&b), (c&&d)]");
     }
 
     @Test
     void testTemplateConjInsideConj() {
         testTemplates("(x && (y &&+1 z))",
-                //"[x, y, z]"
-                "[(x&&y), (x&&z)]"
-        );
+                "[x, y, z]");
+
     }
     @Test
     void testTemplateConjInsideConj2() {
@@ -138,18 +141,18 @@ class TermLinkTest {
     @Test
     void testTemplateConjInsideConjInsideImpl() {
         testTemplates("(a ==> (x && y))",
-                "[(x&&y), a, x, y]");
+                "[(x &&+- y), a, x, y]");
     }
     @Test
     void testTemplateConjInsideConjInsideImplVar() {
         testTemplates("(a ==> (x && #1))",
-                "[(x&&#1), a, x, #1]");
+                "[(x &&+- #1), a, x, #1]");
     }
 
     @Test
     void testTemplateConjInsideConjInsideImpl2() {
         testTemplates("((a && b) ==> (x && (y &&+1 z)))",
-                "[((x&&y) &&+- (x&&z)), (a&&b), (x&&y), (x&&z), a, b]");
+                "[( &&+- ,x,y,z), (a &&+- b), a, b, x, y, z]");
     }
 
     @Test
@@ -161,7 +164,7 @@ class TermLinkTest {
     @Test
     void testTemplateConj2() {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
-                "[(($1-->key)==>open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
+                "[(($1-->key) ==>+- open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
 
     }
 

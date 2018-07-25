@@ -111,8 +111,7 @@ public abstract class PixelBag implements Bitmap2D {
     @Override
     public void update() {
 
-        int sw = sw();
-        int sh = sh();
+        int sw = sw(), sh = sh();
 
         float ew, eh;
 

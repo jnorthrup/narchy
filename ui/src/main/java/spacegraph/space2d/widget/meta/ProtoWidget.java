@@ -251,7 +251,7 @@ public class ProtoWidget extends Widget {
                 }
 
             };
-            set(in, new AutoSurface(config), display);
+            set(in, new ObjectSurface(config), display);
         }
     }
 }

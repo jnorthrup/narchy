@@ -23,9 +23,7 @@ import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -160,7 +158,7 @@ public abstract class TermBuilder {
     public Compound theCompound(Op op, int dt, Subterms subterms, @Nullable byte[] key) {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
-        if (!op.temporal && !subterms.isTemporal()) {
+        if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
             assert(dt == DTERNAL);
             if (subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
                 return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
@@ -482,31 +480,7 @@ public abstract class TermBuilder {
             }
 
             case XTERNAL:
-
-
                 int ul = u.length;
-                if (ul > 1) {
-                    boolean unordered = false;
-                    for (int i = 0; i < ul - 1; i++) {
-                        if (u[i].compareTo(u[i + 1]) > 0) {
-                            unordered = true;
-                            break;
-                        }
-                    }
-                    if (unordered) {
-                        u = u.clone();
-                        if (ul == 2) {
-
-                            Term u0 = u[0];
-                            u[0] = u[1];
-                            u[1] = u0;
-                        } else {
-                            Arrays.sort(u);
-                        }
-                    }
-
-                }
-
                 switch (ul) {
                     case 0:
                         return True;
@@ -514,45 +488,84 @@ public abstract class TermBuilder {
                     case 1:
                         return u[0];
 
-                    case 2: {
-
-
-                        Term a = u[0];
-                        if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
-                            Term b = u[1];
-
-                            int va = a.volume();
-                            int vb = b.volume();
-
-                            if (va > vb) {
-                                Term[] aa = a.subterms().arrayShared();
-                                int va0 = aa[0].volume();
-                                int va1 = aa[1].volume();
-                                int vamin = Math.min(va0, va1);
-
-
-                                if ((va - vamin) > (vb + vamin)) {
-                                    int min = va0 <= va1 ? 0 : 1;
-
-                                    Term[] xu = {CONJ.the(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
-                                    Arrays.sort(xu);
-                                    return compound(CONJ, XTERNAL, xu);
-                                }
-                            }
-
-                        }
-                        break;
-                    }
-
                     default:
-                        break;
+                        boolean unordered = false, innerXternal = false;
+                        for (int i = 0; i < ul; i++) {
+                            Term uu = u[i];
+                            if (i < ul-1 && uu.compareTo(u[i + 1]) > 0) {
+                                unordered = true;
+                                break;
+                            }
+                            if (uu.op()==CONJ && uu.dt()==XTERNAL)
+                                innerXternal = true;
+                        }
+
+                        if (innerXternal) {
+                            final boolean[] repeats = {false};
+                            //flatten inner xternal to top layer
+                            SortedSet<Term> uux = new TreeSet();
+                            for (int i = 0; i < ul; i++) {
+                                Term uu = u[i];
+                                if (uu.op() == CONJ && uu.dt() == XTERNAL)
+                                    uu.subterms().forEach(uut -> {
+                                        if (!uux.add(uut))
+                                            repeats[0] = true;
+                                    });
+                                else
+                                    uux.add(uu);
+                            }
+                            if (uux.size()==1 && repeats[0]) {
+                                return compoundExact(CONJ, XTERNAL, uux.first(), uux.first());
+                            }
+                            return compoundExact(CONJ, XTERNAL, uux.toArray(EmptyTermArray));
+                        }
+
+                        if (unordered) {
+                            u = u.clone();
+                            if (ul == 2) {
+
+                                Term u0 = u[0];
+                                u[0] = u[1];
+                                u[1] = u0;
+                            } else {
+                                Arrays.sort(u);
+                            }
+                        }
+
+                        return compoundExact(CONJ, XTERNAL, u);
+
+//                    case 2: {
+//
+//
+//                        Term a = u[0];
+//                        if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
+//                            Term b = u[1];
+//
+//                            int va = a.volume();
+//                            int vb = b.volume();
+//
+//                            if (va > vb) {
+//                                Term[] aa = a.subterms().arrayShared();
+//                                int va0 = aa[0].volume();
+//                                int va1 = aa[1].volume();
+//                                int vamin = Math.min(va0, va1);
+//
+//
+//                                if ((va - vamin) > (vb + vamin)) {
+//                                    int min = va0 <= va1 ? 0 : 1;
+//
+//                                    Term[] xu = {CONJ.the(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
+//                                    Arrays.sort(xu);
+//                                    return compound(CONJ, XTERNAL, xu);
+//                                }
+//                            }
+//
+//                        }
+//                        break;
+//                    }
+//
                 }
 
-                if (u.length > 1) {
-                    return compoundExact(CONJ, XTERNAL, u);
-                } else {
-                    return u[0];
-                }
 
             default: {
                 if (u.length != 2) {

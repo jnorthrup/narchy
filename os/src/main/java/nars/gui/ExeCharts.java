@@ -18,7 +18,7 @@ import spacegraph.space2d.container.TreeMap2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.slider.FloatSlider;
@@ -67,7 +67,7 @@ public class ExeCharts {
 
         };
 
-        return new Splitting(bmp, new AutoSurface<>(gain), 0.1f);
+        return new Splitting(bmp, new ObjectSurface<>(gain), 0.1f);
     }
 
     public static Surface metaGoalControls(NAR n) {
@@ -101,7 +101,7 @@ public class ExeCharts {
     }
 
     public static Surface exePanel(NAR n) {
-        return new Splitting(new AutoSurface<>(n.loop),
+        return new Splitting(new ObjectSurface<>(n.loop),
                 col(
                         
                         row(

@@ -64,8 +64,9 @@ public class GoalActionConcept extends ActionConcept {
         Truth goal;
 
         int dur = nar.dur();
-        long gStart = pNow - dur / 2, gEnd = pNow + Math.max(0, dur / 2 - 1);
+        //long gStart = pNow - dur / 2, gEnd = pNow + Math.max(0, dur / 2 - 1);
         //long gStart = pNow, gEnd = pNow + Math.max(0, dur-1);
+        long gStart = pPrev + dur/2, gEnd = pNow + Math.max(0, dur / 2-1);
 
         goal =
                 this.goals().truth(gStart, gEnd, nar);

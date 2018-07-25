@@ -417,8 +417,8 @@ public enum NALTruth implements TruthFunc {
 
 //                    n.confMin.floatValue()
 
-//                    n.confMin.floatValue() * 2;
-                        // + m.confResolution.floatValue();
+//                    n.confMin.floatValue() * 2
+//                         + n.confResolution.floatValue();
 
                     //Util.lerp(Util.sqr(n.random().nextFloat()) * 0.5f, minConf, n.confDefault(GOAL));
 

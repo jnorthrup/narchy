@@ -30,11 +30,8 @@ public class TopCraft extends NAgentX {
         PixelBag p = PixelBag.of(() -> craft.image, 64, 64).addActions(id, this);
         int nx = 8;
         camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
-
-
             return new float[]{p.X, p.Y, p.Z};
         }, 8, this);
-        onFrame(p::update); //<- this necessary?
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 

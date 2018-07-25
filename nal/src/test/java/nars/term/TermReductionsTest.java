@@ -305,7 +305,7 @@ class TermReductionsTest extends NarseseTest {
         assertEquals(3, CONJ.the(XTERNAL, new Term[]{$("a"), $("b"), $("c")}).eventCount());
 
         for (int dt : new int[]{ /*XTERNAL,*/ 0, DTERNAL}) {
-            assertEquals("(&&,a,b,c)",
+            assertEquals("( &&+- ,a,b,c)",
                     CONJ.the(dt, new Term[]{$.$("a"), $.$("b"), $.$("c")}).concept().toString(), ()->"dt=" + dt);
         }
 
@@ -534,7 +534,7 @@ class TermReductionsTest extends NarseseTest {
     @Test
     void testEmbeddedConjNormalizationB() {
         assertEq(
-                "(((--,noid(0,5)) &&+- noid(11,2)) &&+- (noid(11,2) &&+- noid(11,2)))",
+                "((--,noid(0,5)) &&+- noid(11,2))",
                 "((((--,noid(0,5)) &&+- noid(11,2)) &&+- noid(11,2)) &&+- noid(11,2))");
     }
 
@@ -714,8 +714,8 @@ class TermReductionsTest extends NarseseTest {
 
     @Test
     void testTemporalConjunctionReduction5() {
-        assertEq(//"((a&|b)&&(a &&+1 b))",
-                "((a&|b) &&+1 (a&|b))",
+        assertEq(
+                "((a&|b) &&+1 b)",
                 "( (a&|b) && (a &&+1 b) )");
     }
 
@@ -1035,8 +1035,7 @@ class TermReductionsTest extends NarseseTest {
     void testConjParallelOverrideEternal2() {
 
         assertEq(
-                "(&&,(a&|b),a,b)",
-                //"(a&|b)",
+                "(a&|b)",
                 "( (a&&b) && (a&|b) )");
 
     }
@@ -1455,7 +1454,9 @@ class TermReductionsTest extends NarseseTest {
 
     @Test
     void testPromoteEternalToParallelDont() {
-        String s = "(a&&(b&|c))";
+        String s =
+                //"(a&&(b&|c))";
+                "(&|,a,b,c)";
         assertEq("((b&|c)&&a)", s);
     }
 
