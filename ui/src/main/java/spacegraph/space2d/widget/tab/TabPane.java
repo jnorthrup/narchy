@@ -24,69 +24,85 @@ public class TabPane extends Splitting {
 
 
     private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
-    private final ButtonSet tabs;
+    private final Gridding tabs;
     private MutableContainer content;
     private Function<Surface, Surface> wrapper = x->x;
 
 
-    public TabPane(Map<String, Supplier<Surface>> builder) {
-        this(ButtonSet.Mode.Multi, builder);
+
+
+
+    public TabPane(Map<String, Supplier<Surface>> builder, Function<String, ToggleButton> buttonBuilder) {
+        this();
+        addToggles(builder, buttonBuilder);
     }
 
-    private TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder) {
-        this(mode, builder, CheckBox::new);
-    }
-
-    public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder, Function<String, ToggleButton> buttonBuilder) {
+    public TabPane() {
         super();
 
         unsplit();
 
         content = new Gridding();
 
-        tabs = new ButtonSet<>(mode, builder.entrySet().stream().map(x -> {
-            final Surface[] created = {null};
-            Supplier<Surface> creator = x.getValue();
-            String label = x.getKey();
-            ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
-                synchronized(TabPane.this) {
-
-                    if (a) {
-                        Surface cx;
-                        try {
-                            cx = creator.get();
-                        } catch (Throwable t) {
-                            String msg = t.getMessage();
-                            if (msg == null)
-                                msg = t.toString();
-                            cx = new Label(msg);
-                        }
-
-
-                        content.add(created[0] = wrapper.apply(cx));
-                        split();
-
-                    } else {
-
-                        if (created[0] != null) {
-                            content.remove(created[0]);
-                            created[0] = null;
-                        }
-                        if (content.isEmpty()) {
-                            unsplit();
-                        }
-
-                    }
-
-                }
-            };
-
-            ToggleButton bb = buttonBuilder.apply(label);
-            return bb.on(toggle);
-        }).toArray(ToggleButton[]::new));
+        tabs = new Gridding();
 
         set(tabs, content);
 
+
+    }
+
+    public TabPane addToggles(Map<String, Supplier<Surface>> builder) {
+        addToggles(builder, CheckBox::new);
+        return this;
+    }
+
+    public void addToggles(Map<String, Supplier<Surface>> builder, Function<String, ToggleButton> buttonBuilder) {
+        builder.entrySet().stream().map(x -> {
+            return addToggle(buttonBuilder, x.getKey(), x.getValue());
+        }).forEach(tabs::add);
+    }
+
+    public ToggleButton addToggle(String label, Supplier<Surface> creator) {
+        return addToggle(CheckBox::new, label, creator);
+    }
+
+    public ToggleButton addToggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
+        final Surface[] created = {null};
+        ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
+            synchronized(TabPane.this) {
+
+                if (a) {
+                    Surface cx;
+                    try {
+                        cx = creator.get();
+                    } catch (Throwable t) {
+                        String msg = t.getMessage();
+                        if (msg == null)
+                            msg = t.toString();
+                        cx = new Label(msg);
+                    }
+
+
+                    content.add(created[0] = wrapper.apply(cx));
+                    split();
+
+                } else {
+
+                    if (created[0] != null) {
+                        content.remove(created[0]);
+                        created[0] = null;
+                    }
+                    if (content.isEmpty()) {
+                        unsplit();
+                    }
+
+                }
+
+            }
+        };
+
+        ToggleButton bb = buttonBuilder.apply(label);
+        return bb.on(toggle);
     }
 
     public TabPane setContent(MutableContainer next) {
@@ -115,8 +131,8 @@ public class TabPane extends Splitting {
 
     public static class TabWall extends TabPane {
 
-        public TabWall(Map<String, Supplier<Surface>> builder) {
-            super(builder);
+        public TabWall() {
+            super();
             setContent(new Wall());
             setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
         }

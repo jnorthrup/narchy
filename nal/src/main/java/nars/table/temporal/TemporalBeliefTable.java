@@ -83,8 +83,8 @@ public interface TemporalBeliefTable extends TaskTable {
         };
     }
 
-    static float costDtDiff(Term template, Task x, int dur) {
-        return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
+    static float costDtDiff(Term template, Term x, int dur) {
+        return Revision.dtDiff(template, x) / (dur /* * dur*/);
     }
 
     /**

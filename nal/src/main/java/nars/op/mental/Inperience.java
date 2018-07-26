@@ -15,7 +15,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
 import nars.time.Tense;
-import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -116,7 +115,7 @@ public class Inperience extends LeakBack {
     }
 
     private static Term reifyQuestion(Term x, byte punc, NAR nar) {
-        x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+        //x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
         if (x instanceof Bool) return Null;
 

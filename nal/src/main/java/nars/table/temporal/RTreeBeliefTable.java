@@ -671,10 +671,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
             FloatFunction<Task> f = taskStrength(start, end, dur);
             if (template == null) {
-
-                return f;
+                return x -> f.floatValueOf(x) / x.volume(); //prefer lower complexity variants
             } else {
-                return x -> f.floatValueOf(x) / TemporalBeliefTable.costDtDiff(template, x, dur);
+//                int tv = template.volume();
+                return x -> f.floatValueOf(x) / (1 + TemporalBeliefTable.costDtDiff(template, x.term(), dur));
             }
         }
 

@@ -19,7 +19,6 @@ import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
 import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
-import jcog.math.OneDHaar;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
@@ -77,7 +76,6 @@ public enum Util {
     public static final int PRIME3 = 524287;
     public static final int PRIME2 = 92821;
     public static final int PRIME1 = 31;
-    public static final float[] EmptyFloatArray = new float[0];
 
     //public static final int MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors();
     public static final ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
@@ -98,9 +96,12 @@ public enum Util {
                     .enable(MapperFeature.AUTO_DETECT_GETTERS)
                     .enable(MapperFeature.AUTO_DETECT_IS_GETTERS)
                     .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+    public static final double log2 = Math.log(2);
+
     private static final int BIG_ENOUGH_INT = 16 * 1024;
     private static final double BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
-    private static final double BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5;
+//    private static final double BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5;
 
 
     public static final VarHandle ITEM = MethodHandles.arrayElementVarHandle(Object[].class);
@@ -1549,7 +1550,7 @@ public enum Util {
         if (n < 1) {
             return false;
         } else {
-            double p_of_2 = (Math.log(n) / OneDHaar.log2);
+            double p_of_2 = (Math.log(n) / log2);
             return Math.abs(p_of_2 - Math.round((int) p_of_2)) == 0;
         }
     }
@@ -2236,7 +2237,7 @@ public enum Util {
 
     public static float[] remove(float[] f, FloatPredicate removeIf) {
         int n = f.length;
-        if (n == 0) return EmptyFloatArray;
+        if (n == 0) return ArrayUtils.EMPTY_FLOAT_ARRAY;
 
         final MetalBitSet toRemove = MetalBitSet.bits(n);
 
@@ -2248,7 +2249,7 @@ public enum Util {
         if (r == 0)
             return f; //no change
         if (r == n)
-            return EmptyFloatArray;
+            return ArrayUtils.EMPTY_FLOAT_ARRAY;
         float[] x = new float[n - r];
         int j = 0;
         for (int i = 0; i < n; i++) {
@@ -2266,7 +2267,7 @@ public enum Util {
      */
     public static float[] remove(float[] f, short[] g, FloatPredicate removeIf) {
         int n = f.length;
-        if (n == 0) return EmptyFloatArray;
+        if (n == 0) return ArrayUtils.EMPTY_FLOAT_ARRAY;
 
         final MetalBitSet toRemove = MetalBitSet.bits(n);
 
@@ -2280,7 +2281,7 @@ public enum Util {
 
         if (r == n) {
             Arrays.fill(g, (short) -1);
-            return EmptyFloatArray;
+            return ArrayUtils.EMPTY_FLOAT_ARRAY;
         }
 
         float[] x = new float[n - r];

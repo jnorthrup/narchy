@@ -39,7 +39,6 @@ import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
-import spacegraph.space2d.widget.tab.ButtonSet;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.util.animate.Animated;
@@ -419,7 +418,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         float EXPAND_SCALE_FACTOR = 4;
 
         PushButton deleteButton = new PushButton("x");
-        Surface menu = new TabPane(ButtonSet.Mode.Multi, Map.of("o", () -> new Gridding(
+        Surface menu = new TabPane(Map.of("o", () -> new Gridding(
                 new Label(source.toString()),
                 new Label(target.toString()),
                 deleteButton

@@ -20,7 +20,6 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.tab.ButtonSet;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.windo.FloatPort;
@@ -118,7 +117,7 @@ public class ProtoWidget extends Widget {
             categories.put(t, ()->new Gridding( fields ) );
         });
 
-        content(new TabPane(ButtonSet.Mode.Multi, categories, (l)->{
+        content(new TabPane(categories, (l)->{
             String icon;
             switch (l) {
                 case "Control":

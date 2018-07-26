@@ -38,6 +38,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.widget.tab.TabPane;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -49,7 +50,6 @@ import java.util.function.Supplier;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.widget.tab.TabPane.TabWall;
 
@@ -154,17 +154,17 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
-                        Derivers.nal(n, 6, 8, "motivation.nal")) {
-                    @Override
-                    public float puncFactor(byte conclusion) {
-                        return conclusion == GOAL ? 1 : 0.1f;
-                    }
-                };
+//                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
+//                        Derivers.nal(n, 6, 8, "motivation.nal")) {
+//                    @Override
+//                    public float puncFactor(byte conclusion) {
+//                        return conclusion == GOAL ? 1 : 0.1f;
+//                    }
+//                };
 
 
                 //Gridding aa = new Gridding(
-                TabWall aa = new TabWall(Map.of(
+                TabPane aa = new TabWall().addToggles(Map.of(
                     a.toString(), () -> NARui.agent(a),
                     "nar", () -> NARui.top(n),
                     "emotion", () -> new EmotionPlot(128, a)

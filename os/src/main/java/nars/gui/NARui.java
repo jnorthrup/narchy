@@ -102,24 +102,24 @@ public class NARui {
     public static Surface top(NAR n) {
         return
                 new Bordering(
-                        new TabPane(Map.of(
-                                "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
-                                "nar", () -> new ObjectSurface<>(n),
-                                "exe", () -> ExeCharts.exePanel(n),
-                                "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
-                                "grp", () -> new ConceptGraph2D(n).widget(),
-                                "svc", () -> new ServicesTable(n.services),
-                                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n),
-                                "snp", () -> memoryView(n),
-                                "mem", () -> ScrollGrid.list(
-                                        (x, y, m) -> new PushButton(m.toString()).click((mm) ->
+                        new TabPane().addToggles(Map.of(
+                                                        "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
+                                                        "nar", () -> new ObjectSurface<>(n),
+                                                        "exe", () -> ExeCharts.exePanel(n),
+                                                        "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
+                                                        "grp", () -> new ConceptGraph2D(n).widget(),
+                                                        "svc", () -> new ServicesTable(n.services),
+                                                        "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n),
+                                                        "snp", () -> memoryView(n),
+                                                        "mem", () -> ScrollGrid.list(
+                                                                (x, y, m) -> new PushButton(m.toString()).click((mm) ->
 
-                                                SpaceGraph.window(
-                                                        ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(m).collect(toList())), 800, 800, true)
-                                        ),
-                                        n.memory.roots().collect(toList())
-                                )
-                        ))
+                                                                        SpaceGraph.window(
+                                                                                ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(m).collect(toList())), 800, 800, true)
+                                                                ),
+                                                                n.memory.roots().collect(toList())
+                                                        )
+                                                ))
                 )
                         .north(ExeCharts.runPanel(n))
                         //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap

@@ -1,6 +1,5 @@
 package nars.video;
 
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatRange;
@@ -13,6 +12,7 @@ import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
+import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -35,7 +35,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
     public final FloatRange noise = new FloatRange(0.01f, 0, 1);;
 
 
-    public static final MetaBits NoMetaBits = (x, y) -> Util.EmptyFloatArray;
+    public static final MetaBits NoMetaBits = (x, y) -> ArrayUtils.EMPTY_FLOAT_ARRAY;
 
     private final MetaBits metabits;
     

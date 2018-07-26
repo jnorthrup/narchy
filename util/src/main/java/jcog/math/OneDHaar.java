@@ -29,8 +29,7 @@ public enum OneDHaar {
 
     private static final double FSNORM = Math.sqrt(2);
     private static final double FDNORM = 1/FSNORM;
-    public static final double log2 = Math.log(2);
-    
+
     private static final double ISNORM = FDNORM;
     private static final double IDNORM = FSNORM;
     
@@ -62,7 +61,7 @@ public enum OneDHaar {
         if (!Util.isPowerOf2(sample.length)) {
             return;
         }
-        int num_sweeps = (int) (Math.log(sample.length) / log2);
+        int num_sweeps = (int) (Math.log(sample.length) / Util.log2);
         inPlaceFastHaarWaveletTransform(sample, num_sweeps);
     }
     
@@ -73,7 +72,7 @@ public enum OneDHaar {
 
 
 
-        int num_sweeps = (int) (Math.log(sample.length) / log2);
+        int num_sweeps = (int) (Math.log(sample.length) / Util.log2);
         inPlaceFastHaarWaveletTransform(sample, num_sweeps);
     }
 

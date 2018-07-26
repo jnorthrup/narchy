@@ -723,7 +723,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public Truth truth(Termed concept, byte punc, long start, long end) {
         @Nullable Concept c = conceptualizeDynamic(concept);
-        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, concept.term(), this) : null;
+        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, null, this) : null;
     }
 
     @Nullable

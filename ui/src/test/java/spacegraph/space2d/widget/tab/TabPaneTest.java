@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.tab;
 
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 
@@ -10,13 +11,13 @@ class TabPaneTest {
     public static class TestDefault {
         public static void main(String[] args) {
             SpaceGraph.window(new TabPane(Map.of(
-                    "a", () -> new Sketch2DBitmap(40, 40),
-                    "b", () -> new PushButton("x"))), 800, 800);
+                                "a", () -> new Sketch2DBitmap(40, 40),
+                                "b", () -> new PushButton("x")), CheckBox::new), 800, 800);
         }
     }
     public static class TestAlternateContentMode {
         public static void main(String[] args) {
-            SpaceGraph.window(new TabPane.TabWall(Map.of(
+            SpaceGraph.window(new TabPane.TabWall().addToggles(Map.of(
                     "a", () -> new Sketch2DBitmap(40, 40),
                     "b", () -> new PushButton("x")))
 

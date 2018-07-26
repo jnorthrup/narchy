@@ -27,70 +27,69 @@ public class ConceptSurface extends TabPane {
     }
 
     public ConceptSurface(Term id, NAR n) {
-        super(Map.of(
-                id.toString(), () -> new Label(id.toString()),
-                "budget", () -> {
+        super();
+        addToggles(Map.of(
+                        id.toString(), () -> new Label(id.toString()),
+                        "budget", () -> {
 
-                    Plot2D p = new Plot2D(64, Plot2D.Line)
-                            .add("pri", () -> {
+                            Plot2D p = new Plot2D(64, Plot2D.Line)
+                                    .add("pri", () -> {
 
-                                Table<?, Activate> bag = n.attn.active;
-                                if (bag != null) {
-                                    Concept ni = n.conceptualize(id);
-                                    if (ni!=null) {
-                                        Activate b = bag.get(ni);
-                                        if (b != null)
-                                            return b.priElseZero();
-                                    }
+                                        Table<?, Activate> bag = n.attn.active;
+                                        if (bag != null) {
+                                            Concept ni = n.conceptualize(id);
+                                            if (ni!=null) {
+                                                Activate b = bag.get(ni);
+                                                if (b != null)
+                                                    return b.priElseZero();
+                                            }
+                                        }
+
+                                        return 0f;
+                                    });
+                            CheckBox boost = new CheckBox("Boost");
+                            return DurSurface.get(new Splitting<>(
+
+                                    boost, p
+
+                            , 0.8f), n, (nn) -> {
+                                p.update();
+                                if (boost.get()) {
+                                    n.activate(id, 1f);
                                 }
-
-                                return 0f; 
                             });
-                    CheckBox boost = new CheckBox("Boost");
-                    return DurSurface.get(new Splitting(
-
-
-
-                            boost, p
-                            
-                    , 0.8f), n, (nn) -> {
-                        p.update();
-                        if (boost.get()) {
-                            n.activate(id, 1f); 
+                        },
+                        "beliefs", () -> NARui.beliefCharts(64, n, n.concept(id)),
+                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
+                        "tasklinks", () -> new BagView("TaskLinks", n.concept(id).tasklinks(), n),
+                        "goal", () -> {
+                            return new Gridding(
+                                    new PushButton("gOAL tRUE").click((b) -> {
+                                        long now = n.time();
+                                        n.input(new NALTask(id, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
+                                    }),
+                                    new PushButton("gOAL fALSE").click((b) -> {
+                                        long now = n.time();
+                                        n.input(new NALTask(id, GOAL, $.t(0f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
+                                    })
+                            );
+                        },
+                        "predict", () -> {
+                            return new Gridding(
+                                    new PushButton("What +1").click((b) -> {
+                                        long now = n.time();
+                                        n.input(new NALTask(id, QUESTION, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUESTION)));
+                                    }),
+                                    new PushButton("What +4").click((b) -> {
+                                        long now = n.time();
+                                        n.input(new NALTask(id, QUESTION, null, now, now + n.dur() * 3, now + n.dur() * 4, n.evidence()).priSet(n.priDefault(QUESTION)));
+                                    }),
+                                    new PushButton("How +1").click((b) -> {
+                                        long now = n.time();
+                                        n.input(new NALTask(id, QUEST, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUEST)));
+                                    })
+                            );
                         }
-                    });
-                },
-                "beliefs", () -> NARui.beliefCharts(64, n, n.concept(id)),
-                "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
-                "tasklinks", () -> new BagView("TaskLinks", n.concept(id).tasklinks(), n),
-                "goal", () -> {
-                    return new Gridding(
-                            new PushButton("gOAL tRUE").click((b) -> {
-                                long now = n.time();
-                                n.input(new NALTask(id, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
-                            }),
-                            new PushButton("gOAL fALSE").click((b) -> {
-                                long now = n.time();
-                                n.input(new NALTask(id, GOAL, $.t(0f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
-                            })
-                    );
-                },
-                "predict", () -> {
-                    return new Gridding(
-                            new PushButton("What +1").click((b) -> {
-                                long now = n.time();
-                                n.input(new NALTask(id, QUESTION, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUESTION)));
-                            }),
-                            new PushButton("What +4").click((b) -> {
-                                long now = n.time();
-                                n.input(new NALTask(id, QUESTION, null, now, now + n.dur() * 3, now + n.dur() * 4, n.evidence()).priSet(n.priDefault(QUESTION)));
-                            }),
-                            new PushButton("How +1").click((b) -> {
-                                long now = n.time();
-                                n.input(new NALTask(id, QUEST, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUEST)));
-                            })
-                    );
-                }
-        ));
+                ));
     }
 }

@@ -1054,7 +1054,6 @@ public class NAL7Test extends NALTest {
     @Test
     void preconImplyConjPost2() {
 
-
         test
                 .input("(a ==>+2 x). :|:")
                 .input("(a ==>-3 y). :|:")
@@ -1067,9 +1066,9 @@ public class NAL7Test extends NALTest {
     void testPreconditionCombine() {
 
         test
-                .believe("(x ==>+5 (z))")
-                .believe("((y) ==>+5 (z))")
-                .mustBelieve(cycles, "( (x &| (y)) ==>+5 (z))", 1f, 0.81f);
+                .believe("(x ==>+5 z)")
+                .believe("(y ==>+5 z)")
+                .mustBelieve(cycles, "( (x &| y) ==>+5 z)", 1f, 0.81f);
     }
 
     @Test
@@ -1091,17 +1090,17 @@ public class NAL7Test extends NALTest {
     void testPreconditionCombineNeg() {
 
         test
-                .believe("(x ==>+5 (z))")
-                .believe("(--(y) ==>+5 (z))")
-                .mustBelieve(cycles, "( (x &| --(y)) ==>+5 (z))", 1f, 0.81f);
+                .believe("(x ==>+5 z)")
+                .believe("(--y ==>+5 z)")
+                .mustBelieve(cycles, "( (x &| --y) ==>+5 z)", 1f, 0.81f);
     }
 
     @Test
     void testPropositionalDecompositionPositive() {
 
         test
-                .believe("(s)")
-                .believe("((s) && a)")
+                .believe("s")
+                .believe("(s && a)")
                 .mustBelieve(cycles, "a", 1f, 0.81f);
     }
 
