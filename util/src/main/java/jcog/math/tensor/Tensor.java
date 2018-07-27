@@ -111,11 +111,21 @@ public interface Tensor extends Supplier<float[]> {
         return snapshot();
     }
 
-    float get(int... cell);
+    default float get(int... cell) {
+        return get(index(cell));
+    }
 
     float get(int linearCell);
 
-    int index(int... cell);
+    default int index(int... coord) {
+        int f = coord[0];
+
+        int[] r = stride();
+        for (int s = 1, iLength = r.length+1; s < iLength; s++) {
+            f += r[s-1] * coord[s];
+        }
+        return f;
+    }
 
     default void set(float newValue, int linearCell) {
         throw new UnsupportedOperationException("read-only");
@@ -132,9 +142,22 @@ public interface Tensor extends Supplier<float[]> {
 
     int[] shape();
 
+    default int[] stride() {
+        return Tensor.stride(shape());
+    }
 
 
-
+    public static int[] stride(int[] shape) {
+        int size = shape[0];
+        int[] stride = new int[size - 1];
+        int striding = shape[0];
+        for (int i = 1, dimsLength = shape.length; i < dimsLength; i++) {
+            size *= shape[i];
+            stride[i-1] = striding;
+            striding *= shape[i];
+        }
+        return stride;
+    }
 
 
 
@@ -160,7 +183,12 @@ public interface Tensor extends Supplier<float[]> {
     /**
      * receives the pair: linearIndex,value (in increasing order within provided subrange, end <= volume())
      */
-    void forEach(IntFloatProcedure sequential, int start, int end);
+    default void forEach(IntFloatProcedure sequential, int start, int end) {
+        for (int i = start; i < end; i++ ) {
+            sequential.value(i, get(i));
+        }
+    }
+
 
     /** should not need subclassed */
     default void writeTo(float[] target) {

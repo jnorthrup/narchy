@@ -36,19 +36,18 @@ public class ArrayTensor implements
     public ArrayTensor(int... shape) {
         int size = shape[0];
         if (shape.length > 1) {
-            this.stride = new int[size - 1];
-            int striding = shape[0];
-            for (int i = 1, dimsLength = shape.length; i < dimsLength; i++) {
-                size *= shape[i];
-                this.stride[i-1] = striding;
-                striding *= shape[i];
-            }
+            this.stride = Tensor.stride(shape);
         } else {
             this.stride = ArrayUtils.EMPTY_INT_ARRAY;
         }
 
         this.shape = shape; 
         this.data = new float[size];
+    }
+
+
+    @Override public int[] stride() {
+        return stride;
     }
 
     @Override
@@ -122,14 +121,7 @@ public class ArrayTensor implements
         }
     }
 
-    @Override
-    public int index(int... coord) {
-        int f = coord[0];
-        for (int s = 1, iLength = shape.length; s < iLength; s++) {
-            f += stride[s-1] * coord[s];
-        }
-        return f;
-    }
+
 
     public void set(@NotNull float[] raw) {
         int d = data.length;

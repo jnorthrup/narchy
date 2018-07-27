@@ -1,6 +1,11 @@
 package jcog.signal;
 
 
+import jcog.TODO;
+import jcog.math.tensor.Tensor;
+
+import java.awt.image.BufferedImage;
+
 public interface Bitmap2D {
 
     static int encodeRGB(float r, float g, float b) {
@@ -87,15 +92,68 @@ public interface Bitmap2D {
     static float decodeBlue(int p) {
         return ((p & 0x000000ff))/256f;
     }
+    static float decodeAlpha(int p) {
+        return ((p & 0xff000000) >> 24)/256f;
+    }
 
 
+    class RGBTensor implements Tensor {
+        private final BufferedImage img;
+        private final int[] shape;
+
+        public RGBTensor(BufferedImage i) {
+            this.img = i;
+            int bitplanes = i.getRaster().getNumBands();
+            this.shape = new int[] { i.getWidth(), i.getHeight(), bitplanes };
+        }
+
+        @Override
+        public float get(int linearCell) {
+//            int w = shape[0];
+//            int planes = shape[2];
+//
+//            int y = linearCell / (w * planes);
+//            int x = ((linearCell/planes) - (y * w * planes));
+//
+//            System.out.println(linearCell + " : " + x + " " + y);
+//
+//
+//           return get(x, y, p)
+            throw new TODO();
+        }
+
+        @Override
+        public float get(int... cell) {
+            int x = cell[0];
+            int y = cell[1];
+
+            int p = img.getRGB(x, y);
+
+            int plane = cell[2];
+            switch (plane) {
+                case 0:
+                    return decodeRed(p);
+                case 1:
+                    return decodeGreen(p);
+                case 2:
+                    return decodeBlue(p);
+                case 3:
+                    return decodeAlpha(p);
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
+
+        @Override
+        public float[] snapshot() {
+            throw new TODO();
+        }
+
+        @Override
+        public int[] shape() {
+            return shape;
+        }
 
 
-
-
-
-
-
-
-
+    }
 }

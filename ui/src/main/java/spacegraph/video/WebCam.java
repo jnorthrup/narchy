@@ -9,12 +9,17 @@ import jcog.event.On;
 import jcog.event.Ons;
 import jcog.event.Topic;
 import jcog.math.tensor.AsyncTensor;
+import jcog.math.tensor.Tensor;
+import jcog.signal.Bitmap2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -97,6 +102,10 @@ public class WebCam {
 
 
                         eventChange.emit(we);
+
+                        if (!tensor.isEmpty()) {
+                            tensor.emit(new Bitmap2D.RGBTensor(nextImage));
+                        }
                     }
                 } else {
                     width = height = 0;
@@ -208,8 +217,49 @@ public class WebCam {
 
     }
 
+    static class ChannelView extends Gridding {
+        public final WebCam cam;
+        private volatile Tensor current = null;
+
+        ChannelView(WebCam cam, int channel) {
+            this.cam = cam;
+            BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y)->{
+                Tensor c = current;
+                if (c!=null) {
+                    float intensity = c.get(x, y, channel);
+                    switch (channel) {
+                        case 0:
+                            return Draw.rgbInt(intensity, 0, 0);
+                        case 1:
+                            return Draw.rgbInt(0, intensity, 0);
+                        case 2:
+                            return Draw.rgbInt(0, 0, intensity);
+                        default:
+                            throw new UnsupportedOperationException();
+
+                    }
+                }
+                return 0;
+            });
+            cam.tensor.on(x -> {
+               current = x;
+               bmp.update();
+            });
+
+            add(bmp);
+        }
+    }
+
     public static void main(String[] args) {
         WebCam wc = the();
-        window(new Splitting(new ObjectSurface(wc), new WebCamSurface(wc),  0.9f), 1000, 1000);
+
+        Gridding menu =new Gridding();
+        menu.add(new PushButton("++").click(()->{
+            window(new ChannelView(wc, 0), 400, 400);
+            window(new ChannelView(wc, 1), 400, 400);
+        }));
+
+        window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), new WebCamSurface(wc),  0.9f), 1000, 1000);
     }
+
 }
