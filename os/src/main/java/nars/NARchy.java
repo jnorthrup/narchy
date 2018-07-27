@@ -1,5 +1,6 @@
 package nars;
 
+import nars.audio.NARAudio;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.BufferedExec;
@@ -9,6 +10,7 @@ import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;
+import nars.video.NARVideo;
 import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 import static nars.Op.BELIEF;
@@ -78,6 +80,8 @@ public class NARchy extends NARS {
                 
             }
 
+            new NARVideo(nar);
+            new NARAudio(nar);
 
 
 

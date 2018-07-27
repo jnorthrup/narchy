@@ -9,7 +9,7 @@ import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.atom.Atom;
 import nars.time.Tense;
-import nars.truth.polation.LinearTruthPolation;
+import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
@@ -42,6 +42,7 @@ public abstract class Param {
     public static final float DerivedTaskBagDrainRate =
             //1f;
             0.5f;
+            //0.33f;
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
@@ -158,8 +159,8 @@ public abstract class Param {
      * creates instance of the default truthpolation implementation
      */
     public static TruthPolation truth(long start, long end, int dur) {
-        return new LinearTruthPolation(start, end, dur);
-        //return new FocusingLinearTruthPolation(start, end, dur);
+        //return new LinearTruthPolation(start, end, dur);
+        return new FocusingLinearTruthPolation(start, end, dur);
     }
 
     /**
@@ -201,11 +202,11 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**

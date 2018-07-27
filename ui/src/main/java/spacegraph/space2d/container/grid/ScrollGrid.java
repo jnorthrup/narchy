@@ -407,7 +407,7 @@ public class ScrollGrid<X> extends Bordering {
                 }
 
                 if (deleted) {
-                    boolean removed = cellMap.remove(cellID); assert(removed);
+                    boolean removed = cellMap.remove(cellID); //assert(removed);
                 }
             });
 

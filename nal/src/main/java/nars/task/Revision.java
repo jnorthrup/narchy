@@ -22,7 +22,6 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -64,14 +63,13 @@ public class Revision {
     }
 
 
-    /*@NotNull*/
     static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
         if (a.equals(b) && bOffset == 0)
             return a;
 
         if (a instanceof Atomic || b instanceof Atomic)
-            return null; //atomics differ
+            return Null; //atomics differ
 
         Op ao = a.op();
         Op bo = b.op();
@@ -90,13 +88,8 @@ public class Revision {
 
 
         if (ao.temporal) {
-
-
             if (ao == CONJ) {
-
-
                 return Conj.conjIntermpolate(a, b, aProp, bOffset, nar);
-
             } else if (ao == IMPL) {
                 return dtMergeDirect(a, b, aProp, curDepth, nar);
             } else
@@ -133,39 +126,32 @@ public class Revision {
     /*@NotNull*/
     private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
 
-
         depth /= 2f;
 
+        Term a0 = a.sub(0), a1 = a.sub(1), b0 = b.sub(0), b1 = b.sub(1);
+
         int dt = chooseDT(a, b, aProp, nar);
-
-        Term a0 = a.sub(0);
-        Term a1 = a.sub(1);
-
-        Term b0 = b.sub(0);
-        Term b1 = b.sub(1);
-
         if (a0.equals(b0) && a1.equals(b1)) {
             return a.dt(dt);
         } else {
             Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
-            if (na == null) return Null; //HACK
             if (na == Null || na == False) return na;
+
             Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
-            if (nb == null) return Null; //HACK
             if (nb == Null || nb == False) return nb;
+
+
             return a.op().the(dt, na, nb);
         }
 
     }
 
     public static int chooseDT(Term a, Term b, float aProp, NAR nar) {
-
         int adt = a.dt(), bdt = b.dt();
-
         return chooseDT(adt, bdt, aProp, nar);
     }
 
-    public static int chooseDT(int adt, int bdt, float aProp, NAR nar) {
+    static int chooseDT(int adt, int bdt, float aProp, NAR nar) {
         int dt;
         if (adt == bdt) {
             dt = adt;
@@ -176,7 +162,8 @@ public class Revision {
 
         } else if (adt == DTERNAL || bdt == DTERNAL) {
 
-            dt = choose(adt, bdt, aProp, nar.random());
+            dt = DTERNAL;
+            //dt = choose(adt, bdt, aProp, nar.random());
             //dt = (adt == DTERNAL) ? bdt : adt;
 
         } else {
@@ -188,22 +175,20 @@ public class Revision {
     }
 
     /** merge delta */
-    public static int merge(int adt, int bdt, float aProp, NAR nar) {
-        int dt;
+    static int merge(int adt, int bdt, float aProp, NAR nar) {
         if (((adt >= 0 == bdt >= 0) && ((float)(Math.abs(adt - bdt))/nar.dur() <= nar.intermpolationDurLimit.floatValue()))) {
             //merge if they are the same sign or within a some number of durations
 
             long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
             assert (Math.abs(abdt) < Integer.MAX_VALUE);
 
-            dt = (int) abdt;
+            return (int) abdt;
 
         } else {
             //different directions and exceed a duration in difference.
             //discard temporal information by resorting to eternity
-            dt = DTERNAL;
+            return DTERNAL;
         }
-        return dt;
     }
     /** merge occurrence */
     public static long merge(long at, long bt, float aProp, NAR nar) {
@@ -268,7 +253,7 @@ public class Revision {
     @Nullable
     public static Task merge(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
 
-        tasks = ArrayUtils.removeNulls(tasks, Task[]::new);
+//        tasks = ArrayUtils.removeNulls(tasks, Task[]::new);
 
         if (start == ETERNAL) {
             long minStart = MAX_VALUE;

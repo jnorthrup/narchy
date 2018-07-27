@@ -106,7 +106,7 @@ public interface DerivedTasks {
 
             if (s > 0) {
 
-                tasks.commit();
+                tasks.commit(null /* no forget */);
 
                 nar.input(derivedTasksDrainer);
             }

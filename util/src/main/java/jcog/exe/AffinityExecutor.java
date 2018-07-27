@@ -1,5 +1,6 @@
 package jcog.exe;
 
+import jcog.data.list.FasterList;
 import jcog.event.Off;
 import net.openhft.affinity.AffinityLock;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -101,20 +103,23 @@ public class AffinityExecutor implements Executor {
         execute(worker, count, true);
     }
 
-    public final void execute(Supplier<Runnable> worker, int count, boolean tryPin) {
+    public final <R extends Runnable> List<R> execute(Supplier<R> worker, int count, boolean tryPin) {
 
 
+        FasterList<R> l = new FasterList(count);
 
         for (int i = 0; i < count; i++) {
+            R w = worker.get();
+            l.add(w);
             AffinityThread at = new AffinityThread(
                     id + "_" + serial.getAndIncrement(),
-                    worker.get(),
+                    w,
                     tryPin);
             add(at);
 
             at.start();
         }
-
+        return l;
 
     }
 

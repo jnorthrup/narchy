@@ -50,8 +50,8 @@ public class DetailedReward extends Reward {
 
         {
              //TODO add these to On/Off
-            agent.alwaysWantEternally(concept.filter.get(0).term, nar.confDefault(GOAL));
-            agent.alwaysWantEternally(concept.filter.get(1).term, nar.confDefault(GOAL) * 0.75f ); //chronic
+            agent.alwaysWantEternally(concept.filter.get(0).term, nar.confDefault(GOAL) * 0.75f );
+            agent.alwaysWantEternally(concept.filter.get(1).term, nar.confDefault(GOAL));
             agent.alwaysWantEternally(concept.filter.get(2).term, nar.confDefault(GOAL) * 0.5f); //acute
             for (Signal x : concept.filter) {
                 ((DefaultBeliefTable) x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table

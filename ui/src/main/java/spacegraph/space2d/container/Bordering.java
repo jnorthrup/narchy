@@ -8,15 +8,15 @@ import spacegraph.space2d.Surface;
 
  */
 public class Bordering extends MutableContainer {
-    protected final static int C = 0;
-    protected final static int N = 1;
-    protected final static int S = 2;
+    public final static int C = 0;
+    public final static int N = 1;
+    public final static int S = 2;
     public final static int E = 3;
-    protected final static int W = 4;
-    protected final static int NE = 5;
-    private final static int NW = 6;
-    private final static int SW = 7;
-    private final static int SE = 8;
+    public final static int W = 4;
+    public final static int NE = 5;
+    public final static int NW = 6;
+    public final static int SW = 7;
+    public final static int SE = 8;
 
     /**
      * in percent of the half total size of the corresponding dimension

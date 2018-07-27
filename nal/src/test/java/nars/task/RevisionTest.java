@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class RevisionTest {
 
+    public final static Term x = $.the("x");
+
     static NAR newNAR(int fixedNumBeliefs) {
         //TODO
 //
@@ -40,35 +42,77 @@ public class RevisionTest {
 
     }
 
+    private static void printTaskLinks(BeliefAnalysis b) {
+        System.out.println("Tasklinks @ " + b.time());
+        b.tasklinks().print();
+    }
+
+    private static void permuteChoose(Compound a, Compound b, int dur, String expected) {
+        assertEquals(expected, permuteIntermpolations(a, b, dur).toString());
+    }
+
+    private static void permuteChoose(Compound a, Compound b, String expected) {
+        permuteChoose(a, b, 1, expected);
+    }
+
+    private static Set<Term> permuteIntermpolations(Term a, Term b) {
+        return permuteIntermpolations(a, b, 1);
+    }
+
+    private static Set<Term> permuteIntermpolations(Term a, Term b, int dur) {
+
+        NAR s = NARS.shell();
+        s.time.dur(dur);
+
+        assertEquals(a.concept(), b.concept(), "concepts differ: " + a + " " + b);
+
+
+
+        Set<Term> ss = new TreeSet();
+
+        int n = 10 * (a.volume() + b.volume());
+        for (int i = 0; i < n; i++) {
+            Term ab = Revision.intermpolate(a, b, s.random().nextFloat(), s);
+
+
+
+
+
+
+            ss.add(ab);
+        }
+
+        System.out.println(ss);
+
+        return ss;
+    }
+
     @Test
     void testBeliefRevision1() {
-        testRevision(1, true); 
+        testRevision(1, true);
     }
 
     @Test
     void testGoalRevision1() {
-        testRevision(32, false); 
+        testRevision(32, false);
     }
 
     @Test
     void testBeliefRevision32() {
-        testRevision(32, true); 
+        testRevision(32, true);
     }
 
     @Test
     void testGoalRevision32() {
-        testRevision(32, false); 
+        testRevision(32, false);
     }
-
-
-    public final static Term x = $.the("x");
 
     private void testRevision(int delay1, boolean beliefOrGoal) {
 
 
         NAR n = newNAR(6);
 
-        
+
 
         BeliefAnalysis b = new BeliefAnalysis(n, x)
             .input(beliefOrGoal, 1f, 0.9f).run(1);
@@ -79,7 +123,7 @@ public class RevisionTest {
 
         b.run(delay1);
 
-        
+
 
         b.table(beliefOrGoal).print();
         assertEquals( 3, b.size(beliefOrGoal));
@@ -94,7 +138,7 @@ public class RevisionTest {
     @Test
     void testTruthOscillation() {
 
-        NAR n = NARS.shell(); 
+        NAR n = NARS.shell();
 
         n.log();
 
@@ -102,21 +146,21 @@ public class RevisionTest {
 
         BeliefAnalysis b = new BeliefAnalysis(n, x);
 
-        
+
 
         b.believe(1.0f, 0.9f, Tense.Present);
         b.run(1);
-        
+
 
         b.run(1);
-        
+
 
         b.believe(0.0f, 0.9f, Tense.Present);
         b.run(1);
-        
+
 
         b.run(1);
-        
+
 
         b.print();
         assertEquals(2, b.size(true));
@@ -125,15 +169,14 @@ public class RevisionTest {
                 .believe(0.0f, 0.9f, Tense.Present);
 
         for (int i = 0; i < 16; i++) {
-            
-            
+
+
             n.run(1);
-            
+
         }
 
 
     }
-
 
     @Test
     void testTruthOscillation2() {
@@ -147,7 +190,7 @@ public class RevisionTest {
 
         BeliefAnalysis b = new BeliefAnalysis(n, x);
 
-        
+
 
         int period = 8;
         int loops = 4;
@@ -156,12 +199,12 @@ public class RevisionTest {
 
 
             b.run(period);
-            
+
 
             b.believe(0.0f, 0.9f, Tense.Present);
 
             b.run(period);
-            
+
             b.print();
         }
 
@@ -169,7 +212,7 @@ public class RevisionTest {
 
         b.print();
 
-        
+
     /*
     Beliefs[@72] 16/16
     <a --> b>. %0.27;0.98% [1, 2, 3, 4, 6] [Revision]
@@ -206,7 +249,7 @@ public class RevisionTest {
     @Test
     void testRevision3Eternals() throws Narsese.NarseseException {
         NAR n = newNAR(6);
-        
+
         n.input("(a). %1.0;0.5%",
                 "(a). %0.0;0.5%",
                 "(a). %0.1;0.5%"
@@ -231,7 +274,6 @@ public class RevisionTest {
         assertEquals(0.5f, t.freq(), 0.01f);
         assertEquals(0.947f, t.conf(), 0.01f);
     }
-
 
     @Test
     void testRevision2TemporalImpl() throws Narsese.NarseseException {
@@ -275,7 +317,7 @@ public class RevisionTest {
 
         printTaskLinks(b);        System.out.println("--------");
 
-        b.run(1); 
+        b.run(1);
         tasklinks.commit();
 
         printTaskLinks(b);        System.out.println("--------");
@@ -289,33 +331,28 @@ public class RevisionTest {
         float beliefAfter2;
         assertEquals(1.0f, beliefAfter2 = b.priSum(), 0.1f /* large delta to allow for forgetting */);
 
-        
 
-        assertEquals(0.71f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.06f); 
+
+        assertEquals(0.71f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.06f);
 
         b.print();
 
-        
+
         assertEquals(3, b.size(true));
 
-        
-        
 
-        assertEquals(beliefAfter2, b.priSum(), 0.01f); 
 
-        
-        
 
-        
-        
+        assertEquals(beliefAfter2, b.priSum(), 0.01f);
 
-        
 
-    }
 
-    private static void printTaskLinks(BeliefAnalysis b) {
-        System.out.println("Tasklinks @ " + b.time());
-        b.tasklinks().print();
+
+
+
+
+
+
     }
 
     @Test
@@ -325,13 +362,13 @@ public class RevisionTest {
         permuteChoose(a, b, "[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]");
     }
 
-
     @Test
     void testIntermpolation0b() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+1 (b &&+1 c))");
         permuteChoose(a, b, "[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+5 c), ((a &&+3 b) &&+3 c), ((a &&+2 c) &&+1 b)]");
     }
+
     @Test
     void testIntermpolationOrderMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(c &&+1 (b &&+1 a))");
@@ -343,7 +380,25 @@ public class RevisionTest {
     void testIntermpolationOrderPartialMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(a &&+1 (c &&+1 b))");
-        permuteChoose(a, b, "[((a &&+1 (b&|c)) &&+1 d), ((a &&+1 (b&|c)) &&+2 d), ((a &&+1 b) &&+1 (c&|d)), ((a &&+1 b) &&+1 (c &&+1 d))]");
+        permuteChoose(a, b, "[((a &&+1 b) &&+1 c), ((a &&+1 c) &&+1 b), (a &&+2 (b&|c)), (a &&+1 (b&|c))]");
+    }
+    @Test
+    void testIntermpolationImplSubjOppositeOrder() throws Narsese.NarseseException {
+        Compound a = $.$("((x &&+2 y) ==> z)");
+        Compound b = $.$("((y &&+2 x) ==> z)");
+        permuteChoose(a, b, "[((x&&y)==>z)]");
+    }
+    @Test
+    void testIntermpolationImplSubjOppositeOrder2() throws Narsese.NarseseException {
+        Compound a = $.$("((x &&+2 y) ==>+1 z)");
+        Compound b = $.$("((y &&+2 x) ==>+1 z)");
+        permuteChoose(a, b, "[((x&&y) ==>+1 z)]");
+    }
+    @Test
+    void testIntermpolationImplSubjImbalance() throws Narsese.NarseseException {
+        Compound a = $.$("((x &&+1 y) ==> z)");
+        Compound b = $.$("(((x &&+1 y) &&+1 x) ==> z)");
+        permuteChoose(a, b, "TODO");
     }
 
     @Test
@@ -354,20 +409,13 @@ public class RevisionTest {
         permuteChoose(a, b, expected);
     }
 
-    private static void permuteChoose(Compound a, Compound b, int dur, String expected) {
-        assertEquals(expected, permuteIntermpolations(a, b, dur).toString());
-    }
-
-    private static void permuteChoose(Compound a, Compound b, String expected) {
-        permuteChoose(a, b, 1, expected);
-    }
-
     @Test
     void testIntermpolationOrderMixDternalPre() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(a &&+1 (b && c))");
         permuteChoose(a, b, "[(a &&+1 (b&&c))]");
     }
+
     @Test
     void testIntermpolationOrderMixDternalPost() throws Narsese.NarseseException {
         Term e = $$("(a && (b &&+1 c))");
@@ -379,14 +427,12 @@ public class RevisionTest {
         permuteChoose(a, b, "[" + e + "]");
     }
 
-
     @Test
     void testIntermpolationWrongOrderSoDternalOnlyOption() throws Narsese.NarseseException {
         Compound a = $.$("(((right-->tetris) &&+5 (rotCW-->tetris)) &&+51 (tetris-->[happy]))");
         Compound b = $.$("(((tetris-->[happy])&&(right-->tetris)) &&+11 (rotCW-->tetris))");
         permuteChoose(a, b, "[(&&,(tetris-->[happy]),(right-->tetris),(rotCW-->tetris))]");
     }
-
 
     @Test
     void testIntermpolationOrderMixDternal2() throws Narsese.NarseseException {
@@ -401,12 +447,14 @@ public class RevisionTest {
         Compound b = $.$("((a && b) &&+1 (c &&+1 d))");
         permuteChoose(a, b, "[(((a&&b) &&+1 c) &&+1 d), (((a&&b) &&+1 c) &&+2 d), (((a&&b) &&+2 c) &&+1 d), ((a&&b) &&+2 (c&|d))]");
     }
+
     @Test
     void testIntermpolationOrderPartialMismatchReverse() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(b &&+1 (a &&+1 c))");
         permuteChoose(a, b, "[((a&&b) &&+1 c)]");
     }
+
     @Test
     void testIntermpolationOrderPartialMismatchReverse2() throws Narsese.NarseseException {
         Compound a = $.$("(b &&+1 (a &&+1 (c &&+1 d)))");
@@ -416,7 +464,6 @@ public class RevisionTest {
                 "[(((a&&c)&|b) &&+2 ((a&&c)&|d))]"
         );
     }
-
 
     @Test
     void testIntermpolationConj2OrderSwap() throws Narsese.NarseseException {
@@ -429,12 +476,14 @@ public class RevisionTest {
         permuteChoose(a, c, 4, "[(a&|b)]");
 
     }
+
     @Test
     void testIntermpolationImplDirectionMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(a ==>+1 b)");
         Compound b = $.$("(a ==>-1 b))");
         permuteChoose(a, b, "[(a==>b)]");
     }
+
     @Test
     void testIntermpolationImplDirectionDternalAndTemporal() throws Narsese.NarseseException {
         Compound a = $.$("(a ==>+1 b)");
@@ -454,7 +503,6 @@ public class RevisionTest {
         }
     }
 
-
     @Test
     void testIntermpolation2() throws Narsese.NarseseException {
         Compound f = $.$("(a &&+1 b)");
@@ -471,38 +519,6 @@ public class RevisionTest {
     void testIntermpolationInner() throws Narsese.NarseseException {
         permuteChoose($.$("(x --> (a &&+1 b))"), $.$("(x --> (a &| b))"),
                 "[(x-->(a&|b)), (x-->(a &&+1 b))]");
-    }
-
-    private static Set<Term> permuteIntermpolations(Term a, Term b) {
-        return permuteIntermpolations(a, b, 1);
-    }
-
-    private static Set<Term> permuteIntermpolations(Term a, Term b, int dur) {
-
-        NAR s = NARS.shell();
-        s.time.dur(dur);
-
-        assertEquals(a.concept(), b.concept(), "concepts differ: " + a + " " + b);
-
-        
-
-        Set<Term> ss = new TreeSet();
-
-        int n = 10 * (a.volume() + b.volume());
-        for (int i = 0; i < n; i++) {
-            Term ab = Revision.intermpolate(a, b, s.random().nextFloat(), s);
-
-            
-
-
-
-
-            ss.add(ab);
-        }
-
-        System.out.println(ss);
-
-        return ss;
     }
 
     @Test

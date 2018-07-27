@@ -40,14 +40,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     private final InstrumentedLoop updater;
     private final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
-    public float renderFPS = 30f;
+    public float renderFPS = 32f;
     public volatile GLWindow window;
     public GL2 gl;
     /**
      * update time since last cycle (S)
      */
     public float dtS = 0;
-    private float updateFPS = 30f;
+    public final Topic<JoglWindow> eventClosed = new ListTopic<>();
+    private float updateFPS = 32f;
     /**
      * render loop
      */
@@ -122,7 +123,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         GLCapabilities config = new GLCapabilities(
 
 
-                GLProfile.get(GLProfile.GL2)
+                GLProfile.getGL2GL3()
+                //GLProfile.getDefault()
+                //GLProfile.get(new String[] { GLProfile.GL2ES2 }, true)
+                //GLProfile.getMinimum(true)
 
 
         );
@@ -205,6 +209,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public void windowDestroyNotify(WindowEvent windowEvent) {
         renderer.stop();
         updater.stop();
+        eventClosed.emit(this);
     }
 
     @Override
@@ -254,9 +259,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public final void display(GLAutoDrawable drawable) {
-
-//            if (gl == null)
-//                gl = drawable.getGL().getGL2();
 
         long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
         if (renderDTMS > Integer.MAX_VALUE) renderDTMS = Integer.MAX_VALUE;
@@ -365,10 +367,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         this.gl = gl;
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
-
             gl.setSwapInterval(1);
         } else {
-            gl.setSwapInterval(4);
+            gl.setSwapInterval(2); //lower framerate
         }
 
 
@@ -538,7 +539,7 @@ class GameAnimatorControl extends AnimatorBase {
     }
 
     @Override
-    public synchronized final boolean isStarted() {
+    public final boolean isStarted() {
         return loop.isRunning();
     }
 

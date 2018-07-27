@@ -97,7 +97,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
         if (peer == null) return 0; //HACK TODO
 
         if (!peer.connected())
-            return -1;
+            return 0;
 
         return super.next(nar, iterations);
     }
@@ -193,9 +193,9 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     }
 
     public void runFPS(float fps) {
-        nar.runLater(()->{
+        //nar.runLater(()->{
         peer.setFPS(fps);
-        });
+        //});
     }
 
     public InetSocketAddress addr() {

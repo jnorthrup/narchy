@@ -63,7 +63,7 @@ public class ProtoWidget extends Widget {
         add("Keyboard", TODO, "Hardware");
         add("Mouse", TODO, "Hardware");
         add("Gamepad", TODO, "Hardware");
-        add("WebCam", ()->new WebCam().view(), "Hardware");
+        add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Hardware");
         add("Microphone", ()->{
             {
                 WaveCapture au = new WaveCapture(new AudioSource(20));

@@ -84,7 +84,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             if (eTotal < Param.TRUTH_MIN_EVI) {
                 tc.evi = -1;
-                return null; 
+                return null;
             } else {
                 tc.freq = task.freq(start, end);
                 tc.evi = eTotal;
@@ -107,11 +107,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         int s = size();
 
         if (s > 1) {
-            sortThisByFloat(tc -> -tc.evi); 
-            
+            sortThisByFloat(tc -> -tc.evi);
+
 
             if (s == 2) {
-                
+
                 if (Stamp.overlapsAny(get(0).task.stamp(), get(1).task.stamp())) {
                     remove(1);
                 }
@@ -121,7 +121,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         if (s == 1)
             return Stamp.toSet(get(0).task);
 
-        
 
         LongHashSet e = new LongHashSet(s * 4);
         removeIf(tc -> {
@@ -130,7 +129,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             for (long ss : stamp) {
                 if (!e.add(ss))
-                    return true; 
+                    return true;
             }
 
 
@@ -185,14 +184,14 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             } else {
                 if (!first.equals(ttt)) {
                     if (second != null) {
-                        
+
                         removeAbove(i);
                         break;
                     } else {
                         second = ttt;
                     }
                 }
-                
+
 
             }
         }
@@ -207,26 +206,25 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             Term b = second.term();
 
 
-
             float diff = dtDiff(a, b);
             if (!Float.isFinite(diff))
-                return 0; 
+                return 0;
             if (diff > 0) {
                 differenceFactor = (float) Param.evi(1f,
                         diff / 2f /* /2 since it is shared between the two */,
-                        Math.max(1, dur) /* cant be zero */); 
+                        Math.max(1, dur) /* cant be zero */);
             } else {
-                
-                
+
+
                 differenceFactor = 1f;
             }
 
-            Term finalFirst = first;
+            Term theFirst = first;
             Term finalSecond = second;
             float e1, e2;
-            if(size() > 2) {
-                
-                e1 = (float) sumOfFloat(x -> x.task.term().equals(finalFirst) ? x.evi : 0);
+            if (size() > 2) {
+
+                e1 = (float) sumOfFloat(x -> x.task.term().equals(theFirst) ? x.evi : 0);
                 e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.evi : 0);
             } else {
                 e1 = get(0).evi;
@@ -236,49 +234,32 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             Term term = Revision.intermpolate(first, second, firstProp, nar);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
-
             if (Task.taskConceptTerm(term)) {
-                this.term = term;
-                return differenceFactor;
+                if (count(t -> !t.task.term().equals(theFirst)) > 1) {
+                    //remove any that are different and just combine what matches the first
+                    removeIfTermDiffers(theFirst);
+                    return 1;
+                } else {
+                    this.term = term;
+                    return differenceFactor;
+                }
             } else {
-                removeIf(t -> !t.task.term().equals(finalFirst));
-                this.term = first;
+                removeIfTermDiffers(theFirst);
                 return 1f;
             }
         }
 
 
+    }
 
-
-
-
-
-
-
-
-
-
+    private void removeIfTermDiffers(Term theFirst) {
+        removeIf(t -> !t.task.term().equals(theFirst));
+        this.term = theFirst;
     }
 
     public byte punc() {
         if (isEmpty()) throw new RuntimeException();
-        return get(0).task.punc(); 
+        return get(0).task.punc();
     }
 
     public TaskRegion[] tasks() {
@@ -319,368 +300,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             return f == f;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

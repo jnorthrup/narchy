@@ -8,15 +8,18 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Ons;
 import jcog.event.Topic;
+import jcog.math.tensor.AsyncTensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.SpaceGraph;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import static spacegraph.SpaceGraph.window;
 
 
 /**
@@ -34,21 +37,20 @@ public class WebCam {
 
     private com.github.sarxos.webcam.Webcam webcam;
 
-    private final Topic<WebcamEvent> eventChange = new ListTopic();
+    private final Ons webcamListeners = new Ons();
 
+    public final Topic<WebcamEvent> eventChange = new ListTopic();
+
+    public final AsyncTensor tensor = new AsyncTensor();
 
     private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
-    public BufferedImage image;
 
-
-    public WebCam() {
-        this(Webcam.getDefault());
-    }
+    public volatile BufferedImage image;
 
     public WebCam(Webcam wc) {
 
-        logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
 
+        //logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
 
         webcam = wc;
 
@@ -106,6 +108,12 @@ public class WebCam {
 
     }
 
+    /** returns the default webcam, or null if none exist */
+    public static WebCam the() {
+        Webcam defaultf = Webcam.getDefault();
+        return defaultf == null ? null : new WebCam(defaultf);
+    }
+
 //    public static void convertFromInterleaved(BufferedImage src, InterleavedU8 dst) {
 //
 //        final int width = src.getWidth();
@@ -132,8 +140,6 @@ public class WebCam {
 //    }
 
 
-    private Ons webcamListeners = new Ons();
-
     public void on(WebcamListener wl) {
         webcamListeners.add(new On() {
             {
@@ -149,25 +155,36 @@ public class WebCam {
     }
 
 
-    public class WebCamSurface extends AspectAlign {
+    static public class WebCamSurface extends AspectAlign {
 
 
         private final Tex ts;
+        private final WebCam webcam;
         private On on;
 
-        WebCamSurface(Tex ts) {
-            super(ts.view(), ((float) webcam.getViewSize().getHeight()) / ((float) webcam.getViewSize().getWidth()));
+        public WebCamSurface(WebCam wc) {
+            this(wc, new Tex());
+        }
+
+        WebCamSurface(WebCam webcam, Tex ts) {
+            super(ts.view(), ((float) webcam.webcam.getViewSize().getHeight()) / ((float) webcam.webcam.getViewSize().getWidth()));
             this.ts = ts;
+            this.webcam = webcam;
         }
 
         @Override
         public boolean start(SurfaceBase parent) {
             if (super.start(parent)) {
-                on = eventChange.on(x -> {
-                    if (x.getType() == WebcamEventType.CLOSED || x.getType() == WebcamEventType.DISPOSED) {
-                        this.stop();
-                    } else if (x.getType() == WebcamEventType.NEW_IMAGE) {
-                        ts.update(image);
+                on = webcam.eventChange.on(x -> {
+                    WebcamEventType t = x.getType();
+                    switch (t) {
+                        case CLOSED:
+                        case DISPOSED:
+                            this.stop();
+                            break;
+                        case NEW_IMAGE:
+                            ts.update(webcam.image);
+                            break;
                     }
                 });
                 return true;
@@ -187,34 +204,12 @@ public class WebCam {
 
     }
 
-    public Surface view() {
-
-        return new WebCamSurface(new Tex());
-
-
-    }
-
-
-    public static void main(String[] args) {
-
-        final WebCam w = new WebCam();
-        SpaceGraph.window(
-
-                w.view(), 1200, 1200);
-
-
-    }
-
-    /**
-     * after webcam input
-     */
-    protected static BufferedImage process(BufferedImage img) {
-        return img;
-    }
-
     public void stop() {
 
     }
 
-
+    public static void main(String[] args) {
+        WebCam wc = the();
+        window(new Splitting(new ObjectSurface(wc), new WebCamSurface(wc),  0.9f), 1000, 1000);
+    }
 }

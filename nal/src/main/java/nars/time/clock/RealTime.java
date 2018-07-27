@@ -68,6 +68,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public final void cycle(NAR n) {
+        //last = t.getAndSet(realtime() - start);
         last = t.getAndSet(Tense.dither(realtime(),n) - Tense.dither(start, n));
     }
 

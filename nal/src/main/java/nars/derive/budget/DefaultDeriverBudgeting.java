@@ -26,7 +26,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
      */
     public final FloatRange evidenceImportance = new FloatRange(1f, 0f, 1f);
 
-    public final FloatRange relGrowthExponent = new FloatRange(3.5f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
 
     @Override
     public float pri(Task t, Derivation d) {

@@ -446,8 +446,8 @@ public class Conj extends ByteAnonMap {
             ) {
                 return what.eventsWhile(this::add,
                         at,
-                        dt != DTERNAL,
-                        dt == DTERNAL,
+                        true,//dt != DTERNAL,
+                        true,//dt == DTERNAL,
                         false, 0);
             }
         }
@@ -865,29 +865,29 @@ public class Conj extends ByteAnonMap {
 
         TreeSet<Term> pt = null, t = null;
 //        do {
-            pt = t;
-            t = new TreeSet<>();
-            final boolean[] negatives = {false};
-            if (b != null) {
-                for (byte x : b) {
-                    if (x == 0)
-                        break;
-                    Term s = sub(x, negatives, validator);
-                    if (s == Null || s == False) {
-                        return s;
-                    }
-                    t.add(s);
+        pt = t;
+        t = new TreeSet<>();
+        final boolean[] negatives = {false};
+        if (b != null) {
+            for (byte x : b) {
+                if (x == 0)
+                    break;
+                Term s = sub(x, negatives, validator);
+                if (s == Null || s == False) {
+                    return s;
                 }
-            } else {
-                TreeSet<Term> tt = t;
-                rb.forEach((int termIndex) ->
-                        tt.add(sub(termIndex, negatives, validator))
-                );
+                t.add(s);
             }
+        } else {
+            TreeSet<Term> tt = t;
+            rb.forEach((int termIndex) ->
+                    tt.add(sub(termIndex, negatives, validator))
+            );
+        }
 
-            if (negatives[0]) {
-                factorDisj(t, when);
-            }
+        if (negatives[0]) {
+            factorDisj(t, when);
+        }
 
 //        } while (!t.equals(pt));
 
@@ -951,7 +951,6 @@ public class Conj extends ByteAnonMap {
                 }
 
 
-
                 Term z;
                 if (t.size() > 1) {
                     Term[] tt = t.toArray(Op.EmptyTermArray); /* sorted iff t is SortedSet */
@@ -966,7 +965,7 @@ public class Conj extends ByteAnonMap {
 ////                            if (when == 0 && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()!=DTERNAL))
 //                            //return CONJ.the(dt, tt);
 ////                            else
-                                return Op.compoundExact(CONJ, dt, tt);
+                        return Op.compoundExact(CONJ, dt, tt);
 //                        }
                     } else {
 //                        boolean complex = false;
@@ -987,8 +986,8 @@ public class Conj extends ByteAnonMap {
                 }
 
                 if (theSequence != null) {
-                    if (theSequence.dt()==dt) {
-                        SortedSet<Term> x =theSequence.subterms().toSetSorted();
+                    if (theSequence.dt() == dt) {
+                        SortedSet<Term> x = theSequence.subterms().toSetSorted();
                         x.add(z);
                         return Op.compoundExact(CONJ, dt, theSequence, z); //concatenate in parallel
                     } else {
@@ -1143,7 +1142,7 @@ public class Conj extends ByteAnonMap {
                             return;
                         }
 
-                        if (f!=True)
+                        if (f != True)
                             csa.add(f);
                     }
 
@@ -1261,23 +1260,56 @@ public class Conj extends ByteAnonMap {
 
             this.b = b;
             this.nar = nar;
+
             this.aa = Conj.from(a);
+//            this.idToTerm.addAll(aa.idToTerm);
+//            this.termToId.putAll(aa.termToId);
+
             this.aProp = aProp;
             add(bOffset, b);
+
+//            //merge remaining events from 'a'
+//            final boolean[] err = {false};
+//            aa.event.forEachKeyValue((long when, Object wat) -> {
+//                if (err[0])
+//                    return; //HACK
+//                if (wat instanceof RoaringBitmap) {
+//                    RoaringBitmap r = (RoaringBitmap) wat;
+//                    r.forEach((int ri) -> {
+//                        boolean neg = (ri < 0);
+//                        if (neg) ri = -ri;
+//                        if (!add(when, idToTerm.get(ri-1).negIf(neg))) {
+//                            err[0] = true;
+//                        }
+//                    });
+//                } else {
+//                    byte[] ii = (byte[]) wat;
+//                    for (byte ri : ii) {
+//                        if (ri == 0)
+//                            break; //eol
+//                        boolean neg = (ri < 0);
+//                        if (neg) ri = (byte) -ri;
+//                        if (!add(when, idToTerm.get(ri-1).negIf(neg))) {
+//                            err[0] = true;
+//                        }
+//                    }
+//                }
+//            });
         }
 
         @Override
         public boolean add(long bt, final Term what) {
             assert (bt != XTERNAL);
 
-
-            if (what == b)
-                return super.add(bt, what);
-            else {
+            {
                 boolean neg = what.op() == NEG;
 
 
-                byte tInA = (byte) ((aa.termToId.get(neg ? what.unneg() : what) + 1) * (neg ? -1 : +1));
+                byte tid = termToId.getIfAbsent(neg ? what.unneg() : what, (byte) -1);
+                if (tid == (byte) -1)
+                    return super.add(bt, what);
+
+                byte tInA = (byte) (tid * (neg ? -1 : +1));
 
 
                 LongArrayList whens = new LongArrayList(2);
@@ -1296,28 +1328,48 @@ public class Conj extends ByteAnonMap {
                     }
                 });
 
+
                 int ws = whens.size();
-                if (ws == 0) {
-                    return super.add(bt, what);
-                }
+                if (ws > 0) {
 
-                long at;
-                if (ws > 1) {
-                    LongToLongFunction temporalDistance;
-                    if (bt == ETERNAL) {
-                        temporalDistance = (a) -> a == ETERNAL ? 0 : Long.MAX_VALUE;
+                    if (whens.contains(bt))
+                        return true;
+
+                    long at;
+                    if (ws > 1) {
+                        LongToLongFunction temporalDistance;
+                        if (bt == ETERNAL) {
+                            temporalDistance = (a) -> a == ETERNAL ? 0 : Long.MAX_VALUE;
+                        } else {
+                            temporalDistance = (a) -> a == ETERNAL ? Long.MAX_VALUE : Math.abs(bt - a);
+                        }
+                        long[] whensArray = whens.toArray();
+                        ArrayUtils.sort(whensArray, temporalDistance);
+
+                        at = whensArray[whensArray.length - 1];
                     } else {
-                        temporalDistance = (a) -> a == ETERNAL ? Long.MAX_VALUE : Math.abs(bt - a);
+                        at = whens.get(0);
                     }
-                    long[] whensArray = whens.toArray();
-                    ArrayUtils.sort(whensArray, temporalDistance);
 
-                    at = whensArray[whensArray.length - 1];
-                } else {
-                    at = whens.get(0);
+                    long merged = merge(at, bt);
+                    if (merged != at) {
+
+                        if ((merged == DTERNAL || merged == XTERNAL) && (at != DTERNAL && bt != DTERNAL && at != XTERNAL && bt != XTERNAL)) {
+                            //add as unique event (below)
+                        } else {
+                            boolean r = aa.remove(what, at); //remove original add the new merged
+                            if (!r) {
+                                assert (r);
+                            }
+                            return super.add(merged, what);
+                        }
+
+                    } else {
+                        return true; //exact
+                    }
                 }
+                return super.add(bt, what);
 
-                return super.add(merge(at, bt), what);
             }
 
         }

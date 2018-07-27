@@ -1,18 +1,23 @@
 package spacegraph.space2d.widget.meta;
 
+import com.jogamp.opengl.GL2;
 import jcog.event.On;
 import jcog.service.Service;
 import jcog.service.Services;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.GridModel;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.ScrollGrid;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.text.Label;
+import spacegraph.video.Draw;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 public class ServicesTable extends Gridding implements GridModel, ScrollGrid.GridRenderer {
@@ -86,7 +91,9 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
             Service s = services.get(y);
             switch (x) {
                 case 0: {
-                    return new PushButton(s.toString());
+                    return new Bordering(
+                            new Label(s.toString())
+                    ).set(Bordering.W, new ServiceToggle(context, s));
                 }
                 case 1: {
                     return new ObjectSurface<>(s);
@@ -98,6 +105,29 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
         return null;
     }
 
+    static class ServiceToggle extends Gridding {
+
+        final Service s;
+
+        ServiceToggle(Services n, Service s) {
+            this.s = s;
+            set(
+                new PushButton("On").click(()->s.start(n, ForkJoinPool.commonPool())),
+                new PushButton("Off").click(()->s.stop(n, ForkJoinPool.commonPool(), ()->{}))
+            );
+        }
+
+        @Override
+        protected void paintBelow(GL2 gl) {
+            if (s.isOff()) {
+                Draw.rectRGBA(bounds, 1, 0, 0, 0.5f, gl);
+            } else if (s.isOn()) {
+                Draw.rectRGBA(bounds, 0, 1, 0, 0.6f, gl);
+            } else {
+              //..
+            }
+        }
+    }
     @Override
     public Surface apply(int x, int y, Object value) {
         return (Surface)value;

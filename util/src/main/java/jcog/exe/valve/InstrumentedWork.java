@@ -2,6 +2,7 @@ package jcog.exe.valve;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import static java.lang.System.nanoTime;
@@ -80,7 +81,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
             iterationsThisCycle += ran;
         } else {
             if (ran < 0)
-                throw new UnsupportedOperationException();
+                throw new WTF();
         }
         return ran;
     }

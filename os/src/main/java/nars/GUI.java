@@ -2,7 +2,6 @@ package nars;
 
 import jcog.User;
 import jcog.data.list.FasterList;
-import jcog.exe.Loop;
 import nars.gui.NARui;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
@@ -14,11 +13,12 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.windo.Dyn2DSurface;
-import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+
+import static spacegraph.SpaceGraph.window;
 
 /**
  * main UI entry point
@@ -32,23 +32,19 @@ public class GUI {
 
         NAR nar = NARchy.ui();
 
-        Loop loop = nar.startFPS(10f);
 
-        nar.runLater(()-> {
-
-
-            logger.info("start SpaceGraph UI");
+        logger.info("start SpaceGraph UI");
 
 
-            SpaceGraph.window(new Widget(NARui.top(nar)), 1024, 800);
-
-
+        window(NARui.top(nar), 1024, 800).eventClosed.on(() -> {
+            nar.reset();
         });
-        
 
+        nar.startFPS(10f);
 
-
-
+//            window(new Gridding(
+//                    List.of("")
+//            ), 500, 500);
 
 
     }
@@ -60,7 +56,9 @@ public class GUI {
         w.frame(NARui.top(nar), 4, 4);
     }
 
-    /** TODO further abstract this as the prototype for other async models */
+    /**
+     * TODO further abstract this as the prototype for other async models
+     */
     static class LuceneQueryModel extends OmniBox.Model {
 
         private final User user;
@@ -68,6 +66,7 @@ public class GUI {
         public LuceneQueryModel() {
             this(User.the());
         }
+
         public LuceneQueryModel(User u) {
             super();
             this.user = u;
@@ -89,7 +88,7 @@ public class GUI {
 
             public Querying start() {
                 if (query.get() == this) {
-                    
+
                     user.run(this);
                 }
                 return this;
@@ -97,14 +96,14 @@ public class GUI {
 
             @Override
             public boolean test(User.DocObj docObj) {
-                
-                if (query.get()!=this)
+
+                if (query.get() != this)
                     return false;
                 else {
                     Document d = docObj.doc();
                     Result r = new Result(d);
                     Surface s = result(r);
-                    if (query.get()==this) {
+                    if (query.get() == this) {
                         results.add(r);
                         target.add(s);
                         return true;
@@ -124,7 +123,6 @@ public class GUI {
             }
 
 
-
             private Surface result(Result r) {
                 return new PushButton(r.id);
             }
@@ -138,18 +136,16 @@ public class GUI {
             public final String id;
             public final String type;
             final Document doc;
-            
+
 
             Result(Document doc) {
                 this.doc = doc;
                 this.id = doc.get("i");
                 switch (this.type = doc.get("c")) {
                     case "blob":
-                        
+
                         break;
                 }
-
-
 
 
             }
@@ -174,7 +170,7 @@ public class GUI {
                     qq.start();
                 }
             }
-            if (prev!=null)
+            if (prev != null)
                 prev.clear();
 
         }

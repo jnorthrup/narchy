@@ -50,7 +50,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     }
 
     public boolean update() {
-        if (src==null || !busy.compareAndSet(false, true))
+        if (src==null || !busy.weakCompareAndSetAcquire(false, true))
             return false;
 
         try {
@@ -97,11 +97,9 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     }
 
 
-
+    /** compose */
     public <Y> Iterable<Y> iterable(Function<X, Y> f) {
-        return ()->{
-            return Iterators.transform(this.iterator(), (b)->f.apply(b.get()));
-        };
+        return ()-> Iterators.transform(this.iterator(), (b)->f.apply(b.get()));
     }
 
 

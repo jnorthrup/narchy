@@ -507,7 +507,7 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .goal("x", Tense.Present, 1f, 0.9f)
-                .believe("(x==>+3y)")
+                .believe("(x ==>+3 y)")
                 .mustGoal(cycles, "y", 1f, 0.81f, 3)
         
         ;

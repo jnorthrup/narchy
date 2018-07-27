@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.Sets;
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.event.Ons;
 import jcog.math.FloatRange;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -67,7 +69,7 @@ public class ObjectSurface<X> extends Gridding {
             List<Surface> l = new FasterList();
             collect(obj, l, 0);
 
-            set(l);
+            set( new ObjectMetaFrame(obj, new Gridding(l)));
             return true;
         }
         return false;
@@ -136,9 +138,7 @@ public class ObjectSurface<X> extends Gridding {
         } else if (x instanceof IntRange) {
             target.add(new MyIntSlider((IntRange) x, yLabel));
         } else if (x instanceof AtomicBoolean) {
-            target.add(new CheckBox(yLabel, (AtomicBoolean) x));
-
-
+            target.add(new MyAtomicBooleanCheckBox(yLabel, (AtomicBoolean) x));
         } else if (x instanceof Runnable) {
             target.add(new PushButton(yLabel, (Runnable) x));
         } else if (x instanceof MutableEnum) {
@@ -194,7 +194,27 @@ public class ObjectSurface<X> extends Gridding {
         for (Object o : x) {
             collect(o, m, depth);
         }
-        return !m.isEmpty() ? grid(m) : null;
+        return !m.isEmpty() ? new ObjectMetaFrame(x, grid(m)) : null;
+    }
+
+    public static class ObjectMetaFrame extends MetaFrame {
+        public final Object instance;
+        public final Surface surface;
+
+        public ObjectMetaFrame(Object instance, Surface surface) {
+            super(surface);
+            if (instance instanceof Surface)
+                throw new TODO();
+            this.instance = instance;
+            this.surface = surface;
+        }
+
+        protected String name(Surface widget) {
+            return instance!=null ?  instance.toString() : "";
+        }
+
+
+        //TODO other inferred features
     }
 
     @Override
@@ -287,6 +307,21 @@ public class ObjectSurface<X> extends Gridding {
         }
     }
 
+    private static class MyAtomicBooleanCheckBox extends CheckBox {
+        final AtomicBoolean a;
+
+        public MyAtomicBooleanCheckBox(String yLabel, AtomicBoolean x) {
+            super(yLabel, x);
+            this.a = x;
+        }
+
+        @Override
+        public boolean prePaint(SurfaceRender r) {
+            set((a.getOpaque())); //load
+            return super.prePaint(r);
+        }
+    }
+
     private class AutoServices extends Widget {
         AutoServices(Services<?, ?> x) {
 
@@ -311,7 +346,7 @@ public class ObjectSurface<X> extends Gridding {
 
             });
 
-            content(new Gridding(l));
+            content(new ObjectMetaFrame(x, new Gridding(l)));
         }
     }
 

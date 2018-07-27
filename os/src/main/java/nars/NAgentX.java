@@ -24,6 +24,7 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
@@ -103,7 +104,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(256))
+                .attention(() -> new Attention(1024))
 
                 //.exe(new UniExec() {
                 .exe(new BufferedExec.WorkerExec(Util.concurrency(), false /* true */))
@@ -128,7 +129,7 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(32 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new CaffeineIndex(64 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         //new HijackConceptIndex(128 * 1024, 4)
 
 
@@ -154,13 +155,13 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-//                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
-//                        Derivers.nal(n, 6, 8, "motivation.nal")) {
+                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
+                        Derivers.nal(n, 6, 8, "motivation.nal")) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
 //                        return conclusion == GOAL ? 1 : 0.1f;
 //                    }
-//                };
+                };
 
 
                 //Gridding aa = new Gridding(
@@ -215,12 +216,7 @@ abstract public class NAgentX extends NAgent {
             nar.activateConceptRate.set(Util.lerp(f, 0.1f, 0.99f));
         });
         m.senseNumber($.func("busy", a.id), new FloatNormalized(()->
-                (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1) {
-            @Override
-            public float asFloat() {
-                return super.asFloat();
-            }
-        }.relax(0.05f));
+                (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
 
         for (Sensor s : a.sensors) {
             if (!(s instanceof Signal)) { //HACK only if compound sensor
@@ -285,7 +281,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(36);
 
         n.forgetRate.set(0.75f);
         n.activateConceptRate.set(0.9f);
@@ -294,17 +290,17 @@ abstract public class NAgentX extends NAgent {
         n.beliefConfDefault.set(0.99f);
         n.goalConfDefault.set(0.9f);
 
-        n.beliefPriDefault.set(0.35f);
-        n.goalPriDefault.set(0.75f);
+        n.beliefPriDefault.set(0.2f);
+        n.goalPriDefault.set(0.7f);
 
         n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.2f);
+        n.questPriDefault.set(0.15f);
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
         n.emotion.want(MetaGoal.Believe, +0.01f);
-        n.emotion.want(MetaGoal.Answer, +0.01f);
-        n.emotion.want(MetaGoal.Desire, +0.01f);
-        n.emotion.want(MetaGoal.Action, +0.02f);
+        n.emotion.want(MetaGoal.Answer, +0.05f);
+        n.emotion.want(MetaGoal.Desire, +0.25f);
+        n.emotion.want(MetaGoal.Action, +0.5f);
     }
 
     public static void initPlugins(NAR n) {
@@ -316,7 +312,7 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 7, 8));
         new MatrixDeriver(Derivers.nal(n, 0, 0, "motivation.nal"));
 
-        //new STMLinkage(n, 1, false);
+        new STMLinkage(n, 1, false);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
@@ -326,12 +322,12 @@ abstract public class NAgentX extends NAgent {
         Inperience inp = new Inperience(n, 32);
 
 
-//        try {
-//            InterNAR i = new InterNAR(n, 8, 0);
-//            i.runFPS(4);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            InterNAR i = new InterNAR(n, 8, 0);
+            i.runFPS(4);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
     }

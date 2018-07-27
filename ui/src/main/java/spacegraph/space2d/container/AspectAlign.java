@@ -85,58 +85,66 @@ public class AspectAlign extends UnitContainer {
         float aspect = this.aspect;
         if (aspect == aspect /* not NaN */) {
 
-            if (th > tw/aspect) {
-
-                    
-                    
-                    th = tw * aspect;
-
-
-
-                    
-                
+            if (otw * tw / aspect >= oth * th * aspect) {
+                tw = otw;
+                th = otw * aspect;
+            } else {
+                th = oth;
+                tw = oth / aspect;
             }
-            if (tw * aspect < th) {
 
-                    
-                    tw = th / aspect;
-                    
-
-
-
-
-            } else if (tw/aspect > th) {
-                
-                tw = th * aspect;
-            }
-            
-
-
-
-
-
-
-
-
+//            if (th > tw/aspect) {
+//
+//
+//
+//                    th = tw * aspect;
+//
+//
+//
+//
+//
+//            }
+//            if (tw * aspect < th) {
+//
+//
+//                    tw = th / aspect;
+//
+//
+//
+//
+//
+//            } else if (tw/aspect > th) {
+//
+//                tw = th * aspect;
+//            }
+//
+//
+//
+//
+//
+//
+//
+//
+//
             if (tw > otw) {
-                
+
                 th = otw/(tw/th);
                 tw = otw;
             }
             if (th > oth) {
-                
+
                 tw = oth/(th/tw);
                 th = oth;
             }
-
-
-
-
-
-
-
-
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
         }
 

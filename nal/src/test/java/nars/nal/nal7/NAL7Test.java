@@ -141,11 +141,20 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    void testConjDecomposeParallelGoal() {
+    void testConjDecomposeGoalPar() {
         test
                 .inputAt(1, "(a &| b)! :|:")
                 .mustGoal(cycles, "a", 1.00f, 0.81f, 1)
                 .mustGoal(cycles, "b", 1.00f, 0.81f, 1)
+        ;
+    }
+
+    @Test
+    void testConjDecomposeGoalSeq() {
+        test
+                .inputAt(1, "(a &&+1 b)! :|:")
+                .mustGoal(cycles, "a", 1.00f, 0.81f, 1)
+                .mustGoal(cycles, "b", 1.00f, 0.81f, 2)
         ;
     }
 
@@ -584,7 +593,7 @@ public class NAL7Test extends NALTest {
         tester.inputAt(t, component + ". :|:");
         tester.inputAt(t + dt, "enter(John,room). :|:");
 
-        tester.mustBelieve((6 * (t + Math.max(2, dt)) + Math.max(2, dt) + 1) /** approx */,
+        tester.mustBelieve((6 * (t + Math.max(3, dt)) + Math.max(3, dt) + 1) /** approx */,
                 "(" + component + " ==>+" + dt + " enter(John,room))",
                 1.00f, 0.45f,
                 t);

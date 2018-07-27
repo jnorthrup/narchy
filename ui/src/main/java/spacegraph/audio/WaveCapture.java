@@ -10,7 +10,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.meter.audio.WaveAnalyzer;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.video.Draw;
 
@@ -34,16 +33,13 @@ public class WaveCapture extends Loop {
 
 
     @Deprecated
-    private final int freqSamplesPerFrame = 8;
+    private final int freqSamplesPerFrame = 16;
     @Deprecated
     private final int historyFrames = 16;
-    /**
-     * holds the normalized value of the latest data
-     */
-    @Deprecated
-    public float[] dataNorm = new float[freqSamplesPerFrame];
+
     @Deprecated
     public float[] data = new float[historyFrames * freqSamplesPerFrame];
+    private volatile float dataMax, dataMin;
 
 
     public Surface view() {
@@ -128,7 +124,7 @@ public class WaveCapture extends Loop {
                     return 1f / (1f + Math.abs(k - centerFreq) / (bandWidth / sensitivity));
                 };
 
-                System.arraycopy(data, 0, data, freqSamplesPerFrame, lastFrameIdx);
+                System.arraycopy(data, freqSamplesPerFrame, data, 0, lastFrameIdx);
 
 
                 float[] data = WaveCapture.this.data;
@@ -139,22 +135,23 @@ public class WaveCapture extends Loop {
 
                     float s = 0;
                     for (int k = 0; k < samples; k++) {
-                        float fk = freqSamples[k];
-                        s += uniform.apply(i, k) * fk;
+                        s += uniform.apply(i, k) * freqSamples[k];
                     }
                     if (s > max)
                         max = s;
                     if (s < min)
                         min = s;
 
-                    data[i] = s;
+                    data[i+lastFrameIdx] = s;
                 }
+                dataMin = min;
+                dataMax = max;
 
-                if (max != min) {
-                    float range = max - min;
-                    for (int i = 0; i < freqSamplesPerFrame; i++)
-                        dataNorm[i] = (WaveCapture.this.data[i] - min) / range;
-                }
+//                if (max != min) {
+//                    float range = max - min;
+//                    for (int i = 0; i < freqSamplesPerFrame; i++)
+//                        dataNorm[i] = (WaveCapture.this.data[i] - min) / range;
+//                }
 
 
             }
@@ -171,15 +168,16 @@ public class WaveCapture extends Loop {
         Plot2D audioPlot2 = new Plot2D(bufferSamples, Plot2D.Line);
         audioPlot2.add(wavelet1d);
 
-        BitmapMatrixView freqHistory = new BitmapMatrixView(freqSamplesPerFrame, historyFrames, (x, y) -> {
+        BitmapMatrixView freqHistory = new BitmapMatrixView(freqSamplesPerFrame, historyFrames, (y, x) -> {
             if (data == null)
                 return 0;
+
             float kw = (data[y * freqSamplesPerFrame + x]);
 
             return Draw.rgbInt(kw >= 0 ? kw : 0, kw < 0 ? -kw : 0, 0);
         });
 
-        WaveAnalyzer waveAnalyzer = new WaveAnalyzer(this);
+        //WaveAnalyzer waveAnalyzer = new WaveAnalyzer(this);
 
 
         Gridding v = new Gridding(
@@ -187,8 +185,8 @@ public class WaveCapture extends Loop {
                         audioPlot,
                         audioPlot2
                 ),
-                freqHistory,
-                waveAnalyzer.view()
+                freqHistory//,
+                //waveAnalyzer.view()
         );
 
         if (source instanceof AudioSource)

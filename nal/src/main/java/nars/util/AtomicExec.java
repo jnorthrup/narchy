@@ -58,10 +58,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     final static int ACTIVE_CAPACITY = 16;
     final ArrayBag<Term, PriReference<Term>> active = new PLinkArrayBag<>(PriMerge.max, ACTIVE_CAPACITY);
 
-
     private DurService onCycle;
-
-
 
     public AtomicExec(@Nullable BiConsumer<Term, TimeAware> exe, float exeThresh) {
         this(exe, new FloatRange(exeThresh, 0.5f, 1f));
@@ -101,7 +98,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
         List<Term> dispatch = new FasterList(active.size());
 
-        active.forEach(x -> {
+        active.forEach((PriReference<Term> x) -> {
             Term xx = x.get();
 
             Concept c = n.concept(xx);
@@ -124,6 +121,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
             dispatch.add(xx);
 
+            x.delete();
         });
 
         dispatch.forEach(tt -> exe.accept(tt, n));

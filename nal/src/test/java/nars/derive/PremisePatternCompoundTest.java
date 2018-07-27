@@ -28,7 +28,8 @@ class PremisePatternCompoundTest {
 
         Term r = PremisePatternIndex.patternify($$("(x || y)"));
         assertEquals(
-                "(--,((--,x) &&+- (--,y)))",
+                //"(--,((--,x) &&+- (--,y)))",
+                "(||+- ,x,y)",
                 //"(x ||+- y)", //TODO
                 r.toString());
     }

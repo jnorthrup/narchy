@@ -52,7 +52,7 @@ public class MetaFrame extends Bordering {
 
     }
 
-    private String name(Surface widget) {
+    protected String name(Surface widget) {
         return widget.toString();
     }
 

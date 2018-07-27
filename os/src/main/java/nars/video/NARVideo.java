@@ -23,8 +23,8 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
 
         private WebCam c;
         public final Webcam cam;
-        Surface surface;
-        private JoglSpace surfaceWindow = null;
+        volatile Surface surface;
+        volatile private JoglSpace surfaceWindow = null;
 
         Video(NAR nar, Webcam cam) {
             super($.p($.the("video"), $.the(cam.getName())));
@@ -42,7 +42,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
 
             cam.open(true);
             c = new WebCam(cam);
-            surface = c.view();
+            surface = new WebCam.WebCamSurface(c);
             surfaceWindow = SpaceGraph.window(surface, 800, 600);
 
         }

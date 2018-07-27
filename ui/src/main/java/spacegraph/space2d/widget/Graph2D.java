@@ -140,7 +140,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {
 
-        if (!busy.compareAndSet(false, true)) {
+        if (!busy.weakCompareAndSetAcquire(false, true)) {
             return this;
         }
         try {

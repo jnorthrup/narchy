@@ -19,11 +19,11 @@ import java.awt.image.BufferedImage;
 public class ExampleBackgroundRemovalStationary {
     public static void main(String[] args) {
 
-        WebCam c = new WebCam();
+        WebCam c = WebCam.the();
 
         Tex output = new Tex();
         SpaceGraph.window(new Gridding(
-            c.view(),
+                new WebCam.WebCamSurface(c),
             output.view()
         ), 800, 800);
 

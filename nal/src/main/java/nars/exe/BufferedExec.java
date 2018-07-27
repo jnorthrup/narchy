@@ -16,6 +16,7 @@ import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
@@ -58,8 +59,7 @@ abstract public class BufferedExec extends UniExec {
         }
     }
 
-    /** poll for the cycle runnable and runs it in the callee. returns true if it actually executed it. */
-    abstract protected boolean tryCycle();
+
 
     /**
      * receives the NARLoop cycle update. should execute immediately, preferably in a worker thread (not synchronously)
@@ -242,6 +242,7 @@ abstract public class BufferedExec extends UniExec {
         final boolean affinity;
 
         final AffinityExecutor exe = new AffinityExecutor();
+        private List<Worker> workers;
 
         public WorkerExec(int threads) {
             this(threads, false);
@@ -260,7 +261,7 @@ abstract public class BufferedExec extends UniExec {
             super.onCycle(nar);
         }
 
-        @Override protected final boolean tryCycle() {
+        protected final boolean tryCycle() {
             Runnable r = narCycle.getAndSet(null);
             if (r != null) {
                 //lucky worker gets to execute the NAR cycle
@@ -290,7 +291,7 @@ abstract public class BufferedExec extends UniExec {
 
                 super.start(n);
 
-                exe.execute(Worker::new, threads, affinity);
+                workers = exe.execute(Worker::new, threads, affinity);
 
                 if (totalConcurrency > Runtime.getRuntime().availableProcessors()/2) {
                     /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
@@ -306,7 +307,12 @@ abstract public class BufferedExec extends UniExec {
             synchronized (this) {
                 Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
 
+                workers.forEach(Worker::off);
+                workers.clear();
+
                 exe.shutdownNow();
+
+
 
                 sync();
 
@@ -392,9 +398,9 @@ abstract public class BufferedExec extends UniExec {
             public void sleep() {
                 if (idleTimePerCycle > 0) {
 
-                    Util.sleepNSUntil(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
+                    Util.sleepNSwhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
                             //in.size() > 0 || !alive
-                            false
+                            true
                     );
                 }
             }

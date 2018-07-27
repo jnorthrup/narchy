@@ -1491,13 +1491,13 @@ public enum Util {
 
 
     public static void sleepNS(long periodNS) {
-        if (periodNS > 500000) {
+        if (periodNS > 100000) {
             LockSupport.parkNanos(periodNS);
             return;
         }
 
-        final long thresholdNS = 100;
-        if (periodNS < thresholdNS)
+        final long thresholdNS = 10000; /** 10uS = 0.01ms */
+        if (periodNS <= thresholdNS)
             return;
 
 
@@ -1506,11 +1506,11 @@ public enum Util {
         long remainNS = end - System.nanoTime();
         while (remainNS > thresholdNS) {
 
-            if (remainNS <= 500000 /** 100uS = 0.5ms */) {
-                Thread.yield();
-            } else if (remainNS <= 1000 /** 10uS = 0.01ms */) {
+//            if (remainNS <= 500000 /** 100uS = 0.5ms */) {
+//                Thread.yield();
+//            } else {
                 Thread.onSpinWait();
-            }
+//            }
 
             remainNS = end - System.nanoTime();
         }
@@ -1518,7 +1518,7 @@ public enum Util {
     }
 
 
-    public static void sleepNSUntil(long periodNS, long napTimeNS, BooleanSupplier wakeEarly) {
+    public static void sleepNSwhile(long periodNS, long napTimeNS, BooleanSupplier keepSleeping) {
         if (periodNS <= napTimeNS) {
             sleepNS(periodNS);
         } else {
@@ -1526,7 +1526,7 @@ public enum Util {
             long end = now + periodNS;
             do {
                 sleepNS(Math.min(napTimeNS, end - now));
-            } while (((now = System.nanoTime()) < end) && !wakeEarly.getAsBoolean());
+            } while (((now = System.nanoTime()) < end) && keepSleeping.getAsBoolean());
         }
     }
 

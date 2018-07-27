@@ -42,7 +42,7 @@ public class AudioSource implements WaveSource {
         bytesPerSample = 2;
 
         dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
-        System.out.println(dataLineInfo);
+//        System.out.println(dataLineInfo);
 
     }
 
