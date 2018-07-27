@@ -446,8 +446,8 @@ public class Conj extends ByteAnonMap {
             ) {
                 return what.eventsWhile(this::add,
                         at,
-                        true,//dt != DTERNAL,
-                        true,//dt == DTERNAL,
+                        dt != DTERNAL,
+                        dt == DTERNAL,
                         false, 0);
             }
         }
@@ -1357,10 +1357,10 @@ public class Conj extends ByteAnonMap {
                         if ((merged == DTERNAL || merged == XTERNAL) && (at != DTERNAL && bt != DTERNAL && at != XTERNAL && bt != XTERNAL)) {
                             //add as unique event (below)
                         } else {
-                            boolean r = aa.remove(what, at); //remove original add the new merged
-                            if (!r) {
-                                assert (r);
-                            }
+//                            boolean r = aa.remove(what, at); //remove original add the new merged
+//                            if (!r) {
+//                                assert (r);
+//                            }
                             return super.add(merged, what);
                         }
 

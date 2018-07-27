@@ -42,11 +42,15 @@ public class KeyValueModel implements GridModel {
     @Nullable
     @Override
     public Object get(int x, int y) {
+        Object[] k = this.keys;
+        if ((y < 0) || y >= keys.length)
+            return null; //OOB
+
         switch (x) {
             case 0: 
-                return keys[y];
+                return k[y];
             case 1: 
-                return map.apply(keys[y]);
+                return map.apply(k[y]);
         }
         return null;
     }
