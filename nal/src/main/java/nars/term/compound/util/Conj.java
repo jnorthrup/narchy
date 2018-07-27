@@ -917,18 +917,21 @@ public class Conj extends ByteAnonMap {
                             }
                         }
                     }
-                    t.removeAll(sequences);
                     int sn = sequences.size();
-                    if (sn > 1) {
-                        Conj a = new Conj();
-                        for (Term s : sequences) {
-                            if (!a.add(0, s))
-                                break;
-                        }
-                        theSequence = a.term();
+                    if (sn > 0) {
+                        t.removeAll(sequences);
 
-                    } else if (sn == 1) {
-                        theSequence = sequences.get(0);
+                        if (sn > 1) {
+                            Conj a = new Conj();
+                            for (Term s : sequences) {
+                                if (!a.add(0, s))
+                                    break;
+                            }
+                            theSequence = a.term();
+
+                        } else if (sn == 1) {
+                            theSequence = sequences.get(0);
+                        }
                     } else {
                         theSequence = null; //dont do anything
                     }
@@ -945,7 +948,10 @@ public class Conj extends ByteAnonMap {
 
                 int dt;
                 if (when == ETERNAL) {
-                    dt = DTERNAL;
+//                    if (theSequence!=null && theSequence.dt() == 0)
+//                        dt = 0; //exception for promoting dternal to parallel
+//                    else
+                        dt = DTERNAL;
                 } else {
                     dt = 0;
                 }
@@ -986,10 +992,23 @@ public class Conj extends ByteAnonMap {
                 }
 
                 if (theSequence != null) {
-                    if (theSequence.dt() == dt) {
+                    if (theSequence.equals(z))
+                        return theSequence;
+
+                    int sdt = theSequence.dt();
+                    if ((dt==DTERNAL || dt == XTERNAL || dt == 0) && (sdt == DTERNAL || sdt == XTERNAL || sdt == 0)) {
+                        //both commutative
+
+                        if ((dt == DTERNAL || dt == XTERNAL) && (sdt != DTERNAL && sdt !=XTERNAL))
+                            dt = sdt; //most specific dt
+
                         SortedSet<Term> x = theSequence.subterms().toSetSorted();
-                        x.add(z);
-                        return Op.compoundExact(CONJ, dt, theSequence, z); //concatenate in parallel
+                        if (z.op()==CONJ)
+                            z.subterms().forEach(x::add);
+                        else
+                            x.add(z);
+
+                        return Op.compoundExact(CONJ, dt, x.toArray(EmptyTermArray)); //concatenate in parallel
                     } else {
                         //Distribute (un-factor) z to each component of the sequence
                         Conj c = new Conj();

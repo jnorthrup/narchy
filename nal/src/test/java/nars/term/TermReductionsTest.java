@@ -298,7 +298,7 @@ class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    void testConjParallelConceptualShouldntBeXTERNAL() throws Narsese.NarseseException {
+    void testConjParallelConceptual() throws Narsese.NarseseException {
 
         assertEquals(1, $("(&&,a,b,c)").eventCount());
         assertEquals(3, $("(&|,a,b,c)").eventCount());
@@ -313,11 +313,11 @@ class TermReductionsTest extends NarseseTest {
         
 
         assertEquals(
-                "(&&,(bx-->noid),(happy-->noid),#1)",
+                "( &&+- ,(bx-->noid),(happy-->noid),#1)",
                 $("(--,(((bx-->noid) &| (happy-->noid)) &| #1))")
                         .concept().toString());
         assertEquals(
-                "(x,(--,(&&,a,b,c)))",
+                "(x,(--,( &&+- ,a,b,c)))",
                 $("(x,(--,(( a &| b) &| c)))")
                         .concept().toString());
     }
