@@ -718,7 +718,7 @@ class TemporalTermTest {
     @Test
     void testEmbeddedChangedRootSeqToMerged() throws Narsese.NarseseException {
         Term x = $("(b &&+1 (c &&+1 d))");
-        assertEquals("(&&,b,c,d)", x.root().toString());
+        assertEquals("( &&+- ,b,c,d)", x.root().toString());
     }
 
     @Test
@@ -727,15 +727,15 @@ class TemporalTermTest {
             
             Term x = $("(a ==> (b &&+1 (c && d)))");
             assertEquals("(a==>(b &&+1 (c&&d)))", x.toString());
-            assertEquals("(a ==>+- (&&,b,c,d))", x.root().toString());
+            assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
         {
             Term x = $("(a ==> (b &&+1 (c &| d)))");
-            assertEquals("(a ==>+- (&&,b,c,d))", x.root().toString());
+            assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
 
         Term x = $("(a ==> (b &&+1 (c &&+1 d)))");
-        assertEquals("(a ==>+- (&&,b,c,d))", x.root().toString());
+        assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
     }
 
     @Test

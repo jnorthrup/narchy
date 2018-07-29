@@ -732,7 +732,7 @@ public class Occurrify extends TimeGraph {
                 //o[0] = NOW; o[1] = NOW + range;
                 o[0] = NOW;
                 //o[1] = Math.max(o[1], NOW + range);
-                o[1] = Math.max(o[1], NOW);
+                o[1] = Math.max(o[1], NOW + Math.max(0, d.dur-1));
 
 
             }

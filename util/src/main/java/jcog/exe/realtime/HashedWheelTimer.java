@@ -1,5 +1,6 @@
 package jcog.exe.realtime;
 
+import jcog.Texts;
 import jcog.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -267,9 +268,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public String toString() {
-        return String.format("HashedWheelTimer { Buffer Size: %d, Resolution: %d }",
+        return String.format("HashedWheelTimer { Buffer Size: %d, Resolution: %s }",
                 wheels,
-                resolution);
+                Texts.timeStr(resolution));
     }
 
     /**

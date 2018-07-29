@@ -303,7 +303,7 @@ public class TestNAR {
 
 
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate occ) {
-        return mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s,e)-> (s==e) && occ.test(s));
+        return mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s,e)-> occ.test(s) && occ.test(e));
     }
 
 

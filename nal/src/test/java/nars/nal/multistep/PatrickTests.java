@@ -18,15 +18,6 @@ import static nars.$.$;
 class PatrickTests extends NALTest {
 
 
-
-
-
-
-
-
-
-
-
     @Test
     void testExample1() {
         /*
@@ -55,46 +46,12 @@ class PatrickTests extends NALTest {
                 .believe("(eats-->(REPRESENT,_,EATING))")
 
 
-
                 .askAt(500, "REPRESENT:((cat,eats),(?x, ?y))")
 
                 .mustBelieve(2000, "REPRESENT((eats,cat),(EATING,ANIMAL))", 0.9f, 1f, 0.15f, 0.99f);
-        
+
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
@@ -114,9 +71,8 @@ class PatrickTests extends NALTest {
         */
 
 
-
         TestNAR tt = test;
-        
+
 
         int cycles = 3000;
 
@@ -125,20 +81,12 @@ class PatrickTests extends NALTest {
         tt.nar.freqResolution.set(0.1f);
         tt.nar.confResolution.set(0.02f);
 
-        
-        int dur = cycles/4;
+
+        int dur = cycles / 4;
         tt.nar.time.dur(dur);
         tt.nar.termVolumeMax.set(20);
-        
-        
 
 
-
-
-
-
-
-        
         tt.input(
                 "made_of(toothbrush,plastic).",
                 "( ( made_of($1, plastic) &| lighter(I, $1) ) ==>+10 <$1 --> [heated]>).",
@@ -149,21 +97,15 @@ class PatrickTests extends NALTest {
                 "(<$1 --> [hardened]> =|> <$1 --> [unscrews]>).",
 
 
+                "$1.0 (toothbrush --> [unscrews])! :|:"
 
-
-
-                "$1.0 (toothbrush --> [unscrews])! :|:" 
-                
         );
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,
-                
-                t -> t > 0  
+
+                t -> t > 0
         );
-        
-
-
 
 
     }
@@ -173,7 +115,7 @@ class PatrickTests extends NALTest {
 
 
         TestNAR tt = test;
-        
+
 
         int cycles = 2000;
 
@@ -182,14 +124,9 @@ class PatrickTests extends NALTest {
         tt.nar.freqResolution.set(0.05f);
         tt.nar.confResolution.set(0.02f);
 
-        
+
         tt.nar.time.dur(cycles);
         tt.nar.termVolumeMax.set(20);
-        
-        
-
-
-
 
 
         tt.input(
@@ -203,19 +140,22 @@ class PatrickTests extends NALTest {
                 "$1.0 unscrews:toothbrush! :|:"
         );
 
-        tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, (t)->t >= 0);
+        tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, (t) -> t >= 0);
 
-        tt.mustGoal(cycles, "hard:toothbrush", 1f, 0.5f, (t)->t >= 0);
-        tt.mustGoal(cycles, "pliable:toothbrush", 1f, 0.5f, (t)->t >= 0);
-        tt.mustGoal(cycles, "molten:toothbrush", 1f, 0.5f, (t)->t >= 0);
+        tt.mustGoal(cycles, "hard:toothbrush", 1f, 0.5f, (t) -> t >= 0);
+        tt.mustGoal(cycles, "pliable:toothbrush", 1f, 0.5f, (t) -> t >= 0);
+        tt.mustGoal(cycles, "molten:toothbrush", 1f, 0.5f, (t) -> t >= 0);
         tt.mustGoal(cycles, "lighter(toothbrush)", 1f,
                 0.3f,
                 (t) -> t >= 0);
 
     }
 
-    /** TODO */
-    @Disabled @Test
+    /**
+     * TODO
+     */
+    @Disabled
+    @Test
     void testConditioningWithoutAnticipation() throws Narsese.NarseseException {
         /*
         <a --> A>. :|: <b --> B>. :|: %0% <c --> C>. %0%
@@ -245,7 +185,6 @@ class PatrickTests extends NALTest {
         n.termVolumeMax.set(16);
 
 
-        
         n.inputAt(0, "  A:a. :|:    --B:b. :|:    --C:c. :|:");
         n.inputAt(8, "  B:b. :|:    --A:a. :|:    --C:c. :|:");
         n.inputAt(16, "  C:c. :|:    --A:a. :|:    --B:b. :|:");
@@ -256,9 +195,8 @@ class PatrickTests extends NALTest {
         n.clear();
 
         n.input("       $0.9 (?x ==>   C:c)?");
-        
-        
-        
+
+
         n.run(2000);
 
         /*
@@ -274,32 +212,22 @@ class PatrickTests extends NALTest {
 
     }
 
-    /** TODO */
-    @Test @Disabled
+    /**
+     * TODO
+     */
+    @Test
+    @Disabled
     void testPixelImage() throws Narsese.NarseseException {
 
-        
+
         NAR n = NARS.tmp();
-        
-        
+
+
         n.termVolumeMax.set(60);
         n.beliefPriDefault.set(0.05f);
         n.questionPriDefault.set(0.9f);
 
-        n.input("<#x --> P>. %0.0;0.25%"); 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        n.input("<#x --> P>. %0.0;0.25%");
 
 
         String image1 =
@@ -334,24 +262,12 @@ class PatrickTests extends NALTest {
         n.input(image1.split("\n"));
 
 
-        
-
-        
         n.question($.parallel($("P:p_2_3"), $("P:p_3_2"), $("P:p_3_4"), $("P:p_4_3"), $("name:example1")));
-        
-
-        
-        
 
 
         n.run(6000);
 
         n.clear();
-
-
-
-
-
 
 
         String image2 =
@@ -385,14 +301,8 @@ class PatrickTests extends NALTest {
         n.input(image2.split("\n"));
 
 
-        
-
-        
         n.question($.parallel($("P:p_2_3"), $("P:p_3_2"), $("P:p_3_3"), $("P:p_3_4"), $("P:p_4_3"), $("name:example2")));
         n.run(6000);
-        
-
-        
 
 
     }

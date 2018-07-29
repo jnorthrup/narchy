@@ -581,7 +581,7 @@ public enum Op {
 
 
     public static boolean concurrent(int dt) {
-        return (dt == DTERNAL) || (dt == 0);
+        return (dt == DTERNAL) || (dt == 0) || (dt == XTERNAL);
     }
 
 
@@ -968,9 +968,7 @@ public enum Op {
     public static boolean commute(int dt, int subterms) {
         return subterms > 1 && Op.concurrent(dt);
     }
-    public boolean commute(int subterms) {
-        return subterms > 1 && commutative;
-    }
+
 
     public final Term the(Subterms s) {
         return the(s.arrayShared());

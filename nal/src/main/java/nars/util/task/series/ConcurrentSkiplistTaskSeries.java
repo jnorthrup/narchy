@@ -148,7 +148,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
                 lastEntryKey = Long.MIN_VALUE;
             }
 
-            assert(nextStart <= nextEnd);
+            //assert(nextStart <= nextEnd);
 
             if (next!=null) {
                 nextT = newTask(term, punc, nextStart, nextEnd, next, nar, removePrev, lastStamp);

@@ -112,6 +112,7 @@ public enum TruthFunctions2 {
 
 
             //float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
+            //float f = Util.lerp(belief.freq(), 1-goal.freq(), goal.freq());
             float f = goal.freq();
 
             return $.t(f, c);
@@ -126,9 +127,7 @@ public enum TruthFunctions2 {
         return analogyNew(a, b.freq(), b.conf(), minConf);
     }
 
-    static Truth desire(float f1, float f2, float c) {
-        return t(and(f1, f2), c);
-    }
+
 
     /**
      * strong frequency and confidence the closer in frequency they are

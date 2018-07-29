@@ -348,10 +348,12 @@
 //// conjunction decompose AND dependent variable elimination - decomposition with elimination of a variable
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Intersect)
+    C, X, eventOf(C,X)     |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Intersect)
+    C, X, eventOfNeg(C,X)  |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Intersect)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
     D, X, eventOfNeg(D,X) |- (--,conjWithout(D,--X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN, Time:Intersect)
+    D, X, eventOf(D,X)    |- (--,conjWithout(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN, Time:Intersect)
 
         //, Goal:StructuralStrong
            //maybe subOf?
@@ -379,13 +381,6 @@
      C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN)
         //conjDropIfEarliestFiltered
 
-    //antigoal in sequence
-    //X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak)
-        //is there another sequence that doesnt involve what i dont want?
-        X, C, eventOfNeg(C,X), task("!") |- substitute(C, --X, X), (Punctuation:Quest)
-    //X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
-        //is there another sequence that doesnt involve what i dont want?
-        X, C, eventOf(C,X), task("!")    |- substitute(C, X, --X), (Punctuation:Quest)
 
 
 

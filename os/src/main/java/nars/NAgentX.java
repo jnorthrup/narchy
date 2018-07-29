@@ -281,14 +281,14 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(42);
 
         n.forgetRate.set(0.75f);
         n.activateConceptRate.set(0.9f);
 
 
         n.beliefConfDefault.set(0.99f);
-        n.goalConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.99f);
 
         n.beliefPriDefault.set(0.2f);
         n.goalPriDefault.set(0.7f);
@@ -310,7 +310,7 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 4, 4));
         new MatrixDeriver(Derivers.nal(n, 5, 6));
         new MatrixDeriver(Derivers.nal(n, 7, 8));
-        new MatrixDeriver(Derivers.nal(n, 0, 0, "motivation.nal"));
+        //new MatrixDeriver(Derivers.nal(n, 0, 0, "motivation.nal"));
 
         new STMLinkage(n, 1, false);
 

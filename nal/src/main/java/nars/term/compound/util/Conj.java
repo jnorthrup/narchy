@@ -1285,7 +1285,12 @@ public class Conj extends ByteAnonMap {
 //            this.termToId.putAll(aa.termToId);
 
             this.aProp = aProp;
-            add(bOffset, b);
+            if (bOffset == 0)
+                addAuto(b);
+            else
+                add(bOffset, b);
+
+            //TODO simplify
 
 //            //merge remaining events from 'a'
 //            final boolean[] err = {false};

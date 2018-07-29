@@ -191,7 +191,7 @@ public abstract class TermBuilder {
         if (subject == Null || predicate == Null)
             return Null;
 
-        boolean dtConcurrent = concurrent(dt);
+        boolean dtConcurrent = concurrent(dt) && dt!=XTERNAL;
         if (dtConcurrent) {
             if (subject.equals(predicate))
                 return True;

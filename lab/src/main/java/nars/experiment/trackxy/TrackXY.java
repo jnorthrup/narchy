@@ -126,10 +126,10 @@ public class TrackXY extends NAgent {
 //        n.questPriDefault.set(0.1f);
 
 
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(32);
 
 
-        TrackXY a = new TrackXY(n, 4, 1);
+        TrackXY a = new TrackXY(n, 4, 4);
 
 
 //        if (rl) {

@@ -159,26 +159,6 @@ public final class TruthFunctions {
     }
 
 
-    /**
-     * A function specially designed for desire value [To be refined]
-     */
-    @Nullable
-    public static Truth desireStrong(Truth a, Truth b, float minConf) {
-        float bFreq = b.freq();
-        float c = and(a.conf(), b.conf(), bFreq);
-
-        return c < minConf ? null : TruthFunctions2.desire(a.freq(), bFreq, c);
-    }
-
-
-    /**
-     * A function specially designed for desire value [To be refined]
-     */
-    public static Truth desireWeak(Truth a, Truth b, float minConf) {
-        float bFreq = b.freq();
-        float c = and(a.conf(), b.conf(), bFreq, w2c(1.0f));
-        return c < minConf ? null : TruthFunctions2.desire(a.freq(), bFreq, c);
-    }
 
 
     /*In the confidence functions, each case for the conclusion to reach its

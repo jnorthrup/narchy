@@ -65,7 +65,7 @@ dependencies {
 
     testCompile(group: 'org.pitest', name: 'pitest', version: '1.4.0')
     testCompile(group: 'org.pitest', name: 'pitest-entry', version: '1.4.0')
-    testCompile(group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.5') {
+    testCompile(group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.6') {
         exclude(module: 'testng')
         exclude(module: 'junit')
     }
