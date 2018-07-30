@@ -3,8 +3,8 @@
  */
 package net.beadsproject.beads.data;
 
-import jcog.math.tensor.ArrayTensor;
-import jcog.math.tensor.Tensor;
+import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.Tensor;
 import net.beadsproject.beads.data.buffers.*;
 
 import java.util.Map;

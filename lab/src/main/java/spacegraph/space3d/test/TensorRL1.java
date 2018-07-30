@@ -6,10 +6,10 @@
 //import jcog.math.FloatRange;
 //import jcog.math.IntIntToObjectFunc;
 //import jcog.math.IntRange;
-//import jcog.math.random.XoRoShiRo128PlusRandom;
-//import jcog.math.tensor.Tensor;
-//import jcog.math.tensor.TensorFunc;
-//import jcog.math.tensor.TensorLERP;
+//import XoRoShiRo128PlusRandom;
+//import jcog.signal.tensor.Tensor;
+//import jcog.signal.tensor.TensorFunc;
+//import jcog.signal.tensor.TensorLERP;
 //import jcog.signal.Bitmap2D;
 //import nars.NAR;
 //import nars.NARS;

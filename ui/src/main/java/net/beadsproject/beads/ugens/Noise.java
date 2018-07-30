@@ -3,7 +3,7 @@
  */
 package net.beadsproject.beads.ugens;
 
-import jcog.math.tensor.ArrayTensor;
+import jcog.signal.tensor.ArrayTensor;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.WaveFactory;

@@ -3,7 +3,7 @@ package jcog.learn;
 import jcog.Util;
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.test.LiveSTM;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
 import java.util.Random;

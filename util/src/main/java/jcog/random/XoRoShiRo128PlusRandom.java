@@ -1,4 +1,4 @@
-package jcog.math.random;
+package jcog.random;
 
 /*
  * DSI utilities

@@ -1,7 +1,7 @@
 package nars.truth;
 
 import jcog.Util;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import nars.Param;
 import nars.task.Revision;
 import org.junit.jupiter.api.Disabled;

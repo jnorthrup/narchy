@@ -8,7 +8,7 @@ import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
-import jcog.math.random.SplitMix64Random;
+import jcog.random.SplitMix64Random;
 import jcog.service.Service;
 import nars.NAR;
 import nars.control.DurService;

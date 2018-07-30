@@ -1,20 +1,21 @@
-package jcog.math.tensor;
+package jcog.signal.tensor;
 
 import jcog.Util;
 import jcog.learn.deep.dA;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 
 /**
  * applies stacked autoencoder as a filter function of an input tensor
+ * TODO AutodecodeTensor (reverse) - generate from encoded. and possibly share autoencoder instance
  */
-public class AutoTensor extends ArrayTensor {
+public class AutoEncodeTensor extends ArrayTensor {
 
     private final Tensor in;
     private final dA a;
     private final double learnRate = 0.01f;
     float noise = 0.0005f;
 
-    public AutoTensor(Tensor input, int outputs) {
+    public AutoEncodeTensor(Tensor input, int outputs) {
         super(outputs);
         this.in = input;
         this.a = new dA(

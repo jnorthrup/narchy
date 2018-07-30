@@ -21,7 +21,7 @@ package jcog.tree.rtree;
  */
 
 import com.google.common.collect.Iterators;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.point.Double2D;
 import jcog.tree.rtree.rect.RectDouble2D;
 import jcog.tree.rtree.rect.RectFloatND;

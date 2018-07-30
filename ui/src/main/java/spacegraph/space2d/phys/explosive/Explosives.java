@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.explosive;
 
 import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.phys.callbacks.ContactImpulse;
 import spacegraph.space2d.phys.callbacks.ContactListener;

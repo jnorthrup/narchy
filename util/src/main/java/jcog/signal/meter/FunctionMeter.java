@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * Convenience implementation for a 1-signal meter
  */
-public abstract class FunctionMeter<M> implements Signals<M>, Serializable {
+public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
 
-    private final List<Signal> signals;
+    private final List<ScalarColumn> signals;
     private M[] vector;
 
     public static String[] newDefaultSignalIDs(String prefix, int n) {
@@ -39,9 +39,9 @@ public abstract class FunctionMeter<M> implements Signals<M>, Serializable {
     }
     
     public FunctionMeter(String... ids) {
-        List<Signal> s = new ArrayList();
+        List<ScalarColumn> s = new ArrayList();
         for (String n : ids) {
-            s.add(new Signal(n, null));
+            s.add(new ScalarColumn(n, null));
         }
 
         signals = Collections.unmodifiableList(s);
@@ -49,12 +49,12 @@ public abstract class FunctionMeter<M> implements Signals<M>, Serializable {
     
     public void setUnits(String... units) { 
         int i = 0;
-        for (Signal s : signals)
+        for (ScalarColumn s : signals)
             s.unit = units[i++];
     }
 
     @Override
-    public List<Signal> getSignals() {
+    public List<ScalarColumn> getSignals() {
         return signals;
     }
 

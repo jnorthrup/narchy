@@ -1,8 +1,8 @@
 package jcog.math;
 
-import jcog.math.tensor.ArrayTensor;
-import jcog.math.tensor.Tensor;
-import jcog.math.tensor.TensorChain;
+import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.Tensor;
+import jcog.signal.tensor.TensorChain;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

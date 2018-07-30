@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.materials;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;

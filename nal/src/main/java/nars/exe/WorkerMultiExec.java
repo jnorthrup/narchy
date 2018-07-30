@@ -5,7 +5,7 @@
 //import jcog.Util;
 //import jcog.exe.BusyPool;
 //import jcog.math.MutableInteger;
-//import jcog.math.random.SplitMix64Random;
+//import SplitMix64Random;
 //import nars.$;
 //import nars.NAR;
 //import nars.Task;

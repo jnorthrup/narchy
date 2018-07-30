@@ -1,4 +1,4 @@
-package jcog.math.tensor;
+package jcog.signal.tensor;
 
 import jcog.Util;
 import jcog.math.FloatSupplier;

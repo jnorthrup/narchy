@@ -3,7 +3,7 @@ package jcog.learn.lstm.test;
 import jcog.learn.lstm.AbstractTraining;
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.SimpleLSTM;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.util.MathArrays;
 

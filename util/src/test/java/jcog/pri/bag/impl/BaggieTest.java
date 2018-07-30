@@ -1,7 +1,7 @@
 package jcog.pri.bag.impl;
 
 import com.google.common.base.Joiner;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import org.apache.commons.math3.stat.Frequency;
 import org.junit.jupiter.api.Test;
 

@@ -15,11 +15,11 @@
  */
 package org.oakgp.evolve;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.op.PriMerge;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
 import org.oakgp.rank.Evolved;

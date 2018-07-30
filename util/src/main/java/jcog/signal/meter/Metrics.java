@@ -45,26 +45,26 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     }
 
     
-    /**
-    *  Calculates a 2-tuple with the following data:
-    *   0: minimum value among all columns in given signals
-    *   1: maximum value among all columns in given signals
-    * 
-    * @param data
-    * @return 
-    */
-    public static double[] getBounds(Iterable<SignalData> data) {
-        double min = Double.POSITIVE_INFINITY;
-        double max = Double.NEGATIVE_INFINITY;
-    
-        for (SignalData ss : data) {   
-            double a = ss.getMin();
-            double b = ss.getMax();
-            if (a < min) min = a;
-            if (b > max) max = b;
-        }
-        return new double[] { min, max };        
-    }
+//    /**
+//    *  Calculates a 2-tuple with the following data:
+//    *   0: minimum value among all columns in given signals
+//    *   1: maximum value among all columns in given signals
+//    *
+//    * @param data
+//    * @return
+//    */
+//    public static double[] getBounds(Iterable<SignalData> data) {
+//        double min = Double.POSITIVE_INFINITY;
+//        double max = Double.NEGATIVE_INFINITY;
+//
+//        for (SignalData ss : data) {
+//            double a = ss.getMin();
+//            double b = ss.getMax();
+//            if (a < min) min = a;
+//            if (b > max) max = b;
+//        }
+//        return new double[] { min, max };
+//    }
     
     protected void setMin(int signal, double n) {
         getSignal(signal).setMin(n);
@@ -74,12 +74,12 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     }
     
     public double getMin(int signal) {
-        Signal s = getSignal(signal);
+        ScalarColumn s = getSignal(signal);
         if (s == null) return Double.NaN;        
         return s.getMin();
     }
     public double getMax(int signal) {
-        Signal s = getSignal(signal);
+        ScalarColumn s = getSignal(signal);
         if (s == null) return Double.NaN;        
         return s.getMax();
     }
@@ -87,7 +87,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     
     public void updateBounds(int signal) {
         
-        Signal s = getSignal(signal);
+        ScalarColumn s = getSignal(signal);
         s.resetBounds();
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
@@ -108,15 +108,15 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     /** adds all meters which exist as fields of a given object (via reflection) */
     public void addViaReflection(Object obj) {
         Class c = obj.getClass();
-        Class meter = Signals.class;
+        Class meter = Meters.class;
         for (Field f : c.getFields()) {
 
 
 
             if ( meter.isAssignableFrom( f.getType() ) ) {
-                Signals m = null;
+                Meters m = null;
                 try {
-                    m = (Signals)f.get(obj);
+                    m = (Meters)f.get(obj);
                 } catch (IllegalAccessException e) {
                     
                 }
@@ -126,19 +126,19 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     }
 
 
-    public SignalData newSignalData(String n) {
-        Signal s = getSignal(n);
-        if (s == null) return null;
-        return new SignalData(this, s);
-    }
+//    public SignalData newSignalData(String n) {
+//        ScalarColumn s = getSignal(n);
+//        if (s == null) return null;
+//        return new SignalData(this, s);
+//    }
 
-    public Metrics addViaReflection(Signals... c) {
-        for (Signals x : c)
+    public Metrics addViaReflection(Meters... c) {
+        for (Meters x : c)
             add(x);
         return this;
     }
 
-    public <M extends Signals<?>> M getMeter(String id) {
+    public <M extends Meters<?>> M getMeter(String id) {
         int i = indexOf(id);
         if (i == -1) return null;
         return (M) meters.get(i);
@@ -201,10 +201,10 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     private RowKey nextRowKey; 
     
     /** the columns of the table */
-    private final List<Signals<?>> meters = new ArrayList<>();
+    private final List<Meters<?>> meters = new ArrayList<>();
     private final ArrayDeque<Object[]> rows = new ArrayDeque<>();
     
-    private transient List<Signal> signalList = new ArrayList<>();
+    private transient List<ScalarColumn> signalList = new ArrayList<>();
     private transient Map<String, Integer> signalIndex = new HashMap();
     
     int numColumns;
@@ -241,13 +241,13 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         rows.clear();
     }
 
-    public <M extends Signals<C>, C> void addAll(M... m) {
+    public <M extends Meters<C>, C> void addAll(M... m) {
         for (M mm : m)
             add(mm);
     }
 
-    public <M extends Signals<C>, C> M add(M m) {
-        for (Signal s : m.getSignals()) {
+    public <M extends Meters<C>, C> M add(M m) {
+        for (ScalarColumn s : m.getSignals()) {
             if (getSignal(s.id)!=null)
                 throw new RuntimeException("Signal " + s.id + " already exists in "+ this);
         }
@@ -260,7 +260,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         return m;
     }
     
-    public void removeMeter(Signals m) {
+    public void removeMeter(Meters m) {
         throw new RuntimeException("Removal not supported yet");
     }
     
@@ -274,7 +274,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         append(nextRow, extremaToInvalidate); 
 
         int c = 0;
-        for (Signals m : meters) {
+        for (Meters m : meters) {
             Object[] v = m.sample(key);
             if (v == null) continue;
             int vl = v.length;
@@ -357,10 +357,10 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
 
     }
     
-    public List<Signal> getSignals() {
+    public List<ScalarColumn> getSignals() {
         if (signalList == null) {
             signalList = new ArrayList(numColumns);
-            for (Signals<?> m : meters)
+            for (Meters<?> m : meters)
                 signalList.addAll(m.getSignals());
         }
         return signalList;        
@@ -370,14 +370,14 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         if (signalIndex == null) {
             signalIndex = new HashMap(numColumns);
             int i = 0;
-            for (Signal s : getSignals()) {
+            for (ScalarColumn s : getSignals()) {
                 signalIndex.put(s.id, i++);
             }
         }
         return signalIndex;
     }
     
-    public int indexOf(Signal s) {
+    public int indexOf(ScalarColumn s) {
         return indexOf(s.id);
     }
     
@@ -387,10 +387,10 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         return i;
     }
     
-    public Signal getSignal(int index) {
+    public ScalarColumn getSignal(int index) {
        return getSignals().get(index); 
     }
-    public Signal getSignal(String s) {
+    public ScalarColumn getSignal(String s) {
        if (s == null) return null;
        int ii = indexOf(s);
        if (ii == -1) return null;
@@ -474,7 +474,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     public double[] doubleArray(String signal) {
         return doubleArray(indexOf(signal));
     }
-    public double[] doubleArray(Signal s) {
+    public double[] doubleArray(ScalarColumn s) {
         return doubleArray(indexOf(s.id));
     }
 
@@ -493,7 +493,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     public String[] getSignalIDs() {
         String[] r = new String[getSignals().size()];
         int i = 0;
-        for (Signal s : getSignals()) {
+        for (ScalarColumn s : getSignals()) {
             r[i++] = s.id;
         }
         return r;
@@ -574,8 +574,8 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
 
 
         int n = 0;
-        for (Signals<?> m : meters) {
-            for (Signal s : m.getSignals()) {
+        for (Meters<?> m : meters) {
+            for (ScalarColumn s : m.getSignals()) {
                 if (n == 0) {
                     
                     out.println("@ATTRIBUTE " + s.id + " STRING");

@@ -6,11 +6,11 @@ import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.decide.MutableRoulette;
-import jcog.math.random.SplitMix64Random;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.util.SpinMutex;
 import jcog.pri.bag.util.Treadmill2;
+import jcog.random.SplitMix64Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 

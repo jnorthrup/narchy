@@ -1,4 +1,4 @@
-package jcog.math.tensor;
+package jcog.signal.tensor;
 
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;

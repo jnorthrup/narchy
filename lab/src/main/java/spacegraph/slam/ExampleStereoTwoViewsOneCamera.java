@@ -45,7 +45,6 @@ import boofcv.gui.feature.AssociationPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.gui.image.VisualizeImageData;
 import boofcv.gui.stereo.RectifiedPairPanel;
-import boofcv.io.UtilIO;
 import boofcv.io.calibration.CalibrationIO;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;

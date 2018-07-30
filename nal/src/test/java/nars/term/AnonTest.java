@@ -1,6 +1,6 @@
 package nars.term;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Narsese;
 import nars.Op;

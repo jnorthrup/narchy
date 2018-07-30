@@ -8,9 +8,9 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Ons;
 import jcog.event.Topic;
-import jcog.math.tensor.AsyncTensor;
-import jcog.math.tensor.Tensor;
 import jcog.signal.Bitmap2D;
+import jcog.signal.tensor.AsyncTensor;
+import jcog.signal.tensor.Tensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.space2d.SurfaceBase;
@@ -222,7 +222,7 @@ public class WebCam {
         public final WebCam cam;
         private volatile Tensor current = null;
 
-        public final Bitmap2D.MutableRGBTensor mix = new Bitmap2D.MutableRGBTensor(-1, +1);
+        public final Bitmap2D.RGB mix = new Bitmap2D.RGB(-1, +1);
         final Bitmap2D.RGBToGrayBitmapTensor mixed = new Bitmap2D.RGBToGrayBitmapTensor(mix);
 
         ChannelView(WebCam cam) {

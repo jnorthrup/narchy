@@ -1,4 +1,4 @@
-package jcog.math.tensor;
+package jcog.signal.tensor;
 
 import jcog.event.ListTopic;
 

@@ -2,8 +2,8 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.set.ArrayHashSet;
-import jcog.math.random.SplitMix64Random;
 import jcog.pri.ScalarValue;
+import jcog.random.SplitMix64Random;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;

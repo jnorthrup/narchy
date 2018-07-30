@@ -4,7 +4,7 @@ import jcog.grammar.synthesize.GrammarFuzzer;
 import jcog.grammar.synthesize.GrammarSynthesis;
 import jcog.grammar.synthesize.util.GrammarUtils;
 import jcog.grammar.synthesize.util.Log;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.stream.XMLInputFactory;

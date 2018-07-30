@@ -5,7 +5,7 @@ import jcog.learn.ntm.learn.BPTTTeacher;
 import jcog.learn.ntm.learn.RMSPropWeightUpdater;
 import jcog.learn.ntm.learn.RandomWeightInitializer;
 import jcog.learn.ntm.memory.address.Head;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

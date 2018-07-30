@@ -9,7 +9,7 @@
 //import jcog.exe.valve.Sharing;
 //import jcog.exe.valve.TimeSlicing;
 //import jcog.data.list.FasterList;
-//import jcog.math.random.SplitMix64Random;
+//import SplitMix64Random;
 //import nars.NAR;
 //import nars.control.DurService;
 //import nars.task.ITask;

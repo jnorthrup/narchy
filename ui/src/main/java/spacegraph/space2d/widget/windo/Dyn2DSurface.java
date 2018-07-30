@@ -8,7 +8,7 @@ import jcog.data.graph.NodeGraph;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.event.On;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;

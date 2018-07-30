@@ -2,7 +2,6 @@ package nars.op;
 
 import jcog.data.set.ArrayHashRing;
 import jcog.data.set.ArrayHashSet;
-import jcog.math.random.SplitMix64Random;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
@@ -10,6 +9,7 @@ import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.op.PriMerge;
+import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;

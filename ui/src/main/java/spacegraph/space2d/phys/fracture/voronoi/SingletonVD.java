@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.voronoi;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.Tuple2f;
 

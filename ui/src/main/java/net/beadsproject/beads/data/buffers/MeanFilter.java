@@ -3,7 +3,7 @@
  */
 package net.beadsproject.beads.data.buffers;
 
-import jcog.math.tensor.ArrayTensor;
+import jcog.signal.tensor.ArrayTensor;
 import net.beadsproject.beads.data.WaveFactory;
 
 import java.util.Arrays;

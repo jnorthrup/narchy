@@ -1,6 +1,6 @@
 package spacegraph.audio.granular;
 
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import spacegraph.audio.Audio;
 import spacegraph.audio.SoundSource;
 import spacegraph.audio.sample.SampleLoader;

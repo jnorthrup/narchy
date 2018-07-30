@@ -8,7 +8,7 @@ package jcog.signal.meter;
 import java.util.List;
 
 /** represents 1 or more signals */
-public interface Signals<M> {
+public interface Meters<M> {
 
     
     default void setActive(boolean active) {
@@ -17,9 +17,9 @@ public interface Signals<M> {
     /** the list of signals produced by this meter; this should not change
      * in quantity during operation
      */
-    List<Signal> getSignals();
+    List<ScalarColumn> getSignals();
     
-    default Signal signal(int i) {
+    default ScalarColumn signal(int i) {
         return getSignals().get(i);
     }
     default String signalID(int i) {
@@ -27,7 +27,7 @@ public interface Signals<M> {
     }
     
     /** convenience method for accessing the first of the signals, in case one needs the only signal */
-    default Signal signalFirst() {
+    default ScalarColumn signalFirst() {
         return getSignals().get(0);
     }
     

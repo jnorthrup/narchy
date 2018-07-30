@@ -1,4 +1,4 @@
-package jcog.math.tensor;
+package jcog.signal.tensor;
 
 public interface TensorTo {
     void set(float newValue, int linearCell);

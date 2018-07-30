@@ -7,7 +7,7 @@ import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import jcog.exe.realtime.FixedRateTimedFuture;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.NARLoop;
 import nars.task.ITask;

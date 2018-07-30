@@ -1,11 +1,11 @@
 package jcog.pri.bag;
 
 import jcog.Texts;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.bag.util.ProxyBag;
 import jcog.pri.op.PriMerge;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.Test;

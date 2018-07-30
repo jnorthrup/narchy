@@ -5,7 +5,7 @@ import jcog.decide.DecideSoftmax;
 import jcog.decide.Deciding;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 
 import java.util.Random;
 

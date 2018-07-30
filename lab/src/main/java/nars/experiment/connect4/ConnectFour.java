@@ -1,6 +1,6 @@
 package nars.experiment.connect4;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.Narsese;
 

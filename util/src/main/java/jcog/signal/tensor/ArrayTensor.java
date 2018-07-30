@@ -1,4 +1,4 @@
-package jcog.math.tensor;
+package jcog.signal.tensor;
 
 import jcog.Texts;
 import org.apache.commons.lang3.ArrayUtils;

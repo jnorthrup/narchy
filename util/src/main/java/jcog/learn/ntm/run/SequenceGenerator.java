@@ -1,7 +1,7 @@
 package jcog.learn.ntm.run;
 
 
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 
 import java.util.Random;
 

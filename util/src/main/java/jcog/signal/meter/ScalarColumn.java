@@ -10,18 +10,18 @@ package jcog.signal.meter;
  * in the column index of rows.
  * May cache re-usable metadata specific to the signal shared by several SignalData views (ex: min, max)
  */
-public class Signal implements Comparable<Signal> {
+public class ScalarColumn implements Comparable<ScalarColumn> {
     public final String id;
     public String unit;
 
     private double min, max;
 
 
-    public Signal(String id) {
+    public ScalarColumn(String id) {
         this(id, null);
     }
 
-    public Signal(String id, String unit) {
+    public ScalarColumn(String id, String unit) {
         this.id = id;
         this.unit = unit;
     }
@@ -33,7 +33,7 @@ public class Signal implements Comparable<Signal> {
 
     @Override
     public boolean equals(Object obj) {
-        return id.equals(((Signal) obj).id);
+        return id.equals(((ScalarColumn) obj).id);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class Signal implements Comparable<Signal> {
     }
 
     @Override
-    public int compareTo(Signal o) {
+    public int compareTo(ScalarColumn o) {
         return id.compareTo(o.id);
     }
 

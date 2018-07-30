@@ -3,7 +3,7 @@ package jcog.learn.gng;
 import jcog.Util;
 import jcog.learn.Autoencoder;
 import jcog.learn.gng.impl.Centroid;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import org.jetbrains.annotations.NotNull;
 
 import static java.lang.System.arraycopy;

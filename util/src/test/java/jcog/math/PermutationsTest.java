@@ -1,6 +1,6 @@
 package jcog.math;
 
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

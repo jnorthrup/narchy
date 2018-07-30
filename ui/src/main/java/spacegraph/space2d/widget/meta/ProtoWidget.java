@@ -8,7 +8,7 @@ import jcog.learn.Autoencoder;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.math.IntRange;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;

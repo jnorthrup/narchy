@@ -1,7 +1,7 @@
 package spacegraph.space2d.container;
 
 import jcog.math.FloatRange;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.widget.Graph2D;

@@ -104,7 +104,8 @@ public class ImageTracer {
             } catch (Exception e) {
             }
         }
-        return -1;
+        //return -1;
+        return Float.NaN;
     }
 
 

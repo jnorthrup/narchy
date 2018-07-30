@@ -19,7 +19,7 @@ import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
 import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;

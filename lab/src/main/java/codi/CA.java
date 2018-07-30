@@ -2,7 +2,7 @@ package codi;
 
 
 import jcog.Util;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 
 import javax.swing.*;
 import java.awt.*;

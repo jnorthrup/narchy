@@ -1,7 +1,7 @@
 package jcog.decide;
 
 import jcog.Util;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Random;

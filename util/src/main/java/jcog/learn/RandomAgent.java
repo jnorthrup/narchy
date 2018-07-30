@@ -1,6 +1,6 @@
 package jcog.learn;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 
 import java.util.Random;
 

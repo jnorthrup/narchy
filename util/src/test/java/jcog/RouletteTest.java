@@ -2,8 +2,8 @@ package jcog;
 
 import jcog.decide.MutableRoulette;
 import jcog.decide.Roulette;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.ScalarValue;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.math3.stat.Frequency;
 import org.junit.jupiter.api.Test;
 

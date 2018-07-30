@@ -1,7 +1,7 @@
 package nars.video;
 
 import jcog.math.FloatRange;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import jcog.signal.Bitmap2D;
 
 import java.util.Random;

@@ -4,7 +4,7 @@ import com.google.common.graph.Graph;
 import com.google.common.graph.SuccessorsFunction;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.list.FasterList;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;

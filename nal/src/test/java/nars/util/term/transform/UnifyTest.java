@@ -1,6 +1,6 @@
 package nars.util.term.transform;
 
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.random.XorShift128PlusRandom;
 import nars.*;
 import nars.derive.premise.PremisePatternIndex;
 import nars.term.Compound;

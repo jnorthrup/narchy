@@ -1,4 +1,4 @@
-package jcog.math.tensor;
+package jcog.signal.tensor;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.AbstractIterator;

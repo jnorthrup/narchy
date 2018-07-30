@@ -7,7 +7,7 @@ package jcog.signal.meter.func;
 
 import jcog.signal.meter.FunctionMeter;
 import jcog.signal.meter.Metrics;
-import jcog.signal.meter.Signal;
+import jcog.signal.meter.ScalarColumn;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,14 +27,14 @@ public abstract class DependsOnColumn<Source,Result> extends FunctionMeter<Resul
         super("", numResults);
         
         int i = 0;
-        Signal m = metrics.getSignal(source);
+        ScalarColumn m = metrics.getSignal(source);
         if (m == null)
             throw new RuntimeException("Missing signal: " + source);
 
         this.metrics = metrics;
         sourceColumn = metrics.indexOf(source);
 
-        for (Signal s : getSignals()) {            
+        for (ScalarColumn s : getSignals()) {
             
         }
         
@@ -57,6 +57,6 @@ public abstract class DependsOnColumn<Source,Result> extends FunctionMeter<Resul
         return metrics.getNewSignalValues(column, i);
     }
     
-    protected abstract String getColumnID(Signal dependent, int i);
+    protected abstract String getColumnID(ScalarColumn dependent, int i);
     
 }

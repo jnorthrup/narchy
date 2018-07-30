@@ -4,119 +4,116 @@ package jcog.signal;
 import jcog.TODO;
 import jcog.Util;
 import jcog.math.FloatRange;
-import jcog.math.tensor.ArrayTensor;
-import jcog.math.tensor.Tensor;
+import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.Tensor;
 
 import java.awt.image.BufferedImage;
 
 public interface Bitmap2D {
 
     static int encodeRGB(float r, float g, float b) {
-        return  (Math.round(r*255) << 16) |
-                (Math.round(g*255) << 8) |
-                (Math.round(b*255));
+        return (Math.round(r * 255) << 16) |
+                (Math.round(g * 255) << 8) |
+                (Math.round(b * 255));
     }
 
-    /** explicit refresh update the image */
+    /**
+     * explicit refresh update the image
+     */
     default void update() {
 
     }
 
     int width();
+
     int height();
 
 
-    /** returns a value 0..1.0 indicating the monochrome brightness (white level) at the specified pixel */
+    /**
+     * returns a value 0..1.0 indicating the monochrome brightness (white level) at the specified pixel
+     */
     float brightness(int xx, int yy);
 
-    /** RGB filtered brightness, if supported; otherwise the factors are ignored */
+    /**
+     * RGB filtered brightness, if supported; otherwise the factors are ignored
+     */
     default float brightness(int xx, int yy, float rFactor, float gFactor, float bFactor) {
-        return brightness(xx, yy); 
+        return brightness(xx, yy);
     }
 
     static float rgbToMono(int r, int g, int b) {
-        return (r+g+b)/256f/3f;
+        return (r + g + b) / 256f / 3f;
     }
 
 
-    @FunctionalInterface interface EachPixelRGB {
+    @FunctionalInterface
+    interface EachPixelRGB {
         void pixel(int x, int y, int aRGB);
     }
-    @FunctionalInterface interface EachPixelRGBf {
+
+    @FunctionalInterface
+    interface EachPixelRGBf {
         void pixel(int x, int y, float r, float g, float b, float a);
     }
-    @FunctionalInterface interface PerPixelMono {
+
+    @FunctionalInterface
+    interface PerPixelMono {
         void pixel(int x, int y, float whiteLevel);
     }
-    @FunctionalInterface interface PerIndexMono {
+
+    @FunctionalInterface
+    interface PerIndexMono {
         void pixel(int index, float whiteLevel);
     }
 
 
-
-
-
-
-
-    default void intToFloat(EachPixelRGBf m, int x, int y, int p) {
-        
-        int a = 255;
-        float r = decodeRed(p);
-        float g = decodeGreen(p);
-        float b = decodeBlue(p);
-        m.pixel(x, y, r, g, b, a/256f);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//    default void intToFloat(EachPixelRGBf m, int x, int y, int p) {
+//
+//        int a = 255;
+//        float r = decodeRed(p);
+//        float g = decodeGreen(p);
+//        float b = decodeBlue(p);
+//        m.pixel(x, y, r, g, b, a/256f);
+//    }
 
 
     static float decodeRed(int p) {
-        return ((p & 0x00ff0000) >> 16)/256f;
+        return ((p & 0x00ff0000) >> 16) / 256f;
     }
+
     static float decodeGreen(int p) {
-        return ((p & 0x0000ff00) >> 8)/256f;
+        return ((p & 0x0000ff00) >> 8) / 256f;
     }
+
     static float decodeBlue(int p) {
-        return ((p & 0x000000ff))/256f;
+        return ((p & 0x000000ff)) / 256f;
     }
+
     static float decodeAlpha(int p) {
-        return ((p & 0xff000000) >> 24)/256f;
+        return ((p & 0xff000000) >> 24) / 256f;
     }
 
 
-    /** single color plane, float value intensity 0..1 */
-    abstract class BitmapTensor implements Tensor {
+    /**
+     * single color plane, float value intensity 0..1
+     */
+    abstract class BitmapTensor implements Tensor, Bitmap2D {
         protected int[] shape;
 
         public BitmapTensor() {
-            this(0,0,0);
+            this(0, 0, 0);
         }
+
         public BitmapTensor(int w, int h, int bitplanes) {
             resize(w, h, bitplanes);
         }
 
         protected void resize(int w, int h, int bitplanes) {
-            if (shape!=null) {
-                if (shape.length == 3 && shape[0]==w && shape[1] ==h && shape[2] == bitplanes )
+            if (shape != null) {
+                if (shape.length == 3 && shape[0] == w && shape[1] == h && shape[2] == bitplanes)
                     return; //no change
             }
-            this.shape = new int[] { w, h, bitplanes };
+            this.shape = new int[]{w, h, bitplanes};
         }
 
         @Override
@@ -124,10 +121,11 @@ public interface Bitmap2D {
             return shape;
         }
 
-        public int w() {
+        public int width() {
             return shape[0];
         }
-        public int h() {
+
+        public int height() {
             return shape[1];
         }
 
@@ -136,6 +134,16 @@ public interface Bitmap2D {
             throw new TODO();
         }
 
+        @Override
+        public float brightness(int xx, int yy) {
+            //TODO handle alpha channel correctly
+            int planes = shape[2];
+            float sum = 0;
+            for (int p = 0; p < planes; p++) {
+                sum += get(xx, yy, p);
+            }
+            return sum / planes;
+        }
 
         @Override
         public float get(int linearCell) {
@@ -185,17 +193,19 @@ public interface Bitmap2D {
         }
 
 
-
     }
 
-    class MutableRGBTensor extends ArrayTensor {
+    /**
+     * labeled FloatRange controls underlying ArrayTensor.  useful for UI purposes that rely on reflection for constructing widgets
+     */
+    class RGB extends ArrayTensor {
         public final FloatRange red, green, blue;
 
-        public MutableRGBTensor() {
+        public RGB() {
             this(0, 1);
         }
 
-        public MutableRGBTensor(float min, float max) {
+        public RGB(float min, float max) {
             super(new float[3]);
             red = new FloatRange(1f, min, max) {
                 @Override
@@ -233,19 +243,21 @@ public interface Bitmap2D {
 
         public void update(BitmapRGBTensor src) {
             this.src = src;
-            resize(src.w(), src.h(), 1);
+            resize(src.width(), src.height(), 1);
         }
 
         public float get(int x, int y) {
-            float r = src.get(x, y, 0);
-            float g = src.get(x, y, 1);
-            float b = src.get(x, y, 2);
+
             float R = rgbMix.get(0);
             float G = rgbMix.get(1);
             float B = rgbMix.get(2);
-            float RGB = Math.abs(R)+Math.abs(G)+Math.abs(B);
+            float RGB = Math.abs(R) + Math.abs(G) + Math.abs(B);
             if (RGB < Float.MIN_NORMAL)
                 return 0f;
+
+            float r = src.get(x, y, 0);
+            float g = src.get(x, y, 1);
+            float b = src.get(x, y, 2);
             return Util.unitize((r * R + g * G + b * B) / RGB);
         }
 

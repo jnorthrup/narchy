@@ -15,7 +15,7 @@
  */
 package org.oakgp.examples.simple;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.oakgp.Assignments;
 import org.oakgp.Evolution;
 import org.oakgp.NodeType;

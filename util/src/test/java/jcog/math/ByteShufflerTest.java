@@ -1,6 +1,6 @@
 package jcog.math;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

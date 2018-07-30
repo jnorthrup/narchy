@@ -6,7 +6,7 @@
 package jcog.signal.meter.func;
 
 import jcog.signal.meter.Metrics;
-import jcog.signal.meter.Signal;
+import jcog.signal.meter.ScalarColumn;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -37,7 +37,7 @@ public class BasicStatistics extends DependsOnColumn<Number,Double>  {
     
     
     @Override
-    protected String getColumnID(Signal dependent, int i) {
+    protected String getColumnID(ScalarColumn dependent, int i) {
         switch (i) {
             case 0: return dependent.id + ".mean";
             case 1: return dependent.id + ".stdev";
