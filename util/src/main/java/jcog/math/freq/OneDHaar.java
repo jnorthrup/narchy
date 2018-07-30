@@ -1,4 +1,4 @@
-package jcog.math;
+package jcog.math.freq;
 
 import jcog.Util;
 

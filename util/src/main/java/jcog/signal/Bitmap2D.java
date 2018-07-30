@@ -2,6 +2,9 @@ package jcog.signal;
 
 
 import jcog.TODO;
+import jcog.Util;
+import jcog.math.FloatRange;
+import jcog.math.tensor.ArrayTensor;
 import jcog.math.tensor.Tensor;
 
 import java.awt.image.BufferedImage;
@@ -97,15 +100,42 @@ public interface Bitmap2D {
     }
 
 
-    class RGBTensor implements Tensor {
-        private final BufferedImage img;
-        private final int[] shape;
+    /** single color plane, float value intensity 0..1 */
+    abstract class BitmapTensor implements Tensor {
+        protected int[] shape;
 
-        public RGBTensor(BufferedImage i) {
-            this.img = i;
-            int bitplanes = i.getRaster().getNumBands();
-            this.shape = new int[] { i.getWidth(), i.getHeight(), bitplanes };
+        public BitmapTensor() {
+            this(0,0,0);
         }
+        public BitmapTensor(int w, int h, int bitplanes) {
+            resize(w, h, bitplanes);
+        }
+
+        protected void resize(int w, int h, int bitplanes) {
+            if (shape!=null) {
+                if (shape.length == 3 && shape[0]==w && shape[1] ==h && shape[2] == bitplanes )
+                    return; //no change
+            }
+            this.shape = new int[] { w, h, bitplanes };
+        }
+
+        @Override
+        public int[] shape() {
+            return shape;
+        }
+
+        public int w() {
+            return shape[0];
+        }
+        public int h() {
+            return shape[1];
+        }
+
+        @Override
+        public float[] snapshot() {
+            throw new TODO();
+        }
+
 
         @Override
         public float get(int linearCell) {
@@ -121,15 +151,25 @@ public interface Bitmap2D {
 //           return get(x, y, p)
             throw new TODO();
         }
+    }
+
+    class BitmapRGBTensor extends BitmapTensor {
+        private final BufferedImage img;
+
+        public BitmapRGBTensor(BufferedImage i) {
+            super(i.getWidth(), i.getHeight(), i.getRaster().getNumBands());
+            this.img = i;
+        }
+
 
         @Override
         public float get(int... cell) {
             int x = cell[0];
             int y = cell[1];
+            int plane = cell[2];
 
             int p = img.getRGB(x, y);
 
-            int plane = cell[2];
             switch (plane) {
                 case 0:
                     return decodeRed(p);
@@ -144,16 +184,78 @@ public interface Bitmap2D {
             }
         }
 
-        @Override
-        public float[] snapshot() {
-            throw new TODO();
-        }
-
-        @Override
-        public int[] shape() {
-            return shape;
-        }
 
 
     }
+
+    class MutableRGBTensor extends ArrayTensor {
+        public final FloatRange red, green, blue;
+
+        public MutableRGBTensor() {
+            this(0, 1);
+        }
+
+        public MutableRGBTensor(float min, float max) {
+            super(new float[3]);
+            red = new FloatRange(1f, min, max) {
+                @Override
+                public void set(float newValue) {
+                    super.set(data[0] = newValue);
+                }
+            };
+            green = new FloatRange(1f, min, max) {
+                @Override
+                public void set(float newValue) {
+                    super.set(data[1] = newValue);
+                }
+            };
+            blue = new FloatRange(1f, min, max) {
+                @Override
+                public void set(float newValue) {
+                    super.set(data[2] = newValue);
+                }
+            };
+        }
+    }
+
+    class RGBToGrayBitmapTensor extends BitmapTensor {
+        private final Tensor rgbMix;
+        private volatile BitmapRGBTensor src;
+
+        public RGBToGrayBitmapTensor(Tensor rgbMix) {
+            this.rgbMix = rgbMix;
+        }
+
+        public RGBToGrayBitmapTensor(BitmapRGBTensor src, Tensor rgbMix) {
+            this(rgbMix);
+            update(src);
+        }
+
+        public void update(BitmapRGBTensor src) {
+            this.src = src;
+            resize(src.w(), src.h(), 1);
+        }
+
+        public float get(int x, int y) {
+            float r = src.get(x, y, 0);
+            float g = src.get(x, y, 1);
+            float b = src.get(x, y, 2);
+            float R = rgbMix.get(0);
+            float G = rgbMix.get(1);
+            float B = rgbMix.get(2);
+            float RGB = Math.abs(R)+Math.abs(G)+Math.abs(B);
+            if (RGB < Float.MIN_NORMAL)
+                return 0f;
+            return Util.unitize((r * R + g * G + b * B) / RGB);
+        }
+
+        @Override
+        public float get(int... cell) {
+            int x = cell[0];
+            int y = cell[1];
+            return get(x, y);
+        }
+
+    }
+
 }

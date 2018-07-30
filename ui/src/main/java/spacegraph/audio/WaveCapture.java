@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.exe.Loop;
-import jcog.math.OneDHaar;
+import jcog.math.freq.OneDHaar;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
