@@ -83,6 +83,10 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
+        return runRT(init, narFPS, narFPS);
+    }
+
+    public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
         /*
         try {
             Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
@@ -93,7 +97,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
-        float clockFPS = narFPS;
+
 
         RealTime clock =
                 new RealTime.MS();

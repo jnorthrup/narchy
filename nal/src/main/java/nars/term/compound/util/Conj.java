@@ -8,15 +8,14 @@ import nars.subterm.Subterms;
 import nars.task.Revision;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
+import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
@@ -918,14 +917,15 @@ public class Conj extends ByteAnonMap {
                         }
                     }
                     int sn = sequences.size();
-                    if (sn > 0) {
+                    if (sn > 0 && sn < t.size()) {
                         t.removeAll(sequences);
 
                         if (sn > 1) {
                             Conj a = new Conj();
+
                             for (Term s : sequences) {
-                                if (!a.add(0, s))
-                                    break;
+                                if (!a.add(when, s))
+                                    return null;
                             }
                             theSequence = a.term();
 
@@ -1266,9 +1266,9 @@ public class Conj extends ByteAnonMap {
      */
     static class Conjterpolate extends Conj {
 
-        private final Conj aa;
-        private final Term b;
-        private final NAR nar;
+//        private final Conj aa;
+//        private final Term b;
+//        private final NAR nar;
 
         /**
          * proportion of a vs. b, ie: (a/(a+b))
@@ -1277,18 +1277,25 @@ public class Conj extends ByteAnonMap {
 
         Conjterpolate(Term a, Term b, long bOffset, float aProp, NAR nar) {
 
-            this.b = b;
-            this.nar = nar;
+//            this.b = b;
+//            this.nar = nar;
 
-            this.aa = Conj.from(a);
+//            this.aa = Conj.from(a);
 //            this.idToTerm.addAll(aa.idToTerm);
 //            this.termToId.putAll(aa.termToId);
 
             this.aProp = aProp;
+
+
+            addAuto(a);
+
+
             if (bOffset == 0)
                 addAuto(b);
             else
                 add(bOffset, b);
+
+            compress(Math.max(a.volume(), b.volume()), Math.round(nar.intermpolationDurLimit.floatValue()*nar.dur()));
 
             //TODO simplify
 
@@ -1321,95 +1328,150 @@ public class Conj extends ByteAnonMap {
 //            });
         }
 
-        @Override
-        public boolean add(long bt, final Term what) {
-            assert (bt != XTERNAL);
+        protected void compress(int targetVol, int interpolationThresh /* time units */) {
+            if (interpolationThresh < 1)
+                return;
 
-            {
-                boolean neg = what.op() == NEG;
-
-
-                byte tid = termToId.getIfAbsent(neg ? what.unneg() : what, (byte) -1);
-                if (tid == (byte) -1)
-                    return super.add(bt, what);
-
-                byte tInA = (byte) (tid * (neg ? -1 : +1));
-
-
-                LongArrayList whens = new LongArrayList(2);
-
-                aa.event.forEachKeyValue((long when, Object wat) -> {
-                    if (wat instanceof RoaringBitmap) {
-                        RoaringBitmap r = (RoaringBitmap) wat;
-                        if (r.contains(tInA) && !r.contains(-tInA)) {
-                            whens.add(when);
-                        }
-                    } else {
-                        byte[] ii = (byte[]) wat;
-                        if (ArrayUtils.indexOf(ii, tInA) != -1 && ArrayUtils.indexOf(ii, (byte) -tInA) == -1) {
-                            whens.add(when);
-                        }
-                    }
-                });
-
-
-                int ws = whens.size();
-                if (ws > 0) {
-
-                    if (whens.contains(bt))
-                        return true;
-
-                    long at;
-                    if (ws > 1) {
-                        LongToLongFunction temporalDistance;
-                        if (bt == ETERNAL) {
-                            temporalDistance = (a) -> a == ETERNAL ? 0 : Long.MAX_VALUE;
-                        } else {
-                            temporalDistance = (a) -> a == ETERNAL ? Long.MAX_VALUE : Math.abs(bt - a);
-                        }
-                        long[] whensArray = whens.toArray();
-                        ArrayUtils.sort(whensArray, temporalDistance);
-
-                        at = whensArray[whensArray.length - 1];
-                    } else {
-                        at = whens.get(0);
-                    }
-
-                    long merged = merge(at, bt);
-                    if (merged != at) {
-
-                        if ((merged == DTERNAL || merged == XTERNAL) && (at != DTERNAL && bt != DTERNAL && at != XTERNAL && bt != XTERNAL)) {
-                            //add as unique event (below)
-                        } else {
-//                            boolean r = aa.remove(what, at); //remove original add the new merged
-//                            if (!r) {
-//                                assert (r);
-//                            }
-                            return super.add(merged, what);
-                        }
-
-                    } else {
-                        return true; //exact
+            //find any two time points that differ by less than the interpolationThresh interval
+            long[] times = this.event.keySet().toSortedArray();
+            if (times.length < 2) return;
+            for (int i = 1; i < times.length; i++) {
+                if (times[i-1]==DTERNAL)
+                    continue;
+                long dt = times[i] - times[i-1];
+                if (Math.abs(dt) <= interpolationThresh) {
+                    if (combine(times[i-1], times[i])) {
+                        i++; //skip past current pair
                     }
                 }
-                return super.add(bt, what);
-
             }
+        }
+        protected boolean combine(long a, long b) {
+            assert(a!=b);
+            assert(a!=DTERNAL && b!=DTERNAL && a!=XTERNAL && b!=XTERNAL);
+            ByteHashSet common = new ByteHashSet();
+            addAllTo(common, event.remove(a));
+            addAllTo(common, event.remove(b));
+            common.remove((byte) 0); //remove any '0' value from a byte[] array
 
+            //detect conflicting combination
+            byte[] ca = common.toArray();
+            boolean changed = false;
+            for (byte cc : ca) {
+                if(cc < 0 && common.contains((byte) -cc)) {
+                    common.remove(cc);
+                    common.remove((byte) -cc);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                ca = common.toArray();
+            }
+            if (ca.length > 0) {
+                long mid = (a + b) / 2L; //TODO better choice
+                event.put(mid, ca);
+            }
+            return true;
         }
 
-        long merge(long a, long b) {
-            if (a == b) return a;
-            if (a == ETERNAL || b == ETERNAL)
-                return ETERNAL;
-            if (a == XTERNAL || b == XTERNAL)
-                throw new RuntimeException("xternal in conjtermpolate");
+//        @Override
+//        public boolean add(long bt, final Term what) {
+//            assert (bt != XTERNAL);
+//
+//            {
+//                boolean neg = what.op() == NEG;
+//
+//
+//                byte tid = termToId.getIfAbsent(neg ? what.unneg() : what, (byte) -1);
+//                if (tid == (byte) -1)
+//                    return super.add(bt, what);
+//
+//                byte tInA = (byte) (tid * (neg ? -1 : +1));
+//
+//
+//                LongArrayList whens = new LongArrayList(2);
+//
+//                aa.event.forEachKeyValue((long when, Object wat) -> {
+//                    if (wat instanceof RoaringBitmap) {
+//                        RoaringBitmap r = (RoaringBitmap) wat;
+//                        if (r.contains(tInA) && !r.contains(-tInA)) {
+//                            whens.add(when);
+//                        }
+//                    } else {
+//                        byte[] ii = (byte[]) wat;
+//                        if (ArrayUtils.indexOf(ii, tInA) != -1 && ArrayUtils.indexOf(ii, (byte) -tInA) == -1) {
+//                            whens.add(when);
+//                        }
+//                    }
+//                });
+//
+//
+//                int ws = whens.size();
+//                if (ws > 0) {
+//
+//                    if (whens.contains(bt))
+//                        return true;
+//
+//                    long at;
+//                    if (ws > 1) {
+//                        LongToLongFunction temporalDistance;
+//                        if (bt == ETERNAL) {
+//                            temporalDistance = (a) -> a == ETERNAL ? 0 : Long.MAX_VALUE;
+//                        } else {
+//                            temporalDistance = (a) -> a == ETERNAL ? Long.MAX_VALUE : Math.abs(bt - a);
+//                        }
+//                        long[] whensArray = whens.toArray();
+//                        ArrayUtils.sort(whensArray, temporalDistance);
+//
+//                        at = whensArray[whensArray.length - 1];
+//                    } else {
+//                        at = whens.get(0);
+//                    }
+//
+//                    long merged = merge(at, bt);
+//                    if (merged != at) {
+//
+//                        if ((merged == DTERNAL || merged == XTERNAL) && (at != DTERNAL && bt != DTERNAL && at != XTERNAL && bt != XTERNAL)) {
+//                            //add as unique event (below)
+//                        } else {
+////                            boolean r = aa.remove(what, at); //remove original add the new merged
+////                            if (!r) {
+////                                assert (r);
+////                            }
+//                            return super.add(merged, what);
+//                        }
+//
+//                    } else {
+//                        return true; //exact
+//                    }
+//                }
+//                return super.add(bt, what);
+//
+//            }
+//
+//        }
 
+//        long merge(long a, long b) {
+//            if (a == b) return a;
+//            if (a == ETERNAL || b == ETERNAL)
+//                return ETERNAL;
+//            if (a == XTERNAL || b == XTERNAL)
+//                throw new RuntimeException("xternal in conjtermpolate");
+//
+//
+//            return Tense.dither(Revision.merge(a, b, aProp, nar), nar);
+//
+//        }
 
-            return Tense.dither(Revision.merge(a, b, aProp, nar), nar);
+    }
 
+    private static void addAllTo(ByteHashSet common, Object o) {
+        if (o instanceof byte[])
+            common.addAll((byte[])o);
+        else {
+            RoaringBitmap r = (RoaringBitmap)o;
+            r.forEach((int x) -> common.add((byte) x));
         }
-
     }
 
 

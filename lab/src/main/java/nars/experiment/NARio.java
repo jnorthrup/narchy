@@ -25,7 +25,7 @@ public class NARio extends NAgentX {
     private final MarioComponent mario;
 //    private final AbstractSensor cam;
 
-    static final float fps = 12;
+    static final float fps = 24;
 
     public NARio(NAR nar) {
         super("nario", fps(fps), nar);
@@ -306,7 +306,7 @@ public class NARio extends NAgentX {
 
     int lastCoins;
 
-    public final FloatRange MoveRight = new FloatRange(0.25f, 0f, 1f);
+    public final FloatRange MoveRight = new FloatRange(0.75f, 0f, 1f);
     public final FloatRange EarnCoin = new FloatRange(0.95f, 0f, 1f);
 
     float lastX;
@@ -326,7 +326,7 @@ public class NARio extends NAgentX {
             return x;
 
 
-        }, fps*2);
+        }, fps);
 
 
     }

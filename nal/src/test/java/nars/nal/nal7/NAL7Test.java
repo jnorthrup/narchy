@@ -1328,5 +1328,22 @@ public class NAL7Test extends NALTest {
         test.inputAt(1, "((a &&+5 (--,a))=|>(b &&+5 (--,b))). |");
         test.mustNotOutput(cycles , "(b &&+5 (--,b))", BELIEF, 0f, 1f, 0f, 1f, (t) -> t==6);
     }
-
+    @Test
+    void testDurationOfInductedImplication() {
+        /*
+        right start/end timing of result?
+           $.21 ((--,(left-->trackXY)) ==>+384 (right-->trackXY)). 21516⋈21867 %0.0;.44% {22256: 1ÂS;1ÅÌ;1Åà;1Åõ} ((%1,%2,(--,is(%1,"==>"))),(((--,%2) ==>+- %1),((InductionPN-->Belief),(BeliefRelative-->Time),(VarIntro-->Also))))
+                $.50 (right-->trackXY). 21900⋈22251 %0.0;.90% {21900: 1Åõ}
+                $.50 (left-->trackXY). 21516⋈22251 %0.0;.86% {22256: 1Åà;1ÅÌ;1ÂS}
+         */
+        test.inputAt(1L,"x. |..+2"); //1..3
+        test.inputAt(2L,"y. |..+2"); //2..4
+        test.mustBelieve(cycles,"(x ==>+1 y)", 1f, 0.45f, 1, 3); //(s,e)->(s==1 && e==2));
+    }
+    @Test
+    void testDurationOfInductedImplicationLimited() {
+        test.inputAt(1L,"x. |..+2"); //1..3
+        test.inputAt(2L,"y. |..+1"); //2..3
+        test.mustBelieve(cycles,"(x ==>+1 y)", 1f, 0.45f, 1, 2); //(s,e)->(s==1 && e==2));
+    }
 }

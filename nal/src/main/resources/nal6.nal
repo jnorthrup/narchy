@@ -203,9 +203,17 @@
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==> (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
 
-    (M ==> C), X, eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Belief:StructuralReduction)
-    (C ==> M), X, eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
-    (--C ==> M), X, eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
+    (M ==> C), X, eventOf(C,X) |- (M ==> conjWithout(C,X)), (Belief:StructuralReduction)
+    (M ==> C), X, eventOfNeg(C,X) |- (M ==> conjWithout(C,--X)), (Belief:StructuralReduction)
+        //(M ==> C), X, eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Belief:StructuralReduction)
+
+    (C ==> M), X, eventOf(C,X) |- (conjWithout(C,X) ==> M), (Belief:StructuralReduction)
+    (C ==> M), X, eventOfNeg(C,X) |- (conjWithout(C,--X) ==> M), (Belief:StructuralReduction)
+        //(C ==> M), X, eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
+
+    (--C ==> M), X, eventOf(C,X) |- (--conjWithout(C,X) ==> M), (Belief:StructuralReduction)
+    (--C ==> M), X, eventOfNeg(C,X) |- (--conjWithout(C,--X) ==> M), (Belief:StructuralReduction)
+        //(--C ==> M), X, eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
 
             //(M ==> C), X, task("?"), eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Punctuation:Question)
         //(M ==> C), X, eventOfNeg(C,X) |- (M ==> conjWithout(C,--X)), (Belief:StructuralReduction)
