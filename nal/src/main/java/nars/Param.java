@@ -52,7 +52,7 @@ public abstract class Param {
     public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
     public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 256;
-    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 128;
+    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 32;
 
 
     //5;
@@ -202,11 +202,11 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**

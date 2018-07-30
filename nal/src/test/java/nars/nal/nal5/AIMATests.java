@@ -82,11 +82,11 @@ class AIMATests {
     void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.05f);
+        n.freqResolution.set(0.1f);
         n.confMin.set(0.01f);
 
-        n.beliefPriDefault.set(0.3f);
-        n.questionPriDefault.set(0.5f);
+//        n.beliefPriDefault.set(0.3f);
+//        n.questionPriDefault.set(0.5f);
 
         n.termVolumeMax.set(28);
 //        n.log();
@@ -114,7 +114,7 @@ class AIMATests {
         });
 
 
-        n.run(4000);
+        n.run(3000);
 //        n.synch();
 
 

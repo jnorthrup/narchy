@@ -26,7 +26,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
      */
     public final FloatRange evidenceImportance = new FloatRange(1f, 0f, 1f);
 
-    public final FloatRange relGrowthExponent = new FloatRange(3f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
 
     @Override
     public float pri(Task t, Derivation d) {
@@ -35,9 +35,10 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
         float pCompl = d.parentComplexitySum;
         float dCompl = t.voluplexity();
+        float penalty = 1; //base penalty (relative to parent complexity)
         float relGrowthCostFactor =
                 //pCompl / (pCompl + dCompl);
-                1f / (1f + Math.max(0, (dCompl - pCompl) / (pCompl)));
+                1f / (1f + (penalty + Math.max(0, (dCompl - pCompl) )) / pCompl);
 
         factor *= Math.pow(relGrowthCostFactor, relGrowthExponent.floatValue());
 

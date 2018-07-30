@@ -293,6 +293,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
                 if (b != -1) {
                     line = line.substring(a+1, b);
                     defineNominal(name, line.split("\\s*,\\s*"));
+                    return;
                 }
             }
             throw new ARFFParseError(lineno, "Attribute of type \"" + type + "\" not supported (yet)");

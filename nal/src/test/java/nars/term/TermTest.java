@@ -330,7 +330,7 @@ public class TermTest {
 
         Term y = $.$(ys);
         String yc;
-        assertEquals("((--,tetris(isRow,13,true))&&tetris(isRowClear,6,true))", yc = y.concept().toString());
+        assertEquals("((--,tetris(isRow,13,true)) &&+- tetris(isRowClear,6,true))", yc = y.concept().toString());
 
         assertEquals(yc, y.root().toString());
 

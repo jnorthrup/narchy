@@ -61,11 +61,11 @@ public class FZero extends NAgentX {
                 ;
 
 
-        initToggleLeftRight();
+        //initToggleLeftRight();
         //initToggleFwdStop();
 
-        initUnipolarLinear(3f);
-        //initBipolarRotateDirect(true, 0.5f);
+        initUnipolarLinear(4f);
+        initBipolarRotateDirect(true, 0.5f);
 
         //initBipolarRotateRelative(fair, rotFactor);
         //initBipolarRotateAbsolute(fair);

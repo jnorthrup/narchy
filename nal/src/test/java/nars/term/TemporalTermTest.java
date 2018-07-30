@@ -596,7 +596,7 @@ class TemporalTermTest {
 
             Term f0 = $("(y " + op + "+- x)");
             assertEquals("(x " + op + "+- y)", f0.toString());
-            assertEquals("(x" + op + "+- y)", f0.root().toString());
+            assertEquals("(x " + op + "+- y)", f0.root().toString());
 
             Concept f = n.conceptualize(f0);
             assertSame(e, f, e + "==" + f);

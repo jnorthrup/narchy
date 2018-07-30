@@ -28,15 +28,12 @@ public interface TaskLink extends Priority, Termed {
     Task get(NAR n);
 
 
-
-
-
-
-
-    /** Tasklike productions */
+    /**
+     * Tasklike productions
+     */
     class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         final Term term;
-        
+
         final byte punc;
         final long when;
         private final int hash;
@@ -44,21 +41,21 @@ public interface TaskLink extends Priority, Termed {
         public Tasklike(Term term, byte punc, long when) {
             this.punc = punc;
 
-            if (when == XTERNAL || when!=ETERNAL &&
-                    (when < -9023372036854775808L || when > +9023372036854775808L ) )
+            if (when == XTERNAL || when != ETERNAL &&
+                    (when < -9023372036854775808L || when > +9023372036854775808L))
                 throw new RuntimeException("detected invalid time");
 
             this.when = when;
 
             this.term = term;
-            assert(term.op().conceptualizable && term.op()!=NEG);
+            assert (term.op().conceptualizable && term.op() != NEG);
 
-            
+
             this.hash = Util.hashCombine(term.hashCode(), punc, Long.hashCode(when));
         }
 
         public final Term term() {
-            
+
             return term;
         }
 
@@ -66,23 +63,24 @@ public interface TaskLink extends Priority, Termed {
         public String toString() {
             return term.toString() +
                     (char) punc +
-                   (when!=ETERNAL ? ("@" + when) : "");
+                    (when != ETERNAL ? ("@" + when) : "");
         }
 
-        @Override public boolean equals(Object o) {
+        @Override
+        public boolean equals(Object o) {
             if (this == o) return true;
 
-            
+
             Tasklike tasklike = (Tasklike) o;
             if (hash != tasklike.hash) return false;
 
             return punc == tasklike.punc && when == tasklike.when &&
-                    
+
                     term.equals(tasklike.term);
         }
 
         @Override
-        public int hashCode() {
+        public final int hashCode() {
             return hash;
         }
 
@@ -104,9 +102,11 @@ public interface TaskLink extends Priority, Termed {
                 byte punc;
                 switch (this.punc) {
                     case BELIEF:
-                        punc = QUESTION; break;
+                        punc = QUESTION;
+                        break;
                     case GOAL:
-                        punc = QUEST; break;
+                        punc = QUEST;
+                        break;
                     case QUESTION:
                     case QUEST:
                         punc = this.punc;
@@ -122,13 +122,13 @@ public interface TaskLink extends Priority, Termed {
                 r.pri(link.priElseZero());
             }
 
-            if (c!=null && r!=null && !t.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
+            if (c != null && r != null && !t.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
                 if (r.isQuestionOrQuest()) {
                     BeliefTable answers = c.tableAnswering(r.punc());
                     if (answers instanceof DynamicBeliefTable) {
                         //match an answer emulating a virtual self-termlink being matched during premise formation
                         Task a = answers.answer(r, n);
-                        if (a!=null) {
+                        if (a != null) {
                             n.input(a);
                         }
                     }
@@ -146,9 +146,6 @@ public interface TaskLink extends Priority, Termed {
      * may delete itself if the target concept is not conceptualized.
      */
     class GeneralTaskLink extends PLink<Tasklike> implements TaskLink {
-
-
-
 
 
         public GeneralTaskLink(Task t, NAR n, float pri) {
@@ -173,16 +170,16 @@ public interface TaskLink extends Priority, Termed {
 
         public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
             long when = t.isEternal() ? ETERNAL : Tense.dither(
-                    
+
                     t.mid()
-                        //+ tt.dtRange() / 2
+                    //+ tt.dtRange() / 2
                     , n);
             return seed(
                     t.term()
-                        .concept()
-                        .negIf(
-                            polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
-                        ),
+                            //.concept()
+                            .negIf(
+                                    polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
+                            ),
                     t.punc(), when);
         }
 
@@ -194,7 +191,7 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public String toString() {
-            return toBudgetString() + " " + term() + ((char)punc()) + ":" + when();
+            return toBudgetString() + " " + term() + ((char) punc()) + ":" + when();
         }
 
         public Term term() {
@@ -239,31 +236,6 @@ public interface TaskLink extends Priority, Termed {
 
             return id;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
