@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 /** chains 2 or more tensors along the 0th dimension */
@@ -45,7 +46,7 @@ public class TensorChain extends BatchArrayTensor {
 
 
     @Override
-    public float get(int linearCell) {
+    public float getAt(int linearCell) {
         throw new UnsupportedOperationException("TODO similar to the other get");
     }
 

@@ -1,6 +1,6 @@
 package nars.agent;
 
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;

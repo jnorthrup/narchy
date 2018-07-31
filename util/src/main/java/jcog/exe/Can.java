@@ -1,7 +1,5 @@
 package jcog.exe;
 
-import jcog.signal.meter.event.AtomicLongGuage;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -11,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * accumulates, in nanoseconds (long) the time spent, and the # of work items (int)
  */
-public class Can extends AtomicLongGuage {
+public class Can  {
 
     private final static AtomicInteger serial = new AtomicInteger();
 
@@ -23,7 +21,7 @@ public class Can extends AtomicLongGuage {
     }
 
     public Can(String id) {
-        super(2);
+        super();
         this.id = id;
     }
 

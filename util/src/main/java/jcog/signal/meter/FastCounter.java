@@ -27,7 +27,7 @@ public class FastCounter extends AtomicLong implements Monitor<Number>, Counter 
 
     @Override
     public void increment(long amount) {
-        getAndAdd(amount);
+        addAndGet(amount);
     }
 
     /**
@@ -35,12 +35,12 @@ public class FastCounter extends AtomicLong implements Monitor<Number>, Counter 
      */
     @Override
     public final Number getValue(int pollerIdx) {
-        return get();
+        return getValue();
     }
 
     @Override
     public final Number getValue() {
-        return get();
+        return getOpaque();
     }
 
     @Override

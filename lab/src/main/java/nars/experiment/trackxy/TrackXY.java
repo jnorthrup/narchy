@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
-import jcog.signal.ArrayBitmap2D;
+import jcog.signal.wave2d.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
 import nars.agent.FrameTrigger;

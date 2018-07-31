@@ -1,4 +1,4 @@
-package jcog.signal.vectorize;
+package jcog.signal.wave2d.vectorize;
 
 
 public class SelectiveBlur {

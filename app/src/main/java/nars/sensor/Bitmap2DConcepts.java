@@ -3,7 +3,7 @@ package nars.sensor;
 import jcog.data.iterator.Array2DIterable;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.NAR;
 import nars.concept.sensor.Signal;

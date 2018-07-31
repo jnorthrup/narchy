@@ -12,7 +12,7 @@ import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.random.SplitMix64Random;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.tensor.ArrayTensor;
-import jcog.signal.tensor.Tensor;
+import jcog.signal.Tensor;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -186,7 +186,7 @@ class BagTest {
         System.out.println(h + ":\n\t" + f1.tsv2());
         System.out.println();
 
-        float[] ff = f1.get();
+        float[] ff = f1.snapshot();
 
         
 

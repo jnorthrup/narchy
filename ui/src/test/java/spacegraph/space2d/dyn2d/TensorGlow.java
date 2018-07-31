@@ -4,7 +4,7 @@ import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.signal.tensor.Tensor;
+import jcog.signal.Tensor;
 import jcog.signal.tensor.TensorLERP;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;

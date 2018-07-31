@@ -1,4 +1,4 @@
-package jcog.signal.vectorize;
+package jcog.signal.wave2d.vectorize;
 
 
 import java.util.ArrayList;
@@ -199,8 +199,7 @@ public class VectorizingUtils {
 
 					
 					px = i; py = j;
-					paths.add(new ArrayList<>());
-					thispath = paths.get(paths.size()-1);
+					paths.add(thispath = new ArrayList<>());
 					pathfinished = false;
 
 					
@@ -210,10 +209,7 @@ public class VectorizingUtils {
 					while(!pathfinished){
 
 						
-						thispath.add(new Integer[3]);
-						thispath.get(thispath.size()-1)[0] = px-1;
-						thispath.get(thispath.size()-1)[1] = py-1;
-						thispath.get(thispath.size()-1)[2] = arr[py][px];
+						thispath.add(new Integer[] { px-1, py-1, arr[py][px]});
 
 						
 						lookuprow = pathscan_combined_lookup[ arr[py][px] ][ dir ];

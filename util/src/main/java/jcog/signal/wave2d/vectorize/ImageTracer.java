@@ -1,5 +1,5 @@
 
-package jcog.signal.vectorize;
+package jcog.signal.wave2d.vectorize;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
-import static jcog.signal.vectorize.SVGUtils.svgpathstring;
-import static jcog.signal.vectorize.SVGUtils.tosvgcolorstr;
+import static jcog.signal.wave2d.vectorize.SVGUtils.svgpathstring;
+import static jcog.signal.wave2d.vectorize.SVGUtils.tosvgcolorstr;
 
 
 public class ImageTracer {
@@ -166,12 +166,12 @@ public class ImageTracer {
             
             float w = (int) (this.width * options.get("scale")), h = (int) (this.height * options.get("scale"));
 
-            String viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + " " + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
+            String viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + ' ' + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
             StringBuilder svgstr = new StringBuilder("<svg " + viewboxorviewport + "version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" ");
             if (options.get("desc") != 0) {
                 svgstr.append("desc=\"Created with ImageTracer.java version ").append(ImageTracer.versionnumber).append("\" ");
             }
-            svgstr.append(">");
+            svgstr.append('>');
 
             render(options, w, h, (path, color)->{
 
@@ -221,6 +221,7 @@ public class ImageTracer {
         byte[][] bytepalette = new byte[numberofcolors][4];
 
         for (int i = 0; i < palette.length; i++) {
+            //TODO use Bitmap2D decode... functions rather than new Color
             Color c = new Color(palette[i]);
             bytepalette[i][0] = (byte) c.getRed();
             bytepalette[i][1] = (byte) c.getGreen();

@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 public class RingBufferTensor extends ArrayTensor {
@@ -46,7 +47,7 @@ public class RingBufferTensor extends ArrayTensor {
 
 
     @Override
-    public float[] get() {
+    public float[] snapshot() {
         t.get();
         t.writeTo(data, target * segment);
         if (++target == num) target = 0;

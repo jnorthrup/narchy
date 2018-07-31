@@ -23,7 +23,7 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
     }
 
     @Override
-    public final void emit(V x) {
+    public void emit(V x) {
         final Consumer[] cc = this.copy;
 
         for (Consumer c: cc)

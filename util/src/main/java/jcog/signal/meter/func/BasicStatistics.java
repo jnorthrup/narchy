@@ -14,7 +14,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 /**
  * Uses apache commons math 
  */
-public class BasicStatistics extends DependsOnColumn<Number,Double>  {
+public class BasicStatistics extends DerivedColumn<Number,Double> {
     
     private StatisticalSummary stat;
 

@@ -1,4 +1,4 @@
-package jcog.signal;
+package jcog.signal.wave2d;
 
 import jcog.util.IntIntToFloatFunction;
 

@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @param Source Return type
  */
-public abstract class DependsOnColumn<Source,Result> extends FunctionMeter<Result> {
+public abstract class DerivedColumn<Source,Result> extends FunctionMeter<Result> {
 
     protected final int sourceColumn;
     protected final Metrics metrics;
@@ -23,7 +23,7 @@ public abstract class DependsOnColumn<Source,Result> extends FunctionMeter<Resul
 
     
 
-    public DependsOnColumn(Metrics metrics, String source, int numResults) {
+    public DerivedColumn(Metrics metrics, String source, int numResults) {
         super("", numResults);
         
         int i = 0;

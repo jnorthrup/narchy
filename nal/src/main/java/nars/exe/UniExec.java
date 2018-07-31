@@ -1,6 +1,5 @@
 package nars.exe;
 
-import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Ons;
@@ -110,7 +109,6 @@ public class UniExec extends AbstractExec {
                     int n = size();
 
                     this.forEach((InstrumentedWork s) -> {
-                        ((Causable)s.who).can.commit((l, i) -> { /* unused */ });
                         double v = ((Causable)s.who).value();
                         s.valueNormalized = v;
                         if (v > valMax[0]) valMax[0] = v;
@@ -119,6 +117,7 @@ public class UniExec extends AbstractExec {
 
                     double valRange = valMax[0] - valMin[0];
                     float UPDATE_RATE = 0.2f;
+
                     if (Math.abs(valRange) > Double.MIN_NORMAL) {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY};
@@ -167,8 +166,8 @@ public class UniExec extends AbstractExec {
                                 if (Double.isFinite(valuePerSecondNormalized)) {
                                     s.pri((float) valuePerSecondNormalized, UPDATE_RATE);
                                 } else {
-                                    //s.pri(0);
-                                    throw new TODO();
+                                    s.pri(0);
+                                    //throw new TODO();
                                 }
 
                                 //System.out.println(s + " " + s.iterations.getMean());

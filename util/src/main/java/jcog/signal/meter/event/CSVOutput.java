@@ -24,7 +24,7 @@ public class CSVOutput extends PrintStream {
         super(out);
         println(Joiner.on(',').join(Iterables.transform(
                 new ArrayIterator<>(headers),
-                col -> "\"" + col + "\"" 
+                col -> '"' + col + '"'
             )
         ));
     }

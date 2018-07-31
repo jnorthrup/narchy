@@ -2,6 +2,7 @@ package jcog.signal.tensor;
 
 import jcog.Util;
 import jcog.math.FloatSupplier;
+import jcog.signal.Tensor;
 import jcog.util.FloatFloatToFloatFunction;
 
 /** rate between 0 and 1 */

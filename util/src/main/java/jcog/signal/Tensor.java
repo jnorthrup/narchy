@@ -1,8 +1,12 @@
-package jcog.signal.tensor;
+package jcog.signal;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.AbstractIterator;
 import jcog.Texts;
+import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.BufferedTensor;
+import jcog.signal.tensor.TensorFunc;
+import jcog.signal.tensor.TensorTensorFunc;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
@@ -11,9 +15,8 @@ import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.function.Supplier;
 
-public interface Tensor extends Supplier<float[]> {
+public interface Tensor  {
 
     static Tensor vectorFromTo(int start, int end) {
 
@@ -92,7 +95,7 @@ public interface Tensor extends Supplier<float[]> {
     }
 
     static float sum(Tensor vector) {
-        return vector.sum();
+        return vector.sumValues();
     }
 
     static Tensor randomVector(int dimension, float min, float max) {
@@ -106,16 +109,12 @@ public interface Tensor extends Supplier<float[]> {
                         d -> (float)random.nextGaussian() * standardDeviation + mean);
     }
 
-    @Override
-    default float[] get() {
-        return snapshot();
-    }
 
     default float get(int... cell) {
-        return get(index(cell));
+        return getAt(index(cell));
     }
 
-    float get(int linearCell);
+    float getAt(int linearCell);
 
     default int index(int... coord) {
         int f = coord[0];
@@ -136,7 +135,13 @@ public interface Tensor extends Supplier<float[]> {
     }
 
 
-    float[] snapshot();
+    default float[] snapshot() {
+        int v = volume();
+        float[] x = new float[v];
+        for (int i = 0; i < v; i++)
+            x[i] = getAt(i);
+        return x;
+    }
 
     
 
@@ -185,7 +190,7 @@ public interface Tensor extends Supplier<float[]> {
      */
     default void forEach(IntFloatProcedure sequential, int start, int end) {
         for (int i = start; i < end; i++ ) {
-            sequential.value(i, get(i));
+            sequential.value(i, getAt(i));
         }
     }
 
@@ -228,7 +233,7 @@ public interface Tensor extends Supplier<float[]> {
     }
 
 
-    default float max() {
+    default float maxValue() {
         final float[] max = {Float.MIN_VALUE};
         forEach((i, v) -> {
             if (max[0] < v)
@@ -237,7 +242,7 @@ public interface Tensor extends Supplier<float[]> {
         return max[0];
     }
 
-    default float min() {
+    default float minValue() {
         final float[] min = {Float.MAX_VALUE};
         forEach((i, v) -> {
             if (min[0] > v)
@@ -246,7 +251,7 @@ public interface Tensor extends Supplier<float[]> {
         return min[0];
     }
 
-    default float sum() {
+    default float sumValues() {
         final float[] sum = {0};
         forEach((i,x) -> {
             sum[0] += x;
@@ -276,7 +281,7 @@ public interface Tensor extends Supplier<float[]> {
             @Override
             protected X computeNext() {
                 if (j == limit) return endOfData();
-                return map.valueOf(get(j++));
+                return map.valueOf(getAt(j++));
             }
         };
     }
@@ -301,11 +306,11 @@ public interface Tensor extends Supplier<float[]> {
         int lowerIndex = Math.max(0, Math.round(posInBuf - 0.5f));
         int upperIndex = Math.min(v, Math.round(posInBuf + 0.5f));
         float offset = posInBuf - lowerIndex;
-        float l = get(lowerIndex);
+        float l = getAt(lowerIndex);
 
 
 
-        float u = get(upperIndex);
+        float u = getAt(upperIndex);
         return (1 - offset) * l + offset * u;
     }
 
@@ -317,7 +322,7 @@ public interface Tensor extends Supplier<float[]> {
      */
 
     default float getFractRaw(float fraction) {
-        return get((int) (fraction * volume()));
+        return getAt((int) (fraction * volume()));
     }
 
 

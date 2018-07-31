@@ -8,9 +8,11 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Ons;
 import jcog.event.Topic;
-import jcog.signal.Bitmap2D;
+import jcog.signal.Tensor;
+import jcog.signal.named.RGB;
 import jcog.signal.tensor.AsyncTensor;
-import jcog.signal.tensor.Tensor;
+import jcog.signal.wave2d.RGBBitmap2DTensor;
+import jcog.signal.wave2d.RGBToGrayBitmap2DTensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.space2d.SurfaceBase;
@@ -46,7 +48,7 @@ public class WebCam {
 
     public final Topic<WebcamEvent> eventChange = new ListTopic();
 
-    public final AsyncTensor tensor = new AsyncTensor();
+    public final AsyncTensor<RGBBitmap2DTensor> tensor = new AsyncTensor();
 
     private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
 
@@ -104,7 +106,7 @@ public class WebCam {
                         eventChange.emit(we);
 
                         if (!tensor.isEmpty()) {
-                            tensor.emit(new Bitmap2D.BitmapRGBTensor(nextImage));
+                            tensor.emit(new RGBBitmap2DTensor(nextImage));
                         }
                     }
                 } else {
@@ -222,8 +224,8 @@ public class WebCam {
         public final WebCam cam;
         private volatile Tensor current = null;
 
-        public final Bitmap2D.RGB mix = new Bitmap2D.RGB(-1, +1);
-        final Bitmap2D.RGBToGrayBitmapTensor mixed = new Bitmap2D.RGBToGrayBitmapTensor(mix);
+        public final RGB mix = new RGB(-1, +1);
+        final RGBToGrayBitmap2DTensor mixed = new RGBToGrayBitmap2DTensor(mix);
 
         ChannelView(WebCam cam) {
             this.cam = cam;
@@ -231,7 +233,7 @@ public class WebCam {
             BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y)->{
                 Tensor c = current;
                 if (c!=null) {
-                    mixed.update((Bitmap2D.BitmapRGBTensor) current);
+                    mixed.update((RGBBitmap2DTensor) current);
                     float intensity = //c.get(x, y, channel);
                             mixed.get(x, y);
                     return Draw.rgbInt(intensity, intensity, intensity);

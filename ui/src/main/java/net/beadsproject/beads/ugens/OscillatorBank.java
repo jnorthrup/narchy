@@ -3,7 +3,7 @@
  */
 package net.beadsproject.beads.ugens;
 
-import jcog.signal.tensor.Tensor;
+import jcog.signal.Tensor;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.UGen;
 
@@ -133,7 +133,7 @@ public class OscillatorBank extends UGen {
 
         float sampleRate = context.getSampleRate();
         for (int i = 0; i < size; i++) {
-            increment[i] = frequency.get(i) / sampleRate;
+            increment[i] = frequency.getAt(i) / sampleRate;
         }
 
         for (int i = 0; i < bufferSize; i++) {
@@ -145,7 +145,7 @@ public class OscillatorBank extends UGen {
                     p = p - 1;
                 point[j] = p;
 
-                x += gain.get(j) * sampled.getFractInterp(p);
+                x += gain.getAt(j) * sampled.getFractInterp(p);
             }
             chan[i] = x * gainMaster;
         }

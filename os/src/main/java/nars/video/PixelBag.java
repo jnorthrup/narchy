@@ -2,7 +2,7 @@ package nars.video;
 
 import jcog.Util;
 import jcog.random.XorShift128PlusRandom;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
@@ -216,9 +216,9 @@ public abstract class PixelBag implements Bitmap2D {
                             continue;
 
                         int RGB = rgb(esx, esy);
-                        R += Bitmap2D.decodeRed(RGB);
-                        G += Bitmap2D.decodeGreen(RGB);
-                        B += Bitmap2D.decodeBlue(RGB);
+                        R += Bitmap2D.decode8bRed(RGB);
+                        G += Bitmap2D.decode8bGreen(RGB);
+                        B += Bitmap2D.decode8bBlue(RGB);
                         samples++;
                     }
                 }

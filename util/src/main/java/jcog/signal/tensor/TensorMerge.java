@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.signal.Tensor;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
@@ -27,10 +28,11 @@ public class TensorMerge extends BatchArrayTensor {
     }
 
     @Override
-    public float[] get() {
+    public float[] snapshot() {
         commit();
-        return super.get();
+        return super.snapshot();
     }
+
     @Override
     public void forEach(IntFloatProcedure each, int start, int end) {
         commit();

@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
@@ -20,8 +21,8 @@ public class TensorFunc implements Tensor {
     }
 
     @Override
-    public float get(int linearCell) {
-        return func.valueOf(from.get(linearCell));
+    public float getAt(int linearCell) {
+        return func.valueOf(from.getAt(linearCell));
     }
 
     @Override

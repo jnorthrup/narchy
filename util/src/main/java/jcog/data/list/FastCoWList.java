@@ -178,8 +178,7 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
 
-    @Override
-    public X get(int index) {
+    @Override public X get(int index) {
         return copy[index];
     }
 

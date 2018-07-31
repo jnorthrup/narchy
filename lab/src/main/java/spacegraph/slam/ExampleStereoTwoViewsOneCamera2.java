@@ -69,7 +69,7 @@ import georegression.transform.se.SePointOps_F64;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import org.ddogleg.fitting.modelset.ModelFitter;
 import org.ddogleg.fitting.modelset.ModelManager;
 import org.ddogleg.fitting.modelset.ModelMatcher;
@@ -148,7 +148,7 @@ public class ExampleStereoTwoViewsOneCamera2 {
 
 					for (ColorPoint3D p : e.gui.view.cloud) {
 						int cc = p.rgb;
-						gl.glColor3f(Bitmap2D.decodeRed(cc), Bitmap2D.decodeGreen(cc), Bitmap2D.decodeBlue(cc));
+						gl.glColor3f(Bitmap2D.decode8bRed(cc), Bitmap2D.decode8bGreen(cc), Bitmap2D.decode8bBlue(cc));
 						Draw.rect(gl, (float) p.x, -(float) p.y, 2, 2, (float) p.z);
 					}
 

@@ -46,7 +46,7 @@ public class WaveIn extends NARService {
         if (autogain != null && c != null) {
 
             float max = 0;
-            for (float s : c.data) {
+            for (float s : c.samples) {
                 max = Math.max(max, Math.abs(s));
             }
 

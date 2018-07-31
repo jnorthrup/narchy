@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.sketch;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import org.apache.commons.math3.random.MersenneTwister;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
@@ -102,10 +102,10 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
 
     private void mix(int[] pix, int i) {
         int e = pix[i];
-        float r = Bitmap2D.decodeRed(e) * 0.5f + paintR * 0.5f;
-        float g = Bitmap2D.decodeGreen(e) * 0.5f + paintG * 0.5f;
-        float b = Bitmap2D.decodeBlue(e) * 0.5f + paintB * 0.5f;
-        int f = Bitmap2D.encodeRGB(r, g, b);
+        float r = Bitmap2D.decode8bRed(e) * 0.5f + paintR * 0.5f;
+        float g = Bitmap2D.decode8bGreen(e) * 0.5f + paintG * 0.5f;
+        float b = Bitmap2D.decode8bBlue(e) * 0.5f + paintB * 0.5f;
+        int f = Bitmap2D.encodeRGB8b(r, g, b);
         pix[i] = f;
 
 

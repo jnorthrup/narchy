@@ -1,12 +1,12 @@
 package nars.video;
 
 import jcog.Util;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 
 import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
-import static jcog.signal.Bitmap2D.*;
+import static jcog.signal.wave2d.Bitmap2D.*;
 
 /**
  * exposes a buffered image as a camera video source
@@ -115,9 +115,9 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
                 return 0;
 
             int rgb = out.getRGB(xx, yy);
-            float r = rFactor > 0 ? rFactor * decodeRed(rgb) : 0;
-            float g = gFactor > 0 ? gFactor * decodeGreen(rgb) : 0;
-            float b = bFactor > 0 ? bFactor * decodeBlue(rgb) : 0;
+            float r = rFactor > 0 ? rFactor * decode8bRed(rgb) : 0;
+            float g = gFactor > 0 ? gFactor * decode8bGreen(rgb) : 0;
+            float b = bFactor > 0 ? bFactor * decode8bBlue(rgb) : 0;
             return (r + g + b) / (sum);
         }
         return Float.NaN;
@@ -127,11 +127,11 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
         if (out!=null) {
             int rgb = out.getRGB(xx, yy);
             switch (mode) {
-                case R: return decodeRed(rgb);
-                case G: return decodeGreen(rgb);
-                case B: return decodeBlue(rgb);
+                case R: return decode8bRed(rgb);
+                case G: return decode8bGreen(rgb);
+                case B: return decode8bBlue(rgb);
                 case RGB:
-                    return (decodeRed(rgb) + decodeGreen(rgb) + decodeBlue(rgb)) / 3f;
+                    return (decode8bRed(rgb) + decode8bGreen(rgb) + decode8bBlue(rgb)) / 3f;
             }
         }
         return Float.NaN;
@@ -146,12 +146,12 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
 
 
     public float red(int x, int y) {
-        return outsideBuffer(x, y) ? Float.NaN : decodeRed(out.getRGB(x, y));
+        return outsideBuffer(x, y) ? Float.NaN : decode8bRed(out.getRGB(x, y));
     }
     public float green(int x, int y) {
-        return outsideBuffer(x, y) ? Float.NaN : decodeGreen(out.getRGB(x, y));
+        return outsideBuffer(x, y) ? Float.NaN : decode8bGreen(out.getRGB(x, y));
     }
-    public float blue(int x, int y) { return outsideBuffer(x, y) ? Float.NaN : decodeBlue(out.getRGB(x,y)); }
+    public float blue(int x, int y) { return outsideBuffer(x, y) ? Float.NaN : decode8bBlue(out.getRGB(x,y)); }
 
     public boolean outsideBuffer(int x, int y) {
         return out == null || (x < 0) || (y < 0) || (x >= out.getWidth()) || (y >= out.getHeight());

@@ -3,7 +3,7 @@ package jcog.exe.valve;
 import jcog.Texts;
 import jcog.Util;
 import jcog.WTF;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 
 import static java.lang.System.nanoTime;
 
@@ -11,18 +11,16 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
 
     final Work work;
 
-    
-
-    static final int WINDOW = 16;
+    final static int WINDOW = 16;
 
     /** total accumulated start/stop tme each cycle */
-    public final DescriptiveStatistics startAndStopTimeNS = new DescriptiveStatistics(WINDOW);
+    public final SynchronizedDescriptiveStatistics startAndStopTimeNS = new SynchronizedDescriptiveStatistics(WINDOW);
 
     /** total accumulated work time, each cycle */
-    public final DescriptiveStatistics iterTimeNS = new DescriptiveStatistics(WINDOW);
+    public final SynchronizedDescriptiveStatistics iterTimeNS = new SynchronizedDescriptiveStatistics(WINDOW);
 
     /** total iterations, each cycle */
-    public final DescriptiveStatistics iterations = new DescriptiveStatistics(WINDOW);
+    public final SynchronizedDescriptiveStatistics iterations = new SynchronizedDescriptiveStatistics(WINDOW);
 
 
     transient public double valuePerSecond,valueNormalized;
@@ -89,14 +87,15 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
     @Override
     public final void stop() {
 
-        if (iterationsThisCycle > 0) {
-            iterations.addValue(iterationsThisCycle);
-            iterTimeNS.addValue(workTimeThisCycleNS);
+
+        iterations.addValue(iterationsThisCycle);
+
+        iterTimeNS.addValue(workTimeThisCycleNS);
 
 
-            iterationsThisCycle = 0;
-            workTimeThisCycleNS = 0;
-        }
+        iterationsThisCycle = 0;
+        workTimeThisCycleNS = 0;
+
 
         beforeEnd = nanoTime();
         work.stop();
@@ -125,7 +124,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
                 long deadlineNS = now + runtimeNS;
 
                 do {
-                    double meanItertime = Math.min(runtimeNS, this.iterTimeNS.getMean() / this.iterations.getMean());
+                    double meanItertime = Math.min(runtimeNS, timePerIterationMean());
                     double expectedNexts;
                     if (meanItertime!=meanItertime)
                         expectedNexts = 1;

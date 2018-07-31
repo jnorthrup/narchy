@@ -5,7 +5,7 @@ import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.agent.NAgent;

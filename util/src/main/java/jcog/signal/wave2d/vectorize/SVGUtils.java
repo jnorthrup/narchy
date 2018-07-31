@@ -1,4 +1,4 @@
-package jcog.signal.vectorize;
+package jcog.signal.wave2d.vectorize;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,26 +25,26 @@ public class SVGUtils {
 		float scale = options.get("scale"), lcpr = options.get("lcpr"), qcpr = options.get("qcpr");
 		int roundcoords = (int) Math.floor(options.get("roundcoords"));
 		
-		sb.append("<path ").append(desc).append(colorstr).append("d=\"" ).append("M ").append(segments.get(0)[1]*scale).append(" ").append(segments.get(0)[2]*scale).append(" ");
+		sb.append("<path ").append(desc).append(colorstr).append("d=\"" ).append("M ").append(segments.get(0)[1]*scale).append(' ').append(segments.get(0)[2]*scale).append(' ');
 
 		if( roundcoords == -1 ){
 			for(int pcnt=0;pcnt<segments.size();pcnt++){
 				if(segments.get(pcnt)[0]==1.0){
-					sb.append("L ").append(segments.get(pcnt)[3]*scale).append(" ").append(segments.get(pcnt)[4]*scale).append(" ");
+					sb.append("L ").append(segments.get(pcnt)[3]*scale).append(' ').append(segments.get(pcnt)[4]*scale).append(' ');
 				}else{
-					sb.append("Q ").append(segments.get(pcnt)[3]*scale).append(" ").append(segments.get(pcnt)[4]*scale).append(" ").append(segments.get(pcnt)[5]*scale).append(" ").append(segments.get(pcnt)[6]*scale).append(" ");
+					sb.append("Q ").append(segments.get(pcnt)[3]*scale).append(' ').append(segments.get(pcnt)[4]*scale).append(' ').append(segments.get(pcnt)[5]*scale).append(' ').append(segments.get(pcnt)[6]*scale).append(' ');
 				}
 			}
 		}else{
 			for(int pcnt=0;pcnt<segments.size();pcnt++){
 				if(segments.get(pcnt)[0]==1.0){
-					sb.append("L ").append(roundtodec((float)(segments.get(pcnt)[3]*scale),roundcoords)).append(" ")
-					.append(roundtodec((float)(segments.get(pcnt)[4]*scale),roundcoords)).append(" ");
+					sb.append("L ").append(roundtodec((float)(segments.get(pcnt)[3]*scale),roundcoords)).append(' ')
+					.append(roundtodec((float)(segments.get(pcnt)[4]*scale),roundcoords)).append(' ');
 				}else{
-					sb.append("Q ").append(roundtodec((float)(segments.get(pcnt)[3]*scale),roundcoords)).append(" ")
-					.append(roundtodec((float)(segments.get(pcnt)[4]*scale),roundcoords)).append(" ")
-					.append(roundtodec((float)(segments.get(pcnt)[5]*scale),roundcoords)).append(" ")
-					.append(roundtodec((float)(segments.get(pcnt)[6]*scale),roundcoords)).append(" ");
+					sb.append("Q ").append(roundtodec((float)(segments.get(pcnt)[3]*scale),roundcoords)).append(' ')
+					.append(roundtodec((float)(segments.get(pcnt)[4]*scale),roundcoords)).append(' ')
+					.append(roundtodec((float)(segments.get(pcnt)[5]*scale),roundcoords)).append(' ')
+					.append(roundtodec((float)(segments.get(pcnt)[6]*scale),roundcoords)).append(' ');
 				}
 			}
 		}
@@ -74,7 +74,7 @@ public class SVGUtils {
 
 
 	static String tosvgcolorstr (byte[] c){
-		return "fill=\"rgb("+(c[0]+128)+","+(c[1]+128)+","+(c[2]+128)+")\" stroke=\"rgb("+(c[0]+128)+","+(c[1]+128)+","+(c[2]+128)+")\" stroke-width=\"1\" opacity=\""+((c[3]+128)/255.0)+"\" ";
+		return "fill=\"rgb("+(c[0]+128)+ ',' +(c[1]+128)+ ',' +(c[2]+128)+")\" stroke=\"rgb("+(c[0]+128)+ ',' +(c[1]+128)+ ',' +(c[2]+128)+")\" stroke-width=\"1\" opacity=\""+((c[3]+128)/255.0)+"\" ";
 	}
 
 

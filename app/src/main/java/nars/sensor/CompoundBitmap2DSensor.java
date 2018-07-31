@@ -1,6 +1,6 @@
 package nars.sensor;
 
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.term.Term;
 import nars.util.TimeAware;

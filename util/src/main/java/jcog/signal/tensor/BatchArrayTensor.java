@@ -1,7 +1,5 @@
 package jcog.signal.tensor;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -16,12 +14,12 @@ abstract public class BatchArrayTensor extends ArrayTensor {
     }
 
     @Override
-    public void set(@NotNull float[] raw) {
+    public void set(float[] raw) {
         throw new UnsupportedOperationException("only batch operations available");
     }
 
     @Override
-    public void set(@NotNull double[] d) {
+    public void set(double[] d) {
         throw new UnsupportedOperationException("only batch operations available");
     }
 
@@ -35,7 +33,7 @@ abstract public class BatchArrayTensor extends ArrayTensor {
 
 
 
-    @Override public float[] get() {
+    @Override public float[] snapshot() {
         
         if (busy.compareAndSet(false, true)) {
             try {

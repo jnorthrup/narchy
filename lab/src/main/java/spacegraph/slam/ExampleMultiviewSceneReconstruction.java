@@ -45,7 +45,7 @@ import georegression.struct.se.Se3_F64;
 import georegression.transform.se.SePointOps_F64;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import org.HdrHistogram.DoubleHistogram;
 import org.ddogleg.fitting.modelset.ModelFitter;
 import org.ddogleg.fitting.modelset.ModelMatcher;
@@ -741,7 +741,7 @@ public class ExampleMultiviewSceneReconstruction {
                 int cc = f.color;
                 gl.glPushMatrix();
                 gl.glTranslated((float) f.x * s, (float) f.y * s, (float) f.z * s);
-                gl.glColor4f(Bitmap2D.decodeRed(cc), Bitmap2D.decodeGreen(cc), Bitmap2D.decodeBlue(cc), 0.75f);
+                gl.glColor4f(Bitmap2D.decode8bRed(cc), Bitmap2D.decode8bGreen(cc), Bitmap2D.decode8bBlue(cc), 0.75f);
                 Draw.glut.glutSolidCube(p);
                 gl.glPopMatrix();
             }

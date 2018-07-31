@@ -11,8 +11,8 @@ public class ScalarTensor extends ArrayTensor {
         this.f = f;
     }
 
-    @Override public float[] get() {
+    @Override public float[] snapshot() {
         set(f.asFloat(), 0);
-        return super.get();
+        return super.snapshot();
     }
 }

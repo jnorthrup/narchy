@@ -14,7 +14,7 @@ import georegression.geometry.UtilPolygons2D_I32;
 import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Polygon2D_I32;
 import georegression.struct.shapes.Rectangle2D_I32;
-import jcog.signal.Bitmap2D;
+import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.agent.NAgent;

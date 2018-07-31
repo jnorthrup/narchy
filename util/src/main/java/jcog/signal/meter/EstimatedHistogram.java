@@ -102,12 +102,12 @@ public class EstimatedHistogram {
     }
 
     private static void appendRange(StringBuilder sb, long[] bucketOffsets, int index) {
-        sb.append("[");
+        sb.append('[');
         if (index == 0)
             if (bucketOffsets[0] > 0)
                 
                 
-                sb.append("1");
+                sb.append('1');
             else
                 sb.append("-Inf");
         else
@@ -117,7 +117,7 @@ public class EstimatedHistogram {
             sb.append("Inf");
         else
             sb.append(bucketOffsets[index]);
-        sb.append("]");
+        sb.append(']');
     }
 
     /**

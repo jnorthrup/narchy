@@ -7,6 +7,7 @@ package jcog.signal.meter;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
+import jcog.TODO;
 import jcog.Texts;
 import jcog.signal.meter.event.DoubleMeter;
 import jcog.signal.meter.event.HitMeter;
@@ -261,7 +262,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     }
     
     public void removeMeter(Meters m) {
-        throw new RuntimeException("Removal not supported yet");
+        throw new TODO("Removal not supported yet");
     }
     
     /** generate the next row.  key can be a time number, or some other unique-like identifying value */

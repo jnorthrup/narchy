@@ -3,7 +3,7 @@
  */
 package net.beadsproject.beads.ugens;
 
-import jcog.signal.tensor.Tensor;
+import jcog.signal.Tensor;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.buffers.SawWave;

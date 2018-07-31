@@ -1,5 +1,7 @@
 package jcog.signal.tensor;
 
+import jcog.signal.Tensor;
+
 public class BufferedTensor extends BatchArrayTensor {
 
     protected final Tensor from;
@@ -11,7 +13,7 @@ public class BufferedTensor extends BatchArrayTensor {
 
 
     @Override public void update() {
-        from.get();
+        //from.snapshot();
         from.writeTo(data);
     }
 

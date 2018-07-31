@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.signal.Tensor;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
@@ -22,8 +23,8 @@ public class TensorTensorFunc implements Tensor {
     }
 
     @Override
-    public float get(int linearCell) {
-        return func.apply(a.get(linearCell), b.get(linearCell));
+    public float getAt(int linearCell) {
+        return func.apply(a.getAt(linearCell), b.getAt(linearCell));
     }
 
     @Override
@@ -35,7 +36,7 @@ public class TensorTensorFunc implements Tensor {
     public float[] snapshot() {
         float[] ab = new float[volume()];
         for (int i = 0; i < ab.length; i++)
-            ab[i] = get(i);
+            ab[i] = getAt(i);
         return ab;
     }
 
@@ -47,7 +48,7 @@ public class TensorTensorFunc implements Tensor {
     @Override
     public void forEach(IntFloatProcedure sequential, int start, int end) {
         a.forEach((i, aa) -> {
-            sequential.value(i, func.apply(aa, b.get(i)));
+            sequential.value(i, func.apply(aa, b.getAt(i)));
         }, start, end);
     }
 }

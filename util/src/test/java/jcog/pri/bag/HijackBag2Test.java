@@ -9,7 +9,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.HijackBag2;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.tensor.ArrayTensor;
-import jcog.signal.tensor.Tensor;
+import jcog.signal.Tensor;
 import jcog.util.FloatFloatToFloatFunction;
 import org.apache.commons.math3.stat.Frequency;
 import org.jetbrains.annotations.NotNull;
@@ -219,7 +219,7 @@ class HijackBag2Test {
         System.out.println(h + ":\n\t" + f1.tsv2());
         System.out.println();
 
-        float[] ff = f1.get();
+        float[] ff = f1.snapshot();
 
         
 

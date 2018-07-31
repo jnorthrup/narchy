@@ -4,7 +4,7 @@
 package net.beadsproject.beads.data;
 
 import jcog.signal.tensor.ArrayTensor;
-import jcog.signal.tensor.Tensor;
+import jcog.signal.Tensor;
 import net.beadsproject.beads.data.buffers.*;
 
 import java.util.Map;
