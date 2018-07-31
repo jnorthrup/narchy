@@ -66,7 +66,8 @@ public class GoalActionConcept extends ActionConcept {
         int dur = nar.dur();
         //long gStart = pNow - dur / 2, gEnd = pNow + Math.max(0, dur / 2 - 1);
         //long gStart = pNow, gEnd = pNow + Math.max(0, dur-1);
-        long gStart = pPrev + dur/2, gEnd = pNow + Math.max(0, dur / 2-1);
+        //long gStart = pPrev + dur, gEnd = pNow + Math.max(0, dur -1);
+        long gStart = pPrev, gEnd = pNow;
 
         goal =
                 this.goals().truth(gStart, gEnd, nar);
@@ -114,7 +115,10 @@ public class GoalActionConcept extends ActionConcept {
         if (curi && feedbackBelief != null) {
             curiosityGoal = curiosity(
                     goal,
-                    term, pNow-dur/2, pNow+Math.max(0,dur/2-1), nar);
+                    term,
+                    //pNow-dur/2, pNow+Math.max(0,dur/2-1),
+                    gStart, gEnd,
+                    nar);
         }
 
         b.clean(nar);

@@ -26,6 +26,7 @@
         B, (C ==> A), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskMinusBeliefDT)
 
 
+
         //TODO question variations
         Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y), (Belief:Deduction)
          Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)

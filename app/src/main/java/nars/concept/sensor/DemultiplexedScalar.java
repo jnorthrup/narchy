@@ -13,13 +13,12 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import static nars.Op.BELIEF;
 
 /** base class for a multi-concept representation of a real scalar value input */
-abstract public class DemultiplexedScalar extends AbstractSensor implements Iterable<Signal>, Consumer<NAR>, FloatSupplier {
+abstract public class DemultiplexedScalar extends AbstractSensor implements Iterable<Signal>, FloatSupplier {
 
     public final NumberX value = new AtomicFloat();
 
@@ -31,7 +30,7 @@ abstract public class DemultiplexedScalar extends AbstractSensor implements Iter
 
     public final Term term;
 
-    private long last;
+//    private long last;
 
     @Override
     public float asFloat() {
@@ -48,25 +47,24 @@ abstract public class DemultiplexedScalar extends AbstractSensor implements Iter
 
         this.term = id;
 
-        this.last = nar.time();
-        this.input = input; 
+        this.input = input;
         this.in = nar.newChannel(id);
         this.truther = truther;
     }
 
 
-
-    @Override
-    public void accept(NAR n) {
-        synchronized (this) {
-            long now = n.time();
-
-            
-            update(last, now, n);
-
-            this.last = now;
-        }
-    }
+//
+//    @Override
+//    public void accept(NAR n) {
+//        synchronized (this) {
+//            long now = n.time();
+//
+//
+//            update(last, now, n);
+//
+//            this.last = now;
+//        }
+//    }
 
     public void update(long start, long end, NAR n) {
 

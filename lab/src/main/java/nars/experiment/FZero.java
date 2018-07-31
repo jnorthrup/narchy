@@ -163,7 +163,7 @@ public class FZero extends NAgentX {
                 INH.the($.the("right"), id)
 
         );
-        onFrame(s);
+        addSensor(s);
         window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 

@@ -148,7 +148,7 @@ abstract public class Deriver extends Causable {
 
     /** unifier TTL used for matching in premise formation */
     protected int matchTTL() {
-        return Param.TTL_MIN * 4;
+        return Param.TTL_MIN * 2;
     }
 
 

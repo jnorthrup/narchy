@@ -19,7 +19,6 @@ import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.time.clock.CycleTime;
@@ -105,31 +104,33 @@ public class TrackXY extends NAgent {
         boolean nars = true;
 //        boolean rl = false;
 
-        int dur = 8;
+        int dur = 4;
 
         NARS nb = new NARS()
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
-                        new CaffeineIndex(4 * 1024 * 20)
+                        new CaffeineIndex(16 * 1024 * 10 )
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 
 
+
         NAR n = nb.get();
-        n.dtDither.set(1);
-        n.timeFocus.set(2);
-//        n.freqResolution.set(0.02f);
-//        n.goalPriDefault.set(0.9f);
-//        n.beliefPriDefault.set(0.3f);
-//        n.questionPriDefault.set(0.1f);
-//        n.questPriDefault.set(0.1f);
+
+        n.dtDither.set(dur);
+        n.timeFocus.set(8);
+
+//        n.goalPriDefault.set(0.99f);
+//        n.beliefPriDefault.set(0.01f);
+//        n.questionPriDefault.set(0.01f);
+//        n.questPriDefault.set(0.01f);
 
 
         n.termVolumeMax.set(32);
 
 
-        TrackXY a = new TrackXY(n, 4, 4);
+        TrackXY a = new TrackXY(n, 3, 3);
 
 
 //        if (rl) {
@@ -153,7 +154,7 @@ public class TrackXY extends NAgent {
 //            ((MatrixDeriver) d).conceptsPerIteration.set(8);
 
 
-            new STMLinkage(n, 1, false);
+            //new STMLinkage(n, 1, false);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
                     //x -> true,
@@ -167,6 +168,7 @@ public class TrackXY extends NAgent {
 //
 //            ), 400, 300);
 
+            //n.log();
             Param.DEBUG = true;
             n.onTask(tt -> {
                 if (tt instanceof DerivedTask && tt.isGoal()) {
@@ -198,12 +200,13 @@ public class TrackXY extends NAgent {
         });
 
 
-        int experimentTime = 35000;
+        int experimentTime = 2000;
         n.run(experimentTime);
 
         printGoals(n);
         printImpls(n);
 
+        n.stats(System.out);
 
     }
 
@@ -274,7 +277,7 @@ public class TrackXY extends NAgent {
                 INH.the($.the("right"), id),
                 INH.the($.the("stay"), id)
         );
-        onFrame(s);
+        addSensor(s);
         SpaceGraph.window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 
@@ -363,12 +366,6 @@ public class TrackXY extends NAgent {
 
 
         });
-
-
-        if (cam != null) {
-            cam.input();
-        }
-
 
         float maxDist = (float) Math.sqrt(W * W + H * H);
         float distance = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy));

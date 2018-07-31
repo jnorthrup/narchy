@@ -40,6 +40,8 @@
     (--P ==> S), (--S ==> P),  task("?") |-   (P ==>+- S),   (Belief:Conversion, Punctuation:Belief)
     (--P ==> S), (--S ==> P),  task("?") |- (--P ==>+- S),   (Belief:ConversionPN, Punctuation:Belief)
 
+//mutex induction from conjunction events
+//    (&&,X,--Y,A..*), X, task(".") |- (X ==>+- --Y), (Belief:StructuralDeduction)
 
 //implication to similarity (equivalence emulation)
 //    (P ==> S), (S ==> P), task(".")   |-   (S <-> P),  (Punctuation:Question)

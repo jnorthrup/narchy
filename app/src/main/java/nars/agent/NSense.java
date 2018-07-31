@@ -176,7 +176,6 @@ public interface NSense {
                 model, nar(),
                 states
         );
-        onFrame(fs);
         addSensor(fs);
         return fs;
     }

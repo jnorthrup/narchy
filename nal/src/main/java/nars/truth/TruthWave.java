@@ -46,7 +46,7 @@ public class TruthWave {
         clear();
     }
 
-    private void clear() {
+    public void clear() {
         size = 0;
         start = end = Tense.ETERNAL;
     }

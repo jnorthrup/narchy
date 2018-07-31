@@ -118,11 +118,10 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 add(what.unneg(), tc, nextDepth, root, nextMaxDepth);
                 return true;
             }, 0, true, true, true, 0);
-            return;
+        } else {
+
+            bb.forEach(s -> add(s.unneg(), tc, nextDepth, root, nextMaxDepth));
         }
-
-
-        bb.forEach(s -> add(s.unneg(), tc, nextDepth, root, nextMaxDepth));
 
     }
 
@@ -138,7 +137,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                         return +1;
                     break;
                 case INH:
-                    if (depth == 1 && x.isAny(Op.SectBits | SetBits | Op.DiffBits | Op.PROD.bit))
+                    if (depth == 1 && x.isAny(Op.SectBits | SetBits | Op.DiffBits ))
                         return +1;
                     break;
                 case CONJ:
@@ -149,7 +148,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                     break;
                 case IMPL:
                     Op xo = x.op();
-                    if ( xo.statement || (depth == 1 && xo==CONJ))
+                    if ( (xo.statement) || (depth == 1 && xo==CONJ))
                         return +1;
                     break;
             }

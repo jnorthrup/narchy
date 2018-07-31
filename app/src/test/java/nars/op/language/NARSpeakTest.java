@@ -40,28 +40,32 @@ public class NARSpeakTest {
         NAR n = NARS.threadSafe();
         n.termVolumeMax.set(16);
         n.freqResolution.set(0.1f);
-        n.confMin.set(0.1f);
+        n.dtDither.set(50);
+//        n.confMin.set(0.1f);
 
-
+        n.log();
+        n.input(
+//                "$1.0 (hear($1) =|> speak($1)).",
+//                "$1.0 (speak($1) =|> hear($1)).",
+                "$1.0 (hear(#1) && speak(#1))!",
+                "$1.0 speak(#1)!",
+                "$1.0 speak(?1)@"
+        );
 
         n.startFPS(40f);
 
-        NARHear.hear(n, "a b c d e f g", "", 100);
+        NARHear.hear(n, "a b c d e f g", "", 100, 0.1f);
 
-        Util.sleepMS(2000);
+        Util.sleepMS(5000);
 
-        n.stop().tasks(true, false, false, false).forEach(x -> {
+        n.stop().tasks(true, false, true, false).forEach(x -> {
             System.out.println(x);
         });
 
         System.out.println();
 
-        n.log();
-        n.input("$1.0 (hear($1) ==> speak($1)).",
-                "$1.0 speak(#1)!"
-                );
 
 
-        n.run(5000);
+
     }
 }

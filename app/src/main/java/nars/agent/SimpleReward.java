@@ -1,6 +1,7 @@
 package nars.agent;
 
 import jcog.math.FloatSupplier;
+import nars.NAR;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -16,9 +17,17 @@ public class SimpleReward extends Reward {
 
     public SimpleReward(Term id, FloatSupplier r, NAgent a) {
         super(a, r);
-        concept = new Signal(id, () -> reward, nar());
+        NAR nar = nar();
+        concept = new Signal(id, () -> reward, nar);
         truther = truther();
-        agent.alwaysWantEternally(concept.term, nar().confDefault(GOAL));
+        agent.alwaysWant/*Eternally*/(concept.term, nar.confDefault(GOAL));
+//        agent.alwaysQuestionDynamic(()->{
+//            int dt =
+//                    //0;
+//                    nar.dur();
+//            Random rng = nar.random();
+//            return IMPL.the(agent.actions.get(rng).term().negIf(rng.nextBoolean()), dt, concept.term());
+//        }, true);
     }
 
     @Override

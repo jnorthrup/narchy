@@ -5,12 +5,9 @@ import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.table.BeliefTable;
-import nars.table.dynamic.DynamicBeliefTable;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -88,10 +85,10 @@ public interface TaskLink extends Priority, Termed {
 
             Term t = term.unneg();
 
+            long[] se = n.timeFocus(when);
             Concept c = n.conceptualizeDynamic(t);
             Task r;
             if (c != null) {
-                long[] se = n.timeFocus(when);
                 r = c.table(punc).sample(se[0], se[1], t, n);
 
                 //r = result == null || result.isDeleted() ? null : result;
@@ -115,25 +112,24 @@ public interface TaskLink extends Priority, Termed {
                         throw new UnsupportedOperationException();
                 }
 
-                long[] se = n.timeFocus(when);
                 r = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
                 if (Param.DEBUG)
                     r.log("Tasklinked");
                 r.pri(link.priElseZero());
             }
 
-            if (c != null && r != null && !t.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
-                if (r.isQuestionOrQuest()) {
-                    BeliefTable answers = c.tableAnswering(r.punc());
-                    if (answers instanceof DynamicBeliefTable) {
-                        //match an answer emulating a virtual self-termlink being matched during premise formation
-                        Task a = answers.answer(r, n);
-                        if (a != null) {
-                            n.input(a);
-                        }
-                    }
-                }
-            }
+//            if (c != null && r != null && !t.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
+//                if (r.isQuestionOrQuest()) {
+//                    BeliefTable answers = c.tableAnswering(r.punc());
+//                    if (answers instanceof DynamicBeliefTable) {
+//                        //match an answer emulating a virtual self-termlink being matched during premise formation
+//                        Task a = answers.answer(r, n);
+//                        if (a != null) {
+//                            n.input(a);
+//                        }
+//                    }
+//                }
+//            }
 
             return r;
 

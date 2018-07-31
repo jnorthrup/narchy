@@ -63,7 +63,7 @@ public abstract class Param {
      */
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
 
@@ -89,9 +89,9 @@ public abstract class Param {
 
 
     public static final PriMerge termlinkMerge =
+            //PriMerge.plus;
             //PriMerge.max;
-            PriMerge.plus;
-    //PriMerge.or;
+            PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.avgGeoFast;
@@ -115,8 +115,8 @@ public abstract class Param {
                     //il.aveAri(t, b);
                     //Util.aveGeo(t, b);
                     //Util.and(t, b);
-                    //Util.or(t, b);
-                    (t+b);
+                    Util.or(t, b);
+                    //(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget

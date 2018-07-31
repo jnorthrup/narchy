@@ -38,7 +38,9 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
             try {
                 String testName = m.getDeclaringClass().getName() + " " + m.getName();
                 MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
-                add(t);
+                synchronized(TestNARSuite.this) {
+                    add(t);
+                }
                 NALTest.test(t, m);
             } catch (Throwable e) {
                 e.printStackTrace();

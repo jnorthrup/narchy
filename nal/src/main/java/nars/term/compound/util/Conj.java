@@ -1008,6 +1008,9 @@ public class Conj extends ByteAnonMap {
                         else
                             x.add(z);
 
+                        if (x.size() == 1)
+                            return x.first();
+
                         return Op.compoundExact(CONJ, dt, x.toArray(EmptyTermArray)); //concatenate in parallel
                     } else {
                         //Distribute (un-factor) z to each component of the sequence
@@ -1339,7 +1342,7 @@ public class Conj extends ByteAnonMap {
                 if (times[i-1]==DTERNAL)
                     continue;
                 long dt = times[i] - times[i-1];
-                if (Math.abs(dt) <= interpolationThresh) {
+                if (Math.abs(dt) < interpolationThresh) {
                     if (combine(times[i-1], times[i])) {
                         i++; //skip past current pair
                     }

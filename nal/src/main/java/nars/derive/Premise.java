@@ -107,7 +107,7 @@ public class Premise {
 //            if (taskTerm.op() == bo) {
 //            } else {
 
-            if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
+            if ((bo.conceptualizable) && (beliefTerm.hasAny(var) /*|| taskTerm.hasAny(var)*/)) {
 
                 Term _beliefTerm = beliefTerm;
                 final Term[] unifiedBeliefTerm = new Term[]{null};
@@ -119,15 +119,15 @@ public class Premise {
 
                         if (!y.equals(_beliefTerm)) {
                             unifiedBeliefTerm[0] = y;
+                            return false;  //done
                         }
-                         return false;  //done
                     }
                     return true;
                 }, matchTTL);
 
                 u.symmetric = false;
 
-                beliefConceptCanAnswerTaskConcept = u.unify(taskTerm, beliefTerm, true).matches() > 0;
+                beliefConceptCanAnswerTaskConcept = u.unify(beliefTerm, taskTerm, true).matches() > 0;
 
                 if (unifiedBeliefTerm[0] != null) {
                     beliefTerm = unifiedBeliefTerm[0];
@@ -141,7 +141,9 @@ public class Premise {
 
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, beliefTransformed);
-
+//        if (belief!=null) {
+//            System.out.println(beliefTerm + " -> " + belief);
+//        }
 
         return d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
     }
@@ -257,9 +259,9 @@ public class Premise {
 
         }
 
-        if (unifiedBelief && belief!=null) {
-            linkVariable(unifiedBelief, d.nar, beliefConcept);
-        }
+//        if (unifiedBelief && belief!=null) {
+//            linkVariable(unifiedBelief, d.nar, beliefConcept);
+//        }
 
         return belief;
     }

@@ -74,27 +74,32 @@ public class ExeCharts {
         CheckBox auto = new CheckBox("Auto");
         auto.set(false);
 
+        float min = -4f;
+        float max = +4f;
+
         float[] want = n.emotion.want;
         Gridding g = grid(
 
 
                 IntStream.range(0, want.length).mapToObj(
-                        w -> new FloatSlider(want[w], -1f, +1f) {
+                        w -> {
+                            return new FloatSlider(want[w], min, max) {
 
-                            @Override
-                            protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-                                if (auto.get()) {
-                                    set(want[w]);
+                                @Override
+                                protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+                                    if (auto.get()) {
+                                        set(want[w]);
+                                    }
+
                                 }
-
                             }
+                                    .text(MetaGoal.values()[w].name())
+                                    .type(SliderModel.KnobHoriz)
+                                    .on((s, v) -> {
+                                        if (!auto.get())
+                                            want[w] = v;
+                                    });
                         }
-                                .text(MetaGoal.values()[w].name())
-                                .type(SliderModel.KnobHoriz)
-                                .on((s, v) -> {
-                                    if (!auto.get())
-                                        want[w] = v;
-                                })
                 ).toArray(Surface[]::new));
 
         return g;

@@ -1,6 +1,7 @@
 package nars.gui;
 
 import com.jogamp.opengl.GL2;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.term.Term;
@@ -12,10 +13,12 @@ import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.video.Draw;
 
+import static jcog.Util.unitize;
 import static nars.gui.BeliefTableChart.renderWaveLine;
 
 
@@ -23,6 +26,8 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
 
     final Term term;
     private final TruthGrid beliefGrid, goalGrid;
+
+    public final FloatRange durs = new FloatRange(32, 0.5f, 128f);
 
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
@@ -32,14 +37,15 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
 
     class TruthGrid extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
-        private final TruthWave wave;
+        private final TruthWave projected, tasks;
         private final boolean beliefOrGoal;
         private final BeliefTableChart.Colorize colorize;
-
+        private static final float taskHeight = 0.04f;
 
         public TruthGrid(int tDiv, int fDiv, boolean beliefOrGoal) {
           super(tDiv, fDiv);
-          wave = new TruthWave(tDiv);
+          projected = new TruthWave(tDiv);
+          tasks = new TruthWave(tDiv);
           this.beliefOrGoal = beliefOrGoal;
                 this.colorize = beliefOrGoal ?
                             (ggl, frq, cnf) -> {
@@ -54,14 +60,18 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
 
 
         void update(Concept c, long start, long end) {
-            wave.project(c, beliefOrGoal, start, end, w, nar);
+            projected.project(c, beliefOrGoal, start, end, w, nar);
+            tasks.clear();
+            tasks.set(beliefOrGoal ? c.beliefs() : c.goals(), start, end);
         }
 
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             super.paint(gl, surfaceRender);
             Draw.bounds(bounds, gl, ggl->{
-                renderWaveLine((start +  end)/2L /*hack*/, start, end, ggl, wave, (f,c)->f, colorize);
+                long now = (start + end) / 2L;
+                renderWaveLine(now /*hack*/, start, end, ggl, projected, (f, c)->f, colorize);
+                renderTasks(start, end, gl, tasks, beliefOrGoal);
             });
         }
 
@@ -69,6 +79,60 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
         public int update(int x, int y) {
             return Draw.rgbInt(nar.random().nextFloat(), 0, 0);
         }
+
+
+
+        private void renderTasks(long minT, long maxT, GL2 gl, TruthWave wave, boolean beliefOrGoal) {
+            float[] confMinMax = wave.range();
+            if (confMinMax[0] == confMinMax[1]) {
+                confMinMax[0] = 0;
+                confMinMax[1] = 1;
+            }
+            wave.forEach((freq, conf, s, e) -> {
+
+                boolean eternal = (s != s);
+                if (eternal)
+                    return;
+
+
+
+
+
+                final float ph =
+                        taskHeight;
+
+
+                float start, end;
+
+//                    if (e >= minT && s <= maxT) {
+//                        s = Math.max(minT, s);
+//                        e = Math.min(maxT, e);
+//                    }
+                    start = unitize(xTime(minT, maxT, s));
+                    end = unitize(xTime(minT, maxT, e + 1));
+
+
+
+                if (beliefOrGoal) {
+                    gl.glColor4f(1f, 0, 0.25f, 0.1f + 0.5f * conf);
+                } else {
+                    gl.glColor4f(0f, 1, 0.25f, 0.1f + 0.5f * conf);
+                }
+                float y = freq - ph / 2;
+                Draw.rect(gl,
+                        start, y,
+                        end-start, ph);
+
+
+            });
+        }
+
+
+    }
+
+    private static float xTime(long minT, long maxT, long o) {
+        if (minT == maxT) return 0.5f;
+        return ((float)(Math.min(maxT, Math.max(minT, o)) - minT)) / (maxT - minT)*2;
     }
 
     public BeliefTableChart2(Termed term, NAR n) {
@@ -81,6 +145,9 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
     @Override
     public void update() {
 
+        if (!showing())
+            return;
+
         Concept ccd = nar.conceptualizeDynamic(term/* lookup by term, not the termed which could be a dead instance */);
         if (ccd == null)
             return;
@@ -89,13 +156,15 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
         int dur = nar.dur();
 
         //TODO different time modes
-        start = now - 32 * dur;
-        end = now + 32 * dur;
+        float durs = this.durs.floatValue();
+        start = now - Math.round(durs * dur);
+        end = now + Math.round(durs * dur);
 
         if (beliefGrid.showing())
             beliefGrid.update(ccd, start, end);
         if (goalGrid.showing())
             goalGrid.update(ccd, start, end);
+
     }
 
     @Override
@@ -113,6 +182,7 @@ public class BeliefTableChart2 extends DurSurface<Stacking> implements MetaFrame
     public Surface menu() {
         return new Gridding(
             new Label(term.toString()),
+            new ObjectSurface(durs),
             PushButton.awesome("search-plus").click(() -> NARui.conceptWindow(term, nar))
         );
     }

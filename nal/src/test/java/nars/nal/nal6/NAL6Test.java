@@ -5,6 +5,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
+import nars.time.Tense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -558,7 +559,21 @@ public class NAL6Test extends NALTest {
 
     }
 
+    @Test
+    void deductionBeliefWithVariable() {
+        test
+                .believe("(x($1)==>y($1))", 1.00f, 0.90f)
+                .believe("x(a)", 1.00f, 0.90f)
+                .mustBelieve(cycles, "y(a)", 1.00f, 0.81f);
+    }
 
+    @Test
+    void deductionGoalWithVariable() {
+        test
+                .believe("(x($1)==>y($1))", 1.00f, 0.90f)
+                .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
+                .mustGoal(cycles, "y(a)", 1.00f, 0.81f);
+    }
     @Test
     void variable_elimination_deduction() {
 

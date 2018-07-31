@@ -36,6 +36,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange pri, FloatRange res, NAR n) {
 
+        last = n.time();
         this.width = src.width();
         this.height = src.height();
         this.area = width * height;
@@ -118,16 +119,19 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         return stream(truther, 0, area, dur, nar);
     }
 
+    private long last;
+
     /**
      * stream of tasks containing changes in all updated pixels
      */
-    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int start, int end, int dur, NAR nar) {
+    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int pixelStart, int pixelEnd, int dur, NAR nar) {
 
         long now = nar.time();
 
-        long tStart = now - dur / 2;
-        long tEnd = now + Math.max(0, dur / 2 - 1);
-        return pixels(start, end).map(p -> p.update(tStart, tEnd, truther, nar));
+        long tStart = last; //now - dur / 2;
+        long tEnd = now;// + Math.max(0, dur / 2 - 1);
+        last = now;
+        return pixels(pixelStart, pixelEnd).map(p -> p.update(tStart, tEnd, truther, nar));
     }
 
     /**

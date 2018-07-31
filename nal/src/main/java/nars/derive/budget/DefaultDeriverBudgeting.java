@@ -59,9 +59,9 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
                 if (single)
                     dConf /= 2;
 
-                float eviFactor = dConf / pConf;
+                float eviLossFactor = Util.unitize((pConf - dConf)/ pConf);
 
-                factor *= Util.lerp(evidenceImportance.floatValue(), 1, eviFactor);
+                factor *= Util.lerp(evidenceImportance.floatValue(), 1, eviLossFactor);
             }
 
 

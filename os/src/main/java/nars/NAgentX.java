@@ -24,7 +24,6 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
@@ -197,9 +196,10 @@ abstract public class NAgentX extends NAgent {
 
     private static NAgent metavisor(NAgent a) {
 
+        //Param.DEBUG = true;
 //        a.nar().onTask(x -> {
 //           if (x.isGoal() && !x.isInput())
-//               System.out.println(x);
+//               System.out.println(x.proof());
 //        });
 
         int durs = 4;
@@ -285,7 +285,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(42);
+        n.termVolumeMax.set(35);
 
         n.forgetRate.set(0.75f);
         n.activateConceptRate.set(0.9f);
@@ -294,11 +294,13 @@ abstract public class NAgentX extends NAgent {
         n.beliefConfDefault.set(0.99f);
         n.goalConfDefault.set(0.99f);
 
-        n.beliefPriDefault.set(0.2f);
-        n.goalPriDefault.set(0.7f);
+        n.beliefPriDefault.set(0.5f);
+        n.questionPriDefault.set(0.5f);
 
-        n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.15f);
+        n.goalPriDefault.set(0.75f);
+        n.questPriDefault.set(0.5f);
+
+
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
         n.emotion.want(MetaGoal.Believe, +0.01f);
@@ -314,9 +316,9 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 4, 4));
         new MatrixDeriver(Derivers.nal(n, 5, 6));
         new MatrixDeriver(Derivers.nal(n, 7, 8));
-        //new MatrixDeriver(Derivers.nal(n, 0, 0, "motivation.nal"));
+        new MatrixDeriver(Derivers.nal(n, 0, 0, "motivation.nal"));
 
-        new STMLinkage(n, 1, false);
+        //new STMLinkage(n, 1, false);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);

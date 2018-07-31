@@ -716,7 +716,7 @@ public class Occurrify extends TimeGraph {
 
             if (o[0] < NOW && o[1] < NOW) {
             //if (o[0] != NOW) {
-                long range = o[1] - o[0];
+//                long range = o[1] - o[0];
 
                 long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
 

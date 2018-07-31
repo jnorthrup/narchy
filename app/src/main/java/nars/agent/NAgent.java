@@ -65,7 +65,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final List<Sensor> sensors = new FastCoWList<>(Sensor[]::new);
 
-    public final List<ActionConcept> actions = new FastCoWList<>(ActionConcept[]::new);
+    public final FastCoWList<ActionConcept> actions = new FastCoWList<>(ActionConcept[]::new);
 
     public final List<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
@@ -75,7 +75,7 @@ public class NAgent extends NARService implements NSense, NAct {
     @Deprecated
     private CauseChannel<ITask> in = null;
 
-    protected volatile long last;
+    protected volatile long last, now;
 
 
     public NAgent(String id, FrameTrigger frameTrigger, NAR nar) {
@@ -86,7 +86,7 @@ public class NAgent extends NARService implements NSense, NAct {
         super(id);
         this.nar = nar;
         this.frameTrigger = frameTrigger;
-        this.last = nar.time();
+        this.now = this.last = nar.time();
 
         nar.on(this);
     }
@@ -136,8 +136,11 @@ public class NAgent extends NARService implements NSense, NAct {
         //long[] evidenceShared = nar.evidence();
 
         always.add(() -> {
-            long now = Tense.dither(this.now(), nar);
-            long next = Tense.dither(this.now() + nar.dur(), nar);
+            int dur = nar.dur();
+            long now = Tense.dither(this.last + dur/*this.now()*/, nar);
+            long next = Tense.dither(this.now + dur/*this.now() + nar.dur()*/, nar);
+            now = Math.min(now, next);
+
             return new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
                     now, next,
                     //evidenceShared
@@ -157,25 +160,32 @@ public class NAgent extends NARService implements NSense, NAct {
         alwaysQuestion(x, false, stamped);
     }
 
-    private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
+    public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest) {
 
-//        always.add(() -> {
-//
-//            long now = Tense.dither(this.now(), nar);
-//            long next = Tense.dither(this.now() + nar.dur(), nar);
-//
-//            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
-//
-//            return new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
-//                    now, next,
-//                    stamp
-//            )/* {
-//                @Override
-//                public boolean isInput() {
-//                    return false;
-//                }
-//            }*/;
-//        });
+        boolean stamped = true;
+        always.add(() -> {
+
+            long now = Tense.dither(this.now(), nar);
+            long next = Tense.dither(this.now() + nar.dur(), nar);
+
+            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
+
+            Termed tt = x.get();
+            if (tt==null) return null;
+
+            return new NALTask(tt.term(), questionOrQuest ? QUESTION : QUEST, null, now,
+                    now, next,
+                    stamp
+            )/* {
+                @Override
+                public boolean isInput() {
+                    return false;
+                }
+            }*/;
+        });
+
+    }
+    private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
 
         NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
                 ETERNAL, ETERNAL,
@@ -329,9 +339,10 @@ public class NAgent extends NARService implements NSense, NAct {
         try {
             long now = nar.time();
             long last = this.last;
-            this.last = now;
             if (now <= last)
                 return;
+
+            this.now = now;
 
             always(pri.floatValue());
 
@@ -339,7 +350,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
             sensors.forEach(s -> s.update(last, now, nar));
 
-            ActionConcept[] aaa = ((FastCoWList<ActionConcept>) actions).copy.clone(); //HACK shuffle cloned copy for thread safety
+            ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
             ArrayUtils.shuffle(aaa, random());
             for (ActionConcept a : aaa) {
 
@@ -353,6 +364,8 @@ public class NAgent extends NARService implements NSense, NAct {
             if (trace.getOpaque())
                 logger.info(summary());
 
+            this.last = now;
+
         } finally {
             busy.setRelease(false);
         }
@@ -360,7 +373,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public long now() {
-        return nar.time();
+        return now;
     }
 
     public float dexterity() {
