@@ -134,12 +134,11 @@ public class TrackXY extends NAgent {
 
 
 //        if (rl) {
-//            new RLBooster(t,
+//            new RLBooster(a,
 //
 //                    HaiQae::new,
 //
-//                    1);
-//            t.curiosity.set(0);
+//                    true);
 //        }
         if (nars) {
 
@@ -200,7 +199,7 @@ public class TrackXY extends NAgent {
         });
 
 
-        int experimentTime = 2000;
+        int experimentTime = 12000;
         n.run(experimentTime);
 
         printGoals(n);

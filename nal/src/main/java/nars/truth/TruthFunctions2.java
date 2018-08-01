@@ -5,6 +5,7 @@ import nars.$;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
+import static jcog.Util.or;
 import static nars.$.t;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
@@ -99,7 +100,7 @@ public enum TruthFunctions2 {
 
         float c = and(
                         and(goal.conf(), belief.conf())
-                        ,belief.freq()
+                            ,belief.freq()
                 )
         ;
 

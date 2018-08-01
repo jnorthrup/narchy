@@ -71,7 +71,26 @@ public class ConceptGraph2D extends Graph2D<Concept> {
            );
         });
 
-        this.layout(new ForceDirected2D<>() {
+        this.layout(getLayout())
+//        layout(new TreeMap2D<>() {
+//            @Override
+//            public void layout(Graph2D<Concept> g, int dtMS) {
+//
+//                g.forEachValue(nn -> {
+//                    if (nn.showing())
+//                        updateNode(nn);
+//                });
+//                super.layout(g, dtMS);
+//            }
+//        })
+                .layer(new TermlinkVis(n))
+                .layer(new TasklinkVis(n))
+                .layer(new StatementVis(n));
+    }
+
+
+    public Graph2DLayout<Concept> getLayout() {
+        return new ForceDirected2D<>() {
 
             @Override
             public void initialize(Graph2D<Concept> g, NodeVis<Concept> n) {
@@ -90,21 +109,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                 super.layout(g, dtMS);
 
             }
-        })
-//        layout(new TreeMap2D<>() {
-//            @Override
-//            public void layout(Graph2D<Concept> g, int dtMS) {
-//
-//                g.forEachValue(nn -> {
-//                    if (nn.showing())
-//                        updateNode(nn);
-//                });
-//                super.layout(g, dtMS);
-//            }
-//        })
-                .layer(new TermlinkVis(n))
-                .layer(new TasklinkVis(n))
-                .layer(new StatementVis(n));
+        };
     }
 
     void updateNode(NodeVis<Concept> nn) {

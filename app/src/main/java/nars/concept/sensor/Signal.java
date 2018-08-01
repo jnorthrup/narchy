@@ -13,11 +13,13 @@ import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Function;
 
 import static nars.Op.BELIEF;
@@ -66,6 +68,11 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
         in = n.newChannel(this);
         n.on(this);
+    }
+
+    @Override
+    public Iterable<Termed> components() {
+        return List.of(this);
     }
 
     @Override

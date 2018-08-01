@@ -36,4 +36,8 @@ public abstract class Reward implements Runnable {
         return (prev, next) -> (next == next) ?
                 $.t(Util.unitize(next), nar().confDefault(BELIEF)) : null;
     }
+
+    public float summary() {
+        return reward;
+    }
 }

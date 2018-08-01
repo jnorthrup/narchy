@@ -107,7 +107,7 @@ public class Premise {
 //            if (taskTerm.op() == bo) {
 //            } else {
 
-            if ((bo.conceptualizable) && (beliefTerm.hasAny(var) /*|| taskTerm.hasAny(var)*/)) {
+            if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
 
                 Term _beliefTerm = beliefTerm;
                 final Term[] unifiedBeliefTerm = new Term[]{null};
@@ -125,7 +125,7 @@ public class Premise {
                     return true;
                 }, matchTTL);
 
-                u.symmetric = false;
+                u.symmetric = true;
 
                 beliefConceptCanAnswerTaskConcept = u.unify(beliefTerm, taskTerm, true).matches() > 0;
 

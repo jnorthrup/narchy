@@ -2,14 +2,12 @@ package nars.test.impl;
 
 import nars.$;
 import nars.NAR;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.test.TestNAR;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static nars.time.Tense.ETERNAL;
@@ -25,8 +23,10 @@ public class DeductiveMeshTest {
 
     public final Term q;
 
-    public final List<Compound> coords;
     public final TestNAR test;
+
+    public final Set<Term> coords;
+    public final Set<Term> edges;
 
 
     public DeductiveMeshTest(@NotNull NAR n, @NotNull int... dims) {
@@ -42,13 +42,13 @@ public class DeductiveMeshTest {
         if (dims.length != 2)
             throw new UnsupportedOperationException("2-D only implemented");
 
-        coords = $.newArrayList();
-        Set<Term> edges = new HashSet();
+        coords = new HashSet();
+        edges = new HashSet();
         for (int x = 0; x < dims[0]; x++) {
             for (int y = 0; y < dims[1]; y++) {
+                coords.add($.p(x,y));
 
-
-                if (x > y) {
+                /*if (x > y)*/ {
                     if (x > 0)
                         edges.add(edge(x, y, x - 1, y));
                     if (y > 0)

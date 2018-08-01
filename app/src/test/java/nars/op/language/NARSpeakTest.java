@@ -45,8 +45,8 @@ public class NARSpeakTest {
 
         n.log();
         n.input(
-//                "$1.0 (hear($1) =|> speak($1)).",
-//                "$1.0 (speak($1) =|> hear($1)).",
+                "$1.0 (hear($1) =|> speak($1)).",
+                "$1.0 (speak($1) =|> hear($1)).",
                 "$1.0 (hear(#1) && speak(#1))!",
                 "$1.0 speak(#1)!",
                 "$1.0 speak(?1)@"

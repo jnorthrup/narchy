@@ -18,7 +18,7 @@ public class HaiQae extends HaiQ {
     public static final Logger logger = LoggerFactory.getLogger(HaiQae.class);
 
 
-    public @NotNull Autoencoder ae;
+    public Autoencoder ae;
     float perceptionAlpha;
     float perceptionNoise = 0.01f;
     float perceptionCorruption = 0.01f;

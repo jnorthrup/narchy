@@ -1,5 +1,6 @@
 package nars.op;
 
+import com.google.common.collect.Iterables;
 import jcog.learn.Autoencoder;
 import nars.NAR;
 import nars.concept.Concept;
@@ -7,6 +8,7 @@ import nars.concept.sensor.AbstractSensor;
 import nars.control.DurService;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -39,6 +41,11 @@ public class AutoConceptualizer extends AbstractSensor {
         this.ae = new Autoencoder(in.size(), features, n.random());
         this.x = new float[in.size()];
         this.on = DurService.on(n, this::update);
+    }
+
+    @Override
+    public Iterable<Termed> components() {
+        return Iterables.transform(in, Termed::term);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth goal;
 
-        int dur = nar.dur();
+        //int dur = nar.dur();
         //long gStart = pNow - dur / 2, gEnd = pNow + Math.max(0, dur / 2 - 1);
         //long gStart = pNow, gEnd = pNow + Math.max(0, dur-1);
         //long gStart = pPrev + dur, gEnd = pNow + Math.max(0, dur -1);
@@ -93,6 +93,7 @@ public class GoalActionConcept extends ActionConcept {
 //            goal = Truth.theDithered(nar.random().nextFloat(), c2w(curiConf), nar);
 
             goal = NALTruth.Curiosity.apply(null, null, nar, 0);
+            goal = goal.ditherFreq(resolution().floatValue());
             curi = true;
 
         } else {

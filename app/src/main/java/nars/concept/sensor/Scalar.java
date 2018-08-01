@@ -11,10 +11,13 @@ import nars.table.dynamic.DynamicBeliefTable;
 import nars.table.eternal.EternalTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * dynamically computed time-dependent function
@@ -46,6 +49,10 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
         }
     }
 
+    @Override
+    public Iterable<Termed> components() {
+        return List.of(this);
+    }
 
     @Override
     public void update(long last, long now, NAR nar) {

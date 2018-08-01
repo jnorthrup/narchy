@@ -64,10 +64,11 @@ public class TruthWave {
      * clears and fills this wave with the data from a table
      */
     public void set(BeliefTable b, long minT, long maxT) {
+        clear();
+
         int s = b.size();
         if (s == 0) {
             this.current = null;
-            clear();
             return;
         }
 
@@ -96,8 +97,8 @@ public class TruthWave {
         });
         this.size = size[0];
 
-        this.start = st[0];
-        this.end = en[0];
+        this.start = minT; //st[0];
+        this.end = maxT; //en[0];
     }
 
     private static void load(float[] array, int index, long absStart, long absEnd, long start, long end, @Nullable Truthed truth) {
@@ -139,13 +140,13 @@ public class TruthWave {
         size(points);
 
         double dt = (maxT - minT) / ((float) points);
-        long t = minT ;
+        double t = minT ;
         float[] data = this.truth;
         int j = 0;
         byte punc = beliefOrGoal ? BELIEF : GOAL;
         BeliefTable table = (BeliefTable) c.table(punc);
         for (int i = 0; i < points; i++) {
-            long a = t; //Math.round(t - dt/2);
+            long a = Math.round(t); //Math.round(t - dt/2);
             long b = Math.round(t + dt);
 
             Truth tr = table.truth(a, b, nar); 

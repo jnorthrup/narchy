@@ -22,14 +22,14 @@ import static nars.time.Tense.ETERNAL;
 class NAL8EternalMixTest extends NALTest {
 
     public static final LongPredicate WHEN_REALIZED = t -> t > 0;
-    private final int cycles = 50;
+    private final int cycles = 100;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
         test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(20);
+        test.nar.termVolumeMax.set(30);
     }
 
     @Test
@@ -49,32 +49,13 @@ class NAL8EternalMixTest extends NALTest {
 
         TestNAR tester = test;
 
-
-        
-
         tester.input("opened:{t001}. :|:");
         tester.input("(((hold({t002}) &&+5 at({t001})) &&+5 open({t001})) &&+5 opened:{t001}).");
 
-        
+
         tester.mustBelieve(cycles, "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))",
                 1.0f, 0.81f,
                 -15);
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
 
 
     }
@@ -145,7 +126,7 @@ class NAL8EternalMixTest extends NALTest {
 
                 .input("goto({t003}). :|:")
                 .input("(goto(#1) &&+5 at(SELF,#1))!")
-                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, (t)->t >= 5)
+                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, (t) -> t >= 5)
         ;
     }
 
@@ -288,7 +269,7 @@ class NAL8EternalMixTest extends NALTest {
                 .input("reachable(SELF,{t002}). :|:")
                 .inputAt(3, "((reachable(SELF,{t002}) &&+5 pick({t002})) ==>+7 hold(SELF,{t002})).")
                 .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF, {t002}))", 1.0f, 0.81f, 5)
-        
+
         ;
 
     }
@@ -301,7 +282,7 @@ class NAL8EternalMixTest extends NALTest {
         tester.input("goto({t001}). :|: ");
         tester.inputAt(7, "(goto($1) ==>+2 at(SELF,$1)). ");
 
-        
+
         tester
                 .mustBelieve(cycles, "at(SELF,{t001})", 1.0f, 0.81f, 2)
                 .mustNotOutput(cycles, "at(SELF,{t001})", BELIEF, 1f, 1.0f, 0.81f, 0.81f,
@@ -316,7 +297,7 @@ class NAL8EternalMixTest extends NALTest {
                 .input("(on({t002},#1) &&+0 at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, 0);
 
-        
+
     }
 
     @Test
@@ -358,9 +339,9 @@ class NAL8EternalMixTest extends NALTest {
         test
 
                 .input("on:(t002,t003). :|:")
-                .inputAt(10, "(on:(t002,#1) && at(SELF,#1)).") 
+                .inputAt(10, "(on:(t002,#1) && at(SELF,#1)).")
                 .mustBelieve(cycles * 4, "at(SELF,t003)", 1.0f, 0.43f, 0)
-        
+
         ;
     }
 
@@ -371,17 +352,17 @@ class NAL8EternalMixTest extends NALTest {
                 .input("hold. :|:")
                 .input("( hold &&+5 (at &&+5 open) )!")
                 .mustGoal(cycles, "(at &&+5 open)", 1.0f, 0.5f, 5)
-                //.mustNotOutput(cycles, "(at &&+5 open)", GOAL, (t)->t!=5 && t!=ETERNAL);
+        //.mustNotOutput(cycles, "(at &&+5 open)", GOAL, (t)->t!=5 && t!=ETERNAL);
         ;
     }
 
     @Test
     void temporal_goal_detachment_2() {
-        
+
 
         test
                 .input("hold! :|:")
-                .inputAt(2, "( hold &&+5 eat ).") 
+                .inputAt(2, "( hold &&+5 eat ).")
                 .mustGoal(cycles, "eat", 1f, 0.81f, 5)
         ;
     }
@@ -391,9 +372,9 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("use! :|:")
-                .inputAt(2, "( hold &&+5 use ).") 
+                .inputAt(2, "( hold &&+5 use ).")
                 .mustGoal(cycles, "hold", 1f, 0.81f, t -> (t >= 2))
-                .mustNotOutput(cycles, "use", GOAL, ETERNAL) 
+                .mustNotOutput(cycles, "use", GOAL, ETERNAL)
                 .mustNotOutput(cycles, "hold", GOAL, ETERNAL)
         ;
     }
@@ -405,7 +386,7 @@ class NAL8EternalMixTest extends NALTest {
                 .input("--use! :|:")
                 .inputAt(1, "( hold &&+5 --use ).")
                 .mustGoal(cycles, "hold", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "use", GOAL, ETERNAL) 
+                .mustNotOutput(cycles, "use", GOAL, ETERNAL)
         ;
     }
 
@@ -450,12 +431,13 @@ class NAL8EternalMixTest extends NALTest {
     @Test
     void temporal_deduction_2() {
 
-        TestNAR tester = test;
 
+        TestNAR tester = test;
         tester.input("((hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
         tester.inputAt(2, "hold(SELF,{t002}). :|: ");
 
-        tester.mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})", 1.0f, 0.81f, 2 + 5);
+        tester.mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
+                1.0f, 0.81f, 2 + 5);
 
     }
 
@@ -464,8 +446,8 @@ class NAL8EternalMixTest extends NALTest {
     void implSubstitutionViaSimilarity() {
 
         test
-                .input("(a:b<->c:d).") 
-                .input("(c:d ==>+1 e:f). :|:") 
+                .input("(a:b<->c:d).")
+                .input("(c:d ==>+1 e:f). :|:")
                 .mustBelieve(cycles, "(a:b ==>+1 e:f)", 1.0f, 0.81f, 0)
                 .mustNotOutput(cycles, "(a:b ==>+1 e:f)", BELIEF, ETERNAL);
     }
@@ -475,8 +457,8 @@ class NAL8EternalMixTest extends NALTest {
 
         test
 
-                .input("(a:b<->c:d).") 
-                .input("(e:f ==>+1 c:d). :|:") 
+                .input("(a:b<->c:d).")
+                .input("(e:f ==>+1 c:d). :|:")
                 .mustBelieve(cycles, "(e:f ==>+1 a:b)", 1.0f, 0.4f, 0)
                 .mustNotOutput(cycles, "(e:f ==>+1 a:b)", BELIEF, ETERNAL);
     }
@@ -498,7 +480,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .believe("x", Tense.Present, 0f, 0.9f)
                 .goal("(--x &&+3 y)")
-                .mustGoal(cycles, "y", 1f, 0.81f, x->x>=3)
+                .mustGoal(cycles, "y", 1f, 0.81f, x -> x >= 3)
                 .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
@@ -509,7 +491,7 @@ class NAL8EternalMixTest extends NALTest {
                 .goal("x", Tense.Present, 1f, 0.9f)
                 .believe("(x ==>+3 y)")
                 .mustGoal(cycles, "y", 1f, 0.81f, 3)
-        
+
         ;
     }
 
@@ -521,7 +503,7 @@ class NAL8EternalMixTest extends NALTest {
                 .inputAt(4, "x. :|:")
                 .mustGoal(cycles, "y", 1f, 0.81f, (4 + 3))
                 .mustNotOutput(cycles, "y", GOAL, 3)
-        
+
         ;
     }
 
@@ -540,7 +522,7 @@ class NAL8EternalMixTest extends NALTest {
         test
 
                 .input("R! :|:")
-                .input("((S) ==>+0 --R).") 
+                .input("((S) ==>+0 --R).")
                 .mustGoal(cycles, "(S)", 0.0f, 0.81f, WHEN_REALIZED);
     }
 
@@ -597,7 +579,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("((a($x) &&+4 b($x)) ==>-3 c($x)).")
                 .inputAt(0, "cx! :|:")
-                
+
                 .mustGoal(cycles * 5, "bx", 1f, 0.73f,
                         (t) -> t >= 3 /* early since cx is alrady active when this gets derived */);
     }
@@ -627,9 +609,9 @@ class NAL8EternalMixTest extends NALTest {
     void deriveNegInhGoalTemporal() {
 
         test
-                .input("b:a! :|:") 
+                .input("b:a! :|:")
                 .input("c:b.")
-                .input("--y:x!  :|:") 
+                .input("--y:x!  :|:")
                 .input("z:y.")
                 .mustGoal(cycles * 2, "c:a", 1f, 0.81f, 0)
                 .mustGoal(cycles * 2, "z:x", 0f, 0.81f, 0);
@@ -637,7 +619,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void testStrongUnificationDeductionPN() {
-        
+
         test
                 .input("((--,Y) ==>+1 x).")
                 .input("(--,Y). :|:")

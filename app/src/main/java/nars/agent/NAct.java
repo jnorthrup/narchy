@@ -328,8 +328,8 @@ public interface NAct {
     default void actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
-                //0.5f;
-                0.66f;
+                0.5f;
+                //0.66f;
 
         float[] lr = new float[2];
 
@@ -373,9 +373,15 @@ public interface NAct {
     default void actionPushButton(Term t, FloatSupplier thresh, BooleanToBooleanFunction on) {
 
 
-        GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
+        FloatToFloatFunction ifGoalMissing =
+                //x -> Float.NaN;
+                x -> 0;
+
+        GoalActionConcept b = actionUnipolar(t, true, ifGoalMissing, (f) -> {
             boolean posOrNeg = f > thresh.asFloat();
-            return on.valueOf(posOrNeg) ? 1f : 0f;
+            return on.valueOf(posOrNeg) ?
+                    1f :
+                    0f;
         });
         b.resolution(1f);
     }

@@ -1,6 +1,5 @@
 package nars.exe;
 
-import jcog.TODO;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
@@ -135,7 +134,7 @@ public class Attention extends DurService implements Sampler<Concept> {
 
     @Override
     public void sample(Random rng, Function<? super Concept, SampleReaction> each) {
-        throw new TODO();
+        active.sample(rng, (Activate a)->each.apply(a.get()));
     }
 
     public float pri(Termed id, float ifMissing) {

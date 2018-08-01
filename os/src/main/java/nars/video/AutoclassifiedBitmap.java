@@ -1,5 +1,6 @@
 package nars.video;
 
+import com.google.common.collect.Iterables;
 import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatRange;
@@ -7,11 +8,13 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.agent.NAgent;
+import nars.concept.NodeConcept;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
+import nars.term.Termed;
 import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
@@ -85,6 +88,10 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
     public interface MetaBits {
         float[] get(int subX, int subY);
+    }
+    @Override
+    public Iterable<Termed> components() {
+        return Iterables.transform(signals, NodeConcept::term);
     }
 
     /*

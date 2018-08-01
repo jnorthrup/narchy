@@ -15,4 +15,8 @@ public interface Sensor extends Termed {
     FloatRange pri();
 
     void update(long last, long now, NAR nar);
+
+    /** the components of the sensor, of which there may be one or more concepts */
+    Iterable<Termed> components();
+
 }

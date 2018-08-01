@@ -1,14 +1,17 @@
 package nars.concept.sensor;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.concept.NodeConcept;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +40,10 @@ abstract public class DemultiplexedScalar extends AbstractSensor implements Iter
         return value.floatValue();
     }
 
+    @Override
+    public Iterable<Termed> components() {
+        return Iterables.transform(this, NodeConcept::term);
+    }
 
     protected DemultiplexedScalar(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
         this(input, id, nar, (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null);

@@ -216,7 +216,7 @@ public class Recog2D extends NAgentX {
             btRange[0] = now - window;
             btRange[1] = now + window;
         });
-        return terms.stream().map(c -> new BeliefTableChart(nar, c, btRange)).collect(toList());
+        return terms.stream().map(c -> new BeliefTableChart(c, nar)).collect(toList());
     }
 
     protected int nextImage() {

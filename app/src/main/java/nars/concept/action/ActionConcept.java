@@ -12,9 +12,11 @@ import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.BiFunction;
 
 
@@ -37,6 +39,11 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
                 )
         );
         ((SignalBeliefTable) beliefs()).resolution(FloatRange.unit(n.freqResolution));
+    }
+
+    @Override
+    public Iterable<Termed> components() {
+        return List.of(this);
     }
 
     /** estimates the organic (derived, excluding curiosity) goal confidence for the given time interval

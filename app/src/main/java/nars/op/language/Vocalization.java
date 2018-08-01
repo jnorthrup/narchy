@@ -4,6 +4,7 @@ import com.google.common.collect.TreeBasedTable;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
+import nars.control.DurService;
 import nars.control.NARService;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -41,8 +42,8 @@ public class Vocalization extends NARService {
     @Override
     protected void starting(NAR nar) {
         nar.runLater(()->{
-            ons.add(nar.onCycle((n) ->{
-                energy = Math.min(1f, energy + 1f/(this.durationsPerWord*nar.dur()));
+            ons.add( DurService.on(nar, ()->{
+                energy = Math.min(1f, energy + 1f/(this.durationsPerWord));
                 if (energy >= 1f) {
                     energy = 0;
                     next();
@@ -76,6 +77,9 @@ public class Vocalization extends NARService {
         }
 
         ta.add(truth);
+
+//        System.out.println(when + " " + word + " " + truth);
+
     }
 
     @Override

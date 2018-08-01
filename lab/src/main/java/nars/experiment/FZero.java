@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
 import static nars.Op.INH;
-import static nars.agent.FrameTrigger.fps;
+import static nars.agent.FrameTrigger.durs;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -37,7 +37,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
-    static float fps = 50f;
+    static float fps = 25f;
 
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
@@ -46,7 +46,10 @@ public class FZero extends NAgentX {
     }
 
     public FZero(NAR nar) {
-        super("fz", fps(fps/2), nar);
+        super("fz",
+                //fps(fps/2),
+                durs(1),
+                nar);
 
         this.fz = new FZeroGame();
 
@@ -66,6 +69,7 @@ public class FZero extends NAgentX {
 
         initUnipolarLinear(4f);
         initBipolarRotateDirect(true, 0.5f);
+        //initBipolarRotateDirect(false, 0.9f);
 
         //initBipolarRotateRelative(fair, rotFactor);
         //initBipolarRotateAbsolute(fair);
@@ -107,7 +111,6 @@ public class FZero extends NAgentX {
 
 //        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
 //                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
-
 
 
     }

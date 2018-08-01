@@ -29,11 +29,23 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
         }
 
         @Override
+        public void removed(CacheCell<K, V> entry) {
+            V v = entry.value;
+            if (v!=null)
+                removing(entry.key, v);
+            super.removed(entry);
+        }
+
+        @Override
         protected void invalidated() {
             super.invalidated();
             invalidate();
         }
     };
+
+    protected void removing(K key, V value) {
+
+    }
 
     @Override
     public void forEach(Consumer<Surface> each) {

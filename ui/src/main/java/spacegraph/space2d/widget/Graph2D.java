@@ -56,7 +56,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     private volatile Graph2DLayout<X> layout = (c, d) -> {
     };
 
-    private final transient Set<CellMap.CacheCell<X, Graph2D.NodeVis<X>>> dontRemain = new LinkedHashSet();
+    private final transient Set<X> dontRemain = new LinkedHashSet();
 
     private final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> x.set(
             new Scale(new PushButton(x.id.toString()), 0.75f)
@@ -160,7 +160,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     private void updateNodes(Iterator<X> nodes, boolean addOrReplace) {
         dontRemain.clear();
         if (!addOrReplace) {
-            cellMap.cache.forEachValue(dontRemain::add);
+            cellMap.cache.forEach((k,v)->dontRemain.add(k));
         }
 
         int nCount = 0;
@@ -182,7 +182,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     return xx; 
             });
 
-            dontRemain.remove(nv);
+            dontRemain.remove(nv.key);
 
             if (nCount++ == nodesMax())
                 break; 
@@ -190,15 +190,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         if (!dontRemain.isEmpty()) {
             dontRemain.forEach(d -> {
-                NodeVis<X> dv = d.value;
-                cellMap.remove(d.key, false);
-                if (dv!=null) {
-                    dv.hide();
-                    nodePool.take(dv);
-                }
+                cellMap.remove(d, false);
             });
             cellMap.cache.invalidate();
         }
+    }
+
+    @Override
+    protected void removing(X key, NodeVis<X> dv) {
+        dv.hide();
+        nodePool.take(dv);
     }
 
     private void updateEdges() {

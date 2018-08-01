@@ -35,18 +35,22 @@ public class NativeSpeechDispatcher {
 
     public void speak(Object x) {
         String s = stringify(x);
+        speak(s);
+    }
+
+    public void speak(String s) {
         try {
 
 
 
 
-                    
+
                     Process p = new ProcessBuilder()
                             .command(command(s))
                             .start();
                     p.onExit().handle((z, y) -> null).exceptionally(t->{
                         logger.warn("speech error: {} {}", s, t);
-                        
+
                         return null;
                     });
 
@@ -56,7 +60,6 @@ public class NativeSpeechDispatcher {
         } catch (IOException e) {
             logger.warn("speech error: {} {}", s, e);
         }
-
     }
 
 }

@@ -154,7 +154,7 @@ public class NARui {
                     new CameraSensorView(b, a.nar()).withControls(),
                     AspectAlign.Align.Center, b.width, b.height))
             .on(x -> x instanceof Concept,
-                    (Concept x) -> new MetaFrame(new BeliefTableChart2(x.term(), a.nar())))
+                    (Concept x) -> new MetaFrame(new BeliefTableChart(x.term(), a.nar())))
 //            .on(x -> x instanceof LinkedHashMap, (LinkedHashMap x)->{
 //                return new AutoSurface<>(x.keySet());
 //            })
@@ -342,7 +342,7 @@ public class NARui {
 
             List<Surface> s = StreamSupport.stream(ii.spliterator(), false)
                     .map(x -> x instanceof Termed ? (Termed) x : null).filter(Objects::nonNull)
-                    .map(c -> new MetaFrame(new BeliefTableChart2(c, nar))).collect(toList());
+                    .map(c -> new MetaFrame(new BeliefTableChart(c, nar))).collect(toList());
 
             if (!s.isEmpty()) {
                 set(s);

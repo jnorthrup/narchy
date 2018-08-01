@@ -3,6 +3,7 @@ package nars.nal.nal6;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Param;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
@@ -16,7 +17,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 300;
+    private static final int cycles = 500;
 
     @BeforeEach
     void setup() {
@@ -26,7 +27,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(22);
         n.confMin.set(0.05f);
         return n;
     }
@@ -333,6 +334,7 @@ public class NAL6Test extends NALTest {
     @Test
     void multiple_variable_elimination2() {
 
+        Param.DEBUG = true;
         TestNAR tester = test;
         tester.believe("<<$x --> lock> ==> (<#y --> key> && open(#y,$x))>");
         tester.believe("<{lock1} --> lock>");

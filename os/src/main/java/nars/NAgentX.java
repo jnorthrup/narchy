@@ -196,6 +196,8 @@ abstract public class NAgentX extends NAgent {
 
     private static NAgent metavisor(NAgent a) {
 
+//        new NARSpeak.VocalCommentary( a.nar());
+
         //Param.DEBUG = true;
 //        a.nar().onTask(x -> {
 //           if (x.isGoal() && !x.isInput())
@@ -268,7 +270,7 @@ abstract public class NAgentX extends NAgent {
 //        });
 
         m.actionUnipolar($.func("curious", a.id), (cur) -> {
-            a.curiosity.set(lerp(cur, 0.01f, 0.3f));
+            a.curiosity.set(lerp(cur, 0.01f, 0.25f));
         });//.resolution(0.05f);
 
         m.actionUnipolar($.func("timeFocus", a.id), (f) -> {

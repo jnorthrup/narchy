@@ -110,7 +110,7 @@ public class NAgentTest {
             n.on(this);
         }
 
-        abstract float reward();
+        public abstract float reward();
 
         public float avgReward() {
             return rewardSum / (((float) nar.time()) / nar.dur());
@@ -139,7 +139,7 @@ public class NAgentTest {
         }
 
         @Override
-        float reward() {
+        public float reward() {
             float r = reward;
             reward = 0;
             return r;
@@ -170,7 +170,7 @@ public class NAgentTest {
         }
 
         @Override
-        float reward() {
+        public float reward() {
             float r = y == prev ? -1 : 1;
             prev = y;
             y = 0;

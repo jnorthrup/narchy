@@ -1,10 +1,12 @@
 package nars.sensor;
 
+import com.google.common.collect.Iterables;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
 import nars.agent.NAgent;
+import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
@@ -12,6 +14,7 @@ import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
@@ -60,6 +63,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
         this.in = nar.newChannel(this);
     }
 
+    @Override
+    public Iterable<Termed> components() {
+        return Iterables.transform(concepts, NodeConcept::term);
+    }
 
     @Override
     public void update(long last, long now, NAR nar) {

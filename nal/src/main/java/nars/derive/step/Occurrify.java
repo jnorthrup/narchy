@@ -705,7 +705,8 @@ public class Occurrify extends TimeGraph {
 //                //pretend in present
 //                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
 
-                o[0] = NOW;  o[1] = NOW + Math.max(0,d.dur-1);
+                o[0] = NOW;
+                o[1] = NOW + Math.max(0, d.dur - 1);
                 //o[0] = NOW-d.dur/2;  o[1] = NOW + d.dur/2;
                 return true;
             }
@@ -715,7 +716,7 @@ public class Occurrify extends TimeGraph {
             }
 
             if (o[0] < NOW && o[1] < NOW) {
-            //if (o[0] != NOW) {
+                //if (o[0] != NOW) {
 //                long range = o[1] - o[0];
 
                 long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
@@ -732,7 +733,7 @@ public class Occurrify extends TimeGraph {
                 //o[0] = NOW; o[1] = NOW + range;
                 o[0] = NOW;
                 //o[1] = Math.max(o[1], NOW + range);
-                o[1] = Math.max(o[1], NOW + Math.max(0, d.dur-1));
+                o[1] = Math.max(o[1], NOW + Math.max(0, d.dur - 1));
 
 
             }

@@ -118,14 +118,18 @@ public class CellMap<K, V> {
     public boolean remove(K key, boolean invalidate) {
         CacheCell<K, V> entry = cache.remove(key);
         if (entry != null) {
-            entry.clear();
-            cellPool.take(entry);
+            removed(entry);
             if (invalidate) {
                 invalidated();
             }
             return true;
         }
         return false;
+    }
+
+    public void removed(CacheCell<K, V> entry) {
+        entry.clear();
+        cellPool.take(entry);
     }
 
     protected void invalidated() {
@@ -146,8 +150,7 @@ public class CellMap<K, V> {
 
     public void clear() {
         cache.removeIf(e -> {
-            e.clear();
-            cellPool.take(e);
+            removed(e);
             return true;
         });
     }

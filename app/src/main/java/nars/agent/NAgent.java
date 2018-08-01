@@ -75,7 +75,8 @@ public class NAgent extends NARService implements NSense, NAct {
     @Deprecated
     private CauseChannel<ITask> in = null;
 
-    protected volatile long last, now;
+    public volatile long last;
+    protected volatile long now;
 
 
     public NAgent(String id, FrameTrigger frameTrigger, NAR nar) {
@@ -358,7 +359,8 @@ public class NAgent extends NARService implements NSense, NAct {
                 if (a instanceof GoalActionConcept)
                     ((GoalActionConcept) a).curiosity(curiosity.get());
 
-                a.update(last, now, nar);
+                //a.update(last, now, nar);
+                long d = Math.max(now-last, nar.dur()); a.update(now-d/2, now+d/2, nar);
             }
 
             if (trace.getOpaque())
@@ -381,8 +383,8 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public float dexterity(long when) {
-        int d = nar().dur();
-        return dexterity(when - d / 2, when + Math.max(0, d / 2 - 1));
+        long d = Math.max(nar().dur(), now-last);
+        return dexterity(when - d / 2, when + d/2);
     }
 
     /**
@@ -451,4 +453,11 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
+    public float reward() {
+        float total = 0;
+        for (Reward r : rewards) {
+            total +=r.summary();
+        }
+        return total;
+    }
 }
