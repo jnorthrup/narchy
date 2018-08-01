@@ -278,6 +278,16 @@ public class FasterList<X> extends FastList<X> {
         return min;
     }
 
+    public long maxValue(ToLongFunction<? super X> function) {
+        long max = Long.MIN_VALUE;
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            long y = function.applyAsLong(this.get(i));
+            if (y > max)
+                max = y;
+        }
+        return max;
+    }
+
     public X maxBy(float mustExceed, FloatFunction<? super X> function) {
 
         if (ArrayIterate.isEmpty(items)) {

@@ -14,6 +14,7 @@ import nars.concept.action.SwitchAction;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
+import nars.exe.Attention;
 import nars.exe.UniExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
@@ -51,7 +52,7 @@ public class TrackXY extends NAgent {
 
     public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.05f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.01f, 0, 2f);
 
     public final FloatRange visionContrast = new FloatRange(0.9f, 0, 1f);
 
@@ -65,7 +66,7 @@ public class TrackXY extends NAgent {
 
     protected TrackXY(NAR nar, int W, int H) {
         super("trackXY",
-                FrameTrigger.durs(2),
+                FrameTrigger.durs(1),
                 //FrameTrigger.fps(1),
                 nar);
 
@@ -83,7 +84,6 @@ public class TrackXY extends NAgent {
         this.view = new ArrayBitmap2D(this.W = W, this.H = H);
         if (targetCam) {
             this.cam = sense(new Bitmap2DSensor<>(id /* (Term) null*/, view, nar));
-            this.cam.resolution(0.2f);
         } else {
             this.cam = null;
         }
@@ -97,6 +97,8 @@ public class TrackXY extends NAgent {
 
         randomize();
 
+
+
     }
 
     public static void main(String[] args) {
@@ -104,13 +106,14 @@ public class TrackXY extends NAgent {
         boolean nars = true;
 //        boolean rl = false;
 
-        int dur = 4;
+        int dur = 1;
 
         NARS nb = new NARS()
+                .attention(()->new Attention(64))
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
-                        new CaffeineIndex(16 * 1024 * 10 )
+                        new CaffeineIndex(1 * 1024 * 10 )
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 
@@ -119,7 +122,7 @@ public class TrackXY extends NAgent {
         NAR n = nb.get();
 
         n.dtDither.set(dur);
-        n.timeFocus.set(8);
+        n.timeFocus.set(1);
 
 //        n.goalPriDefault.set(0.99f);
 //        n.beliefPriDefault.set(0.01f);
@@ -127,10 +130,12 @@ public class TrackXY extends NAgent {
 //        n.questPriDefault.set(0.01f);
 
 
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(9);
+        n.freqResolution.set(0.25f);
+        n.confResolution.set(0.05f);
 
 
-        TrackXY a = new TrackXY(n, 3, 3);
+        TrackXY a = new TrackXY(n, 2, 1);
 
 
 //        if (rl) {
@@ -144,13 +149,13 @@ public class TrackXY extends NAgent {
 
 
             Deriver d = new MatrixDeriver(Derivers.nal(n,
-                    1,
-                    8
-                    //,"curiosity.nal"
-                    , "motivation.nal"
+            6,8
+//                    1, 8
+//                    //,"curiosity.nal"
+//                    , "motivation.nal"
             ));
 
-//            ((MatrixDeriver) d).conceptsPerIteration.set(8);
+            ((MatrixDeriver) d).conceptsPerIteration.set(8);
 
 
             //new STMLinkage(n, 1, false);
@@ -158,7 +163,7 @@ public class TrackXY extends NAgent {
             ConjClustering cjB = new ConjClustering(n, BELIEF,
                     //x -> true,
                     Task::isInput,
-                    4, 16);
+                    2, 4);
 
 
 //            window(new Gridding(
@@ -199,13 +204,14 @@ public class TrackXY extends NAgent {
         });
 
 
-        int experimentTime = 12000;
+        int experimentTime = 6000;
         n.run(experimentTime);
 
         printGoals(n);
         printImpls(n);
 
         n.stats(System.out);
+        n.conceptsActive().forEach(System.out::println);
 
     }
 
@@ -318,7 +324,7 @@ public class TrackXY extends NAgent {
 
     private void actionPushButtonMutex() {
         if (view.height() > 1) {
-            actionPushButtonMutex(INH.the($.the("up"), id), INH.the($.the("down"), id), (b) -> {
+            actionPushButtonMutex($.func("up", id), $.func("down", id), (b) -> {
                 if (b)
                     sy = Util.clamp(sy + this.controlSpeed.floatValue(), 0, view.height() - 1);
             }, (b) -> {
@@ -327,7 +333,7 @@ public class TrackXY extends NAgent {
             });
         }
 
-        actionPushButtonMutex(INH.the($.the("right"), id), INH.the($.the("left"), id), (b) -> {
+        actionPushButtonMutex($.func("right", id), $.func("left", id), (b) -> {
             if (b)
                 sx = Util.clamp(sx + this.controlSpeed.floatValue(), 0, view.width() - 1);
         }, (b) -> {

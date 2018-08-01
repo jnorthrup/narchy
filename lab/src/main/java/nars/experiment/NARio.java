@@ -26,6 +26,7 @@ public class NARio extends NAgentX {
 //    private final AbstractSensor cam;
 
     static final float fps = 24;
+    private Mario theMario = null;
 
     public NARio(NAR nar) {
         super("nario", fps(fps), nar);
@@ -148,19 +149,38 @@ public class NARio extends NAgentX {
 
             return reward;
         });
-        reward("getCoins", () -> {
+        reward("getCoins",  () -> {
             int coins = Mario.coins;
             float reward = (coins - lastCoins) * EarnCoin.floatValue();
             lastCoins = coins;
             return Math.max(0,reward);
         });
-        reward("alive", () -> {
-            int t = mario.scene instanceof LevelScene ? (((LevelScene) mario.scene).mario.deathTime > 0 ? -1 : +1) : 0;
-            if (t == -1)
+        reward("alive", -1, +1, () -> {
+            if (dead)
+                return -1;
+
+            if (theMario ==null) {
+                if (mario.scene instanceof LevelScene)
+                    theMario = ((LevelScene) mario.scene).mario;
+                else
+                    return 0f;
+            }
+
+            int t = theMario.deathTime > 0 ? -1 : +1;
+            if (t == -1) {
                 System.out.println("Dead");
+                theMario.deathTime = 0;
+                dead = true;
+                nar.runAt(nar.time() + theMario.AFTERLIFE_TIME, ()->{
+                    mario.levelFailed(); //restart level
+                    dead = false;
+                });
+            }
             return t;
         });
     }
+
+    boolean dead = false;
 
 
     public int tile(int dx, int dy) {

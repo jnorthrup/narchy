@@ -334,11 +334,11 @@ public class LevelScene extends Scene implements SpriteContext {
             renderBlackout(g, mario.xDeathPos - xCam, mario.yDeathPos - yCam, (int) (320 - t));
         }
 
-        if (mario.deathTime > 0) {
-            renderer.levelFailed();
-
-
-        }
+//        if (mario.deathTime > 0) {
+//            renderer.levelFailed();
+//
+//
+//        }
     }
 
     private void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {

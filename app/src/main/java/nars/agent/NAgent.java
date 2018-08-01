@@ -304,14 +304,20 @@ public class NAgent extends NARService implements NSense, NAct {
     public Off reward(String reward, FloatSupplier rewardFunc) {
         return reward($.inh($$(reward), id), rewardFunc);
     }
+    public Off reward(String reward, float min, float max, FloatSupplier rewardFunc) {
+        return reward($.inh($$(reward), id), min, max, rewardFunc);
+    }
 
+    public Off reward(Term reward, FloatSupplier rewardFunc) {
+        return reward(reward, 0, 0, rewardFunc);
+    }
     /**
      * set a default (bi-polar) reward supplier
      */
-    public Off reward(Term reward, FloatSupplier rewardFunc) {
+    public Off reward(Term reward, float min, float max, FloatSupplier rewardFunc) {
         return reward(new SimpleReward(reward,
                 //default normalizer
-                new FloatNormalized(rewardFunc, 0, 0, false).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+                new FloatNormalized(rewardFunc, min, max, false).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
                 this));
     }
 

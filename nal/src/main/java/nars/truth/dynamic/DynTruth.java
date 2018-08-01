@@ -80,12 +80,12 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
     @Override
     public long start() {
-        throw new TODO();
+        return minValue(LongInterval::start);
     }
 
     @Override
     public long end() {
-        throw new TODO();
+        return maxValue(LongInterval::end);
     }
 
     @Override

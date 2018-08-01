@@ -3,14 +3,22 @@
 //TODO n-ary conj
 
 
-  ((A-->X) && (B-->X)),   X, neq(A,B)  |- ((A|B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
-(--(A-->X) && --(B-->X)), X, neq(A,B)  |- ((A&B)-->X), (Belief:StructuralReductionN, Goal:StructuralReductionN, Time:TaskRange)
+  ((A-->X) && (B-->X)),   X, neq(A,B), task(".")  |- ((A|B)-->X), (Punctuation:Question, Time:TaskRange)
+(--(A-->X) && --(B-->X)), X, neq(A,B), task(".")  |- ((A&B)-->X), (Punctuation:Question, Time:TaskRange)
 
     //((A<->X) && (B<->X)),   X, neq(A,B)  |- ((A|B)<->X), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
     //(--(A<->X) && --(B<->X)), X, neq(A,B)  |- ((A&B)<->X), (Belief:StructuralReductionN, Goal:StructuralReductionN, Time:TaskRange)
 
-  ((X-->A) && (X-->B)),   X, neq(A,B)  |- (X-->(A&B)), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
-(--(X-->A) && --(X-->B)), X, neq(A,B)  |- (X-->(A|B)), (Belief:StructuralReductionN, Goal:StructuralReductionN, Time:TaskRange)
+  ((X-->A) && (X-->B)),   X, neq(A,B), task(".")  |- (X-->(A&B)), (Punctuation:Question, Time:TaskRange)
+(--(X-->A) && --(X-->B)), X, neq(A,B), task(".")  |- (X-->(A|B)), (Punctuation:Question, Time:TaskRange)
 
+
+//specific difference of two conjunctions
+ (&&,X,A..+), (&&,Y,A..+), neq(X,Y), task(".")    |- (X-Y), (Punctuation:Question, Time:TaskRange)
+    (&&,X,A..+), (&&,Y,A..+), neq(X,Y), task("!")    |- (X-Y), (Punctuation:Quest, Time:TaskRange)
+ (&&,X,A..+), (&&,Y,A..+), neq(X,Y), task(".")    |- (Y-X), (Punctuation:Question, Time:TaskRange)
+    (&&,X,A..+), (&&,Y,A..+), neq(X,Y), task("!")    |- (Y-X), (Punctuation:Quest, Time:TaskRange)
+
+//identity?
   ((X-->A) - (X-->B)),   X  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
   ((A-->X) - (B-->X)),   X  |- ((A~B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
