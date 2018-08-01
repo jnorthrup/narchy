@@ -82,7 +82,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
     }
 
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, long next, NAR nar) {
         update(last, now, signals, input);
     }
 

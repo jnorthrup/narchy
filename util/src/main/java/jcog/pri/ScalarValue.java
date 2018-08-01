@@ -23,7 +23,7 @@ public interface ScalarValue {
     /**
      * global minimum difference necessary to indicate a significant modification in budget float number components
      */
-    float EPSILON =             0.00001f;
+    float EPSILON =             0.000001f;
 
     /** setter
      *  @return value after set

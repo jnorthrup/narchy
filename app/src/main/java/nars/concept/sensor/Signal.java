@@ -151,8 +151,8 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Override
-    public void update(long last, long now, NAR nar) {
-        in.input(update(last, now, (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF)), nar));
+    public void update(long prev, long now, long next, NAR nar) {
+        in.input(update(prev, now, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar));
     }
 
     public Signal setPri(FloatRange pri) {

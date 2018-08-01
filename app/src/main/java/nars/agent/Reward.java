@@ -9,7 +9,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 
 import static nars.Op.BELIEF;
 
-public abstract class Reward implements Runnable {
+public abstract class Reward  {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
@@ -25,10 +25,9 @@ public abstract class Reward implements Runnable {
         this.rewardFunc = r;
     }
 
-    public NAR nar() { return agent.nar(); }
+    public final NAR nar() { return agent.nar(); }
 
-    @Override
-    public void run() {
+    public void update(long prev, long now, long next) {
         reward = rewardFunc.asFloat();
     }
 

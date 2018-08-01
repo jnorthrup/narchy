@@ -58,21 +58,26 @@ public class GoalActionConcept extends ActionConcept {
 
 
     @Override
-    public void update(long pPrev, long pNow, NAR nar) {
+    public void update(long prev, long now, long next, NAR nar) {
 
 
-        Truth goal;
 
-        //int dur = nar.dur();
+
+        int dur = nar.dur();
         //long gStart = pNow - dur / 2, gEnd = pNow + Math.max(0, dur / 2 - 1);
         //long gStart = pNow, gEnd = pNow + Math.max(0, dur-1);
         //long gStart = pPrev + dur, gEnd = pNow + Math.max(0, dur -1);
-        long gStart = pPrev, gEnd = pNow;
+        //long gStart = prev, gEnd = now;
 
-        goal =
-                this.goals().truth(gStart, gEnd, nar);
-                //goals().truthStored(gStart, gEnd, null, nar);
+        Truth goal = this.goals()
+                .truth(prev, now /*next*/, nar);
+                //.truthStored(prev, now /*next*/, null, nar);
 
+//        if (goal==null) {
+//            //self fulfilling prophecy
+//            Truth beliefAhead = this.beliefs().truth(now, next, nar);
+//            goal = beliefAhead;
+//        }
 
         boolean curi;
         if (nar.random().nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
@@ -98,27 +103,25 @@ public class GoalActionConcept extends ActionConcept {
 
         } else {
             curi = false;
-
-
         }
 
 
-        Truth belief = this.beliefs().truth(gStart, gEnd, nar);
 
 
-        Truth feedback = this.motor.apply(belief, goal);
+
+
+        Truth feedback = this.motor.apply(null, goal);
 
         SignalBeliefTable b = beliefs();
         Task feedbackBelief = feedback != null ?
-                b.add(feedback, gStart, gEnd, this, nar) : null;
+                b.add(feedback, now, next, this, nar) : null;
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief != null) {
             curiosityGoal = curiosity(
                     goal,
                     term,
-                    //pNow-dur/2, pNow+Math.max(0,dur/2-1),
-                    gStart, gEnd,
+                    prev, now,
                     nar);
         }
 

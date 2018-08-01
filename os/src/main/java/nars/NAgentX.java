@@ -176,11 +176,11 @@ abstract public class NAgentX extends NAgent {
 
                 window(aa, 1200, 900);
 
-                if (a instanceof NAgentX) {
-                    NAgent m = metavisor(a);
-                    m.pri.set(0.1f);
-                    window(NARui.agent(m), 400, 400);
-                }
+//                if (a instanceof NAgentX) {
+//                    NAgent m = metavisor(a);
+//                    m.pri.set(0.1f);
+//                    window(NARui.agent(m), 400, 400);
+//                }
 
 
                 //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));

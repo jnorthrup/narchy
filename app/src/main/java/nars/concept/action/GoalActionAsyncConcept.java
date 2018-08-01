@@ -39,15 +39,15 @@ public class GoalActionAsyncConcept extends ActionConcept {
     }
 
     @Override
-    public void update(long pPrev, long pNow, NAR nar) {
+    public void update(long prev, long now, long next, NAR nar) {
 
 
-        long gStart, gEnd;
+//        long gStart, gEnd;
         int dur = nar.dur();
-        gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
-        //gStart = pNow; gEnd = pNow + dur;
+//        gStart = pNow - dur / 2; gEnd = pNow + dur / 2;
+//        //gStart = pNow; gEnd = pNow + dur;
 
-        Truth goal = this.goals().truth(gStart, gEnd, nar);
+        Truth goal = this.goals().truth(prev, now , nar);
 
 
         this.motor.accept(this, goal);

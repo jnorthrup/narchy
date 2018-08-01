@@ -27,6 +27,9 @@ abstract public class FrameTrigger {
         }
     }
 
+    /** estimate the time of the next cycle */
+    abstract public long next(long now);
+
     /** measured in realtime */
     public static class FPS extends FrameTrigger {
 
@@ -39,10 +42,16 @@ abstract public class FrameTrigger {
             this.initialFPS = fps;
             loop = new Loop(-1) {
                 @Override public boolean next() {
-                    agent.frame();
+                    agent.next();
                     return true;
                 }
             };
+        }
+
+        @Override
+        public long next(long now) {
+            RealTime t = (RealTime) agent.nar().time;
+            return now + Math.round(t.secondsToUnits(loop.periodMS.getOpaque()*0.001));
         }
 
         @Override protected Off install(NAgent a) {
@@ -68,9 +77,14 @@ abstract public class FrameTrigger {
             this.initialDurs = initialDurs;
         }
         @Override protected Off install(NAgent a) {
-            loop = DurService.on(a.nar(), a::frame);
+            loop = DurService.on(a.nar(), a::next);
             loop.durs(initialDurs);
             return loop;
+        }
+
+        @Override
+        public long next(long now) {
+            return now + loop.durCycles();
         }
     }
 

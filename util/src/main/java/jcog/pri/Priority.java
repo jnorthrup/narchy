@@ -94,7 +94,6 @@ public interface Priority extends Prioritized, ScalarValue {
 //    }
 
     static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
-        //TODO can this be made fully atomic?
         return fund(maxPri, copyOrTransfer, (x -> x), src);
     }
 
@@ -102,17 +101,13 @@ public interface Priority extends Prioritized, ScalarValue {
      * X[] may contain nulls
      */
     static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, Priority> getPri, X... src) {
-        //TODO can this be made fully atomic?
 
         assert (src.length > 0);
 
-        float priSum = Util.sum((X s) -> {
+        float priTarget = Math.min(maxPri, Util.sum((X s) -> {
             if (s == null) return 0;
-            Priority p = getPri.apply(s);
-            return p.priElseZero();
-        }, src);
-
-        float priTarget = Math.min(maxPri, priSum);
+            return getPri.apply(s).priElseZero();
+        }, src));
 
         UnitPri u = new UnitPri();
 

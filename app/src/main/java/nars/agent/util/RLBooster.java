@@ -119,8 +119,12 @@ public class RLBooster implements Consumer<NAR> {
 
         float reward = env.reward();
 
-        long start = env.last; //now() - dur/2;
-        long end = env.now(); //+ dur/2;
+//        long start = env.last; //now() - dur/2;
+//        long end = env.now(); //+ dur/2;
+        //HACK
+        int dur = env.nar().dur();
+        long start = env.nar().time() - dur/2;
+        long end = env.nar().time() + dur/2;
         int O = rl.act(reward, input(start, end));
 
         float OFFfreq

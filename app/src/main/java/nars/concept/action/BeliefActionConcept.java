@@ -28,7 +28,7 @@ public class BeliefActionConcept extends ActionConcept {
     }
 
     @Override
-    public void update(long start, long end, NAR nar) {
+    public void update(long start, long end, long next, NAR nar) {
 
         int dur = nar.dur();
         long nowStart =

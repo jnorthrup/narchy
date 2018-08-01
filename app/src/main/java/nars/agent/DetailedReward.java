@@ -67,12 +67,12 @@ public class DetailedReward extends Reward {
 
 
     @Override
-    public void run() {
-        super.run();
+    public void update(long prev, long now, long next) {
+        super.update(prev, now, next);
 
         NAR nar = nar();
 
-        concept.update(agent.last, agent.now(), nar);
+        concept.update(prev, now, next, nar);
 
 //            Truth happynowT = nar.beliefTruth(concept, last, now);
 //            float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;

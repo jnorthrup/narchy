@@ -73,7 +73,7 @@ abstract public class DemultiplexedScalar extends AbstractSensor implements Iter
 //        }
 //    }
 
-    public void update(long start, long end, NAR n) {
+    public void update(long start, long end, long next, NAR n) {
 
         if (input!=null)
             value.set(input.asFloat());

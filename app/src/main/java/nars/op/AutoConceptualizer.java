@@ -49,7 +49,7 @@ public class AutoConceptualizer extends AbstractSensor {
     }
 
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, long next, NAR nar) {
         update(nar);
     }
 

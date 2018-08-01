@@ -170,7 +170,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     abstract protected void run(NAR n, long dt);
 
 
-    public long dur() {
+    public long durCycles() {
         return durCycles(nar);
     }
 

@@ -388,10 +388,10 @@
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
 
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
-     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Desire)
+     //C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Desire)
             //conjDropIfEarliestFiltered
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN)
-     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN)
+     //C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN)
         //conjDropIfEarliestFiltered
 
 

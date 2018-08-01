@@ -69,7 +69,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
     }
 
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, long next, NAR nar) {
         //..
     }
 

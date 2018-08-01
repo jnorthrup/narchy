@@ -55,7 +55,7 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
     }
 
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, long next, NAR nar) {
         //?
     }
 

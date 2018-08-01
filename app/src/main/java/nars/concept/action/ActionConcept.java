@@ -73,7 +73,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
         }
     }
 
-    abstract public void update(long start, long end, NAR nar);
+
 
     @Override
     public void value(Task t, float activation, NAR n) {

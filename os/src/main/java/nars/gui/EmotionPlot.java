@@ -30,10 +30,10 @@ public class EmotionPlot extends DurSurface<Gridding> {
 
         the.set(
                 plot1 = new Plot2D(plotHistory, Plot2D.Line)
-                        .add("Dex+0", () -> a.dexterity(a.now())/*, 0f, 1f*/)
-                        .add("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
-                        .add("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())),
-                plot2 = new Plot2D(plotHistory, Plot2D.Line)
+                        .add("Dex+0", () -> a.dexterity()/*, 0f, 1f*/)
+//                        .add("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
+//                        .add("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur()))
+                ,plot2 = new Plot2D(plotHistory, Plot2D.Line)
                         .add("Busy", nar.emotion.busyVol::getSum),
                 plot3 = new Plot2D(plotHistory, Plot2D.Line));
 

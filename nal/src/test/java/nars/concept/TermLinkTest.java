@@ -164,7 +164,8 @@ class TermLinkTest {
     @Test
     void testTemplateConj2() {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
-                "[(($1-->key) ==>+- open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
+                //"[(($1-->key) ==>+- open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
+                "[(($1-->key) ==>+- open($1,#2)), (#2-->lock)]");
 
     }
 

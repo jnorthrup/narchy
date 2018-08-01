@@ -2,7 +2,10 @@ package nars.agent;
 
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
-import jcog.event.*;
+import jcog.event.ListTopic;
+import jcog.event.Off;
+import jcog.event.On;
+import jcog.event.Topic;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -23,18 +26,20 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
-import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.util.TimeAware;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -67,17 +72,24 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final FastCoWList<ActionConcept> actions = new FastCoWList<>(ActionConcept[]::new);
 
-    public final List<Reward> rewards = new FastCoWList<>(Reward[]::new);
+    public final FastCoWList<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
-    @Deprecated
-    private final List<Supplier<Task>> always = $.newArrayList();
+    public final AtomicInteger iteration = new AtomicInteger(0);
+
+    @FunctionalInterface  public interface ReinforcedTask {
+        @Nullable Task get(long prev, long now, long next);
+    }
+
+    private final List<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
 
     @Deprecated
     private CauseChannel<ITask> in = null;
 
-    public volatile long last;
-    protected volatile long now;
+    private NAgentCycle cycle =
+            //Cycles.Biphasic;
+            Cycles.Interleaved;
 
+    private volatile long last;
 
     public NAgent(String id, FrameTrigger frameTrigger, NAR nar) {
         this(id.isEmpty() ? null : Atomic.the(id), frameTrigger, nar);
@@ -87,7 +99,7 @@ public class NAgent extends NARService implements NSense, NAct {
         super(id);
         this.nar = nar;
         this.frameTrigger = frameTrigger;
-        this.now = this.last = nar.time();
+        this.last = nar.time();
 
         nar.on(this);
     }
@@ -125,24 +137,20 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public Task alwaysWantEternally(Termed x, float conf) {
-        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now(),
+        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),
                 ETERNAL, ETERNAL,
                 //nar.evidence()
                 Stamp.UNSTAMPED
         );
 
-        always.add(() -> t);
+        always.add((prev,now,next) -> t);
         return t;
     }
 
     public void alwaysWant(Termed x, float confFactor) {
         //long[] evidenceShared = nar.evidence();
 
-        always.add(() -> {
-            int dur = nar.dur();
-            long now = Tense.dither(this.last + dur/*this.now()*/, nar);
-            long next = Tense.dither(this.now + dur/*this.now() + nar.dur()*/, nar);
-            now = Math.min(now, next);
+        always.add((prev, now, next) -> {
 
             return new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
                     now, next,
@@ -156,27 +164,22 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public void alwaysQuestion(Termed x, boolean stamped) {
-        alwaysQuestionDynamic(()->x, true);
+        alwaysQuestionDynamic(() -> x, true);
     }
 
     public void alwaysQuest(Termed x, boolean stamped) {
-        alwaysQuestionDynamic(()->x, false);
+        alwaysQuestionDynamic(() -> x, false);
     }
 
     public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest) {
 
         boolean stamped = true;
-        always.add(() -> {
-
-            //long now = Tense.dither(this.now(), nar), next = Tense.dither(this.now() + nar.dur(), nar);
-
-            long d = Math.max(nar.dur(), now - last);
-            long now = Tense.dither(this.now()-d/2, nar), next = Tense.dither(this.now() + d/2, nar);
+        always.add((prev, now, next) -> {
 
             long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
 
             Termed tt = x.get();
-            if (tt==null) return null;
+            if (tt == null) return null;
 
             return new NALTask(tt.term(), questionOrQuest ? QUESTION : QUEST, null, now,
                     now, next,
@@ -190,6 +193,7 @@ public class NAgent extends NARService implements NSense, NAct {
         });
 
     }
+
     private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
 
         NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
@@ -198,7 +202,7 @@ public class NAgent extends NARService implements NSense, NAct {
                 stamped ? nar.evidence() : Stamp.UNSTAMPED
 
         );
-        always.add(() -> etq);
+        always.add((prev, now, next) -> etq);
     }
 
 
@@ -287,15 +291,6 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
-    protected void always(float activation) {
-        in.input(always.stream().map(Supplier::get).peek(x -> {
-            x.pri(
-                    activation * nar.priDefault(x.punc())
-            );
-        }));
-    }
-
-
     public Off reward(FloatSupplier rewardfunc) {
         return reward($.func("reward", id), rewardfunc);
     }
@@ -308,6 +303,7 @@ public class NAgent extends NARService implements NSense, NAct {
     public Off reward(String reward, FloatSupplier rewardFunc) {
         return reward($.inh($$(reward), id), rewardFunc);
     }
+
     public Off reward(String reward, float min, float max, FloatSupplier rewardFunc) {
         return reward($.inh($$(reward), id), min, max, rewardFunc);
     }
@@ -315,6 +311,7 @@ public class NAgent extends NARService implements NSense, NAct {
     public Off reward(Term reward, FloatSupplier rewardFunc) {
         return reward(reward, 0, 0, rewardFunc);
     }
+
     /**
      * set a default (bi-polar) reward supplier
      */
@@ -336,45 +333,90 @@ public class NAgent extends NARService implements NSense, NAct {
      */
     final public Off reward(Reward r) {
         rewards.add(r);
-        return new Ons(onFrame(r));
+        return () -> rewards.remove(r);
+    }
+
+    public interface NAgentCycle {
+        /**
+         * in each iteration,
+         * responsible for invoking some or all of the following agent operations, and
+         * supplying their necessary time bounds:
+         * <p>
+         * a.frame() - executes attached per-frame event handlers
+         * <p>
+         * a.reinforce(...) - inputs 'always' tasks
+         * <p>
+         * a.sense(...) - reads sensors
+         * <p>
+         * a.act(...) - reads/invokes goals and feedback
+         */
+        void next(NAgent a, int iteration, long prev, long now, long next);
+    }
+
+    public enum Cycles implements NAgentCycle {
+
+        /**
+         * original, timing needs analyzed more carefully
+         */
+        Interleaved() {
+            @Override
+            public void next(NAgent a, int iteration, long prev, long now, long next) {
+
+                a.reinforce(prev, now, next);
+
+                a.frame();
+
+                a.sense(prev, now, next);
+
+                a.act(prev, now, next);
+            }
+
+        },
+
+        /**
+         * iterations occurr in read then act pairs
+         */
+        Biphasic() {
+            @Override
+            public void next(NAgent a, int iteration, long prev, long now, long next) {
+
+                //System.out.println(a.nar.time() + ": " + (iteration%2) + " " + prev + " " + now + " " + next);
+
+                switch (iteration % 2) {
+                    case 0:
+                        //SENSE
+                        a.sense(prev, now, next);
+                        a.frame();
+                        break;
+                    case 1:
+                        //ACT
+                        a.reinforce(prev, now, next);
+                        a.act(prev, now, next);
+                        break;
+                }
+            }
+        }
     }
 
 
     /**
      * runs a frame
      */
-    protected void frame() {
-        if (!enabled.getOpaque() || !busy.weakCompareAndSetAcquire(false, true))
+    protected void next() {
+        if (!enabled.getOpaque())
+            return;
+
+        long now = nar.time();
+        long last = this.last;
+        if (now <= last)
+            return;
+
+        if (!busy.weakCompareAndSetAcquire(false, true))
             return;
 
         try {
-            long now = nar.time();
-            long last = this.last;
-            if (now <= last)
-                return;
 
-            this.now = now;
-
-            always(pri.floatValue());
-
-            eventFrame.emit(nar);
-
-            sensors.forEach(s -> s.update(last, now, nar));
-
-            ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
-            ArrayUtils.shuffle(aaa, random());
-            for (ActionConcept a : aaa) {
-
-                //HACK temporary
-                if (a instanceof GoalActionConcept)
-                    ((GoalActionConcept) a).curiosity(curiosity.get());
-
-                //a.update(last, now, nar);
-                long d = Math.max(now-last, nar.dur()); a.update(now-d/2, now+d/2, nar);
-            }
-
-            if (trace.getOpaque())
-                logger.info(summary());
+            cycle.next(this, iteration.getAndIncrement(), this.last, now, frameTrigger.next(now));
 
             this.last = now;
 
@@ -382,19 +424,49 @@ public class NAgent extends NARService implements NSense, NAct {
             busy.setRelease(false);
         }
 
+        if (trace.getOpaque())
+            logger.info(summary());
     }
 
-    public long now() {
-        return now;
+    protected void act(long prev, long now, long next) {
+        ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
+        ArrayUtils.shuffle(aaa, random());
+        for (ActionConcept a : aaa) {
+
+            //HACK temporary
+            if (a instanceof GoalActionConcept)
+                ((GoalActionConcept) a).curiosity(curiosity.get());
+
+            a.update(prev, now, next, nar);
+        }
     }
+
+    protected void sense(long prev, long now, long next) {
+        sensors.forEach(s -> s.update(prev, now, next, nar));
+        rewards.forEach(r -> r.update(prev, now, next));
+    }
+
+    protected void reinforce(long prev, long now, long next) {
+        in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
+            x.pri(
+                    pri.floatValue() * nar.priDefault(x.punc())
+            );
+        }));
+    }
+
+    protected final void frame() {
+        eventFrame.emit(nar);
+    }
+
 
     public float dexterity() {
-        return dexterity(now());
+        return dexterity(nar.time());
     }
 
     public float dexterity(long when) {
-        long d = Math.max(nar().dur(), now-last);
-        return dexterity(when - d / 2, when + d/2);
+        long now = nar.time();
+        long d = frameTrigger.next(now) - now;
+        return dexterity(when - d / 2, when + d / 2);
     }
 
     /**
@@ -466,7 +538,7 @@ public class NAgent extends NARService implements NSense, NAct {
     public float reward() {
         float total = 0;
         for (Reward r : rewards) {
-            total +=r.summary();
+            total += r.summary();
         }
         return total;
     }

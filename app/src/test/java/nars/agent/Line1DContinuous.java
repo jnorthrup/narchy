@@ -70,7 +70,7 @@ public class Line1DContinuous extends NAgent {
         });
 
         reward(() -> {
-            yHidden = Math.round(targetFunc.valueOf((int) now()) * (size - 1));
+            yHidden = Math.round(targetFunc.valueOf((int) nar.time()) * (size - 1));
 
             yHidden = Math.min(size - 1, Math.max(0, yHidden));
             yEst = Math.min(size - 1, Math.max(0, yEst));
