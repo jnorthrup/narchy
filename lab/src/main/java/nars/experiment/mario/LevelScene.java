@@ -180,6 +180,9 @@ public class LevelScene extends Scene implements SpriteContext {
             boolean hasShotCannon = false;
             int xCannon = 0;
 
+            if (layer == null)
+                return;
+
             for (int x = (int) xCam / 16 - 1; x <= (int) (xCam + layer.width) / 16 + 1; x++)
                 for (int y = (int) yCam / 16 - 1; y <= (int) (yCam + layer.height) / 16 + 1; y++) {
                     int dir = 0;
@@ -265,6 +268,10 @@ public class LevelScene extends Scene implements SpriteContext {
 
     @Override
     public void render(Graphics g, float alpha) {
+        LevelRenderer layer = this.layer;
+        if (level == null || layer == null)
+            return;
+
         int xCam = (int) (mario.xOld + (mario.x - mario.xOld) * alpha) - 160;
         int yCam = (int) (mario.yOld + (mario.y - mario.yOld) * alpha) - 120;
 
@@ -334,11 +341,11 @@ public class LevelScene extends Scene implements SpriteContext {
             renderBlackout(g, mario.xDeathPos - xCam, mario.yDeathPos - yCam, (int) (320 - t));
         }
 
-//        if (mario.deathTime > 0) {
-//            renderer.levelFailed();
-//
-//
-//        }
+        if (mario.deathTime > 0) {
+            renderer.levelFailed();
+
+
+        }
     }
 
     private void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {

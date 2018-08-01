@@ -64,7 +64,7 @@ public class NARui {
     }
 
 
-    public static Surface bagHistogram(Iterable<? extends Prioritized> bag, int bins, NAR n) {
+    public static <X extends Prioritized> Surface bagHistogram(Iterable<X> bag, int bins, NAR n) {
 
 
         float[] d = new float[bins];

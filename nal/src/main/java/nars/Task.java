@@ -384,9 +384,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     @Nullable
     static ObjectBooleanPair<Term> tryContent(/*@NotNull*/Term t, byte punc, boolean safe) {
 
-        Op o = t.op();
-
         t = t.normalize();
+
+        Op o = t.op();
 
         boolean negated;
         if (o == NEG) {

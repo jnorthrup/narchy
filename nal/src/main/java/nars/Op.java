@@ -441,7 +441,7 @@ public enum Op {
      * negation is an exception to this, being unconceptualizable itself
      * but it will have conceptualizable=true.
      */
-    public final boolean conceptualizable;
+    public final boolean conceptualizable, taskable;
     public final boolean beliefable, goalable;
     /**
      * string representation
@@ -481,6 +481,8 @@ public enum Op {
         return (existing & possiblyIncluded) != 0;
     }*/
     public final byte id;
+
+
 
     Op(char c, int minLevel, OpType type) {
         this(c, minLevel, type, Args.None);
@@ -542,13 +544,12 @@ public enum Op {
 
         conceptualizable = !var &&
                 !str.equals("B") /* Bool */
-
-
         ;
 
-        goalable = conceptualizable && !isImpl;
+        taskable = conceptualizable && !str.equals("+") /* int */;
 
-        beliefable = conceptualizable;
+        beliefable = taskable;
+        goalable = taskable && !isImpl;
 
         indepVarParent = isImpl;
         depVarParent = isConj;

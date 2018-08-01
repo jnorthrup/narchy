@@ -52,8 +52,8 @@ public class NARio extends NAgentX {
 
         frame.setVisible(true);
 
-        mario.start();
 
+        mario.start();
 
         PixelBag cc = PixelBag.of(() -> mario.image, 32, 24);
         cc.addActions(id, this, false, false, true);
@@ -156,9 +156,9 @@ public class NARio extends NAgentX {
             return Math.max(0,reward);
         });
         reward("alive", -1, +1, () -> {
-            if (dead)
-                return -1;
-
+//            if (dead)
+//                return -1;
+//
             if (theMario ==null) {
                 if (mario.scene instanceof LevelScene)
                     theMario = ((LevelScene) mario.scene).mario;
@@ -167,15 +167,15 @@ public class NARio extends NAgentX {
             }
 
             int t = theMario.deathTime > 0 ? -1 : +1;
-            if (t == -1) {
-                System.out.println("Dead");
-                theMario.deathTime = 0;
-                dead = true;
-                mario.levelFailed(); //restart level
-                nar.runAt(nar.time() + theMario.AFTERLIFE_TIME, ()->{
-                    dead = false;
-                });
-            }
+//            if (t == -1) {
+//                System.out.println("Dead");
+//                theMario.deathTime = 0;
+//                dead = true;
+                //mario.levelFailed(); //restart level
+//                nar.runAt(nar.time() + theMario.AFTERLIFE_TIME, ()->{
+//                    dead = false;
+//                });
+//            }
             return t;
         });
     }

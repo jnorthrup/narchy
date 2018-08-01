@@ -1,75 +1,39 @@
 package spacegraph.space2d.widget.meter;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import spacegraph.space2d.container.TreeMap2D;
+import spacegraph.space2d.widget.Graph2D;
+
+import java.util.function.Consumer;
 
 /**
  * TreeChart visualization of items in a collection
+ * TODO
  */
-@Deprecated public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart.ItemVis<X>> {
+public class BagChart<X> extends Graph2D<X> {
 
-    private final AtomicBoolean busy = new AtomicBoolean(false);
+    private final Iterable<X> input;
 
-    private final Iterable<? extends X> input;
-    private final Function<X, TreeChart.ItemVis<X>> updater;
-
-    public BagChart(Iterable<X> b) {
+    /** decorator should also assign pri to each node vis */
+    public BagChart(Iterable<X> b, Consumer<NodeVis<X>> decorator) {
         super();
         this.input = b;
-        this.updater = cached(this::newItem);
+        nodeBuilder(decorator);
+        layout(new TreeMap2D<>());
         update();
     }
 
     public void update() {
-        if (busy.compareAndSet(false, true)) {
-            try {
-                update(input, this, updater);
-            } finally {
-                busy.set(false);
-            }
-        }
+        set(input);
     }
 
-    private ItemVis<X> newItem(X i) {
-        return new ItemVis<>(i, label(i, 50));
-    }
-
-    
 
 
-
-
-
-
-    protected String label( X i, int MAX_LEN) {
+    protected String label(X i, int MAX_LEN) {
         String s = i.toString();
         if (s.length() > MAX_LEN)
             s = s.substring(0, MAX_LEN);
         return s;
     }
-
-    @Override
-    public void accept(X x, ItemVis<X> xItemVis) {
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

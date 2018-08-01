@@ -1298,9 +1298,8 @@ public class Conj extends ByteAnonMap {
             else
                 add(bOffset, b);
 
-            compress(Math.max(a.volume(), b.volume()), Math.round(nar.intermpolationDurLimit.floatValue()*nar.dur()));
+//            compress(Math.max(a.volume(), b.volume()), Math.round(nar.intermpolationDurLimit.floatValue()*nar.dur()));
 
-            //TODO simplify
 
 //            //merge remaining events from 'a'
 //            final boolean[] err = {false};

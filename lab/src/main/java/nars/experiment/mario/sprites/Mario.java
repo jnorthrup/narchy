@@ -8,7 +8,6 @@ import nars.experiment.mario.level.Level;
 
 
 public class Mario extends Sprite {
-    public static final int AFTERLIFE_TIME = 5000;
     public static boolean large;
     public static boolean fire;
     public static int coins;
@@ -519,7 +518,7 @@ public class Mario extends Sprite {
         xDeathPos = (int) x;
         yDeathPos = (int) y;
         world.paused = true;
-        deathTime = AFTERLIFE_TIME;
+        deathTime = 100;
         Art.stopMusic();
 
     }

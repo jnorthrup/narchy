@@ -3,6 +3,7 @@ package nars.op;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Param;
 import nars.term.Evaluation;
 import nars.term.Term;
 import nars.test.TestNAR;
@@ -65,8 +66,14 @@ class FunctorTest {
 
 
         TestNAR t = new TestNAR(NARS.tmp());
+        t.nar.freqResolution.set(0.25f);
+        Param.DEBUG = true;
+        t.log();
+
         t.believe("((complexity($1)<->3)==>c3($1))");
         t.ask("c3(x:y)");
+
+
 
         t.mustBelieve(1024, "c3(x:y)", 1f, 0.81f);
 

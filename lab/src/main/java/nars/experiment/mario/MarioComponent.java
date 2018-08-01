@@ -113,6 +113,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         scene = mapScene;
 
 
+
         Art.init(graphicsConfiguration);
 
         image = new BufferedImage(320, 240, BufferedImage.TYPE_4BYTE_ABGR);
@@ -129,6 +130,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
         toTitle();
         adjustFPS();
+
 
         while (running) {
             scene.tick();

@@ -12,36 +12,39 @@
 
     B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Desire, Time:TaskPlusBeliefDT)
     B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePN, Goal:DesirePN, Time:TaskPlusBeliefDT)
-        B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
+        B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((A ==> C),A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
+          B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
         B, (A ==> C), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskPlusBeliefDT)
 
     B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:DesireN, Time:TaskPlusBeliefDT)
     B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveNN, Goal:DesireNN, Time:TaskPlusBeliefDT)
-        B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
+        B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((--A ==> C),A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
+          B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
         B, (--A ==> C), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskPlusBeliefDT)
 
     B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Desire, Time:TaskMinusBeliefDT)
     B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DesireNN, Time:TaskMinusBeliefDT)
-        B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskMinusBeliefDT)
+        B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((C ==> A),A,B), (Punctuation:Question, Time:TaskMinusBeliefDT)
+          B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskMinusBeliefDT)
         B, (C ==> A), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskMinusBeliefDT)
 
 
 
         //TODO question variations
         Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y), (Belief:Deduction)
-         //Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
+         Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
         Y, ((&&,--X,A..+) ==> Z) |- subIfUnifiesAny(((&&,--X,A..+) ==> Z), X,Y), (Belief:DeductionN)
-         //Y, ((&&,--X,A..+) ==> Z) |- subIfUnifiesAny(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
+         Y, ((&&,--X,A..+) ==> Z) |- subIfUnifiesAny(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
                 Y, (--(&&,X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,X,A..+) ==> Z), X,Y), (Belief:Deduction)
-                 //Y, (--(&&,X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
+                 Y, (--(&&,X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
                 Y, (--(&&,--X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,--X,A..+) ==> Z), X,Y), (Belief:DeductionN)
-                 //Y, (--(&&,--X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
+                 Y, (--(&&,--X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
 
 
         Y, (Z ==> (&&,X,A..+)) |- subIfUnifiesAny((Z ==> (&&,X,A..+)), X,Y), (Belief:Abduction)
-         //Y, (Z ==> (&&,X,A..+)) |- subIfUnifiesAny((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
+         Y, (Z ==> (&&,X,A..+)) |- subIfUnifiesAny((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
         Y, (Z ==> (&&,--X,A..+)) |- subIfUnifiesAny((Z ==> (&&,--X,A..+)), X,Y), (Belief:AbductionN)
-         //Y, (Z ==> (&&,--X,A..+)) |- subIfUnifiesAny((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
+         Y, (Z ==> (&&,--X,A..+)) |- subIfUnifiesAny((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
         B, ((&&,C,A..+) ==> X)         |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:Desire)
           B, ((&&,C,A..+) ==> X)         |- subIfUnifiesAny((&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
