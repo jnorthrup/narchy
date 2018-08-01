@@ -277,6 +277,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
                 Task x = (Task) aList;
                 if (x.equals(input)) {
+
                 /*if (x!=y && x.isInput())
                     throw new RuntimeException("different input task instances with same stamp");*/
                     r.merge(x);

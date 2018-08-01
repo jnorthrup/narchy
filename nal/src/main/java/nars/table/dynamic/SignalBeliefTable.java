@@ -50,6 +50,7 @@ public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.Serie
                 t, new ConcurrentSkiplistTaskSeries<>(new ConcurrentSkipListMap<>(), /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE) {
                     @Override
                     public SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp) {
+                        nextEnd = Math.max(nextStart, nextEnd); //HACK
                         SeriesTask nextT = new SeriesTask(
                                 term,
                                 punc,

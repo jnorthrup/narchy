@@ -152,7 +152,7 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
 
         @Override
         public ITask inputStrategy(Task result, NAR n) {
-            return new TaskLinkTaskAndEmit(this, pri(), concept); //just link
+            return new TaskLinkTaskAndEmit(this, priElseZero(), concept); //just link
         }
 
     }

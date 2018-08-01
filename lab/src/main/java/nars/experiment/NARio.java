@@ -171,8 +171,8 @@ public class NARio extends NAgentX {
                 System.out.println("Dead");
                 theMario.deathTime = 0;
                 dead = true;
+                mario.levelFailed(); //restart level
                 nar.runAt(nar.time() + theMario.AFTERLIFE_TIME, ()->{
-                    mario.levelFailed(); //restart level
                     dead = false;
                 });
             }

@@ -210,12 +210,14 @@ public interface QuestionTable extends TaskTable {
         public void add(Remember r, NAR n) {
             Task x = put(r.input, null);
             if (x != r.input) {
-                if (x!=null)
+                if (x!=null) {
+                    assert(x.equals(r.input));
                     r.merge(x); //existing
-                else
+                } else
                     r.reject();
             } else {
                 r.remember(x);
+                commit();
             }
             //TODO track displaced questions
         }

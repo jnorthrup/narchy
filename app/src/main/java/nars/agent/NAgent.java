@@ -105,6 +105,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
     protected <A extends ActionConcept> void actionAdded(A c) {
         alwaysQuest(c, true);
+//        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
+//        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
         //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
         //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
     }
@@ -154,11 +156,11 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public void alwaysQuestion(Termed x, boolean stamped) {
-        alwaysQuestion(x, true, stamped);
+        alwaysQuestionDynamic(()->x, true);
     }
 
     public void alwaysQuest(Termed x, boolean stamped) {
-        alwaysQuestion(x, false, stamped);
+        alwaysQuestionDynamic(()->x, false);
     }
 
     public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest) {
@@ -166,8 +168,10 @@ public class NAgent extends NARService implements NSense, NAct {
         boolean stamped = true;
         always.add(() -> {
 
-            long now = Tense.dither(this.now(), nar);
-            long next = Tense.dither(this.now() + nar.dur(), nar);
+            //long now = Tense.dither(this.now(), nar), next = Tense.dither(this.now() + nar.dur(), nar);
+
+            long d = Math.max(nar.dur(), now - last);
+            long now = Tense.dither(this.now()-d/2, nar), next = Tense.dither(this.now() + d/2, nar);
 
             long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
 

@@ -123,7 +123,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         double time = System.nanoTime() / 1000000000.0;
         double now = time;
         long tm = System.currentTimeMillis();
-        long lTick = tm;
 
         addKeyListener(this);
         addFocusListener(this);
@@ -132,7 +131,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         adjustFPS();
 
         while (running) {
-            lTick = tm;
             scene.tick();
 
             //float alpha = (float) (System.currentTimeMillis() - lTick);

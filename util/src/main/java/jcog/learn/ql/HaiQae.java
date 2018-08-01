@@ -4,7 +4,6 @@ import jcog.decide.DecideEpsilonGreedy;
 import jcog.decide.Deciding;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatSupplier;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,7 @@ public class HaiQae extends HaiQ {
         super(states, outputs);
         
         this.perceptionAlpha =
-                0.02f;
+                0.05f;
         this.perceptionError =
                 ()->0.01f;
                 

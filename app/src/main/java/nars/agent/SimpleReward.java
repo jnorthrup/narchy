@@ -20,7 +20,9 @@ public class SimpleReward extends Reward {
         NAR nar = nar();
         concept = new Signal(id, () -> reward, nar);
         truther = truther();
-        agent.alwaysWant/*Eternally*/(concept.term, nar.confDefault(GOAL));
+        agent.alwaysWant
+              //  alwaysWantEternally
+                    (concept.term, nar.confDefault(GOAL));
 //        agent.alwaysQuestionDynamic(()->{
 //            int dt =
 //                    //0;

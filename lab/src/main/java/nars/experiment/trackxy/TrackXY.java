@@ -2,6 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.learn.ql.HaiQae;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
@@ -10,6 +11,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
+import nars.agent.util.RLBooster;
 import nars.concept.action.SwitchAction;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -52,7 +54,7 @@ public class TrackXY extends NAgent {
 
     public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.01f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.2f, 0, 2f);
 
     public final FloatRange visionContrast = new FloatRange(0.9f, 0, 1f);
 
@@ -101,28 +103,28 @@ public class TrackXY extends NAgent {
 
     }
 
-    public static void main(String[] args) {
+    public static class X1 {
+        public static void main(String[] args) {
 
-        boolean nars = true;
+            boolean nars = true, rl = false;
 //        boolean rl = false;
 
-        int dur = 1;
+            int dur = 1;
 
-        NARS nb = new NARS()
-                .attention(()->new Attention(64))
-                .exe(new UniExec())
-                .time(new CycleTime().dur(dur))
-                .index(
-                        new CaffeineIndex(1 * 1024 * 10 )
-                        //new HijackConceptIndex(4 * 1024, 4)
-                );
+            NARS nb = new NARS()
+                    .attention(() -> new Attention(64))
+                    .exe(new UniExec())
+                    .time(new CycleTime().dur(dur))
+                    .index(
+                            new CaffeineIndex(1 * 1024 * 10)
+                            //new HijackConceptIndex(4 * 1024, 4)
+                    );
 
 
+            NAR n = nb.get();
 
-        NAR n = nb.get();
-
-        n.dtDither.set(dur);
-        n.timeFocus.set(1);
+            n.dtDither.set(dur);
+            n.timeFocus.set(1);
 
 //        n.goalPriDefault.set(0.99f);
 //        n.beliefPriDefault.set(0.01f);
@@ -130,40 +132,42 @@ public class TrackXY extends NAgent {
 //        n.questPriDefault.set(0.01f);
 
 
-        n.termVolumeMax.set(9);
-        n.freqResolution.set(0.25f);
-        n.confResolution.set(0.05f);
+//            n.termVolumeMax.set(9);
+//            n.freqResolution.set(0.25f);
+//            n.confResolution.set(0.05f);
 
 
-        TrackXY a = new TrackXY(n, 2, 1);
+            TrackXY a = new TrackXY(n, 4, 4);
 
 
-//        if (rl) {
-//            new RLBooster(a,
-//
-//                    HaiQae::new,
-//
-//                    true);
-//        }
-        if (nars) {
+        if (rl) {
+            new RLBooster(a,
+
+                    HaiQae::new,
+                    //HaiQ::new,
+
+                    true);
+            a.curiosity.set(0);
+        }
+            if (nars) {
 
 
-            Deriver d = new MatrixDeriver(Derivers.nal(n,
-            6,8
-//                    1, 8
+                Deriver d = new MatrixDeriver(Derivers.nal(n,
+//                        6, 8
+                    1, 8
 //                    //,"curiosity.nal"
 //                    , "motivation.nal"
-            ));
+                ));
 
-            ((MatrixDeriver) d).conceptsPerIteration.set(8);
+                ((MatrixDeriver) d).conceptsPerIteration.set(16);
 
 
-            //new STMLinkage(n, 1, false);
+                //new STMLinkage(n, 1, false);
 
-            ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    //x -> true,
-                    Task::isInput,
-                    2, 4);
+                ConjClustering cjB = new ConjClustering(n, BELIEF,
+                        //x -> true,
+                        Task::isInput,
+                        2, 4);
 
 
 //            window(new Gridding(
@@ -172,47 +176,48 @@ public class TrackXY extends NAgent {
 //
 //            ), 400, 300);
 
-            //n.log();
-            Param.DEBUG = true;
-            n.onTask(tt -> {
-                if (tt instanceof DerivedTask && tt.isGoal()) {
-                    System.out.println(tt.proof());
+                //n.log();
+                Param.DEBUG = true;
+                n.onTask(tt -> {
+                    if (tt instanceof DerivedTask && tt.isGoal()) {
+                        System.out.println(tt.proof());
+                    }
+                });
+
+            }
+
+
+            n.runLater(() -> {
+
+                window(NARui.agent(a), 800, 800);
+
+                window(new Gridding(NARui.top(n), new EmotionPlot(128, a)), 800, 250);
+
+//            NARui.agentWindow(t);
+                if (a.cam != null) {
+                    window(new CameraSensorView(a.cam, n) {
+                        @Override
+                        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                            super.paint(gl, surfaceRender);
+                            RectFloat2D at = cellRect(a.sx, a.sy, 0.5f, 0.5f);
+                            gl.glColor4f(1, 0, 0, 0.9f);
+                            Draw.rect(at.move(x(), y(), 0.01f), gl);
+                        }
+                    }.withControls(), 800, 800);
                 }
             });
 
+
+            int experimentTime = 6000;
+            n.run(experimentTime);
+
+            printGoals(n);
+            printImpls(n);
+
+            n.stats(System.out);
+            n.conceptsActive().forEach(System.out::println);
+
         }
-
-
-        n.runLater(() -> {
-
-            window(NARui.agent(a), 800, 800);
-
-            window(new Gridding(NARui.top(n), new EmotionPlot(128, a)), 800, 250);
-
-//            NARui.agentWindow(t);
-            if (a.cam != null) {
-                window(new CameraSensorView(a.cam, n) {
-                    @Override
-                    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                        super.paint(gl, surfaceRender);
-                        RectFloat2D at = cellRect(a.sx, a.sy, 0.5f, 0.5f);
-                        gl.glColor4f(1, 0, 0, 0.9f);
-                        Draw.rect(at.move(x(), y(), 0.01f), gl);
-                    }
-                }.withControls(), 800, 800);
-            }
-        });
-
-
-        int experimentTime = 6000;
-        n.run(experimentTime);
-
-        printGoals(n);
-        printImpls(n);
-
-        n.stats(System.out);
-        n.conceptsActive().forEach(System.out::println);
-
     }
 
     public static void printGoals(NAR n) {
