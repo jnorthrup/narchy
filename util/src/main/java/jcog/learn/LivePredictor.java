@@ -86,7 +86,7 @@ public class LivePredictor {
             int stride = ins.length;
             int all = pastVector.length;
             System.arraycopy(pastVector, stride, pastVector, 0, all - stride);
-            System.arraycopy(present, 0, pastVector, all - stride,  stride);
+            System.arraycopy(present, 0, pastVector, stride, present.length );
 
             return pastVector;
         }

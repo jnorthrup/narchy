@@ -318,7 +318,7 @@ abstract class AbstractTimerTest {
     void testExecutionOnTime() throws InterruptedException {
 
         int delayTime = 250;
-        int tolerance = 25;
+        int tolerance = 50;
         int maxTimeout = (delayTime) + tolerance;
 
         int scheduledTasks =

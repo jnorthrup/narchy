@@ -485,9 +485,8 @@ class MyCMAESOptimizerTest {
         assertTrue(optim.getIterations() > 0);
     }
 
-    @NotNull
     private static RandomAdaptor rng() {
-        return new RandomAdaptor(new MersenneTwister());
+        return new RandomAdaptor(new MersenneTwister(1));
     }
 
     private static double[] point(int n, double value) {

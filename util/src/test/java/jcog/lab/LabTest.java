@@ -33,7 +33,7 @@ public class LabTest {
         t.print();
         t.printExplanations();
 
-        assertTrue(((Number) best.get(0)).doubleValue() >= 5f);
+        assertTrue(((Number) best.get(0)).doubleValue() >= 4.9f);
         assertTrue(a.vars.size() >= 4);
         assertEquals(5, r.data().attrCount());
 

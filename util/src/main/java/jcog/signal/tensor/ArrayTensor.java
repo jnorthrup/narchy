@@ -39,10 +39,16 @@ public class ArrayTensor implements
     }
 
     public ArrayTensor(int... shape) {
-        int size = shape[0];
+        int size;
         if (shape.length > 1) {
             this.stride = Tensor.stride(shape);
+            int v = 1;
+            for (int i = 0;i < shape.length; i++) {
+                v *= shape[i];
+            }
+            size = v;
         } else {
+            size = shape[0];
             this.stride = ArrayUtils.EMPTY_INT_ARRAY;
         }
 

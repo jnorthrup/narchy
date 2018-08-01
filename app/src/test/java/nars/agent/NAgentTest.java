@@ -3,9 +3,8 @@ package nars.agent;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.control.MetaGoal;
 import nars.term.Term;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,14 +19,14 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(12);
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.01f);
         n.time.dur(1);
 
 
-        n.emotion.want(MetaGoal.Perceive, -0.1f);
-        n.emotion.want(MetaGoal.Desire, +0.1f);
+//        n.emotion.want(MetaGoal.Perceive, -0.1f);
+//        n.emotion.want(MetaGoal.Desire, +0.1f);
 
 
         return n;
@@ -66,37 +65,33 @@ public class NAgentTest {
 
 
         MiniTest a = new ToggleOscillate(n, $.the("t"),
-                $.$$("t:y"),
+                $.$$("y"),
 
                 true);
 
 
         init.accept(a);
 
-        n.run(500);
+        n.run(1500);
 
-        assertTrue(-(-1 - a.avgReward()) > 0.2f);
-        assertTrue(a.dex.getMean() > 0.1f);
+        assertTrue(-(-1 - a.avgReward()) > 0.2f, ()->""+a.avgReward());
+        assertTrue(a.dex.getMean() > 0.1f, ()->a.dex.toString());
     }
 
 
     abstract static class MiniTest extends NAgent {
         private final Runnable statPrint;
         public float rewardSum = 0;
-        final DescriptiveStatistics dex = new DescriptiveStatistics();
-
-        public MiniTest(NAR n) {
-            this(null, n);
-        }
+        final SummaryStatistics dex = new SummaryStatistics();
 
         public MiniTest(Term id, NAR n) {
             super(id, FrameTrigger.durs(1), n);
             statPrint = n.emotion.printer(System.out);
 
             reward(() -> {
-                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
-                statPrint.run();
-                nar.stats(System.out);
+//                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
+//                statPrint.run();
+//                nar.stats(System.out);
 
                 float yy = reward();
 
