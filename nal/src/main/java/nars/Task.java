@@ -9,6 +9,7 @@ import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.proto.Remember;
+import nars.op.stm.ConjClustering;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.TaskWithNegatedTruth;
@@ -23,6 +24,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.truth.func.NALTruth;
 import nars.truth.polation.TruthIntegration;
 import nars.util.TimeAware;
 import org.eclipse.collections.api.PrimitiveIterable;
@@ -339,9 +341,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     @Nullable
     static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
+        return clone(x, newContent, newTruth, newPunc, x.start(), x.end());
+    }
+
+    @Nullable
+    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
         return clone(x, newContent, newTruth, newPunc, (c, t) ->
                 new NALTask(c, newPunc, t,
-                        x.creation(), x.start(), x.end(),
+                        x.creation(), start, end,
                         x.stamp()
                 ));
     }
@@ -805,6 +812,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     });
 
         }
+        return postProcess(yy, needEval);
+    }
+
+    @Nullable
+    default ITask postProcess(Collection<ITask> yy, boolean needEval) {
         switch (yy.size()) {
             case 0:
                 return null;
@@ -933,6 +945,35 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             }
         }
 
+        if (Param.AUTO_DECOMPOSE_CONJ && op()==CONJ && (isBelief() || isGoal())) {
+            if (!(this instanceof ConjClustering.STMClusterTask)) { //HACK
+                Truth reducedTruth = NALTruth.StructuralDeduction.apply(truth(), null, n, n.confMin.floatValue());
+                if (reducedTruth != null) {
+                    long s = start();
+                    long range = end() - s;
+                    List<Task> subTasks = new FasterList(2);
+                    term().eventsWhile((when, what) -> {
+                        assert(!what.equals(term()));
+
+                        Task t = Task.clone(this, what, reducedTruth, punc(), when, when + range);
+
+                        if (t!=null)
+                            subTasks.add(t);
+                        return true;
+                    }, s, true, true, false, 0);
+                    if (!subTasks.isEmpty()) {
+                        int ns = subTasks.size();
+                        float p = priElseZero() / ns;
+                        for (Task ss : subTasks) {
+                            ss.pri(0);
+                            ss.take(this, p, true, true);
+                            ss.setCyclic(true);
+                        }
+                        queue.addAll(subTasks);
+                    }
+                }
+            }
+        }
 
     }
 

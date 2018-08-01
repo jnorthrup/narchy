@@ -10,7 +10,6 @@ import nars.concept.TaskConcept;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -75,13 +74,13 @@ public final class Remember extends AbstractTask {
 
     private void validate(NAR n) {
         //verify dithering
-        if (Param.DEBUG) {
-            if (!input.isInput()) {
-                Truth t = input.truth();
-                if (t != null)
-                    t.ensureDithered(n);
-            }
-        }
+//        if (Param.DEBUG) {
+//            if (!input.isInput()) {
+//                Truth t = input.truth();
+//                if (t != null)
+//                    t.ensureDithered(n);
+//            }
+//        }
     }
 
     //TODO: private static final class ListTask extends FasterList<ITask> extends NativeTask {

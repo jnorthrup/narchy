@@ -23,7 +23,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         super(null, Needle, nar, states);
         this.decider =
                 //new DecideEpsilonGreedy(0.05f, nar.random());
-                new DecideSoftmax(0.1f, nar.random());
+                new DecideSoftmax(0.5f, nar.random());
         this.action = action;
         exp = new float[states.length];
         
@@ -43,8 +43,8 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
 
     /** truth -> decidability */
     public float q(Truth g) {
-        //return g.expectation();
-        return g.freq();
+        return g.expectation();
+        //return g.freq();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         int d = decide(start, end);
 
         if (d!=-1 && action.test(d))
-            value.set(((float)d)/exp.length);
+            value.set((d +0.5f)/exp.length);
         else
             value.set(Float.NaN);
 

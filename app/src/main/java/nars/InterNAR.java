@@ -61,6 +61,8 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     public InterNAR(NAR nar, float outRate, int port, boolean discover) {
         super(256, outRate, nar);
 
+        this.nar = nar;
+
         assert(nar.time instanceof RealTime.MS && ((RealTime.MS)nar.time).t0 !=0 );
         recv = nar.newChannel(this);
 

@@ -25,10 +25,10 @@ public class UnevaluatedTask extends NALTask {
 
     @Override
     public ITask next(NAR n) {
+
         //HACK, for ensuring the operator invocation etc
         FasterList<ITask> q = new FasterList(1);
         preProcess(n, term(), q);
-        assert(q.size()==1);
-        return q.get(0);
+        return postProcess(q, false);
     }
 }

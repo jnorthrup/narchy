@@ -54,6 +54,9 @@ public abstract class Param {
     public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 256;
     public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 32;
 
+    /** auto decompose conjunction beliefs and goals on input */
+    public static final boolean AUTO_DECOMPOSE_CONJ = true;
+
 
     //5;
 

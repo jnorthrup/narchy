@@ -52,9 +52,9 @@ public class TrackXY extends NAgent {
 
     float sx, sy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
+    public final FloatRange controlSpeed = new FloatRange(0.25f, 0, 4f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.2f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.04f, 0, 2f);
 
     public final FloatRange visionContrast = new FloatRange(0.9f, 0, 1f);
 
@@ -90,8 +90,8 @@ public class TrackXY extends NAgent {
             this.cam = null;
         }
 
-        actionPushButtonMutex();
-        //actionSwitch();
+        //actionPushButtonMutex();
+        actionSwitch();
         //actionTriState();
 
 
@@ -116,7 +116,7 @@ public class TrackXY extends NAgent {
                     .exe(new UniExec())
                     .time(new CycleTime().dur(dur))
                     .index(
-                            new CaffeineIndex(1 * 1024 * 10)
+                            new CaffeineIndex(2 * 1024 * 10)
                             //new HijackConceptIndex(4 * 1024, 4)
                     );
 
@@ -156,10 +156,10 @@ public class TrackXY extends NAgent {
 //                        6, 8
                     1, 8
 //                    //,"curiosity.nal"
-//                    , "motivation.nal"
+                    , "motivation.nal"
                 ));
 
-                ((MatrixDeriver) d).conceptsPerIteration.set(16);
+                ((MatrixDeriver) d).conceptsPerIteration.set(8);
 
 
                 //new STMLinkage(n, 1, false);
