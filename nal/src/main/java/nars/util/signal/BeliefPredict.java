@@ -2,8 +2,8 @@ package nars.util.signal;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.data.atomic.AtomicFloat;
 import jcog.learn.LivePredictor;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -24,10 +24,15 @@ import static nars.truth.TruthFunctions.c2w;
 
 /**
  * numeric prediction support
+ * TODO configuration parameters for projections
+ *      --number
+ *      --time width (duty cycle %)
+ *      --confidence fade factor
  */
 public class BeliefPredict {
 
-    final Number conf = new AtomicFloat(0.5f);
+    public final FloatRange conf = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange confFadeFactor = new FloatRange(0.9f, 0, 1f);
 
     final DurService on;
     //final List<ITask> currentPredictions = new FasterList<>();
@@ -79,11 +84,15 @@ public class BeliefPredict {
 
             double[] p = null;
 
+            float c = conf.floatValue() * nar.beliefConfDefault.floatValue();
+            float fade = confFadeFactor.floatValue();
             for (int i = 0; i < projections + 1; i++) {
 
                 p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);
 
-                believe(now + (i ) * sampleDur, p);
+                believe(now + (i ) * sampleDur, p, c);
+
+                c *= fade;
             }
             //System.out.println(); System.out.println();
 
@@ -98,9 +107,9 @@ public class BeliefPredict {
 
     }
 
-    private void believe(long when, double[] predFreq) {
+    private void believe(long when, double[] predFreq, float conf) {
 
-        float evi = c2w(conf.floatValue() * nar.beliefConfDefault.floatValue());
+        float evi = c2w(conf );
 
         long eShared = nar.evidence()[0];
 

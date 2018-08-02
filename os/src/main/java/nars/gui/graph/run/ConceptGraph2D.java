@@ -187,13 +187,16 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             if (!termlinks.get())
                 return;
 
-            node.id.termlinks().forEach(l -> {
-                Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.get()));
-                if (e != null) {
-                    float p = l.priElseZero();
-                    e.weight(p).color((0.9f * p) + 0.1f, 0, 0);
-                }
-            });
+            Concept id = node.id;
+            if (id!=null) {
+                id.termlinks().forEach(l -> {
+                    Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.get()));
+                    if (e != null) {
+                        float p = l.priElseZero();
+                        e.weight(p).color((0.9f * p) + 0.1f, 0, 0);
+                    }
+                });
+            }
         }
     }
 

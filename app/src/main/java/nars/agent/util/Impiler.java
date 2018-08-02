@@ -1,6 +1,9 @@
 package nars.agent.util;
 
 import jcog.TODO;
+import jcog.data.graph.FromTo;
+import jcog.data.graph.Node;
+import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
 import jcog.sort.SortedArray;
 import jcog.util.HashCachedPair;
@@ -20,6 +23,7 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -32,6 +36,9 @@ import static nars.time.Tense.ETERNAL;
 
 /** implication compiler */
 public class Impiler {
+
+    /** concept metadata field key storing impiler node instances */
+    static final String IMPILER_NODE = ImpilerTracker.class.getSimpleName();
 
     public static class ImpilerSolver extends TaskLeak {
 
@@ -76,7 +83,54 @@ public class Impiler {
             return in.value();
         }
     }
+    /** searches forward, discovering shortcuts in the downstream impl graph
+     *  TODO configurable trigger, dont just extend TaskLeak
+     */
+    static class ImpilerDeduction extends TaskLeak {
 
+        protected ImpilerDeduction(int capacity, float ratePerDuration, NAR n) {
+            super(capacity, ratePerDuration, n);
+        }
+
+        @Override
+        protected float leak(Task next) {
+            Term t = next.term();
+
+            Term subj = t.sub(0);
+            Term pred = t.sub(1);
+            Concept c = nar.conceptualizeDynamic(pred);
+            if (c == null)
+                return 0;
+
+            ImplNode m = c.meta(IMPILER_NODE);
+            if (m != null) {
+                if (!m.out.isEmpty()) {
+                    new Search<Term,ImplEdge>() {
+                        @Override
+                        protected boolean next(BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>> move, Node<Term, ImplEdge> next) {
+                            return false;
+                        }
+                    }.bfs( m );
+                }
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected boolean preFilter(Task next) {
+            return next.op()==IMPL && next.punc()==BELIEF && !next.hasVars();
+        }
+
+        @Override
+        public float value() {
+            return 0;
+        }
+    }
+
+    /** builds the implication graph in concept metadata fields
+     *  TODO configurable trigger, dont just extend TaskLeak
+     * */
     public static class ImpilerTracker extends TaskLeak {
 
         final static boolean beliefOrGoal = true;
@@ -116,7 +170,7 @@ public class Impiler {
 //                    float cn = (conf * (1 - f));
 
                     Concept sc = nar.conceptualizeDynamic(subj.unneg());
-                    Concept pc = nar.conceptualizeDynamic(pred.unneg());
+                    Concept pc = nar.conceptualizeDynamic(pred/*.unneg()*/);
                     if (sc!=null && pc!=null) {
                         ImplEdge e = new ImplEdge(subj, pred);
                         e.dt = idt;
@@ -138,7 +192,7 @@ public class Impiler {
         }
 
         private ImplNode node(Concept sc) {
-            return sc.meta(ImpilerTracker.class.getSimpleName(), (s) -> new ImplNode());
+            return sc.meta(IMPILER_NODE, (s) -> new ImplNode(sc.term()));
         }
 
         @Override
@@ -147,15 +201,26 @@ public class Impiler {
         }
     }
 
-    static class ImplNode implements FloatFunction<ImplEdge> {
+    static class ImplNode implements Node<Term,ImplEdge>, FloatFunction<ImplEdge> {
 
         final static int CAP = 8; //TODO parameterize
 
         final ImplBag
                 out = new ImplBag(CAP),
-                //TODO separate outPos and outNeg
+                //TODO separate outPos and outNeg?
                 //outNeg = new ImplBag(CAP),
                 in = new ImplBag(CAP);
+
+        private final Term id;
+
+        public ImplNode(Term id) {
+            this.id = id;
+        }
+
+        @Override
+        public final Term id() {
+            return id;
+        }
 
         public final void addSource(ImplEdge e) {
             add(out, e);
@@ -179,6 +244,11 @@ public class Impiler {
         @Override
         public String toString() {
             return in + " " + out;
+        }
+
+        @Override
+        public Iterable<FromTo<Node<Term, ImplEdge>, ImplEdge>> edges(boolean in, boolean out) {
+            throw new TODO();
         }
     }
 
@@ -247,7 +317,9 @@ public class Impiler {
 
     }
 
-    //scan forward
+
+
+    //scan forward, matches probable events
     static class ImplSource extends ImplBeam {
 
 

@@ -2,9 +2,7 @@ package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.data.graph.ImmutableDirectedEdge;
-import jcog.data.graph.MapNodeGraph;
-import jcog.data.graph.NodeGraph;
+import jcog.data.graph.*;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.event.On;
@@ -565,8 +563,8 @@ public class Dyn2DSurface extends Wall implements Animated {
         return ropeJoint;
     }
 
-    public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(Surface s) {
-        NodeGraph.Node<Surface, Wire> n = links.node(s);
+    public Iterable<FromTo<Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire>, Wire>> edges(Surface s) {
+        Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> n = links.node(s);
         return n != null ? n.edges(true, true) : Collections.emptyList();
     }
 
@@ -845,9 +843,9 @@ public class Dyn2DSurface extends Wall implements Animated {
         Wire unlink(Surface source, Surface target) {
             synchronized (links) {
                 Wire wire = new Wire(source, target);
-                NodeGraph.Node<Surface, Wire> an = links.node(wire.a);
+                Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> an = links.node(wire.a);
                 if (an != null) {
-                    NodeGraph.Node<Surface, Wire> bn = links.node(wire.b);
+                    Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> bn = links.node(wire.b);
                     if (bn != null) {
                         boolean removed = links.edgeRemove(new ImmutableDirectedEdge<>(
                                 an, bn, wire)
@@ -882,11 +880,11 @@ public class Dyn2DSurface extends Wall implements Animated {
 
                 NodeGraph.MutableNode<Surface, Wire> A = links.addNode(aa);
 
-                Iterable<ImmutableDirectedEdge<Surface, Wire>> edges = A.edges(false, true); 
+                Iterable<FromTo<Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire>, Wire>> edges = A.edges(false, true);
                 if (edges != null) {
                     
-                    for (ImmutableDirectedEdge<Surface, Wire> e : edges) {
-                        Wire ee = e.id;
+                    for (FromTo<Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire>, Wire> e : edges) {
+                        Wire ee = e.what();
                         if (wire.equals(ee))
                             return ee; 
                     }

@@ -89,14 +89,16 @@
     //nature of such a rule."
 
     //If after S M happens, and after M then P happens, so S then P happens
-    (S ==> M), (M ==> P) |- (S ==> P), (Belief:Deduction)
+    (S ==> M), (M ==> P)   |- (S ==> P), (Belief:Deduction)
+     (M ==> P), (S ==> M)  |- (S ==> P), (Belief:Deduction)
+      //if after S --M happens, and after --M then P happens, so S then P happens
+      (S ==> M), (--M ==> P)  |- (S ==> P), (Belief:DeductionN)
+       (--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPN)
 
         (S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
             //(S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
 
-        //if after S --M happens, and after --M then P happens, so S then P happens
-        (S ==> M), (--M ==> P) |- (S ==> P), (Belief:DeductionN)
             (S ==> M), (--M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
                 //(S ==> M), (--M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
                 //(S ==> M), (--M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
@@ -106,7 +108,7 @@
             //(S ==> M), (--N ==> P), neq(M,N) |- subIfUnifiesAny((S ==> P), M, N), (Belief:DeductionN)
 
 
-
+    //TODO reversals for Abduction, Induction, Exemplification
 
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction)
 

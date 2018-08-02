@@ -1,5 +1,6 @@
 package nars.experiment;
 
+import jcog.Util;
 import jcog.learn.LivePredictor;
 import nars.$;
 import nars.NAR;
@@ -25,15 +26,15 @@ public class PredictDemo {
 
         LongToFloatFunction f = (rt) -> {
             float t = ((float) rt) / n.dur();
-            return (float) (0.5f + 0.5f * Math.sin(t / 6f));
+            return (float) (Math.abs(Math.cos((t/100f)%3))*Util.sqr((float) (0.5f + 0.5f * Math.sin(t / 60f))));
         };
-        Scalar X1 = new Scalar($.the("x1"), f, n);
-        Scalar X2 = new Scalar($.the("x2"), f, n);
+        Scalar X1 = new Scalar($.the("LSTM"), f, n);
+        Scalar X2 = new Scalar($.the("MLP"), f, n);
 
 
-        int history = 32;
+        int history = 64;
         int projections = 64;
-        int sampleDur = n.dur() * 2;
+        int sampleDur = n.dur() * 4;
         new BeliefPredict(List.of(X1), history, sampleDur, projections,
 
                 new LivePredictor.LSTMPredictor(0.15f, 1),

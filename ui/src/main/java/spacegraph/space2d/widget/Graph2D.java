@@ -2,8 +2,7 @@ package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.data.graph.ImmutableDirectedEdge;
-import jcog.data.graph.NodeGraph;
+import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.map.CellMap;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
@@ -508,9 +507,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     public static class NodeGraphLayer<N, E> implements Graph2D.Graph2DLayer<N> {
         @Override
         public void node(NodeVis<N> node, GraphBuilder<N> graph) {
-            if (node.id instanceof NodeGraph.Node) {
-                NodeGraph.Node<N, E> nn = (NodeGraph.Node<N, E>) node.id;
-                nn.edges(false, true).forEach((ImmutableDirectedEdge<N, E> e) -> {
+            if (node.id instanceof Node) {
+                Node<N,E> nn = (Node<N,E>) node.id;
+                nn.edges(false, true).forEach((e) -> {
                     Graph2D.EdgeVis<N> ee = graph.edge(node, e.other(nn));
                     
 

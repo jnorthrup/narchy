@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
-import jcog.data.graph.NodeGraph;
+import jcog.data.graph.Node;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
@@ -34,7 +34,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
     private IntObjectProcedure<Port> updater = null;
 
-    private transient NodeGraph.Node<Surface, Wire> node;
+    private transient Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> node;
 
 
 
@@ -266,9 +266,9 @@ public class Port extends Widget implements Wiring.Wireable {
     private void out(Port sender, Object x) {
         
         if (enabled) {
-            NodeGraph.Node<Surface, Wire> n = this.node;
+            Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> n = this.node;
             if (n!=null)
-                n.edges(true, true).forEach(t -> t.id.in(sender, x));
+                n.edges(true, true).forEach(t -> t.what().in(sender, x));
         }
     }
 

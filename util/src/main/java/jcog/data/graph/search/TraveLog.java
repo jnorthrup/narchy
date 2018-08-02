@@ -1,5 +1,6 @@
 package jcog.data.graph.search;
 
+import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
@@ -8,12 +9,12 @@ public interface TraveLog {
     void clear();
 
     /** returns false if it was already added */
-    boolean visit(NodeGraph.Node n);
+    boolean visit(Node n);
 
 
-    void unvisit(NodeGraph.Node n);
+    void unvisit(Node n);
 
-    boolean hasVisited(NodeGraph.Node n);
+    boolean hasVisited(Node n);
 
 
     
@@ -28,18 +29,18 @@ public interface TraveLog {
         }
 
         @Override
-        public boolean visit(NodeGraph.Node n) {
-            return visit.add(n.serial);
+        public boolean visit(Node n) {
+            return visit.add(((NodeGraph.AbstractNode)n).serial);
         }
 
         @Override
-        public void unvisit(NodeGraph.Node n) {
-            visit.remove(n.serial);
+        public void unvisit(Node n) {
+            visit.remove(((NodeGraph.AbstractNode)n).serial);
         }
 
         @Override
-        public boolean hasVisited(NodeGraph.Node n) {
-            return visit.contains(n.serial);
+        public boolean hasVisited(Node n) {
+            return visit.contains(((NodeGraph.AbstractNode)n).serial);
         }
 
     }

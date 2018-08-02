@@ -39,7 +39,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         return this;
     }
 
-    public MutableNode<Object,Accessor> add(Object x, int depth) {
+    public Node<Object, Accessor> add(Object x, int depth) {
         return add(x, x, new FasterList<>(), depth);
     }
 

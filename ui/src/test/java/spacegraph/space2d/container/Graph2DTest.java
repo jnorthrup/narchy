@@ -1,7 +1,7 @@
 package spacegraph.space2d.container;
 
 import jcog.data.graph.MapNodeGraph;
-import jcog.data.graph.NodeGraph;
+import jcog.data.graph.Node;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.util.matrices.SystemEnvironmentMatrix;
 import spacegraph.SpaceGraph;
@@ -28,7 +28,7 @@ public class Graph2DTest {
             h.addEdge(("y"), ("yz"), ("z"));
             h.addEdge(("w"), ("wy"), ("y"));
 
-            Graph2D<NodeGraph.Node<Object, Object>> sg = new Graph2D<NodeGraph.Node<Object, Object>>()
+            Graph2D<Node<Object, Object>> sg = new Graph2D<Node<Object, Object>>()
 
                 .layout(new ForceDirected2D())
 
@@ -56,7 +56,7 @@ public class Graph2DTest {
             });
 
 
-            Graph2D<NodeGraph.Node<Object, Object>> sg = new Graph2D<NodeGraph.Node<Object, Object>>()
+            Graph2D<Node<Object, Object>> sg = new Graph2D<Node<Object, Object>>()
 
                     .layout(new ForceDirected2D())
 

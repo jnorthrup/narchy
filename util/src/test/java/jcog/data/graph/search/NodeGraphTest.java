@@ -1,6 +1,7 @@
 package jcog.data.graph.search;
 
 import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.graph.ObjectGraph;
 import jcog.data.list.FasterList;
@@ -22,7 +23,7 @@ class NodeGraphTest {
         n.dfs("a", new Search() {
 
             @Override
-            protected boolean next(BooleanObjectPair move, NodeGraph.Node next) {
+            protected boolean next(BooleanObjectPair move, Node next) {
                 trace.add(path.toString());
                 return true;
             }
@@ -36,7 +37,7 @@ class NodeGraphTest {
         NodeGraph n = g1();
         List<String> trace = new FasterList();
         n.bfs("a", new Search() {
-            @Override protected boolean next(BooleanObjectPair move, NodeGraph.Node next) {
+            @Override protected boolean next(BooleanObjectPair move, Node next) {
                 trace.add(path.toString());
                 return true;
             }

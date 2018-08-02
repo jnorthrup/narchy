@@ -8,6 +8,8 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.FromTo;
+import jcog.data.graph.Node;
 import jcog.data.graph.search.Search;
 import jcog.data.list.Cons;
 import jcog.data.list.FasterList;
@@ -36,7 +38,7 @@ import java.util.function.Predicate;
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
 import static nars.time.Tense.*;
-import static nars.time.TimeGraph.TimeSpan.TS_ZERO;
+import static nars.time.TimeSpan.TS_ZERO;
 import static org.eclipse.collections.impl.tuple.Tuples.twin;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -53,7 +55,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * DTERNAL relationships can be maintained separate
  * from +0.
  */
-public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
+public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
     /**
@@ -182,8 +184,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
     public Event event(Event e) {
-        Node<TimeGraph.Event, TimeGraph.TimeSpan> existing = node(e);
-        return existing != null ? existing.id : e;
+        Node<Event, TimeSpan> existing = node(e);
+        return existing != null ? existing.id() : e;
     }
 
     public boolean link(Event before, TimeSpan e, Event after) {
@@ -221,8 +223,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
     @Override
-    protected void onAdd(Node<TimeGraph.Event, TimeGraph.TimeSpan> x) {
-        Event event = x.id;
+    protected void onAdd(Node<Event, TimeSpan> x) {
+        Event event = x.id();
         Term eventTerm = event.id;
 
         if (byTerm.put(eventTerm, event)) {
@@ -454,7 +456,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
                 return bfsPush(rels, new CrossTimeSolver() {
                     @Override
-                    protected boolean next(BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> move, Node<TimeGraph.Event, TimeGraph.TimeSpan> next) {
+                    protected boolean next(BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
 
                         long[] startDT = pathDT(next, a, b, path);
@@ -677,7 +679,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         List<Event> created = new FasterList(roots.size());
 
         for (Event r : roots) {
-            Node<Event, TimeSpan> n;
+            Node<nars.time.TimeGraph.Event,nars.time.TimeSpan> n;
             if ((n = node(r)) == null) {
                 addNode(r);
                 created.add(r);
@@ -686,7 +688,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
         }
 
-        Queue<Pair<List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>>, Node<Event, TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
+        Queue<Pair<List<BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>>>, Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
 
         boolean result = bfs(roots, tv, q);
 
@@ -703,12 +705,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             Set<Event> nexts = null;
 
             @Override
-            protected boolean next(BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> move, Node<Event, TimeSpan> n) {
+            protected boolean next(BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> n) {
 
-                if (!(n.id instanceof Absolute))
+                if (!(n.id() instanceof Absolute))
                     return true;
 
-                long pathEndTime = n.id.start();
+                long pathEndTime = ((Event)n.id()).start();
 
 
                 long startTime;
@@ -777,51 +779,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
     public Multimap<Term, Event> events() {
         return byTerm;
-    }
-
-
-    static final class TimeSpan {
-        public final static TimeSpan TS_ZERO = new TimeSpan(0);
-
-
-        public final static TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
-        public final long dt;
-
-        private TimeSpan(long dt) {
-            this.dt = dt;
-
-
-        }
-
-        public static TimeSpan the(long dt) {
-            assert (dt != TIMELESS);
-            assert (dt != XTERNAL) : "probably meant to use TIMELESS";
-            assert (dt != DTERNAL) : "probably meant to use ETERNAL";
-
-            if (dt == 0) {
-                return TS_ZERO;
-            } else if (dt == ETERNAL) {
-                return TS_ETERNAL;
-            } else {
-                return new TimeSpan(dt);
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return Long.hashCode(dt);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj || ((obj instanceof TimeSpan && dt == ((TimeSpan) obj).dt));
-        }
-
-        @Override
-        public String toString() {
-            return (dt == ETERNAL ? "~" : (dt >= 0 ? ("+" + dt) : ("-" + (-dt))));
-
-        }
     }
 
 
@@ -992,8 +949,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     abstract protected class TimeSolver extends Search<Event, TimeSpan> {
 
 
-        @Nullable Iterator<ImmutableDirectedEdge<Event, TimeSpan>> dynamicLink(Node<TimeGraph.Event, TimeGraph.TimeSpan> n) {
-            Iterator<Event> x = byTerm.get(n.id.id).iterator();
+        @Nullable Iterator<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n) {
+            Iterator<Event> x = byTerm.get(((Event)n.id()).id).iterator();
             return x.hasNext() ?
                     Iterators.transform(
                             Iterators.filter(Iterators.transform(
@@ -1011,25 +968,25 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     abstract protected class CrossTimeSolver extends TimeSolver {
 
         @Override
-        protected Iterable<ImmutableDirectedEdge<Event, TimeSpan>> next(Node<TimeGraph.Event, TimeGraph.TimeSpan> n) {
-            Iterable<ImmutableDirectedEdge<Event, TimeSpan>> e = n.edges(true, true);
+        protected Iterable<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
+            Iterable<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> e = n.edges(true, true);
 
 
-            Iterator<ImmutableDirectedEdge<Event, TimeSpan>> d = dynamicLink(n);
+            Iterator<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> d = dynamicLink(n);
 
             return (d != null && d.hasNext()) ? Iterables.concat(e, new FasterList<>(d)) : e;
         }
     }
 
-    protected static Event pathStart(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
-        BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> step = path.get(0);
-        return step.getTwo().from(step.getOne()).id;
+    protected static Event pathStart(List<BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>>> path) {
+        BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> step = path.get(0);
+        return step.getTwo().from(step.getOne()).id();
     }
 
-    protected static Event pathEnd(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
-        BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> step = path instanceof Cons ?
-                ((Cons<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>>) path).tail : path.get(path.size() - 1);
-        return step.getTwo().to(step.getOne()).id;
+    protected static Event pathEnd(List<BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>>> path) {
+        BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> step = path instanceof Cons ?
+                ((Cons<BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>>>) path).tail : path.get(path.size() - 1);
+        return step.getTwo().to(step.getOne()).id();
     }
 
     /**
@@ -1040,8 +997,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
      * returns (startTime, dt) if solved, null if dt can not be calculated.
      */
     @Nullable
-    protected long[] pathDT(Node<TimeGraph.Event, TimeGraph.TimeSpan> n, Term a, Term b, List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
-        Term endTerm = n.id.id;
+    protected long[] pathDT(Node<Event, TimeSpan> n, Term a, Term b, List<BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>>> path) {
+        Term endTerm = ((Event)n.id()).id;
         int adjEnd;
         boolean endA = ((adjEnd = choose(a.subTimes(endTerm))) == 0);
         boolean endB = !endA &&
@@ -1129,16 +1086,16 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     /**
      * computes the length of time spanned from start to the end of the given path
      */
-    static long pathTime(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path, boolean eternalAsZero) {
+    static long pathTime(List<BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>>> path, boolean eternalAsZero) {
 
         long t = 0;
 
-        for (BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> r : path) {
+        for (BooleanObjectPair<FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan>> r : path) {
 
 
-            ImmutableDirectedEdge<Event, TimeSpan> event = r.getTwo();
+            FromTo<Node<nars.time.TimeGraph.Event,nars.time.TimeSpan>, TimeSpan> event = r.getTwo();
 
-            long spanDT = event.id.dt;
+            long spanDT = event.what().dt;
 
             if (spanDT == ETERNAL) {
 
