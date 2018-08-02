@@ -7,10 +7,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 
 import java.io.PrintStream;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -20,9 +17,9 @@ public abstract class NodeGraph<N, E> {
     abstract public Node<N, E> node(Object key);
 
 
-    abstract public void forEachNode(Consumer<Node<N,E>> n);
+    abstract public void forEachNode(Consumer<Node<N, E>> n);
 
-    protected abstract Node<N,E> newNode(N data);
+    protected abstract Node<N, E> newNode(N data);
 
 
     /**
@@ -36,7 +33,7 @@ public abstract class NodeGraph<N, E> {
      * gets existing node, or creates and adds a node if missing
      * can override in mutable subclass implementations
      */
-    public Node<N,E> addNode(N key) {
+    public Node<N, E> addNode(N key) {
         throw new UnsupportedOperationException();
     }
 
@@ -48,11 +45,11 @@ public abstract class NodeGraph<N, E> {
         return bfs(List.of(startingNode), tv, new ArrayDeque());
     }
 
-    public boolean dfs(Iterable<N> startingNodes, Search<N, E> search) {
+    private boolean dfs(Iterable<N> startingNodes, Search<N, E> search) {
         return search.dfs(Iterables.transform(startingNodes, this::node));
     }
 
-    public boolean bfs(Iterable<N> startingNodes, Search<N, E> search, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>>> q) {
+    public boolean bfs(Iterable<N> startingNodes, Search<N, E> search, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q) {
         return search.bfs(Iterables.transform(startingNodes, this::node), q);
     }
 
@@ -61,7 +58,7 @@ public abstract class NodeGraph<N, E> {
         print(System.out);
     }
 
-    public void print(PrintStream out) {
+    private void print(PrintStream out) {
         forEachNode((node) -> node.print(out));
     }
 
@@ -69,10 +66,11 @@ public abstract class NodeGraph<N, E> {
     public abstract static class AbstractNode<N, E> implements Node<N, E> {
         private final static AtomicInteger serials = new AtomicInteger(1);
         public final N id;
-        public final int serial, hash;
+        public final int serial;
+        final int hash;
 
 
-        public AbstractNode(N id) {
+        protected AbstractNode(N id) {
             this.serial = serials.getAndIncrement();
             this.id = id;
             this.hash = id.hashCode();
@@ -107,34 +105,22 @@ public abstract class NodeGraph<N, E> {
         }
 
 
-
     }
 
     public static class MutableNode<N, E> extends AbstractNode<N, E> {
 
 
-        public final Collection<FromTo<Node<N,E>,E>> in;
-        public final Collection<FromTo<Node<N,E>,E>> out;
+        private Collection<FromTo<Node<N, E>, E>> in;
+        private Collection<FromTo<Node<N, E>, E>> out;
 
-        protected MutableNode(N id, Collection<FromTo<Node<N,E>,E>> in, Collection<FromTo<Node<N,E>,E>> out) {
+        public MutableNode(N id) {
+            this(id, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        }
+
+        public MutableNode(N id, Collection<FromTo<Node<N, E>, E>> in, Collection<FromTo<Node<N, E>, E>> out) {
             super(id);
             this.in = in;
             this.out = out;
-        }
-
-        protected static <N,E> Node<N,E> withEdgeSets(N id) {
-            return withEdgeSets(id, 0);
-        }
-
-        protected static <N,E> Node<N,E> withEdgeSets(N id, int inOutInitialCapacity) {
-            return new MutableNode<>(id,
-                    new ArrayHashSet<>(inOutInitialCapacity),
-                    new ArrayHashSet<>(inOutInitialCapacity)
-                    
-                    
-                    
-                    
-            );
         }
 
         public int edgeCount() {
@@ -142,7 +128,7 @@ public abstract class NodeGraph<N, E> {
         }
 
         @Override
-        public Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out) {
+        public Iterable<FromTo<Node<N, E>, E>> edges(boolean in, boolean out) {
             if (out && !in) return this.out;
             else if (!out && in) return this.in;
             else {
@@ -155,50 +141,57 @@ public abstract class NodeGraph<N, E> {
             }
         }
 
-        public final int ins() {
+        final int ins() {
             return ins(true);
         }
 
-        public int ins(boolean countSelfLoops) {
+        int ins(boolean countSelfLoops) {
             if (countSelfLoops) {
-                return in.size(); 
+                return in.size();
             } else {
                 return (int) streamIn().filter(e -> e.from() != this).count();
             }
         }
 
-        public int outs() {
-            
+        int outs() {
+
             return out.size();
         }
 
 
-        protected boolean addIn(FromTo<Node<N,E>,E> e) {
+        boolean addIn(FromTo<Node<N, E>, E> e) {
+            if (in == Collections.EMPTY_LIST)
+                in = newEdgeCollection();
             return in.add(e);
         }
 
-        protected boolean addOut(FromTo<Node<N,E>,E> e) {
+        protected Collection<FromTo<Node<N, E>, E>> newEdgeCollection() {
+            return new ArrayHashSet<>(2);
+        }
+
+        boolean addOut(FromTo<Node<N, E>, E> e) {
+            if (out == Collections.EMPTY_LIST)
+                out = newEdgeCollection();
             return out.add(e);
         }
 
-        protected boolean removeIn(FromTo<Node<N,E>,E> e) {
-            
+        boolean removeIn(FromTo<Node<N, E>, E> e) {
             return in.remove(e);
         }
 
-        protected boolean removeOut(FromTo<Node<N,E>,E> e) {
-            
+        boolean removeOut(FromTo<Node<N, E>, E> e) {
             return out.remove(e);
         }
 
-        @Override public Stream<FromTo<Node<N,E>,E>> streamIn() {
+        @Override
+        public Stream<FromTo<Node<N, E>, E>> streamIn() {
             return (in.stream());
         }
 
-        @Override public Stream<FromTo<Node<N,E>,E>> streamOut() {
+        @Override
+        public Stream<FromTo<Node<N, E>, E>> streamOut() {
             return (out.stream());
         }
-
 
 
     }

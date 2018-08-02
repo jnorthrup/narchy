@@ -6,6 +6,7 @@ import nars.$;
 import nars.Narsese;
 import nars.Op;
 import nars.term.Term;
+import nars.time.Event;
 import nars.time.TimeGraph;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.junit.jupiter.api.AfterEach;
@@ -324,7 +325,7 @@ class TimeGraphTest {
 
     }
 
-    private class ExpectSolutions extends ConcurrentSkipListSet<String> implements Predicate<TimeGraph.Event> {
+    private class ExpectSolutions extends ConcurrentSkipListSet<String> implements Predicate<Event> {
 
         final Supplier<String> errorMsg;
         final String[] solutions;
@@ -359,7 +360,7 @@ class TimeGraphTest {
         }
 
         @Override
-        public boolean test(TimeGraph.Event termEvent) {
+        public boolean test(Event termEvent) {
             add(termEvent.toString());
             return true;
         }

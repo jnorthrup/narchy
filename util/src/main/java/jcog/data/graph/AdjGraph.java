@@ -45,7 +45,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
 
 
-    int serial;
+    private int serial;
 
     public V node(int i) {
         return antinodes.get(i).v;
@@ -73,10 +73,10 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      */
     public static class Node<V> {
         public final V v;
-        public final IntHashSet e; 
-        public final int id;
+        final IntHashSet e;
+        final int id;
 
-        public Node(V v, int id) {
+        Node(V v, int id) {
             super();
             this.v = v;
             this.id = id;
@@ -108,13 +108,13 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * provide constant access to nodes based on indexes.
      */
     public final ObjectIntHashMap<Node<V>> nodes;
-    public final IntObjectHashMap<Node<V>> antinodes;
+    private final IntObjectHashMap<Node<V>> antinodes;
 
 
     /**
      * edge values indexed by their unique 64-bit id formed from the id's of the src (32bit int) and target (32bit int)
      */
-    public final LongObjectHashMap<E> edges;
+    private final LongObjectHashMap<E> edges;
 
 
     /**
@@ -135,7 +135,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         this(directed, 0, 0);
     }
 
-    public AdjGraph(boolean directed, int nodeCap, int edgeCap) {
+    private AdjGraph(boolean directed, int nodeCap, int edgeCap) {
         edges = new LongObjectHashMap<>(edgeCap);
         nodes = new ObjectIntHashMap<>(nodeCap);
         antinodes = new IntObjectHashMap(nodeCap);
@@ -165,7 +165,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         return index;
     }
 
-    protected int _addNode(V o) {
+    private int _addNode(V o) {
         int id = serial++;
         Node n = new Node(o, id);
         nodes.put(n, id);
@@ -355,7 +355,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         return edge(s, p, ()->ifMissing);
     }
 
-    public E edge(int s, int p, Supplier<E> ifMissing) {
+    private E edge(int s, int p, Supplier<E> ifMissing) {
         @Nullable E existing = edge(s, p);
         if (existing != null)
             return existing;
@@ -377,10 +377,10 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         return false;
     }
 
-    public void eachNode(TriConsumer<Node<V>, Node<V>, E> edge) {
+    private void eachNode(TriConsumer<Node<V>, Node<V>, E> edge) {
         edges.forEachKeyValue((eid, ev) -> {
             int a = (int) (eid >> 32);
-            int b = (int) (eid & 0xffffffff);
+            int b = (int) (eid);
             Node<V> na = antinodes.get(a);
             Node<V> nb = antinodes.get(b);
             if (na == null || nb == null) {
@@ -394,7 +394,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     /**
      * returns true if modified
      */
-    public void each(TriConsumer<V, V, E> edge) {
+    private void each(TriConsumer<V, V, E> edge) {
         eachNode((an, bn, e) -> {
             edge.accept(an.v, bn.v, e);
         });
@@ -405,7 +405,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         return compact((x, y, z) -> z);
     }
 
-    public AdjGraph<V, E> compact(TriFunction<V, V, E, E> retain) {
+    private AdjGraph<V, E> compact(TriFunction<V, V, E, E> retain) {
         AdjGraph g = new AdjGraph(directed);
         each((a, b, e) -> {
             

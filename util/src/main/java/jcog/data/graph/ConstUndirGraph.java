@@ -42,9 +42,9 @@ public class ConstUndirGraph implements Graph {
 
 
 
-    protected final Graph g;
+    final Graph g;
 
-    protected final IntArrayList[] in;
+    final IntArrayList[] in;
 
 
 
@@ -55,7 +55,7 @@ public class ConstUndirGraph implements Graph {
      * them too. The given graph is stored by reference (not cloned) so it should
      * not be modified while this object is in use.
      */
-    public ConstUndirGraph(Graph g) {
+    ConstUndirGraph(Graph g) {
 
         this.g = g;
         in = !g.directed() ? null : new IntArrayList[g.size()];
@@ -68,7 +68,7 @@ public class ConstUndirGraph implements Graph {
     /**
      * Finds and stores incoming edges
      */
-    protected void initGraph() {
+    void initGraph() {
 
         final int max = g.size();
         for (int i = 0; i < max; ++i) in[i] = new IntArrayList();

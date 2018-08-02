@@ -7,7 +7,11 @@ import java.util.stream.Stream;
 
 public interface Node<N, E> {
 
-    <X> X id();
+    static <X,Y> FromTo<Node<Y,X>,X> edge(Node<Y, X> from, X what, Node<Y, X> to) {
+        return new ImmutableDirectedEdge<>(from, what, to);
+    }
+
+    N id();
 
     Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out);
 

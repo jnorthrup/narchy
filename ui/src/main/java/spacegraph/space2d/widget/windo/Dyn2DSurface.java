@@ -848,7 +848,7 @@ public class Dyn2DSurface extends Wall implements Animated {
                     Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> bn = links.node(wire.b);
                     if (bn != null) {
                         boolean removed = links.edgeRemove(new ImmutableDirectedEdge<>(
-                                an, bn, wire)
+                                an, wire, bn)
                         );
                         return removed ? wire : null;
                     }
@@ -884,7 +884,7 @@ public class Dyn2DSurface extends Wall implements Animated {
                 if (edges != null) {
                     
                     for (FromTo<Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire>, Wire> e : edges) {
-                        Wire ee = e.what();
+                        Wire ee = e.id();
                         if (wire.equals(ee))
                             return ee; 
                     }

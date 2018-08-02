@@ -24,10 +24,6 @@ public final class InternedCompound extends ByteKey  {
         this.op = o.id; this. dt = dt; this.rawSubs = rawSubs;
     }
 
-    public static InternedCompound get(Term x) {
-        DynBytes key = new DynBytes(4 * x.volume() /* ESTIMATE */);
-        return get(x, key);
-    }
 
     /** for look-up */
     public static InternedCompound get(Term x, DynBytes tmp) {
@@ -64,7 +60,7 @@ public final class InternedCompound extends ByteKey  {
     }
 
     public static InternedCompound get(Op o, int dt, Term... subs) {
-        DynBytes key = new DynBytes(32 * subs.length /* ESTIMATE */);
+        DynBytes key = new DynBytes(128 * subs.length /* ESTIMATE */);
 
         key.writeByte((o.id));
 

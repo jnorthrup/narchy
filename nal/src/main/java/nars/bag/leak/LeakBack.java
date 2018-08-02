@@ -23,11 +23,6 @@ abstract public class LeakBack extends TaskLeak {
         this.in = nar.newChannel(this).buffered();
     }
 
-    @Override
-    protected boolean full() {
-        boolean full = in.full();
-        return full;
-    }
 
     @Override
     protected int next(NAR nar, int iterations) {

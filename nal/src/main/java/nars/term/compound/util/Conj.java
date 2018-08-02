@@ -7,14 +7,17 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.task.Revision;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Bool;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
@@ -865,10 +868,10 @@ public class Conj extends ByteAnonMap {
             return sub(b[0], null, validator);
         }
 
-        TreeSet<Term> pt = null, t = null;
+        MutableSet<Term> t;
 //        do {
-        pt = t;
-        t = new TreeSet<>();
+//        pt = t;
+        t = new UnifiedSet<>(8);
         final boolean[] negatives = {false};
         if (b != null) {
             for (byte x : b) {
@@ -881,9 +884,9 @@ public class Conj extends ByteAnonMap {
                 t.add(s);
             }
         } else {
-            TreeSet<Term> tt = t;
+            //TreeSet<Term> tt = t;
             rb.forEach((int termIndex) ->
-                    tt.add(sub(termIndex, negatives, validator))
+                    /* tt*/t.add(sub(termIndex, negatives, validator))
             );
         }
 
@@ -899,7 +902,7 @@ public class Conj extends ByteAnonMap {
             case 0:
                 return True;
             case 1:
-                return t.first();
+                return t.getOnly();
             default: {
                 Term theSequence = null;
                 {
@@ -961,9 +964,15 @@ public class Conj extends ByteAnonMap {
 
 
                 Term z;
-                if (t.size() > 1) {
-                    Term[] tt = t.toArray(Op.EmptyTermArray); /* sorted iff t is SortedSet */
-                    if (theSequence == null) {
+                switch (t.size()) {
+                    case 0:
+                        throw new UnsupportedOperationException();
+                    case 1:
+                        z = t.getOnly();
+                        break;
+                    default: {
+                        Term[] tt = Terms.sorted(t); /* sorted iff t is SortedSet */
+                        if (theSequence == null) {
 //                        if (tt.length == 2) {
 //                            assert (dt == 0 || dt == DTERNAL);
 //                            return conjSeqFinal(dt, tt[0], tt[1]);
@@ -974,9 +983,9 @@ public class Conj extends ByteAnonMap {
 ////                            if (when == 0 && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()!=DTERNAL))
 //                            //return CONJ.the(dt, tt);
 ////                            else
-                        return Op.compoundExact(CONJ, dt, tt);
+                            return Op.compoundExact(CONJ, dt, tt);
 //                        }
-                    } else {
+                        } else {
 //                        boolean complex = false;
 //                        for (Term x : t) {
 //                            if (x.hasAny(Op.CONJ)) {
@@ -985,14 +994,16 @@ public class Conj extends ByteAnonMap {
 //                            }
 //                        }
 //                        if (complex) {
-                        z = CONJ.the(dt, tt);
+                            z = CONJ.the(dt, tt);
 //                        } else {
 //                            z = Op.compoundExact(CONJ, dt, tt);
 //                        }
+                        }
+
                     }
-                } else {
-                    z = t.first();
+
                 }
+
 
                 if (theSequence != null) {
                     if (theSequence.equals(z))
@@ -1062,7 +1073,7 @@ public class Conj extends ByteAnonMap {
 //            t.addAll(csa);
 //    }
 
-    private static void factorDisj(TreeSet<Term> t, long when) {
+    private static void factorDisj(Set<Term> t, long when) {
 
         List<Term> d;
         boolean stable, stable2;
@@ -1183,7 +1194,7 @@ public class Conj extends ByteAnonMap {
 
     }
 
-    private static Term matchingEventsRemoved(Term d, TreeSet<Term> t, long at) {
+    private static Term matchingEventsRemoved(Term d, Set<Term> t, long at) {
         if (d.dt() == DTERNAL /*commute(d.dt(), d.subs())*/) {
             SortedSet<Term> s = d.subterms().toSetSortedExcept(t::contains);
             if (s.size() < d.subs()) {
@@ -1209,7 +1220,7 @@ public class Conj extends ByteAnonMap {
         }
     }
 
-    private static boolean hasEvent(Term du, TreeSet<Term> t, long at, boolean neg) {
+    private static boolean hasEvent(Term du, Set<Term> t, long at, boolean neg) {
         if (commute(du.dt(), du.subs())) {
             return du.subterms().OR(ddd -> t.contains(ddd.negIf(neg)));
         } else {

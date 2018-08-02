@@ -169,7 +169,7 @@ public abstract class ConceptIndex implements Iterable<Termed> {
     }
 
     private void forget(TaskConcept tc) {
-        tc.tasks().forEach(Priority::delete);
+        tc.forEachTask(Priority::delete);
     }
 
 

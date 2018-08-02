@@ -11,11 +11,11 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public abstract class Service<C> extends AtomicReference<Services.ServiceState> implements Off {
 
     public boolean isOn() {
-        return get() == Services.ServiceState.On;
+        return getOpaque() == Services.ServiceState.On;
     }
 
     public boolean isOff() {
-        Services.ServiceState s = get();
+        Services.ServiceState s = getOpaque();
         return s == Services.ServiceState.Off;
     }
 

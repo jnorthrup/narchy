@@ -232,7 +232,7 @@ public class Dyn2DSurfaceTest {
             };
 
             og.forEachNode(n -> {
-                Dyn2DSurface.PhyWindow oo = s.put(new PushButton(n.id.getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
+                Dyn2DSurface.PhyWindow oo = s.put(new PushButton(n.id().getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
             });
 
 

@@ -147,9 +147,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return super.theSubterms(t);
     }
 
-    final static ThreadLocal<DynBytes> tmpkey = ThreadLocal.withInitial(()->new DynBytes(256));
+    //final static ThreadLocal<DynBytes> tmpkey = ThreadLocal.withInitial(()->new DynBytes(256));
     private static DynBytes tmpKey() {
-        return tmpkey.get();
+        //return tmpkey.get();
+        return new DynBytes(128);
     }
 
     private void resolve(Term[] t) {
@@ -164,6 +165,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 tmp = tmpKey();
 
             Term y = get(x, tmp);
+
+            if (y == null) {
+                tmp.clear(); //recycle
+            } else {
+                tmp = null; //force reset to avoid sharing array
+            }
 
             if (y!=null && x!=y) {
                 t[i] = y;

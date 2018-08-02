@@ -210,8 +210,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             if (!Float.isFinite(diff))
                 return 0;
             if (diff > 0) {
-                differenceFactor = (float) Param.evi(1f,
-                        diff / 2f /* /2 since it is shared between the two */,
+                differenceFactor = Param.evi(1f,
+                        Math.round(diff / 2f) /* /2 since it is shared between the two */,
                         Math.max(1, dur) /* cant be zero */);
             } else {
 

@@ -25,7 +25,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * @author Marc Woerlein (woerlein@informatik.uni-erlangen.de)
  * 
  */
-public class HalfIntMatrix {
+class HalfIntMatrix {
 	/** the array holding the complete triangle matrix */
 	private final int[] matrix;
 
@@ -50,7 +50,7 @@ public class HalfIntMatrix {
 	 *            the number of new nodes for which space should be reserved or
 	 *            removed
 	 */
-	public HalfIntMatrix(final HalfIntMatrix template, final int reserveNewNodes) {
+    private HalfIntMatrix(final HalfIntMatrix template, final int reserveNewNodes) {
 		this.size = (template.size + reserveNewNodes);
 		this.initialValue = template.initialValue;
 		this.matrix = new int[((size * size + size) / 2)];

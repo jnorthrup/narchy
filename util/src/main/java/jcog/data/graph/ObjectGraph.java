@@ -39,11 +39,11 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         return this;
     }
 
-    public Node<Object, Accessor> add(Object x, int depth) {
+    private Node<Object, Accessor> add(Object x, int depth) {
         return add(x, x, new FasterList<>(), depth);
     }
 
-    protected MutableNode<Object,Accessor> add(Object root, Object x, FasterList<Pair<Class,Accessor>> path, int level) {
+    private MutableNode<Object,Accessor> add(Object root, Object x, FasterList<Pair<Class, Accessor>> path, int level) {
 
 
         MutableNode<Object, Accessor> n = addNode(x);
@@ -128,7 +128,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         return true;
     }
 
-    public boolean includeNull() {
+    private boolean includeNull() {
         return false;
     }
 
@@ -173,7 +173,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
      * Return all declared and inherited fields for this class.
      * TODO cache
      */
-    protected Stream<Field> fields(Class<?> clazz) {
+    private Stream<Field> fields(Class<?> clazz) {
 
         Stream<Field> s = Stream.of(clazz.getDeclaredFields());
 
@@ -244,11 +244,11 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         }
     }
 
-    public static class ArrayAccessor extends Accessor {
+    static class ArrayAccessor extends Accessor {
         final Class type;
         final int index;
 
-        protected ArrayAccessor(Class type, int index) {
+        ArrayAccessor(Class type, int index) {
             this.type = type;
             this.index = index;
         }

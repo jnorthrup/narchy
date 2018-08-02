@@ -29,5 +29,32 @@ class ImpilerTest {
         n.run(10);
 
     }
+    @Test
+    public void testDeductionChainPositive() throws Narsese.NarseseException {
+        NAR n = NARS.tmp(1);
+
+        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 2, n);
+        //Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(8, 1, n);
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 2, n);
+
+        n.synch();
+
+        n.log();
+        n.run(4);
+
+
+        n.input("(a ==> b). "); n.run(1);
+        n.input("(b ==> c). "); n.run(1);
+        n.input("(c ==> d). "); n.run(1);
+        n.input("(d ==> e). "); n.run(1);
+//        n.input("(d ==> e). ");
+//        n.input("(e ==> f). ");
+
+        n.input("a@"); n.run(1);
+        n.input("a@"); n.run(1);
+
+        n.run(10);
+
+    }
 
 }

@@ -7,7 +7,7 @@ import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
-class NAL4MultistepTest extends NALTest {
+public class NAL4MultistepTest extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);

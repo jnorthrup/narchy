@@ -219,12 +219,14 @@ public class UniExec extends AbstractExec {
 
     protected void onDur() {
         revaluator.update(nar);
+
+
     }
 
     protected void onCycle(NAR nar) {
+
         nar.time.scheduled(this::executeNow);
         sync();
-
         can.forEachValue(c->
             c.c.next(nar, WORK_PER_CYCLE)
         );

@@ -15,6 +15,7 @@ import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
+import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import org.eclipse.collections.api.map.ImmutableMap;

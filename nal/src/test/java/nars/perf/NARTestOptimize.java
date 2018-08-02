@@ -8,9 +8,11 @@ import nars.NARS;
 import nars.derive.Deriver;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.deriver.MatrixDeriver;
+import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
+import nars.nal.nal4.NAL4MultistepTest;
 import nars.nal.nal4.NAL4Test;
 import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
@@ -30,13 +32,13 @@ class NARTestOptimize {
             int nalLevel = 8;
             boolean parallel = true;
             Class[] testClasses = new Class[] {
-                    NAL1Test.class, NAL2Test.class, NAL3Test.class, NAL4Test.class,
-                    NAL5Test.class, NAL6Test.class, NAL7Test.class, NAL8Test.class
+                    NAL1Test.class, NAL1MultistepTest.class, NAL2Test.class, NAL3Test.class, NAL4Test.class,
+                    NAL5Test.class, NAL6Test.class, NAL7Test.class, NAL8Test.class, NAL4MultistepTest.class
             };
 
             Lab<NAR> l = new Lab<>(() -> NARS.tmp(nalLevel))
-//                .var("ttlMax", 6, 20, 3,
-//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("ttlMax", 6, 20, 3,
+                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("termlinkBalance", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.termlinkBalance.set(f))
                 .var("forgetRate", 0, 1f, 0.1f,

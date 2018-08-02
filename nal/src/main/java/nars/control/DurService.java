@@ -141,23 +141,18 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
             //this.lastFinished = atEnd;
 
             if (!isOff()) {
-                if (busy.weakCompareAndSetRelease(true, false)) {
-                    long next = Math.max(
-                            atEnd + 1 /* next cycle */,
-                            atStart + durCycles);
 
-                    //System.out.println(this + "\tnext=" + next);
+                long next = Math.max(
+                        atEnd + 1 /* next cycle */,
+                        atStart + durCycles);
 
-                    spawn(nar, next);
-                }
-            } else {
-                busy.setRelease(false);
+                //System.out.println(this + "\tnext=" + next);
+
+                nar.runAt(next, this);
+
             }
+            busy.setRelease(false);
         }
-    }
-
-    private void spawn(NAR nar, long when) {
-        nar.runAt(when, this);
     }
 
     private int durCycles(NAR nar) {

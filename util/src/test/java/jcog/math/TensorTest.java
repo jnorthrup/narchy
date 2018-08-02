@@ -1,7 +1,7 @@
 package jcog.math;
 
-import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.Tensor;
+import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
 import org.junit.jupiter.api.Test;
 

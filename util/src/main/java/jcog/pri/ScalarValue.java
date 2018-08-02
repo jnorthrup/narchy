@@ -1,6 +1,5 @@
 package jcog.pri;
 
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.util.FloatFloatToFloatFunction;
@@ -39,6 +38,14 @@ public interface ScalarValue {
     }
     default float pri(FloatFloatToFloatFunction update, float x) {
         return pri(update.apply(pri(), x));
+    }
+    default float[] priDelta(FloatFloatToFloatFunction update, float x) {
+        float[] beforeAfter = new float[2];
+        beforeAfter[1] = pri((xx,yy)-> {
+            beforeAfter[0] = xx;
+            return update.apply(xx, yy);
+        }, x);
+        return beforeAfter;
     }
 
     /**
@@ -108,24 +115,15 @@ public interface ScalarValue {
      */
     default float priAddOverflow(float inc /* float upperLimit=1 */) {
 
-        if (Math.abs(inc) <= EPSILON) {
+        if (inc <= EPSILON)
             return 0;
-        }
 
-        final float[] before = new float[1];
-        float after = pri((x,y)->{
+        float[] beforeAfter = priDelta((x,y)-> ((x!=x) ? 0 : x) + y, inc);
 
-            if (x!=x)
-                x = 0;
-            before[0] = x;
-
-            return Util.min(1f, x + y);
-
-        }, inc);
-
-        float delta = after - before[0];
-
-        return inc - delta;
+        float after = beforeAfter[1];
+        float before = beforeAfter[0];
+        float delta = (before != before) ? after : (after - before);
+        return Math.max(0, inc - delta); //should be >= 0
     }
 
 
@@ -159,19 +157,19 @@ public interface ScalarValue {
         }
 
 
-        final static int NaN = floatToIntBits(Float.NaN);
+        final static int iNaN = floatToIntBits(Float.NaN);
 
         private volatile int pri;
 
 
         public final float priElseZero() {
             int i = _pri();
-            return i == NaN ? 0 : intBitsToFloat(i);
+            return i == iNaN ? 0 : intBitsToFloat(i);
         }
 
         @Override
         public boolean delete() {
-            return ((int)INT.getAndSet(this, NaN)) != NaN;
+            return ((int)INT.getAndSet(this, iNaN)) != iNaN;
             //if the above doesnt work, try converting with intToFloatBits( then do NaN test for equality etc
         }
 
@@ -181,7 +179,7 @@ public interface ScalarValue {
         }
 
         /** allows NaN */
-        protected float _v(float x) {
+        private float _v(float x) {
             return x!=x ? Float.NaN : v(x);
         }
 
@@ -197,7 +195,7 @@ public interface ScalarValue {
         }
 
         public boolean isDeleted() {
-            return _pri() == NaN;
+            return _pri() == iNaN;
         }
 
 
@@ -217,5 +215,6 @@ public interface ScalarValue {
         @Override public final float pri(FloatFloatToFloatFunction update, float x) {
             return FLOAT.updateAndGet(this, (xx,yy)-> _v(update.apply(xx,yy)), x);
         }
+
     }
 }

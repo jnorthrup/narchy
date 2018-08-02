@@ -407,14 +407,14 @@ public abstract class Param {
      * with a perceptual duration used as a time constant
      * dt >= 0
      */
-    public static double evi(double evi, double dt, long dur) {
+    public static float evi(float evi, long dt, long dur) {
 
 
         int falloffDurs =
                 1;
                 //4;
                 //dur;
-        return evi / (1.0 + (dt / (falloffDurs * dur)));
+        return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
 
         //return evi / (1.0 + ( Math.max(0,(dt-dur/2)) / (dur)));
 

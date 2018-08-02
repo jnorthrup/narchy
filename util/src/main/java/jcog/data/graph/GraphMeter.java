@@ -39,25 +39,25 @@ public class GraphMeter {
 
 
 
-    public final static int WHITE = 0;
-    public final static int GREY = 1;
-    public final static int BLACK = 2;
+    private final static int WHITE = 0;
+    private final static int GREY = 1;
+    private final static int BLACK = 2;
     /**
      * output of some algorithms is passed here
      */
-    public int[] root;
+    private int[] root;
     /**
      * output of some algorithms is passed here
      */
-    public int[] color;
+    private int[] color;
     /**
      * output of some algorithms is passed here
      */
-    public IntHashSet cluster;
+    private IntHashSet cluster;
     /**
      * output of some algorithms is passed here
      */
-    public int[] d;
+    private int[] d;
     private final IntArrayList stack = new IntArrayList();
     private int counter;
     private Graph g;
@@ -84,7 +84,7 @@ public class GraphMeter {
      *
      * @throws IllegalArgumentException if g is directed
      */
-    public static double clustering(Graph g, int i) {
+    private static double clustering(Graph g, int i) {
 
         if (g.directed()) throw new IllegalArgumentException(
                 "graph is directed");
@@ -316,7 +316,7 @@ public class GraphMeter {
      * In <code>{@link #d}[j]</code> returns the length of the shortest path between
      * i and j. The value -1 indicates that j is not accessible from i.
      */
-    public void dist(Graph g, int i) {
+    private void dist(Graph g, int i) {
 
         this.g = g;
         if (d == null || d.length < g.size()) d = new int[g.size()];

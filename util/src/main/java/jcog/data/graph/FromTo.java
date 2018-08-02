@@ -3,8 +3,9 @@ package jcog.data.graph;
 import org.jetbrains.annotations.Nullable;
 
 public interface FromTo<F, X> /* extends Triple<F,X,F> */ {
+
     F from();
-    X what();
+    X id();
     F to();
 
     default F to(boolean outOrIn) {

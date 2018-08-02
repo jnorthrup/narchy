@@ -62,7 +62,7 @@ public class BitMatrixGraph implements Graph {
      * @param n        size of graph
      * @param directed if true graph is directed
      */
-    public BitMatrixGraph(int n, boolean directed) {
+    private BitMatrixGraph(int n, boolean directed) {
 
         sets = new ArrayList<>(n);
         for (int i = 0; i < n; ++i) sets.add(new BitSet());

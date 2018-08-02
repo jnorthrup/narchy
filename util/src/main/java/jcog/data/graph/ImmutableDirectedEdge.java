@@ -8,14 +8,14 @@ import jcog.Util;
 public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
 
     private final int hash;
-    public final E id;
+    private final E id;
     public final Node<N,E> from, to;
 
-    public ImmutableDirectedEdge(Node<N,E> from, Node<N,E> to, E id) {
+    public ImmutableDirectedEdge(Node<N, E> from, E id, Node<N, E> to) {
+        this.hash = Util.hashCombine(id.hashCode(), from.hashCode(), to.hashCode());
         this.id = id;
         this.from = from;
         this.to = to;
-        this.hash = Util.hashCombine(id.hashCode(), from.hashCode(), to.hashCode());
     }
 
     @Override
@@ -24,7 +24,7 @@ public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
     }
 
     @Override
-    public final E what() {
+    public final E id() {
         return id;
     }
 

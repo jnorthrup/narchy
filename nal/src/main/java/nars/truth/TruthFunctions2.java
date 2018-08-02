@@ -5,7 +5,6 @@ import nars.$;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
-import static jcog.Util.or;
 import static nars.$.t;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
@@ -163,21 +162,6 @@ public enum TruthFunctions2 {
         return c >= minConf ? t((1 - f), c) : null;
     }
 
-    @Nullable
-    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
 
-        float f = and(a.freq(), bF);
-        float c = and(f,
-                and //original
-                        //or
-                        //aveAri
-                                (a.conf(), bC)
-        );
-
-        return c >= minConf ? t(f, c) : null;
-    }
-
-
-//        float f = 0.5f * ((f1-0.5f)*2*(f2-0.5f)*2 + 1);
 
 }

@@ -22,24 +22,23 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
     private final Number rate /* base rate items per dt */;
     private float RATE_THRESH = 1f;
-    private volatile long lastLeak = ETERNAL;
-    private volatile float lastBudget;
+    final static float maxBudgetRefund = 1f;
+    protected volatile long lastLeak = ETERNAL;
+    private volatile float savings;
 
     DtLeak(@NotNull Bag<X, Y> bag, @NotNull Number rate) {
         super(bag);
         this.rate = rate;
     }
 
-    public float commit(NAR nar, int iterations) {
+    public void commit(NAR nar, int iterations) {
 
 
         long now = nar.time();
         int dur = nar.dur();
 
         long last = this.lastLeak;
-        if (last == ETERNAL) {
-            this.lastLeak = last = now;
-        }
+
 
         float forgetRate = nar.forgetRate.floatValue();
         if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
@@ -47,26 +46,21 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
             
             float durDT = Math.max(0, (now - last) / ((float) dur));
 
-            float nextBudget = iterations * rate.floatValue() * durDT + lastBudget;
+            float nextBudget = iterations * rate.floatValue() * durDT + savings;
             
 
             if (nextBudget >= RATE_THRESH) {
                 this.lastLeak = now;
 
-                return commit(nextBudget);
+                commit(nextBudget);
             }
         }
 
 
-        return 0;
     }
 
-    /** override to implement backpressure stop switch */
-    boolean full() {
-        return false;
-    }
 
-    private float commit(float nextBudget) {
+    private void commit(float nextBudget) {
 
         final float[] budget = {nextBudget};
 
@@ -84,12 +78,11 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
                     return Sampler.SampleReaction.RemoveAndStop;
             }
 
-            return !full() ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
+            return Sampler.SampleReaction.Remove;
         }));
 
-        this.lastBudget = Math.min(0, budget[0]); 
 
-        return nextBudget - budget[0];
+        this.savings = Math.min(maxBudgetRefund, Math.max(0, budget[0]));
 
     }
 

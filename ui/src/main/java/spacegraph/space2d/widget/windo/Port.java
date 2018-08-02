@@ -268,7 +268,7 @@ public class Port extends Widget implements Wiring.Wireable {
         if (enabled) {
             Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> n = this.node;
             if (n!=null)
-                n.edges(true, true).forEach(t -> t.what().in(sender, x));
+                n.edges(true, true).forEach(t -> t.id().in(sender, x));
         }
     }
 

@@ -40,7 +40,7 @@ public abstract class TaskLeak extends Causable {
 
 
     TaskLeak(Bag<Task, PLink<Task>> bag, Number rate, NAR n) {
-        super();
+        super(n);
         this.queue = new DtLeak<>(bag, rate) {
             @Override
             protected Random random() {
@@ -53,19 +53,10 @@ public abstract class TaskLeak extends Causable {
                 return t.isDeleted() ? 0f : TaskLeak.this.leak(t);
             }
 
-            @Override
-            protected boolean full() {
-                return TaskLeak.this.full();
-            }
         };
-        n.on(this);
+        queue.lastLeak = nar.time();
     }
 
-
-    /** override to implement backpressure stop switch */
-    protected boolean full() {
-        return false;
-    }
 
     @Override
     protected void starting(NAR nar) {
@@ -81,10 +72,10 @@ public abstract class TaskLeak extends Causable {
     @Override
     protected int next(NAR nar, int iterations) {
 
-        if (queue.isEmpty())
+        if (queue == null /* HACK */ || queue.isEmpty())
             return 0;
 
-        float done = queue.commit(nar, iterations);
+        queue.commit(nar, iterations);
         return iterations; //(int) Math.ceil(done);
     }
 

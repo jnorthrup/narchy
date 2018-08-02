@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.tuple.Pair;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 

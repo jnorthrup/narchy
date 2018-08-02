@@ -37,6 +37,7 @@
  */
 package jcog.data.set;
 
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
@@ -124,6 +125,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         ArrayHashSet a = new ArrayHashSet(x.length);
         Collections.addAll(a, x);
         return a;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends X> c) {
+        throw new TODO("optimized bulk add");
     }
 
     @Override
