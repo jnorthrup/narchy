@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.util.term.transform.Retemporalize;
 import org.eclipse.collections.api.tuple.Pair;
 
 import static nars.Op.*;
@@ -84,7 +83,7 @@ public final class Termify extends AbstractPred<Derivation> {
         }
 
 
-        Term c2;
+
         if (d.temporal) {
 
             boolean unwrapNeg;
@@ -101,7 +100,7 @@ public final class Termify extends AbstractPred<Derivation> {
                 return false;
             }
 
-            c2 = timing.getOne();
+            Term c2 = timing.getOne();
             long[] occ = timing.getTwo();
             if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
                     (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
@@ -127,22 +126,13 @@ public final class Termify extends AbstractPred<Derivation> {
                 c2 = c2.neg();
 
             d.concOcc = occ;
-
+            d.concTerm = c2;
         } else {
-            if ((d.concPunc == BELIEF || d.concPunc == GOAL) && c1.hasXternal()) {
-                c2 =
-                        c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-                if (c1 != c2 && !Taskify.valid(c2, d.concPunc)) {
-                    d.nar.emotion.deriveFailTemporal.increment();
-                    return false;
-                }
-            } else {
-                c2 = c1;
-            }
+            d.concTerm = c1;
             d.concOcc = null;
         }
 
-        d.concTerm = c2;
+
         return true;
     }
 

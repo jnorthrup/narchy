@@ -1,4 +1,4 @@
-package spacegraph.audio.brainwave;
+package spacegraph.audio.synth.brainwave;
 
 import org.apache.commons.math3.util.FastMath;
 import spacegraph.audio.SoundProducer;

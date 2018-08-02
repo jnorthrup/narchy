@@ -11,12 +11,12 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -27,45 +27,46 @@ import static nars.time.Tense.ETERNAL;
 /** schema+data -> beliefs/questions */
 public class NALSchema {
 
-    public static void believe(NAR n, ARFF data, Function<Term[], Term> pointGenerator) {
+    public static void believe(NAR n, ARFF data, BiFunction<Term, Term[], Term> pointGenerator) {
         n.input(
                 Stream.concat(metaBeliefs(n, data, pointGenerator), data(n, data, pointGenerator))
         );
     }
 
-    public static void ask(NAR n, ARFF data, Function<Term[], Term> pointGenerator) {
+    public static void ask(NAR n, ARFF data, BiFunction<Term, Term[], Term> pointGenerator) {
         n.input(
                 data(n, data, QUESTION, pointGenerator)
         );
     }
 
-    /** raw product representation of the row */
-    public static Function<Term[], Term> raw = $::p;
-
+//    /** raw product representation of the row */
+//    public static Function<Term[], Term> raw = $::p;
+//
+//    /** all elements except a specified row become the subj of an impl to the element in the specified column*/
+//    public static BiFunction<Term, Term[], Term> predictsNth(int column) {
+//        return (tt) -> {
+//            Term[] subj = ArrayUtils.remove(tt, column);
+//            Term pred = tt[column];
+//            return $.inh($.p(subj), pred);
+//        };
+//    }
     /** all elements except a specified row become the subj of an impl to the element in the specified column*/
-    public static Function<Term[], Term> predictsNth(int column) {
-        return (tt) -> {
-            Term[] subj = ArrayUtils.remove(tt, column);
-            Term pred = tt[column];
-            return $.inh($.p(subj), pred);
-        };
-    }
-    /** all elements except a specified row become the subj of an impl to the element in the specified column*/
-    public static Function<Term[], Term> predictsLast = (tt) -> {
+    public static BiFunction<Term, Term[], Term> predictsLast = (ctx, tt) -> {
         int lastCol = tt.length - 1;
         Term[] subj = Arrays.copyOf(tt, lastCol);
         Term pred = tt[lastCol];
-        return $.inh($.p(subj), pred);
+        return $.inh($.p($.p(subj), pred), ctx);
     };
 
 
 
     /** beliefs representing the schema's metadata */
-    public static Stream<Task> metaBeliefs(NAR nar, ARFF a, Function<Term[], Term> pointGenerator) {
+    public static Stream<Task> metaBeliefs(NAR nar, ARFF a, BiFunction<Term, Term[], Term> pointGenerator) {
         List<Term> meta = new FasterList();
 
         int n = a.attrCount();
         Term pattern = pointGenerator.apply(
+            name(a),
             IntStream.range(0,n).mapToObj(i -> $.varDep(i+1)).toArray(Term[]::new)
         );
         for (int i = 0; i < n; i++) {
@@ -98,7 +99,7 @@ public class NALSchema {
         return $.$$(Texts.unquote(ai));
     }
 
-    public static Stream<Task> data(NAR n, ARFF a, Function<Term[], Term> pointGenerator) {
+    public static Stream<Task> data(NAR n, ARFF a, BiFunction<Term, Term[], Term> pointGenerator) {
         return data(n, a, (byte)0, pointGenerator);
     }
 
@@ -118,7 +119,7 @@ public class NALSchema {
      *      (a,b,c,d) -> ((a,b,c)-->d)
      *
      */
-    public static Stream<Task> data(NAR n, ARFF a, byte punc, Function<Term[],Term> pointGenerator) {
+    public static Stream<Task> data(NAR n, ARFF a, byte punc, BiFunction<Term, Term[], Term> pointGenerator) {
         long now = n.time();
         return terms(a, pointGenerator).map(point->{
 
@@ -136,7 +137,8 @@ public class NALSchema {
         });
     }
 
-    public static Stream<Term> terms(ARFF a, Function<Term[],Term> generator) {
+    public static Stream<Term> terms(ARFF a, BiFunction<Term, Term[], Term> generator) {
+        Term ctx = name(a);
         return a.stream().map(instance->{
             ImmutableList point = instance.data;
             int n = point.size();
@@ -151,8 +153,15 @@ public class NALSchema {
                     throw new UnsupportedOperationException();
                 }
             }
-            return generator.apply(t);
+            return generator.apply(ctx, t);
         });
+    }
+
+    public static Term name(ARFF a) {
+        String r = a.getRelation();
+        if (r == null)
+            r = ("ARFF_" + System.identityHashCode(a));
+        return $.the(r);
     }
 
 

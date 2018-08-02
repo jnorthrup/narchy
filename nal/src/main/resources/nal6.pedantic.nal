@@ -1,0 +1,22 @@
+//probably not very helpful:
+
+//Conj and Disj Question Decomposition
+    C, X, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
+        X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
+    C, X, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
+        X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
+
+
+//question/quest propagation
+    Z, (X==>Y), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)
+    Z, (X==>Y), task("@") |- X, (Punctuation:Quest)
+        //Z, (X==>Y), task("@") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Quest)
+        //Z, (X==>Y), neq(Y,Z), task("?") |- subIfUnifiesAny((X ==>+- Y),Y,Z,strict), (Punctuation:Question)
+    Z, (Y==>X), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)
+    Z, (Y==>X), task("@") |- X, (Punctuation:Quest)
+        //Z, (Y==>X), task("@") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Quest)
+        //Z, (Y==>X), neq(Y,Z), task("?") |- subIfUnifiesAny((Y ==>+- X),Y,Z,strict), (Punctuation:Question)
+    Z, (--Y==>X), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)
+    Z, (--Y==>X), task("@") |- X, (Punctuation:Quest)
+        //Z, (--Y==>X), task("@") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Quest)
+        //Z, (Y==>X), neq(Y,Z), task("?") |- subIfUnifiesAny((--Y ==>+- X),Y,Z,strict), (Punctuation:Question)

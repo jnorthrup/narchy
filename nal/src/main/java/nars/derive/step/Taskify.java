@@ -11,6 +11,7 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.util.term.transform.Retemporalize;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,25 +55,34 @@ public class Taskify extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-        Truth tru = d.concTruth;
+
 
         Term x0 = d.concTerm;
+        final byte punc = d.concPunc;
+        if ((punc == BELIEF || punc == GOAL) && x0.hasXternal()) {
+            //HACK this is for deficiencies in the temporal solver that can be fixed
+            x0 = x0.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            if (!Taskify.valid(x0, d.concPunc)) {
+                d.nar.emotion.deriveFailTemporal.increment();
+                return spam(d, Param.TTL_DERIVE_TASK_FAIL);
+            }
+        }
 
         Term x1 = d.anon.get(x0);
         if (x1==null)
-            return false;
+            throw new NullPointerException(); //return spam(d, Param.TTL_DERIVE_TASK_FAIL);
+
         Term x = Term.forceNormalizeForBelief(x1);
-        if (!x.op().conceptualizable) {
+        if (!x.op().conceptualizable)
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
-        }
 
 
 
-        byte punc = d.concPunc;
         assert (punc != 0) : "no punctuation assigned";
 
-        if (punc == BELIEF || punc == GOAL) {
+        Truth tru = d.concTruth;
 
+        if (punc == BELIEF || punc == GOAL) {
             if (tru.conf() < d.confMin)
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 

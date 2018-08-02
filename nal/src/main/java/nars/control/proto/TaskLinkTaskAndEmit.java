@@ -7,9 +7,7 @@ import nars.task.ITask;
 
 public class TaskLinkTaskAndEmit extends TaskLinkTask {
 
-    public TaskLinkTaskAndEmit(Task result) {
-        super(result);
-    }
+
 
     public TaskLinkTaskAndEmit(Task result, float pri, Concept concept) {
         super(result, pri, concept);

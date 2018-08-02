@@ -1,4 +1,4 @@
-package spacegraph.audio.granular;
+package spacegraph.audio.synth.granular;
 
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;

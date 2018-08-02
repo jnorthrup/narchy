@@ -48,8 +48,8 @@ class PatrickTests extends NALTest {
 
                 .askAt(500, "REPRESENT:((cat,eats),(?x, ?y))")
 
-                .mustBelieve(2000, "REPRESENT((eats,cat),(EATING,ANIMAL))", 0.9f, 1f, 0.15f, 0.99f);
-
+                //.mustBelieve(2000, "REPRESENT((eats,cat),(EATING,ANIMAL))", 0.9f, 1f, 0.15f, 0.99f);
+                .mustBelieve(2000, "REPRESENT((cat,eats),(ANIMAL,EATING))", 0.9f, 1f, 0.15f, 0.99f);
 
     }
 

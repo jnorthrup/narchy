@@ -107,27 +107,21 @@ public enum Draw {
         List<HGlyph> glyphs = new FasterList();
         String[] lines = null;
 
-        
+
         for (int tries = 0; tries < 2 && lines == null; tries++) {
             try {
                 String font =
 
-                        
-                        
+
                         "futural";
-                
-                
-                
-                
-                
-                
+
 
                 lines = new String(Draw.class.getClassLoader().getResourceAsStream("spacegraph/font/hershey/" + font + ".jhf").readAllBytes()).split("\n");
                 break;
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Util.sleepMS(50);
+            Util.sleepMS(20);
         }
         if (lines == null) {
             lines = ArrayUtils.EMPTY_STRING_ARRAY;
@@ -157,10 +151,10 @@ public enum Draw {
 
     public static void drawCoordSystem(GL gl) {
         ImmModeSink vbo = ImmModeSink.createFixed(3 * 4,
-                3, GL.GL_FLOAT, 
-                4, GL.GL_FLOAT, 
-                0, GL.GL_FLOAT, 
-                0, GL.GL_FLOAT, 
+                3, GL.GL_FLOAT,
+                4, GL.GL_FLOAT,
+                0, GL.GL_FLOAT,
+                0, GL.GL_FLOAT,
                 GL.GL_STATIC_DRAW);
         vbo.glBegin(GL.GL_LINES);
         vbo.glColor4f(1f, 1f, 1f, 1f);
@@ -190,26 +184,6 @@ public enum Draw {
     public static void draw(GL2 gl, CollisionShape shape) {
 
 
-        
-
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
         if (shape.getShapeType() == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
             CompoundShape compoundShape = (CompoundShape) shape;
             Transform childTrans = new Transform();
@@ -232,9 +206,9 @@ public enum Draw {
                 case BOX_SHAPE_PROXYTYPE:
                     SimpleBoxShape boxShape = (SimpleBoxShape) shape;
                     v3 a = boxShape.implicitShapeDimensions;
-                    
+
                     gl.glScalef(2f * a.x, 2f * a.y, 2f * a.z);
-                    
+
                     glut.glutSolidCube(1f);
 
                     useWireframeFallback = false;
@@ -242,26 +216,20 @@ public enum Draw {
                 case CONVEX_HULL_SHAPE_PROXYTYPE:
                 case TRIANGLE_SHAPE_PROXYTYPE:
                 case TETRAHEDRAL_SHAPE_PROXYTYPE:
-                    
 
 
                     if (shape.isConvex()) {
                         ConvexShape convexShape = (ConvexShape) shape;
                         if (shape.getUserPointer() == null) {
-                            
+
                             ShapeHull hull = new ShapeHull(convexShape);
 
-                            
-                            
-                            
 
                             float margin = shape.getMargin();
                             hull.buildHull(margin);
                             convexShape.setUserPointer(hull);
 
-                            
-                            
-                            
+
                         }
 
                         if (shape.getUserPointer() != null) {
@@ -306,9 +274,9 @@ public enum Draw {
                     break;
                 case SPHERE_SHAPE_PROXYTYPE: {
                     SphereShape sphereShape = (SphereShape) shape;
-                    float radius = sphereShape.getMargin(); 
-                    
-                    
+                    float radius = sphereShape.getMargin();
+
+
                     glsrt.drawSphere(gl, radius);
                             /*
                             glPointSize(10f);
@@ -329,45 +297,20 @@ public enum Draw {
                     glsrt.drawCylinder(gl, radius, halfHeight, upAxis);
 
                     gl.glTranslatef(0f, -halfHeight, 0f);
-                    
-                    
+
+
                     glsrt.drawSphere(gl, radius);
                     gl.glTranslatef(0f, 2f * halfHeight, 0f);
-                    
-                    
+
+
                     glsrt.drawSphere(gl, radius);
                     useWireframeFallback = false;
                     break;
                 }
                 case MULTI_SPHERE_SHAPE_PROXYTYPE:
                     break;
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
+
+
                 case CONVEX_TRIANGLEMESH_SHAPE_PROXYTYPE:
                     useWireframeFallback = false;
                     break;
@@ -389,19 +332,19 @@ public enum Draw {
 
 
             if (useWireframeFallback) {
-                
+
                 if (shape.isPolyhedral()) {
                     PolyhedralConvexShape polyshape = (PolyhedralConvexShape) shape;
 
                     ImmModeSink vbo = ImmModeSink.createFixed(polyshape.getNumEdges() + 3,
-                            3, GL.GL_FLOAT,  
-                            0, GL.GL_FLOAT,  
-                            0, GL.GL_FLOAT,  
-                            0, GL.GL_FLOAT, GL.GL_STATIC_DRAW); 
+                            3, GL.GL_FLOAT,
+                            0, GL.GL_FLOAT,
+                            0, GL.GL_FLOAT,
+                            0, GL.GL_FLOAT, GL.GL_STATIC_DRAW);
 
                     vbo.glBegin(GL.GL_LINES);
 
-                    
+
                     int i;
                     for (i = 0; i < polyshape.getNumEdges(); i++) {
                         polyshape.getEdge(i, a, b);
@@ -411,102 +354,24 @@ public enum Draw {
                     }
                     vbo.glEnd(gl);
 
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-
 
                 }
             }
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            if (shape.isConcave())
-            
-            {
-                ConcaveShape concaveMesh = (ConcaveShape) shape;
-                
-                
 
-                
+            if (shape.isConcave()) {
+                ConcaveShape concaveMesh = (ConcaveShape) shape;
 
 
                 a.set(1e30f, 1e30f, 1e30f);
                 b.set(-1e30f, -1e30f, -1e30f);
 
                 GlDrawcallback drawCallback = new GlDrawcallback(gl);
-                drawCallback.wireframe = false; 
+                drawCallback.wireframe = false;
 
                 concaveMesh.processAllTriangles(drawCallback, b, a);
             }
         }
-        
-
-        
-        
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-        
-        
-        
-
-
-
-
-
-
-
-        
 
 
     }
@@ -537,6 +402,7 @@ public enum Draw {
         gl.glVertex2i(x3, y3);
         gl.glEnd();
     }
+
     public static void tri2f(GL2 gl, float x1, float y1, float x2, float y2, float x3, float y3) {
         gl.glBegin(GL2.GL_TRIANGLES);
         gl.glVertex2f(x1, y1);
@@ -544,6 +410,7 @@ public enum Draw {
         gl.glVertex2f(x3, y3);
         gl.glEnd();
     }
+
     public static void quad2d(GL2 gl, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         gl.glBegin(GL2.GL_QUADS);
         gl.glVertex2f(x1, y1);
@@ -579,14 +446,11 @@ public enum Draw {
         gl.glEnd();
 
 
-
-
-
     }
 
     public static void circle(GL2 gl, v2 center, boolean solid, float radius, int NUM_CIRCLE_POINTS) {
-        
-        
+
+
         float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
         float c = (float) Math.cos(theta);
         float s = (float) Math.sin(theta);
@@ -598,19 +462,17 @@ public enum Draw {
 
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
-            
+
             float temp = x;
             x = c * x - s * y;
             y = s * temp + c * y;
         }
         gl.glEnd();
-        
+
     }
 
     public static void particles(GL2 gl, Tuple2f[] centers, float radius, int NUM_CIRCLE_POINTS, ParticleColor[] colors, int count) {
 
-        
-        
 
         float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
         float c = (float) Math.cos(theta);
@@ -638,16 +500,12 @@ public enum Draw {
             }
             gl.glEnd();
         }
-        
+
     }
 
     public static void rect(GL2 gl, float x1, float y1, float w, float h) {
 
         gl.glRectf(x1, y1, x1 + w, y1 + h);
-
-
-
-
 
 
     }
@@ -676,7 +534,7 @@ public enum Draw {
         if (z == 0) {
             rect(gl, x1, y1, w, h);
         } else {
-            
+
             gl.glBegin(GL2.GL_QUADS);
             gl.glNormal3f(0, 0, 1);
             gl.glVertex3f(x1, y1, z);
@@ -688,43 +546,6 @@ public enum Draw {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-
-
     public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha) {
         rectTex(gl, tt, x, y, z, w, h, repeatScale, alpha, false);
     }
@@ -732,22 +553,10 @@ public enum Draw {
     public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha, boolean inverted) {
 
 
-
-
-
-        
-
-
-
-
-
-        
-
         tt.enable(gl);
         tt.bind(gl);
 
 
-        
         gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
 
 
@@ -760,7 +569,7 @@ public enum Draw {
             gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
             gl.glGenerateMipmap(GL_TEXTURE_2D);
         } else {
-            
+
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             repeatScale = 1f;
@@ -809,8 +618,6 @@ public enum Draw {
         v3 ww = new v3(0, 0, 1);
         tmpQ.rotateVector(ww, ww);
 
-        
-
 
         Transform tt = e.tgt().transform;
 
@@ -831,15 +638,15 @@ public enum Draw {
         gl.glColor4f(e.r, e.g, e.b, e.a);
         gl.glNormal3f(ww.x, ww.y, ww.z);
 
-        gl.glVertex3f(sx + vv.x, sy + vv.y, sz + vv.z); 
+        gl.glVertex3f(sx + vv.x, sy + vv.y, sz + vv.z);
 
-        gl.glVertex3f( 
-                sx + -vv.x, sy + -vv.y, sz + -vv.z 
-                
+        gl.glVertex3f(
+                sx + -vv.x, sy + -vv.y, sz + -vv.z
+
         );
 
         gl.glColor4f(e.r / 2f, e.g / 2f, e.b / 2f, e.a * 2 / 3);
-        gl.glVertex3f(tx, ty, tz); 
+        gl.glVertex3f(tx, ty, tz);
 
         gl.glEnd();
 
@@ -1061,7 +868,7 @@ public enum Draw {
         for (int i = 0; i < n; ++i)
             body.getWorldPointToGL(pv[i], preScale, gl);
 
-        body.getWorldPointToGL(pv[0], preScale, gl); 
+        body.getWorldPointToGL(pv[0], preScale, gl);
 
         gl.glEnd();
     }
@@ -1088,7 +895,7 @@ public enum Draw {
     public static void stencilStart(GL gl) {
         gl.glEnable(gl.GL_STENCIL_TEST);
 
-        
+
         gl.glColorMask(false, false, false, false);
         gl.glDepthMask(false);
 
@@ -1101,94 +908,18 @@ public enum Draw {
         gl.glStencilFunc(gl.GL_NEVER, 1, 0xFF);
         gl.glStencilOp(gl.GL_REPLACE, gl.GL_KEEP, gl.GL_KEEP);
 
-        
+
         gl.glStencilMask(0xFF);
 
-        
+
         gl.glClear(gl.GL_STENCIL_BUFFER_BIT);
 
-        
-        
+
     }
 
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static void stencilEnd(GL gl) {
-        
+
         gl.glDisable(gl.GL_STENCIL_TEST);
     }
 
@@ -1230,83 +961,29 @@ public enum Draw {
      */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static void stencilUse(GL gl, boolean includeOrExclude) {
-        
+
         gl.glColorMask(true, true, true, true);
         gl.glDepthMask(true);
 
-        
+
         gl.glStencilMask(0x00);
 
-        
+
         gl.glStencilFunc(includeOrExclude ? GL2.GL_NOTEQUAL : GL2.GL_EQUAL, 0, 0xFF);
 
-        
+
     }
 
-    public static void text(GL2 gl, CharSequence s, float scale, float x, float y, float z) {
-        text(gl, s, scale, scale, x, y, z, TextAlignment.Center);
+    public static void hersheyText(GL2 gl, CharSequence s, float scale, float x, float y, float z) {
+        hersheyText(gl, s, scale, scale, x, y, z, TextAlignment.Center);
     }
 
-    public static void text(GL2 gl, CharSequence s, float scale, float x, float y, float z, TextAlignment a) {
-        text(gl, s, scale, scale, x, y, z, a);
+    public static void hersheyText(GL2 gl, CharSequence s, float scale, float x, float y, float z, TextAlignment a) {
+        hersheyText(gl, s, scale, scale, x, y, z, a);
     }
 
-    public static void text(GL2 gl, CharSequence s, float scaleX, float scaleY, float x, float y, float z, TextAlignment a) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public static void hersheyText(GL2 gl, CharSequence s, float scaleX, float scaleY, float x, float y, float z, TextAlignment a) {
 
 
         int sl = s.length();
@@ -1316,14 +993,13 @@ public enum Draw {
         float totalWidth = sl * scaleX;
         switch (a) {
             case Left:
-                
-                x += scaleX / 2f; 
+                x += scaleX / 2f;
                 break;
             case Right:
-                x -= totalWidth; 
+                x -= totalWidth;
                 break;
             case Center:
-                x -= totalWidth / 2f; 
+                x -= totalWidth / 2f;
                 break;
         }
 
@@ -1342,13 +1018,13 @@ public enum Draw {
         gl.glPushMatrix();
     }
 
-    public static void text(GL2 gl, char c, float scale, float x, float y, float z) {
-        text(gl, c, scale, scale, x, y, z);
+    public static void hersheyText(GL2 gl, char c, float scale, float x, float y, float z) {
+        hersheyText(gl, c, scale, scale, x, y, z);
     }
 
-    private static void text(GL2 gl, char c, float scaleX, float scaleY, float x, float y, float z) {
+    private static void hersheyText(GL2 gl, char c, float scaleX, float scaleY, float x, float y, float z) {
 
-        int ci = c - 32; 
+        int ci = c - 32;
         if (ci >= 0 && (ci < fontMono.length)) {
 
             push(gl);
@@ -1359,7 +1035,7 @@ public enum Draw {
 
             gl.glTranslatef(x / sx, y / sy, z);
 
-            fontMono[ci].draw(gl, 0);
+            fontMono[ci].draw(gl);
             pop(gl);
         }
     }
@@ -1379,7 +1055,7 @@ public enum Draw {
 
     public static void textNext(GL2 gl, char c, float x) {
 
-        int ci = c - 32; 
+        int ci = c - 32;
         if (ci >= 0 && (ci < fontMono.length)) {
             fontMono[ci].draw(gl, x * 20);
         }
@@ -1412,10 +1088,10 @@ public enum Draw {
         @Override
         public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
             ImmModeSink vbo = ImmModeSink.createFixed(10,
-                    3, GL.GL_FLOAT,  
-                    4, GL.GL_FLOAT,  
-                    0, GL.GL_FLOAT,  
-                    0, GL.GL_FLOAT, GL.GL_STATIC_DRAW); 
+                    3, GL.GL_FLOAT,
+                    4, GL.GL_FLOAT,
+                    0, GL.GL_FLOAT,
+                    0, GL.GL_FLOAT, GL.GL_STATIC_DRAW);
             if (wireframe) {
                 vbo.glBegin(GL.GL_LINES);
                 vbo.glColor4f(1, 0, 0, 1);
@@ -1442,13 +1118,13 @@ public enum Draw {
     }
 
     public static final class HGlyph {
-        
-        
-        static final int offsetR = (int) ('R');
+
+
+        static final int offsetR = ('R');
         /*int idx, verts, */
         final int leftPos;
         final int rightPos;
-        
+
         final byte[][] segments;
         private int id;
 
@@ -1456,13 +1132,12 @@ public enum Draw {
         HGlyph(String hspec) {
             FasterList<byte[]> segments = new FasterList();
 
-            
-            
+
             String spec = (hspec.substring(10));
 
-            
-            leftPos = (int) (hspec.charAt(8)) - offsetR;
-            rightPos = (int) (hspec.charAt(9)) - offsetR;
+
+            leftPos = (hspec.charAt(8)) - offsetR;
+            rightPos = (hspec.charAt(9)) - offsetR;
 
             int curX, curY;
             boolean penUp = true;
@@ -1476,10 +1151,10 @@ public enum Draw {
                     continue;
                 }
 
-                curX = (int) (spec.charAt(i)) - offsetR; 
+                curX = (spec.charAt(i)) - offsetR;
                 currentSeg.add((byte) curX);
-                curY = (int) (spec.charAt(i + 1)) - offsetR; 
-                currentSeg.add((byte) (10 - curY)); 
+                curY = (spec.charAt(i + 1)) - offsetR;
+                currentSeg.add((byte) (10 - curY));
             }
             if (!currentSeg.isEmpty())
                 segments.add(currentSeg.toArray());
@@ -1490,19 +1165,19 @@ public enum Draw {
         }
 
         void draw(GL2 gl, float x) {
-            
-
-
-
 
 
             if (x != 0)
                 gl.glTranslatef(x, 0, 0);
 
-            gl.glCallList(id);
+            draw(gl);
 
             if (x != 0)
-                gl.glTranslatef(-x, 0, 0); 
+                gl.glTranslatef(-x, 0, 0);
+        }
+
+        final void draw(GL2 gl) {
+            gl.glCallList(id);
         }
 
         void init(GL2 gl) {
@@ -1515,7 +1190,7 @@ public enum Draw {
 
                 gl.glBegin(GL2.GL_LINE_STRIP);
                 for (int j = 0; j < ss; ) {
-                    
+
                     gl.glVertex2i(seg[j++], seg[j++]);
                 }
                 gl.glEnd();
@@ -1659,33 +1334,7 @@ public enum Draw {
             glyphCount = 128;
             for (int i = 0; i < 128; i++) {
 
-                
-                
-                
-                
-                
-                
-                
-                
-                
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-                
                 glyphs[i] = new Glyph();
 
 
@@ -1730,7 +1379,7 @@ public enum Draw {
         }
 
         public Glyph getGlyph(char c) {
-            int n = (int) c;
+            int n = c;
             /* if c is out of the BitFont-glyph bounds, return
              * the defaultChar glyph (the space char by
              * default). */
@@ -1742,23 +1391,23 @@ public enum Draw {
 
             float[] tex;
 
-            
+
             int w = byteArrayToInt(new byte[]{bytes[0], bytes[1]});
 
-            
+
             int h = byteArrayToInt(new byte[]{bytes[2], bytes[3]});
 
-            
+
             int s = byteArrayToInt(new byte[]{bytes[4], bytes[5]});
 
-            
+
             int c = byteArrayToInt(new byte[]{bytes[6], bytes[7]});
 
             tex = new float[w * h];
             textureWidth = w;
             textureHeight = h;
 
-            
+
             int off = 8 + s;
             for (int i = off; i < bytes.length; i++) {
                 for (int j = 0; j < 8; j++) {
@@ -1768,7 +1417,7 @@ public enum Draw {
 
             int cnt = 0, n = 0, i = 0;
 
-            
+
             for (i = 0; i < s; i++) {
                 while (++cnt != bytes[i + 8]) {
                 }
@@ -1826,7 +1475,7 @@ public enum Draw {
             int leftExtent;
 
             public void draw(float x, float y, float w, float h) {
-                
+
             }
         }
     }

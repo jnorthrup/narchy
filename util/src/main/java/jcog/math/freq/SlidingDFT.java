@@ -59,6 +59,10 @@ public class SlidingDFT {
         }
     }
 
+    public void next(float[] inBuf, int chan, float[] fftBuf) {
+        next(inBuf, 0, fftSize, chan, fftBuf);
+    }
+
     public void next(float[] inBuf, int inOff, int len, int chan, float[] fftBuf) {
 
 
@@ -70,7 +74,7 @@ public class SlidingDFT {
 
         for (int i = 0, j = inOff; i < len; i++, j++) {
             f1 = inBuf[j];
-            delta = (double) f1 - (double) timeBufC[timeBufIdxC];
+            delta = (double) f1 - timeBufC[timeBufIdxC];
 
             timeBufC[timeBufIdxC] = f1;
             for (int k = 0, m = 0; m < fftSizeP2; k++) {

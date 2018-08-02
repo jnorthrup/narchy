@@ -91,7 +91,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         return this;
     }
     private void render() {
-        if (needUpdate.compareAndSet(true, false)) {
+        if (needUpdate.weakCompareAndSetAcquire(true, false)) {
             if (ensureBufferSize()) {
                 updateBackBuffer();
                 tex.update(backbuffer);
@@ -166,6 +166,9 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     }
 
     private void redraw(Graphics g, TextCharacter character, int columnIndex, int rowIndex, int fontWidth, int fontHeight, int characterWidth) {
+        if (g == null)
+            return;
+
         int x = columnIndex * fontWidth;
         int y = rowIndex * fontHeight;
 
@@ -213,6 +216,6 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     }
 
     public void setUpdateNecessary() {
-        needUpdate.set(true);
+        needUpdate.setRelease(true);
     }
 }

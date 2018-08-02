@@ -1,12 +1,11 @@
 package spacegraph.audio;
 
-import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.exe.Loop;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.AsyncTensor;
-import jcog.signal.wave1d.FrequencyDomainTensor;
+import jcog.signal.wave1d.SlidingDFTTensor;
 import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
@@ -20,7 +19,7 @@ public class WaveCapture extends Loop {
 
     private int bufferSamples;
 
-    public float[] samples = ArrayUtils.EMPTY_FLOAT_ARRAY;
+    public float[] samples = ArrayUtils.EMPTY_FLOAT_ARRAY, nextSamples = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
     public final AsyncTensor<ArrayTensor> wave = new AsyncTensor<>(new ArrayTensor(samples));
 
@@ -75,7 +74,9 @@ public class WaveCapture extends Loop {
         };
 
 
-        FrequencyDomainTensor freqDomain = new FrequencyDomainTensor(wave, bufferSamples);
+        SlidingDFTTensor freqDomain =
+                //new HaarWaveletTensor(wave, bufferSamples);
+                new SlidingDFTTensor(wave, 64);
         wavelet1d = new Plot2D.Series("Wavelet", 1) {
             {
                 wave.on(x -> {
@@ -243,16 +244,21 @@ public class WaveCapture extends Loop {
                 bufferSamples = audioBufferSize;
 
 
-                if (samples == null || samples.length != audioBufferSize)
-                    samples = new float[Util.largestPowerOf2NoGreaterThan(audioBufferSize)];
+                if (samples == null || samples.length != audioBufferSize) {
+                    samples = new float[audioBufferSize]; //Util.largestPowerOf2NoGreaterThan(audioBufferSize)];
+                    nextSamples = new float[audioBufferSize]; //Util.largestPowerOf2NoGreaterThan(audioBufferSize)];
+                }
             }
         }
     }
 
+
     @Override
     public boolean next() {
 
-        source.next(samples);
+        int read = source.next(nextSamples);
+        System.arraycopy(samples, samples.length-read, samples, 0, read); //shift
+        System.arraycopy(nextSamples, 0, samples, samples.length-read, read); //append
 
         frame.emit(this);
 

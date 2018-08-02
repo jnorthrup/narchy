@@ -8,11 +8,11 @@ import jcog.signal.tensor.ArrayTensor;
 import java.util.Arrays;
 
 /** TODO support pluggable models (DCT, DFT, Wavelet Transform, etc) with optional phase data in secondary dimension */
-public class FrequencyDomainTensor extends ArrayTensor {
+public class HaarWaveletTensor extends ArrayTensor {
 
     private final Tensor src;
 
-    public FrequencyDomainTensor(Tensor wave, int size) {
+    public HaarWaveletTensor(Tensor wave, int size) {
         super(Util.largestPowerOf2NoGreaterThan(size) /* specific to haar */);
         this.src = wave;
     }
@@ -21,8 +21,9 @@ public class FrequencyDomainTensor extends ArrayTensor {
     public void update() {
         if(tmp==null || tmp.length!=data.length) {
             tmp = new float[data.length];
+        } else {
+            Arrays.fill(tmp, 0);
         }
-        Arrays.fill(tmp, 0);
 
         src.writeTo(tmp);
 

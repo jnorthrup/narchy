@@ -1,41 +1,37 @@
 package spacegraph.space2d.widget.text;
 
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.EmptyContainer;
 import spacegraph.util.math.Color4f;
-import spacegraph.video.Draw;
 
 /**
  * Created by me on 7/29/16.
  */
 public class Label extends EmptyContainer {
 
-    private String text = "(null)";
+    protected volatile String text = "(null)";
 
-    private float textScaleX = 1f;
-    private float textScaleY = 1f;
-    private final Color4f textColor = new Color4f(1f, 1f, 1f, 1f);
+    protected final Color4f textColor = new Color4f(1f, 1f, 1f, 1f);
 
-    private transient float textThickness;
+    @Deprecated
+    protected float textScaleX = 1f, textScaleY = 1f;
+    protected transient float textThickness;
+    protected float textY;
+    final LabelRenderer renderer = LabelRenderer.
+                                        Hershey;
+                                        //AWTBitmap;
+                                        //NewtGraph;
 
-
-    /**
-     * inner rectangle in which the text is actually rendered, after calculating
-     * aspect ratio, scale and alignment
-     */
-    private RectFloat2D innerBounds = RectFloat2D.Zero;
-    private float textY;
 
     public Label() {
         this("");
     }
 
     public Label(String s) {
-        
+
         text(s);
     }
 
@@ -46,18 +42,16 @@ public class Label extends EmptyContainer {
 
     @Override
     protected void doLayout(int dtMS) {
-        float tx = x(), ty = y();
-        float tw = w();
-        float th = h();
-        innerBounds = RectFloat2D.XYXY(tx, ty, tx + tw, ty + th);
 
-        int len = text().length();
+        int len = text.length();
         if (len == 0) return;
 
         float charAspect = 1.4f;
         this.textScaleX = 1f / len;
         this.textScaleY = 1 * charAspect;
 
+        float tw = w();
+        float th = h();
         float visAspect = th / tw;
         if (textScaleY / textScaleX <= visAspect) {
             this.textScaleX = 1f / (charAspect * len);
@@ -67,7 +61,7 @@ public class Label extends EmptyContainer {
         }
 
         if (textScaleY > 1f) {
-            textScaleX = 1f / (len*textScaleY); 
+            textScaleX = 1f / (len * textScaleY);
             textScaleY = 1f;
 
         }
@@ -77,7 +71,7 @@ public class Label extends EmptyContainer {
 
     @Override
     protected void paintIt(GL2 gl) {
-        Draw.bounds(innerBounds, gl, this::paintUnit);
+        renderer.accept(this, gl);
     }
 
     @Override
@@ -87,51 +81,27 @@ public class Label extends EmptyContainer {
             return false;
         }
 
-        textThickness = Math.min(3, 0.5f + (p/70f));
+        textThickness = Math.min(3, 0.5f + (p / 70f));
 
         return super.prePaint(r);
     }
 
-    private void paintUnit(GL2 gl) {
-
-
-        textColor.apply(gl);
-        gl.glLineWidth(textThickness);
-        
-        Draw.text(gl, text(), textScaleX, textScaleY, 0, textY, 0, Draw.TextAlignment.Left);
-
-    }
-
 
     public Label text(String newValue) {
-        this.text = newValue;
-        layout();
+        if (!newValue.equals(this.text)) {
+            this.text = newValue;
+            layout();
+        }
         return this;
     }
 
-    private String text() {
-        return text;
-    }
+    public final String text() { return text; }
+
 
     @Override
     public String toString() {
-        return "Label[" + text() + ']';
+        return "Label[" + text + ']';
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

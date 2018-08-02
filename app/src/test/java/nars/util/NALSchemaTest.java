@@ -3,10 +3,7 @@ package nars.util;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.io.arff.ARFF;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
-import nars.Task;
+import nars.*;
 import nars.task.util.DialogTask;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -82,7 +79,9 @@ public class NALSchemaTest {
         assertEquals(originalDataSetSize, validationPoints.size() + data.size());
 
         NAR n = NARS.tmp();
-        
+
+        Param.DEBUG = true;
+        n.log();
         
 
         LongHashSet questions = new LongHashSet();
@@ -90,7 +89,8 @@ public class NALSchemaTest {
             if (t.isInput() && t.isQuestionOrQuest())
                 questions.add(t.stamp()[0]);
             else if (t.isBeliefOrGoal() && Stamp.overlapsAny(questions, t.stamp())) {
-                System.out.println("ANSWER: " + t);
+                //if (t.isInput())
+                    System.out.println("ANSWER: " + t);
             }
         });
 
@@ -104,7 +104,8 @@ public class NALSchemaTest {
         new DialogTask(n, questions1) {
             @Override
             protected boolean onTask(Task x) {
-                System.out.println(x);
+                if (!x.isInput())
+                    System.out.println(x);
                 return true;
             }
         };
@@ -123,7 +124,7 @@ public class NALSchemaTest {
             "% XOR\n" +
             "%\n" +
             "\n" +
-            "@RELATION xor\n" +
+            "@RELATION XOR\n" +
             "\n" +
             "@ATTRIBUTE input1 REAL\n" +
             "@ATTRIBUTE input2 REAL\n" +

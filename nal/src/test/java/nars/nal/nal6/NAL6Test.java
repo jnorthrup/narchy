@@ -574,7 +574,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(x($1)==>y($1))", 1.00f, 0.90f)
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "y(a)", 1.00f, 0.81f);
+                .mustGoal(cycles, "y(a)", 1.00f, 0.45f);
     }
     @Test
     void variable_elimination_deduction() {

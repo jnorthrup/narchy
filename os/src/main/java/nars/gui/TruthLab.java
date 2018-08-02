@@ -113,7 +113,7 @@ public class TruthLab extends Gridding {
             push(gl);
             gl.glScalef(0.1f, 2f, 1f);
             gl.glColor4fv(labelColor, 0);
-            Draw.text(gl, label, 0.05f, 0, 0.25f, 0, Draw.TextAlignment.Right);
+            Draw.hersheyText(gl, label, 0.05f, 0, 0.25f, 0, Draw.TextAlignment.Right);
             pop(gl);
 
             for (int i = 0; i < data.length; ) {

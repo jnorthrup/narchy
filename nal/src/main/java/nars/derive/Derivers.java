@@ -27,6 +27,7 @@ public class Derivers {
                     files.add("nal6.layer2.nal");
                     files.add("nal6.to.nal3.nal");
                     //files.add("nal6.misc.nal"); //<- suspect
+                    //files.add("nal6.pedantic.nal"); //<- spam
 
                     files.add("induction.nal");
                     files.add("hol.nal");

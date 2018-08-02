@@ -3,6 +3,7 @@ package nars.agent;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -56,6 +57,13 @@ public class NAgentTest {
     public void testOscillate() {
 
         NAR n = nar();
+        Param.DEBUG = true;
+        n.log();
+        n.onTask(x -> {
+           if (x.isGoal() && !x.isInput())
+               System.out.println(x.proof());
+        });
+
         assertOscillatesAction(n, (a) -> {
         });
     }
@@ -72,7 +80,7 @@ public class NAgentTest {
 
         init.accept(a);
 
-        n.run(1500);
+        n.run(100);
 
         assertTrue(-(-1 - a.avgReward()) > 0.2f, ()->""+a.avgReward());
         assertTrue(a.dex.getMean() > 0.1f, ()->a.dex.toString());
@@ -166,9 +174,15 @@ public class NAgentTest {
 
         @Override
         public float reward() {
-            float r = y == prev ? -1 : 1;
+            float r;
+
+            if (y == prev) {
+                r = -1;
+            } else {
+                r = 1;
+            }
+
             prev = y;
-            y = 0;
 
             return r;
         }

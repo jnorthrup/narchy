@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import spacegraph.audio.Audio;
 import spacegraph.audio.Sound;
 import spacegraph.audio.SoundProducer;
-import spacegraph.audio.granular.Granulize;
+import spacegraph.audio.synth.granular.Granulize;
 import spacegraph.audio.sample.SampleLoader;
 import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.synth.SineWave;

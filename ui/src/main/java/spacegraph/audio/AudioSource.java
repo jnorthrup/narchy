@@ -1,7 +1,6 @@
 package spacegraph.audio;
 
 import com.google.common.base.Joiner;
-import jcog.Util;
 import jcog.math.FloatRange;
 
 import javax.sound.sampled.*;
@@ -81,7 +80,7 @@ public class AudioSource implements WaveSource {
 
             int audioBufferSize = (int) (sampleRate * numChannels * period);
 
-            int audioBufferSizeAllocated = Util.largestPowerOf2NoGreaterThan(audioBufferSize);
+            int audioBufferSizeAllocated = audioBufferSize; //Util.largestPowerOf2NoGreaterThan(audioBufferSize);
             audioBytes = new byte[audioBufferSizeAllocated * bytesPerSample];
             samples = new short[audioBufferSizeAllocated];
 

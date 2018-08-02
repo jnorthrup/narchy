@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
+import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -945,13 +946,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             }
         }
 
-        if (Param.AUTO_DECOMPOSE_CONJ && op()==CONJ && (isBelief() || isGoal())) {
+        if (Param.AUTO_DECOMPOSE_CONJ && op()==CONJ && dt()!=DTERNAL && dt()!=XTERNAL && (isBelief() || isGoal())) {
             if (!(this instanceof ConjClustering.STMClusterTask)) { //HACK
                 Truth reducedTruth = NALTruth.StructuralDeduction.apply(truth(), null, n, n.confMin.floatValue());
                 if (reducedTruth != null) {
                     long s = start();
                     long range = end() - s;
                     List<Task> subTasks = new FasterList(2);
+
                     term().eventsWhile((when, what) -> {
                         assert(!what.equals(term()));
 
@@ -960,7 +962,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                         if (t!=null)
                             subTasks.add(t);
                         return true;
-                    }, s, true, true, false, 0);
+                    }, s, true, false, false, 0);
+
                     if (!subTasks.isEmpty()) {
                         int ns = subTasks.size();
                         float p = priElseZero() / ns;

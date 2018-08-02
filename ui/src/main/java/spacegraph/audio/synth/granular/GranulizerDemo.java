@@ -1,4 +1,4 @@
-package spacegraph.audio.granular;
+package spacegraph.audio.synth.granular;
 
 import jcog.random.XorShift128PlusRandom;
 import spacegraph.audio.Audio;

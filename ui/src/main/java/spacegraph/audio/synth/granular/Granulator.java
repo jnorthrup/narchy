@@ -1,4 +1,4 @@
-package spacegraph.audio.granular;
+package spacegraph.audio.synth.granular;
 
 class Granulator {
 

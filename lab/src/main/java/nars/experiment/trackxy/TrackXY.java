@@ -52,7 +52,7 @@ public class TrackXY extends NAgent {
 
     float sx, sy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.25f, 0, 4f);
+    public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
 
     public final FloatRange targetSpeed = new FloatRange(0.04f, 0, 2f);
 
@@ -63,7 +63,6 @@ public class TrackXY extends NAgent {
 
     static boolean targetNumerics = false, targetCam = true;
 
-    private transient float lastDistance = Float.POSITIVE_INFINITY;
 
 
     protected TrackXY(NAR nar, int W, int H) {
@@ -90,8 +89,8 @@ public class TrackXY extends NAgent {
             this.cam = null;
         }
 
-        //actionPushButtonMutex();
-        actionSwitch();
+        actionPushButtonMutex();
+        //actionSwitch();
         //actionTriState();
 
 
@@ -380,8 +379,6 @@ public class TrackXY extends NAgent {
         float maxDist = (float) Math.sqrt(W * W + H * H);
         float distance = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy));
 
-        this.lastDistance = distance;
-
         return (-2 * distance / maxDist) + 1;
     }
 
@@ -394,8 +391,8 @@ public class TrackXY extends NAgent {
             @Override
             public void accept(TrackXY t) {
                 x += t.targetSpeed.floatValue();
-                t.tx = t.W / 2;
-                t.ty = t.H / 2;
+                t.tx = t.W / 2f;
+                t.ty = t.H / 2f;
             }
         },
 

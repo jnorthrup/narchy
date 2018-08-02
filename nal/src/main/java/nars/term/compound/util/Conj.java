@@ -374,12 +374,15 @@ public class Conj extends ByteAnonMap {
      */
     public static Term conjIntermpolate(Term a, Term b, float aProp, long bOffset, NAR nar) {
 
-        if (bOffset == 0 && a.subterms().equals(b.subterms())) {
-            //special case: equal subs
-            return a.dt(Revision.chooseDT(a, b, aProp, nar));
+        if (bOffset == 0) {
+            if (a.subterms().equals(b.subterms())) {
+                //special case: equal subs
+                return a.dt(Revision.chooseDT(a, b, aProp, nar));
+            }
         }
 
-        return new Conjterpolate(a, b, bOffset, aProp, nar).term();
+        //return new Conjterpolate(a, b, bOffset, aProp, nar).term();
+        return Null; //probably better not to bother
     }
 
     public void clear() {

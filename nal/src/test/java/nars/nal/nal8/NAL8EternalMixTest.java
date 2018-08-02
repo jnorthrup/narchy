@@ -230,7 +230,7 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("reachable(SELF,{t002})! :|:")
-                .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) ==>+0 reachable(SELF,$1)).")
+                .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) =|> reachable(SELF,$1)).")
                 .mustGoal(cycles, "(on({t002},#1) &&+0 at(SELF,#1))", 1.0f, 0.45f, 0)
                 .mustNotOutput(cycles, "(at(SELF,#1) &&+0 on({t002},#1))", GOAL, t -> t == ETERNAL || t == 5);
 

@@ -7,8 +7,8 @@
   (Z ==> X), (--Z ==> Y), neqRCom(X,Y) |- --(polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized, Time:Intersect)
 
 //sim/impl = impl/sim in reverse
-  (X <-> Y),   Y, task(".") |- (X ==> Y), (Punctuation:Question)
-  (X <-> --Y), Y, task(".") |- (X ==> Y), (Punctuation:Question)
+//  (X <-> Y),   Y, task(".") |- (X ==> Y), (Punctuation:Question)
+//  (X <-> --Y), Y, task(".") |- (X ==> Y), (Punctuation:Question)
 
 //distinction - an attempt to elucidate the difference between similar/dissimilar concepts
   (X <-> Y),   Y, task(".") |- ((X && ?1) <-> (Y && ?2)), (Punctuation:Question)
