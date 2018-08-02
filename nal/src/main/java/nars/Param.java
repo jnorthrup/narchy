@@ -52,10 +52,16 @@ public abstract class Param {
     public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
     public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 256;
-    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 32;
+    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
     /** auto decompose conjunction beliefs and goals on input */
     public static final boolean AUTO_DECOMPOSE_CONJ = true;
+
+    /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
+     *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
+     *  the demand on tasklinks
+     */
+    public static final boolean TASKLINK_CONCEPT_TERM = true;
 
 
     //5;

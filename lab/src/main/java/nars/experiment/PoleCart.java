@@ -1,7 +1,7 @@
 package nars.experiment;
 
 import jcog.Util;
-import jcog.learn.ql.HaiQae;
+import jcog.learn.LivePredictor;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -9,8 +9,8 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
-import nars.agent.util.RLBooster;
 import nars.concept.Concept;
+import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -167,14 +167,17 @@ public class PoleCart extends NAgentX {
 
 
 
-//        new BeliefPredict(
-//                java.util.List.of(angX, angY, angVel, xVel),
-//                8,
-//                1,
-//                4,
-//                new LivePredictor.LSTMPredictor(0.1f, 2),
-//                nar
-//        );
+        new BeliefPredict(
+                java.util.List.of(
+                        //x, xVel,
+                        angVel, angX, angY),
+                16,
+                2 * nar.dur(),
+                8,
+                new LivePredictor.LSTMPredictor(0.1f, 1),
+                //new LivePredictor.MLPPredictor(0.1f),
+                nar
+        );
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,

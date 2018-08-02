@@ -47,6 +47,7 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
             ((ScalarBeliefTable) goals()).setPri(pri);
             ((ScalarBeliefTable) goals()).setRes(res);
         }
+        n.on(this);
     }
 
     @Override

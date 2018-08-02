@@ -92,6 +92,7 @@ public interface TaskLink extends Priority, Termed {
             Concept c = n.conceptualizeDynamic(t);
             Task r;
             if (c != null) {
+
                 r = c.table(punc).sample(se[0], se[1], t, n);
 
                 //r = result == null || result.isDeleted() ? null : result;
@@ -174,8 +175,7 @@ public interface TaskLink extends Priority, Termed {
                     //+ tt.dtRange() / 2
                     , n);
             return seed(
-                    t.term()
-                            //.concept()
+                    (Param.TASKLINK_CONCEPT_TERM ? t.term().concept() : t.term())
                             .negIf(
                                     polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
                             ),

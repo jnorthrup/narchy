@@ -1,4 +1,4 @@
-package synthesizer.filter;
+package spacegraph.audio.filter;
 
 import static java.lang.StrictMath.atan;
 

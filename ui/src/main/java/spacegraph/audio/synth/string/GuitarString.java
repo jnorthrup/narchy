@@ -43,9 +43,9 @@ public class GuitarString extends KarplusStrongString {
         int c = buffer.capacity();
         for (int i = 0; i < c; i++) {
             buffer.enqueue(
-                    //(Math.random() - 0.5) * 2
+                    (Math.random() - 0.5) * 2
                     //rng.nextGaussian()/2
-                    Math.tanh(rng.nextGaussian())
+                    //Math.tanh(rng.nextGaussian())
                     * getMaxVolume());
         }
     }
@@ -166,8 +166,9 @@ public class GuitarString extends KarplusStrongString {
     double v0;
     @Override
     public double sample() {
-        double v = lowPass(v0, super.sample(), lowPass);
-        resonate();
+//        double v = lowPass(v0, super.sample(), lowPass);
+//        resonate();
+        double v = super.sample();
         return v0 = v;
     }
 }

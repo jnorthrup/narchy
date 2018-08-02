@@ -1,65 +1,56 @@
 package nars.experiment;
 
-import jcog.exe.Loop;
 import jcog.learn.LivePredictor;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.sensor.Signal;
+import nars.concept.sensor.Scalar;
 import nars.gui.NARui;
 import nars.time.clock.RealTime;
-import nars.truth.Truth;
 import nars.util.signal.BeliefPredict;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.List;
 
-import static nars.Op.BELIEF;
-
 public class PredictDemo {
     public static void main(String[] args) {
         float fps = 50f;
 
-        NAR n = new NARS.DefaultNAR(8, true)
-                .time(new RealTime.CS(true).durFPS(fps))
+        NAR n = new NARS.DefaultNAR(0, true)
+                .time(new RealTime.MS(true).durFPS(fps))
                 .get();
 
 
-        float[] xf = new float[1];
-        @Nullable Signal X = new Signal($.the("x"), () -> xf[0], n);
-        n.on(X);
-
-
-        final FloatFloatToObjectFunction<Truth> truther =
-                (prev, next) -> $.t(next, n.confDefault(BELIEF));
-
-        Loop.of(() -> {
-            long rt = n.time();
+        LongToFloatFunction f = (rt) -> {
             float t = ((float) rt) / n.dur();
-            xf[0] = (float) (0.5f + 0.5f * Math.sin(t / 6f));
+            return (float) (0.5f + 0.5f * Math.sin(t / 6f));
+        };
+        Scalar X1 = new Scalar($.the("x1"), f, n);
+        Scalar X2 = new Scalar($.the("x2"), f, n);
 
 
-            X.update(truther, n);
-
-
-        }).setFPS(15f);
-
-
-        new BeliefPredict(List.of(X), 8, n.dur() * 8, 8,
+        int history = 32;
+        int projections = 64;
+        int sampleDur = n.dur() * 2;
+        new BeliefPredict(List.of(X1), history, sampleDur, projections,
 
                 new LivePredictor.LSTMPredictor(0.15f, 1),
+                n
+        );
+        new BeliefPredict(List.of(X2), history, sampleDur, projections,
+
+                new LivePredictor.MLPPredictor(0.15f),
                 n
         );
 
         SpaceGraph.window(new Gridding(Gridding.VERTICAL,
 
-                NARui.beliefCharts(64, List.of(X), n),
-
-                NARui.beliefCharts(256, List.of(X), n),
-                NARui.beliefCharts(2048, List.of(X), n)
+                NARui.beliefCharts(64, List.of(X1, X2), n)
+//
+//                NARui.beliefCharts(256, List.of(X), n),
+//                NARui.beliefCharts(2048, List.of(X), n)
 
         ), 800, 800);
 

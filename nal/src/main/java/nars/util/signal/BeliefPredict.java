@@ -5,11 +5,14 @@ import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
 import jcog.learn.LivePredictor;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.control.DurService;
 import nars.control.channel.BufferedCauseChannel;
 import nars.task.signal.SignalTask;
+import nars.term.Term;
 import nars.term.Termed;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
@@ -31,6 +34,8 @@ public class BeliefPredict {
     private final BufferedCauseChannel predict;
     private final LivePredictor predictor;
     private final NAR nar;
+
+    /** in cycles (not durs) */
     private final int sampleDur;
     private final Termed[] predicted;
     int projections = 0;
@@ -67,23 +72,22 @@ public class BeliefPredict {
         this.on = DurService.on(nar, this::predict);
     }
 
-    protected synchronized void predict() {
+    protected void predict() {
 
-        long now = nar.time();
+        synchronized (this) {
+            long now = nar.time();
 
-        double[] p = predictor.next(now);
+            double[] p = null;
 
-        now += sampleDur;
-        believe(now, p);
+            for (int i = 0; i < projections + 1; i++) {
 
-        for (int i = 0; i < projections; i++) {
+                p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);
 
-            p = predictor.project(p);
+                believe(now + (i ) * sampleDur, p);
+            }
+            //System.out.println(); System.out.println();
 
-            now += sampleDur;
-            believe(now, p);
         }
-
 
 //        currentPredictions.forEach(ITask::delete); //disarm last cycles predictions
 //        currentPredictions.clear();
@@ -98,6 +102,8 @@ public class BeliefPredict {
 
         float evi = c2w(conf.floatValue() * nar.beliefConfDefault.floatValue());
 
+        long eShared = nar.evidence()[0];
+
         for (int i = 0; i < predFreq.length; i++) {
 
             double f0 = predFreq[i];
@@ -108,13 +114,13 @@ public class BeliefPredict {
 
             PreciseTruth t = Truth.theDithered(f, evi, nar);
             if (t == null)
-                continue; 
+                continue;
 
-            Task p = new SignalTask(predicted[i].term(), BELIEF,
-                    t,
-                    when - sampleDur/2, when + sampleDur/2,
-                    nar.evidence()[0]
-            ).priSet(nar.priDefault(BELIEF));
+
+            long start = Tense.dither(when , nar);
+            long end = Tense.dither(when+sampleDur, nar);
+            //System.out.println("-> " + start + " " + end);
+            Task p = new PredictionTask(predicted[i].term(), i, t, start, end, eShared).pri(nar);
 
             predict.input(
                     p
@@ -124,9 +130,10 @@ public class BeliefPredict {
 
     LongToFloatFunction freqSupplier(Termed c, NAR nar) {
         return (when) -> {
-            long start = Math.round(when - sampleDur/2f);
-            long end = Math.round(when + sampleDur/2f);
-            @Nullable Truth t = nar.truth(c, BELIEF, start, end);
+            long start = Math.round(when);
+            long end = Math.round(when + sampleDur);
+            //System.out.println("<- " + start + " " + end);
+            @Nullable Truth t = nar.truth(c, BELIEF, start, end); //TODO filter predictions (PredictionTask's) from being used in this calculation
             if (t == null)
                 return
                         0.5f;
@@ -135,4 +142,11 @@ public class BeliefPredict {
                 return t.freq();
         };
     }
+
+    private static class PredictionTask extends SignalTask {
+        public PredictionTask(Term term, int i, PreciseTruth t, long start, long end, long eShared) {
+            super(term, Op.BELIEF, t, start, end, eShared);
+        }
+    }
+
 }

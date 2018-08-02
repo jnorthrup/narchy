@@ -1,7 +1,5 @@
 package spacegraph.audio.synth.string;
 
-import synthesizer.filter.Distortion;
-import synthesizer.filter.EchoFilter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -184,7 +182,7 @@ public class GuitarHero extends JPanel implements KeyListener {
             strings[i + keyboardSize] = new SquareVolumeWave(indexToCustom(i, 2, asymmetric_5limit));
         }
 
-        EchoFilter echo = new EchoFilter(0.75, 10, 44100);
+        //EchoFilter echo = new spacegraph.audio.filter.EchoFilter(0.75, 10, 44100);
 
         while (true) {
 
@@ -204,8 +202,8 @@ public class GuitarHero extends JPanel implements KeyListener {
             /* play the sample on standard audio */
 
 
-            sample = Distortion.distortion(sample, 32, 1);
-            sample = echo.apply(sample);
+//            sample = Distortion.distortion(sample, 32, 1);
+//            sample = echo.apply(sample);
 
 
             StdAudio.play(sample);

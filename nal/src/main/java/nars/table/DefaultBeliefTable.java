@@ -15,6 +15,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static nars.time.Tense.ETERNAL;
+
 
 /**
  * Stores beliefs ranked in a sorted ArrayList, with strongest beliefs at lowest indexes (first iterated)
@@ -137,8 +139,13 @@ public class DefaultBeliefTable implements BeliefTable {
     @Override
     public Task sample(long start, long end, Term template, NAR nar) {
         Task ete = eternal.sample(start, end, template, nar);
-        Task tmp = temporal.sample(start, end, template, nar); 
-        if (ete == null) return tmp;
+        if (ete!=null && start==ETERNAL)
+            return ete; //eternal sought
+
+        Task tmp = temporal.sample(start, end, template, nar);
+        if (ete == null || tmp!=null && tmp.contains(start,end))
+            return tmp; //interval found
+
         if (tmp == null) return ete;
         float e = TruthIntegration.eviInteg(ete,start,end,1);
         float t = TruthIntegration.eviInteg(tmp,start,end,1);
