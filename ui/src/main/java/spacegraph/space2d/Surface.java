@@ -185,7 +185,7 @@ abstract public class Surface implements SurfaceBase {
         render(gl, new SurfaceRender(1, 1, dtMS).setScale(pw, ph, pw/2, ph/2));
     }
 
-    public /*final*/ void render(GL2 gl, SurfaceRender r) {
+    public final void render(GL2 gl, SurfaceRender r) {
 
         if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
             paint(gl, r);

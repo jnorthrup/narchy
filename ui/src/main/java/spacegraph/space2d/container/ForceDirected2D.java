@@ -1,5 +1,6 @@
 package spacegraph.space2d.container;
 
+import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.FloatRange;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
@@ -9,7 +10,6 @@ import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-import java.util.List;
 import java.util.Random;
 
 public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
@@ -116,15 +116,19 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         float fromRad = b.radius();
 
-        List<Graph2D.EdgeVis<X>> read = from.edgeOut.read();
+        ConcurrentFastIteratingHashMap<X, Graph2D.EdgeVis<X>> read = from.edgeOut.read();
         //int neighbors = read.size();
 
         v2 total = new v2();
-        read.forEach(edge -> {
+        read.forEachValue(edge -> {
             if (edge == null)
                 return; //wtf
 
-            MovingRectFloat2D to = edge.to.mover;
+            Graph2D.NodeVis<X> who = edge.to;
+            if (who == null)
+                return;
+
+            MovingRectFloat2D to = who.mover;
             if (to == null)
                 return;
 

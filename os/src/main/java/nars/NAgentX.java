@@ -38,6 +38,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.tab.TabPane;
 
 import java.awt.*;
@@ -170,11 +171,10 @@ abstract public class NAgentX extends NAgent {
                 //Gridding aa = new Gridding(
                 TabPane aa = new TabWall().addToggles(Map.of(
                     a.toString(), () -> NARui.agent(a),
-                    "nar", () -> NARui.top(n),
                     "emotion", () -> new EmotionPlot(128, a)
                 ) );
 
-                window(aa, 1200, 900);
+                window(new Gridding(aa, NARui.top(n)), 1200, 900);
 
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);

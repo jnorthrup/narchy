@@ -2,11 +2,10 @@ package spacegraph.space2d.widget.tab;
 
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Clipped;
-import spacegraph.space2d.container.MutableContainer;
-import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.*;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.Label;
@@ -16,6 +15,8 @@ import spacegraph.space2d.widget.windo.Windo;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 12/2/16.
@@ -62,47 +63,63 @@ public class TabPane extends Splitting {
         }).forEach(tabs::add);
     }
 
-    public ToggleButton addToggle(String label, Supplier<Surface> creator) {
+    public Surface addToggle(String label, Supplier<Surface> creator) {
         return addToggle(CheckBox::new, label, creator);
     }
 
-    public ToggleButton addToggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
+    public Surface addToggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
         final Surface[] created = {null};
-        ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
-            synchronized(TabPane.this) {
+        ObjectBooleanProcedure<ToggleButton> toggleInside = (cb, onOrOff) -> {
+            toggle(creator, onOrOff, created, true);
+        };
 
-                if (a) {
-                    Surface cx;
-                    try {
-                        cx = creator.get();
-                    } catch (Throwable t) {
-                        String msg = t.getMessage();
-                        if (msg == null)
-                            msg = t.toString();
-                        cx = new Label(msg);
-                    }
+        Runnable  toggleOutside = () -> {
+            toggle(creator, true, created, false);
+        };
+
+        ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
+        PushButton cc = PushButton.awesome("external-link").click(toggleOutside);
+
+        return new Bordering(bb).east(new Scale(cc,0.75f));
+    }
+
+    void toggle(Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
+        synchronized(TabPane.this) {
+
+            if (onOrOff) {
+                Surface cx;
+                try {
+                    cx = creator.get();
+                } catch (Throwable t) {
+                    String msg = t.getMessage();
+                    if (msg == null)
+                        msg = t.toString();
+                    cx = new Label(msg);
+                }
 
 
+                if (inside) {
                     content.add(created[0] = wrapper.apply(cx));
                     split();
-
                 } else {
+                    window(created[0] = wrapper.apply(cx), 800, 800);
+                }
 
-                    if (created[0] != null) {
-                        content.remove(created[0]);
-                        created[0] = null;
-                    }
-                    if (content.isEmpty()) {
-                        unsplit();
-                    }
 
+
+            } else {
+
+                if (created[0] != null) {
+                    content.remove(created[0]);
+                    created[0] = null;
+                }
+                if (content.isEmpty()) {
+                    unsplit();
                 }
 
             }
-        };
 
-        ToggleButton bb = buttonBuilder.apply(label);
-        return bb.on(toggle);
+        }
     }
 
     public TabPane setContent(MutableContainer next) {

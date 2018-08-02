@@ -6,16 +6,15 @@ import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Narsese;
 import nars.agent.NAgent;
-import nars.concept.Concept;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.gui.graph.run.ConceptGraph2D;
-import nars.sensor.Bitmap2DSensor;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
-import nars.video.CameraSensorView;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.EdgeDirected3D;
+import spacegraph.space2d.container.MutableContainer;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueModel;
 import spacegraph.space2d.container.grid.ScrollGrid;
@@ -42,6 +41,7 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.truth.TruthFunctions.w2cSafe;
+import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -114,7 +114,7 @@ public class NARui {
                                                         "mem", () -> ScrollGrid.list(
                                                                 (x, y, m) -> new PushButton(m.toString()).click((mm) ->
 
-                                                                        SpaceGraph.window(
+                                                                        window(
                                                                                 ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(m).collect(toList())), 800, 800, true)
                                                                 ),
                                                                 n.memory.roots().collect(toList())
@@ -145,20 +145,23 @@ public class NARui {
     }
 
     public static void conceptWindow(Termed t, NAR n) {
-        SpaceGraph.window(new ConceptSurface(t, n), 500, 500, true);
+        window(new ConceptSurface(t, n), 500, 500, true);
     }
 
     public static ObjectSurface<NAgent> agent(NAgent a) {
-        return new ObjectSurface<>(a, 4)
-            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) -> new AspectAlign(
-                    new CameraSensorView(b, a.nar()).withControls(),
-                    AspectAlign.Align.Center, b.width, b.height))
-            .on(x -> x instanceof Concept,
-                    (Concept x) -> new MetaFrame(new BeliefTableChart(x.term(), a.nar())))
+        return new ObjectSurface<>(a, 4);
+//            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) ->
+//                new PushButton(b.id.toString()).click(()-> {
+//                    window(new AspectAlign(
+//                        new CameraSensorView(b, a.nar()).withControls(),
+//                        AspectAlign.Align.Center, b.width, b.height), 500, 500);
+//                }))
+//            .on(x -> x instanceof Concept,
+//                    (Concept x) -> new MetaFrame(new BeliefTableChart(x.term(), a.nar())))
 //            .on(x -> x instanceof LinkedHashMap, (LinkedHashMap x)->{
 //                return new AutoSurface<>(x.keySet());
 //            })
-                ;
+
             //.on(Loop.class, LoopPanel::new),
 
     }
@@ -166,7 +169,7 @@ public class NARui {
     @Deprecated public static void agentOld(NAgent a) {
         NAR nar = a.nar();
         //nar.runLater(() -> {
-            SpaceGraph.window(
+            window(
                     grid(
                             new ObjectSurface(a),
 

@@ -64,11 +64,11 @@ public class FZero extends NAgentX {
                 ;
 
 
-        initToggleLeftRight();
-        initToggleFwdStop();
+        //initToggleLeftRight();
+        //initToggleFwdStop();
 
-        //initUnipolarLinear(4f);
-        //initBipolarRotateDirect(true, 0.5f);
+        initUnipolarLinear(4f);
+        initBipolarRotateDirect(true, 0.5f);
         //initBipolarRotateDirect(false, 0.9f);
 
         //initBipolarRotateRelative(fair, rotFactor);
@@ -81,9 +81,9 @@ public class FZero extends NAgentX {
         Signal dAngVel = senseNumberDifference($.func("vel", $.func("ang", id)), () -> (float) fz.playerAngle);
         AbstractSensor ang = senseNumber(angle -> $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                6,
+                8,
                 DigitizedScalar.FuzzyNeedle
-        ).resolution(0.05f);
+        ).resolution(0.1f);
 
 
 

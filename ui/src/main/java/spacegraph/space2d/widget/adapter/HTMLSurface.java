@@ -13,8 +13,12 @@ import java.io.IOException;
 public class HTMLSurface extends AWTSurface {
 
     public static void main(String[] args) {
-        SpaceGraph.wall(800, 800).put(
-            new Gridding(new HTMLSurface("http://java.com", 800, 800)), 1, 1
+        //SpaceGraph.wall(800, 800).put(
+        SpaceGraph.window(
+            new Gridding(new HTMLSurface(
+                    //"http://java.com"
+                    "http://w3c.org"
+                    , 800, 800)), 800, 800
         );
     }
 

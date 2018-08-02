@@ -18,7 +18,7 @@ import spacegraph.video.Tex;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
@@ -38,7 +38,7 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
     public Sketch2DBitmap(int w, int h) {
         this.pw = w;
         this.ph = h;
-        this.buf = new BufferedImage(w, h, TYPE_INT_ARGB);
+        this.buf = new BufferedImage(w, h, TYPE_INT_RGB);
         this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
     }
 

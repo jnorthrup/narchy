@@ -19,6 +19,7 @@ import java.awt.image.DataBufferInt;
 import java.util.function.Supplier;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 
 /**
@@ -188,7 +189,7 @@ public class BitmapMatrixView extends Surface {
         if (buf == null) {
             if (w == 0 || h == 0) return;
 
-            buf = new BufferedImage(w, h, TYPE_INT_ARGB);
+            buf = new BufferedImage(w, h, alpha() ? TYPE_INT_ARGB : TYPE_INT_RGB);
             this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
         }
 
@@ -205,6 +206,10 @@ public class BitmapMatrixView extends Surface {
         }
 
         bmp.update(buf);
+    }
+
+    public boolean alpha() {
+        return false;
     }
 
     @FunctionalInterface  public interface ViewFunction1D {

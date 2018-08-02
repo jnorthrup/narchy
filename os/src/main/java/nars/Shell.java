@@ -14,7 +14,6 @@ import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.Texts;
-import jdk.jshell.JShell;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
@@ -195,11 +194,11 @@ public class Shell {
             DefaultVirtualTerminal term = new DefaultVirtualTerminal(new TerminalSize(80, 40));
             ConsoleTerminal termView;
 
-
-            JShell js = JShell.builder()
-                    .in(termOut)
-                    
-                    .build();
+//
+//            JShell js = JShell.builder()
+//                    .in(termOut)
+//
+//                    .build();
 
 
             SpaceGraph.window(termView = new ConsoleTerminal(term) {
@@ -207,7 +206,7 @@ public class Shell {
                 public boolean tryKey(KeyEvent e, boolean pressed) {
 
                         
-                        js.eval(String.valueOf(e.getKeyChar()));
+//                        js.eval(String.valueOf(e.getKeyChar()));
 
 
 
@@ -267,7 +266,7 @@ public class Shell {
                     @Override
                     public void doLayout(int dtMS) {
 
-                        text.doLayout(dtMS);
+//                        text.doLayout(dtMS);
 
                         float cc, rr;
                         float boundsAspect = text.h() / text.w();

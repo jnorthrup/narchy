@@ -10,13 +10,10 @@ import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.util.PMVMatrix;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jogamp.graph.font.typecast.TypecastFontConstructor;
-import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.widget.console.StringBitmapSurface;
 import spacegraph.video.Draw;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
 
 @FunctionalInterface
@@ -37,28 +34,29 @@ public interface LabelRenderer extends BiConsumer<Label, GL2> {
         }
     };
 
-    /** TODO not ready */
-    LabelRenderer AWTBitmap = new LabelRenderer() {
-        //HACK
-        final WeakHashMap<Label,StringBitmapSurface> surfaces = new WeakHashMap<>();
-        @Override
-        public void accept(Label label, GL2 gl) {
-            StringBitmapSurface s = surfaces.computeIfAbsent(label, (x) -> new StringBitmapSurface() {
-                @Override
-                public void render(GL2 gl, SurfaceRender r) {
-                    pos(x.bounds);
-                    text(x.text);
-                    paint(gl, r);
-                }
-            });
-            s.render(gl, new SurfaceRender(1000, 1000, 1) {
-                @Override
-                public boolean visible(RectFloat2D r) {
-                    return true;
-                }
-            });
-        }
-    };
+
+//    /** TODO not ready */
+//    LabelRenderer AWTBitmap = new LabelRenderer() {
+//        //HACK
+//        final WeakHashMap<Label,StringBitmapSurface> surfaces = new WeakHashMap<>();
+//        @Override
+//        public void accept(Label label, GL2 gl) {
+//            StringBitmapSurface s = surfaces.computeIfAbsent(label, (x) -> new StringBitmapSurface() {
+//                @Override
+//                public void render(GL2 gl, SurfaceRender r) {
+//                    pos(x.bounds);
+//                    text(x.text);
+//                    paint(gl, r);
+//                }
+//            });
+//            s.render(gl, new SurfaceRender(1000, 1000, 1) {
+//                @Override
+//                public boolean visible(RectFloat2D r) {
+//                    return true;
+//                }
+//            });
+//        }
+//    };
 
     /** TODO not ready */
     LabelRenderer NewtGraph = new LabelRenderer() {

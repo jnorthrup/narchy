@@ -23,21 +23,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
 
-/** https://www.khronos.org/opengl/wiki/Image_Format */
+/**
+ * https://www.khronos.org/opengl/wiki/Image_Format
+ */
 public class Tex {
 
     public com.jogamp.opengl.util.texture.Texture texture;
 
     private boolean mipmap;
 
-    
-
 
     private final AtomicBoolean textureUpdated = new AtomicBoolean(false);
     public GLProfile profile;
     private TextureData nextData;
 
-    /** weird rotation correction.. dunno why yet */
+    /**
+     * weird rotation correction.. dunno why yet
+     */
     boolean inverted = false;
 
     private Object src;
@@ -53,7 +55,6 @@ public class Tex {
     void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
 
 
-
         if (profile == null) {
             profile = gl.getGLProfile();
         }
@@ -63,7 +64,7 @@ public class Tex {
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, nextData);
             } else if (nextData != null) {
-                
+
                 texture.updateImage(gl, nextData);
             }
 
@@ -76,22 +77,23 @@ public class Tex {
 
     }
 
-    public void update(BufferedImage iimage) {
+    public boolean update(BufferedImage iimage) {
         if (iimage == null || profile == null)
-            return;
+            return false;
 
         if (nextData == null || this.src != iimage) {
             DataBuffer b = iimage.getRaster().getDataBuffer();
             int W = iimage.getWidth();
             int H = iimage.getHeight();
             if (b instanceof DataBufferInt)
-                update(((DataBufferInt) b).getData(), W, H);
+                update(((DataBufferInt) b).getData(), W, H, iimage.getColorModel().hasAlpha());
             else if (b instanceof DataBufferByte) {
                 update(((DataBufferByte) b).getData(), W, H);
             }
         }
 
         textureUpdated.set(true);
+        return true;
     }
 
     private void update(byte[] iimage, int width, int height) {
@@ -112,11 +114,15 @@ public class Tex {
     }
 
     void update(int[] iimage, int width, int height) {
+        update(iimage, width, height, true);
+    }
+
+    void update(int[] iimage, int width, int height, boolean alpha) {
 
         this.src = iimage;
 
         IntBuffer buffer = IntBuffer.wrap(iimage);
-        nextData = new TextureData(profile, GL_RGB,
+        nextData = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
                 width, height,
                 0 /* border */,
                 GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
@@ -135,7 +141,9 @@ public class Tex {
         return new AspectAlign(view(), aspect);
     }
 
-    /** less efficient than: b = update(x, b) */
+    /**
+     * less efficient than: b = update(x, b)
+     */
     public BufferedImage update(GrayU8 x) {
         return update(x, null);
     }
@@ -143,26 +151,15 @@ public class Tex {
     public BufferedImage update(GrayU8 x, BufferedImage b) {
         this.src = x;
 
-        if (b == null || b.getWidth()!=x.width || b.getHeight()!=x.height)
+        if (b == null || b.getWidth() != x.width || b.getHeight() != x.height)
             b = new BufferedImage(x.width, x.height, BufferedImage.TYPE_INT_ARGB);
 
-        
+
         update(
-            ConvertBufferedImage.convertTo(x, b)
+                ConvertBufferedImage.convertTo(x, b)
         );
 
         return b;
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -172,16 +169,14 @@ public class Tex {
         private final Tex tex;
 
         TexSurface(Tex tex) {
-           this.tex = tex;
+            this.tex = tex;
         }
+
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             try {
                 tex.paint(gl, bounds);
             } catch (NullPointerException e) {
-
-
-
 
 
             }

@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.button;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.video.ImageTexture;
 
@@ -23,7 +24,11 @@ public class PushButton extends AbstractButton {
     }
 
     public PushButton(String s) {
-        this(new Label(s));
+
+        this(
+            //new Label(s)
+                new BitmapLabel(s)
+        );
     }
 
     public PushButton(Surface content) {
@@ -66,7 +71,9 @@ public class PushButton extends AbstractButton {
         return this;
     }
     public PushButton label(String s) {
-        content(new Label(s));
+        content(
+            new Label(s)
+        );
         return this;
     }
 

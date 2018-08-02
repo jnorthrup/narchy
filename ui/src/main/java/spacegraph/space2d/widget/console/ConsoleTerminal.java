@@ -24,7 +24,7 @@ import java.util.TreeSet;
 public class ConsoleTerminal extends Widget {
 
     public final VirtualTerminal term;
-    public final MyBitmapConsoleSurface text = new MyBitmapConsoleSurface();
+    public final MyBitmapTextGrid text = new MyBitmapTextGrid();
     private VirtualTerminalListener listener;
 
     public ConsoleTerminal(int cols, int rows) {
@@ -279,16 +279,16 @@ public class ConsoleTerminal extends Widget {
     }
 
 
-    public class MyBitmapConsoleSurface extends BitmapConsoleSurface {
+    public class MyBitmapTextGrid extends BitmapTextGrid {
         @Override
         public Surface tryTouch(Finger finger) {
             return null;
         }
-
-        @Override
-        public boolean tangible() {
-            return false;
-        }
+//
+//        @Override
+//        public boolean tangible() {
+//            return false;
+//        }
 
         @Override
         public Appendable append(CharSequence c) {
@@ -311,8 +311,7 @@ public class ConsoleTerminal extends Widget {
         }
 
         @Override
-        public void doLayout(int dtMS) {
-            super.doLayout(dtMS);
+        protected void doLayout(int dtMS) {
             TerminalSize ts = term.getTerminalSize();
             if (ts.getColumns()!=cols || ts.getRows()!=rows) {
                 term.setTerminalSize(new TerminalSize(cols, rows));
@@ -322,6 +321,8 @@ public class ConsoleTerminal extends Widget {
 
         @Override
         protected boolean updateBackBuffer() {
+
+
             final TerminalPosition cursorPosition = term.getCursorBufferPosition();
 
 

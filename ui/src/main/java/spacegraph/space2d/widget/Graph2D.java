@@ -6,6 +6,7 @@ import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.data.map.CellMap;
+import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.pool.DequePool;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +49,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         @Override
         public EdgeVis<X> create() {
             return new EdgeVis<>();
+        }
+
+        @Override
+        public void take(EdgeVis<X> i) {
+            i.clear();
+            super.take(i);
         }
     };
 
@@ -205,9 +212,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     private void updateEdges() {
 
         cellMap.forEachValue((NodeVis<X> nv) -> {
-            List<EdgeVis<X>> edgesNext = nv.edgeOut.write();
+            ConcurrentFastIteratingHashMap<X, EdgeVis<X>> edgesNext = nv.edgeOut.write();
             if (!edgesNext.isEmpty()) {
-                edgesNext.forEach(edgePool::take);
+                edgesNext.forEachValue(edgePool::take);
                 edgesNext.clear();
             }
         });
@@ -215,7 +222,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         //cellMap.forEachValue((NodeVis<X> nv) -> layers.forEach(layer -> layer.node(nv, builder)));
         layers.forEach(layer -> cellMap.forEachValue((NodeVis<X> nv) -> layer.node(nv, builder)));
 
-        cellMap.forEachValue((NodeVis<X> nv) -> nv.edgeOut.commitAndGet());
+        cellMap.forEachValue(NodeVis::commitEdges);
     }
 
     /** hard limit on # nodes */
@@ -248,14 +255,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 //                return null;
 
             @Nullable NodeVis<X> t = graph.cellMap.getValue(to);
-            if (t == null/* || !t.visible()*/)
+            if (t == null || !t.visible())
                 return null;
 
             EdgeVis<X> result = graph.edgePool.get();
             result.to = t;
-            from.edgeOut.write().add(result);
-            return result;
+            return from.edgeAdd(result);
         }
+
     }
 
     private final GraphBuilder builder = new GraphBuilder(this);
@@ -337,14 +344,15 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     public static class NodeVis<X> extends Windo {
 
         public transient X id;
-        public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(FasterList::new);
+        public final Flip<ConcurrentFastIteratingHashMap<X,EdgeVis<X>>> edgeOut =
+                new Flip<>(()->new ConcurrentFastIteratingHashMap<>(new EdgeVis[0]));
 
         /** optional priority component */
         public float pri;
 
 
         /** current layout movement instance */
-        public transient MovingRectFloat2D mover = null;
+        public volatile transient MovingRectFloat2D mover = null;
 
         private float r, g, b;
 
@@ -354,7 +362,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             pri = 0.5f;
             edgeOut.write().clear();
             edgeOut.commit();
-            edgeOut.write().clear();
+//            edgeOut.write().clear();
             r = g = b = 0.5f;
         }
 
@@ -368,7 +376,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         void paintEdges(GL2 gl) {
-            edgeOut.read().forEach(x -> x.draw(this, gl));
+            edgeOut.read().forEachValue(x -> x.draw(this, gl));
         }
 
         @Override
@@ -388,16 +396,48 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             
             return false;
         }
+
+        public void commitEdges() {
+            edgeOut.commitAndGet();
+        }
+
+        private EdgeVis<X> edgeAdd(EdgeVis<X> x) {
+            EdgeVis<X> y = edgeOut.write().putIfAbsent(x.to.id, x);
+            if (y!=x && y!=null) {
+                y.merge(x);
+                return y;
+            } else {
+                return x;
+            }
+        }
+
     }
 
     public static class EdgeVis<X> {
         volatile public NodeVis<X> to;
-        volatile float r = 0.5f;
-        volatile float g = 0.5f;
-        volatile float b = 0.5f;
-        volatile float a = 0.75f;
-        volatile public float weight = 1f;
-        volatile public EdgeVisRenderer renderer = EdgeVisRenderer.Triangle;
+        volatile float r, g, b, a;
+        volatile public float weight;
+        volatile public EdgeVisRenderer renderer;
+
+        public EdgeVis() {
+            clear();
+        }
+
+        public void clear() {
+            r = g = b = 0.25f;
+            a = 0.75f;
+            to = null;
+            weight = 1f;
+            renderer = EdgeVisRenderer.Triangle;
+        }
+
+        protected void merge(EdgeVis<X> x) {
+            weight += x.weight;
+            r = Util.or(r, x.r);
+            g = Util.or(g, x.g);
+            b = Util.or(b, x.b);
+            a = Util.or(a, x.a);
+        }
 
         enum EdgeVisRenderer {
             Line {
@@ -413,8 +453,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             Triangle {
                 @Override
                 public void render(EdgeVis e, NodeVis from, GL2 gl) {
-                    float fx = from.cx(), fy = from.cy();
                     NodeVis to = e.to;
+                    if (to == null)
+                        return;
+
+                    float fx = from.cx(), fy = from.cy();
+
                     float tx = to.cx(), ty = to.cy();
 
                     float scale = Math.min(from.w(), from.h());

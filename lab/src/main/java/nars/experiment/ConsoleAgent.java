@@ -281,10 +281,10 @@ public abstract class ConsoleAgent extends NAgentX {
             }
         }
 
-        @Override
-        protected void doLayout(int dtMS) {
-
-        }
+//        @Override
+//        protected void doLayout(int dtMS) {
+//
+//        }
 
         @Override
         public boolean tryKey(KeyEvent e, boolean pressed) {
