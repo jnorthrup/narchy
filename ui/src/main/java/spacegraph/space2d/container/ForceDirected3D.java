@@ -20,8 +20,8 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
     private final int iterations;
     private boolean center = true;
 
-    private final FloatRange repel = new FloatRange(14f, 0, 32f);
-    public final FloatRange attraction = new FloatRange(0.05f, 0, 3f);
+    public final FloatRange expand = new FloatRange(14f, 0, 32f);
+    public final FloatRange condense = new FloatRange(0.05f, 0, 3f);
 
 
 
@@ -115,7 +115,7 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
     private void batch(List<Collidable> l) {
 
-        float speed = repel.floatValue();
+        float speed = expand.floatValue();
         for (int i = 0, lSize = l.size(); i < lSize; i++) {
             Collidable x = l.get(i);
             for (int j = i + 1; j < lSize; j++) {

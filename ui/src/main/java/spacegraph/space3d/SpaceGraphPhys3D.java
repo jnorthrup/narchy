@@ -7,11 +7,11 @@
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
  * the use of this software.
- * 
- * Permission is granted to anyone to use this software for any purpose, 
+ *
+ * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software
  *    in a product, an acknowledgment in the product documentation would be
@@ -55,18 +55,13 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
     private final boolean simulating = true;
 
-    /** 0 for variable timing */
+    /**
+     * 0 for variable timing
+     */
     private final int maxSubsteps =
             0;
-            
 
 
-    
-
-
-    
-
-    
     public final Dynamics3D<X> dyn;
 
     public SpaceGraphPhys3D<X> camPos(float x, float y, float z) {
@@ -87,13 +82,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         debug |= DebugDrawModes.NO_HELP_TEXT;
 
 
-        
-
         Intersecter dispatcher = new DefaultIntersecter(new DefaultCollisionConfiguration());
 
-        
-        
-        
 
         Broadphase broadphase =
 
@@ -101,7 +91,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
         dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
-        onUpdate((dt)->{
+        onUpdate((dt) -> {
             update(dtMS);
             return true;
         });
@@ -123,7 +113,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     @Override
     protected void initInput() {
 
-        
+
         addMouseListenerPost(new FPSLook(this));
         addMouseListenerPost(new OrbMouse(this));
 
@@ -131,24 +121,19 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     }
 
 
-    @Override protected void initLighting(GL2 gl) {
+    @Override
+    protected void initLighting(GL2 gl) {
         gl.glLightModelf(GL_LIGHT_MODEL_AMBIENT, 0.6f);
 
         final float a = 0.7f;
         float[] light_ambient = {a, a, a, 1.0f};
         float[] light_diffuse = {0.5f, 0.5f, 0.5f, 0.5f};
-        
+
         float[] light_specular = {0.5f, 0.5f, 0.5f, 0.5f};
         /* light_position is NOT default value */
 
         float distance = 25f;
         float[] light_position0 = {0f, 0f, distance, 0.0f};
-
-        
-
-
-
-
 
 
         gl.glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient, 0);
@@ -159,18 +144,10 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         gl.glEnable(GL_LIGHT0);
 
 
-
-
-
-
-
-
-
-
     }
 
     private final Queue<Spatial> toRemove =
-            
+
             new ConcurrentLinkedQueue<>();
 
     private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
@@ -180,21 +157,20 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         toRemove.forEach(x -> x.delete(dyn));
         toRemove.clear();
 
-        inputs.forEach((anIi)->{
+        inputs.forEach((anIi) -> {
             anIi.update(this, dtMS);
         });
 
 
         if (simulating) {
-            
+
             dyn.update(
-                    
-                    Math.max(dtMS/1000f, 1000000f / renderFPS)
+
+                    Math.max(dtMS / 1000f, 1000000f / renderFPS)
                             / 1000000.f, maxSubsteps
-                    
+
             );
         }
-
 
 
     }
@@ -247,140 +223,12 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public int getDebug() {
         return debug;
     }
 
     public void setDebug(int mode) {
         debug = mode;
-
 
 
     }
@@ -398,121 +246,6 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
             input.forEach(each);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -536,78 +269,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         public static boolean gDisableDeactivation;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

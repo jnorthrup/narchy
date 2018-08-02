@@ -30,11 +30,9 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
     @Override
     public void stop() {
         synchronized (this) {
+            clear();
+
             super.stop();
-            
-            active.forEach(space::remove);
-            active.clear();
-            
         }
     }
 
@@ -46,74 +44,62 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
     @Override
     public void update(SpaceGraphPhys3D<X> s, long dtMS) {
 
-        List<? extends Spatial<X>> prev = this.active;
+        synchronized (this) {
+            List<? extends Spatial<X>> prev = this.active;
 
-        prev.forEach(Active::deactivate);
+            prev.forEach(Active::deactivate);
 
-        List next = get();
+            List next = get();
 
-        
 
-        this.active = next;
+            this.active = next;
 
-        
-        prev.forEach(x -> {
-            if (!x.preactive)
-                x.order = -1;
-        });
 
-        active.forEach(x -> x.update(s.dyn));
+            prev.forEach(x -> {
+                if (!x.preactive)
+                    x.order = -1;
+            });
 
-        super.update(s, dtMS);
+            active.forEach(x -> x.update(s.dyn));
+
+            super.update(s, dtMS);
+        }
+
+
+
     }
 
     abstract protected List<? extends Spatial<X>> get();
 
 
-
-    /** displays in a window with default force-directed options */
-    @Deprecated public SpaceGraphPhys3D show(int w, int h, boolean flat) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
+    /**
+     * displays in a window with default force-directed options
+     */
+    @Deprecated
+    public SpaceGraphPhys3D show(int w, int h, boolean flat) {
 
 
         AbstractSpace ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
-        SpaceGraphPhys3D<X> s = new SpaceGraphPhys3D<>(
-                ss
-        );
+        SpaceGraphPhys3D<X> s = new SpaceGraphPhys3D<>(ss);
 
         EdgeDirected3D fd = new EdgeDirected3D();
         s.dyn.addBroadConstraint(fd);
-        fd.attraction.set(fd.attraction.get() * 8);
+        fd.condense.set(fd.condense.get() * 8);
 
 
-        
-
-        
-
-                
         s.camPos(0, 0, 90).show(w, h, false);
 
         return s;
 
     }
+
+    public void clear() {
+        synchronized (this) {
+            active.forEach(space::remove);
+            active.clear();
+        }
+    }
+
 }
 
 

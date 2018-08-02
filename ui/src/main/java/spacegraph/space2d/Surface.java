@@ -112,6 +112,11 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public SurfaceRoot root() {
+        return rootParent();
+    }
+
+    /** default root() impl */
+    public final SurfaceRoot rootParent() {
         SurfaceBase parent = this.parent;
         return parent == null ? null : parent.root();
     }

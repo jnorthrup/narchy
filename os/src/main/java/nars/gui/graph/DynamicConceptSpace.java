@@ -40,7 +40,7 @@ import static nars.gui.graph.DynamicConceptSpace.ColorNode.Hash;
 public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     public final NAR nar;
-    final Bagregate<Activate> concepts;
+    protected final Bagregate<Activate> concepts;
 
     private final Flip<List<ConceptWidget>> next = new Flip(FasterList::new);
     final float bagUpdateRate = 0.25f;

@@ -60,8 +60,8 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         super();
 
         onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
-        onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed))); 
-        onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed))); 
+        onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)));
+        onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
 
     }
 
@@ -101,51 +101,33 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glEnable(GL_STENCIL);
 
 
-        
-        
         gl.glEnable(GL_LINE_SMOOTH);
-        
+
         gl.glEnable(GL2.GL_MULTISAMPLE);
-
-
-
-
-
 
 
         gl.glHint(GL_POLYGON_SMOOTH_HINT,
                 GL_NICEST);
-        
+
         gl.glHint(GL_LINE_SMOOTH_HINT,
                 GL_NICEST);
-        
+
         gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT,
                 GL_NICEST);
-        
 
-        
+
         gl.glColorMaterial(GL_FRONT_AND_BACK,
                 GL_AMBIENT_AND_DIFFUSE
-                
+
         );
         gl.glEnable(GL_COLOR_MATERIAL);
         gl.glEnable(GL_NORMALIZE);
 
-        
-        
 
         initDepth(gl);
 
 
         initBlend(gl);
-
-
-        
-
-
-
-        
-
 
 
         initLighting(gl);
@@ -168,7 +150,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glDepthFunc(GL_LEQUAL);
 
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
-        gl.glClearDepth(1f); 
+        gl.glClearDepth(1f);
     }
 
     private void initBlend(GL gl) {
@@ -176,21 +158,12 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
         gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 
-        
-        
 
     }
 
     protected void initLighting(GL2 gl) {
 
 
-        
-        
-
-        
-
-
-        
     }
 
     protected void initInput() {
@@ -236,32 +209,18 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
             GL2 gl = this.gl;
 
-            
+
             int w = window.getWidth();
             int h = window.getHeight();
             gl.glViewport(0, 0, w, h);
             gl.glMatrixMode(GL_PROJECTION);
             gl.glLoadIdentity();
 
-            
+
             gl.glOrtho(0, w, 0, h, -1.5, 1.5);
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
             gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-            
 
 
             gl.glDisable(GL2.GL_DEPTH_TEST);
@@ -297,20 +256,13 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     private void clearMotionBlur(float rate /* TODO */) {
 
 
-
-
-        
         gl.glAccum(GL2.GL_LOAD, 0.5f);
-        
+
         gl.glAccum(GL2.GL_ACCUM, 0.5f);
-
-
-
 
 
         gl.glAccum(GL2.GL_RETURN, rate);
         gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
-        
 
 
     }
@@ -320,8 +272,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     }
 
     private void perspective() {
-        
-
 
 
         if (gl == null)
@@ -331,60 +281,19 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glLoadIdentity();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
         float aspect = ((float) window.getWidth()) / window.getHeight();
 
         this.aspect = aspect;
 
         tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
 
-        top = tanFovV * zNear; 
-        right = aspect * top;    
+        top = tanFovV * zNear;
+        right = aspect * top;
         bottom = -top;
         left = -right;
 
 
-
-
-
-
-        
         gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
-
-
-        
-
-
-
-        
-
-
 
 
         Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
@@ -396,9 +305,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glLoadIdentity();
 
 
-
     }
-
 
 
     @Override

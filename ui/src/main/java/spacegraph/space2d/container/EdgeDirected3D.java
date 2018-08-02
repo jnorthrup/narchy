@@ -13,7 +13,7 @@ public class EdgeDirected3D extends ForceDirected3D {
     @Override
     public void solve(Broadphase b, List<Collidable> objects, float timeStep) {
 
-        float a = attraction.floatValue();
+        float a = condense.floatValue();
 
         for (Collidable c : objects) {
             Spatial A = ((Spatial) c.data());

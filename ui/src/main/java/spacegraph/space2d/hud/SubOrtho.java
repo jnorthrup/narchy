@@ -2,30 +2,39 @@ package spacegraph.space2d.hud;
 
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Surface;
+import spacegraph.video.JoglSpace;
 
 /** ortho sized proportionally to its containing window */
 public class SubOrtho extends Ortho {
 
+    private final Surface content;
     private RectFloat2D boundsWin;
 
     public SubOrtho(Surface content) {
-        super(content);
-        
+        super();
+        this.content = content;
     }
 
     @Override
-    public boolean autoresize() {
-        return true;
+    public void start(JoglSpace s) {
+        super.start(s);
+        set(content);
     }
-    
 
 
+//    @Override
+//    public boolean autoresize() {
+//        return true;
+//    }
 
-
+    @Override
+    protected boolean tangible() {
+        return false;
+    }
 
     /** position and size relative to the containing window (1=width, 1=height)*/
     public Ortho posWindow(float x, float y, float w, float h) {
-        this.boundsWin = RectFloat2D.XYXY(x, y, w, h);
+        this.boundsWin = RectFloat2D.XYWH(x, y, w, h);
         layout();
         return this;
     }
@@ -35,9 +44,15 @@ public class SubOrtho extends Ortho {
         int ww = window.getWidthNext();
         int wh = window.getHeightNext();
 
-        pos(RectFloat2D.XYXY(boundsWin.x * ww, boundsWin.y * wh, boundsWin.w * ww, boundsWin.h * wh));
-
         super.doLayout(dtMS);
+
+
+        surface.pos(RectFloat2D.XYXY(boundsWin.x * ww, boundsWin.y * wh, (boundsWin.x + boundsWin.w) * ww,
+                (boundsWin.y + boundsWin.h) * wh));
+
+
+        System.out.println(surface + " " + surface.bounds);
+
     }
 
 

@@ -288,6 +288,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         synchronized (exe) {
 
             boolean running = loop.isRunning();
+            float fps = running ? loop.getFPS() : -1;
 
             stop();
 
@@ -295,6 +296,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             time.reset();
 
             exe.start(this);
+
+            if (running)
+                loop.setFPS(fps);
 
             logger.info("reset");
 

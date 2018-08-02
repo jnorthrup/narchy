@@ -249,7 +249,7 @@ public class NARui {
                                         );
                                         EdgeDirected3D fd = new EdgeDirected3D();
                                         s.dyn.addBroadConstraint(fd);
-                                        fd.attraction.set(fd.attraction.get() * 8);
+                                        fd.condense.set(fd.condense.get() * 8);
 
                                         s.add(new SubOrtho(
 
