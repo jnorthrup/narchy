@@ -30,7 +30,7 @@ public class Tex {
 
     public com.jogamp.opengl.util.texture.Texture texture;
 
-    private boolean mipmap;
+    private boolean mipmap = true;
 
 
     private final AtomicBoolean textureUpdated = new AtomicBoolean(false);

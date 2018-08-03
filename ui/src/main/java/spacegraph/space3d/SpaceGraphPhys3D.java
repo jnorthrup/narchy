@@ -146,16 +146,17 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
     }
 
-    private final Queue<Spatial> toRemove =
-
+    @Deprecated private final Queue<Spatial> toRemove =
             new ConcurrentLinkedQueue<>();
 
     private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
 
     private void update(long dtMS) {
 
-        toRemove.forEach(x -> x.delete(dyn));
-        toRemove.clear();
+        toRemove.removeIf(x -> {
+            x.delete(dyn);
+            return true;
+        });
 
         inputs.forEach((anIi) -> {
             anIi.update(this, dtMS);
@@ -255,7 +256,6 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
      */
     public static class ExtraGlobals {
 
-        public static final boolean DEBUG = true;
 
 
         public static final float FLT_EPSILON = 1.19209290e-07f;
@@ -266,7 +266,6 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         public static final float SIMD_HALF_PI = SIMD_2_PI * 0.25f;
 
 
-        public static boolean gDisableDeactivation;
 
 
     }

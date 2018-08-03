@@ -31,8 +31,8 @@ import static spacegraph.util.math.v3.v;
 public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     @Nullable
-    public Surface front;
-    private static final float zOffset = 0.1f;
+    public volatile Surface front;
+    private static final float zOffset = 0.05f;
 
     @Nullable
     private Finger finger;
@@ -169,16 +169,17 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             
 
             gl.glTranslatef(-0.5f, -0.5f, 0.5f + (shape instanceof SphereShape ? 5 : 0)+zOffset);
-            
 
-            
-            
-            
-            
+
+
+
+
+            gl.glDepthMask(false);
+
             float pixelScale = 1;
             front.render(gl, pixelScale, pixelScale, dtMS);
-            
 
+            gl.glDepthMask(true);
             
         }
     }

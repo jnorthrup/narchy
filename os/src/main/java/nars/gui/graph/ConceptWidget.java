@@ -1,5 +1,6 @@
 package nars.gui.graph;
 
+import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.pri.PLink;
 import jcog.pri.ScalarValue;
 import jcog.util.Flip;
@@ -13,9 +14,7 @@ import spacegraph.space3d.widget.EDraw;
 import spacegraph.space3d.widget.SpaceWidget;
 import spacegraph.video.Draw;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TASKLINK;
 import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TERMLINK;
@@ -28,26 +27,15 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     public float pri;
 
-    public final Flip<Map<Concept, ConceptEdge>> edges = new Flip(LinkedHashMap::new);
+    public final Flip<ConcurrentFastIteratingHashMap<Concept, ConceptEdge>> edges =
+            new Flip<>(()->new ConcurrentFastIteratingHashMap<>(new ConceptEdge[0]));
 
     public ConceptWidget(Concept x) {
         super(x);
 
 
-
-
-
-
-
-        
-
-
-
-
-
-
-
     }
+
     public static float r(float range) {
         return (-0.5f + (float) Math.random()) * 2f * range;
     }
@@ -68,13 +56,13 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         final float initDistanceEpsilon = 50f;
 
-        
+
         x.transform.set(
                 r(initDistanceEpsilon),
                 r(initDistanceEpsilon),
                 r(initDistanceEpsilon));
 
-        
+
         final float initImpulseEpsilon = 0.25f;
         x.impulse(v(
                 r(initImpulseEpsilon),
@@ -83,30 +71,6 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         return x;
     }
-
-    
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static class ConceptVis1 implements TermVis<ConceptWidget> {
@@ -124,7 +88,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
             float p = cw.pri;
             p = (p == p) ? p : 0;
 
-            
+
             float nodeScale = (float) (minSize + Math.sqrt(p) * maxSize);
             cw.scale(nodeScale, nodeScale, nodeScale);
 
@@ -146,9 +110,12 @@ public class ConceptWidget extends SpaceWidget<Concept> {
         }
 
         public ConceptWidget src() {
-            return id.getOne().getOne(); }
+            return id.getOne().getOne();
+        }
+
         public ConceptWidget tgt() {
-            return id.getOne().getTwo(); }
+            return id.getOne().getTwo();
+        }
 
         @Override
         public boolean isDeleted() {
@@ -174,9 +141,8 @@ public class ConceptWidget extends SpaceWidget<Concept> {
         }
 
         protected void decay(float rate) {
-            
 
-            
+
             termlinkPri *= rate;
             tasklinkPri *= rate;
         }
@@ -219,84 +185,6 @@ public class ConceptWidget extends SpaceWidget<Concept> {
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

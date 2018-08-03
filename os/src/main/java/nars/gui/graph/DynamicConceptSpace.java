@@ -281,7 +281,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             
 
             pending.forEach(c -> {
-                c.edges.write().values().forEach(x -> x.inactive = true);
+                c.edges.write().forEachValue(x -> x.inactive = true);
             });
 
             edges.commit(ee -> {
@@ -308,7 +308,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             float lineAlphaMax = Math.max(lineAlphaMin, _lineAlphaMax);
             pending.forEach(c -> {
                 float srcRad = c.radius();
-                c.edges.write().values().removeIf(e -> {
+                c.edges.write().removeIf(e -> {
                     if (e.inactive)
                         return true;
 

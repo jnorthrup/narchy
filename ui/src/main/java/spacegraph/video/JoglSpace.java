@@ -149,6 +149,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LEQUAL);
 
+
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
         gl.glClearDepth(1f);
     }
@@ -244,8 +245,8 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
 
     private void clear() {
-        //clearMotionBlur(0.5f);
-        clearComplete();
+        clearMotionBlur(0.5f);
+        //clearComplete();
 
     }
 

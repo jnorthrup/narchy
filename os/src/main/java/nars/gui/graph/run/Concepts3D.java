@@ -20,17 +20,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
-public class SimpleConceptGraph3D extends DynamicConceptSpace {
+public class Concepts3D extends DynamicConceptSpace {
 
     private final AtomicBoolean reloadReady = new AtomicBoolean(false);
 //    private final TextEdit inputbox;
 
-    private SimpleConceptGraph3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
+    private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
         this(nar, () -> nar.attn.active().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
     }
 
-    private SimpleConceptGraph3D(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
+    private Concepts3D(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
         SpaceGraphPhys3D sg = show(1400, 1000, false);
@@ -55,8 +55,8 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
 
                             cpts.clear();
 
-                            SimpleConceptGraph3D.this.clear();
-                            
+                            Concepts3D.this.clear();
+
                             try {
                                 nar.input(text());
                             } catch (Narsese.NarseseException e) {
@@ -101,7 +101,7 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
 
 
 
-        SimpleConceptGraph3D g = new SimpleConceptGraph3D(n,
+        Concepts3D g = new Concepts3D(n,
                 /* TODO */ 128, 5);
 
         try {
