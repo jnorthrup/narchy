@@ -30,7 +30,7 @@ public class Tex {
 
     public com.jogamp.opengl.util.texture.Texture texture;
 
-    private boolean mipmap = true;
+    private boolean mipmap = false;
 
 
     private final AtomicBoolean textureUpdated = new AtomicBoolean(false);
@@ -54,6 +54,16 @@ public class Tex {
 
     void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
 
+        commit(gl);
+
+        if (texture != null) {
+            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, inverted);
+        }
+
+    }
+
+    /** try to commit */
+    public Tex commit(GL2 gl) {
 
         if (profile == null) {
             profile = gl.getGLProfile();
@@ -63,18 +73,12 @@ public class Tex {
 
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, nextData);
-            } else if (nextData != null) {
-
+            }
+            if (texture != null && nextData != null) {
                 texture.updateImage(gl, nextData);
             }
-
-
         }
-
-        if (texture != null) {
-            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, inverted);
-        }
-
+        return this;
     }
 
     public boolean update(BufferedImage iimage) {

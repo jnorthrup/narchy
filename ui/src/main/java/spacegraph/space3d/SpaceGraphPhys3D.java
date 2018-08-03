@@ -24,8 +24,14 @@
 package spacegraph.space3d;
 
 import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.fixedfunc.GLLightingFunc;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.GLUquadric;
+import com.jogamp.opengl.util.texture.Texture;
 import jcog.data.list.FasterList;
+import jcog.signal.wave2d.Bitmap2D;
 import spacegraph.input.finger.FPSLook;
 import spacegraph.input.finger.OrbMouse;
 import spacegraph.space3d.phys.Dynamics3D;
@@ -39,7 +45,10 @@ import spacegraph.space3d.phys.math.DebugDrawModes;
 import spacegraph.space3d.widget.DynamicListSpace;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglSpace;
+import spacegraph.video.Tex;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -63,6 +72,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
 
     public final Dynamics3D<X> dyn;
+
+
 
     public SpaceGraphPhys3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
@@ -177,6 +188,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     }
 
     protected void renderVolume(int dtMS) {
+
+
         forEach(s -> s.renderAbsolute(gl, dtMS));
 
         forEach(s -> s.forEachBody(body -> {
@@ -190,6 +203,65 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
             gl.glPopMatrix();
 
         }));
+
+        renderSky();
+
+    }
+
+    private Texture tHv;
+    private GLUquadric quad;
+    private void renderSky() {
+
+
+        if(quad==null) {
+            quad = Draw.glu.gluNewQuadric();
+            Draw.glu.gluQuadricDrawStyle(quad, GLU.GLU_FILL);
+            Draw.glu.gluQuadricNormals(quad,
+                    //GLU.GLU_SMOOTH
+                    //GLU.GLU_FLAT
+                    GLU.GLU_NONE
+            );
+            Draw.glu.gluQuadricTexture(quad , true);
+        }
+        gl.glColor3f(1f,1f,1f);
+        gl.glMaterialfv(GL.GL_FRONT_AND_BACK , GLLightingFunc.GL_AMBIENT_AND_DIFFUSE ,
+                //new float[] { 10.0f , 10.0f , 10.0f , 1.0f },
+                new float[] { 1.0f , 1.0f , 1.0f , 1.0f },
+                0);
+        if (tHv == null) {
+            Tex t = new Tex();
+
+            int w = 33, h = 33;
+            BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = (Graphics2D) bi.getGraphics();
+            int on = Bitmap2D.encodeRGB8b(0.3f, 0.3f, 0.3f);
+            int off = Bitmap2D.encodeRGB8b(0f, 0f, 0f);
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < h; y++) {
+                    bi.setRGB(x, y, (x^y) % 2 == 0 ? on : off);
+                }
+            }
+            g.dispose();
+
+            t.commit(gl);  //HACK
+            t.update(bi);  //HACK
+            t.commit(gl);  //HACK
+
+            tHv = t.texture;
+        }
+        tHv.enable(gl);
+        tHv.bind(gl);
+
+        gl.glPushMatrix();
+//        gl.glLoadIdentity();
+//        gl.glTranslatef(camPos.x, camPos.y, camPos.z);
+
+
+
+        Draw.glu.gluSphere(quad , 1000.0f , 9 , 9);
+        gl.glPopMatrix();
+
+        tHv.disable(gl);    ////TTTTTTTTTTTTTTT
     }
 
     private DynamicListSpace<X> add(Spatial<X>... s) {

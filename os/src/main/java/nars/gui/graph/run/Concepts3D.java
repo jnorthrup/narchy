@@ -16,13 +16,11 @@ import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class Concepts3D extends DynamicConceptSpace {
 
-    private final AtomicBoolean reloadReady = new AtomicBoolean(false);
+//    private final AtomicBoolean reloadReady = new AtomicBoolean(false);
 //    private final TextEdit inputbox;
 
     private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
