@@ -700,8 +700,8 @@ public class Occurrify extends TimeGraph {
             long NOW = d.time;
 
             if (o[0] == ETERNAL) {
-//                if (d.belief != null && d.belief.isEternal())
-//                    return true; //both task and belief are eternal; keep eternal
+                if (d.task.isEternal() && (d.belief == null || d.belief.isEternal()))
+                    return true; //both task and belief are eternal; keep eternal
 //
 //                //pretend in present
 //                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);

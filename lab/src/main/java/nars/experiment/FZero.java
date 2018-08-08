@@ -108,6 +108,7 @@ public class FZero extends NAgentX {
 
             return r;
         });
+        reward("noCollide", ()->Util.equals(FZeroGame.FULL_POWER, fz.power, 1f) ? +1 : -1 ); //dont bump edges
 
 //        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
 //                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);

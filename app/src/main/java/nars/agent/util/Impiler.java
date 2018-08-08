@@ -166,9 +166,9 @@ public class Impiler {
                                         } else {
                                             Term f = e.term();
                                             e = new Conj();
-                                            e.add(DTERNAL, f); //add existing accumulated sequence DTERNALly
+                                            e.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
                                         }
-                                        e.add(DTERNAL, ss.getTwo());
+                                        e.add(ETERNAL, ss.getTwo());
                                         when = 0; //reset to zero
                                         break;
                                     }

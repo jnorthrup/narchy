@@ -424,10 +424,14 @@ class TemporalTermTest {
 
     @Test
     void testRetemporalization1() throws Narsese.NarseseException {
-        assertEquals("a(x,true)",
-                $("a(x,(--,((--,((6-->ang) &&+1384 (6-->ang))) &&+- (6-->ang))))").temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).toString()
+        assertEquals(
+                "a(x,true)",
+                $(
+                        "a(x,(--,((--,((6-->ang) &&+1384 (6-->ang))) &&+- (6-->ang))))"
+                 ).temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).toString()
         );
     }
+
     @Test
     void testConjEtePara() {
         assertEquals("((a&|b)&&(b&|c))",
@@ -1151,7 +1155,6 @@ class TemporalTermTest {
         assertTrue(x instanceof Compound);
         Term y = $("((--,(vy &&+84 happy))&&(happy&|vy))");
         assertEquals(
-                
                 "((--,(vy &&+84 happy))&&(vy&|happy))",
                 y.toString());
         assertEquals(
@@ -1238,12 +1241,14 @@ class TemporalTermTest {
     }
 
     @Test void testValidConjParallelContainingTerm() {
-        String s =
-                //"(x &&+100 ((--,(&|,(--,L),(--,R),(--,angVel)))&|(--,(x&|angY))))";
-                "(x &&+100 ((--,z)&|(--,(x&|angY))))";
-                //"(x &&+100 (--,(x&|angY)))";
-        assertEquals(s,
-                $.$$(s).toString());
+        for (String s : new String[]{
+                "(x &&+100 ((--,(&|,(--,L),(--,R),(--,angVel)))&|(--,(x&|y))))",
+                "(x &&+100 ((--,(x&|y))&|(--,z)))",
+                "(x &&+100 (--,(x&|y)))"
+        }){
+            assertEquals(s,
+                    $.$$(s).toString());
+        }
 
     }
 

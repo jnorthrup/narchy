@@ -894,7 +894,7 @@ public class Conj extends ByteAnonMap {
             );
         }
 
-        if (negatives[0]) {
+        if (when==ETERNAL && negatives[0]) {
             factorDisj(t, when);
         }
 
@@ -1137,7 +1137,8 @@ public class Conj extends ByteAnonMap {
 
                         stable = false;
 
-                        Term fff = CONJ.the(DTERNAL, f, CONJ.the(DTERNAL, ff).neg()).neg();
+                        int dtf = when == ETERNAL ? DTERNAL : 0;
+                        Term fff = CONJ.the(dtf, f, CONJ.the(dtf, ff).neg()).neg();
                         if (fff != True) {
                             if ((fff == False) || (fff == Null)) {
                                 t.clear();

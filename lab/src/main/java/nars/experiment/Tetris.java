@@ -10,12 +10,14 @@ import nars.agent.FrameTrigger;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
+import nars.video.CameraSensorView;
 
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 
 import static nars.experiment.Tetris.TetrisState.*;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 7/28/16.
@@ -59,13 +61,13 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
         };
 
-        onFrame(()->{
+        onFrame(() -> {
             state.timePerFall = Math.round(this.timePerFall.floatValue());
             state.next();
         });
         reward("height", () -> state.score());
         reward("density", () -> {
-            return 1 - ((float)state.rowsFilled)/state.height;
+            return 1 - ((float) state.rowsFilled) / state.height;
 //            int filled = 0;
 //            for (float s : state.grid) {
 //                if (s > 0) {
@@ -82,6 +84,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
                         , this, nar)
 
         );
+
+        window(new CameraSensorView(pixels, this), 400, 900);
 
 
         actionsReflect();
