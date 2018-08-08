@@ -139,8 +139,8 @@ public class BeliefPredict {
 
     LongToFloatFunction freqSupplier(Termed c, NAR nar) {
         return (when) -> {
-            long start = Math.round(when);
-            long end = Math.round(when + sampleDur);
+            long start = (when);
+            long end = (when + sampleDur);
             //System.out.println("<- " + start + " " + end);
             @Nullable Truth t = nar.truth(c, BELIEF, start, end); //TODO filter predictions (PredictionTask's) from being used in this calculation
             if (t == null)

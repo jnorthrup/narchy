@@ -76,7 +76,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 //            return 0.5f - ((float)filled)/state.grid.length;
         });
 
-        sense(
+        addCamera(
                 pixels = new Bitmap2DSensor<>(
                         (x, y) -> $.p(id, $.the(x), $.the(y))
                         , this, nar)

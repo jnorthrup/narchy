@@ -29,16 +29,15 @@ class NARTestOptimize {
     static class NAL1Optimize {
         public static void main(String[] args) {
 
-            int nalLevel = 8;
             boolean parallel = true;
             Class[] testClasses = new Class[] {
                     NAL1Test.class, NAL1MultistepTest.class, NAL2Test.class, NAL3Test.class, NAL4Test.class,
                     NAL5Test.class, NAL6Test.class, NAL7Test.class, NAL8Test.class, NAL4MultistepTest.class
             };
 
-            Lab<NAR> l = new Lab<>(() -> NARS.tmp(nalLevel))
-                .var("ttlMax", 6, 20, 3,
-                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+            Lab<NAR> l = new Lab<>(() -> NARS.tmp())
+//                .var("ttlMax", 6, 20, 3,
+//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("termlinkBalance", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.termlinkBalance.set(f))
                 .var("forgetRate", 0, 1f, 0.1f,

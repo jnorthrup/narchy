@@ -98,7 +98,8 @@ public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.Serie
 
                 List<Task> deleteAfter = new FasterList(4);
                 temporal.whileEach(sstart, send, t -> {
-                    if (t.end() < send) {
+                    if (t.start() <= send) {
+                    //if (t.end() <= send) {
                         deleteAfter.add(t);
                     }
                     return true;

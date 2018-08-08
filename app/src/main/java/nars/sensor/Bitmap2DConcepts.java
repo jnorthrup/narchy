@@ -33,7 +33,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final P src;
 
     private final FloatRange pri;
-    final FloatRange priPixel = new FloatRange(0, 0, 1);
+    private final FloatRange priPixel = new FloatRange(0, 0, 1);
 
     public final Array2DIterable<Signal> iter;
 
@@ -272,7 +272,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
     private float priPixel(float pri) {
-        return pri/area;
+        //return pri/area;
+        return (float) (pri / Math.sqrt(area));
     }
 
 

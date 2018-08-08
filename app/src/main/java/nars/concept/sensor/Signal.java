@@ -39,12 +39,12 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
      * update directly with next value
      */
     public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> SET = (conf) ->
-            ((p, n) -> n == n ? $.t(n, conf.asFloat()) : null);
+            ((prev, next) -> next == next ? $.t(next, conf.asFloat()) : null);
     /**
      * first order difference
      */
     public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> DIFF = (conf) ->
-            ((p, n) -> (n == n) ? ((p == p) ? $.t((n - p) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
+            ((prev, next) -> (next == next) ? ((prev == prev) ? $.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
 
     public final FloatSupplier source;
     private final CauseChannel<ITask> in;

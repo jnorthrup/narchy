@@ -20,7 +20,6 @@ import nars.concept.sensor.Sensor;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.link.Activate;
-import nars.sensor.Bitmap2DSensor;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -130,11 +129,12 @@ public class NAgent extends NARService implements NSense, NAct {
         return s;
     }
 
-    public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {
-        addSensor(bmp);
-        onFrame(bmp::input); //TODO support adaptive input mode
-        return bmp;
-    }
+//    public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {
+//        return addCamera(bmp);
+////        addSensor(bmp);
+////        onFrame(bmp::input); //TODO support adaptive input mode
+////        return bmp;
+//    }
 
     public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),

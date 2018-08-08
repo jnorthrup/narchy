@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static jcog.Texts.n2;
 import static jcog.pri.bag.impl.HijackBag.Mode.*;
 
 /**
@@ -561,6 +562,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (s <= 0)
             return;
 
+        //System.out.println(); System.out.println();
+
         restart:
         while (true) {
             final AtomicReferenceArray<V> map = this.map;
@@ -624,7 +627,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 float p;
 
                 if (v0 == null || (p = pri(v0)) != p) {
-                    if (mapNullSeen++ == c)
+                    if (++mapNullSeen == c)
                         break;
                 } else {
                     mapNullSeen = 0;
@@ -636,37 +639,41 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     }
                     wVal[entryCell] = v0;
                     wPri[entryCell] = Util.max(p, ScalarValue.EPSILON);
-                }
 
-                int which = roulette.reweigh(weight).next();
 
-                V v = (V) wVal[which];
-                if (v == null)
-                    continue; //assert(v!=null);
+                    //System.out.println(n2(wPri) + "\t" + Arrays.toString(wVal));
 
-                SampleReaction next = each.apply(v);
-                if (next.remove) {
-                    evict(map, i, v);
-                }
+                    int which = roulette.reweigh(weight).next();
 
-                if (next.stop) {
-                    break restart;
-                } else if (next.remove) {
+                    V v = (V) wVal[which];
+                    if (v == null)
+                        continue; //assert(v!=null);
 
-                    if (which == entryCell || wVal[0] == null) {
-
-                        wVal[which] = null;
-                        wPri[which] = 0;
-                    } else {
-                        //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
-                        ArrayUtils.swap(wVal, 0, which);
-                        ArrayUtils.swap(wPri, 0, which);
+                    SampleReaction next = each.apply(v);
+                    if (next.remove) {
+                        evict(map, i, v);
                     }
+
+                    if (next.stop) {
+                        break restart;
+                    } else if (next.remove) {
+
+                        if (which == entryCell || wVal[0] == null) {
+
+                            wVal[which] = null;
+                            wPri[which] = 0;
+                        } else {
+                            //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
+                            ArrayUtils.swap(wVal, 0, which);
+                            ArrayUtils.swap(wPri, 0, which);
+                        }
+                    }
+
+
+                    if (map != this.map)
+                        continue restart;
+
                 }
-
-
-                if (map != this.map)
-                    continue restart;
 
 
             }

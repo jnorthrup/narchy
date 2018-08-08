@@ -4,7 +4,8 @@ import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.hijack.DefaultHijackBag;
+import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.op.PriMerge;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import spacegraph.SpaceGraph;
@@ -13,11 +14,11 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.util.math.Color3f;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import static jcog.pri.op.PriMerge.avg;
 import static spacegraph.space2d.container.grid.Gridding.col;
 import static spacegraph.space2d.container.grid.Gridding.row;
 
@@ -99,13 +100,13 @@ public class BagLab {
         int capacity = 512;
         BagLab bagLab;
         bagLab = new BagLab(
-//                new CurveBag(
-//                        //plus,
-//                        //replace,
-//                        PriMerge.avg,
-//                        new HashMap(), capacity)
+                new CurveBag(
+                        //plus,
+                        //replace,
+                        PriMerge.avg,
+                        new HashMap(), capacity)
 
-                new DefaultHijackBag<>(avg,capacity,4)
+                //new DefaultHijackBag<>(avg,capacity,4)
                 
         );
 

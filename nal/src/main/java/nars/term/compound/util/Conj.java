@@ -1014,10 +1014,22 @@ public class Conj extends ByteAnonMap {
                         return theSequence;
 
                     int sdt = theSequence.dt();
-                    if ((dt==DTERNAL || dt == XTERNAL || dt == 0) && (sdt == DTERNAL || sdt == XTERNAL || sdt == 0)) {
+                    if (sdt == XTERNAL && (dt==0 || dt == DTERNAL || dt == XTERNAL)) {
+                        Set<Term> az = new HashSet();
+                        for (Term aa : theSequence.subterms()) {
+                            Term aazz = CONJ.the(aa, dt, z);
+                            if (aazz == False)
+                                return False;
+                            if (aazz == Null)
+                                return Null;
+                            if (aazz!=True)
+                                az.add(aazz);
+                        }
+                        return CONJ.the(XTERNAL, az);
+                    } else if ((dt==DTERNAL || dt == XTERNAL || dt == 0) && (sdt == DTERNAL || sdt == 0)) {
                         //both commutative
 
-                        if ((dt == DTERNAL || dt == XTERNAL) && (sdt != DTERNAL && sdt !=XTERNAL))
+                        if ((dt == DTERNAL || dt == XTERNAL) && (sdt != DTERNAL ))
                             dt = sdt; //most specific dt
 
                         SortedSet<Term> x = theSequence.subterms().toSetSorted();
@@ -1028,8 +1040,10 @@ public class Conj extends ByteAnonMap {
 
                         if (x.size() == 1)
                             return x.first();
-
-                        return Op.compoundExact(CONJ, dt, x.toArray(EmptyTermArray)); //concatenate in parallel
+                        else {
+                            //return Op.compoundExact(CONJ, dt, x.toArray(EmptyTermArray)); //concatenate in parallel
+                            return CONJ.the(dt, x.toArray(EmptyTermArray)); //concatenate in parallel
+                        }
                     } else {
                         //Distribute (un-factor) z to each component of the sequence
                         Conj c = new Conj();

@@ -62,9 +62,10 @@ public class LivePredictor {
             }
 
             int i = 0;
-            for (int t = past-1; t >=0; t--) { 
+            for (int t = past-1; t >=0; t--) {
+                long w = now - (t + 1) * dur;
                 for (LongToFloatFunction c : ins) {
-                    pastVector[i++] = c.valueOf(now - (t+1) * dur);
+                    pastVector[i++] = c.valueOf(w);
                 }
             }
             int k = 0;

@@ -209,7 +209,8 @@ class TemporalTermTest {
         String s = "(((--,((--,(joy-->tetris))&|#1)) &&+30 #1) &&+60 (joy-->tetris))";
         assertEquals(
                 //"(((--,((--,(joy-->tetris))&&#1)) &&+- #1)&&(joy-->tetris))",
-                "(((||+- ,(joy-->tetris),(--,#1)) &&+- #1) &&+- (joy-->tetris))",
+                //"(((||+- ,(joy-->tetris),(--,#1)) &&+- #1) &&+- (joy-->tetris))",
+                "( &&+- ,(||+- ,(joy-->tetris),(--,#1)),(joy-->tetris),#1)",
 
                 $(s).concept().toString());
     }
@@ -1098,7 +1099,7 @@ class TemporalTermTest {
 
         Term r = t.root();
         {
-            assertEquals("((--,((||+- ,a,b)&&a)) &&+- a)", r.toString());
+            assertEquals("((--,((||+- ,a,b) &&+- a)) &&+- a)", r.toString());
         }
 
         {
@@ -1234,6 +1235,15 @@ class TemporalTermTest {
         Term ss = $$(s);
         assertTrue(Task.validTaskCompound(ss, true));
         assertTrue(Task.taskConceptTerm(ss));
+    }
+
+    @Test void testValidConjParallelContainingTerm() {
+        String s =
+                //"(x &&+100 ((--,(&|,(--,L),(--,R),(--,angVel)))&|(--,(x&|angY))))";
+                "(x &&+100 ((--,z)&|(--,(x&|angY))))";
+                //"(x &&+100 (--,(x&|angY)))";
+        assertEquals(s,
+                $.$$(s).toString());
 
     }
 

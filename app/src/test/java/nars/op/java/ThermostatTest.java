@@ -95,7 +95,7 @@ public class ThermostatTest {
 
             training[0] = true;
 
-            op.exeThresh.set(1f);
+            //op.exeThresh.set(1f);
             for (int i = 0; i < subTrainings; i++) {
                 for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
 

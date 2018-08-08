@@ -170,11 +170,11 @@ public class PoleCart extends NAgentX {
 
         new BeliefPredict(
                 java.util.List.of(
-                        //x, xVel,
+                        x, xVel,
                         angVel, angX, angY),
-                16,
-                2 * nar.dur(),
                 8,
+                2 * nar.dur(),
+                4,
                 new LivePredictor.LSTMPredictor(0.1f, 1),
                 //new LivePredictor.MLPPredictor(0.1f),
                 nar

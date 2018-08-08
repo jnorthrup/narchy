@@ -41,7 +41,7 @@ import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 /* 1D and 2D grid tracking */
-public class TrackXY extends NAgent {
+public class TrackXY extends NAgentX {
 
     final Bitmap2DSensor cam;
     final ArrayBitmap2D view;
@@ -84,7 +84,7 @@ public class TrackXY extends NAgent {
 
         this.view = new ArrayBitmap2D(this.W = W, this.H = H);
         if (targetCam) {
-            this.cam = sense(new Bitmap2DSensor<>(id /* (Term) null*/, view, nar));
+            this.cam = addCamera(new Bitmap2DSensor<>(id /* (Term) null*/, view, nar));
         } else {
             this.cam = null;
         }

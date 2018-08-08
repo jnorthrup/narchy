@@ -1,9 +1,6 @@
 package nars.op.java;
 
-import nars.$;
 import nars.NAR;
-import nars.term.Term;
-import nars.time.Tense;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -37,26 +34,27 @@ public class Trick<X> {
 
     public synchronized void train(X x, NAR n) {
 
-        
 
 
 
-        Term LEARN = $.func("learn", $.the(id));
-        n.believe(LEARN, Tense.Present); 
+
+//        Term LEARN = $.func("learn", $.the(id));
+//        n.believe(LEARN, Tense.Present);
+
         pre.accept(x);
 
 
 
 
-        Term DO = $.func("do", $.the(id));
-        n.believe(DO, Tense.Present); 
+//        Term DO = $.func("do", $.the(id));
+//        n.believe(DO, Tense.Present);
 
         action.accept(x); 
 
 
 
-        n.believe(DO.neg(), Tense.Present); 
-        n.believe(LEARN.neg(), Tense.Present); 
+//        n.believe(DO.neg(), Tense.Present);
+//        n.believe(LEARN.neg(), Tense.Present);
 
 
 

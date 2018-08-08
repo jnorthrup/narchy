@@ -30,12 +30,14 @@
 
 
     //antigoal in sequence
-    //X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak)
+    X, C, eventOfNeg(C,X)   |- --C, (Goal:DesireWeak)
+      X, C, eventOfNeg(C,X) |- C, (Goal:DesireWeakPN)
         //is there another sequence that doesnt involve what i dont want?
-        X, C, eventOfNeg(C,X), task("!") |- substitute(C, --X, X), (Punctuation:Quest)
-    //X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
+        //X, C, eventOfNeg(C,X), task("!") |- substitute(C, --X, X), (Punctuation:Quest)
+    X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
+      X, C, eventOf(C,X)  |- C, (Goal:DesireWeakNN)
         //is there another sequence that doesnt involve what i dont want?
-        X, C, eventOf(C,X), task("!")    |- substitute(C, X, --X), (Punctuation:Quest)
+        //X, C, eventOf(C,X), task("!")    |- substitute(C, X, --X), (Punctuation:Quest)
 
 
 //goal induction
