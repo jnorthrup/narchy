@@ -10,7 +10,6 @@ import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
-import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
@@ -90,13 +89,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
         return concepts.newReader(in, mode, nar);
     }
 
-    public DurService readDirectEachDuration() {
-        return readDirectEachDuration(mode);
-    }
+//    public DurService readDirectEachDuration() {
+//        return readDirectEachDuration(mode);
+//    }
 
-    public DurService readDirectEachDuration(FloatFloatToObjectFunction<Truth> mode) {
-        return DurService.on(nar, (nn)-> input(nar.dur(), mode));
-    }
+//    public DurService readDirectEachDuration(FloatFloatToObjectFunction<Truth> mode) {
+//        return DurService.on(nar, (nn)-> input(nar.dur(), mode));
+//    }
 
     final FloatFloatToObjectFunction<Truth> SET;
     final FloatFloatToObjectFunction<Truth> DIFF;

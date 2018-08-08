@@ -93,6 +93,9 @@ public class Premise {
      */
     public boolean match(Derivation d, int matchTTL) {
 
+        if (task.isDeleted())
+            return false;
+
         Term taskTerm = task.term();
 
 

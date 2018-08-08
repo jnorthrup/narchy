@@ -1,5 +1,6 @@
 package nars.term.compound.util;
 
+import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import nars.NAR;
@@ -420,6 +421,9 @@ public class Conj extends ByteAnonMap {
      * now corrupt and its result via .term() should be considered final
      */
     public boolean add(long at, Term what) {
+
+        if (at == DTERNAL) //HACK
+            throw new WTF("probably meant at=ETERNAL not DTERNAL");
 
         if (term != null)
             throw new RuntimeException("already term-inated to: " + term);

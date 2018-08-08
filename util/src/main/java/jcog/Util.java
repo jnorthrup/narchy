@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
-import com.google.common.hash.Hashing;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.google.common.primitives.Bytes;
@@ -150,8 +149,7 @@ public enum Util {
     }
 
     public static long hash64(byte[] bytes, int from, int to) {
-        return Hashing.murmur3_32().hashBytes()
-        //return Util.hashELF(bytes, 1, from, to);
+        return Util.hashELF(bytes, 1, from, to);
     }
 
     public static void assertNotNull(Object test, String varName) {

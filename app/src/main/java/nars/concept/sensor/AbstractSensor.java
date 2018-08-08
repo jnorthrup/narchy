@@ -48,12 +48,12 @@ abstract public class AbstractSensor extends NARService implements Sensor {
 //    }
 
     @Override
-    public FloatRange resolution() {
+    public final FloatRange resolution() {
         return res;
     }
 
     @Override
-    public FloatRange pri() {
+    public final FloatRange pri() {
         return pri;
     }
 

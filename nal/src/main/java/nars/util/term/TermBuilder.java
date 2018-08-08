@@ -8,6 +8,7 @@ import nars.op.mental.AliasConcept;
 import nars.subterm.*;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;
@@ -18,12 +19,16 @@ import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.transform.CompoundNormalization;
 import nars.util.term.transform.Retemporalize;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.ListIterator;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -488,52 +493,29 @@ public abstract class TermBuilder {
                     case 1:
                         return u[0];
 
-                    default:
-                        boolean unordered = false, innerXternal = false;
+                    default: {
+                        MutableSet<Term> uux = new UnifiedSet(ul);
                         for (int i = 0; i < ul; i++) {
                             Term uu = u[i];
-                            if (i < ul-1 && uu.compareTo(u[i + 1]) > 0) {
-                                unordered = true;
-                                break;
-                            }
-                            if (uu.op()==CONJ && uu.dt()==XTERNAL)
-                                innerXternal = true;
-                        }
-
-                        if (innerXternal) {
-                            final boolean[] repeats = {false};
-                            //flatten inner xternal to top layer
-                            SortedSet<Term> uux = new TreeSet();
-                            for (int i = 0; i < ul; i++) {
-                                Term uu = u[i];
-                                if (uu.op() == CONJ && uu.dt() == XTERNAL)
-                                    uu.subterms().forEach(uut -> {
-                                        if (!uux.add(uut))
-                                            repeats[0] = true;
-                                    });
-                                else
-                                    uux.add(uu);
-                            }
-                            if (uux.size()==1 && repeats[0]) {
-                                return compoundExact(CONJ, XTERNAL, uux.first(), uux.first()); //repeat
+                            if (uu.op() == CONJ && uu.dt() == XTERNAL) {
+                                uu.subterms().forEach(uut -> {
+                                    uux.add(uut);
+                                });
                             } else {
-                                return compoundExact(CONJ, XTERNAL, uux.toArray(EmptyTermArray));
+                                uux.add(uu);
                             }
                         }
 
-                        if (unordered) {
-                            u = u.clone();
-                            if (ul == 2) {
 
-                                Term u0 = u[0];
-                                u[0] = u[1];
-                                u[1] = u0;
-                            } else {
-                                Arrays.sort(u);
-                            }
+                        if (uux.size() == 1) {
+                            Term only = uux.getOnly();
+                            return compoundExact(CONJ, XTERNAL, only, only); //repeat
+                        } else {
+                            return compoundExact(CONJ, XTERNAL, Terms.sorted(uux));
                         }
+                    }
 
-                        return compoundExact(CONJ, XTERNAL, u);
+
 
 //                    case 2: {
 //
