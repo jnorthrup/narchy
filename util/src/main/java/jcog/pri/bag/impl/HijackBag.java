@@ -12,6 +12,7 @@ import jcog.pri.bag.util.SpinMutex;
 import jcog.pri.bag.util.Treadmill2;
 import jcog.random.SplitMix64Random;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -586,7 +587,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
             int mapNullSeen = 0;
 
-            MutableRoulette roulette = new MutableRoulette(windowCap, (k) -> wPri[k], random);
+            IntToFloatFunction weight = (k) -> wPri[k];
+            MutableRoulette roulette = new MutableRoulette(windowCap, weight, random);
 
             int prefilled = 1; //leave the (highest) entryCell open for the first slide to cover it
             if (windowCap > 1) {
@@ -636,7 +638,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     wPri[entryCell] = Util.max(p, ScalarValue.EPSILON);
                 }
 
-                int which = roulette.reweigh().next();
+                int which = roulette.reweigh(weight).next();
 
                 V v = (V) wVal[which];
                 if (v == null)

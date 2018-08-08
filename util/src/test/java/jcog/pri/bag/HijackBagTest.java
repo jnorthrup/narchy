@@ -6,7 +6,6 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.pri.op.PriMerge;
-import jcog.random.XorShift128PlusRandom;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -126,7 +125,6 @@ class HijackBagTest {
             int rep = 3;
             int batch = 4;
             int extraSpace = 5;
-            final Random rng = new XorShift128PlusRandom(1);
             DefaultHijackBag bag = new DefaultHijackBag(plus, cap * extraSpace, rep) {
 
                 @Override
@@ -144,8 +142,8 @@ class HijackBagTest {
 
 
             fillLinear(bag, cap);
-            testBagSamplingDistribution(bag, batch);
             bag.print();
+            testBagSamplingDistribution(bag, batch);
         }
 
     }

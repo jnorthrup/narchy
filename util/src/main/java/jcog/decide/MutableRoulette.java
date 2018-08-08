@@ -3,6 +3,7 @@ package jcog.decide;
 import jcog.Util;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -54,27 +55,30 @@ public final class MutableRoulette {
         this(count, initialWeights, (x -> x), rng);
     }
 
-    public MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
-        this(Util.map(count, initialWeights), weightUpdate, rng);
-    }
-
     public MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
         this.w = w;
         this.weightUpdate = weightUpdate;
         this.rng = rng;
 
-        reweigh();
-
-        int l = w.length;
-        this.i = l == 1 ? 0 : rng.nextInt(l);
+        reweigh(null);
     }
 
-    public MutableRoulette reweigh() {
+    public MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
+        this.w = new float[count];
+        this.weightUpdate = weightUpdate;
+        this.rng = rng;
+
+        reweigh(initialWeights);
+    }
+
+    public MutableRoulette reweigh(@Nullable IntToFloatFunction initialWeights) {
         int n = w.length;
         float s = 0;
 
         final int nn = n;
         for (int i = 0; i < nn; i++) {
+            if (initialWeights!=null)
+                w[i] = initialWeights.valueOf(i);
             float wi = w[i];
             if (wi < 0 || !Float.isFinite(wi))
                 throw new RuntimeException("invalid weight: " + wi);
@@ -92,9 +96,18 @@ public final class MutableRoulette {
             s = n = w.length;
         }
 
+        int l = w.length;
+        if (l > 1 && n > 1) {
+            this.direction = rng.nextBoolean();
+            this.i = rng.nextInt(l);
+        } else {
+            this.direction = true;
+            this.i = 0;
+        }
+
         this.remaining = n;
         this.weightSum = s;
-        this.direction = rng.nextBoolean();
+
         return this;
     }
 

@@ -50,7 +50,15 @@ public interface TermTransform {
      * transform pathway for compounds
      */
     default Term transformCompound(Compound x) {
-        return transformCompound(x, x.op(), x.dt());
+        Subterms xx = x.subterms();
+        Subterms yy = xx.transformSubs(this);
+        if (yy == null)
+            return Null;
+        if (xx == yy)
+            return x; //no change
+
+        //return transformCompound(x, x.op(), x.dt());
+        return transformedCompound(x, x.op(), x.dt(), xx, yy);
     }
 
 
@@ -193,8 +201,9 @@ public interface TermTransform {
         @Override
         @Nullable
         default Term transformCompound(Compound x) {
-            Term xx = x.unneg();
-            if (xx!=x) {
+
+            if (x.op()==NEG) {
+                Term xx = x.unneg();
                 Term yy = transform(xx);
                 if (yy == null)
                     return null;

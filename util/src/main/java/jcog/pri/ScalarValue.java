@@ -16,13 +16,16 @@ import static java.lang.Float.intBitsToFloat;
  * general purpose value.  consumes and supplies 32-bit float numbers
  * supports certain numeric operations on it
  * various storage implementations are possible
- * as well as the operation implementations. */
+ * as well as the operation implementations.
+ *
+ * see: NumericUtils.java (lucene)
+ * */
 public interface ScalarValue {
 
     /**
      * global minimum difference necessary to indicate a significant modification in budget float number components
      */
-    float EPSILON =             0.000001f;
+    float EPSILON =             0.0000001f;
 
     /** setter
      *  @return value after set

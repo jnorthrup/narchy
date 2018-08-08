@@ -71,7 +71,7 @@ class TemporalInductionTest {
      * rather than raw belief truth
      */
     private static void testInduction(String a, String b, int dt) {
-        int cycles = dt * 136;
+        int cycles = dt * 60;
         TestNAR t = new TestNAR(NARS.tmp())
                 .input(a + ". :|:")
                 .inputAt(dt, b + ". :|:")

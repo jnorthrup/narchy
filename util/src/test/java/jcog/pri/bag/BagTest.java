@@ -180,7 +180,7 @@ class BagTest {
         int batchSize = (int)Math.ceil(batchSizeProp * cap);
         int batches = cap * 1000 / batchSize;
 
-        Tensor f1 = samplingPriDist(bag, batches, batchSize, Math.min(10,Math.max(2, cap/2)));
+        Tensor f1 = samplingPriDist(bag, batches, batchSize, Math.min(10,Math.max(3, cap/2)));
 
         String h = "cap=" + cap + " total=" + (batches * batchSize);
         System.out.println(h + ":\n\t" + f1.tsv2());
@@ -192,6 +192,7 @@ class BagTest {
 
         float orderThresh = 0.1f; 
         for (int j = 0; j < ff.length; j++) {
+//            assertTrue(ff[j] > 0); //no zero bins
             for (int i = j+1; i < ff.length; i++) {
                 float diff = ff[j] - ff[i];
                 boolean unordered = diff > orderThresh;

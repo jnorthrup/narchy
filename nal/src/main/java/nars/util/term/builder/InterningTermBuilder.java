@@ -16,7 +16,6 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * can intern subterms and compounds.
@@ -180,7 +179,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private static boolean internableRoot(Op op, int dt, Term[] u) {
-        return internableRoot(op, dt) && internableSubs(u);
+        boolean i = internableRoot(op, dt) && internableSubs(u);
+//        if (!i) {
+//            System.out.println(op + " " + dt + " " + Arrays.toString(u));
+//        }
+        return i;
     }
 
     private static boolean internableRoot(Op op, int dt) {
@@ -285,14 +288,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
     public Term conj(int dt, Term[] u) {
         //TODO presort if commutive?
         if (internableRoot(CONJ, dt, u)) {
-            switch(dt) {
-                case 0:
-                case DTERNAL:
-                case XTERNAL:
-                    //pre-sort
-                    Arrays.sort(u);
-                    break;
-            }
+//            switch(dt) {
+//                case 0:
+//                case DTERNAL:
+//                case XTERNAL:
+//                    //pre-sort
+            //TODO may need to clone array if callee uses the array for other purposes
+//                    Arrays.sort(u);
+//                    break;
+//            }
             return conj.apply(InternedCompound.get(CONJ, dt, u));
         } else
             return super.conj(dt, u);

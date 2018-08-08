@@ -515,9 +515,10 @@ public abstract class TermBuilder {
                                     uux.add(uu);
                             }
                             if (uux.size()==1 && repeats[0]) {
-                                return compoundExact(CONJ, XTERNAL, uux.first(), uux.first());
+                                return compoundExact(CONJ, XTERNAL, uux.first(), uux.first()); //repeat
+                            } else {
+                                return compoundExact(CONJ, XTERNAL, uux.toArray(EmptyTermArray));
                             }
-                            return compoundExact(CONJ, XTERNAL, uux.toArray(EmptyTermArray));
                         }
 
                         if (unordered) {

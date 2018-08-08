@@ -40,7 +40,7 @@ public class PriForget<P extends Priority> implements Consumer<P> {
      * @return the update function to apply to a bag
      */
     @Nullable
-    public static Consumer forget(int s, int cap, float pressure, float mass, float temperature, float priEpsilon, FloatToObjectFunction<Consumer> f) {
+    public static Consumer forget(int s, int cap, float pressure, float mass, float temperature, FloatToObjectFunction<Consumer> f) {
 
         if ((s > 0) && (pressure > 0) && (cap > 0) && (mass > 0) && temperature > 0) {
 
@@ -57,14 +57,14 @@ public class PriForget<P extends Priority> implements Consumer<P> {
         return null;
     }
 
-    @Nullable public static Consumer forget(Bag b, float temperature, float priEpsilon, FloatToObjectFunction f) {
+    @Nullable public static Consumer forget(Bag b, float temperature, FloatToObjectFunction f) {
         int size = b.size();
         if (size > 0) {
             return forget(size,
                     b.capacity(),
                     b.depressurize(),
                     b.mass(),
-                    temperature, priEpsilon, f);
+                    temperature, f);
         } else {
             return null;
         }

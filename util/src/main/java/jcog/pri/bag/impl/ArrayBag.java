@@ -120,8 +120,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * trash must be removed from the map, outside of critical section
      * may include the item being added
      */
-    @Nullable
-    protected void update(@Nullable Y toAdd, @Nullable Consumer<Y> update, boolean commit, final FasterList<Y> trash) {
+    private void update(@Nullable Y toAdd, @Nullable Consumer<Y> update, boolean commit, final FasterList<Y> trash) {
 
         int s = size();
         if (s == 0) {
@@ -513,12 +512,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     @Override
-
     public Bag<X, Y> commit(Consumer<Y> update) {
 
 
         int s = size();
-        if (update != null && s > 0 || update == null && s > capacity) {
+        /*if ((update != null && s > 0) || (update == null && s > capacity))*/ {
             @Nullable FasterList<Y> trash = new FasterList(Math.max(s / 8, 4));
             synchronized (items) {
 

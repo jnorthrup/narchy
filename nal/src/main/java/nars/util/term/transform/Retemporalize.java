@@ -139,8 +139,13 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
         if (x.dt() == dtNext && !requiresTransform(x.subterms()))
             return x; 
         else {
-            Op op = x.op();
-            return /*NegOblivious*/TermTransform.NegObliviousTermTransform.super.transformCompound(x, op, op.temporal ? dtNext : DTERNAL);
+            Op xo = x.op();
+            int n = xo.temporal ? dtNext : DTERNAL;
+            if (n == x.dt())
+                return NegObliviousTermTransform.super.transformCompound(x); //fast fail if dt doesnt change
+            else {
+                return NegObliviousTermTransform.super.transformCompound(x, xo, n);
+            }
         }
     }
 

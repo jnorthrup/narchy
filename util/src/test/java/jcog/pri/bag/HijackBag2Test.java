@@ -13,6 +13,7 @@ import jcog.signal.tensor.ArrayTensor;
 import jcog.util.FloatFloatToFloatFunction;
 import org.apache.commons.math3.stat.Frequency;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import static jcog.pri.bag.BagTest.rng;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class HijackBag2Test {
 
     @Test

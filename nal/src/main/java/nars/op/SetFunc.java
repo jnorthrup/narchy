@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
@@ -186,7 +187,7 @@ public class SetFunc {
 
     }
 
-    abstract static class BinarySetFunctor extends Functor implements Functor.InlineFunctor {
+    abstract static class BinarySetFunctor extends Functor implements Functor.InlineFunctor, The {
 
         protected BinarySetFunctor( String id) {
             super(id);

@@ -3,7 +3,6 @@ package jcog.pri.bag;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.list.table.Table;
-import jcog.pri.ScalarValue;
 import jcog.pri.op.PriForget;
 import jcog.util.FloatFloatToFloatFunction;
 import org.jetbrains.annotations.NotNull;
@@ -341,7 +340,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      * how fast the bag should allow new items. 0.5 is a default value
      */
     default @Nullable Consumer<V> forget(float temperature) {
-        return PriForget.forget(this, temperature, ScalarValue.EPSILON, (x)-> {
+        return PriForget.forget(this, temperature, (x)-> {
             //float m =
                     //0.5f / size();
                     //0.5f / Util.sqrt(size());
