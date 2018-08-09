@@ -71,7 +71,7 @@ dependencies {
     }
 
     // https://mvnrepository.com/artifact/eu.stamp-project/dspot
-    testCompile(group: 'eu.stamp-project', name: 'dspot', version: '1.1.0')
+//    testCompile(group: 'eu.stamp-project', name: 'dspot', version: '1.1.0')
 
 
     testCompile(group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.21') {
