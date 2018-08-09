@@ -894,7 +894,7 @@ public class Conj extends ByteAnonMap {
             );
         }
 
-        if (when==ETERNAL && negatives[0]) {
+        if (negatives[0]) {
             factorDisj(t, when);
         }
 
@@ -1099,7 +1099,7 @@ public class Conj extends ByteAnonMap {
             stable2 = true;
             do {
 
-                d = disjComponents(t);
+                d = disjComponents(t, when);
                 if (d == null)
                     return; //no change
 
@@ -1259,16 +1259,19 @@ public class Conj extends ByteAnonMap {
     }
 
     @Nullable
-    private static List<Term> disjComponents(Set<Term> t) {
+    private static List<Term> disjComponents(Set<Term> t, long when) {
         List<Term> d = null;
         for (Term x : t) {
             if (x.hasAll(NEG.bit | CONJ.bit)) {
                 if (x.op() == NEG) {
                     Term disj = x.unneg();
                     if (disj.op() == CONJ) {
-                        if (d == null)
-                            d = new FasterList<>(t.size());
-                        d.add(x);
+                        int dt = disj.dt();
+                        if ((when == ETERNAL) || (when!=ETERNAL && dt == 0)) {
+                            if (d == null)
+                                d = new FasterList<>(t.size());
+                            d.add(x);
+                        }
                     }
                 }
             }

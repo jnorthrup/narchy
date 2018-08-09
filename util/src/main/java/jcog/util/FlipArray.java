@@ -1,7 +1,5 @@
 package jcog.util;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -51,7 +49,7 @@ public class FlipArray<X> extends AtomicInteger {
         }
     }
 
-    public X[] read() {
+    private X[] read() {
         return (getOpaque() & 1) == 0 ? b : a;
     }
 
@@ -61,17 +59,17 @@ public class FlipArray<X> extends AtomicInteger {
         return valid.getOpaque()==OK;
     }
 
-    @Nullable
-    public X[] readOK() {
-        int before = getOpaque();
-        if (ok()) {
-            int after = getOpaque();
-            X[] r = read();
-            if (before == after)
-                return r;
-        }
-        return null;
-    }
+//    @Nullable
+//    public X[] readOK() {
+//        int before = getOpaque();
+//        if (ok()) {
+//            int after = getOpaque();
+//            X[] r = read();
+//            if (before == after)
+//                return r;
+//        }
+//        return null;
+//    }
 
     public void invalidate() {
         valid.setRelease(INVALID);

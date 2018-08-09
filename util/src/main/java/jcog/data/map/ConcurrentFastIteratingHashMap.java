@@ -44,7 +44,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     @Override
     public Y putIfAbsent(X key, Y value) {
         Y r;
-        if ((r = map.putIfAbsent(key, value)) == null) {
+        if ((r = map.putIfAbsent(key, value)) != value) {
             invalidate();
             return null;
         }
@@ -80,11 +80,13 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     @Override
     public int size() {
-        Y[] y = list.readOK();
-        if (y == null)
-            return map.size();
-        else
-            return y.length;
+        Y[] y = valueArray();
+        return y.length;
+//        Y[] y = list.readOK();
+//        if (y == null)
+//            return map.size();
+//        else
+//            return y.length;
     }
 
     @Override

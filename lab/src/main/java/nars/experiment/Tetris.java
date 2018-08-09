@@ -44,11 +44,11 @@ public class Tetris extends NAgentX implements Bitmap2D {
      * @param height
      * @param timePerFall larger is slower gravity
      */
-    public Tetris(NAR nar, int width, int height, int timePerFall) {
+    public Tetris(NAR n, int width, int height, int timePerFall) {
         super("tetris",
                 //FrameTrigger.fps(10f),
                 FrameTrigger.durs(1),
-                nar);
+                n);
 
         state = new TetrisState(width, height, timePerFall) {
             @Override
@@ -81,7 +81,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         addCamera(
                 pixels = new Bitmap2DSensor<>(
                         (x, y) -> $.p(id, $.the(x), $.the(y))
-                        , this, nar)
+                        , this, n)
 
         );
 
@@ -93,6 +93,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
         actionsToggle();
 
         state.reset();
+//
+//        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
+//        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
+
     }
 
     public static void main(String[] args) {

@@ -5,6 +5,7 @@ import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.agent.util.Impiler;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
@@ -45,18 +46,19 @@ public class FZero extends NAgentX {
         NAgentX.runRT(FZero::new, fps);
     }
 
-    public FZero(NAR nar) {
+    public FZero(NAR n) {
         super("fz",
                 //fps(fps/2),
                 durs(1),
-                nar);
+                n);
+
 
         this.fz = new FZeroGame();
 
 
         c = senseCamera($.func("cam", id), new Scale(() -> fz.image,
-                24, 24
-                //8, 8
+                //24, 24
+                8, 8
 
 
         )/*.blur()*/);//.diff()

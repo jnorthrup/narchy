@@ -9,6 +9,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
+import nars.agent.util.Impiler;
 import nars.concept.Concept;
 import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,7 @@ public class PoleCart extends NAgentX {
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
 
 
-    static final float fps = 60;
+    static final float fps = 30;
 
     public static void main(String[] arg) {
 
@@ -46,10 +47,6 @@ public class PoleCart extends NAgentX {
             try {
                 NAgent a = new PoleCart(n);
 
-
-//                Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(16, 1f, n);
-//                Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(4, 0.5f, n);
-//                Impiler.ImpilerDeduction ds = new Impiler.ImpilerDeduction(4, 0.5f, n);
 
 
                 return a;
