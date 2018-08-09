@@ -75,7 +75,6 @@ public final class TruthFunctions {
         float c = and(f, a.conf(), reliance);
         return (c >= minConf) ? t(f, c) : null;
     }
-    /* ----- double argument functions, called in SyllogisticRules ----- */
 
 
     @Nullable

@@ -126,10 +126,9 @@ public class NARS {
                 nar.termlinkBalance.set(0.5f);
                 nar.termVolumeMax.set(26);
 
-                nar.activateConceptRate.set(0.8f);
+                //nar.activateConceptRate.set(0.5f);
 
-
-                nar.forgetRate.set(0.5f);
+                //nar.forgetRate.set(0.5f);
 
                 nar.beliefPriDefault.set(0.5f);
                 nar.goalPriDefault.set(0.5f);
@@ -209,12 +208,12 @@ public class NARS {
                         ),
                         //termlinks
                         curve(Concept::volume,
-                                1, 64,
+                                1, 48,
                                 24,16
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 64,
+                                1, 48,
                                 24,16
                         ))
         );

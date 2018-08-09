@@ -65,6 +65,37 @@ public enum TruthFunctions2 {
         float c = and(a.conf(), bc, bf);
         return c >= minConf ? t(a.freq(), c) : null;
     }
+    @Nullable
+    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
+
+        float f;
+        float aF = a.freq();
+//        if (bF >= 0.5f) {
+//            f = Util.lerp(bF, 0.5f, aF);
+//        } else {
+//            f = Util.lerp(bF, 0.5f, 1- aF);
+//        }
+        f = Util.lerp(bF, 1-aF, aF);
+
+        float p = Math.abs(f - 0.5f)*2f; //polarization
+
+        float c = and(/*f,*/ /*p,*/ a.conf(), bC);
+
+        return c >= minConf ? t(f, c) : null;
+    }
+
+    /**
+     * {<S ==> M>, <P ==> M>} |- <S ==> P>
+     *
+     * @param a Truth value of the first premise
+     * @param b Truth value of the second premise
+     * @return Truth value of the conclusion, or null if either truth is analytic already
+     */
+    public static Truth induction(Truth a, Truth b, float minConf) {
+        float c = w2cSafe(a.conf() * b.freqTimesConf());
+        return c >= minConf ? $.t(a.freq(), c) : null;
+    }
+
 //
 //    /**
 //     * frequency determined entirely by the desire component.

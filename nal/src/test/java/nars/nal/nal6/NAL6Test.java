@@ -17,7 +17,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1000;
+    private static final int cycles = 700;
 
     @BeforeEach
     void setup() {
@@ -28,7 +28,7 @@ public class NAL6Test extends NALTest {
     protected NAR nar() {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(24);
-        n.confMin.set(0.05f);
+        n.confMin.set(0.02f);
         return n;
     }
 
@@ -567,6 +567,31 @@ public class NAL6Test extends NALTest {
                 .believe("(x($1)==>y($1))", 1.00f, 0.90f)
                 .believe("x(a)", 1.00f, 0.90f)
                 .mustBelieve(cycles, "y(a)", 1.00f, 0.81f);
+    }
+
+    @Test
+    void deductionBeliefWeakPositiveButNotNegative() {
+        test
+                .believe("(a==>b)", 0.55f, 0.90f)
+                .believe("a", 0.55f, 0.90f)
+                .mustBelieve(cycles, "b", 0.51f, 0.81f);
+    }
+    @Test
+    void deductionBeliefWeakNegativeButNotPositive() {
+        test
+                .believe("(a==>b)", 0.45f, 0.90f)
+                .believe("a", 0.45f, 0.90f)
+                .mustBelieve(cycles, "b", 0.49f, 0.81f);
+    }
+
+    @Test
+    void abductionBeliefWeakPositiveButNotNegative() {
+        Param.DEBUG = true;
+        test
+                .log()
+                .believe("(a==>b)", 0.55f, 0.90f)
+                .believe("b", 0.55f, 0.90f)
+                .mustBelieve(cycles, "a", 0.55f, 0.31f);
     }
 
     @Test

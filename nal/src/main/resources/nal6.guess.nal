@@ -1,6 +1,6 @@
 //NAL6---------------
 
-    Z, (X==>Y), task("?"), neq(Y,Z) |- subIfUnifiesAny((X ==>+- Z), Y, Z, "$", strict), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    Z, (X==>Y), task("?"), neq(Y,Z) |- subIfUnifiesAny((X ==>+- Y), Y, Z, "$", strict), (Belief:BeliefStructuralReduction, Punctuation:Belief)
 
 
 //If S can stand for P, P can to a certain low degree also represent the class S

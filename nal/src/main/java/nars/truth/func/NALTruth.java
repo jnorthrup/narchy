@@ -36,7 +36,7 @@ public enum NALTruth implements TruthFunc {
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            return TruthFunctions.deduction(T, B.freq(), B.conf(), minConf);
+            return TruthFunctions2.deduction(T, B.freq(), B.conf(), minConf);
 
         }
     },
@@ -100,27 +100,27 @@ public enum NALTruth implements TruthFunc {
     },
 
 
-    /**
-     * polarizes according to an implication belief and its effective negation reduction
-     * TODO rename 'PB' to 'Sym'
-     */
-    DeductionPB() {
-        @Override
-        public Truth apply(Truth T, Truth B, NAR n, float minConf) {
-            if (B.isNegative()) {
-                Truth d = Deduction.apply(T.neg(), B.neg(), n, minConf);
-                return d != null ? d.neg() : null;
-            } else {
-                return Deduction.apply(T, B, n, minConf);
-            }
-        }
-    },
+//    /**
+//     * polarizes according to an implication belief and its effective negation reduction
+//     * TODO rename 'PB' to 'Sym'
+//     */
+//    DeductionPB() {
+//        @Override
+//        public Truth apply(Truth T, Truth B, NAR n, float minConf) {
+//            if (B.isNegative()) {
+//                Truth d = Deduction.apply(T.neg(), B.neg(), n, minConf);
+//                return d != null ? d.neg() : null;
+//            } else {
+//                return Deduction.apply(T, B, n, minConf);
+//            }
+//        }
+//    },
 
 
     Induction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.induction(T, B, minConf);
+            return TruthFunctions2.induction(T, B, minConf);
         }
     },
 
@@ -144,12 +144,12 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap AbductionRecursive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
-            return Abduction.apply(B, T, n, minConf);
-        }
-    },
+//    @AllowOverlap AbductionRecursive() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
+//            return Abduction.apply(B, T, n, minConf);
+//        }
+//    },
 
 
     /**

@@ -141,6 +141,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                         return +1;
                     break;
                 case CONJ:
+                    if (x.op().statement && x.hasAny(Op.VAR_DEP))
+                        return +1; //necessary for certain NAL6 unification cases
 //                    if (depth == 1 && x.op().statement)
 //                    //if (depth == 1 && x.op().statement)
 ////                    //if (x.op()==IMPL || x.op()==INH)
