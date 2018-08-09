@@ -129,7 +129,8 @@ public class NARio extends NAgentX {
         });
 
 
-        initButton();
+        //initButton();
+        initBipolar();
 
 
         Signal dvx = senseNumberDifference($$("vx(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
@@ -221,7 +222,7 @@ public class NARio extends NAgentX {
 
     }
 
-    public void initTriState() {
+    void initTriState() {
         actionTriState($.inh($.the("x"), id), i -> {
             boolean n, p;
             switch (i) {

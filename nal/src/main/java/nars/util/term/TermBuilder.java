@@ -475,7 +475,7 @@ public abstract class TermBuilder {
 
 
                 assert u.length > 1;
-                Conj c = new Conj();
+                Conj c = new Conj(u.length);
                 long sdt = dt == DTERNAL ? ETERNAL : 0;
                 for (Term x : u) {
                     if (!c.add(sdt, x))

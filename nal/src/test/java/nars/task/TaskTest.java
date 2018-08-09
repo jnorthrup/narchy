@@ -171,7 +171,7 @@ class TaskTest {
     @Test
     void testValid() throws Narsese.NarseseException {
         NAR tt = NARS.shell();
-        Task t = $.task("((&&,#1,(#1 &&+0 #3),(#2 &&+0 #3),(#2 &&+0 (toothbrush-->here))) ==>+0 lighter(I,toothbrush))", BELIEF, 1f, 0.9f).apply(tt);
+        Task t = $.task("((&&,#1,(#1 &| #3),(#2 &| #3),(#2 &| a)) =|> b)", BELIEF, 1f, 0.9f).apply(tt);
         assertNotNull(t);
         Concept c = t.concept(tt,true);
         assertNotNull(c);

@@ -1252,4 +1252,13 @@ class TemporalTermTest {
 
     }
 
+    @Test public void testInvalidImpls() {
+        for (String s : new String[] {
+                "(--y =|> y)",
+                "(--(x &| y) =|> y)",
+                "(--(--x &| y) =|> y)"
+        })
+            assertEquals(Null, $$(s));
+    }
+
 }

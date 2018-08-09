@@ -171,10 +171,11 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public void remove( Term entry) {
-        table.remove(entry);
-        
+    public Termed remove(Term entry) {
+        PLinkHashCached<Termed> e = table.remove(entry);
+        return e!=null ? e.id : null;
     }
+
     @Override
     public Stream<Termed> stream() {
         return table.stream().map(Supplier::get);

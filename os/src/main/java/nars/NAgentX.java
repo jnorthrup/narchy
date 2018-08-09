@@ -327,7 +327,12 @@ abstract public class NAgentX extends NAgent {
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(32, n);
 
-        Inperience inp = new Inperience(n, 32);
+        {
+            new Inperience.Believe(n, 32);
+            new Inperience.Want(n, 32);
+            new Inperience.Wonder(n, 8);
+            new Inperience.Plan(n, 8);
+        }
 
 
         try {

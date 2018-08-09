@@ -41,8 +41,8 @@ public class MapConceptIndex extends MaplikeConceptIndex {
 
 
     @Override
-    public void remove(Term entry) {
-        concepts.remove(entry);
+    public Termed remove(Term entry) {
+        return concepts.remove(entry);
     }
 
     @Override

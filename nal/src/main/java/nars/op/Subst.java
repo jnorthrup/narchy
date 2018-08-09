@@ -1,5 +1,6 @@
 package nars.op;
 
+import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
@@ -15,7 +16,7 @@ import static nars.Op.Null;
  * if STRICT is 4th argument, then there will only be a valid result
  * if the input has changed (not if nothing changed, and not if the attempted change had no effect)
  */
-public class Subst extends Functor implements Functor.InlineFunctor {
+public class Subst extends Functor implements Functor.InlineFunctor, The {
 
     
     public final static Term STRICT = Atomic.the("strict");

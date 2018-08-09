@@ -18,10 +18,22 @@ import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DynamicImplTest {
+    NAR n = NARS.shell();
+
+    @Test void eligibleDynamicImpl() {
+        //((--,(([add(#1,2)]<->[#1])&|equal(#1,0)))=|>([add(#1,2)]<->[#1]))
+        assertTrue(n.conceptualize($$("((x && y) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable);
+        assertTrue(n.conceptualize($$("(((x,#1) && y) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable); //#1 not shared between components
+        assertFalse(n.conceptualize($$("((#1 && (y,#1)) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable); //raw depvar componnet
+        assertFalse(n.conceptualize($$("(((x,#1) && (y,#1)) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable);
+        assertFalse(n.conceptualize($$("(((x,$1) && y) ==> (a,$1))")).beliefs() instanceof DynamicTruthBeliefTable); //indepvar shared between subj and impl
+    }
+    @Test void eligibleDynamicImpl2() {
+        assertFalse(n.conceptualize($$("(((x,#1) && y) ==> (a,#1))")).beliefs() instanceof DynamicTruthBeliefTable); //depvar shared between subj and impl
+    }
 
     @Test
     void testDynamicImplSubj() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
         n.believe("(x ==> a)", 1f, 0.9f);
         n.believe("(y ==> a)", 1f, 0.9f);
         //            n.believe("a:y", 1f, 0.9f);

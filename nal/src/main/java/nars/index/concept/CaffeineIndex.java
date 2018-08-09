@@ -71,8 +71,8 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     }
 
     @Override
-    public void remove(Term x) {
-        concepts.invalidate(x);
+    public Termed remove(Term x) {
+        return concepts.asMap().remove(x);
     }
 
 
@@ -103,9 +103,8 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
         Termed y;
         if (createIfMissing)
             y = concepts.get(x, nar.conceptBuilder::apply);
-        else {
+        else
             y = concepts.getIfPresent(x);
-        }
 
         if (createIfMissing && weightDynamic && y!=null)
             concepts.put(x, y); 

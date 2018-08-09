@@ -44,8 +44,8 @@ public class ProxyConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public void remove(Term entry) {
-        
+    public Termed remove(Term entry) {
+        return ref.remove(entry);
     }
 
     @Override

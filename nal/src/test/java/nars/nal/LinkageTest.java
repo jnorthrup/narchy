@@ -184,6 +184,8 @@ class LinkageTest extends NALTest {
                     Term e = entry2.get();
                     if (target.equals(e))
                         return true;
+                    if (!e.op().conceptualizable)
+                        continue;
 
                     Concept ee = nar.concept(e);
                     if (ee != null && target.equals(ee))

@@ -172,6 +172,9 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                             Term x = stmtDecompose(op, subjOrPred, y, common,
                                     ixTernal ? DTERNAL : occ, union);
 
+                            if (x == Null)
+                                return false;
+
                             return each.accept(x, subStart, subEnd);
                         }
                         , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
@@ -343,12 +346,18 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
         assert (!(s == null || p == null));
 
+        Term y;
         if (dt == DTERNAL) {
-            return superOp.the(s, p);
+            y = superOp.the(s, p);
         } else {
             assert (superOp == IMPL);
-            return superOp.the(s, dt, p);
+            y = superOp.the(s, dt, p);
         }
+
+        if (!y.op().conceptualizable)
+            return Null; //throw new WTF();
+
+        return y;
 
     }
 

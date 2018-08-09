@@ -7,7 +7,7 @@ import nars.index.concept.TreeConceptIndex;
 import nars.term.atom.Atomic;
 import nars.util.term.TermBytes;
 import nars.util.term.TermRadixTree;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -67,31 +67,38 @@ class TermRadixTreeTest {
         int preSize = index.size();
 
         String[] terms = {
-                "x",
-                "(x)", "(xx)", "(xxx)",
+                "x", "y", "z",
+                "(x)",
                 "(x,y)", "(x,z)",
                 "(x --> z)", "(x <-> z)",
                 "(x&&z)"
         };
         HashSet<Term> input = new HashSet();
         for (String s : terms) {
-            @NotNull Term ts = $(s);
-            input.add(ts);
-            index.get(ts, true);
+            Term x = $(s).concept();
+            input.add(x);
+
+            @Nullable Termed y = index.get(x, true);
+
+//            System.out.println(index.concepts.prettyPrint());
+
+            assertEquals(x.concept(), y.term(),
+                    ()->y + " is " + y.getClass() + " and should have term equal to " + x.concept());
         }
 
         assertEquals(terms.length + preSize, index.size());
 
+        //check again
         for (Term x : input)
-            assertNotNull(index.get(x,false));
+            assertEquals(x.concept(), index.get(x,false).term());
 
 
-        
-
-        
-
-        index.concepts.prettyPrint();
+        System.out.println(index.concepts.prettyPrint());
         index.print(System.out);
+        
+
+        
+
 
 
 

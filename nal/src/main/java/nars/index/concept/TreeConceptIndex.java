@@ -19,12 +19,13 @@ import java.util.stream.Stream;
 
 /**
  * concurrent radix tree index
+ * TODO restore byte[] sequence writing that doesnt prepend atom length making leaves unfoldable by natural ordering
  */
 public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     float maxFractionThatCanBeRemovedAtATime = 0.05f;
     float descentRate = 0.5f;
-    
+
 
     public final TermRadixTree<Termed> concepts;
 
@@ -34,8 +35,9 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
         this.concepts = new TermRadixTree<>() {
 
-            @Override public AbstractBytes key(Object k) {
-                return TermBytes.termByVolume(((Termed)k).term());
+            @Override
+            public AbstractBytes key(Object k) {
+                return TermBytes.termByVolume(((Termed) k).term().concept());
             }
 
             @Override
@@ -55,19 +57,11 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         this.sizeLimit = sizeLimit;
 
 
-
-
-
-
-
-
-
-
     }
 
     @Override
     public Stream<Termed> stream() {
-        return Streams.stream( concepts.iterator() );
+        return Streams.stream(concepts.iterator());
     }
 
     @Override
@@ -76,27 +70,6 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
         nar.onCycle(this);
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private void forgetNext() {
@@ -133,21 +106,19 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
                     int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
 
                     if (subTreeSize > 0) {
-                        
+
                         concepts.removeHavingAcquiredWriteLock(s, true);
-                        
-                          
+
+
                     }
 
-                    s = null; 
+                    s = null;
                 }
 
             }
         } finally {
             concepts.releaseWriteLock();
         }
-
-
 
 
     }
@@ -160,26 +131,17 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         List<MyConcurrentRadixTree.Node> l = concepts.root.getOutgoingEdges();
         int levels = l.size();
 
-        
-        float r = rng.nextFloat();
-        r = (r * r); 
-        
-        
 
-        return l.get( Math.round((levels - 1) * (1 - r)) );
+        float r = rng.nextFloat();
+        r = (r * r);
+
+
+        return l.get(Math.round((levels - 1) * (1 - r)));
     }
 
     private int sizeEst() {
         return concepts.sizeEst();
     }
-
-
-
-
-
-
-
-
 
 
     private static boolean removeable(Concept c) {
@@ -214,8 +176,8 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
         concepts.acquireWriteLock();
         try {
-            Termed existing = concepts.get(k); 
-            if (existing!=target && !(existing instanceof PermanentConcept)) {
+            Termed existing = concepts.get(k);
+            if (existing != target && !(existing instanceof PermanentConcept)) {
                 concepts.put(k, target);
             }
         } finally {
@@ -235,24 +197,27 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     @Override
     public int size() {
-        return concepts.size(); 
+        return concepts.size();
     }
 
 
     @Override
     public String summary() {
-        
+
         return concepts.sizeEst() + " concepts";
     }
 
 
     @Override
-    public void remove(Term entry) {
+    public Termed remove(Term entry) {
         AbstractBytes k = key(entry);
         Termed result = concepts.get(k);
         if (result != null) {
-            concepts.remove(k);
+            boolean removed = concepts.remove(k);
+            if (removed)
+                return result;
         }
+        return null;
     }
 
 
@@ -264,54 +229,6 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     public void accept(NAR eachFrame) {
         forgetNext();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

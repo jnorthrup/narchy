@@ -1,5 +1,6 @@
 package nars.term.compound.util;
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
@@ -1041,15 +1042,20 @@ public class Conj extends ByteAnonMap {
                         if (x.size() == 1)
                             return x.first();
                         else {
-                            //return Op.compoundExact(CONJ, dt, x.toArray(EmptyTermArray)); //concatenate in parallel
-                            return CONJ.the(dt, x.toArray(EmptyTermArray)); //concatenate in parallel
+
+                            Term[] xx = x.toArray(EmptyTermArray);
+                            if (Util.and(xxx -> xxx.unneg().op()!=CONJ, xx))
+                                return Op.compoundExact(CONJ, dt, xx); //build direct
+                            else
+                                return CONJ.the(dt, xx); //build with potential reduction
                         }
                     } else {
                         //Distribute (un-factor) z to each component of the sequence
                         Conj c = new Conj();
-                        theSequence.eventsWhile((whn, wht) -> {
-                            return c.add(whn, CONJ.the(0, wht, z));
-                        }, 0, true /*false*/, false, true, 0);
+                        int dtdt = dt;
+                        theSequence.eventsWhile((whn, wht) ->
+                                c.add(whn, CONJ.the(dtdt, wht, z)),
+                        0, true /*false*/, false, true, 0);
                         return c.term();
                     }
                 }

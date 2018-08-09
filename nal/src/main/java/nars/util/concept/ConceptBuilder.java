@@ -1,6 +1,5 @@
 package nars.util.concept;
 
-import jcog.TODO;
 import jcog.pri.bag.Bag;
 import nars.Op;
 import nars.Task;
@@ -19,6 +18,7 @@ import nars.term.*;
 import nars.term.compound.util.Image;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -68,7 +68,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                     Concept x = cc.apply(conceptor, Operator.args(t));
                     if (x != null)
-                        return (TaskConcept) x;
+                        return x;
                 }
             }
 
@@ -88,6 +88,30 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);
+    }
+    public static boolean validDynamicSubtermsAndNoSharedVars(Term conj) {
+        Subterms conjSubterms = conj.subterms();
+        if (validDynamicSubterms(conjSubterms)) {
+            if (conjSubterms.hasAny(VAR_DEP)) {
+                Map<Term,Term> varLocations = new UnifiedMap(conjSubterms.subs());
+
+                return conj.eventsWhile((when,event) -> {
+                   if (event.hasAny(VAR_DEP)) {
+                       boolean valid = event.recurseTerms((Compound x)->x.hasAny(VAR_DEP), (Term possiblyVar, Compound parent) -> {
+                           if (possiblyVar.op()==VAR_DEP)
+                               if (varLocations.putIfAbsent(possiblyVar, event)!=null)
+                                   return false;
+                           return true;
+                       }, null);
+                       if (!valid)
+                           return false;
+                   }
+                   return true;
+                }, 0, true, true, true, 0);
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -111,18 +135,21 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             //TODO not done yet
             case IMPL: {
                 Term su = t.sub(0);
+                if (su.hasAny(Op.VAR_INDEP))
+                    return null;
                 Term pu = t.sub(1);
+                if (pu.hasAny(Op.VAR_INDEP))
+                    return null;
 
                 Op suo = su.op();
                 //subject has special negation union case
                 boolean subjDyn = (
-                    suo == CONJ && validDynamicSubterms(su.subterms())
+                    suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
                         ||
-                    suo == NEG && (su.unneg().op()==CONJ && validDynamicSubterms(su.unneg().subterms()))
+                    suo == NEG && (su.unneg().op()==CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
                 );
-                boolean predDyn = (pu.op() == CONJ && validDynamicSubterms(pu.subterms()));
+                boolean predDyn = (pu.op() == CONJ && validDynamicSubtermsAndNoSharedVars(pu));
 
-                //TODO if subj is negated
 
                 if (subjDyn && predDyn) {
                     //choose the simpler to dynamically calculate for
@@ -147,7 +174,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             }
 
             case CONJ:
-                if (validDynamicSubterms(t.subterms()))
+                if (validDynamicSubtermsAndNoSharedVars(t))
                     return DynamicTruthModel.DynamicConjTruth.ConjIntersection;
                 break;
 
@@ -241,11 +268,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return apply(x);
     }
 
-    public final Termed apply(Term _x) {
-
-        Term x = _x.the();
-        if (x == null)
-            throw new TODO(_x + " seems non-immutable");
+    public final Termed apply(Term x) {
 
         Concept c = Task.taskConceptTerm(x) ? taskConcept(x) : nodeConcept(x);
         if (c == null)

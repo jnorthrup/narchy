@@ -8,8 +8,6 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.Variable;
-import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -64,7 +62,7 @@ public abstract class ConceptIndex implements Iterable<Termed> {
      */
     public abstract String summary();
 
-    public abstract void remove(Term entry);
+    @Nullable public abstract Termed remove(Term entry);
 
     public void print(PrintStream out) {
         stream().forEach(out::println);
@@ -95,20 +93,18 @@ public abstract class ConceptIndex implements Iterable<Termed> {
             return ((Concept) _x);
 
         Term x = _x.term();
-        if (x instanceof Bool || x instanceof Variable)
-            return null;
-
+        if (!x.op().conceptualizable)
+            throw new WTF();
 
         Term xx = x.concept();
-        if (xx == null)
+        if (x!=xx && (xx == null || !xx.op().conceptualizable))
             throw new WTF();
-//        if (!(xx.op().conceptualizable)) {
-//
-//
-//            return null;
-//        }
 
-        return (Concept) get(xx, createIfMissing);
+        Term xxx = xx.the();
+        if (xxx == null)
+            throw new WTF(_x + " not immutable");
+
+        return (Concept) get(xxx, createIfMissing);
     }
 
     /**

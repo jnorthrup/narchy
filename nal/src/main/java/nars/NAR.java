@@ -1097,7 +1097,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final Concept on(PermanentConcept c) {
 
-        Concept existing = concept(c);
+        Termed existing = concepts.remove(c.term());
         if ((existing != null)) {
             if (existing != c) {
 

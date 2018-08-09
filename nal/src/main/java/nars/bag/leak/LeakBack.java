@@ -33,7 +33,7 @@ abstract public class LeakBack extends TaskLeak {
         return i;
     }
 
-    protected void input(ITask x) {
+    protected final void input(ITask x) {
         in.input(x);
     }
 
