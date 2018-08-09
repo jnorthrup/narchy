@@ -10,22 +10,24 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
 
-    A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Deduction, Goal:InductionPB, Time:TaskPlusBeliefDT)
-     B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Belief:DeductionRecursive, Goal:InductionPB, Time:TaskPlusBeliefDT)
-    //B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B), (Belief:DeductionPN, Goal:InductionPN, Time:TaskPlusBeliefDT)
+    A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Deduction, Goal:Induction, Time:TaskPlusBeliefDT)
+     B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
+    A, (A ==> C), --is(A,"#"),--is(C,"#") |- --C, (Belief:DeductionPN, Goal:InductionPN, Time:TaskPlusBeliefDT)
+     B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(--C,A,B,strict), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
         B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((A ==> C),A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
           //B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
           //B, (A ==> C), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskPlusBeliefDT)
 
     A, (--A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:DeductionN, Goal:InductionN, Time:TaskPlusBeliefDT)
      B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
-    //B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B), (Belief:DeductionNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
+    A, (--A ==> C), --is(A,"#"),--is(C,"#") |- --C, (Belief:DeductionNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
+     B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(--C,A,B,strict), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
         B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((--A ==> C),A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
           //B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
           //B, (--A ==> C), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskPlusBeliefDT)
 
-    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:Deduction, Time:TaskMinusBeliefDT)
-    //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
         B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((C ==> A),A,B), (Punctuation:Question, Time:TaskMinusBeliefDT)
           //B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskMinusBeliefDT)
           //B, (C ==> A), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskMinusBeliefDT)

@@ -67,12 +67,12 @@ public class AnonVector extends TermVector implements FullyInternable {
     }
 
 
-    //    @Override
+//        @Override
 //    public @Nullable Subterms transformSubs(TermTransform f) {
 //        @Nullable Subterms s = super.transformSubs(f);
-////        if (s!=this && s instanceof AnonVector && equals(s))
-////            return this; //HACK
-////        else
+//        if (s!=this && equals(s))
+//            return this; //HACK
+//        else
 //            return s;
 //    }
 

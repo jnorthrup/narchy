@@ -266,15 +266,15 @@ public class Conj extends ByteAnonMap {
 
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
         Conj c = new Conj();
-        if (aStart == bStart) {
-            if (c.addAuto(a)) {
-                c.addAuto(b);
-            }
-        } else {
+//        if (aStart == bStart) {
+//            if (c.addAuto(a)) {
+//                c.addAuto(b);
+//            }
+//        } else {
             if (c.add(aStart, a)) {
                 c.add(bStart, b);
             }
-        }
+//        }
         return c.term();
     }
 

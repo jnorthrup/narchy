@@ -555,16 +555,20 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (xo == IMPL) {
             return x.dt(dt - x.sub(0).dtRange());
         } else if (xo == CONJ) {
-            int early = Op.conjEarlyLate(x, true);
-            if (early == 1)
-                dt = -dt;
+            if (dt == 0 || dt == DTERNAL) {
+                return x.dt(dt);
+            } else {
+                int early = Op.conjEarlyLate(x, true);
+                if (early == 1)
+                    dt = -dt;
 
-            Term xEarly = x.sub(early);
-            Term xLate = x.sub(1 - early);
+                Term xEarly = x.sub(early);
+                Term xLate = x.sub(1 - early);
 
-            return Conj.conjMerge(
-                    xEarly, 0,
-                    xLate, dt);
+                return Conj.conjMerge(
+                        xEarly, 0,
+                        xLate, dt);
+            }
         } else {
 
         }
@@ -708,7 +712,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 if (!(n.id() instanceof Absolute))
                     return true;
 
-                long pathEndTime = ((Event)n.id()).start();
+                long pathEndTime = n.id().start();
 
 
                 long startTime;
@@ -881,7 +885,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
         @Nullable Iterator<FromTo<Node<Event,nars.time.TimeSpan>, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n) {
-            Iterator<Event> x = byTerm.get(((Event)n.id()).id).iterator();
+            Iterator<Event> x = byTerm.get(n.id().id).iterator();
             return x.hasNext() ?
                     Iterators.transform(
                             Iterators.filter(Iterators.transform(
@@ -918,7 +922,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     @Nullable
     protected long[] pathDT(Node<Event, TimeSpan> n, Term a, Term b, List<BooleanObjectPair<FromTo<Node<Event,nars.time.TimeSpan>, TimeSpan>>> path) {
-        Term endTerm = ((Event)n.id()).id;
+        Term endTerm = n.id().id;
         int adjEnd;
         boolean endA = ((adjEnd = choose(a.subTimes(endTerm))) == 0);
         boolean endB = !endA &&

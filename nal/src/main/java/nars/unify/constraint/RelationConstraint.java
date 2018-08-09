@@ -25,7 +25,7 @@ abstract public class RelationConstraint extends MatchConstraint {
     }
 
     protected RelationConstraint(Term x, Term y, String func, Term... args) {
-        this(x, y, $.func(func, args.length > 0 ? $.pFast(y, $.pFast(args)) : y));
+        this(x, y, $.func(func, x, args.length > 0 ? $.pFast(y, $.pFast(args)) : y));
     }
 
     public RelationConstraint neg() {

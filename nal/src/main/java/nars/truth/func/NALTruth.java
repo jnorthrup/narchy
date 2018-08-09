@@ -1,6 +1,5 @@
 package nars.truth.func;
 
-import jcog.Util;
 import jcog.util.Reflect;
 import nars.$;
 import nars.NAR;
@@ -36,8 +35,17 @@ public enum NALTruth implements TruthFunc {
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            return TruthFunctions2.deduction(T, B.freq(), B.conf(), minConf);
+            return TruthFunctions.deduction(T, B.freq(), B.conf(), minConf);
+            //return TruthFunctions2.deduction(T, B.freq(), B.conf(), minConf);
 
+        }
+    },
+
+    Induction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.induction(T, B, minConf);
+            //return TruthFunctions2.induction(T, B, minConf);
         }
     },
 
@@ -117,12 +125,6 @@ public enum NALTruth implements TruthFunc {
 //    },
 
 
-    Induction() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions2.induction(T, B, minConf);
-        }
-    },
 
     InductionPB() {
         @Override
@@ -139,7 +141,6 @@ public enum NALTruth implements TruthFunc {
     Abduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
-
             return Induction.apply(B, T, n, minConf);
         }
     },
@@ -164,12 +165,7 @@ public enum NALTruth implements TruthFunc {
     AbductionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-
-            if (B.isNegative()) {
-                return Abduction.apply(T.neg(), B.neg(), m, minConf);
-            } else {
-                return Abduction.apply(T, B, m, minConf);
-            }
+            return InductionPB.apply(B, T, m, minConf);
         }
     },
 
@@ -211,6 +207,7 @@ public enum NALTruth implements TruthFunc {
 
         }
     },
+
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -233,21 +230,21 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    /**
-     * special truth function for implication composition
-     */
-    Implsition() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            float tc = T.conf();
-            float bc = B.conf();
-            float c = tc * bc;
-            if (c < minConf) return null;
-            float f = Util.lerp(bc / (tc + bc), T.freq(), B.freq());
-            return $.t(f, c);
-
-        }
-    },
+//    /**
+//     * special truth function for implication composition
+//     */
+//    Implsition() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            float tc = T.conf();
+//            float bc = B.conf();
+//            float c = tc * bc;
+//            if (c < minConf) return null;
+//            float f = Util.lerp(bc / (tc + bc), T.freq(), B.freq());
+//            return $.t(f, c);
+//
+//        }
+//    },
     UnionSym() {
         @Override
         public @Nullable Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
@@ -306,42 +303,42 @@ public enum NALTruth implements TruthFunc {
     },
 
 
-    @AllowOverlap DecomposePositiveNegativeNegative() {
+    DecomposePositiveNegativeNegative() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, true, false, false, minConf);
         }
     },
 
-    @AllowOverlap DecomposeNegativeNegativeNegative() {
+    DecomposeNegativeNegativeNegative() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, false, false, false, minConf);
         }
     },
 
-    @AllowOverlap DecomposePositiveNegativePositive() {
+    DecomposePositiveNegativePositive() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, true, false, true, minConf);
         }
     },
 
-    @AllowOverlap DecomposePositivePositiveNegative() {
+    DecomposePositivePositiveNegative() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, true, true, false, minConf);
         }
     },
 
-    @AllowOverlap DecomposeNegativePositivePositive() {
+    DecomposeNegativePositivePositive() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, false, true, true, minConf);
         }
     },
 
-    @AllowOverlap DecomposePositivePositivePositive() {
+    DecomposePositivePositivePositive() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, true, true, true, minConf);
