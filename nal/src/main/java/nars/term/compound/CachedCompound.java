@@ -55,7 +55,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         }
 
         @Override
-        public Term root() {
+        public final Term root() {
             return this;
         }
 

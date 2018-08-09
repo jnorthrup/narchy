@@ -187,7 +187,8 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("yet");
+        concepts.clear();
+        //throw new UnsupportedOperationException("yet");
     }
 
     @Override

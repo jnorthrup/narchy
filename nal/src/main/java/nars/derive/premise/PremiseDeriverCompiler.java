@@ -179,7 +179,7 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PREDICATE<Derivation> compile(TermTrie<PREDICATE<Derivation>, DeriveAction> trie, Function<PREDICATE<Derivation>, @Nullable PREDICATE<Derivation>> each) {
+    static PREDICATE<Derivation> compile(TermTrie<PREDICATE<Derivation>, DeriveAction> trie, Function<PREDICATE<Derivation>, PREDICATE<Derivation>> each) {
         Collection<PREDICATE<Derivation>> bb = compile(trie.root);
 
         PREDICATE<Derivation> tf = FORK.fork(bb, (Function<PREDICATE<Derivation>[], PREDICATE<Derivation>>) FORK::new);

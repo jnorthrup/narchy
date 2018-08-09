@@ -228,7 +228,7 @@ public abstract class TermBuilder {
 
             switch (predicate.op()) {
                 case IMPL: {
-                    return IMPL.the(predicate.dt(), CONJ.the(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1));
+                    return IMPL.the(predicate.dt(), CONJ.the(subject, dt, predicate.sub(0)), predicate.sub(1));
                 }
 
 
@@ -326,15 +326,17 @@ public abstract class TermBuilder {
 
                 if (peChange[0]) {
 
-                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
+                    int pdt = predicate.dt();
                     Term newPredicate;
                     if (pe.size() == 1) {
                         newPredicate = pe.getOnly().getTwo();
-                    } else if (predicate.dt() == DTERNAL) {
+                    } else if (pdt == DTERNAL || pdt == 0) {
+
+                        long cdt = pdt == DTERNAL ? ETERNAL : 0;
 
                         Conj c = new Conj();
                         for (LongObjectPair<Term> aPe: pe) {
-                            if (!c.add(ETERNAL, aPe.getTwo()))
+                            if (!c.add(cdt, aPe.getTwo()))
                                 break;
                         }
                         newPredicate = c.term();
@@ -342,6 +344,7 @@ public abstract class TermBuilder {
                         newPredicate = Conj.conj(pe);
                     }
 
+                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
                     return IMPL.the(ndt, subject, newPredicate);
                 }
 

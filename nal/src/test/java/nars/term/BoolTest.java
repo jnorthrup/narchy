@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Bool and Tautology tests
  */
-class BoolTest {
+public class BoolTest {
 
     @Test
     void testBoolType() {

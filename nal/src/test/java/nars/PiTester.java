@@ -5,8 +5,10 @@ import jcog.data.list.FasterList;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.term.AnonTest;
+import nars.term.BoolTest;
 import nars.term.TermTest;
-import nars.term.compound.CachedCompound;
+import nars.term.VariableTest;
+import nars.term.compound.ConjTest;
 import org.pitest.classinfo.ClassInfo;
 import org.pitest.classpath.ClassloaderByteArraySource;
 import org.pitest.classpath.CodeSource;
@@ -14,6 +16,7 @@ import org.pitest.classpath.PathFilter;
 import org.pitest.classpath.ProjectClassPaths;
 import org.pitest.coverage.CoverageDatabase;
 import org.pitest.coverage.CoverageGenerator;
+import org.pitest.coverage.CoverageSummary;
 import org.pitest.coverage.execute.CoverageOptions;
 import org.pitest.coverage.execute.DefaultCoverageGenerator;
 import org.pitest.coverage.export.DefaultCoverageExporter;
@@ -25,6 +28,7 @@ import org.pitest.mutationtest.MutationConfig;
 import org.pitest.mutationtest.MutationResult;
 import org.pitest.mutationtest.build.*;
 import org.pitest.mutationtest.config.*;
+import org.pitest.mutationtest.engine.MutationDetails;
 import org.pitest.mutationtest.engine.MutationEngine;
 import org.pitest.mutationtest.engine.gregor.config.GregorEngineFactory;
 import org.pitest.mutationtest.execute.MutationAnalysisExecutor;
@@ -42,38 +46,44 @@ import org.pitest.util.Timings;
 import java.util.*;
 import java.util.function.Predicate;
 
-/** executes pitest
+/**
+ * executes pitest
  * https:
- * */
+ */
 public class PiTester {
 
     public static void main(String[] args) {
-        
 
 
-
-
-
-
-
-
-        
         Predicate<String> testFilter =
                 t ->
                         t.equals(NAL1Test.class.getName())
-                        || t.equals(NAL1MultistepTest.class.getName())
-                        || t.equals(TermTest.class.getName())
-                        || t.equals(AnonTest.class.getName())
-                ;
-        run(CachedCompound.SimpleCachedCompound.class, testFilter);
+                                || t.equals(NAL1MultistepTest.class.getName())
+                                || t.equals(TermTest.class.getName())
+                                || t.equals(AnonTest.class.getName()) ||
+                                t.equals(BoolTest.class.getName()) ||
+                                t.equals(ConjTest.class.getName()) ||
+                                t.equals(VariableTest.class.getName()
+                                );
+
+        run(
+                //CachedCompound.SimpleCachedCompound.class,
+                Set.of("*CachedCompound*", "*Conj"),
+
+                testFilter);
+
     }
 
 
-    private static void run(final Class<?> clazz, final Predicate<String> testFilter) {
+    private static void run(final Class mutee, final Predicate<String> testFilter) {
+        final Set<String> mutees = Collections.singleton(mutee.getName() + "*");
+        run(mutees, testFilter);
+    }
+
+    private static void run(final Set<String> mutees, final Predicate<String> testFilter) {
 
         int concurrency = Util.concurrency();
 
-        
 
         final Collection<MutationResult> results = new FasterList().asSynchronized();
         MutationStatisticsListener stats = new MutationStatisticsListener() {
@@ -91,23 +101,16 @@ public class PiTester {
         );
 
 
-
         final ReportOptions data = new ReportOptions();
 
         data.setNumberOfThreads(concurrency);
         data.setReportDir("/tmp/pitest");
-        
-
-
-
-
-
+        data.setExportLineCoverage(true);
 
 
         data.setTargetTests(Set.of(testFilter));
         data.setDependencyAnalysisMaxDistance(-1);
 
-        final Set<String> mutees = Collections.singleton(clazz.getName() + "*");
         data.setTargetClasses(mutees);
 
         data.setTimeoutConstant(PercentAndConstantTimeoutStrategy.DEFAULT_CONSTANT);
@@ -126,7 +129,6 @@ public class PiTester {
                     config,
                     data.isVerbose(), data.getDependencyAnalysisMaxDistance());
 
-            
 
             final LaunchOptions launchOptions = new LaunchOptions(agent,
                     new DefaultJavaExecutableLocator(), data.getJvmArgs(),
@@ -149,7 +151,7 @@ public class PiTester {
                                     new UndatedReportDirCreationStrategy()
                             )
                     ),
-                    
+
                     timings, false);
 
             final CoverageDatabase coverageData = coverageGenerator.calculateCoverage();
@@ -181,23 +183,31 @@ public class PiTester {
                     new MutationSource(
                             mutationConfig,
                             new DefaultTestPrioritiser(coverageData),
-                                new ClassloaderByteArraySource(
+                            new ClassloaderByteArraySource(
                                     IsolationUtils.getContextClassLoader()),
                             CompoundMutationInterceptor.nullInterceptor()),
                     new DefaultGrouper(0));
 
             mae.run(builder.createMutationTestUnits(FCollection.map(code.getCode(),
-                            ClassInfo.toClassName())));
-
-
+                    ClassInfo.toClassName())));
 
 
             results.forEach(m -> {
 
+                MutationDetails d = m.getDetails();
+                System.out.println(m.getStatusDescription() + " " + d.getFilename() + " " +
+                        d.getMethod() + " " + " line " + d.getLineNumber());
+                System.out.print("\t");
                 System.out.println(m);
             });
+            stats.getStatistics().getScores().forEach(s -> {
+                s.report(System.out);
+                System.out.println();
+            });
             stats.getStatistics().report(System.out);
-            System.out.println("coverage=" + coverageData.createSummary().getCoverage() + "%");
+
+            CoverageSummary cs = coverageData.createSummary();
+            System.out.println("coverage=" + cs.getCoverage() + "% (" + cs.getNumberOfCoveredLines() + "/" + cs.getNumberOfLines() + ")");
 
         } finally {
             agent.close();

@@ -56,7 +56,7 @@ public class Finger {
     /**
      * widget above which this finger currently hovers
      */
-    public final AtomicReference<@Nullable Widget> touching = new AtomicReference<>();
+    public final AtomicReference<Widget> touching = new AtomicReference<>();
 
 
     public Finger() {

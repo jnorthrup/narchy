@@ -20,7 +20,7 @@ import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConjTest {
+public class ConjTest {
 
     @Test
     void testSimpleEternals() {

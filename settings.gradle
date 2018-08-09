@@ -8,6 +8,7 @@ include ':gp'
 include ':nal'
 include ':os'
 include ':lab'
+include ':app'
 
 //project(':util').projectDir = "$rootDir/util" as File
 //project(':ui').projectDir = "$rootDir/ui" as File
@@ -16,7 +17,4 @@ include ':lab'
 //project(':nal').projectDir = "$rootDir/nal" as File
 //project(':app').projectDir = "$rootDir/app" as File
 //project(':lab').projectDir = "$rootDir/lab" as File
-include 'logic:web'
-//findProject(':logic:web')?.name = 'logicweb'
-include 'app'
 

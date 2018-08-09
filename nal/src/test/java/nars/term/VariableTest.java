@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 8/28/15.
  */
-class VariableTest {
+public class VariableTest {
 
 
     @Test

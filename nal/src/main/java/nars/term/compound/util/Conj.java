@@ -978,18 +978,7 @@ public class Conj extends ByteAnonMap {
                     default: {
                         Term[] tt = Terms.sorted(t); /* sorted iff t is SortedSet */
                         if (theSequence == null) {
-//                        if (tt.length == 2) {
-//                            assert (dt == 0 || dt == DTERNAL);
-//                            return conjSeqFinal(dt, tt[0], tt[1]);
-//                        } else {
-////                        if (when == ETERNAL && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()==DTERNAL, tt)) {
-////                            z = CONJ.the(dt, tt);
-////                        } else {
-////                            if (when == 0 && jcog.Util.or((Term x) -> x.op()==CONJ && x.dt()!=DTERNAL))
-//                            //return CONJ.the(dt, tt);
-////                            else
                             return Op.compoundExact(CONJ, dt, tt);
-//                        }
                         } else {
 //                        boolean complex = false;
 //                        for (Term x : t) {
@@ -1016,7 +1005,7 @@ public class Conj extends ByteAnonMap {
 
                     int sdt = theSequence.dt();
                     if (sdt == XTERNAL && (dt==0 || dt == DTERNAL || dt == XTERNAL)) {
-                        Set<Term> az = new HashSet();
+                        Set<Term> az = new UnifiedSet();
                         for (Term aa : theSequence.subterms()) {
                             Term aazz = CONJ.the(aa, dt, z);
                             if (aazz == False)
@@ -1105,7 +1094,7 @@ public class Conj extends ByteAnonMap {
             stable2 = true;
             do {
 
-                d = disjComponents(t, when);
+                d = disjComponents(t);
                 if (d == null)
                     return; //no change
 
@@ -1187,8 +1176,14 @@ public class Conj extends ByteAnonMap {
                     Term du = disj.unneg();
 
 
-                    Term e = matchingEventsRemoved(du, t, when);
-                    if (e != du) {
+                    Term e = matchingEventsRemoved(du, t, when==ETERNAL ? DTERNAL : 0);
+                    if (e == False || e == Null) {
+                        t.clear();
+                        t.add(e);
+                        return;
+                    }
+
+                    if (e != du && e!=True) {
                         stable2 = false;
 
                         t.remove(disj);
@@ -1219,30 +1214,39 @@ public class Conj extends ByteAnonMap {
 
     }
 
-    private static Term matchingEventsRemoved(Term d, Set<Term> t, long at) {
+    private static Term matchingEventsRemoved(Term d, Set<Term> t, int dt) {
         if (d.dt() == DTERNAL /*commute(d.dt(), d.subs())*/) {
             SortedSet<Term> s = d.subterms().toSetSortedExcept(t::contains);
             if (s.size() < d.subs()) {
                 return CONJ.the(d.dt(), s.toArray(EmptyTermArray));
             }
-            return d;
         } else {
-            Conj remain = new Conj();
-            d.eventsWhile((when, what) -> {
-                if (at == ETERNAL || when == at) {
+            //TODO may not be necessary to construct this 'remain' Conj
+//            Conj remain = new Conj();
+            if (!d.eventsWhile((when, what) -> {
+                if (dt == DTERNAL || when == 0) { //only need to compare first event if not ETERNAL
+//                    if (what.equals(d))
+//                        return true; //skip, this is what we are comparing against
+
                     if (!t.contains(what)) {
-                        if (!remain.add(when, what))
-                            return false;
+//                        if (!remain.add(when, what))
+//                            return false;
+                    } else {
+                        //contradict
+                        //remain.term = False;
+                        return false;
                     }
                 }
                 return true;
-            }, 0, true, true, true, 0);
-            Term e = remain.term();
-            if (e.equals(d)) {
-                return d;
-            }
-            return e;
+            }, 0, true, true, true, 0))
+                return False;
+//            Term e = remain.term();
+//            if (e.equals(d)) {
+//                return d;
+//            }
+//            return e;
         }
+        return d;
     }
 
     private static boolean hasEvent(Term du, Set<Term> t, long at, boolean neg) {
@@ -1265,7 +1269,7 @@ public class Conj extends ByteAnonMap {
     }
 
     @Nullable
-    private static List<Term> disjComponents(Set<Term> t, long when) {
+    private static List<Term> disjComponents(Set<Term> t) {
         List<Term> d = null;
         for (Term x : t) {
             if (x.hasAll(NEG.bit | CONJ.bit)) {
@@ -1273,7 +1277,7 @@ public class Conj extends ByteAnonMap {
                     Term disj = x.unneg();
                     if (disj.op() == CONJ) {
                         int dt = disj.dt();
-                        if ((when == ETERNAL) || (when!=ETERNAL && dt == 0)) {
+                        /*if ((when == ETERNAL) || (when!=ETERNAL && dt == 0))*/ {
                             if (d == null)
                                 d = new FasterList<>(t.size());
                             d.add(x);

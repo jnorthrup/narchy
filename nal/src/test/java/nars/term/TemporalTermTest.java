@@ -131,7 +131,7 @@ class TemporalTermTest {
     }
     
     @Test public void testFactorDternalComponentIntoTemporals1() {
-        assertEquals("((a&|x) &&+1 (a&|y))", $$("((x &&+1 y) && a)").toString());
+        assertEquals("((a&&x) &&+1 (a&&y))", $$("((x &&+1 y) && a)").toString());
     }
     @Test public void testFactorDternalComponentIntoTemporals2() {
         assertEquals("((a&&x) &&+- (a&&y))", $$("((x &&+- y) && a)").toString());
@@ -424,10 +424,12 @@ class TemporalTermTest {
 
     @Test
     void testRetemporalization1() throws Narsese.NarseseException {
+        assertEquals(False, $$("((--,(x &&+1 x))&&x)"));
+        
         assertEquals(
                 "a(x,true)",
                 $(
-                        "a(x,(--,((--,((6-->ang) &&+1384 (6-->ang))) &&+- (6-->ang))))"
+                        "a(x,(--,((--,(x &&+1 x)) &&+- x)))"
                  ).temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).toString()
         );
     }
@@ -1240,15 +1242,36 @@ class TemporalTermTest {
         assertTrue(Task.taskConceptTerm(ss));
     }
 
-    @Test void testValidConjParallelContainingTerm() {
+    @Test void testValidConjDoubleNegativeWTF() {
+        assertEquals("(x &&+1 x)", $.$$("((x &&+1 x) && x)").toString());
+        assertEquals(False, $.$$("((x &&+1 x) && --x)"));
+
+        assertEquals("((--,x) &&+1 x)", $.$$("((--x &&+1 x) &| --x)").toString()); //matches at zero
+
+        assertEquals(False, $.$$("((--x &&+1 x) && x)"));
+        assertEquals(False, $.$$("((x &&+1 --x) && --x)"));
+        assertEquals("x", $.$$("(--(--x &&+1 x) &| x)").toString());
+
+        assertEquals(False, $.$$("((--x &&+1 x) &| (--x &&+1 --x))"));
+    }
+
+    @Test void testValidConjParallelContainingTermButSeparatedInTime0() {
         for (String s : new String[]{
+                "(x &&+100 (--,(x&|y)))",
+                "(x &&+100 ((--,(x&|y))&|a))"
+        })
+            assertEquals(s, $.$$(s).toString());
+    }
+
+    @Test void testValidConjParallelContainingTermButSeparatedInTime() {
+        for (String s : new String[]{
+                "((--,(&|,(--,L),(--,R),(--,angVel)))&|(--,(x&|y)))",
                 "(x &&+100 ((--,(&|,(--,L),(--,R),(--,angVel)))&|(--,(x&|y))))",
                 "(x &&+100 ((--,(x&|y))&|(--,z)))",
                 "(x &&+100 (--,(x&|y)))"
-        }){
-            assertEquals(s,
-                    $.$$(s).toString());
-        }
+        })
+            assertEquals(s, $.$$(s).toString());
+
 
     }
 
@@ -1258,7 +1281,7 @@ class TemporalTermTest {
                 "(--(x &| y) =|> y)",
                 "(--(--x &| y) =|> y)"
         })
-            assertEquals(Null, $$(s));
+            assertEquals(False, $$(s));
     }
 
 }

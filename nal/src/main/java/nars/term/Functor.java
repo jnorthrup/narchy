@@ -340,7 +340,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
 
-    public static final class LambdaFunctor extends Functor {
+    public static final class LambdaFunctor extends Functor implements The {
 
         private final Function<Subterms, Term> f;
 

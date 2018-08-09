@@ -67,7 +67,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         });
         reward("height", () -> state.score());
         reward("density", () -> {
-            return 1 - ((float) state.rowsFilled) / state.height;
+            return 1 - (float) state.rowsFilled / state.height;
 //            int filled = 0;
 //            for (float s : state.grid) {
 //                if (s > 0) {
@@ -101,7 +101,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     public static void main(String[] args) {
 
-        NAgentX.runRT((n) -> new Tetris(n, Tetris.tetris_width, Tetris.tetris_height), 30f);
+        NAgentX.runRT(n -> new Tetris(n, Tetris.tetris_width, Tetris.tetris_height), 30f);
 
     }
 
@@ -117,22 +117,24 @@ public class Tetris extends NAgentX implements Bitmap2D {
     }
 
     void actionsToggle() {
-        final Term LEFT = $.inh($.the("left"), id);
-        final Term RIGHT = $.inh($.the("right"), id);
-        final Term ROT = $.inh($.the("rotate"), id);
+        final Term LEFT = $.inh("left", id);
+        final Term RIGHT = $.inh("right", id);
+        final Term ROT = $.inh("rotate", id);
+        final Term FALL = $.inh("fall", id);
 
         actionPushButtonMutex(LEFT, RIGHT,
-                (b) -> state.act(TetrisState.LEFT, b),
-                (b) -> state.act(TetrisState.RIGHT, b));
+                b -> state.act(TetrisState.LEFT, b),
+                b -> state.act(TetrisState.RIGHT, b));
 
         actionPushButton(ROT, () -> state.act(CW));
+        actionPushButton(FALL, () -> state.act(TetrisState.FALL));
 
     }
 
     void actionsTriState() {
 
 
-        actionTriState($.func("X", id), (i) -> {
+        actionTriState($.func("X", id), i -> {
             switch (i) {
                 case -1:
                     return state.act(LEFT);
@@ -570,51 +572,53 @@ public class Tetris extends NAgentX implements Bitmap2D {
         }
 
         /* This code applies the action, but doesn't do the default fall of 1 square */
-        public synchronized boolean act(int theAction, boolean enable) {
+        public boolean act(int theAction, boolean enable) {
+            synchronized (this) {
 
 
-            int nextRotation = currentRotation;
-            int nextX = currentX;
-            int nextY = currentY;
+                int nextRotation = currentRotation;
+                int nextX = currentX;
+                int nextY = currentY;
 
-            switch (theAction) {
-                case CW:
-                    nextRotation = (currentRotation + 1) % 4;
-                    break;
-                case CCW:
-                    nextRotation = (currentRotation - 1);
-                    if (nextRotation < 0) {
-                        nextRotation = 3;
-                    }
-                    break;
-                case LEFT:
-                    nextX = enable ? currentX - 1 : currentX;
-                    break;
-                case RIGHT:
-                    nextX = enable ? currentX + 1 : currentX;
-                    break;
-                case FALL:
-                    nextY = currentY;
-
-                    boolean isInBounds = true;
-                    boolean isColliding = false;
-
-
-                    while (isInBounds && !isColliding) {
-                        nextY++;
-                        isInBounds = inBounds(nextX, nextY, nextRotation);
-                        if (isInBounds) {
-                            isColliding = colliding(nextX, nextY, nextRotation);
+                switch (theAction) {
+                    case CW:
+                        nextRotation = (currentRotation + 1) % 4;
+                        break;
+                    case CCW:
+                        nextRotation = currentRotation - 1;
+                        if (nextRotation < 0) {
+                            nextRotation = 3;
                         }
-                    }
-                    nextY--;
-                    break;
-                default:
-                    throw new RuntimeException("unknown action");
+                        break;
+                    case LEFT:
+                        nextX = enable ? currentX - 1 : currentX;
+                        break;
+                    case RIGHT:
+                        nextX = enable ? currentX + 1 : currentX;
+                        break;
+                    case FALL:
+                        nextY = currentY;
+
+                        boolean isInBounds = true;
+                        boolean isColliding = false;
+
+
+                        while (isInBounds && !isColliding) {
+                            nextY++;
+                            isInBounds = inBounds(nextX, nextY, nextRotation);
+                            if (isInBounds) {
+                                isColliding = colliding(nextX, nextY, nextRotation);
+                            }
+                        }
+                        nextY--;
+                        break;
+                    default:
+                        throw new RuntimeException("unknown action");
+                }
+
+
+                return act(nextRotation, nextX, nextY);
             }
-
-
-            return act(nextRotation, nextX, nextY);
         }
 
         protected boolean act() {
@@ -623,13 +627,15 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         protected boolean act(int nextRotation, int nextX, int nextY) {
 
+            synchronized (this) {
 
-            if (inBounds(nextX, nextY, nextRotation)) {
-                if (!colliding(nextX, nextY, nextRotation)) {
-                    currentRotation = nextRotation;
-                    currentX = nextX;
-                    currentY = nextY;
-                    return true;
+                if (inBounds(nextX, nextY, nextRotation)) {
+                    if (!colliding(nextX, nextY, nextRotation)) {
+                        currentRotation = nextRotation;
+                        currentX = nextX;
+                        currentY = nextY;
+                        return true;
+                    }
                 }
             }
 
@@ -711,7 +717,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                         if (thePiece[x][y] != 0) {
 
 
-                            if ((checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height)) {
+                            if (checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height) {
 
 
                                 int linearArrayIndex = i(checkX + x, checkY + y);
@@ -820,7 +826,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             currentBlockId = nextBlock();
 
             currentRotation = 0;
-            currentX = (width / 2) - 2;
+            currentX = width / 2 - 2;
             currentY = -4;
 
 
@@ -884,7 +890,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         }
 
         public float height() {
-            return (((float) rowsFilled) / height);
+            return (float) rowsFilled / height;
         }
 
         /**
@@ -897,7 +903,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         public boolean isRow(int y, boolean filledOrClear) {
             for (int x = 0; x < width; ++x) {
                 float s = grid[i(x, y)];
-                if (filledOrClear ? (s == 0) : (s != 0)) {
+                if (filledOrClear ? s == 0 : s != 0) {
                     return false;
                 }
             }

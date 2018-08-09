@@ -5,7 +5,6 @@ import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.agent.util.Impiler;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
@@ -257,7 +256,7 @@ public class FZero extends NAgentX {
     public void initBipolarRotateDirect(boolean fair, float rotFactor) {
 
         final float[] heading = {0};
-        final MiniPID rotFilter = new MiniPID(0.1f, 0.1, 0.1f);
+        final MiniPID rotFilter = new MiniPID(0.2f, 0.2, 0.2f);
 
         float curve = //curve exponent
                 //1;

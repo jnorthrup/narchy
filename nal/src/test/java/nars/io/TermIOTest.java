@@ -276,10 +276,7 @@ class TermIOTest {
         a
                 .synch()
                 .outputBinary(baos, (Task t)->{
-                    if (!written.add(t)) {
-                        System.err.println("duplicate: " + t);
-                        fail();
-                    }
+                    assertTrue(written.add(t),()->"duplicate: " + t);
                     count.incrementAndGet();
                     return true;
                 })

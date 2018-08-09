@@ -1,9 +1,6 @@
 package nars.concept;
 
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
@@ -33,7 +30,7 @@ import static nars.Op.INH;
  * <patham9_> 4. the system wont try to execute and pursue things in the current moment which are "sheduled" to be in the future.
  * <patham9_> 5. the system wont pursue a goal it already pursued for the same reason (due to revision, it is related to 1)
  */
-public class Operator extends NodeConcept implements PermanentConcept, Atomic {
+public class Operator extends NodeConcept implements PermanentConcept, Atomic, The {
 
     public static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594)); 
 

@@ -211,11 +211,11 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 2.5f;
+    public static float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**

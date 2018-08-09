@@ -171,6 +171,8 @@ class LinkageTest extends NALTest {
             Term w = entry.get();
             if (target.equals(w))
                 return true;
+            if (!w.op().conceptualizable)
+                continue;
 
             Concept ww = nar.concept(w);
 
