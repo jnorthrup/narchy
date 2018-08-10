@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static jcog.Texts.n2;
 import static jcog.pri.bag.impl.HijackBag.Mode.*;
 
 /**

@@ -69,7 +69,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
             @Override
             protected float leak(Task t) {
-                Concept abbreviable = t.concept(nar, true);
+                Concept abbreviable = nar.concept(t.term(), true);
                 if (abbreviable != null &&
                         !(abbreviable instanceof PermanentConcept) &&
                         !(abbreviable instanceof AliasConcept) &&

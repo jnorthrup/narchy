@@ -10,7 +10,6 @@ import jcog.signal.wave2d.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
 import nars.agent.FrameTrigger;
-import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.action.SwitchAction;
 import nars.derive.Deriver;

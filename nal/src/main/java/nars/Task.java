@@ -1,8 +1,6 @@
 package nars;
 
 import jcog.Util;
-import jcog.bloom.StableBloomFilter;
-import jcog.bloom.hash.BytesHashProvider;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import jcog.pri.Priority;
@@ -149,11 +147,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
     }
 
-    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
-        return new StableBloomFilter<>(
-                cap, 1, 0.0005f, rng,
-                new BytesHashProvider<>(IO::taskToBytes));
-    }
+//    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
+//        return new StableBloomFilter<>(
+//                cap, 1, 0.0005f, rng,
+//                new BytesHashProvider<>(IO::taskToBytes));
+//    }
 
     static boolean taskConceptTerm(@Nullable Term t) {
         return taskConceptTerm(t, (byte) 0, true);
@@ -552,13 +550,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     @Nullable
     default Appendable toString(boolean showStamp) {
         return appendTo(new StringBuilder(128), showStamp);
-    }
-
-    @Nullable
-    default Concept concept(/*@NotNull*/NAR n, boolean conceptualize) {
-        return n.concept(term(), conceptualize);
-
-
     }
 
 

@@ -97,7 +97,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     @Override
     protected void starting(NAR nar) {
         long now = nar.time();
-        int durCycles = durCycles(nar);
+        long durCycles = durCycles();
         lastStarted = now - durCycles;
         //lastFinished = lastStarted - durCycles;
         //spawn(nar, now + durCycles);
@@ -114,7 +114,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
             return;
 
 
-        long durCycles = durCycles(nar);
+        long durCycles = durCycles();
 
         long atStart = nar.time();
 
@@ -155,8 +155,8 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         }
     }
 
-    private int durCycles(NAR nar) {
-        return Math.round(durations.floatValue() * nar.dur());
+    public long durCycles() {
+        return Math.round(durations.floatValue() * this.nar.dur());
     }
 
     /**
@@ -165,8 +165,5 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     abstract protected void run(NAR n, long dt);
 
 
-    public long durCycles() {
-        return durCycles(nar);
-    }
 
 }

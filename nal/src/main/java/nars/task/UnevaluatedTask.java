@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.task.util.InvalidTaskException;
@@ -23,12 +22,16 @@ public class UnevaluatedTask extends NALTask {
         super(c, xx.punc(), t, xx.creation(), xx.start(), xx.end(), xx.stamp());
     }
 
+//    @Override
+//    public ITask next(NAR n) {
+//
+//        //HACK, for ensuring the operator invocation etc
+//        FasterList<ITask> q = new FasterList(1);
+//        preProcess(n, term(), q);
+//        return postProcess(q, false);
+//    }
     @Override
     public ITask next(NAR n) {
-
-        //HACK, for ensuring the operator invocation etc
-        FasterList<ITask> q = new FasterList(1);
-        preProcess(n, term(), q);
-        return postProcess(q, false);
+        return inputStrategy(this, n);
     }
 }

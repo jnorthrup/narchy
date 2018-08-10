@@ -9,7 +9,6 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
-import nars.agent.util.Impiler;
 import nars.concept.Concept;
 import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;

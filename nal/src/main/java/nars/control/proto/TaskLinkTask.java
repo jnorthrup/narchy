@@ -39,7 +39,7 @@ public class TaskLinkTask extends AbstractTask {
 
         Concept c = this.concept;
         if (c == null) {
-            c = task.concept(n, true);
+            c = n.concept(task.term(), true);
             if (c == null)
                 return null;
         }

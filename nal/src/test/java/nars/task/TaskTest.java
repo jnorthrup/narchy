@@ -173,7 +173,7 @@ class TaskTest {
         NAR tt = NARS.shell();
         Task t = $.task("((&&,#1,(#1 &| #3),(#2 &| #3),(#2 &| a)) =|> b)", BELIEF, 1f, 0.9f).apply(tt);
         assertNotNull(t);
-        Concept c = t.concept(tt,true);
+        Concept c = tt.concept(t.term(), true);
         assertNotNull(c);
     }
 

@@ -23,7 +23,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
-        assert(op!=NEG); 
+        assert(op!=NEG && op!=CONJ);
 
         this.sub = sub;
         this.op = op.id;
@@ -41,7 +41,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
     }
 
     @Override
-    public final Term unneg() {
+    public Term unneg() {
         return this;
     }
 

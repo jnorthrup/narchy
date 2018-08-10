@@ -78,7 +78,7 @@ public class SimpleDeriver extends Deriver {
         assert(tt>0);
         Random rng = n.random();
         Consumer<Predicate<Activate>> forEach = x -> {
-            while (x.test(new Activate(tasks.get(rng.nextInt(tt)).concept(n, true), 1f))) ;
+            while (x.test(new Activate(n.conceptualize(tasks.get(rng.nextInt(tt))), 1f))) ;
         };
         PremiseDeriverRuleSet rules = Derivers.nal(n, 1, 8);
 

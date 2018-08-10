@@ -28,7 +28,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.The;
-import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.anon.Anom;
@@ -175,23 +174,23 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return whileTrue.test(this, superterm);
     }
 
-    /** convenience method  do not override */
-    default boolean recurseTerms(Predicate<Term> descendFilter, Consumer<Term> each) {
-        return recurseTerms(descendFilter, (x) -> {
-            each.accept(x);
-            return true;
-        }, null);
-    }
+//    /** convenience method  do not override */
+//    default boolean recurseTerms(Predicate<Term> descendFilter, Consumer<Term> each) {
+//        return recurseTerms(descendFilter, (x) -> {
+//            each.accept(x);
+//            return true;
+//        }, null);
+//    }
 
-    /** convenience, do not override */
-    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term,Compound> whileTrue) {
-        return recurseTerms(descendFilter, whileTrue, null);
-    }
+//    /** convenience, do not override */
+//    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term,Compound> whileTrue) {
+//        return recurseTerms(descendFilter, whileTrue, null);
+//    }
 
-    /** convenience, do not override */
-    default boolean recurseTerms(BiPredicate<Term,Compound> whileTrue) {
-        return recurseTerms(x -> true, whileTrue, null);
-    }
+//    /** convenience, do not override */
+//    default boolean recurseTerms(BiPredicate<Term,Compound> whileTrue) {
+//        return recurseTerms(x -> true, whileTrue, null);
+//    }
 
     /** convenience, do not override */
     default void recurseTerms(BiConsumer<Term,Compound> each) {
@@ -662,7 +661,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     Term replace(Term from, Term to);
 
     default Term neg() {
-        return Neg.the(this);
+        //return Neg.the(this);
+        return NEG.the(this);
     }
 
     default Term negIf(boolean negate) {

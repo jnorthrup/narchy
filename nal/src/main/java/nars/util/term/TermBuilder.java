@@ -5,10 +5,12 @@ import jcog.data.set.ArrayHashSet;
 import nars.Op;
 import nars.Param;
 import nars.op.mental.AliasConcept;
-import nars.subterm.*;
+import nars.subterm.ArrayTermVector;
+import nars.subterm.BiSubterm;
+import nars.subterm.Subterms;
+import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;
@@ -32,6 +34,7 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.term.Terms.sorted;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -120,35 +123,37 @@ public abstract class TermBuilder {
         return theCompound(o, dt, u, null);
     }
 
-    protected Term theCompound(Op o, int dt, Term[] u, @Nullable byte[] key) {
-        assert (!o.atomic) : o + " is atomic, with subterms: " + Arrays.toString(u);
+    protected Term theCompound(Op o, int dt, Term[] t, @Nullable byte[] key) {
+        assert (!o.atomic) : o + " is atomic, with subterms: " + Arrays.toString(t);
 
         boolean hasEllipsis = false;
 
-        for (Term x : u) {
+        for (Term x : t) {
             if (x == Null)
                 return Null;
             if (!hasEllipsis && (x instanceof Ellipsislike))
                 hasEllipsis = true;
         }
 
-        int s = u.length;
+        int s = t.length;
         assert (o.maxSize >= s) :
-                "subterm overflow: " + o + ' ' + Arrays.toString(u);
+                "subterm overflow: " + o + ' ' + Arrays.toString(t);
         assert (o.minSize <= s || hasEllipsis) :
-                "subterm underflow: " + o + ' ' + Arrays.toString(u);
+                "subterm underflow: " + o + ' ' + Arrays.toString(t);
 
-        if (s == 1 && !AnonID.isAnonPosOrNeg(u[0])) {
-            Term x = /*resolve*/(u[0]);
+        if (s == 1 && !AnonID.isAnonPosOrNeg(t[0])) {
+            Term x = t[0];
             switch (o) {
                 case NEG:
-                    return Neg.the(x);
+                    return NEG.the(x);
+                case CONJ:
+                    break; //skip below
                 default:
                     return new CachedUnitCompound(o, x);
             }
-        } else {
-            return theCompound(o, dt, subterms(o, u), key);
         }
+
+        return theCompound(o, dt, subterms(o, t), key);
     }
 
 
@@ -459,8 +464,7 @@ public abstract class TermBuilder {
 
 
                     //quick test
-                    Term a = u[0];
-                    Term b = u[1];
+                    Term a = u[0], b = u[1];
                     if (Term.commonStructure(a, b)) {
                         if (a.equals(b))
                             return u[0];
@@ -468,14 +472,13 @@ public abstract class TermBuilder {
                             return False;
                     }
 
-//                    if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
-//
-//
-//                        return theExact(CONJ, dt, sorted(u[0], u[1]));
-//                    }
+                    if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
+                        //fast construct for simple case, verified above to not contradict itself
+                        return Op.compoundExact(CONJ, dt, sorted(u[0], u[1]));
+                    }
 
                 }
-
+                //TODO fast 3-ary case
 
                 assert u.length > 1;
                 Conj c = new Conj(u.length);
@@ -514,7 +517,7 @@ public abstract class TermBuilder {
                             Term only = uux.getOnly();
                             return compoundExact(CONJ, XTERNAL, only, only); //repeat
                         } else {
-                            return compoundExact(CONJ, XTERNAL, Terms.sorted(uux));
+                            return compoundExact(CONJ, XTERNAL, sorted(uux));
                         }
                     }
 

@@ -9,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
+import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -49,11 +50,30 @@ public enum Op {
     ATOM(".", Op.ANY_LEVEL, OpType.Other),
 
     NEG("--", 1, Args.One) {
+
+        public Term the(Term u) {
+            switch (u.op()) {
+                case ATOM:
+                    if (u instanceof Anom) {
+                        return u.neg();
+                    }
+                    break;
+                case BOOL:
+                    return u.neg();
+                case NEG:
+                    return u.unneg();
+            }
+            return new Neg(u);
+        }
+
         public Term the(int dt, Term[] u) {
 
             if (u.length != 1)
                 throw new RuntimeException("negation requires one subterm");
-            return Neg.the(u[0]);
+            if (dt!=DTERNAL)
+                throw new RuntimeException("negation has no temporality");
+
+            return the(u[0]);
         }
 
     },
@@ -977,6 +997,9 @@ public enum Op {
 
     public final Term the(/*@NotNull*/ Term... u) {
         return the(DTERNAL, u);
+    }
+    public Term the(/*@NotNull*/ Term onlySubterm) {
+        return the(DTERNAL, onlySubterm);
     }
 
     @Override

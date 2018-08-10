@@ -7,7 +7,6 @@ import nars.subterm.util.TermList;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.anon.AnonVector;
 import nars.term.atom.Atomic;
 import nars.term.compound.LazyCompound;
 import nars.term.var.UnnormalizedVariable;

@@ -36,7 +36,7 @@ public class DialogTask {
                 nar.input(t);
 
                 if (t!=null)
-                    return t.concept(nar, true);
+                    return nar.concept(t.term(), true);
                 else
                     return null;
 

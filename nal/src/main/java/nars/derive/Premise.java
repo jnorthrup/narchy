@@ -273,7 +273,7 @@ public class Premise {
         if (unifiedBelief) {
             Concept originalBeliefConcept = n.conceptualize(term());
             if (originalBeliefConcept != null) {
-                Concept taskConcept = task.concept(n, true);
+                Concept taskConcept = n.concept(task.term(), true);
 
 
                 float pri = termLink.priElseZero();

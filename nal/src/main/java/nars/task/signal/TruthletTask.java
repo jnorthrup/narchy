@@ -42,7 +42,7 @@ public class TruthletTask extends SignalTask {
     }
 
     public void update(NAR n, Consumer<TruthletTask> t) {
-        Concept c = concept(n, true);
+        Concept c = n.concept(term(), true);
         if (c != null) {
 
             update(c, t);
@@ -136,7 +136,7 @@ public class TruthletTask extends SignalTask {
 
     public void truth(Truthlet newTruthlet, boolean relink, NAR n) {
         if (truthlet!=newTruthlet) {
-            Concept c = concept(n, true);
+            Concept c = n.concept(term(), true);
             if (c != null) {
                 update(c, (tt) -> {
                     tt.truthlet = newTruthlet;

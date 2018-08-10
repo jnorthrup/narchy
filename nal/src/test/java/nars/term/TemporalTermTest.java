@@ -365,10 +365,10 @@ class TemporalTermTest {
         @NotNull Term aa = a.term();
         assertNotNull(aa);
 
-        @Nullable Concept na = a.concept(n, true);
+        @Nullable Concept na = n.concept(a.term(), true);
         assertNotNull(na);
 
-        @Nullable Concept nc = c.concept(n, true);
+        @Nullable Concept nc = n.concept(c.term(), true);
         assertNotNull(nc);
 
         assertSame(na, nc);
@@ -376,9 +376,7 @@ class TemporalTermTest {
         assertSame(na.sub(0), nc.sub(0));
 
 
-
-
-        assertEquals(b.concept(n, true).sub(0), c.concept(n, true).sub(0));
+        assertEquals(n.concept(b.term(), true).sub(0), n.concept(c.term(), true).sub(0));
 
     }
 
@@ -424,7 +422,7 @@ class TemporalTermTest {
 
     @Test
     void testRetemporalization1() throws Narsese.NarseseException {
-        assertEquals(False, $$("((--,(x &&+1 x))&&x)"));
+        assertEquals("x", $$("((--,(x &&+1 x))&&x)").toString());
         
         assertEquals(
                 "a(x,true)",

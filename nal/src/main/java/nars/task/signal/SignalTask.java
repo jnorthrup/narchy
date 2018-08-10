@@ -39,8 +39,5 @@ public class SignalTask extends UnevaluatedTask {
         return false;
     }
 
-    @Override
-    public ITask next(NAR n) {
-        return inputStrategy(this, n);
-    }
+
 }

@@ -30,7 +30,7 @@ public final class Remember extends AbstractTask {
     @Nullable public static Remember the(Task input, NAR n) {
 
 
-        Concept concept = input.concept(n, true);
+        Concept concept = n.concept(input.term(), true);
         if (concept == null) {
             return null;
         } else if (!(concept instanceof TaskConcept)) {
