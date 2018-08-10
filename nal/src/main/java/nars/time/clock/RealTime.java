@@ -122,7 +122,7 @@ public abstract class RealTime extends Time {
     }
 
     @Override
-    protected String durationString(long time) {
+    public String timeString(long time) {
         return Texts.timeStr(unitsToSeconds(time) * 1.0E9);
     }
 

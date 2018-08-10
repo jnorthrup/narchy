@@ -133,15 +133,16 @@ public abstract class Time implements Clock, Serializable {
     }
 
 
-    /**
-     * returns a string containing the time elapsed/to the given time
-     */
-    public String durationToString(long target) {
-        long now = now();
-        return durationString(now - target);
-    }
+//    /**
+//     * returns a string containing the time elapsed/to the given time
+//     */
+//    public String durationToString(long target) {
+//        long now = now();
+//        return durationString(now - target);
+//    }
 
-    protected abstract String durationString(long time);
+    /** produces a string representative of the amount of time (cycles, not durs) */
+    public abstract String timeString(long time);
 
     public long toCycles(Quantity q) {
         throw new UnsupportedOperationException("Only in RealTime implementations");

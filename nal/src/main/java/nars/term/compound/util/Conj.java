@@ -531,7 +531,7 @@ public class Conj extends ByteAnonMap {
                             } else
                                 b[i] = 0; //erase disjunction, continue comparing. the result remains eligible for add
                             if (result != null && result != True)
-                                return add(at, result.negIf(bi < 0));
+                                return addEvent(at, result.negIf(bi < 0));
                         }
                     }
                 }
@@ -699,10 +699,22 @@ public class Conj extends ByteAnonMap {
                 if (cs.containsNeg(incoming))
                     return False; //contradiction
                 else if (cs.contains(incoming))
-                    return True;
+                    return Op.EmptyProduct; //present, ignore
 
                 return CONJ.the(cdt, cs.toSet().with(incoming));
             } else {
+                if (cdt == 0) {
+                    if (cs.containsNeg(incoming))
+                        return False; //contradiction
+                    else if (cs.contains(incoming))
+                        return Op.EmptyProduct; //present, ignore
+                } else if (cdt == DTERNAL) {
+                    if (cs.containsNeg(incoming))
+                        return False; //contradiction
+                    else if (cs.contains(incoming))
+                        return conj.dt(0); //present, promote to parallel
+                }
+
                 //sequence distribute (un-factor)
                 Conj c = new Conj();
                 int dtdt = eternal ? DTERNAL : 0;
@@ -1131,6 +1143,7 @@ public class Conj extends ByteAnonMap {
                 return t.getOnly();
             default:
                 return Op.compoundExact(CONJ, when == ETERNAL ? DTERNAL : 0, Terms.sorted(t));
+                //return CONJ.the(when == ETERNAL ? DTERNAL : 0, Terms.sorted(t));
         }
 //            default: {
 //                Term theSequence = null;

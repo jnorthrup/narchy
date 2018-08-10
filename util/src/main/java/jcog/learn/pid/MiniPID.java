@@ -466,4 +466,8 @@ public class MiniPID {
             if (F < 0) F *= -1;
         }
     }
+
+    public float outFloat() {
+        return (float) out();
+    }
 }

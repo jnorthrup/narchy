@@ -9,6 +9,7 @@ import nars.concept.TaskConcept;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
+import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.term.Term;
@@ -22,15 +23,19 @@ import java.util.function.BiFunction;
 
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
 
-    protected ActionConcept(Term term, NAR n) {
+    protected ActionConcept(Term term, TermLinker linker, NAR n) {
         this(term,
                 new SignalBeliefTable(term, true, n.conceptBuilder),
-                n.conceptBuilder.newTable(term, false),
+                n.conceptBuilder.newTable(term, false), linker,
                 n);
     }
 
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
-        super(term, beliefs, goals, n.conceptBuilder);
+        this(term, beliefs, goals, n.conceptBuilder.termlinker(term), n);
+    }
+
+    protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
+        super(term, beliefs, goals, l, n.conceptBuilder);
 
         ((SignalBeliefTable) beliefs()).setPri(
                 FloatRange.unit(

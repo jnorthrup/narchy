@@ -2,6 +2,7 @@ package nars.truth.polation;
 
 import jcog.Paper;
 import jcog.Skill;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
@@ -21,6 +22,7 @@ import java.util.Collection;
 
 import static java.lang.Float.NaN;
 import static nars.task.Revision.dtDiff;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * Truth Interpolation and Extrapolation of Temporal Beliefs/Goals
@@ -56,9 +58,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     @Nullable
     public abstract Truth truth(NAR nar);
 
-    public TruthPolation add(Task t) {
-        super.add(new TaskComponent(t));
-        return this;
+    public boolean add(Task t) {
+        return /* t.intersects(start, end) &&*/  //<- hard filter
+                super.add(new TaskComponent(t));
     }
 
     /**
@@ -274,6 +276,43 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     @Nullable
     public Truth truth() {
         return truth(null);
+    }
+
+    /** refined time involving the actual contained tasks.  the pre-specified interval may be larger but
+     * after filtering tasks, it may have shrunk.
+     */
+    public long[] taskRange() {
+        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
+
+        for (TaskComponent x : this) {
+            long a = x.task.start();
+            if (a!=ETERNAL) {
+                a = Math.min(end, a);
+                if (a < s)
+                    s = a;
+                long b = x.task.end();
+                b = Math.max(start, b);
+                if (b > e)
+                    e = b;
+            }
+        }
+
+        if (s == Long.MAX_VALUE)
+            return new long[] { ETERNAL, ETERNAL }; //unchanged, must be due to eternal content only
+        else if (start == ETERNAL)
+            return new long[] { s, e };
+        else {
+            long[] t = new long[]{
+                    Math.max(s, start), Math.min(e, end)
+            };
+            if (t[0] > t[1])
+                throw new WTF();
+            return t;
+        }
+    }
+
+    public Task getTask(int i) {
+        return get(i).task;
     }
 
 

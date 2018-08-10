@@ -71,8 +71,7 @@ public class TaskProxy implements Task {
 
     @Override
     public boolean delete() {
-        
-        
+        //task.delete() ??
         return false;
     }
 

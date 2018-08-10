@@ -2,9 +2,12 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
+import jcog.math.FloatAveraged;
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
@@ -68,8 +71,8 @@ public class FZero extends NAgentX {
         //initToggleLeftRight();
         //initToggleFwdStop();
 
-        initUnipolarLinear(4f);
-        initBipolarRotateDirect(true, 0.5f);
+        initUnipolarLinear(5f);
+        initBipolarRotateDirect(false, 0.5f);
         //initBipolarRotateDirect(false, 0.9f);
 
         //initBipolarRotateRelative(fair, rotFactor);
@@ -79,8 +82,14 @@ public class FZero extends NAgentX {
         Signal dVelX = senseNumberDifference($.func("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]);
         Signal dVelY = senseNumberDifference($.func("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]);
         Signal dAccel = senseNumberDifference($.func("accel", id), () -> (float) fz.vehicleMetrics[0][6]);
-        Signal dAngVel = senseNumberDifference($.func("vel", $.func("ang", id)), () -> (float) fz.playerAngle);
-        AbstractSensor ang = senseNumber(angle -> $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+
+        FloatSupplier playerAngle = Util.compose(() -> (float) fz.playerAngle,
+                new FloatAveraged(0.5f, true));
+        Signal dAngVel = senseNumberDifference($.func("vel", id, $$("ang")), playerAngle);
+
+        AbstractSensor ang = senseNumber(angle ->
+                        //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+                        $.prop($.func("ang", id), $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 4,
                 DigitizedScalar.FuzzyNeedle
@@ -89,7 +98,7 @@ public class FZero extends NAgentX {
 
 
 
-        rewardDetailed( ()->{
+        rewardDetailed("race", ()->{
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 
@@ -109,6 +118,7 @@ public class FZero extends NAgentX {
 
             return r;
         });
+
         reward("noCollide", ()->Util.equals(FZeroGame.FULL_POWER, fz.power, 1f) ? +1 : -1 ); //dont bump edges
 
 //        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
@@ -169,7 +179,7 @@ public class FZero extends NAgentX {
 
         );
         addSensor(s);
-        window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
+        window(NARui.beliefCharts(s.sensors, nar), 300, 300);
     }
 
     private void initToggleLeftRight() {
@@ -241,7 +251,7 @@ public class FZero extends NAgentX {
     public void initBipolarRotateRelative(boolean fair, float rotFactor) {
         final float[] _r = {0};
         final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
-        actionBipolarFrequencyDifferential($.p(/*id, */$.the("turn")), fair, true, (r0) -> {
+        actionBipolarFrequencyDifferential($.p(/*id, */$.the("turn")), fair, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 
@@ -271,7 +281,12 @@ public class FZero extends NAgentX {
 
             return dHeading;
         };
-        actionBipolarFrequencyDifferential($.func("ang", id, $.the("rotate")), fair, false, d);
+        BiPolarAction A = actionBipolarFrequencyDifferential($.func("rotate", id),
+                fair, d);
+
+        window(NARui.beliefCharts(nar, A.pos, A.neg), 800, 500);
+
+
         //actionUnipolar($.the("heading"), d);
     }
 
@@ -284,7 +299,7 @@ public class FZero extends NAgentX {
 
             return heading;
         };
-        actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, true, x);
+        actionBipolarFrequencyDifferential($.p(/*id, */$.the("heading")), fair, x);
 
     }
 

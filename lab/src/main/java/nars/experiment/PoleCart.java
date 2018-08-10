@@ -10,6 +10,8 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
 import nars.concept.Concept;
+import nars.concept.action.BiPolarAction;
+import nars.gui.NARui;
 import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
 import static nars.agent.FrameTrigger.fps;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * adapted from:
@@ -37,7 +40,7 @@ public class PoleCart extends NAgentX {
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
 
 
-    static final float fps = 30;
+    static final float fps = 45;
 
     public static void main(String[] arg) {
 
@@ -101,7 +104,7 @@ public class PoleCart extends NAgentX {
 
     public PoleCart(NAR nar) {
 
-        super("cart", fps(fps/2), nar);
+        super("cart", fps(fps), nar);
 
 
         pos = 0.;
@@ -151,16 +154,26 @@ public class PoleCart extends NAgentX {
         );
 
 
-        actionUnipolar($.the("L"), (a) -> {
-            if (!manualOverride)
-                action = Util.clampBi((float) (action + a));
-            return a;
+        final float SPEED = 0.5f;
+        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
+            float a =
+                    //x * SPEED;
+                    (x * x * x) * SPEED;
+            this.action = a;
+            return x;
         });
-        actionUnipolar($.the("R"), (a) -> {
-            if (!manualOverride)
-                action = Util.clampBi((float) (action - a));
-            return a;
-        });
+        window(NARui.beliefCharts(nar, F.pos, F.neg), 700, 700);
+
+//        actionUnipolar($.p($.the("L"),id), (a) -> {
+//            if (!manualOverride)
+//                action = Util.clampBi((float) (action + a));
+//            return a;
+//        });
+//        actionUnipolar($.p($.the("R"),id), (a) -> {
+//            if (!manualOverride)
+//                action = Util.clampBi((float) (action - a));
+//            return a;
+//        });
 
 
 

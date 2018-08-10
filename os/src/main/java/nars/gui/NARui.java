@@ -1,48 +1,41 @@
 package nars.gui;
 
-import jcog.math.Quantiler;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Narsese;
 import nars.agent.NAgent;
-import nars.gui.graph.DynamicConceptSpace;
 import nars.gui.graph.run.ConceptGraph2D;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.EdgeDirected3D;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueModel;
 import spacegraph.space2d.container.grid.ScrollGrid;
-import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.meta.*;
+import spacegraph.space2d.widget.meta.MetaFrame;
+import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.meta.OmniBox;
+import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.util.math.Color3f;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
-import static nars.truth.TruthFunctions.w2cSafe;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * SpaceGraph-based visualization utilities for NARchy
@@ -54,13 +47,12 @@ public class NARui {
         return new TextEdit(40, 8).surface();
     }
 
-    public static Surface beliefCharts(int window, NAR nar, Object... x) {
-        return beliefCharts(window, List.of(x), nar);
+    public static Surface beliefCharts(NAR nar, Object... x) {
+        return beliefCharts(List.of(x), nar);
     }
 
-    public static Surface beliefCharts(int window, Iterable ii, NAR nar) {
-        BeliefChartsGrid g = new BeliefChartsGrid(ii, nar, window);
-        return DurSurface.get(g, nar);
+    public static Surface beliefCharts(Iterable ii, NAR nar) {
+        return new BeliefChartsGrid(ii, nar);
     }
 
 
@@ -166,182 +158,177 @@ public class NARui {
 
     }
 
-    @Deprecated public static void agentOld(NAgent a) {
-        NAR nar = a.nar();
-        //nar.runLater(() -> {
-            window(
-                    grid(
-                            new ObjectSurface(a),
-
-                            beliefCharts(nar.dur() * 64, a.actions(), a.nar()),
-
-                            new EmotionPlot(64, a),
-                            grid(
-
-                                    new TextEdit() {
-                                        @Override
-                                        protected void onKeyEnter() {
-                                            String s = text();
-                                            text("");
-                                            try {
-                                                nar.conceptualize(s);
-                                            } catch (Narsese.NarseseException e) {
-                                                e.printStackTrace();
-                                            }
-                                            conceptWindow(s, nar);
-                                        }
-                                    }.surface(),
-
-
-                                    new PushButton("dump", () -> {
-                                        try {
-                                            nar.output(Files.createTempFile(a.toString(), "" + System.currentTimeMillis()).toFile(), false);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }),
-
-                                    new PushButton("clear", () -> {
-                                        nar.runLater(NAR::clear);
-                                    }),
-
-                                    new PushButton("prune", () -> {
-                                        nar.runLater(() -> {
-                                            nar.logger.info("Belief prune start");
-                                            final long scaleFactor = 1_000_000;
-                                            //Histogram i = new Histogram(1<<20, 5);
-                                            Quantiler q = new Quantiler(16*1024);
-                                            long now = nar.time();
-                                            int dur = nar.dur();
-                                            nar.tasks(true, false, false, false).forEach(t ->
-                                                    {
-                                                        try {
-                                                            float c = w2cSafe(t.evi(now, dur));
-                                                            //i.recordValue(Math.round(c * scaleFactor));
-                                                            q.add(c);
-                                                        } catch (Throwable e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                    }
-                                            );
-                                            //System.out.println("Belief evidence Distribution:");
-                                            //Texts.histogramPrint(i, System.out);
-
-                                            //float confThresh = i.getValueAtPercentile(50)/ scaleFactor;
-                                            float confThresh = q.quantile(0.9f);
-                                            if (confThresh > 0) {
-                                                nar.tasks(true, false, false, false, (c, t) -> {
-                                                    try { if (w2cSafe(t.evi(now, dur)) < confThresh)
-                                                        c.remove(t); } catch (Throwable e) { e.printStackTrace(); }
-                                                });
-                                            }
-                                            nar.logger.info("Belief prune finish");
-                                        });
-                                    }),
-
-                                    new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
-
-                                    new WindowToggleButton("concept graph", () -> {
-                                        DynamicConceptSpace sg;
-                                        SpaceGraphPhys3D s = new SpaceGraphPhys3D<>(
-                                                sg = new DynamicConceptSpace(nar, () -> nar.attn.active().iterator(),
-                                                        128, 16)
-                                        );
-                                        EdgeDirected3D fd = new EdgeDirected3D();
-                                        s.dyn.addBroadConstraint(fd);
-                                        fd.condense.set(fd.condense.get() * 8);
-
-                                        s.add(new SubOrtho(
-
-                                                grid(new ObjectSurface<>(fd), new ObjectSurface<>(sg.vis))) {
-
-                                        }.posWindow(0, 0, 1f, 0.2f));
-
-
-
-
-                                        s.camPos(0, 0, 90);
-                                        return s;
-                                    })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//    @Deprecated public static void agentOld(NAgent a) {
+//        NAR nar = a.nar();
+//        //nar.runLater(() -> {
+//            window(
+//                    grid(
+//                            new ObjectSurface(a),
 //
-//                                    a instanceof NAgentX ?
-//                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(
-//                                                    new CameraSensorView(cs, a).withControls(), AspectAlign.Align.Center, cs.width, cs.height))
-//                                                    .toArray(Surface[]::new))
-//                                            ) : grid()
-                            )
-                    ),
+//                            beliefCharts(a.actions(), a.nar()),
+//
+//                            new EmotionPlot(64, a),
+//                            grid(
+//
+//                                    new TextEdit() {
+//                                        @Override
+//                                        protected void onKeyEnter() {
+//                                            String s = text();
+//                                            text("");
+//                                            try {
+//                                                nar.conceptualize(s);
+//                                            } catch (Narsese.NarseseException e) {
+//                                                e.printStackTrace();
+//                                            }
+//                                            conceptWindow(s, nar);
+//                                        }
+//                                    }.surface(),
+//
+//
+//                                    new PushButton("dump", () -> {
+//                                        try {
+//                                            nar.output(Files.createTempFile(a.toString(), "" + System.currentTimeMillis()).toFile(), false);
+//                                        } catch (IOException e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    }),
+//
+//                                    new PushButton("clear", () -> {
+//                                        nar.runLater(NAR::clear);
+//                                    }),
+//
+//                                    new PushButton("prune", () -> {
+//                                        nar.runLater(() -> {
+//                                            nar.logger.info("Belief prune start");
+//                                            final long scaleFactor = 1_000_000;
+//                                            //Histogram i = new Histogram(1<<20, 5);
+//                                            Quantiler q = new Quantiler(16*1024);
+//                                            long now = nar.time();
+//                                            int dur = nar.dur();
+//                                            nar.tasks(true, false, false, false).forEach(t ->
+//                                                    {
+//                                                        try {
+//                                                            float c = w2cSafe(t.evi(now, dur));
+//                                                            //i.recordValue(Math.round(c * scaleFactor));
+//                                                            q.add(c);
+//                                                        } catch (Throwable e) {
+//                                                            e.printStackTrace();
+//                                                        }
+//                                                    }
+//                                            );
+//                                            //System.out.println("Belief evidence Distribution:");
+//                                            //Texts.histogramPrint(i, System.out);
+//
+//                                            //float confThresh = i.getValueAtPercentile(50)/ scaleFactor;
+//                                            float confThresh = q.quantile(0.9f);
+//                                            if (confThresh > 0) {
+//                                                nar.tasks(true, false, false, false, (c, t) -> {
+//                                                    try { if (w2cSafe(t.evi(now, dur)) < confThresh)
+//                                                        c.remove(t); } catch (Throwable e) { e.printStackTrace(); }
+//                                                });
+//                                            }
+//                                            nar.logger.info("Belief prune finish");
+//                                        });
+//                                    }),
+//
+//                                    new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
+//
+//                                    new WindowToggleButton("concept graph", () -> {
+//                                        DynamicConceptSpace sg;
+//                                        SpaceGraphPhys3D s = new SpaceGraphPhys3D<>(
+//                                                sg = new DynamicConceptSpace(nar, () -> nar.attn.active().iterator(),
+//                                                        128, 16)
+//                                        );
+//                                        EdgeDirected3D fd = new EdgeDirected3D();
+//                                        s.dyn.addBroadConstraint(fd);
+//                                        fd.condense.set(fd.condense.get() * 8);
+//
+//                                        s.add(new SubOrtho(
+//
+//                                                grid(new ObjectSurface<>(fd), new ObjectSurface<>(sg.vis))) {
+//
+//                                        }.posWindow(0, 0, 1f, 0.2f));
+//
+//
+//
+//
+//                                        s.camPos(0, 0, 90);
+//                                        return s;
+//                                    })
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+////
+////                                    a instanceof NAgentX ?
+////                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(
+////                                                    new CameraSensorView(cs, a).withControls(), AspectAlign.Align.Center, cs.width, cs.height))
+////                                                    .toArray(Surface[]::new))
+////                                            ) : grid()
+//                            )
+//                    ),
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//                    900, 600);
+//        //});
+//    }
 
 
+    /** TODO make this a static utility method of Gridding that take a surface builder Function applied to an Iterable */
+    public static class BeliefChartsGrid extends Gridding  {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    900, 600);
-        //});
-    }
-
-
-    public static class BeliefChartsGrid extends Gridding implements Consumer<NAR> {
-
-        private final int window;
-
-        long[] btRange;
-
-        public BeliefChartsGrid(Iterable<?> ii, NAR nar, int window) {
+        public BeliefChartsGrid(Iterable<?> ii, NAR nar) {
             super();
-
-            btRange = new long[2];
-            this.window = window;
 
             List<Surface> s = StreamSupport.stream(ii.spliterator(), false)
                     .map(x -> x instanceof Termed ? (Termed) x : null).filter(Objects::nonNull)
@@ -356,13 +343,6 @@ public class NARui {
         }
 
 
-        @Override
-        public void accept(NAR nar) {
-            long now = nar.time();
-            int dur = nar.dur();
-            btRange[0] = now - (window * dur);
-            btRange[1] = now + (window * dur);
-        }
     }
 
     static class NarseseJShellModel extends OmniBox.JShellModel {

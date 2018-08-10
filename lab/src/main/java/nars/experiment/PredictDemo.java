@@ -48,7 +48,7 @@ public class PredictDemo {
 
         SpaceGraph.window(new Gridding(Gridding.VERTICAL,
 
-                NARui.beliefCharts(64, List.of(X1, X2), n)
+                NARui.beliefCharts(List.of(X1, X2), n)
 //
 //                NARui.beliefCharts(256, List.of(X), n),
 //                NARui.beliefCharts(2048, List.of(X), n)

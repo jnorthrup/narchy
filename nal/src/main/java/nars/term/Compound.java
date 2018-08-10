@@ -305,7 +305,12 @@ public interface Compound extends Term, IPair, Subterms {
 
 
         if (xs == 1) {
-            return xx.sub(0).unify(yy.sub(0), u);
+            try {
+                return xx.sub(0).unify(yy.sub(0), u);
+            } catch (StackOverflowError e) {
+                System.err.println("stack overflow in unify: " + xx.sub(0) + " (in " + xx + ")\tvs\t" + yy.sub(0) + " (in " + yy + ")");
+                throw e;
+            }
         }
 
         if (isCommutative()) {

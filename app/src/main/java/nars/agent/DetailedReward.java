@@ -1,6 +1,6 @@
 package nars.agent;
 
-import jcog.math.FloatExpMovingAverage;
+import jcog.math.FloatAveraged;
 import jcog.math.FloatNormalizer;
 import jcog.math.FloatPolarNormalizer;
 import jcog.math.FloatSupplier;
@@ -38,12 +38,12 @@ public class DetailedReward extends Reward {
 
                 pair($.func("chronic", id), compose(
                         new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-                        new FloatExpMovingAverage(0.02f)
+                        new FloatAveraged(0.02f)
                 )),
 
 
                 pair($.func("acute", id), compose(
-                        new FloatExpMovingAverage(0.1f, false),
+                        new FloatAveraged(0.1f, false),
                         new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
                 ))
         );
@@ -68,7 +68,10 @@ public class DetailedReward extends Reward {
 
     }
 
-
+    @Override
+    public Term term() {
+        return concept.term;
+    }
 
     @Override
     public void update(long prev, long now, long next) {

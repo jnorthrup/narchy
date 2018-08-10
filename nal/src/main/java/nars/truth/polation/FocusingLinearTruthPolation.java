@@ -11,8 +11,8 @@ public class FocusingLinearTruthPolation extends LinearTruthPolation {
 
 
     private final static int minDur =
-            0;
-    //1;
+            //0;
+            1;
 
 
     public FocusingLinearTruthPolation(long start, long end, int dur) {
@@ -20,15 +20,18 @@ public class FocusingLinearTruthPolation extends LinearTruthPolation {
     }
 
     @Override
-    public TruthPolation add(Task t) {
-        super.add(t);
+    public boolean add(Task t) {
 
-        if (dur > minDur) {
-            if (!t.isEternal()) {
-                dur = Math.max(minDur, Math.min(dur, (int) t.minTimeTo(start, end)));
+        if (super.add(t)) {
+
+            if (dur > minDur) {
+                if (!t.isEternal()) {
+                    dur = Math.max(minDur, Math.min(dur, (int) t.minTimeTo(start, end)));
+                }
             }
+            return true;
         }
-        return this;
+        return false;
     }
 
 

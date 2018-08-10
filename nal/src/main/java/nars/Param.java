@@ -23,7 +23,7 @@ import static nars.time.Tense.XTERNAL;
 public abstract class Param {
 
 
-    public static final boolean FILTER_DYNAMIC_MATCHES = true;
+    public static final boolean FILTER_SIGNAL_TABLE_TEMPORAL_TASKS = true;
 
     /**
      * experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS
@@ -146,8 +146,7 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    @Deprecated
-    public final static int SIGNAL_LATCH_TIME_MAX = 8;
+    public final static int SIGNAL_LATCH_DUR_MAX = 32;
 
 
     /**

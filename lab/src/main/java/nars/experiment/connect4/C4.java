@@ -162,7 +162,7 @@ public class C4 {
             c.add($.$$("whoWon(c,0)"));
             c.add($.$$("whoWon(c,2)"));
 
-            return NARui.beliefCharts(40, c, n);
+            return NARui.beliefCharts(c, n);
         }
     }
 

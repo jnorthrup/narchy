@@ -4,12 +4,14 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
+import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.PixelBag;
 
@@ -19,6 +21,7 @@ import static jcog.Util.unitize;
 import static nars.$.$$;
 import static nars.agent.FrameTrigger.fps;
 import static nars.experiment.mario.level.Level.*;
+import static spacegraph.SpaceGraph.window;
 
 public class NARio extends NAgentX {
 
@@ -273,12 +276,12 @@ public class NARio extends NAgentX {
     }
 
     public void initBipolar() {
-        float thresh = 0.33f;
+        float thresh = 0.25f;
 
 
-        actionBipolarFrequencyDifferential($.the("x"), false, true, (x) -> {
+        BiPolarAction X = actionBipolarFrequencyDifferential($.p(id, $.the("x")), false, (x) -> {
 
-            float boostThresh = 0.66f;
+            float boostThresh = 0.75f;
             if (x <= -thresh) {
                 mario.scene.key(Mario.KEY_LEFT, true);
                 mario.scene.key(Mario.KEY_RIGHT, false);
@@ -301,7 +304,7 @@ public class NARio extends NAgentX {
 
             }
         });
-        actionBipolarFrequencyDifferential($.the("y"), false, true, (y) -> {
+        BiPolarAction Y = actionBipolarFrequencyDifferential($.p(id, $.the("y")), false, (y) -> {
 
             if (y <= -thresh) {
                 mario.scene.key(Mario.KEY_DOWN, true);
@@ -323,6 +326,8 @@ public class NARio extends NAgentX {
         });/*.forEach(g -> {
             g.resolution(0.1f);
         });*/
+
+        window(NARui.beliefCharts(nar, X.pos, X.neg, Y.pos, Y.neg), 700, 700);
     }
 
     int lastCoins;

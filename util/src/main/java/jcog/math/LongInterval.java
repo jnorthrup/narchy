@@ -255,6 +255,18 @@ public interface LongInterval {
             return (distToStart + distToEnd)/2L;
         }
     }
+    default long maxTimeTo(long x) {
+        long start = start();
+        if (start == ETERNAL) return 0;
+        long end = end();
+        long distToStart = Math.abs(start - x);
+        if (end == start) {
+            return distToStart;
+        } else {
+            long distToEnd = Math.abs(end - x);
+            return Math.max(distToStart,distToEnd);
+        }
+    }
 
     default boolean intersects(long rangeStart, long rangeEnd) {
         if (rangeStart == ETERNAL)

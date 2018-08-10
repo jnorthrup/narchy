@@ -5,7 +5,6 @@ import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
-import nars.util.TimeAware;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -20,7 +19,7 @@ public interface TaskSeries<T extends Task> {
     /** the provided truth value should already be dithered */
     T add(Term term, byte punc, long start, long end, Truth nextValue, int dur, NAR nar);
 
-    @Nullable DynTruth truth(long start, long end, long dur, TimeAware timeAware);
+    @Nullable DynTruth truth(long start, long end, long dur, NAR nar);
 
     int size();
 
@@ -38,16 +37,6 @@ public interface TaskSeries<T extends Task> {
 
     int forEach(long start, long end, int limit, Consumer<T> target);
 
-//        default FasterList<T> toList(long start, long end, int limit) {
-//            int size = size();
-//            if (size == 0)
-//                return new FasterList(0);
-//
-//            FasterList<T> l = new FasterList<>(Math.min(size, limit));
-//            forEach(start, end, limit, l::add);
-//            l.compact();
-//            return l;
-//        }
 
     void forEach(Consumer<? super T> action);
 
@@ -58,4 +47,6 @@ public interface TaskSeries<T extends Task> {
         return size()==0;
     }
 
+    /** returns false if there is some data which occurrs inside the given interval */
+    boolean isEmpty(long start, long end);
 }

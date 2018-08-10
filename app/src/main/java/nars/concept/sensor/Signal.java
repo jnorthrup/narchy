@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.control.DurService;
@@ -107,28 +106,25 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Nullable
     @Deprecated
-    public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
+    public final ITask update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
         return update(truther, n.time(), n.dur(), n);
     }
 
     @Nullable
     @Deprecated
-    public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
+    public ITask update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
         return update(time - dur / 2, time + Math.max(0, (dur / 2 - 1)), truther, n);
     }
 
     @Nullable
-    public Task update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
+    public ITask update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
 
         float prevValue = currentValue;
         float nextValue = floatValueOf(term);
         if (nextValue == nextValue /* not NaN */) {
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
-
-
-                return ((SignalBeliefTable) beliefs()).add(nextTruth,
-                        start, end, this, n);
+                return ((SignalBeliefTable) beliefs()).add(nextTruth, start, end, this, n);
             }
         }
         return null;

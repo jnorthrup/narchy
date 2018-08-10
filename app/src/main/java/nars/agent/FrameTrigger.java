@@ -62,7 +62,7 @@ abstract public class FrameTrigger {
 
             loop.setFPS(initialFPS);
 
-            return () -> loop.stop();
+            return loop::stop;
         }
     }
 
@@ -84,7 +84,8 @@ abstract public class FrameTrigger {
 
         @Override
         public long next(long now) {
-            return now + loop.durCycles();
+            DurService l = this.loop;
+            return l !=null ?  now + l.durCycles() : now;
         }
     }
 

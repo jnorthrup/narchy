@@ -549,7 +549,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * sorted by time; decomposes inner parallel conj
      */
     /* final */
-    default FasterList<LongObjectPair<Term>> eventList() {
+    @Deprecated default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0, 1);
     }
 
@@ -563,35 +563,35 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return whileEachEvent.accept(dt, this);
     }
 
-    /** recursively visits all conj and impl sub-conditions */
-    default boolean conditionsWhile(Predicate<Term> each) {
+//    /** recursively visits all conj and impl sub-conditions */
+//    default boolean conditionsWhile(Predicate<Term> each) {
+//
+//        if (hasAny(Op.Conditional))
+//            return each.test(this);  //short-cut, just this
+//
+//        return eventsWhile((w, what) -> {
+//            if (!each.test(what))
+//                return false;
+//
+//            what = what.unneg();
+//
+//            if (what.op()==IMPL) {
+//                if (!each.test(what.sub(0)))
+//                    return false;
+//                if (!each.test(what.sub(1)))
+//                    return false;
+//            }
+//
+//            return true;
+//        }, 0,true, true, true, 0);
+//    }
 
-        if (hasAny(Op.Conditional))
-            return each.test(this);  //short-cut, just this
-
-        return eventsWhile((w, what) -> {
-            if (!each.test(what))
-                return false;
-
-            what = what.unneg();
-
-            if (what.op()==IMPL) {
-                if (!each.test(what.sub(0)))
-                    return false;
-                if (!each.test(what.sub(1)))
-                    return false;
-            }
-
-            return true;
-        }, 0,true, true, true, 0);
-    }
-
-    default void conditionsEach(Consumer<Term> each) {
-        conditionsWhile((e)->{
-            each.accept(e);
-            return true;
-        });
-    }
+//    default void conditionsEach(Consumer<Term> each) {
+//        conditionsWhile((e)->{
+//            each.accept(e);
+//            return true;
+//        });
+//    }
 
     default void printRecursive() {
         printRecursive(System.out);

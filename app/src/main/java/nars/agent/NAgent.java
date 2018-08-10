@@ -115,7 +115,10 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected <A extends ActionConcept> void actionAdded(A c) {
-        alwaysQuest(c, true);
+        alwaysQuest(c,
+                true
+                //false
+        );
 //        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
 //        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
         //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
@@ -164,16 +167,15 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public void alwaysQuestion(Termed x, boolean stamped) {
-        alwaysQuestionDynamic(() -> x, true);
+        alwaysQuestionDynamic(() -> x, true, stamped);
     }
 
     public void alwaysQuest(Termed x, boolean stamped) {
-        alwaysQuestionDynamic(() -> x, false);
+        alwaysQuestionDynamic(() -> x, false, stamped);
     }
 
-    public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest) {
+    public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest, boolean stamped) {
 
-        boolean stamped = true;
         always.add((prev, now, next) -> {
 
             long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
@@ -292,20 +294,25 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
     public Off reward(FloatSupplier rewardfunc) {
-        return reward($.func("reward", id), rewardfunc);
+        return reward(rewardTerm("reward"), rewardfunc);
     }
 
     @Deprecated
     public Off rewardDetailed(FloatSupplier rewardfunc) {
-        return rewardDetailed($.func("reward", id), rewardfunc);
+        return rewardDetailed(rewardTerm("reward"), rewardfunc);
     }
 
     public Off reward(String reward, FloatSupplier rewardFunc) {
-        return reward($.inh($$(reward), id), rewardFunc);
+        return reward(rewardTerm(reward), rewardFunc);
+    }
+
+    /** default reward term builder from String */
+    protected Term rewardTerm(String reward) {
+        return $.inh($$(reward), id);
     }
 
     public Off reward(String reward, float min, float max, FloatSupplier rewardFunc) {
-        return reward($.inh($$(reward), id), min, max, rewardFunc);
+        return reward(rewardTerm(reward), min, max, rewardFunc);
     }
 
     public Off reward(Term reward, FloatSupplier rewardFunc) {
@@ -317,21 +324,26 @@ public class NAgent extends NARService implements NSense, NAct {
      */
     public Off reward(Term reward, float min, float max, FloatSupplier rewardFunc) {
         return reward(new SimpleReward(reward,
-                //default normalizer
                 new FloatNormalized(rewardFunc, min, max, false).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
                 this));
+    }
+    @Deprecated
+    public Off rewardDetailed(String reward, FloatSupplier rewardFunc) {
+        return rewardDetailed(rewardTerm(reward), rewardFunc);
     }
 
     @Deprecated
     public Off rewardDetailed(Term reward, FloatSupplier rewardFunc) {
-        DetailedReward r = new DetailedReward(reward, rewardFunc, this);
-        return reward(r);
+        return reward(new DetailedReward(reward, rewardFunc, this));
     }
 
     /**
      * default reward module
      */
-    final public Off reward(Reward r) {
+    final public synchronized Off reward(Reward r) {
+        if (rewards.anySatisfy(e-> e.term().equals(r.term())))
+            throw new RuntimeException("reward exists with the ID: " + r.term());
+
         rewards.add(r);
         return () -> rewards.remove(r);
     }
@@ -400,32 +412,33 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
     /**
-     * runs a frame
+     * iteration
      */
-    protected void next() {
-        if (!enabled.getOpaque())
-            return;
+    protected final void next() {
 
-        long now = nar.time();
-        long last = this.last;
-        if (now <= last)
-            return;
-
-        if (!busy.weakCompareAndSetAcquire(false, true))
+        if (!enabled.getOpaque() || !busy.weakCompareAndSetAcquire(false, true))
             return;
 
         try {
+            long now = nar.time();
+            long last = this.last;
+            if (last == ETERNAL)
+                last = now;
+            else if (now <= last)
+                return;
 
-            cycle.next(this, iteration.getAndIncrement(), this.last, now, frameTrigger.next(now));
+            long next = Math.max(now, frameTrigger.next(now));
+            cycle.next(this, iteration.getAndIncrement(), last, now, next);
 
             this.last = now;
+
+            if (trace.getOpaque())
+                logger.info(summary());
 
         } finally {
             busy.setRelease(false);
         }
 
-        if (trace.getOpaque())
-            logger.info(summary());
     }
 
     protected void act(long prev, long now, long next) {

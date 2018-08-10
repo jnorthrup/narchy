@@ -68,7 +68,6 @@ public abstract class Event implements LongObjectPair<Term> {
         throw new TODO();
     }
 
-    public long dur() {
-        return end() - start();
-    }
+    abstract public long dur(); //        return end() - start();
+
 }

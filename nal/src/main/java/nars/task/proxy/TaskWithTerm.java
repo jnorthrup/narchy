@@ -17,7 +17,7 @@ public class TaskWithTerm extends TaskProxy {
     public TaskWithTerm(Term term, Task task) {
         super(task);
         if(term.op()==NEG)
-            throw new RuntimeException("task must not be named wit NEG term: " + term + " via " + task);
+            throw new RuntimeException("task must not be named with NEG term: " + term + " via " + task);
         this.term = term;
     }
 

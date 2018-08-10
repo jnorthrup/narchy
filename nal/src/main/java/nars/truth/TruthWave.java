@@ -1,7 +1,6 @@
 package nars.truth;
 
 import nars.NAR;
-import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.time.Tense;
 import nars.util.TimeAware;
@@ -9,9 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 /**
  * compact chart-like representation of a belief state at each time cycle in a range of time.
@@ -38,8 +34,8 @@ public class TruthWave {
      */
     private float[] truth;
     private int size;
-    @Nullable
-    public Truth current;
+
+
 
     public TruthWave(int initialCapacity) {
         resize(initialCapacity);
@@ -65,12 +61,12 @@ public class TruthWave {
      */
     public void set(BeliefTable b, long minT, long maxT) {
         clear();
-
+        this.start = minT; this.end = maxT;
         int s = b.size();
         if (s == 0) {
-            this.current = null;
             return;
         }
+
 
         size(s);
 
@@ -78,7 +74,7 @@ public class TruthWave {
 
         final int[] size = {0};
 
-        long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
+        //long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
         b.forEachTask(false, minT, maxT, x -> {
             int ss = size[0];
             if (ss >= s) { 
@@ -91,21 +87,20 @@ public class TruthWave {
             int j = (size[0]++) * ENTRY_SIZE;
             load(t, j, minT, maxT, xs, xe, x);
 
-            if (xs < st[0]) st[0] = xs;
-            if (xe > en[0]) en[0] = xe;
+//            if (xs < st[0]) st[0] = xs;
+//            if (xe > en[0]) en[0] = xe;
 
         });
         this.size = size[0];
 
-        this.start = minT; //st[0];
-        this.end = maxT; //en[0];
+
     }
 
     private static void load(float[] array, int index, long absStart, long absEnd, long start, long end, @Nullable Truthed truth) {
 
-        long range = absEnd - absStart;
-        array[index++] = start == Tense.ETERNAL ? Float.NaN : ((float)(start-absStart))/range;
-        array[index++] = end == Tense.ETERNAL ? Float.NaN : ((float)(end-absStart))/range;
+        double range = absEnd - absStart;
+        array[index++] = start == Tense.ETERNAL ? Float.NaN : (float) (((start - absStart)) / range);
+        array[index++] = end == Tense.ETERNAL ? Float.NaN : (float) (((end - absStart)) / range);
         if (truth != null) {
             array[index++] = truth.freq();
             array[index/*++*/] = truth.conf();
@@ -131,9 +126,10 @@ public class TruthWave {
     /**
      * fills the wave with evenly sampled points in a time range
      */
-    public void project(Concept c, boolean beliefOrGoal, long minT, long maxT, int points, NAR nar) {
+    public void project(BeliefTable table, long minT, long maxT, int points, NAR nar) {
         clear();
-
+        this.start = minT;
+        this.end = maxT;
         if (minT == maxT) {
             return;
         }
@@ -143,8 +139,6 @@ public class TruthWave {
         double t = minT ;
         float[] data = this.truth;
         int j = 0;
-        byte punc = beliefOrGoal ? BELIEF : GOAL;
-        BeliefTable table = (BeliefTable) c.table(punc);
         for (int i = 0; i < points; i++) {
             long a = Math.round(t); //Math.round(t - dt/2);
             long b = Math.round(t + dt);
@@ -158,10 +152,8 @@ public class TruthWave {
             );
             t += dt;
         }
-        this.current = null;
         this.size = j;
-        this.start = minT;
-        this.end = maxT;
+
     }
 
     public boolean isEmpty() {

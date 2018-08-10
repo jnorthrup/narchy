@@ -10,8 +10,8 @@ import nars.control.proto.Remember;
 import nars.op.stm.ConjClustering;
 import nars.subterm.Subterms;
 import nars.task.*;
-import nars.task.proxy.TaskWithNegatedTruth;
-import nars.task.proxy.TaskWithTruthAndOccurrence;
+import nars.task.proxy.SpeciaTermTask;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.*;
@@ -426,7 +426,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             Truth tt = t.truth(subStart, subEnd, n.dur());
 
             return (tt != null) ?
-                    new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, tt.negIf(negated)) : null;
+                    new SpecialTruthAndOccurrenceTask(t, subStart, subEnd, negated, tt.negIf(negated)) : null;
         }
 
         return negated ? Task.negated(t) : t;
@@ -436,7 +436,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * creates negated proxy of a task
      */
     static Task negated(@Nullable Task t) {
-        return new TaskWithNegatedTruth(t);
+        return new SpeciaTermTask(t);
     }
 
 //    static Task eternalized(Task tx) {
@@ -458,6 +458,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                         )
         );
     }
+
+
 
     @Override
     default float freqMin() {
@@ -818,7 +820,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             case 1:
                 return needEval ? yy.iterator().next() : ((List<ITask>)yy).get(0); /* avoid creating iterator */
             default:
-                return new AbstractTask.NARTask((nn) -> yy.forEach(z -> z.run(nn)));
+                return new AbstractTask.NARTask((nn) -> yy.forEach(z -> {
+                    if (z!=null) //HACK
+                        z.run(nn);
+                }));
         }
     }
 
@@ -904,7 +909,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
 
         if (!cmd) {
-            queue.add(inputStrategy(this, n));
+            queue.add(inputSubTask(this, n));
         }
 
 
@@ -978,7 +983,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     }
 
-    default ITask inputStrategy(Task result, NAR n) {
+    default ITask inputSubTask(Task result, NAR n) {
         return Remember.the(result, n);
     }
 

@@ -1,7 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.pri.ScalarValue;
 import jcog.random.SplitMix64Random;
@@ -316,10 +315,8 @@ public class Derivation extends PreDerivation {
             anon.clear();
             try {
                 this.taskTerm = anon.put(nextTask.term());
-            } catch (WTF w) {
-                //HACK
-                nextTask.delete();
-                throw w;
+            } catch (RuntimeException w) {
+                return fatal(nextTask, w);
             }
 
 
@@ -381,11 +378,8 @@ try {
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthDuringTask = null;
         }
-} catch (WTF w) {
-	//HACK
-    if (nextBelief!=null)
-        nextBelief.delete();
-	throw w;
+} catch (RuntimeException w) {
+    return fatal(nextBelief, w);
 }
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
@@ -395,6 +389,17 @@ try {
 
 
         return true;
+    }
+
+    public static boolean fatal(@Nullable Task problemTask, RuntimeException w) {
+        if (problemTask!=null)
+            problemTask.delete();
+        if (Param.DEBUG)
+            throw w;
+        else {
+            logger.warn("{}", w.getMessage());
+            return false;
+        }
     }
 
     /**

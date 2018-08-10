@@ -4,12 +4,13 @@ import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
 import static nars.Op.BELIEF;
 
-public abstract class Reward  {
+public abstract class Reward implements Termed {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 

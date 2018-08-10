@@ -8,20 +8,14 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.ActionConcept;
-import nars.concept.action.GoalActionAsyncConcept;
 import nars.concept.action.GoalActionConcept;
-import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
-import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
@@ -91,64 +85,6 @@ public interface NAct {
                 nar().confDefault(BELIEF) /*d.conf()*/);
     }
 
-    /**
-     * selects one of 2 states until it shifts to the other one. suitable for representing
-     * push-buttons like keyboard keys. by default with no desire the state is off.   the off procedure will not be called immediately.
-     */
-    default void actionTriState(Term s, IntConsumer i) {
-        actionTriState(s, (v) -> {
-            i.accept(v);
-            return true;
-        });
-    }
-
-    /**
-     * tri-state implemented as delta version memory of last state.
-     * initial state is neutral.
-     */
-    default GoalActionAsyncConcept[] actionTriState(Term cc, IntPredicate i) {
-
-
-        GoalActionAsyncConcept[] g = actionBipolar(cc, true, (float f) -> {
-
-            f = f / 2f + 0.5f;
-
-
-            float deadZoneFreqRadius =
-                    1 / 6f;
-
-            int s;
-            if (f > 0.5f + deadZoneFreqRadius)
-                s = +1;
-            else if (f < 0.5f - deadZoneFreqRadius)
-                s = -1;
-            else
-                s = 0;
-
-            if (i.test(s)) {
-
-
-                switch (s) {
-                    case -1:
-                        return -1f;
-                    case 0:
-                        return 0f;
-                    case +1:
-                        return +1f;
-                    default:
-                        throw new RuntimeException();
-                }
-
-            }
-
-            return 0f;
-
-        });
-        float res = 0.5f;
-        g[0].resolution(res);
-        g[1].resolution(res);
-        return g;
-    }
 
     <A extends ActionConcept> A addAction(A c);
 
@@ -408,200 +344,9 @@ public interface NAct {
 //        return addAction(new BeliefActionConcept(s, nar(), update));
 //    }
 
-    default GoalActionAsyncConcept[] actionBipolar(Term s, FloatToFloatFunction update) {
-        return actionBipolar(s, false, update);
-    }
 
-    default GoalActionAsyncConcept[] actionBipolar(Term s, boolean fair, FloatToFloatFunction update) {
-        return actionBipolarFrequencyDifferential(s, fair, false, update);
 
 
-    }
-
-    default void actionBipolarSteering(Term s, FloatConsumer act) {
-        final float[] amp = new float[1];
-        float dt = 0.1f;
-        float max = 1f;
-        float decay = 0.9f;
-        actionTriState(s, (i) -> {
-            float a = amp[0];
-            float b = Util.clamp((a * decay) + dt * i, -max, max);
-            amp[0] = b;
-
-            act.accept(b);
-
-            return !Util.equals(a, b, Float.MIN_NORMAL);
-        });
-
-
-    }
-
-    default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(Term s, boolean fair, boolean latchPreviousIfUndecided, FloatToFloatFunction update) {
-
-        Term pt =
-
-                $.inh(s, PLUS);
-
-
-        Term nt =
-
-                $.inh(s, NEG);
-
-
-        final float g[] = new float[2];
-        final float e[] = new float[2];
-        final long[] lastUpdate = {nar().time()};
-        final long[] lastFeedback = {nar().time()};
-
-        final float[] lastX = {0};
-
-        GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2];
-
-        BiConsumer<GoalActionAsyncConcept, Truth> u = (action, gg) -> {
-
-
-            NAR n = nar();
-            long now = n.time();
-
-            if (now != lastUpdate[0]) {
-                lastUpdate[0] = now;
-                CC[0] = CC[1] = null;
-            }
-
-
-            float confMin = n.confMin.floatValue();
-
-            float feedbackConf =
-                    n.confDefault(BELIEF);
-
-
-            boolean p = action.term().equals(pt);
-            int ip = p ? 0 : 1;
-            CC[ip] = action;
-            g[ip] = gg != null ?
-                    gg.freq()
-                    //gg.exp()
-
-                    :
-
-                    Float.NaN;
-            e[ip] = gg != null ?
-                    gg.evi()
-
-                    :
-                    0f;
-
-
-            float x;
-
-            boolean curious;
-            if (CC[0] != null && CC[1] != null /* both ready */) {
-
-                if (g[0] != g[0] && g[1] == g[1]) {
-                    g[0] = 1 - g[1];
-                } else if (g[1] != g[1] && g[0] == g[0]) {
-                    g[1] = 1 - g[0];
-                } else if (g[1] != g[1] && g[0] != g[0]) {
-                    g[0] = g[1] = 0.5f;
-                }
-
-                float cMax = Math.max(e[0], e[1]);
-                float cMin = Math.min(e[0], e[1]);
-                float coherence = cMin / cMax;
-
-                Random rng = n.random();
-                float cur = curiosity().floatValue();
-                if (cur > 0 && rng.nextFloat() <= cur) {
-                    x = (rng.nextFloat() - 0.5f) * 2f;
-
-
-                    e[0] = e[1] = feedbackConf;
-                    coherence = 1f;
-                    curious = true;
-                } else {
-                    curious = false;
-
-
-                    if (cMax < confMin) {
-                        if (latchPreviousIfUndecided) {
-                            x = lastX[0];
-                        } else {
-                            x = 0;
-                        }
-                    } else {
-
-
-                        x = ((g[0] - g[1]));
-
-
-                        if (fair) {
-
-                            x *= coherence;
-
-
-                        }
-
-
-                    }
-
-
-                }
-
-                x = Util.clamp(x, -1f, +1f);
-
-                lastX[0] = x;
-
-                float y = update.valueOf(x);
-
-
-                PreciseTruth Nb, Ng, Pb, Pg;
-
-                if (y == y) {
-
-                    float yp, yn;
-                    if (Math.abs(y) >= n.freqResolution.floatValue()) {
-                        yp = 0.5f + y / 2f;
-                        yn = 1f - yp;
-                    } else {
-                        yp = yn = 0.5f;
-                    }
-
-
-                    float pbf = yp;
-                    float nbf = yn;
-                    Pb = $.t(pbf, feedbackConf);
-                    Nb = $.t(nbf, feedbackConf);
-
-
-                    Pg = null;
-                    Ng = null;
-
-
-                } else {
-                    Pb = Nb = Pg = Ng = null;
-                }
-
-
-                long lastFb = lastFeedback[0];
-                lastFeedback[0] = now;
-                CC[0].feedback(Pb, Pg, lastFb, now, n);
-                CC[1].feedback(Nb, Ng, lastFb, now, n);
-
-
-            }
-        };
-
-        CauseChannel<ITask> cause = nar().newChannel(s);
-        GoalActionAsyncConcept p = new GoalActionAsyncConcept(pt, nar(), cause, u);
-        GoalActionAsyncConcept n = new GoalActionAsyncConcept(nt, nar(), cause, u);
-
-        addAction(p);
-        addAction(n);
-
-        CC[0] = p;
-        CC[1] = n;
-        return CC;
-    }
 
     default GoalActionConcept actionUnipolar(Term s, FloatConsumer update) {
         return actionUnipolar(s, (x) -> {

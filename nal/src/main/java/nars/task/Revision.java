@@ -78,7 +78,7 @@ public class Revision {
 
 
         int len = a.subs();
-        assert(len > 0);
+        assert len > 0;
 //        if (len == 0) {
 //            //WTF
 //            if (a.op() == PROD) return a;
@@ -106,7 +106,7 @@ public class Revision {
                 Term bi = bb.sub(i);
                 if (!ai.equals(bi)) {
                     Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
-                    if (y == null || y instanceof Bool && (!(ai instanceof Bool)))
+                    if (y == null || y instanceof Bool && !(ai instanceof Bool))
                         return Null;
 
                     if (!ai.equals(y)) {
@@ -157,7 +157,7 @@ public class Revision {
             dt = adt;
         } else if (adt == XTERNAL || bdt == XTERNAL) {
 
-            dt = (adt == XTERNAL) ? bdt : adt;
+            dt = adt == XTERNAL ? bdt : adt;
             //dt = choose(adt, bdt, aProp);
 
         } else if (adt == DTERNAL || bdt == DTERNAL) {
@@ -176,11 +176,11 @@ public class Revision {
 
     /** merge delta */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
-        if (((adt >= 0 == bdt >= 0) && ((float)(Math.abs(adt - bdt))/nar.dur() <= nar.intermpolationDurLimit.floatValue()))) {
+        if (adt >= 0 == bdt >= 0 && (float) Math.abs(adt - bdt) /nar.dur() <= nar.intermpolationDurLimit.floatValue()) {
             //merge if they are the same sign or within a some number of durations
 
             long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
-            assert (Math.abs(abdt) < Integer.MAX_VALUE);
+            assert Math.abs(abdt) < Integer.MAX_VALUE;
 
             return (int) abdt;
 
@@ -197,7 +197,7 @@ public class Revision {
         if (diff == 1) {
             return choose(at, bt, aProp, nar.random());
         }
-        if (((float) diff /nar.dur() <= nar.intermpolationDurLimit.floatValue())) {
+        if ((float) diff /nar.dur() <= nar.intermpolationDurLimit.floatValue()) {
             //merge if within a some number of durations
             dt = Util.lerp(aProp, bt, at);
         } else {
@@ -210,10 +210,10 @@ public class Revision {
 //        return (rng.nextFloat() < aProp) ? a : b;
 //    }
     static int choose(int a, int b, float aProp, /*@NotNull*/ Random rng) {
-        return (rng.nextFloat() < aProp) ? a : b;
+        return rng.nextFloat() < aProp ? a : b;
     }
     static long choose(long a, long b, float aProp, /*@NotNull*/ Random rng) {
-        return (rng.nextFloat() < aProp) ? a : b;
+        return rng.nextFloat() < aProp ? a : b;
     }
 
 //    /*@NotNull*/
@@ -244,7 +244,7 @@ public class Revision {
      */
     @Nullable
     public static Task merge(NAR nar, TaskRegion... tt) {
-        assert (tt.length > 1);
+        assert tt.length > 1;
         long[] u = Tense.union(tt);
         return merge(nar, nar.dur(), u[0], u[1], true, tt);
     }
@@ -274,7 +274,7 @@ public class Revision {
 
         /*Truth.EVI_MIN*/
 
-        float range = (start != ETERNAL) ? (end - start + 1) : 1;
+        float range = start != ETERNAL ? end - start + 1 : 1;
         float eviMinInteg = Param.TRUTH_MIN_EVI;
         Task defaultTask;
         if (!forceProjection) {
@@ -286,9 +286,12 @@ public class Revision {
 
         TruthPolation T = Param.truth(start, end, dur).add(tasks);
         LongSet stamp = T.filterCyclic();
-        if (!forceProjection && T.size() == 1) {
-
-            return defaultTask;
+        if (T.size() == 1) {
+            if (!forceProjection) {
+                return T.getTask(0);
+            } else {
+                return null; //fail
+            }
         }
 
         Truth truth = T.truth(nar);
@@ -297,7 +300,7 @@ public class Revision {
 
         float truthEvi = truth.evi();
 
-        if ((truthEvi * range) < eviMinInteg)
+        if (truthEvi * range < eviMinInteg)
             return defaultTask;
 
         Truth cTruth = Truth.theDithered(truth.freq(), truthEvi, nar);
@@ -306,14 +309,15 @@ public class Revision {
 
         byte punc = T.punc();
 
-        long finalStart = start;
-        long finalEnd = end;
-        Task t = Task.tryTask(T.term, punc, cTruth, (c, tr) ->
-                new NALTask(c, punc,
-                        tr,
-                        nar.time(), finalStart, finalEnd,
-                        Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
-                )
+
+        Task t = Task.tryTask(T.term, punc, cTruth, (c, tr) -> {
+                    long[] taskRange = T.taskRange();
+                    return new NALTask(c, punc,
+                            tr,
+                            nar.time(), taskRange[0], taskRange[1],
+                            Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+                    );
+                }
         );
 
         if (t == null)
@@ -323,11 +327,9 @@ public class Revision {
 
         t.pri(Priority.fund(Util.max((TaskRegion p) -> p.task().priElseZero(), tasks),
                 true,
-
                 Tasked::task, tasks));
 
         ((NALTask) t).cause(Cause.sample(Param.causeCapacity.intValue(), tasks));
-
 
         return t;
     }
@@ -370,7 +372,7 @@ public class Revision {
             String bs = Conj.sequenceString(b, c).toString();
 
             int levDist = Texts.levenshteinDistance(as, bs);
-            float seqDiff = (((float) levDist) / (Math.min(as.length(), bs.length())));
+            float seqDiff = (float) levDist / Math.min(as.length(), bs.length());
 
 
             float rangeDiff = Math.max(1f, Math.abs(a.dtRange() - b.dtRange()));

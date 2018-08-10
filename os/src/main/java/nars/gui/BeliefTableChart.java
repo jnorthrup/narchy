@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.concept.Concept;
+import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.TruthWave;
@@ -19,6 +20,9 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.video.Draw;
+
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 
 public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.Menu {
@@ -108,8 +112,9 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
 
         void update(Concept c) {
-            projected.project(c, beliefOrGoal, start, end, w, nar);
-            tasks.set(beliefOrGoal ? c.beliefs() : c.goals(), start, end);
+            BeliefTable table = (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL);
+            projected.project(table, start, end, w, nar);
+            tasks.set(table, start, end);
         }
 
         @Override
@@ -157,9 +162,9 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
 
                 if (beliefOrGoal) {
-                    gl.glColor4f(1f, 0, 0.25f, 0.1f + 0.5f * conf);
+                    gl.glColor4f(1f, 0, 0.25f, 0.15f + 0.75f * conf);
                 } else {
-                    gl.glColor4f(0f, 1, 0.25f, 0.1f + 0.5f * conf);
+                    gl.glColor4f(0f, 1, 0.25f, 0.15f + 0.75f * conf);
                 }
                 float y = freq - ph / 2;
                 Draw.rect(gl,
@@ -197,13 +202,13 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
         int dur = nar.dur();
 
         //TODO different time modes
-        float durs = this.durs.floatValue();
+        double durs = this.durs.doubleValue();
         start = now - Math.round(durs * dur);
         end = now + Math.round(durs * dur);
 
-        if (beliefGrid.showing())
+
             beliefGrid.update(ccd);
-        if (goalGrid.showing())
+
             goalGrid.update(ccd);
 
     }

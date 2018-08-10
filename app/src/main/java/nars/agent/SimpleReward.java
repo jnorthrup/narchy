@@ -33,6 +33,11 @@ public class SimpleReward extends Reward {
     }
 
     @Override
+    public Term term() {
+        return concept.term();
+    }
+
+    @Override
     public void update(long prev, long now, long next) {
         super.update(prev, now, next);
         concept.update(prev, now, truther, nar());

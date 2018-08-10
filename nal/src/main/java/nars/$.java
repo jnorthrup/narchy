@@ -6,7 +6,6 @@ import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jdk.nashorn.api.scripting.NashornScriptEngine;
 import nars.op.FileFunc;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
@@ -37,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import javax.script.ScriptEngineManager;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -666,12 +664,12 @@ public enum $ {
     }
 
 
-    /**
-     * instantiate new Javascript context
-     */
-    public static NashornScriptEngine JS() {
-        return (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
-    }
+//    /**
+//     * instantiate new Javascript context
+//     */
+//    public static NashornScriptEngine JS() {
+//        return (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
+//    }
 
     public static <X> PREDICATE<X> IF(Term t, Predicate<X> test) {
         return new LambdaPred<>(t, test);

@@ -52,7 +52,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * max allowed truths to be truthpolated in one test
      * must be less than or equal to Stamp.CAPACITY otherwise stamp overflow
      */
-    private static final int TRUTHPOLATION_LIMIT = Param.STAMP_CAPACITY - 1;
+    private static final int TRUTHPOLATION_LIMIT = (Param.STAMP_CAPACITY - 1)/2;
 
     /**
      * max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task
@@ -72,7 +72,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int SCAN_CONF_OCTAVES_MAX = 1;
     private static final int SCAN_TIME_OCTAVES_MAX = 3;
 
-    private static final int MIN_TASKS_PER_LEAF = 2;
+    private static final int MIN_TASKS_PER_LEAF = 3;
     private static final int MAX_TASKS_PER_LEAF = 4;
     private static final Split<TaskRegion> SPLIT =
             new AxialSplitLeaf<>();
@@ -152,7 +152,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         return (TaskRegion r) -> {
 
-            long timeDist = r.midTimeTo(when);
+            long timeDist =
+                    //r.midTimeTo(when);
+                    r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
+
             float conf = ((float) r.coord(true, 2));
             return (float) -Param.evi(/*c2wSafe(*/conf,  timeDist, perceptDur);
 
@@ -419,7 +422,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         Top<Leaf<TaskRegion>> weakLeaf = new Top<>(leafWeakness);
 
         FloatFunction<TaskRegion> weakestTask = t ->
-                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t), t.midTimeTo(now), perceptDur));
+                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t),
+                        //t.midTimeTo(now)
+                         t.maxTimeTo(now)
+                        , perceptDur));
 
         Top<TaskRegion> weakest = new Top<>(weakestTask);
 
@@ -635,6 +641,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     @Override
     public boolean removeTask(Task x) {
+        x.delete();
         return remove(x);
     }
 
@@ -791,7 +798,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
                 otherwise limit by the Leaf capacity */
             if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= TRUTHPOLATION_LIMIT)) {
-                table.forEachOptimistic(this::accept);
+                table.forEach /*forEachOptimistic*/(this::accept);
                 //TODO this might be faster to add directly then sort the results after
                 //eliminating need for the Cache map
                 return this;
@@ -889,7 +896,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     }
 
                     if (lll != null || rrr != null) {
-                        table.readOptimistic((Space<TaskRegion> tree) -> {
+                        table.read /*readOptimistic*/((Space<TaskRegion> tree) -> {
                             if (lll != null)
                                 tree.whileEachIntersecting(lll, this);
                             if (rrr != null)

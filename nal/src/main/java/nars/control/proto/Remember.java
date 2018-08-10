@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public final class Remember extends AbstractTask {
 
 
-    public final Task input;
+    public Task input;
 
     final FasterList<ITask> next = new FasterList(2);
     final FasterList<Task> remembered = new FasterList(2);

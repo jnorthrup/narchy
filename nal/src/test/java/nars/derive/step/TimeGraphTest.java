@@ -86,7 +86,7 @@ class TimeGraphTest {
 
         assertSolved("(two &&+- three)", A,
 
-                "(two &&+1 three)", "(two &&+1 three)@2", "(three &&+17 two)@3", "(two &&+1 three)@2", "(two &&+1 three)@2", "(two &&+1 three)@20", "(two &&+19 three)@2");
+                "(two &&+1 three)@2", "(three &&+17 two)@3", "(two &&+1 three)@2", "(two &&+1 three)@2", "(two &&+1 three)@20", "(two &&+19 three)@2");
 
     }
 
@@ -118,7 +118,7 @@ class TimeGraphTest {
         cc1.know($.$("(b &&+5 c)"), 6);
         
         assertSolved("(a &&+- c)", cc1,
-                "(a &&+10 c)", "(a &&+10 c)@1");
+                "(a &&+10 c)@1");
     }
 
     @Test
@@ -128,7 +128,7 @@ class TimeGraphTest {
         cc1.know($.$("(a &&+5 b)"), 1);
         
         assertSolved("(a &&+- b)", cc1,
-                "(a &&+5 b)","(a &&+5 b)@1");
+                "(a &&+5 b)@1");
     }
 
     @Test
@@ -139,7 +139,7 @@ class TimeGraphTest {
         cc1.know($.$("(b &&+5 c)"), 6);
         
         assertSolved("((b &&+5 c) &&+- (a &&+5 b))", cc1,
-                "((a &&+5 b) &&+5 c)", "((a &&+5 b) &&+5 c)@1");
+                "((a &&+5 b) &&+5 c)@1");
     }
 
     @Test

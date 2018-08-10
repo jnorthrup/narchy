@@ -30,7 +30,7 @@ public class CuriosityGoalTable extends SeriesBeliefTable<SeriesBeliefTable.Seri
                     //final long[] sharedStamp = n.evidence();
 
                     @Override
-                    public SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp) {
+                    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp) {
                         SeriesBeliefTable.SeriesTask t = new SeriesBeliefTable.SeriesTask(
                                 term,
                                 punc,

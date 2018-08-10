@@ -286,7 +286,7 @@ public class TrackXY extends NAgentX {
                 INH.the($.the("stay"), id)
         );
         addSensor(s);
-        SpaceGraph.window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
+        SpaceGraph.window(NARui.beliefCharts(s.sensors, nar), 300, 300);
     }
 
     private void actionTriState() {

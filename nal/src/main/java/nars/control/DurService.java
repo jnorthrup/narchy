@@ -30,10 +30,11 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
 
     protected DurService(NAR n, float durs) {
-        super((NAR)null);
+        super((NAR)null); //dont call through super constructor
         durations.set(durs);
-        if (n!=null)
-            n.on(this);
+        if (n!=null) {
+            (this.nar = n).on(this);
+        }
     }
 
 
@@ -97,8 +98,8 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     @Override
     protected void starting(NAR nar) {
         long now = nar.time();
-        long durCycles = durCycles();
-        lastStarted = now - durCycles;
+        //long durCycles = durCycles();
+        lastStarted = now;// - durCycles;
         //lastFinished = lastStarted - durCycles;
         //spawn(nar, now + durCycles);
         accept(nar);

@@ -242,6 +242,7 @@ public abstract class TermBuilder {
 
             if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
+                //TODO use some variation of Conj class to determine subj/pred contradiction
                 ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
                 subject.eventsWhile((w, t) -> {
                     se.add(PrimitiveTuples.pair(w, t));

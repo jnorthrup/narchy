@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * term anonymization context, for canonicalization and generification of compounds
- *         //return new DirectTermTransform() {
- *         //return new TermTransform.NegObliviousTermTransform() {
+ * //return new DirectTermTransform() {
+ * //return new TermTransform.NegObliviousTermTransform() {
  */
 public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermTransform {
 
@@ -31,7 +31,9 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
         return idToTerm.size();
     }
 
-    /** returns true if anything changed */
+    /**
+     * returns true if anything changed
+     */
     public boolean rollback(int toUniques) {
         if (toUniques == 0) {
             clear();
@@ -75,10 +77,12 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
 
 
     void validate(Term x, Term y) {
-        if (y.op()!=x.op())
+
+        if (y.op() != x.op())
             throw new WTF("anon changed op: " + x + " -> " + y);
-        if (y.volume()!=x.volume())
+        if (y.volume() != x.volume())
             throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
+
     }
 
     public final Term get(Term x) {
@@ -87,7 +91,7 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
         } else if (x instanceof Compound) {
             return getCompound((Compound) x);
         } else {
-            return x; 
+            return x;
         }
     }
 

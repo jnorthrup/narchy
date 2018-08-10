@@ -21,13 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles =300;
+    public static final int cycles = 800;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(26);
+        test.nar.freqResolution.set(0.04f); //coarse
+        test.nar.termVolumeMax.set(24);
     }
 
     @Test

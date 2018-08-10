@@ -3,14 +3,17 @@ package nars.agent;
 import jcog.Util;
 import jcog.event.On;
 import jcog.math.*;
+import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.List;
 import java.util.function.*;
@@ -205,5 +208,101 @@ public interface NSense {
         return senseNumber($$(id), v);
     }
 
+    default BiPolarAction actionBipolar(Term s, FloatToFloatFunction update) {
+        return actionBipolar(s, false, update);
+    }
+
+    default BiPolarAction actionBipolar(Term s, boolean fair, FloatToFloatFunction update) {
+        return actionBipolarFrequencyDifferential(s, fair, update);
+    }
+
+    default BiPolarAction actionBipolarFrequencyDifferential(Term s, boolean fair, FloatToFloatFunction motor) {
+        BiPolarAction a = addSensor(new BiPolarAction(s,
+                new BiPolarAction.DefaultPolarization(fair, this),
+                motor, nar()));
+
+        nar().on(a.pos);
+        nar().on(a.neg);
+        ((NAgent)this).addAction(a.pos);
+        ((NAgent)this).addAction(a.neg);
+        return a;
+    }
+
+    /**
+     * tri-state implemented as delta version memory of last state.
+     * initial state is neutral.
+     */
+    default BiPolarAction actionTriState(Term cc, IntPredicate i) {
+
+
+        return actionBipolar(cc, true, (float f) -> {
+
+            f = f / 2f + 0.5f;
+
+
+            float deadZoneFreqRadius =
+                    1 / 6f;
+
+            int s;
+            if (f > 0.5f + deadZoneFreqRadius)
+                s = +1;
+            else if (f < 0.5f - deadZoneFreqRadius)
+                s = -1;
+            else
+                s = 0;
+
+            if (i.test(s)) {
+
+
+                switch (s) {
+                    case -1:
+                        return -1f;
+                    case 0:
+                        return 0f;
+                    case +1:
+                        return +1f;
+                    default:
+                        throw new RuntimeException();
+                }
+
+            }
+
+            return 0f;
+
+        });
+//        float res = 0.5f;
+//        g[0].resolution(res);
+//        g[1].resolution(res);
+//        return g;
+    }
+    default void actionBipolarSteering(Term s, FloatConsumer act) {
+        final float[] amp = new float[1];
+        float dt = 0.1f;
+        float max = 1f;
+        float decay = 0.9f;
+        actionTriState(s, (i) -> {
+            float a = amp[0];
+            float b = Util.clamp((a * decay) + dt * i, -max, max);
+            amp[0] = b;
+
+            act.accept(b);
+
+            return !Util.equals(a, b, Float.MIN_NORMAL);
+        });
+
+
+    }
+
+
+    /**
+     * selects one of 2 states until it shifts to the other one. suitable for representing
+     * push-buttons like keyboard keys. by default with no desire the state is off.   the off procedure will not be called immediately.
+     */
+    default void actionTriState(Term s, IntConsumer i) {
+        actionTriState(s, (v) -> {
+            i.accept(v);
+            return true;
+        });
+    }
 
 }

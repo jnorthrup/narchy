@@ -1,13 +1,13 @@
 package nars.concept.action;
 
 import nars.NAR;
-import nars.Task;
+import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
+import nars.control.proto.TaskLinkTask;
 import nars.table.dynamic.CuriosityGoalTable;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
-import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
@@ -63,7 +63,7 @@ public class GoalActionConcept extends ActionConcept {
 
 
 
-        int dur = nar.dur();
+        //int dur = nar.dur();
         //long gStart = pNow - dur / 2, gEnd = pNow + Math.max(0, dur / 2 - 1);
         //long gStart = pNow, gEnd = pNow + Math.max(0, dur-1);
         //long gStart = pPrev + dur, gEnd = pNow + Math.max(0, dur -1);
@@ -113,22 +113,18 @@ public class GoalActionConcept extends ActionConcept {
         Truth feedback = this.motor.apply(null, goal);
 
         SignalBeliefTable b = beliefs();
-        Task feedbackBelief = feedback != null ?
+        ITask feedbackBelief = feedback != null ?
                 b.add(feedback, now, next, this, nar) : null;
 
-        Task curiosityGoal = null;
+        ITask curiosityGoal = null;
         if (curi && feedbackBelief != null) {
-            curiosityGoal = curiosity(
-                    goal,
-                    term,
+            curiosityGoal = curiosity(goal,
                     prev, now,
-                    nar);
+                    this, nar);
         }
 
-        b.clean(nar);
-
         in.input(
-            Stream.of(feedbackBelief, (ITask) curiosityGoal).filter(Objects::nonNull)
+            Stream.of(feedbackBelief, curiosityGoal).filter(Objects::nonNull)
         );
     }
 //
@@ -140,16 +136,19 @@ public class GoalActionConcept extends ActionConcept {
 //        super.add(r, n);
 //    }
 
-    SignalTask curiosity(Truth truth, Term term, long pStart, long pEnd, NAR nar) {
+    TaskLinkTask curiosity(Truth truth, long pStart, long pEnd, Concept c, NAR nar) {
         //SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, curiosityStamp);
 
         SeriesBeliefTable.SeriesTask curiosity =
                 goals().series.add(term, GOAL, pStart, pEnd, truth, nar.dur(), nar);
 
-        if (curiosity!=null)
+        if (curiosity!=null) {
             curiosity.pri(nar.priDefault(GOAL));
+            return curiosity.input(c);
+        } else {
+            return null;
+        }
 
-        return curiosity;
     }
 
     public void curiosity(float c) {

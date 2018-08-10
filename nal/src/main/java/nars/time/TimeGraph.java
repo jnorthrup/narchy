@@ -239,13 +239,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             case IMPL:
 
                 Term subj = eventTerm.sub(0);
-
+                Term pred = eventTerm.sub(1);
 
                 Event se = know(subj);
-
-
-                Term pred = eventTerm.sub(1);
                 Event pe = know(pred);
+
                 if (edt == DTERNAL) {
 
                     link(se, ETERNAL, pe);
@@ -253,12 +251,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     subj.eventsWhile((w, y) -> {
                         link(know(y), ETERNAL, pe);
                         return true;
-                    }, 0, true, true, false, 0);
+                    }, 0, true, false, false, 0);
 
                     pred.eventsWhile((w, y) -> {
                         link(se, ETERNAL, know(y));
                         return true;
-                    }, 0, true, true, false, 0);
+                    }, 0, true, false, false, 0);
 
                 } else if (edt != XTERNAL) {
 
@@ -270,12 +268,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     subj.eventsWhile((w, y) -> {
                         link(know(y), edt + st - w, pe);
                         return true;
-                    }, 0, true, true, false, 0);
+                    }, 0, true, false, false, 0);
 
                     pred.eventsWhile((w, y) -> {
                         link(se, edt + st + w, know(y));
                         return true;
-                    }, 0, true, true, false, 0);
+                    }, 0, true, false, false, 0);
 
                 }
 
@@ -289,46 +287,80 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                 switch (edt) {
                     case XTERNAL:
+                        for (Term sub : eventTerm.subterms()) {
+                            know(sub);
+                            //link(event, TimeSpan.TS_ETERNAL, know(sub));
+                        }
                         break;
 
+                    case 0:
                     case DTERNAL:
 
                         Subterms es = eventTerm.subterms();
                         int esn = es.subs();
-                        Term prev = es.sub(0);
-                        for (int i = 1; i < esn; i++) {
+                        //Event prevEvent = null;
+
+                        long superSubDT = edt == 0 ? 0 /* left aligned parallel */ : ETERNAL;
+                        for (int i = 0; i < esn; i++) {
                             Term next = es.sub(i);
-                            link(knowComponent(eventStart, eventEnd, 0, prev), ETERNAL, knowComponent(eventStart, eventEnd, 0, next));
-                            prev = next;
+                            Event nextEvent = knowComponent(next, eventStart, eventEnd);
+//                            if (i == 0) {
+//                                prevEvent = nextEvent;
+//                                continue;
+//                            }
+
+                            //link(prevEvent, ETERNAL, nextEvent);
+                            //prevEvent = nextEvent;
+                            link(event, superSubDT, nextEvent);
                         }
 
                         break;
-                    case 0:
-
-
-                        boolean timed = eventStart != ETERNAL;
-                        for (Term s : eventTerm.subterms()) {
-                            Event t = edt == 0 ?
-                                    knowComponent(eventStart, eventEnd, 0, s) :
-                                    (timed ? know(s, eventStart, eventEnd) :
-                                            know(s));
-                            if (t != null) {
-                                link(event, (edt == 0 || timed) ? 0 : ETERNAL,
-                                        t
-                                );
-                            } else {
-
-                            }
-                        }
-                        break;
+//                    case 0:
+//
+//
+//                        boolean timed = eventStart != ETERNAL;
+//                        for (Term s : eventTerm.subterms()) {
+//                            Event t = edt == 0 ?
+//                                    knowComponent(s, 0, eventStart, eventEnd) :
+//                                    (timed ? know(s, eventStart, eventEnd) :
+//                                            know(s));
+//                            if (t != null) {
+//                                link(event, (edt == 0 || timed) ? 0 : ETERNAL,
+//                                        t
+//                                );
+//                            } else {
+//
+//                            }
+//                        }
+//                        break;
                     default:
 
-                        eventTerm.eventsWhile((w, y) -> {
+                        if (eventStart!=ETERNAL && eventStart!=TIMELESS) {
+                            //chain the events to the absolute parent
+                            long range = eventEnd - eventStart;
+                            eventTerm.eventsWhile((w, y) -> {
+                                long ew = w + eventStart;
+                                link(event, w, knowComponent(y, ew, ew+range));
+                                return true;
+                            }, 0, true, false, false, 0);
+                        } else {
+                            //chain the events together relatively
+                            final Event[] prev = {null};
+                            final long[] prevDT = {0};
+                            eventTerm.eventsWhile((w, y) -> {
+                                Event next = know(y);
+                                if (prev[0] == null) {
+                                    link(next, 0, event); //chain the starting event to the beginning of the compound superterm
+                                    assert(w==0);
+                                } else {
+                                    link(prev[0], w - prevDT[0], next);
+                                    prevDT[0] += w;
+                                }
+                                prev[0] = next;
+                                return true;
+                            }, 0, false, false, false, 0);
+                        }
 
-                            link(event, w, knowComponent(eventStart, eventEnd, w, y));
-
-                            return true;
-                        }, 0, false, false, false, 0);
                         break;
                 }
 
@@ -343,13 +375,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
     }
 
-    private Event knowComponent(long eventStart, long eventEnd, long w, Term y) {
-        return (eventStart == TIMELESS) ?
-                know(y)
-                : know(y,
-                (eventStart == ETERNAL) ? ETERNAL : (w + eventStart),
-                (eventStart == ETERNAL) ? ETERNAL : (w + eventEnd)
-        );
+    @Deprecated private Event knowComponent(Term y, long start, long end) {
+        assert(start!=DTERNAL && end!=DTERNAL && start!=XTERNAL && end!=XTERNAL); //mismatch type
+
+        if (start == TIMELESS) {
+            assert(end == TIMELESS);
+            return know(y);
+        } else if (end == ETERNAL) {
+            assert(end == ETERNAL);
+            return know(y, ETERNAL);
+        } else {
+            return know(y, start, end);
+        }
     }
 
     boolean solveDT(Term x, Predicate<Event> each) {
@@ -364,6 +401,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             Term b = xx.sub(1);
 
             boolean aEqB = a.equals(b);
+            //TODO case if aEqNegB
 
             if (!a.hasXternal() && !b.hasXternal() && (aEqB || !commonSubEventsWithMultipleOccurrences(a, b))) {
                 UnifiedSet<Event> ae = new UnifiedSet(2);
@@ -388,10 +426,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                     if (i == j) continue;
                                     long to = dt(abi, ab[j]);
                                     if (uniqueTry.add(pair(from, to))) {
-                                        if (!solveDT(x, from, to,
-
-                                                Math.min(abi.dur(), ab[j].dur())
-                                                , each))
+                                        if (!solveDT(x, from, to, durMerge(abi, ab[j]), each))
                                             return false;
                                     }
                                 }
@@ -412,8 +447,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             if (!ae.allSatisfy(ax ->
                                     be.allSatisfyWith((bx, axx) -> {
                                         if (uniqueTry.add(twin(axx, bx))) {
-                                            return solveDT(x, axx.start(), dt(axx, bx),
-                                                    Math.min(axx.dur(), bx.dur()),
+                                            long st = x.op()==CONJ ? axx.start() : TIMELESS; //for impl and other types cant assume occurrence corresponds with subject
+                                            return solveDT(x, st, dt(axx, bx),
+                                                    durMerge(axx, bx),
                                                     each);
                                         } else {
                                             return true;
@@ -462,9 +498,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             return true;
 
                         long start = startDT[0];
+                        if (x.op()!=CONJ)
+                            start = TIMELESS; //cant assume this start time corresponds to the impl term being solved
                         long ddt = startDT[1];
                         return TimeGraph.this.solveDT(x, start, ddt,
-                                (start != ETERNAL && start != XTERNAL) ? Math.min(pathStart(path).id().dur(), pathEnd(path).id().dur()) : 0
+                                (start != ETERNAL && start != XTERNAL) ?
+                                        durMerge(pathStart(path).id(), pathEnd(path).id()) : 0
                                 , each);
                     }
                 });
@@ -477,6 +516,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         return true;
 
+    }
+
+    private long durMerge(Event a, Event b) {
+        if (a instanceof Absolute && b instanceof Absolute)
+            return Math.min(a.dur(), b.dur());
+        else if (a instanceof Absolute && !(b instanceof Absolute)){
+            return a.dur();
+        } else if (b instanceof Absolute && !(a instanceof Absolute)){
+            return b.dur();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -653,10 +704,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 }
             }
 
+        } else {
+            //learn it as a unique result
+            //know(x);
         }
 
         /* occurrence, with or without any xternal remaining */
-        return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y.id, each))) &&
+        return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y, each))) &&
                 solveOccurrence(x, each);
 
     }
@@ -667,9 +721,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     protected boolean solveOccurrence(Term t, Predicate<Event> each) {
 
-        Event x = event(t, TIMELESS, false);
-
-        return solveOccurrence(x, each);
+        return solveOccurrence( event(t, TIMELESS, false), each);
 
     }
 
@@ -700,7 +752,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
-        assert (x instanceof Relative);
+        if (x instanceof Absolute)
+            return each.test(x);
 
         return solveExact(x.id, each) && bfsPush(x, new CrossTimeSolver() {
 
@@ -738,22 +791,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 if (startTime != ETERNAL && startTime != XTERNAL/* && x.id.op() != CONJ*/) {
                     Event s = pathStart(path).id();
                     Event e = pathEnd(path).id();
-                    long dur;
-                    if (s instanceof Absolute && e instanceof Absolute) {
-                        long startDur = s.dur();
-                        long endDur = e.dur();
-                        dur =
-                                Math.min(startDur, endDur);
-                                //Math.max(startDur, endDur);
-                    } else if (s instanceof Absolute) {
-                        dur = s.dur();
-                    } else if (e instanceof Absolute) {
-                        dur = e.dur();
-                    } else {
-                        dur = 0; //??
-                    }
 
-                    endTime = startTime + dur;
+                    endTime = startTime + durMerge(s, e);
                 } else {
                     endTime = startTime;
                 }
@@ -818,18 +857,23 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return start;
         }
 
+        @Override
+        public long dur() {
+            return 0;
+        }
+
         /**
          * contained within but not true if equal
          */
         public boolean containedInButNotEqual(long cs, long ce) {
-            return (cs <= start && ce >= end() && start != cs && end() != ce);
+            return (cs <= start && ce >= end() && (start != cs || end() != ce));
         }
 
         /**
          * contains or is equal to
          */
-        public boolean containsOrEqual(long ps, long pe) {
-            return (start <= ps && end() >= pe);
+        public boolean containsOrEqual(long cs, long ce) {
+            return (start <= cs && end() >= ce);
         }
 
         @Nullable
@@ -858,8 +902,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return end;
         }
 
+        @Override
+        public long dur() {
+            return end-start;
+        }
     }
 
+    /** TODO RelativeRange? */
     public static class Relative extends Event {
 
         Relative(Term id) {
@@ -874,6 +923,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         @Override
         public long end() {
             return TIMELESS;
+        }
+
+        @Override
+        public long dur() {
+            throw new UnsupportedOperationException();
+            //return 0;
         }
     }
 
