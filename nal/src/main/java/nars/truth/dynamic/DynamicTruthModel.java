@@ -326,8 +326,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 //                                each.accept(event, start, end)
 //                        );
 //                    }
-                }
 
+                    /* simple case granting freedom when to resolve the components */
+                    return subterms.AND(event -> each.accept(event, start, end));
+                }
 
                 LongObjectPredicate<Term> sub;
                 if (xternal || dternal) {

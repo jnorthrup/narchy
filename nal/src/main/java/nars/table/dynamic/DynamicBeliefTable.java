@@ -172,16 +172,34 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     @Override
     public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
-        if (template!=null && template.op()!=term.op())
-            template = null;
+        boolean anyTemplate;
+        if (template==null || template.op()!=term.op()) {
+            template = term;
+            anyTemplate = true;
+        } else {
+            anyTemplate = false;
+        }
 
         //TODO apply filter to dynamic results
         Task y = taskDynamic(start, end, template, nar);
-
         if (y!=null && dynamicOverrides())
             return y;
 
         Task x = taskStored(start, end, template, filter, nar);
+        if (x == null)
+            return y;
+        if (y == null)
+            return x;
+
+        if (!anyTemplate) {
+            //choose betch match to template term
+            float xt = Revision.dtDiff(x.term(), template);
+            float yt = Revision.dtDiff(y.term(), template);
+            if (xt < yt)
+                return x;
+            else if (yt < xt)
+                return y;
+        }
 
         return Revision.mergeOrChoose(x, y, start, end, filter, nar);
     }

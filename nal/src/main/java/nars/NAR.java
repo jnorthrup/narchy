@@ -1329,9 +1329,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Task answer = ((BeliefTable) concept.table(punc)).answer(start, end,
                 t.term(), null, this);
-        if (answer != null && !answer.isDeleted()) {
-            input(answer);
-        }
+//        if (answer != null && !answer.isDeleted()) {
+//            input(answer);
+//        }
         return answer;
     }
 

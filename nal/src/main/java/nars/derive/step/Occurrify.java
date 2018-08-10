@@ -25,11 +25,9 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -336,15 +334,13 @@ public class Occurrify extends TimeGraph {
 
     private Term solveDT(Term pattern, ArrayHashSet<Event> solutions) {
         Term p;
-        int ss = filterOnlyNonXternal(solutions);
+        int ss = filterSolutions(solutions);
         if (ss == 0)
             p = pattern;
         else if (ss == 1) {
             p = solutions.first().id;
         } else {
             p = solutions.get(random()).id;
-
-
         }
         return p;
     }
@@ -353,7 +349,7 @@ public class Occurrify extends TimeGraph {
 
         int ss = solutions.size();
         if (ss > 0)
-            ss = filterOnlyNonXternal(solutions);
+            ss = filterSolutions(solutions);
 
         switch (ss) {
             case 0:
@@ -365,7 +361,7 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-    private static int filterOnlyNonXternal(ArrayHashSet<Event> solutions) {
+    private int filterSolutions(ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss > 1) {
             int occurrenceSolved = ((FasterList) solutions.list).count(t -> t instanceof Absolute);
@@ -373,7 +369,58 @@ public class Occurrify extends TimeGraph {
                 if (solutions.removeIf(t -> t instanceof Relative))
                     ss = solutions.size();
             }
+            if (ss > 1) {
+                return filterOOB(solutions);
+            }
         }
+        return ss;
+    }
+
+    /** prefer results which are within the model's range of known absolute timepoints, not outside of it */
+    private int filterOOB(ArrayHashSet<Event> solutions) {
+        int ss = solutions.size();
+        if (ss <= 1)
+            return ss;
+
+        long min = Long.MAX_VALUE, max = Long.MAX_VALUE;
+
+        for (Event ee : byTerm.values()) {
+            if (!(ee instanceof Absolute))
+                continue;
+            Absolute a = (Absolute)ee;
+            long s = a.start();
+            if (s == ETERNAL)
+                continue; //skip eternal
+            long e = a.end();
+            min=Math.min(min, s);
+            max=Math.max(max, e);
+        }
+        if (min == Long.MAX_VALUE) return ss; //nothing could change
+
+        RoaringBitmap contained = new RoaringBitmap();
+        RoaringBitmap intersect = new RoaringBitmap();
+        RoaringBitmap outside = new RoaringBitmap();
+        List<Event> list = solutions.list;
+        for (int ei = 0, listSize = list.size(); ei < listSize; ei++) {
+            Event e = list.get(ei);
+            if (e instanceof Absolute) {
+                Absolute a = ((Absolute) e);
+                //if (Longerval.contains...)
+                if (a.containedIn(min, max))
+                    contained.add(ei);
+                if (a.intersectsWith(min, max))
+                    intersect.add(ei);
+                else
+                    outside.add(ei);
+            }
+        }
+
+        if (!outside.isEmpty() && (!intersect.isEmpty() || !contained.isEmpty())) {
+            outside.forEach((int o)->solutions.list.remove(o)); //TODO solutions.remove(int)
+            return solutions.size();
+        }
+        //TODO remove intersects?
+
         return ss;
     }
 

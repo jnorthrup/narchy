@@ -89,7 +89,7 @@ class AIMATests {
 //        n.beliefPriDefault.set(0.3f);
         n.questionPriDefault.set(0.75f);
 
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(26);
 //        n.log();
 
 
@@ -115,7 +115,7 @@ class AIMATests {
         });
 
 
-        n.run(4000);
+        n.run(8000);
 //        n.synch();
 
 

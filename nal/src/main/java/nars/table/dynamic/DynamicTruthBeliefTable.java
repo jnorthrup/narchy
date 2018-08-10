@@ -34,10 +34,6 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 
     @Override
     public Task taskDynamic(long start, long end, Term template, NAR nar) {
-
-        if (template == null)
-            template = term;
-
         DynTruth yy = model.eval(template, beliefOrGoal, start, end, true /* dont force projection */, nar);
         return yy != null ? yy.task(template, model, beliefOrGoal, nar) : null;
     }

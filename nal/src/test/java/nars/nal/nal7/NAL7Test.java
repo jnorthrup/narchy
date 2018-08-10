@@ -225,7 +225,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "((happy &&+4120 i) &&+1232 --i). :|:")
                 .mustBelieve(cycles * 2, "(happy &&+4120 i)", 1f, 0.81f, 1)
-                .mustNotOutput(cycles * 2, "(happy &&+4120 i)", BELIEF, 1233)
+                .mustNotOutput(cycles * 2, "(happy &&+4120 i)", BELIEF, t -> t!=1)
                 .mustNotOutput(cycles * 2, "(i && happy)", BELIEF, 1)
         ;
     }

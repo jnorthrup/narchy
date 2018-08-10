@@ -220,7 +220,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**

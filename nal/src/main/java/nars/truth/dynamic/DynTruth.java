@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
@@ -114,15 +113,18 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             return null;
 
         float evi = t.evi();
-        if (evi < Math.min(eviMin, c2wSafe(confRes)))
-            return null;
+//        if (evi < Math.min(eviMin, c2wSafe(confRes)))
+//            return null;
+
 
         float freq = t.freq();
 
         float f;
-        long start, end;
+
+
         if (taskOrJustTruth) {
 
+            long start, end;
             if (size() > 1) {
                 if (superterm.op() == CONJ) {
                     long min = TIMELESS;
@@ -151,7 +153,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
 
                 } else {
-                    long[] u = Tense.union(this.array());
+                    long[] u = //Tense.union(this.array());
+                            Tense.intersection(this.array());
                     start = u[0];
                     end = u[1];
                 }
@@ -185,6 +188,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             PreciseTruth tr = Truth.theDithered(r.getTwo() ? (1 - f) : f, freqRes, evi, confRes, w2cSafe(eviMin));
             if (tr == null)
                 return null; //TODO see if this can be detected earlier, by comparing evi before term construction
+
 
             NALTask dyn = new DynamicTruthTask(
                     r.getOne(), beliefOrGoal,

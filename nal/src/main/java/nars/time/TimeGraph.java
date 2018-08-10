@@ -339,10 +339,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             //chain the events to the absolute parent
                             long range = eventEnd - eventStart;
                             eventTerm.eventsWhile((w, y) -> {
-                                long ew = w + eventStart;
-                                link(event, w, knowComponent(y, ew, ew+range));
+
+                                link(event, w - eventStart, know(y, w, w+range));
                                 return true;
-                            }, 0, true, false, false, 0);
+                            }, eventStart, true, false, false, 0);
                         } else {
                             //chain the events together relatively
                             final Event[] prev = {null};
@@ -350,7 +350,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             eventTerm.eventsWhile((w, y) -> {
                                 Event next = know(y);
                                 if (prev[0] == null) {
-                                    link(next, 0, event); //chain the starting event to the beginning of the compound superterm
+                                    link(event, 0, next); //chain the starting event to the beginning of the compound superterm
                                     assert(w==0);
                                 } else {
                                     link(prev[0], w - prevDT[0], next);
@@ -866,8 +866,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
          * contained within but not true if equal
          */
         public boolean containedInButNotEqual(long cs, long ce) {
-            return (cs <= start && ce >= end() && (start != cs || end() != ce));
+            return containedIn(cs,ce) && (start != cs || end() != ce);
         }
+
+        public boolean containedIn(long cs, long ce) {
+            return (cs <= start && ce >= end());
+        }
+        public boolean intersectsWith(long cs, long ce) {
+            return Longerval.intersects(start, end(), cs, ce);
+        }
+
 
         /**
          * contains or is equal to

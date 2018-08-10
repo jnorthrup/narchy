@@ -314,7 +314,7 @@ public class Revision {
                     long[] taskRange = T.taskRange();
                     return new NALTask(c, punc,
                             tr,
-                            nar.time(), taskRange[0], taskRange[1],
+                            nar.time(), Tense.dither(taskRange[0], nar), Tense.dither(taskRange[1],nar),
                             Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
                     );
                 }
