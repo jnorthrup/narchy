@@ -512,6 +512,8 @@ public class Conj extends ByteAnonMap {
                     Term result = merge(bi, x, at == ETERNAL);
 
                     if (result != null) {
+                        if (result == Op.EmptyProduct)
+                            return true; //unaffected
                         if (result == False || result == Null) {
                             this.term = result;
                             return false;
@@ -581,9 +583,6 @@ public class Conj extends ByteAnonMap {
      *
      * @param d - term which is disjunctively negated (now un-negated)
      * @param x - incoming term, possibly negated
-     * @return null - do nothing, no conflict.  add x to the event time
-     * Null/False - entire term is cancelled due to contradiction
-     * non-null - (simplified) value, possible True, to replace the disjunction with, and then proceed to add x to the event time
      */
     private Term disjunctify(Term disjUnwrapped, Term x, boolean eternal) {
         final Term[] result = new Term[1];
@@ -613,7 +612,11 @@ public class Conj extends ByteAnonMap {
                 //carefully remove the contradicting first event
                 result[0] = Conj.conjDrop(disjUnwrapped, x, true, false);
             }
-            result[0] = CONJ.the(result[0].neg(), x).neg();
+            int dt = eternal ? DTERNAL : 0;
+//            if (result[0].equals(disjUnwrapped))
+//                result[0] = Op.compoundExact(CONJ, dt, result[0].neg(), x).neg(); //prevent loop
+//            else
+                result[0] = CONJ.the(result[0].neg(), dt, x).neg();
         }
 
         boolean xIsDisjToo = /*x.op() == NEG && */x.unneg().op() == CONJ;
@@ -721,14 +724,30 @@ public class Conj extends ByteAnonMap {
         return null;
     }
 
+    /**
+     *
+     * @param bi
+     * @param x
+     * @param eternal
+     *      * @return codes:
+     *      * null - do nothing, no conflict.  add x to the event time
+     *      * True - add the incoming, and annihilated the existing
+     *      * Null/False - entire term is cancelled due to contradiction
+     *      * Op.EmptyProduct - the incoming has no effect on the existing, so return success but apply no change
+     *      * non-null - (simplified) value, possible True, to replace the disjunction with, and then proceed to add x to the event time
+     */
     private Term merge(byte bi, Term x, boolean eternal) {
         Term existing = idToTerm.get((bi < 0 ? (-bi) : bi) - 1);
         if (existing.op() == CONJ) {
             Term merged;
             if (bi < 0) {
                 merged = disjunctify(existing, x, eternal);
+                if (merged!=null && merged.equalsNeg(existing))
+                    return Op.EmptyProduct; //no change
             } else {
                 merged = conjoinify(existing, x, eternal);
+                if (merged!=null && merged.equals(existing))
+                    return Op.EmptyProduct; //no change
             }
             //TODO maybe also check for equal or reduction in volume sum
             return merged;
