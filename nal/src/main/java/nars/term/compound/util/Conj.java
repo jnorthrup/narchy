@@ -449,27 +449,33 @@ public class Conj extends ByteAnonMap {
         if (o == CONJ) {
             int dt = what.dt();
             if ((dt != XTERNAL)
-                    && (
-                    (dt != DTERNAL ^ at == ETERNAL)
-////                    (dt!=0 && dt!=DTERNAL) ||
-////                    (dt == DTERNAL && at == ETERNAL) ||
-////                    (dt == 0 && at != ETERNAL)
-            )
+                    &&
+                (dt != DTERNAL ^ at == ETERNAL)
             ) {
-                return what.eventsWhile(this::add,
-                        at,
+                return added(what.eventsWhile((when,ww)->{
+                            if (!ww.term().equals(what)) {
+                                return add(when, ww);
+                            } else {
+                                //rare case: didnt decompose. add as event HACK
+                                return addEvent(when, ww);
+                            }
+                        }, at,
                         at != ETERNAL, //dt != DTERNAL,
                         at == ETERNAL, //dt == DTERNAL,
-                        false, 0);
+                        false, 0));
             }
         }
 
-        if (!add(at, what, o != NEG)) {
-            term = False;
+        return added(addEvent(at, what));
+    }
+
+    private boolean added(boolean success) {
+        if (!success) {
+            if (term == null)
+                term = False;
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     public boolean add(Term t, long start, long end, int maxSamples, int minSegmentLength) {
@@ -493,7 +499,8 @@ public class Conj extends ByteAnonMap {
         }
     }
 
-    private boolean add(long at, Term x, boolean polarity) {
+    private boolean addEvent(long at, Term x) {
+        boolean polarity = x.op()!=NEG;
         byte id = add(polarity ? x : x.unneg());
         if (!polarity) id = (byte) -id;
 
@@ -537,7 +544,7 @@ public class Conj extends ByteAnonMap {
                 }
             }
 
-            //no capacity, upgrade to RoaringBitmap
+            //no remaining capacity, upgrade to RoaringBitmap
 
             RoaringBitmap rb = new RoaringBitmap();
             for (byte bb : b)
@@ -613,10 +620,10 @@ public class Conj extends ByteAnonMap {
                 result[0] = Conj.conjDrop(disjUnwrapped, x, true, false);
             }
             int dt = eternal ? DTERNAL : 0;
-//            if (result[0].equals(disjUnwrapped))
-//                result[0] = Op.compoundExact(CONJ, dt, result[0].neg(), x).neg(); //prevent loop
-//            else
-                result[0] = CONJ.the(result[0].neg(), dt, x).neg();
+            if (result[0].equals(disjUnwrapped))
+                return Op.compoundExact(CONJ, dt, disjUnwrapped.neg(), x).neg(); //try to prevent loop
+            else
+                return CONJ.the(result[0].neg(), dt, x).neg();
         }
 
         boolean xIsDisjToo = /*x.op() == NEG && */x.unneg().op() == CONJ;

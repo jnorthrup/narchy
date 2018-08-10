@@ -8,6 +8,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -165,6 +166,20 @@ public class Cause implements Comparable<Cause> {
     public static short[] sample(int maxLen, short[]... s) {
 
         int ss = s.length;
+        assert(ss>0);
+        if (ss == 1)
+            return s[0];
+
+
+        //quick test for equality
+        boolean allEqual = true;
+        for (int i = 1; i < ss; i++) {
+            allEqual &= Arrays.equals(s[i-1], s[i]);
+        }
+        if (allEqual)
+            return s[0];
+
+
 
         int totalItems = 0;
         short[] lastNonEmpty = null;

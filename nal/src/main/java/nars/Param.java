@@ -55,13 +55,16 @@ public abstract class Param {
     public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
     /** auto decompose conjunction beliefs and goals on input */
-    public static final boolean AUTO_DECOMPOSE_CONJ = true;
+    public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = true;
+    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = true;
 
     /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
      *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
-     *  the demand on tasklinks
+     *  the demand on tasklinks.
+     *
+     *  seems to enable more temporal precision at the cost of more links.
      */
-    public static final boolean TASKLINK_CONCEPT_TERM = true;
+    public static final boolean TASKLINK_CONCEPT_TERM = false;
 
 
     //5;
@@ -69,6 +72,9 @@ public abstract class Param {
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
+
+    /** whether INT atoms can name a concept directly */
+    public static final boolean INT_CONCEPTUALIZABLE = false;
 
     /**
      * warning: can interfere with expected test results
@@ -211,11 +217,11 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**

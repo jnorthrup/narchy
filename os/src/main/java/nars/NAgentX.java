@@ -20,7 +20,7 @@ import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -133,8 +133,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(64 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        //new HijackConceptIndex(128 * 1024, 4)
+                        //new CaffeineIndex(64 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(128 * 1024, 4)
 
 
                 )

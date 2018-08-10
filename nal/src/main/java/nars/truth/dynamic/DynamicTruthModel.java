@@ -9,6 +9,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
@@ -291,31 +292,61 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 int superDT = superterm.dt();
 
 
-                if ((superDT == DTERNAL || superDT == XTERNAL) && !superterm.hasAny(CONJ)) {
-                    /* simple case: */
-                    return superterm.subterms().AND(event ->
-                            each.accept(event, start, end)
-                    );
-                } else {
+                boolean xternal = superDT == XTERNAL;
+                boolean dternal = superDT == DTERNAL;
+                boolean parallel = superDT == 0;
+                if (dternal || xternal || parallel) {
 
-                    boolean xternal = superDT == XTERNAL;
-                    boolean dternal = superDT == DTERNAL;
-                    LongObjectPredicate<Term> sub;
-                    if (xternal || dternal) {
-                        //propagate start,end to each subterm.  allowing them to match freely inside
-                        sub = (whenIgnored, event) -> each.accept(event, start, end);
-                    } else {
-                        //??subterm refrences a specific point as a result of event time within the term. so start/end range gets collapsed at this point
-                        long range = (end - start);
-                        sub = (when, event) -> each.accept(event, when, when + range);
+                    Subterms subterms = superterm.subterms();
+                    if (subterms.subs() == 2) {
+
+                        Term a = subterms.sub(0);
+                        Term b = subterms.sub(1);
+                        if (a.equals(b)) {
+                            if (end == start)
+                                //return false; //repeat term sampled at same point, give up
+                                return each.accept(a, start, start); //just one component should work
+                            else
+                                return each.accept(a, start, start) && each.accept(b, end, end); //use the difference in time to create two distinct point samples
+                        }
+
+                        if (a.equalsNeg(b))
+                            return false; //inversion would collapse. how to decide which subterm sampled where.  ThreadLocalRandom etc
                     }
-
-                    //if (event!=superterm)
-                    //else
-                    //return false;
-                    return superterm.eventsWhile(sub, start, superDT == 0, superDT == DTERNAL,
-                            true /* always decompose xternal */, 0);
+//                        if (end - start > 0) {
+//                            randomly choose?
+//                        }
+//                        //a repeat or inverting pair of terms.
+//                        // ensure that each component is sampled from different time otherwise collapse occurrs
+//                        return each.accept(subterms.sub(0), start0, end0) &&
+//                                each.accept(subterms.sub(1), start1, end1);
+//                    } else {
+//                        /* simple case: */
+//                        return subterms.AND(event ->
+//                                each.accept(event, start, end)
+//                        );
+//                    }
                 }
+
+
+                LongObjectPredicate<Term> sub;
+                if (xternal || dternal) {
+                    //propagate start,end to each subterm.  allowing them to match freely inside
+                    sub = (whenIgnored, event) -> each.accept(event, start, end);
+                } else {
+                    //??subterm refrences a specific point as a result of event time within the term. so start/end range gets collapsed at this point
+                    long range = (end - start);
+                    sub = (when, event) -> each.accept(event, when, when + range);
+                }
+
+                //if (event!=superterm)
+                //else
+                //return false;
+                return superterm.eventsWhile(sub, start,
+                        parallel,
+                        dternal,
+                        xternal, 0);
+
             }
         };
     }
@@ -436,7 +467,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         Term sect;
         int outerDT;
-        if (op==IMPL) {
+        if (op == IMPL) {
             //IMPL: compute innerDT for the conjunction
             Conj c = new Conj();
             for (TaskRegion x : components) {
@@ -446,19 +477,19 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 if (xx.op() == NEG) {
 
 //                    if (op == IMPL) {
-                        if (xx.unneg().op() == IMPL) {
-                            xx = xx.unneg();
-                            forceNegate = true;
+                    if (xx.unneg().op() == IMPL) {
+                        xx = xx.unneg();
+                        forceNegate = true;
+                    } else {
+                        if (!subjOrPred) {
+                            //assume this is the reduced (true ==> --x)
+                            c.add(ETERNAL, xx.neg());
+                            continue;
                         } else {
-                            if (!subjOrPred) {
-                                //assume this is the reduced (true ==> --x)
-                                c.add(ETERNAL, xx.neg());
-                                continue;
-                            } else {
-                                throw new WTF();
-                            }
+                            throw new WTF();
                         }
-                } else if (xx.op()!=IMPL){
+                    }
+                } else if (xx.op() != IMPL) {
                     if (!subjOrPred) {
                         //assume this is the reduced (true ==> x)
                         c.add(ETERNAL, xx);

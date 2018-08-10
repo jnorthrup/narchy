@@ -30,6 +30,7 @@ class DynamicImplTest {
     }
     @Test void eligibleDynamicImpl2() {
         assertFalse(n.conceptualize($$("(((x,#1) && y) ==> (a,#1))")).beliefs() instanceof DynamicTruthBeliefTable); //depvar shared between subj and impl
+        assertTrue(n.conceptualize($$("(((x,#1) && (y,#1)) ==> (a,#1))")).beliefs() instanceof DynamicTruthBeliefTable); //all share it
     }
 
     @Test

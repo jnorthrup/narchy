@@ -82,9 +82,9 @@ public class FZero extends NAgentX {
         Signal dAngVel = senseNumberDifference($.func("vel", $.func("ang", id)), () -> (float) fz.playerAngle);
         AbstractSensor ang = senseNumber(angle -> $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                8,
+                4,
                 DigitizedScalar.FuzzyNeedle
-        ).resolution(0.1f);
+        ).resolution(0.02f);
 
 
 

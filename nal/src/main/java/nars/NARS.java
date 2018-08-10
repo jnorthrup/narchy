@@ -170,30 +170,32 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
+        attention(()->new Attention(64));
+
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(
                         //beliefs ete
                         curve(Concept::volume,
                         1, 8,
-                                16, 4,
-                                32, 2
+                                16, 6,
+                                32, 3
                         ),
                         //beliefs tmp
                         curve(Concept::volume,
                                 1, 96,
-                                6,64,
+                                8,32,
                                 16, 16
                         ),
                         //goals ete
                         curve(Concept::volume,
-                                1, 6,
+                                1, 4,
                                 16, 3,
                                 32, 2
                         ),
                         //goals tmp
                         curve(Concept::volume,
                                 1, 96,
-                                6,64,
+                                8,32,
                                 16, 16
                         ),
                         //questions
@@ -208,18 +210,21 @@ public class NARS {
                         ),
                         //termlinks
                         curve(Concept::volume,
-                                1, 48,
-                                24,16
+                                1, 64,
+                                8,32,
+                                24,12,
+                                48,8
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 48,
-                                24,16
+                                1, 64,
+                                8,32,
+                                24,12,
+                                48,8
                         ))
         );
 
 
-        attention(()->new Attention(128));
     }
 
     /**

@@ -102,7 +102,8 @@ class DynamicConjTest {
     @Test
     void testDynamicConjunctionEternalTemporalMix() throws Narsese.NarseseException {
 
-        assertEquals("((x&|y)&&e)", $$("((x&|y)&&e)").toString());
+        String xx = "((e&&x)&|(e&&y))";
+        assertEquals(xx, $$("((x&|y)&&e)").toString());
 
         NAR n = NARS.shell()
                 .believe($$("x"), 0)
@@ -113,9 +114,9 @@ class DynamicConjTest {
         Task atOne = n.belief($("(&&,x,y,e)"), 1);
         Task atEte = n.belief($("(&&,x,y,e)"), ETERNAL);
 
-        assertEquals("((x&|y)&&e)", atZero.term().toString());
-        assertEquals("((x&|y)&&e)", atOne.term().toString());
-        assertEquals("((x&|y)&&e)", atEte.term().toString());
+        assertEquals(xx, atZero.term().toString());
+        assertEquals(xx, atOne.term().toString());
+        assertEquals(xx, atEte.term().toString());
 
         assertEquals(0, atZero.start());
         assertEquals(1, atOne.start());

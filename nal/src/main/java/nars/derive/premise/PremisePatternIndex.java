@@ -29,6 +29,7 @@ import java.util.TreeSet;
 
 import static nars.Op.ATOM;
 import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.time.Tense.XTERNAL;
 import static nars.unify.match.Ellipsis.firstEllipsis;
 
@@ -469,11 +470,12 @@ public class PremisePatternIndex extends MapConceptIndex {
                     (Compound) Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x)
             );
 
-            @Nullable Ellipsislike e = firstEllipsis(x.subterms());
-            if (e!=null) {
-                return ellipsis(x, x.subterms(), (Ellipsis) e);
-            }
-            return x;
+            Term xx;
+            boolean neg = x.op() == NEG;
+            if (neg) xx = x.unneg(); else xx = x;
+
+            @Nullable Ellipsislike e = firstEllipsis(xx.subterms());
+            return (e != null ? ellipsis((Compound) xx, xx.subterms(), (Ellipsis) e) : xx).negIf(neg);
         }
     };
 }

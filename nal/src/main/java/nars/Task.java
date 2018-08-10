@@ -362,7 +362,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         float xp = x.priElseZero();
         y.pri(xp);
 
-        ((NALTask) y).cause(x.cause().clone());
+        ((NALTask) y).cause(x.cause()/*.clone()*/);
+
+//        if (x.term().equals(y.term()) && x.isCyclic())
+//            y.setCyclic(true);
 
         return y;
     }
@@ -937,9 +940,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             }
         }
 
-        if (Param.AUTO_DECOMPOSE_CONJ && op()==CONJ && dt()!=DTERNAL && dt()!=XTERNAL && (isBelief() || isGoal())) {
+        byte p = punc();
+        if (op()==CONJ  && (dt()!=DTERNAL && dt()!=XTERNAL) && !isEternal() && ((p==BELIEF  && Param.AUTO_DECOMPOSE_CONJ_BELIEF) ||
+                (p == GOAL && Param.AUTO_DECOMPOSE_CONJ_GOAL))) {
             if (!(this instanceof ConjClustering.STMClusterTask)) { //HACK
                 Truth reducedTruth = NALTruth.StructuralDeduction.apply(truth(), null, n, n.confMin.floatValue());
+                if (reducedTruth!=null)
+                    reducedTruth.dither(n);
                 if (reducedTruth != null) {
                     long s = start();
                     long range = end() - s;
@@ -948,7 +955,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     term().eventsWhile((when, what) -> {
                         assert(!what.equals(term()));
 
-                        Task t = Task.clone(this, what, reducedTruth, punc(), when, when + range);
+                        Task t = Task.clone(this, what, reducedTruth, p, Tense.dither(when, n), Tense.dither(when + range, n));
 
                         if (t!=null)
                             subTasks.add(t);
@@ -957,11 +964,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
                     if (!subTasks.isEmpty()) {
                         int ns = subTasks.size();
-                        float p = priElseZero() / ns;
+                        float pr = (reducedTruth.conf()/conf()) * priElseZero() / ns;
                         for (Task ss : subTasks) {
                             ss.pri(0);
-                            ss.take(this, p, true, true);
-                            ss.setCyclic(true);
+                            ss.take(this, pr, true, false);
+                            //ss.setCyclic(true);
                         }
                         queue.addAll(subTasks);
                     }

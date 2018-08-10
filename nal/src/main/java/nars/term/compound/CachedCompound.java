@@ -178,7 +178,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
 
     private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
 
-        assert(op!=NEG); 
+        assert(op!=NEG): "can not construct " + CachedCompound.class + " for NEG: dt=" + dt + ", subs=" + subterms;
 
         int h = (this.subterms = subterms).hashWith(this.op = op.id);
         this.hash = (dt == DTERNAL) ? h : Util.hashCombine(h, dt);

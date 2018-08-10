@@ -561,12 +561,15 @@ public enum Op {
         final Set<String> ATOMICS = Set.of(".", "+", "B");
         this.atomic = var || ATOMICS.contains(str);
 
+        boolean isBool = str.equals("B");
+        boolean isInt = str.equals("+");
 
         conceptualizable = !var &&
-                !str.equals("B") /* Bool */
+                !isBool &&
+                (Param.INT_CONCEPTUALIZABLE || !isInt)
         ;
 
-        taskable = conceptualizable && !str.equals("+") /* int */;
+        taskable = conceptualizable && !isInt /* int */;
 
         beliefable = taskable;
         goalable = taskable && !isImpl;
