@@ -260,11 +260,11 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term superterm) {
-        return (!aSuperCompoundMust.test(this)) || (sub().recurseTerms(aSuperCompoundMust, whileTrue, this));
+        return (!aSuperCompoundMust.test(this)) || (whileTrue.test(this) && sub().recurseTerms(aSuperCompoundMust, whileTrue, this));
     }
     @Override
     public boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
-        return (!aSuperCompoundMust.test(this)) || (sub().recurseTerms(aSuperCompoundMust, whileTrue, this));
+        return (!aSuperCompoundMust.test(this)) || (whileTrue.test(this,superterm) && sub().recurseTerms(aSuperCompoundMust, whileTrue, this));
     }
 
 

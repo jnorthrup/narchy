@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by me on 10/29/16.
  */
-class NAL6MultistepTest {
+public class NAL6MultistepTest {
 
 
     /** https://dtai.cs.kuleuven.be/problog/tutorial/basic/02_bayes.html */

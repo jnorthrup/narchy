@@ -83,13 +83,13 @@ class AIMATests {
         final NAR n = NARS.tmp(6);
 
         n.freqResolution.set(0.1f);
-        n.confMin.set(0.02f);
+        n.confMin.set(0.05f);
 
-        n.activateConceptRate.set(0.5f);
+        //n.activateConceptRate.set(0.5f);
 //        n.beliefPriDefault.set(0.3f);
-//        n.questionPriDefault.set(0.5f);
+        n.questionPriDefault.set(0.75f);
 
-        n.termVolumeMax.set(28);
+        n.termVolumeMax.set(24);
 //        n.log();
 
 
@@ -107,15 +107,15 @@ class AIMATests {
 
 
         n.question($.$(
-                "Criminal:?x"
-                //"Criminal(?x)"
+                //"Criminal:?x"
+                "Criminal(?x)"
 
         ), ETERNAL, (q, a) -> {
             System.out.println(a);
         });
 
 
-        n.run(10000);
+        n.run(4000);
 //        n.synch();
 
 

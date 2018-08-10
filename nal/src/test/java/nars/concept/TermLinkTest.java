@@ -38,7 +38,8 @@ class TermLinkTest {
         
         testTemplates("(open(John,door) ==> #x)",
                 
-                "[open(John,door), (John,door), open, #1]"
+                //"[open(John,door), (John,door), open, #1]"
+                "[open(John,door), #1]"
         );
     }
 
@@ -47,7 +48,8 @@ class TermLinkTest {
         
         testTemplates("(open(John,portal:interdimensional) ==> #x)",
                 
-                "[open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), open, #1]"
+                //"[open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), open, #1]"
+                "[open(John,(interdimensional-->portal)), #1]"
 
         );
     }
@@ -56,7 +58,8 @@ class TermLinkTest {
     void testTemplates4b() {
         testTemplates("(open(John,portal(a(d),b,c)) ==> #x)",
                 
-                "[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), open, #1]"
+                //"[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), open, #1]"
+                "[open(John,portal(a(d),b,c)), #1]"
         );
     }
 
@@ -164,8 +167,8 @@ class TermLinkTest {
     @Test
     void testTemplateConj2() {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
-                //"[(($1-->key) ==>+- open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
-                "[(($1-->key) ==>+- open($1,#2)), (#2-->lock)]");
+                "[(($1-->key) ==>+- open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
+                //"[(($1-->key) ==>+- open($1,#2)), (#2-->lock)]");
 
     }
 

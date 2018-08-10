@@ -535,7 +535,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x));
+                return solveDT(d, x, d.occ.reset(x,false));
             }
 
             @Override
@@ -556,7 +556,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x));
+                return solveDT(d, x, d.occ.reset(x,false));
             }
 
             @Override
@@ -577,7 +577,7 @@ public class Occurrify extends TimeGraph {
         Relative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveOccDT(d, x, d.occ.reset(x));
+                return solveOccDT(d, x, d.occ.reset(x,false));
             }
 
             @Override

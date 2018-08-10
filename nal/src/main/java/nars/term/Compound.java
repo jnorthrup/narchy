@@ -167,16 +167,18 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term superterm) {
-        return (!aSuperCompoundMust.test(this) && whileTrue.test(this)) || (subterms().recurseTerms(aSuperCompoundMust, whileTrue, this));
+        return (!aSuperCompoundMust.test(this) ||
+                (whileTrue.test(this) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this)));
     }
 
     @Override
     default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
-        return (!aSuperCompoundMust.test(this) && whileTrue.test(superterm, this)) || (subterms().recurseTerms(aSuperCompoundMust, whileTrue, this));
+        return (!aSuperCompoundMust.test(this) ||
+                (whileTrue.test(this, superterm) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this)));
     }
 
     default void recurseTerms(BiConsumer<Term,Compound> each) {
-        each.accept(this, null);
+//        each.accept(this, null);
         recurseTerms(x -> true, (sub, sup)->{ each.accept(sub, sup); return true; } , null);
     }
 

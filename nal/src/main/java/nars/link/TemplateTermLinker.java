@@ -128,33 +128,38 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     /** depth extensions */
     private static int extraDepth(int depth, Term root, Term x) {
         if (depth >= 1 && depth <= 2) {
+            Op xo = x.op();
             switch (root.op()) {
                 case SIM:
                     if (depth == 1 && x.isAny(
                             //Op.SectBits | Op.SetBits | Op.DiffBits | Op.PROD.bit | Op.INH.bit
                             Op.INH.bit
-                    ))
+                    ) && x.hasAny(Op.VAR_INDEP))
                         return +1;
+                    if (depth > 1 && !x.hasAny(Op.VAR_INDEP))
+                        return -1;
                     break;
                 case INH:
                     if (depth == 1 && x.isAny(Op.SectBits | SetBits | Op.DiffBits | Op.PROD.bit ))
                         return +1;
                     break;
                 case CONJ:
-                    if (depth ==1 && (x.op().statement && x.hasAny(Op.VAR_DEP)))
+                    if (depth ==1 && (xo.statement && x.hasAny(Op.VAR_DEP)))
                         return +1; //necessary for certain NAL6 unification cases
                     if (depth > 1 && !x.hasAny(Op.VAR_DEP))
-                        return -1; //subterm without any var dep, dont actually recurse
-
-//                    if (depth == 1 && x.op().statement)
-//                    //if (depth == 1 && x.op().statement)
-////                    //if (x.op()==IMPL || x.op()==INH)
-//                        return +1;
+                        return -1; //event subterm without any var dep, dont actually recurse
                     break;
                 case IMPL:
-                    Op xo = x.op();
-                    if ( (xo.statement) || (depth == 1 && xo==CONJ))
+                    if ( (xo.statement && x.hasAny(Op.VariableBits) ) || (depth == 1 && xo==CONJ))
                         return +1;
+                    if (depth > 1 && (!x.hasAny(Op.VariableBits) && xo!=CONJ))
+                        return -1;
+
+//                    if (depth ==1 && (xo ==CONJ || (xo.statement)))
+//                        return +1;
+//                    if (depth > 1 && !x.hasAny(Op.VAR_INDEP))
+//                        return -1;
+
                     break;
             }
         }

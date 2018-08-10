@@ -8,6 +8,7 @@ import nars.NARS;
 import nars.derive.Deriver;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.deriver.MatrixDeriver;
+import nars.nal.multistep.PatrickTests;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
@@ -31,17 +32,20 @@ class NARTestOptimize {
 
             boolean parallel = true;
             Class[] testClasses = new Class[] {
-                    NAL1Test.class, NAL1MultistepTest.class, NAL2Test.class, NAL3Test.class, NAL4Test.class,
-                    NAL5Test.class, NAL6Test.class, NAL7Test.class, NAL8Test.class, NAL4MultistepTest.class
+                    NAL1Test.class, NAL1MultistepTest.class, NAL2Test.class, NAL3Test.class,
+                    NAL4Test.class, NAL4MultistepTest.class,
+                    NAL5Test.class,
+                    PatrickTests.class,
+                    NAL6Test.class, NAL7Test.class, NAL8Test.class,
             };
 
             Lab<NAR> l = new Lab<>(() -> NARS.tmp())
-//                .var("ttlMax", 6, 20, 3,
-//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-//                .var("termlinkBalance", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.termlinkBalance.set(f))
-                .var("forgetRate", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.forgetRate.set(f))
+                .var("ttlMax", 6, 20, 3,
+                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("termlinkBalance", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.termlinkBalance.set(f))
+//                .var("forgetRate", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.forgetRate.set(f))
                 .var("activationRate", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.activateConceptRate.set(f))
                 .var("derivationComplexityExponent", 0.5f, 4f, 0.5f,
@@ -64,11 +68,16 @@ class NARTestOptimize {
                 (TestNARSuite t) -> (float) t.score()
             );
 
-//            o
+            o
 //            .sense("numConcepts",
 //                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
-//            .sense("derivedTask",
-//                (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()));
+            .sense("derivedTask",
+                (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()))
+            .sense("duplicateTask",
+                    (TestNARSuite t) -> t.sum((NAR n)->
+                            n.emotion.deriveFailParentDuplicate.getValue()) +
+                            t.sum((NAR n) -> n.emotion.deriveFailDerivationDuplicate.getValue())
+            );
 
             o.runSync().print();
 

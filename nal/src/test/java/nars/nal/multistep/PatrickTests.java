@@ -15,7 +15,7 @@ import static nars.$.$;
  * see Natural_Language_Processing2.md
  */
 
-class PatrickTests extends NALTest {
+public class PatrickTests extends NALTest {
 
 
     @Test
