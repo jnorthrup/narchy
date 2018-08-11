@@ -4,10 +4,11 @@ import nars.$;
 import nars.NARS;
 import nars.Narsese;
 import nars.Task;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -22,12 +23,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NarseseTest {
 
 
-    @NotNull <T extends Term> T term(@NotNull String s) throws Narsese.NarseseException {
+    public static @NotNull <T extends Term> T term(@NotNull String s) throws Narsese.NarseseException {
         
         return (T) Narsese.term(s);
     }
 
-    protected void assertInvalidTerms(@NotNull String... inputs) {
+    public static void assertInvalidTerms(@NotNull String... inputs) {
         for (String s : inputs) {
             
             try {
@@ -37,7 +38,7 @@ public class NarseseTest {
                 } else {
                     fail(s + " should not be parseable but got: " + e); 
                 }
-            } catch (Narsese.NarseseException | Term.InvalidTermException e) {
+            } catch (Narsese.NarseseException | TermException e) {
                 assertTrue(true);
             }
         }
@@ -148,7 +149,7 @@ public class NarseseTest {
         try {
             s.get();
             fail("");
-        } catch (InvalidTaskException good) {
+        } catch (TaskException good) {
             assertTrue(true); 
         } catch (Exception e) {
             fail(e.toString()); 

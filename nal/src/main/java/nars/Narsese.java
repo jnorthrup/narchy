@@ -21,7 +21,7 @@ import com.google.common.util.concurrent.Futures;
 import jcog.Util;
 import nars.task.CommandTask;
 import nars.task.NALTask;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.obj.QuantityTerm;
@@ -199,7 +199,7 @@ public class Narsese {
         });
 
         if (y == null) {
-            throw new InvalidTaskException(content, "input: " + Arrays.toString(x));
+            throw new TaskException(content, "input: " + Arrays.toString(x));
         }
 
         return y;

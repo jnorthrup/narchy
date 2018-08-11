@@ -17,6 +17,7 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.util.TermException;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -269,7 +270,7 @@ public class IO {
         for (int i = 0; i < siz; i++) {
             Term read = (s[i] = readTerm(in));
             if (read == null || read instanceof Bool)
-                throw new Term.InvalidTermException(Op.PROD /* consider the termvector as a product */, s, "invalid");
+                throw new TermException(Op.PROD /* consider the termvector as a product */, s, "invalid");
         }
 
         return s;
@@ -297,7 +298,7 @@ public class IO {
 
         Term y = o.the(dt, v);
         if (y instanceof Bool)
-            throw new Term.InvalidTermException(o, dt, v, "invalid term");
+            throw new TermException(o, dt, v, "invalid term");
 
 
         return y;

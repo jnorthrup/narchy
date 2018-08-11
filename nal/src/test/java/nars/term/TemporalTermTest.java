@@ -16,6 +16,7 @@ import java.util.TreeSet;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.False;
+import static nars.term.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,8 +38,7 @@ public class TemporalTermTest {
     }
 
     public static void assertConceptual(String cexp, String c) throws Narsese.NarseseException {
-        Term p = $(c);
-        assertEquals(cexp, p.concept().toString());
+        assertEq(cexp, $(c).concept().toString());
     }
 
     @Test public void testSortingTemporalImpl() {
@@ -60,23 +60,6 @@ public class TemporalTermTest {
 
     }
 
-    @Test
-    void testCoNegatedSubtermTask() throws Narsese.NarseseException {
-
-        
-        assertNotNull(Narsese.the().task("(x &&+1 (--,x)).", n));
-
-        
-        assertInvalidTask("(x && (--,x)).");
-        assertInvalidTask("(x &&+0 (--,x)).");
-    }
-
-
-    @Test
-    void testMaintainParallelAmongEternal() {
-        assertEquals("((x&|y)&&e)", $$("((x&|y)&&e)").toString());
-    }
-
 
     @Test
     void testInvalidInheritanceOfEternalTemporalNegated() throws Narsese.NarseseException {
@@ -92,42 +75,7 @@ public class TemporalTermTest {
     }
 
 
-    private void assertInvalidTask(@NotNull String ss) {
-        try {
-            Narsese.the().task(ss, n);
-            fail("");
-        } catch (Exception e) {
-            assertTrue(true);
-        }
-    }
 
-
-    @Test
-    void testStableNormalizationAndConceptualizationComplex() {
-        String s = "(((--,checkScore(#1))&|#1) &&+14540 ((--,((#1)-->$2)) ==>+17140 (isRow(#1,(0,false),true)&|((#1)-->$2))))";
-        Term t = $$(s);
-        assertEquals(s, t.toString());
-        assertEquals(s, t.normalize().toString());
-        assertEquals(s, t.normalize().normalize().toString());
-        String c = "( &&+- ,((--,((#1)-->$2)) ==>+- (isRow(#1,(0,false),true) &&+- ((#1)-->$2))),(--,checkScore(#1)),#1)";
-        assertEquals(c, t.concept().toString());
-        assertEquals(c, t.concept().concept().toString());
-        Termed x = new DefaultConceptBuilder((z)-> { }).apply(t);
-        assertTrue(x instanceof TaskConcept);
-    }
-
-
-
-    @Test
-    void testAtemporalization() throws Narsese.NarseseException {
-        assertEquals("(x ==>+- y)", n.conceptualize($("(x ==>+10 y)")).toString());
-    }
-
-    @Test
-    void testAtemporalization2() throws Narsese.NarseseException {
-
-        assertEquals("((--,y) &&+- y)", $.<Compound>$("(y &&+3 (--,y))").temporalize(Retemporalize.retemporalizeAllToXTERNAL).toString());
-    }
 
     @Test
     void testAtemporalization3a() throws Narsese.NarseseException {
@@ -250,50 +198,6 @@ public class TemporalTermTest {
 
 
     @Test
-    void testCommutiveTemporalityConcepts2() throws Narsese.NarseseException {
-
-
-        for (String op : new String[]{"&&"}) {
-            Concept a = n.conceptualize($("(x " + op + "   y)"));
-            Concept b = n.conceptualize($("(x " + op + "+1 y)"));
-
-            assertSame(a, b);
-
-            Concept c = n.conceptualize($("(x " + op + "+2 y)"));
-
-            assertSame(b, c);
-
-            Concept d = n.conceptualize($("(x " + op + "-1 y)"));
-
-            assertSame(c, d);
-
-            Term e0 = $("(x " + op + "+- y)");
-            assertEquals("(x " + op + "+- y)", e0.toString());
-            Concept e = n.conceptualize(e0);
-
-            assertSame(d, e);
-
-            Term f0 = $("(y " + op + "+- x)");
-            assertEquals("(x " + op + "+- y)", f0.toString());
-            assertEquals("(x " + op + "+- y)", f0.root().toString());
-
-            Concept f = n.conceptualize(f0);
-            assertSame(e, f, e + "==" + f);
-
-            
-            Concept g = n.conceptualize($("(x " + op + "+- x)"));
-            assertEquals("(x " + op + "+- x)", g.toString());
-
-            
-            Concept h = n.conceptualize($("(x " + op + "+- (--,x))"));
-            assertEquals("((--,x) " + op + "+- x)", h.toString());
-
-
-        }
-
-    }
-
-    @Test
     void parseTemporalRelation() throws Narsese.NarseseException {
         
         assertEquals("(x ==>+5 y)", $("(x ==>+5 y)").toString());
@@ -366,7 +270,7 @@ public class TemporalTermTest {
         {
             
             Term x = $("(a ==> (b &&+1 (c && d)))");
-            assertEquals("(a==>(b &&+1 (c&&d)))", x.toString());
+            assertEquals("(a==>(b &&+1 (c&|d)))", x.toString());
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
         {
@@ -378,6 +282,25 @@ public class TemporalTermTest {
         assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
     }
 
+    @Test
+    void testStableNormalizationAndConceptualizationComplex() {
+        String s = "(((--,checkScore(#1))&|#1) &&+14540 ((--,((#1)-->$2)) ==>+17140 (isRow(#1,(0,false),true)&|((#1)-->$2))))";
+        Term t = $$(s);
+        assertEquals(s, t.toString());
+        assertEquals(s, t.normalize().toString());
+        assertEquals(s, t.normalize().normalize().toString());
+        String c = "( &&+- ,((--,((#1)-->$2)) ==>+- (isRow(#1,(0,false),true) &&+- ((#1)-->$2))),(--,checkScore(#1)),#1)";
+        assertEquals(c, t.concept().toString());
+        assertEquals(c, t.concept().concept().toString());
+        Termed x = new DefaultConceptBuilder((z) -> {
+        }).apply(t);
+        assertTrue(x instanceof TaskConcept);
+    }
+
+    @Test
+    void testAtemporalization() throws Narsese.NarseseException {
+        assertEquals("(x ==>+- y)", n.conceptualize($("(x ==>+10 y)")).toString());
+    }
 
     @Test
     void testTransformedImplDoesntActuallyOverlap() throws Narsese.NarseseException {
@@ -530,14 +453,5 @@ public class TemporalTermTest {
         assertTrue(Task.taskConceptTerm(ss));
     }
 
-
-    @Test public void testInvalidImpls() {
-        for (String s : new String[] {
-                "(--y =|> y)",
-                "(--(x &| y) =|> y)",
-                "(--(--x &| y) =|> y)"
-        })
-            assertEquals(False, $$(s));
-    }
 
 }

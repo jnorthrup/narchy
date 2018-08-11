@@ -1,11 +1,9 @@
 package jcog.data.map;
 
 import com.google.common.collect.Lists;
-import jcog.Texts;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -69,21 +67,21 @@ public class ConcurrentOpenHashMapTest {
         assertNull(map.put("2", "two"));
         assertNull(map.put("3", "three"));
 
-        assertEquals(map.size(), 3);
+        assertEquals(3, map.size());
 
-        assertEquals(map.get("1"), "one");
-        assertEquals(map.size(), 3);
+        assertEquals("one", map.get("1"));
+        assertEquals(3, map.size());
 
-        assertEquals(map.remove("1"), "one");
-        assertEquals(map.size(), 2);
-        assertEquals(map.get("1"), null);
-        assertEquals(map.get("5"), null);
-        assertEquals(map.size(), 2);
+        assertEquals("one", map.remove("1"));
+        assertEquals(2, map.size());
+        assertNull(map.get("1"));
+        assertNull(map.get("5"));
+        assertEquals(2, map.size());
 
         assertNull(map.put("1", "one"));
-        assertEquals(map.size(), 3);
-        assertEquals(map.put("1", "uno"), "one");
-        assertEquals(map.size(), 3);
+        assertEquals(3, map.size());
+        assertEquals("one", map.put("1", "uno"));
+        assertEquals(3, map.size());
     }
 
     @Test
@@ -106,23 +104,23 @@ public class ConcurrentOpenHashMapTest {
     public void testRehashing() {
         int n = 16;
         ConcurrentOpenHashMap<String, Integer> map = new ConcurrentOpenHashMap<>(n / 2, 1);
-        assertEquals(map.capacity(), n);
-        assertEquals(map.size(), 0);
+        assertEquals(n, map.capacity());
+        assertEquals(0, map.size());
 
         for (int i = 0; i < n; i++) {
             map.put(Integer.toString(i), i);
         }
 
         assertEquals(map.capacity(), 2 * n);
-        assertEquals(map.size(), n);
+        assertEquals(n, map.size());
     }
 
     @Test
     public void testRehashingWithDeletes() {
         int n = 16;
         ConcurrentOpenHashMap<Integer, Integer> map = new ConcurrentOpenHashMap<>(n / 2, 1);
-        assertEquals(map.capacity(), n);
-        assertEquals(map.size(), 0);
+        assertEquals(n, map.capacity());
+        assertEquals(0, map.size());
 
         for (int i = 0; i < n / 2; i++) {
             map.put(i, i);
@@ -137,19 +135,36 @@ public class ConcurrentOpenHashMapTest {
         }
 
         assertEquals(map.capacity(), 2 * n);
-        assertEquals(map.size(), n);
+        assertEquals(n, map.size());
     }
 
     @Test
-    public void concurrentInsertions() throws Throwable {
-        ConcurrentOpenHashMap<Long, String> map = new ConcurrentOpenHashMap<>(16, 1);
+    public void testConcurrentInsertionsOpenHashMapConcurrency1_2() {
+        concurrentInsertions(new ConcurrentOpenHashMap<>(16, 1), 1);
+    }
+    @Test
+    public void testConcurrentInsertionsOpenHashMapConcurrency1_16() {
+        concurrentInsertions(new ConcurrentOpenHashMap<>(16, 1), 16);
+    }
+    @Test
+    public void testConcurrentInsertionsOpenHashMapConcurrency4_16() {
+        Map<Long, String> map = new ConcurrentOpenHashMap<>(16, 4);
+        concurrentInsertions(map, 16);
+    }
+
+    @Test
+    public void testConcurrentInsertionsCustomConcurrentHashMap() {
+        Map<Long, String> map = new ConcurrentOpenHashMap<>(16, 1);
+        concurrentInsertions(map, 16);
+    }
+
+    static void concurrentInsertions(Map<Long, String> map, int nThreads)  {
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        final int nThreads = 16;
         final int N = 100_000;
         String value = "value";
 
-        List<Future<?>> futures = new ArrayList<>();
+        Collection<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < nThreads; i++) {
             final int threadIdx = i;
 
@@ -167,24 +182,30 @@ public class ConcurrentOpenHashMapTest {
         }
 
         for (Future<?> future : futures) {
-            future.get();
+            try {
+                future.get();
+            } catch (Throwable e) {
+                fail(() -> e.toString());
+            }
         }
-
-        assertEquals(map.size(), N * nThreads);
+        assertEquals(N * nThreads, map.size());
 
         executor.shutdown();
     }
 
     @Test
-    public void concurrentInsertionsAndReads() throws Throwable {
-        ConcurrentOpenHashMap<Long, String> map = new ConcurrentOpenHashMap<>();
+    void concurrentInsertionsAndReadsConcurrentOpenHashMap() {
+        concurrentInsertionsAndReads(new ConcurrentOpenHashMap<>(), 16);
+    }
+
+    static void concurrentInsertionsAndReads(ConcurrentOpenHashMap<Long, String> map, int nThreads)  {
+
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        final int nThreads = 16;
         final int N = 100_000;
         String value = "value";
 
-        List<Future<?>> futures = new ArrayList<>();
+        Collection<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < nThreads; i++) {
             final int threadIdx = i;
 
@@ -202,10 +223,14 @@ public class ConcurrentOpenHashMapTest {
         }
 
         for (Future<?> future : futures) {
-            future.get();
+            try {
+                future.get();
+            } catch (Throwable e) {
+                fail(e);
+            }
         }
 
-        assertEquals(map.size(), N * nThreads);
+        assertEquals(N * nThreads, map.size());
 
         executor.shutdown();
     }
@@ -214,40 +239,40 @@ public class ConcurrentOpenHashMapTest {
     public void testIteration() {
         ConcurrentOpenHashMap<Long, String> map = new ConcurrentOpenHashMap<>();
 
-        assertEquals(map.keys(), Collections.emptyList());
-        assertEquals(map.values(), Collections.emptyList());
+        assertEquals(Collections.emptyList(), map.keys());
+        assertEquals(Collections.emptyList(), map.values());
 
-        map.put(0l, "zero");
+        map.put(0L, "zero");
 
-        assertEquals(map.keys(), Lists.newArrayList(0l));
-        assertEquals(map.values(), Lists.newArrayList("zero"));
+        assertEquals(Lists.newArrayList(0l), map.keys());
+        assertEquals(Lists.newArrayList("zero"), map.values());
 
-        map.remove(0l);
+        map.remove(0L);
 
-        assertEquals(map.keys(), Collections.emptyList());
-        assertEquals(map.values(), Collections.emptyList());
+        assertEquals(Collections.emptyList(), map.keys());
+        assertEquals(Collections.emptyList(), map.values());
 
-        map.put(0l, "zero");
-        map.put(1l, "one");
-        map.put(2l, "two");
+        map.put(0L, "zero");
+        map.put(1L, "one");
+        map.put(2L, "two");
 
         List<Long> keys = map.keys();
         keys.sort(null);
-        assertEquals(keys, Lists.newArrayList(0l, 1l, 2l));
+        assertEquals(Lists.newArrayList(0l, 1l, 2l), keys);
 
         List<String> values = map.values();
         values.sort(null);
-        assertEquals(values, Lists.newArrayList("one", "two", "zero"));
+        assertEquals(Lists.newArrayList("one", "two", "zero"), values);
 
-        map.put(1l, "uno");
+        map.put(1L, "uno");
 
         keys = map.keys();
         keys.sort(null);
-        assertEquals(keys, Lists.newArrayList(0l, 1l, 2l));
+        assertEquals(Lists.newArrayList(0l, 1l, 2l), keys);
 
         values = map.values();
         values.sort(null);
-        assertEquals(values, Lists.newArrayList("two", "uno", "zero"));
+        assertEquals(Lists.newArrayList("two", "uno", "zero"), values);
 
         map.clear();
         assertTrue(map.isEmpty());
@@ -266,35 +291,35 @@ public class ConcurrentOpenHashMapTest {
         int bucket2 = ConcurrentOpenHashMap.signSafeMod(ConcurrentOpenHashMap.hash(key2), Buckets);
         assertEquals(bucket1, bucket2);
 
-        assertEquals(map.put(key1, "value-1"), null);
-        assertEquals(map.put(key2, "value-2"), null);
-        assertEquals(map.size(), 2);
+        assertNull(map.put(key1, "value-1"));
+        assertNull(map.put(key2, "value-2"));
+        assertEquals(2, map.size());
 
-        assertEquals(map.remove(key1), "value-1");
-        assertEquals(map.size(), 1);
+        assertEquals("value-1", map.remove(key1));
+        assertEquals(1, map.size());
 
-        assertEquals(map.put(key1, "value-1-overwrite"), null);
-        assertEquals(map.size(), 2);
+        assertNull(map.put(key1, "value-1-overwrite"));
+        assertEquals(2, map.size());
 
-        assertEquals(map.remove(key1), "value-1-overwrite");
-        assertEquals(map.size(), 1);
+        assertEquals("value-1-overwrite", map.remove(key1));
+        assertEquals(1, map.size());
 
-        assertEquals(map.put(key2, "value-2-overwrite"), "value-2");
-        assertEquals(map.get(key2), "value-2-overwrite");
+        assertEquals("value-2", map.put(key2, "value-2-overwrite"));
+        assertEquals("value-2-overwrite", map.get(key2));
 
-        assertEquals(map.size(), 1);
-        assertEquals(map.remove(key2), "value-2-overwrite");
+        assertEquals(1, map.size());
+        assertEquals("value-2-overwrite", map.remove(key2));
         assertTrue(map.isEmpty());
     }
 
     @Test
     public void testPutIfAbsent() {
         ConcurrentOpenHashMap<Long, String> map = new ConcurrentOpenHashMap<>();
-        assertEquals(map.putIfAbsent(1l, "one"), null);
-        assertEquals(map.get(1l), "one");
+        assertNull(map.putIfAbsent(1l, "one"));
+        assertEquals("one", map.get(1l));
 
-        assertEquals(map.putIfAbsent(1l, "uno"), "one");
-        assertEquals(map.get(1l), "one");
+        assertEquals("one", map.putIfAbsent(1l, "uno"));
+        assertEquals("one", map.get(1l));
     }
 
     @Test
@@ -303,17 +328,17 @@ public class ConcurrentOpenHashMapTest {
         AtomicInteger counter = new AtomicInteger();
         Function<Integer, Integer> provider = key -> counter.getAndIncrement();
 
-        assertEquals(map.computeIfAbsent(0, provider).intValue(), 0);
-        assertEquals(map.get(0).intValue(), 0);
+        assertEquals(0, map.computeIfAbsent(0, provider).intValue());
+        assertEquals(0, map.get(0).intValue());
 
-        assertEquals(map.computeIfAbsent(1, provider).intValue(), 1);
-        assertEquals(map.get(1).intValue(), 1);
+        assertEquals(1, map.computeIfAbsent(1, provider).intValue());
+        assertEquals(1, map.get(1).intValue());
 
-        assertEquals(map.computeIfAbsent(1, provider).intValue(), 1);
-        assertEquals(map.get(1).intValue(), 1);
+        assertEquals(1, map.computeIfAbsent(1, provider).intValue());
+        assertEquals(1, map.get(1).intValue());
 
-        assertEquals(map.computeIfAbsent(2, provider).intValue(), 2);
-        assertEquals(map.get(2).intValue(), 2);
+        assertEquals(2, map.computeIfAbsent(2, provider).intValue());
+        assertEquals(2, map.get(2).intValue());
     }
 
     @Test
@@ -347,70 +372,20 @@ public class ConcurrentOpenHashMapTest {
         T t2 = new T(2);
 
         assertEquals(t1, t1_b);
-        assertFalse(t1.equals(t2));
-        assertFalse(t1_b.equals(t2));
+        assertNotEquals(t1, t2);
+        assertNotEquals(t1_b, t2);
 
         assertNull(map.put(t1, "t1"));
-        assertEquals(map.get(t1), "t1");
-        assertEquals(map.get(t1_b), "t1");
+        assertEquals("t1", map.get(t1));
+        assertEquals("t1", map.get(t1_b));
         assertNull(map.get(t2));
 
-        assertEquals(map.remove(t1_b), "t1");
+        assertEquals("t1", map.remove(t1_b));
         assertNull(map.get(t1));
         assertNull(map.get(t1_b));
     }
 
 
 
-    static void bench(Map<Long, String> map) {
-        long start = System.nanoTime();
 
-        for (long i = 0; i < Iterations; i++) {
-            for (int j = 0; j < N; j++) {
-                map.put(i, "value");
-            }
-
-            for (long h = 0; h < ReadIterations; h++) {
-                for (int j = 0; j < N; j++) {
-                    map.get(i);
-                }
-            }
-
-            for (long j = 0; j < N; j++) {
-                map.remove(i);
-            }
-        }
-
-        long end = System.nanoTime();
-
-        System.out.println(map.getClass() + " " + Texts.timeStr(end - start));
-    }
-
-    final static int Iterations = 1;
-    final static int ReadIterations = 1000;
-    final static int N = 1_000_000;
-
-    public void benchConcurrentOpenHashMap() {
-        bench(new ConcurrentOpenHashMap<>(N, 1));
-    }
-    public void benchConcurrentHashMap() {
-        bench(new ConcurrentHashMap<>(N, 0.66f, 1));
-    }
-
-    void benchHashMap() {
-        bench(new HashMap<>(N, 0.66f));
-    }
-
-    public static class Benchmark {
-
-
-        public static void main(String[] args) {
-            ConcurrentOpenHashMapTest t = new ConcurrentOpenHashMapTest();
-
-            t.benchHashMap();
-            t.benchConcurrentHashMap();
-            t.benchConcurrentOpenHashMap();
-
-        }
-    }
 }

@@ -6,6 +6,7 @@ import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.TermException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -39,7 +40,7 @@ public class LightDTCompound implements SeparateSubtermsCompound {
         this.ref = base;
 
         if (!(dt == XTERNAL || Math.abs(dt) < Param.DT_ABS_LIMIT))
-            throw new InvalidTermException(base.op(), dt, s, "exceeded DT limit");
+            throw new TermException(base.op(), dt, s, "exceeded DT limit");
 
         if (Param.DEBUG_EXTRA) {
 
@@ -48,7 +49,7 @@ public class LightDTCompound implements SeparateSubtermsCompound {
             int size = s.subs();
 
             if (op.temporal && (op != CONJ && size != 2))
-                throw new InvalidTermException(op, dt, "Invalid dt value for operator", s.arrayShared());
+                throw new TermException(op, dt, "Invalid dt value for operator", s.arrayShared());
 
             if (dt != XTERNAL && op.commutative && size == 2) {
                 if (sub(0).compareTo(sub(1)) > 0)

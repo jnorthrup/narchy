@@ -2,7 +2,7 @@ package nars.task;
 
 import nars.NAR;
 import nars.Task;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -18,7 +18,7 @@ public class UnevaluatedTask extends NALTask {
                 stamp /* TODO use an implementation which doenst need an array for this */);
     }
 
-    public UnevaluatedTask(Term c, Task xx, Truth t) throws InvalidTaskException {
+    public UnevaluatedTask(Term c, Task xx, Truth t) throws TaskException {
         super(c, xx.punc(), t, xx.creation(), xx.start(), xx.end(), xx.stamp());
     }
 

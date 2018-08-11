@@ -1,12 +1,12 @@
-package nars.term;
+package nars.term.util;
 
 import jcog.data.byt.AbstractBytes;
 import nars.NARS;
 import nars.Narsese;
 import nars.index.concept.TreeConceptIndex;
+import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atomic;
-import nars.term.util.TermBytes;
-import nars.term.util.TermRadixTree;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 

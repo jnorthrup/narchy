@@ -27,6 +27,7 @@ import java.util.List;
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public class NarseseParser extends BaseParser<Object> implements Narsese.INarseseParser {
 
@@ -414,7 +415,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                     firstOf(
                             TimeUnit(),
 
-                            seq("+-", push(Tense.XTERNAL)),
+                            seq("+-", push(XTERNAL)),
                             seq('+', oneOrMore(digit()),
                                     push(Texts.i(matchOrDefault(invalidCycleDeltaString)))
                             ),
@@ -714,7 +715,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 firstOf(
                     Op.DISJstr,
-                        "&|",
+                        "&|", "&&+-","||+-",
                         Op.SECTe.str
                 ), push(match()),
 
@@ -736,19 +737,28 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     static Term buildCompound(List<Term> subs, String op) {
         switch (op) {
+            case "&|":
+                return CONJ.the(0, subs);
+            case "&&+-":
+                return CONJ.the(XTERNAL, subs);
+
             case DISJstr:
                 subs.replaceAll(Term::neg);
                 return CONJ.the(DTERNAL, subs).neg();
-            case "&|":
-                return CONJ.the(0, subs);
+            case "||+-":
+                subs.replaceAll(Term::neg);
+                return CONJ.the(XTERNAL, subs).neg();
+
             case "=|>":
                 return IMPL.the(0, subs);
+
             case "-{-":
                 return subs.size() != 2 ? Null : $.inst(subs.get(0), subs.get(1));
             case "-]-":
                 return subs.size() != 2 ? Null : $.prop(subs.get(0), subs.get(1));
             case "{-]":
                 return subs.size() != 2 ? Null : $.instprop(subs.get(0), subs.get(1));
+
             default: {
                 Op o = Op.stringToOperator.get(op);
                 if (o == null)

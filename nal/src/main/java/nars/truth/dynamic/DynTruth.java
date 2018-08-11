@@ -13,7 +13,7 @@ import nars.control.Cause;
 import nars.control.proto.TaskLinkTask;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.time.Tense;
@@ -275,7 +275,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
     static class DynamicTruthTask extends NALTask {
 
-        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, TimeAware n, long start, long end, long[] stamp) throws InvalidTaskException {
+        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, TimeAware n, long start, long end, long[] stamp) throws TaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
             if (c.op() == NEG)
                 throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");

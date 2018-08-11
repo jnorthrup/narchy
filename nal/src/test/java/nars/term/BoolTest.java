@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.*;
 import static nars.$.or;
 import static nars.Op.*;
-import static nars.term.TermReductionsTest.assertEq;
+import static nars.term.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

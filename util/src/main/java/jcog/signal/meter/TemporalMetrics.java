@@ -10,10 +10,9 @@ import jcog.signal.meter.event.DoubleMeter;
 import java.util.function.DoubleSupplier;
 
 /**
- *
- * @author me
+ * TODO use TableSaw Table
  */
-public class TemporalMetrics extends Metrics<Double> {
+@Deprecated public class TemporalMetrics extends Metrics<Double> {
 
     public TemporalMetrics(int historySize) {
         super(historySize);

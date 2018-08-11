@@ -15,6 +15,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
+import nars.term.util.TermException;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
@@ -605,7 +606,13 @@ public enum Op {
 
 
     public static boolean concurrent(int dt) {
-        return (dt == DTERNAL) || (dt == 0) || (dt == XTERNAL);
+        switch (dt) {
+            case XTERNAL:
+            case DTERNAL:
+            case 0:
+                return true;
+        }
+        return false;
     }
 
 
@@ -684,7 +691,7 @@ public enum Op {
 
         }
 
-        throw new Term.InvalidTermException(op, t, "diff requires 2 terms");
+        throw new TermException(op, t, "diff requires 2 terms");
 
     }
 
@@ -992,6 +999,7 @@ public enum Op {
     public static boolean commute(int dt, int subterms) {
         return subterms > 1 && Op.concurrent(dt);
     }
+
 
 
     public final Term the(Subterms s) {

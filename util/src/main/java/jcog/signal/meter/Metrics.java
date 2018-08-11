@@ -21,12 +21,9 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /**
- * A tabular data store where each (# indexed) column represents a different
- * type of value, and each row is a that value sampled/recorded at a different
- * time point (first column).
- * 
+ * TODO use TableSaw Table
  */
-public class Metrics<RowKey> implements Iterable<Object[]> {
+@Deprecated public class Metrics<RowKey> implements Iterable<Object[]> {
 
 
 

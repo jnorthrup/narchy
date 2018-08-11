@@ -21,8 +21,10 @@ import nars.concept.Concept;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
+import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import nars.unify.match.EllipsisMatch;
 import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +52,7 @@ public class TermTest {
     private final NAR n = NARS.shell();
 
     public static void assertReallyEquals(Term c, Term f) {
-        assertTrue(f!=c, "identical, nothing is being tested");
+        assertTrue(f != c, "identical, nothing is being tested");
 
         assertEquals(c.op(), f.op());
         assertEquals(c.subs(), f.subs());
@@ -68,7 +70,7 @@ public class TermTest {
             assertEquals(ci.subterms(), fi.subterms());
             assertEquals(fi.hashCode(), ci.hashCode());
             assertEquals(-fi.compareTo(ci),
-                         ci.compareTo(fi) );
+                    ci.compareTo(fi));
         }
 
         assertArrayEquals(c.subterms().arrayShared(), f.subterms().arrayShared());
@@ -88,7 +90,7 @@ public class TermTest {
     }
 
 
-    private void assertEquivalentTerm(@NotNull String term1String, @NotNull String term2String) {
+    public static void assertEquivalentTerm(@NotNull String term1String, @NotNull String term2String) {
 
         try {
 
@@ -96,7 +98,6 @@ public class TermTest {
             Termed term1 = $.$(term1String);
             Termed term2 = $.$(term2String);
 
-            
 
             assertEquivalentTerm(term1.term(), term2.term());
 
@@ -105,7 +106,7 @@ public class TermTest {
         }
     }
 
-    private void assertEquivalentTerm(Term term1, Term term2) {
+    public static void assertEquivalentTerm(Term term1, Term term2) {
 
         assertEquals(term1, term2);
         assertEquals(term2, term1);
@@ -117,9 +118,33 @@ public class TermTest {
         assertEquals(0, term2.compareTo(term2));
     }
 
+    public static Term assertStable(String is) {
+        return assertEq(is,is);
+    }
+
+    public static Term assertEq(String exp, String is) {
+        Term t = $$(is);
+        assertEquals(exp, t.toString(), () -> is + " reduces to " + exp);
+
+
+        //test for stability:
+        Term u = $$(t.toString());
+        assertEquals(u, t, ()-> is + " unstable:\n0:\t" + t + "\n1:\t" + u);
+
+        return t;
+    }
+
+    public static void assertEq(Term exp, String is) {
+        assertEquals(exp, $$(is), () -> exp + " reduces to " + is);
+    }
+
+    public static void assertEq(String exp, Term is) {
+        assertEquals(exp, is.toString(), () -> exp + " reduces to " + is);
+    }
+
     @Test
     void testInstantiateBoolsFromEquivString() {
-        for (Term b : new Term[] { True, False, Null })
+        for (Term b : new Term[]{True, False, Null})
             assertSame(b, $.the(b.toString()));
     }
 
@@ -128,14 +153,6 @@ public class TermTest {
         assertEquals(2, $("(add(s(s(0)),s(s(0)),?R)==>goal(?R))").varQuery());
     }
 
-    @Test
-    void testConjCommutivity() {
-
-        assertEquivalentTerm("(&&,a,b)", "(&&,b,a)");
-        assertEquivalentTerm("(&&,(||,(b),(c)),(a))", "(&&,(a),(||,(b),(c)))");
-        assertEquivalentTerm("(&&,(||,(c),(b)),(a))", "(&&,(a),(||,(b),(c)))");
-        assertEquivalentTerm("(&&,(||,(c),(b)),(a))", "(&&,(a),(||,(c),(b)))");
-    }
 
     @Test
     void testSetCommutivity() throws Exception {
@@ -166,19 +183,18 @@ public class TermTest {
     void testSimCommutivity() throws Exception {
         assertEquivalentTerm("<{Birdie}<->{Tweety}>", "<{Tweety}<->{Birdie}>");
         assertEquivalentTerm($("<{Birdie}<->{Tweety}>"),
-                        $("<{Tweety}<->{Birdie}>"));
+                $("<{Tweety}<->{Birdie}>"));
 
         assertEquivalentTerm(
-                $.sim($("{Birdie}"),$("{Tweety}")),
-                $.sim($("{Tweety}"),$("{Birdie}"))
+                $.sim($("{Birdie}"), $("{Tweety}")),
+                $.sim($("{Tweety}"), $("{Birdie}"))
         );
-
 
 
     }
 
     @Test
-    void testCommutativivity()  {
+    void testCommutativivity() {
         Atomic W = Atomic.the("w");
         Atomic X = Atomic.the("x");
         Atomic Y = Atomic.the("y");
@@ -188,9 +204,9 @@ public class TermTest {
 
             Term xy = o.the(X, Y);
             assertTrue(xy.isCommutative());
-            assertEquals(xy, o.the(Y, X), ()->"commutivity failed for " + xy);
-            assertEquals(xy, o.the(List.of(Y, X)), ()->"commutivity failed for " + xy);
-            assertEquals(xy, o.the(Set.of(Y, X)), ()->"commutivity failed for " + xy);
+            assertEquals(xy, o.the(Y, X), () -> "commutivity failed for " + xy);
+            assertEquals(xy, o.the(List.of(Y, X)), () -> "commutivity failed for " + xy);
+            assertEquals(xy, o.the(Set.of(Y, X)), () -> "commutivity failed for " + xy);
 
             if (o.maxSize > 2) {
                 Term xyz = o.the(X, Y, Z);
@@ -214,7 +230,6 @@ public class TermTest {
     }
 
 
-
     @Test
     void testTermSort() throws Exception {
 
@@ -236,35 +251,16 @@ public class TermTest {
     }
 
 
-
-
-    @Test
-    void testConjunction1Term() throws Narsese.NarseseException {
-
-        assertEquals("a", $.$("(&&,a)").toString());
-        assertEquals("x(a)", $.$("(&&,x(a))").toString());
-        assertEquals("a", $.$("(&&,a, a)").toString());
-
-        assertEquals("((before-->x) &&+10 (after-->x))",
-                $.$("(x:after &&-10 x:before)").toString());
-        assertEquals("((before-->x) &&+10 (after-->x))",
-                $.$("(x:before &&+10 x:after)").toString());
-
-        
-        
-    }
-
     @Test
     void testConjunctionTreeSet() throws Narsese.NarseseException {
 
-        
+
         String term1String = "<#1 --> (&,boy,(/,taller_than,{Tom},_))>";
         Term term1 = $.$(term1String).term();
         String term1Alternate = "<#1 --> (&,(/,taller_than,{Tom},_),boy)>";
         Term term1a = $.$(term1Alternate).term();
 
 
-        
         Term term2 = $.$("<#1 --> (|,boy,(/,taller_than,{Tom},_))>").term();
 
         assertEquals(term1a.toString(), term1.toString());
@@ -272,10 +268,6 @@ public class TermTest {
         assertEquals(term1.complexity(), term2.complexity());
 
         assertSame(term1.op(), INH);
-
-
-        
-        
 
 
         boolean t1e2 = term1.equals(term2);
@@ -315,14 +307,15 @@ public class TermTest {
         Compound cterm1 = ((Compound) term1);
         Compound cterm2 = ((Compound) term2);
 
-        
-        assertEquals(cterm1.sub(0), cterm2.sub(0)); 
+
+        assertEquals(cterm1.sub(0), cterm2.sub(0));
 
     }
 
 
-
-    /** test consistency between subterm conceptualization and term conceptualization */
+    /**
+     * test consistency between subterm conceptualization and term conceptualization
+     */
     @Test
     void testRootOfImplWithConj() throws Narsese.NarseseException {
         String ys = "((--,tetris(isRow,13,true))&&tetris(isRowClear,6,true))";
@@ -337,35 +330,6 @@ public class TermTest {
         assertEquals("(tetris(isRowClear,10,true) ==>+- " + yc + ")", x.concept().toString());
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
@@ -394,11 +358,6 @@ public class TermTest {
         }
 
 
-
-
-
-
-
     }
 
     @Test
@@ -407,9 +366,10 @@ public class TermTest {
                 $$("(($1 &&+4 $1) ==>-2 ((--,angX) &&+8 $1))")));
     }
 
-    @Deprecated static boolean isOperation(Termed _t) {
+    @Deprecated
+    static boolean isOperation(Termed _t) {
         Term t = _t.term();
-        if (t.op() == Op.INH) { 
+        if (t.op() == Op.INH) {
             Compound c = (Compound) t;
             return c.subIs(1, Op.ATOM) &&
                     c.subIs(0, Op.PROD);
@@ -421,13 +381,10 @@ public class TermTest {
     void testParseOperationInFunctionalForm() throws Narsese.NarseseException {
 
 
-
-
-            Term x = $.$("wonder(a,b)").term();
-            assertEquals(INH, x.op());
-            assertTrue(isOperation(x));
-            assertEquals("wonder(a,b)", x.toString());
-
+        Term x = $.$("wonder(a,b)").term();
+        assertEquals(INH, x.op());
+        assertTrue(isOperation(x));
+        assertEquals("wonder(a,b)", x.toString());
 
 
     }
@@ -437,7 +394,7 @@ public class TermTest {
     void testFromEllipsisMatch() {
         Term xy = EllipsisMatch.matched($.the("x"), $.the("y"));
 
-        for (Op o : new Op[] { Op.SECTi, SECTe, DIFFe, DIFFi, CONJ }) {
+        for (Op o : new Op[]{Op.SECTi, SECTe, DIFFe, DIFFi, CONJ}) {
             Term z = o.the(DTERNAL, xy);
             assertEquals("(x" + o.str + "y)", z.toString());
             assertEquals(3, z.volume());
@@ -445,30 +402,6 @@ public class TermTest {
             assertEquals(Op.ATOM, z.sub(1).op());
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
@@ -492,7 +425,8 @@ public class TermTest {
             fail(e);
         }
     }
-    private void testTermEquality(@NotNull String s)  {
+
+    private void testTermEquality(@NotNull String s) {
         try {
             testTermEquality(s, true);
         } catch (Narsese.NarseseException e) {
@@ -509,7 +443,6 @@ public class TermTest {
         NAR n2 = NARS.shell();
         Term b = $.$(s).term();
 
-        
 
         if (a instanceof Compound) {
             assertEquals(a.subterms(), b.subterms());
@@ -524,7 +457,7 @@ public class TermTest {
 
         if (conceptualize) {
             Concept n2a = n2.conceptualize(a);
-            assertNotNull( n2a, a + " should conceptualize");
+            assertNotNull(n2a, a + " should conceptualize");
             assertNotNull(b);
             assertEquals(n2a.toString(), b.toString());
             assertEquals(n2a.hashCode(), b.hashCode());
@@ -584,12 +517,8 @@ public class TermTest {
         TimeAware n2 = NARS.shell();
         Termed b = $.$(s);
 
-        
+
         assertEquals(a, b);
-
-        
-
-
 
 
     }
@@ -597,7 +526,7 @@ public class TermTest {
 
     @Test
     void statementHash() throws Narsese.NarseseException {
-        
+
         statementHash("i4", "i2");
         statementHash("{i4}", "{i2}");
         statementHash("<{i4} --> r>", "<{i2} --> r>");
@@ -617,10 +546,10 @@ public class TermTest {
     @Test
     void statementHash3() throws Narsese.NarseseException {
 
-        
+
         statementHash("<<{i0} --> r> ==> A(8)>", "<<{i1} --> r> ==> A(7)>");
 
-        
+
         statementHash("<<{i10} --> r> ==> A(1)>", "<<{i11} --> r> ==> A(0)>");
     }
 
@@ -652,7 +581,7 @@ public class TermTest {
     void testHashDistribution() {
         int ah = new UniSubterm($.the("x")).hashCode();
         int bh = new UniSubterm($.the("y")).hashCode();
-        assertTrue(Math.abs(ah-bh) > 1, ah + " vs " + bh);
+        assertTrue(Math.abs(ah - bh) > 1, ah + " vs " + bh);
     }
 
     @Test
@@ -705,37 +634,6 @@ public class TermTest {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static void assertValid(String o) {
         assertEquals(o, assertValid($$(o)).toString());
     }
@@ -758,154 +656,20 @@ public class TermTest {
 
 
         } catch (Exception e) {
-            
+
         }
     }
-
 
 
     static void assertValidTermValidConceptInvalidTaskContent(String o) {
-        try {
-
-            NARS.shell().believe(o);
-
-            fail(o + " should not have been allowed as a task content");
-
-
-        } catch (Exception e) {
-            
-        }
+        assertThrows(TaskException.class, ()-> { NARS.shell().input(o); });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
     void testSubTermStructure() throws Narsese.NarseseException {
-        assertTrue( x.term().impossibleSubTerm( x.term() ) );
-        assertTrue( !x.hasAll($.$("<a-->#b>").term().structure()) );
+        assertTrue(x.term().impossibleSubTerm(x.term()));
+        assertTrue(!x.hasAll($.$("(a-->#b)").term().structure()));
     }
 
     @Test
@@ -930,8 +694,8 @@ public class TermTest {
 
     @Test
     void testHash1() throws Narsese.NarseseException {
-        testUniqueHash("<A --> B>", "<A <-> B>");
-        testUniqueHash("<A --> B>", "<A ==> B>");
+        testUniqueHash("(A --> B)", "(A <-> B)");
+        testUniqueHash("(A --> B)", "(A ==> B)");
         testUniqueHash("A", "B");
         testUniqueHash("%1", "%2");
         testUniqueHash("%A", "A");
@@ -949,45 +713,32 @@ public class TermTest {
 
     @Test
     void testSetOpFlags() throws Narsese.NarseseException {
-        assertTrue( $("{x}").op().isSet() );
-        assertTrue( $("[y]}").op().isSet() );
-        assertFalse( $("x").op().isSet() );
-        assertFalse( $("a:b").op().isSet() );
+        assertTrue($("{x}").op().isSet());
+        assertTrue($("[y]}").op().isSet());
+        assertFalse($("x").op().isSet());
+        assertFalse($("a:b").op().isSet());
     }
 
     @Test
     void testEmptyProductEquality() throws Narsese.NarseseException {
-        assertEquals( $("()"),$("()") );
+        assertEquals($("()"), $("()"));
         assertEquals(EmptyProduct, $("()"));
     }
 
 
     static void assertInvalid(@NotNull String o) {
-        assertInvalid(() -> {
-                try {
-                    Term x = $(o);
-                    return x;
-                } catch (Narsese.NarseseException e) {
-                    return Null;
-                }
+        assertThrows(TermException.class, () -> {
+            $(o);
         });
     }
-    private static void assertInvalid(@NotNull Supplier<Term> o) {
-        try {
-            Term recv = o.get();
-            if (recv!=Null) 
-                fail(recv + " was not null");
-        } catch (Term.InvalidTermException e) {
-            
-        }
-    }
+
     @Test
     void reuseVariableTermsDuringNormalization2() throws Narsese.NarseseException {
-        for (String v : new String[] { "?a", "?b", "#a", "#c" }) {
-            Compound x = $("<<" + v +" --> b> ==> <" + v + " --> c>>");
-            Term a = x.subPath((byte)0, (byte)0);
-            Term b = x.subPath((byte)1, (byte)0);
-            assertNotEquals(a, x.subPath((byte)0, (byte)1));
+        for (String v : new String[]{"?a", "?b", "#a", "#c"}) {
+            Compound x = $("((" + v + " --> b) ==> (" + v + " --> c))");
+            Term a = x.subPath((byte) 0, (byte) 0);
+            Term b = x.subPath((byte) 1, (byte) 0);
+            assertNotEquals(a, x.subPath((byte) 0, (byte) 1));
             assertEquals(a, b, x + " subterms (0,0)==(1,0)");
             assertSame(a, b);
         }

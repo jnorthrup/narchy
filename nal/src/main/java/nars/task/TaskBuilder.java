@@ -5,7 +5,7 @@ import jcog.pri.Prioritized;
 import jcog.pri.UnitPri;
 import nars.*;
 import nars.concept.Concept;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -72,7 +72,7 @@ import static nars.time.Tense.ETERNAL;
 
 
 
-    public TaskBuilder(Term t, byte punct, float freq, @NotNull NAR nar) throws InvalidTaskException {
+    public TaskBuilder(Term t, byte punct, float freq, @NotNull NAR nar) throws TaskException {
         this(t, punct, t(freq, nar.confDefault(punct)));
     }
 
@@ -83,17 +83,17 @@ import static nars.time.Tense.ETERNAL;
         this(t, punct, t(freq, conf));
     }
 
-    public TaskBuilder(String compoundTermString, byte punct, @Nullable Truth truth) throws Narsese.NarseseException, InvalidTaskException {
+    public TaskBuilder(String compoundTermString, byte punct, @Nullable Truth truth) throws Narsese.NarseseException, TaskException {
         this($(compoundTermString), punct, truth);
     }
 
 
-    public TaskBuilder(Term term, byte punct, @Nullable Truth truth) throws InvalidTaskException {
+    public TaskBuilder(Term term, byte punct, @Nullable Truth truth) throws TaskException {
         this(term, punct, truth,
             /* budget: */ 0, Float.NaN);
     }
 
-    public TaskBuilder(Term term, byte punctuation /* TODO byte */, @Nullable Truth truth, float p, float q) throws InvalidTaskException {
+    public TaskBuilder(Term term, byte punctuation /* TODO byte */, @Nullable Truth truth, float p, float q) throws TaskException {
         super(0);
         pri(p);;
 
@@ -109,7 +109,7 @@ import static nars.time.Tense.ETERNAL;
                 if (punctuation == Op.BELIEF || punctuation == Op.GOAL)
                     truth = truth.neg();
             } else {
-                throw new InvalidTaskException(this, "Top-level negation");
+                throw new TaskException(this, "Top-level negation");
             }
         }
 
@@ -124,23 +124,23 @@ import static nars.time.Tense.ETERNAL;
     }
 
     @Override
-    public Task apply(NAR n) throws Concept.InvalidConceptException, InvalidTaskException {
+    public Task apply(NAR n) throws Concept.InvalidConceptException, TaskException {
 
         if (isDeleted())
-            throw new InvalidTaskException(this, "Deleted");
+            throw new TaskException(this, "Deleted");
 
         Term t = term;
 
         byte punc = punc();
         if (punc == 0)
-            throw new InvalidTaskException(this, "Unspecified punctuation");
+            throw new TaskException(this, "Unspecified punctuation");
 
         Term cntt = t.normalize();//.the();
         if (cntt == null)
-            throw new InvalidTaskException(t, "Failed normalization");
+            throw new TaskException(t, "Failed normalization");
 
         if (!Task.taskConceptTerm(cntt, punc, !isInput() && !Param.DEBUG))
-            throw new InvalidTaskException(cntt, "Invalid content");
+            throw new TaskException(cntt, "Invalid content");
 
         if (cntt != t) {
             this.term = cntt;
@@ -279,7 +279,7 @@ import static nars.time.Tense.ETERNAL;
     protected final void setTruth(@Nullable Truth t) {
 
         if (t == null && isBeliefOrGoal())
-            throw new InvalidTaskException(this, "null truth for belief or goal");
+            throw new TaskException(this, "null truth for belief or goal");
 
         if (!Objects.equals(truth, t)) {
             truth = t;

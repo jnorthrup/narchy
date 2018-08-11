@@ -12,7 +12,7 @@ import nars.control.Cause;
 import nars.control.channel.BufferedCauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.util.Conj;
 import nars.time.Tense;
@@ -306,7 +306,7 @@ public class ConjClustering extends Causable {
 
     public static class STMClusterTask extends NALTask {
 
-        STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
+        STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
             super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
         }
 

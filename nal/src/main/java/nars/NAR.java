@@ -34,7 +34,7 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.term.Conceptor;
 import nars.term.Functor;
 import nars.term.Term;
@@ -343,7 +343,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return (T) inputTask(Narsese.the().task(taskText, (this)));
     }
 
-    public List<Task> input(String text) throws NarseseException, InvalidTaskException {
+    public List<Task> input(String text) throws NarseseException, TaskException {
         List<Task> l = Narsese.the().tasks(text, this);
         switch (l.size()) {
             case 0: return List.of();
@@ -492,40 +492,40 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return want(term, trueOrFalse ? 1.0f : 0f, conf);
     }
 
-    public NAR believe(Term term, long occurrenceTime) throws InvalidTaskException {
+    public NAR believe(Term term, long occurrenceTime) throws TaskException {
         return believe(term, occurrenceTime, occurrenceTime);
     }
 
-    public NAR believe(Term term, long start, long end) throws InvalidTaskException {
+    public NAR believe(Term term, long start, long end) throws TaskException {
         input(priDefault(BELIEF), term, BELIEF, start, end, 1f, confDefault(BELIEF));
         return this;
     }
 
-    public Task believe(Term term, long start, long end, float freq, float conf) throws InvalidTaskException {
+    public Task believe(Term term, long start, long end, float freq, float conf) throws TaskException {
         return believe(priDefault(BELIEF), term, start, end, freq, conf);
     }
 
-    public Task believe(float pri, Term term, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
+    public Task believe(float pri, Term term, long occurrenceTime, float freq, float conf) throws TaskException {
         return believe(pri, term, occurrenceTime, occurrenceTime, freq, conf);
     }
 
-    public Task believe(float pri, Term term, long start, long end, float freq, float conf) throws InvalidTaskException {
+    public Task believe(float pri, Term term, long start, long end, float freq, float conf) throws TaskException {
         return input(pri, term, BELIEF, start, end, freq, conf);
     }
 
-    public Task want(float pri, Term goal, long when, float freq, float conf) throws InvalidTaskException {
+    public Task want(float pri, Term goal, long when, float freq, float conf) throws TaskException {
         return input(pri, goal, GOAL, when, when, freq, conf);
     }
 
-    public Task want(float pri, Term goal, long start, long end, float freq, float conf) throws InvalidTaskException {
+    public Task want(float pri, Term goal, long start, long end, float freq, float conf) throws TaskException {
         return input(pri, goal, GOAL, start, end, freq, conf);
     }
 
-    public Task input(float pri, Term term, byte punc, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
+    public Task input(float pri, Term term, byte punc, long occurrenceTime, float freq, float conf) throws TaskException {
         return input(pri, term, punc, occurrenceTime, occurrenceTime, freq, conf);
     }
 
-    public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws InvalidTaskException {
+    public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws TaskException {
 
         PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
         @Nullable Task z = Task.tryTask(term, punc, tr, (c, truth) -> {

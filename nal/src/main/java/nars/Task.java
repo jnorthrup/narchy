@@ -12,7 +12,7 @@ import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.SpeciaTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.*;
 import nars.term.atom.Bool;
@@ -320,7 +320,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (safe)
             return false;
         else
-            throw new InvalidTaskException(t, reason);
+            throw new TaskException(t, reason);
     }
 
     @Nullable
@@ -377,7 +377,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     @Nullable
     static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> withResult, boolean safe) {
         if ((punc == BELIEF || punc == GOAL) && tr.evi() < Float.MIN_NORMAL /*Truth.EVI_MIN*/)
-            throw new InvalidTaskException(t, "insufficient evidence");
+            throw new TaskException(t, "insufficient evidence");
 
         ObjectBooleanPair<Term> x = tryContent(t, punc, safe);
         return x != null ? withResult.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null) : null;

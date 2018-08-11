@@ -633,8 +633,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * Creates a new CustomConcurrentHashMap with strong keys and
      * values, and equality-based equivalence.
      */
+    public CustomConcurrentHashMap(int expectedSize) {
+        this(STRONG, EQUALS, STRONG, EQUALS, expectedSize);
+    }
     public CustomConcurrentHashMap() {
-        this(STRONG, EQUALS, STRONG, EQUALS, 0);
+        this(0);
     }
 
     /**

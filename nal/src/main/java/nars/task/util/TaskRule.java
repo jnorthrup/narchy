@@ -5,6 +5,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import nars.unify.Unify;
 import nars.term.util.transform.TermTransform;
 import nars.term.util.transform.VariableNormalization;
@@ -86,7 +87,7 @@ public class TaskRule extends TaskMatch {
 
             try {
                 match.unify(input, x.term(), true);
-            } catch (Term.InvalidTermException | InvalidTaskException e) {
+            } catch (TermException | TaskException e) {
                 onError(e);
             }
 

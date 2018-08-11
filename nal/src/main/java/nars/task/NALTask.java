@@ -7,7 +7,7 @@ import jcog.pri.op.PriMerge;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
-import nars.task.util.InvalidTaskException;
+import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -37,15 +37,15 @@ public class NALTask extends UnitPri implements Task {
 
     private volatile boolean cyclic;
 
-    public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
+    public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super();
 
 
         if (!term.op().taskable)
-            throw new InvalidTaskException(term, "invalid term: " + term);
+            throw new TaskException(term, "invalid term: " + term);
 
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
-            throw new InvalidTaskException(term, "null truth");
+            throw new TaskException(term, "null truth");
 
 
         if ((start == ETERNAL && end != ETERNAL) ||
@@ -199,7 +199,7 @@ public class NALTask extends UnitPri implements Task {
 
         private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
-        NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
+        NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws TaskException {
             super(term, punc, truth, creation, start, end, stamp);
         }
 

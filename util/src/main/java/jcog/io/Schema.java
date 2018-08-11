@@ -13,8 +13,10 @@ import static jcog.io.arff.ARFF.AttributeType.*;
 /**
  * specified semantics of a data record / structure
  * TODO move most of this to 'MutableSchema' implementation of interface Schema
+ * 
+ * TODO use TableSaw Table
  */
-public class Schema {
+@Deprecated public class Schema {
 
     protected final List<String> attribute_names;
     protected final Map<String, ARFF.AttributeType> attrTypes;

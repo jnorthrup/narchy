@@ -6,6 +6,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
+import nars.Param;
 import nars.subterm.Subterms;
 import nars.task.Revision;
 import nars.term.Term;
@@ -423,50 +424,26 @@ public class Conj extends ByteAnonMap {
      * ConjEvents instance is
      * now corrupt and its result via .term() should be considered final
      */
-    public boolean add(long at, Term what) {
-
-        if (at == DTERNAL) //HACK
-            throw new WTF("probably meant at=ETERNAL not DTERNAL");
+    public boolean add(long at, Term x) {
 
         if (term != null)
-            throw new RuntimeException("already term-inated to: " + term);
+            throw new RuntimeException("already concluded: " + term);
 
-        if (what instanceof Bool) {
-            //short circuits
-            if (what == True)
-                return true;
-            else if (what == False) {
-                this.term = False;
-                return false;
-            } else if (what == Null) {
-                this.term = Null;
-                return false;
-            }
-        }
-
-
-        Op o = what.op();
+        Op o = x.op();
         if (o == CONJ) {
-            int dt = what.dt();
-            if ((dt != XTERNAL)
-                    &&
-                (dt != DTERNAL ^ at == ETERNAL)
-            ) {
-                return added(what.eventsWhile((when,ww)->{
-                            if (!ww.term().equals(what)) {
-                                return add(when, ww);
-                            } else {
-                                //rare case: didnt decompose. add as event HACK
-                                return addEvent(when, ww);
-                            }
-                        }, at,
-                        at != ETERNAL, //dt != DTERNAL,
-                        at == ETERNAL, //dt == DTERNAL,
+            int cdt;
+            if (at == ETERNAL && (((cdt = x.dt())!=0) && (cdt!=DTERNAL))) {
+                //sequence or xternal embedded in eternity; add as self contained event
+            } else {
+                //potentially decomposable conjunction
+                return added(x.eventsWhile((when, ww) -> addEvent(when, ww), at,
+                        at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
+                        true,
                         false, 0));
             }
         }
 
-        return added(addEvent(at, what));
+        return added(addEvent(at, x));
     }
 
     private boolean added(boolean success) {
@@ -500,6 +477,25 @@ public class Conj extends ByteAnonMap {
     }
 
     private boolean addEvent(long at, Term x) {
+        if (Param.DEBUG) {
+            if (at == DTERNAL) //HACK
+                throw new WTF("probably meant at=ETERNAL not DTERNAL");
+        }
+        if (x instanceof Bool) {
+            //short circuits
+            if (x == True)
+                return true;
+            else if (x == False) {
+                this.term = False;
+                return false;
+            } else if (x == Null) {
+                this.term = Null;
+                return false;
+            }
+        }
+
+
+
         boolean polarity = x.op()!=NEG;
         byte id = add(polarity ? x : x.unneg());
         if (!polarity) id = (byte) -id;

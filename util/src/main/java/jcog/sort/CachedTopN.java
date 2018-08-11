@@ -2,6 +2,7 @@ package jcog.sort;
 
 import jcog.data.set.ArrayHashSet;
 import jcog.pri.NLink;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Collection;
@@ -20,7 +21,7 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
     }
 
     public CachedTopN(NLink<X>[] target, FloatFunction<X> rank) {
-        super(new TopN<>(target, NLink::pri));
+        super(new TopN<>(target, ScalarValue.AtomicScalarValue::pri));
         this.rank = rank;
     }
 

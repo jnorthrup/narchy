@@ -8,7 +8,7 @@ import nars.term.AnonTest;
 import nars.term.BoolTest;
 import nars.term.TermTest;
 import nars.term.VariableTest;
-import nars.term.compound.ConjTest;
+import nars.term.ConjTest;
 import org.pitest.classinfo.ClassInfo;
 import org.pitest.classpath.ClassloaderByteArraySource;
 import org.pitest.classpath.CodeSource;

@@ -50,13 +50,9 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     protected Map newBagMap(int volume) {
 
 
-        float loadFactor = 0.99f;
-//        if (volume < 8) {
-//            return new HashMap(0, loadFactor);
-//        } else {
-        return new UnifiedMap(0, loadFactor);
-//        }
-
+        //return new UnifiedMap(0, 0.99f);
+        return new UnifiedMap(0);
+        //return new HashMap(0);
 
     }
 

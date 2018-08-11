@@ -33,25 +33,22 @@ import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.var.NormalizedVariable;
-import nars.time.Tense;
-import nars.unify.Unify;
-import nars.util.SoftException;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.term.util.transform.VariableTransform;
+import nars.term.var.NormalizedVariable;
+import nars.time.Tense;
+import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -740,53 +737,5 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    /**
-     * Created by me on 2/26/16.
-     */
-    final class InvalidTermException extends SoftException {
-
-
-        private final Op op;
-        private final int dt;
-
-        private final Term[] args;
-
-        private final String reason;
-
-
-        public InvalidTermException(Op op, Term[] args, String reason) {
-            this(op, DTERNAL, reason, args);
-        }
-
-        public InvalidTermException(Op op, int dt, Term[] args, String reason) {
-            this(op, dt, reason, args);
-        }
-
-        public InvalidTermException(Op op, int dt, Termlike args, String reason) {
-            this(op, dt, reason, args.arrayShared());
-        }
-
-        public InvalidTermException(Op op, int dt, String reason, Term... args) {
-            this.op = op;
-            this.dt = dt;
-            this.args = args;
-            this.reason = reason;
-        }
-
-//        public InvalidTermException(String s, Compound c) {
-//            this(c.op(), c.dt(), c.subterms(), s);
-//        }
-
-        @NotNull
-        @Override
-        public String getMessage() {
-            return getClass().getSimpleName() + ": " + reason + " {" +
-                    op +
-                    ", dt=" + dt +
-                    ", args=" + Arrays.toString(args) +
-                    '}';
-        }
-
-    }
 }
 

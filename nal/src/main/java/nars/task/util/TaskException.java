@@ -6,14 +6,14 @@ import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by me on 10/15/16.
+ * reports problems when constructing a Task
  */
-public final class InvalidTaskException extends SoftException {
+public final class TaskException extends SoftException {
 
     private final Termed task;
 
 
-    public InvalidTaskException(Termed t, String message) {
+    public TaskException(Termed t, String message) {
         super(message);
         this.task = t;
         if (t instanceof Task)

@@ -53,6 +53,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
     compile group: 'org.apache.commons', name: 'commons-vfs2', version: '2.2'
 
+    // https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-core
+    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.24.9'
+
 //// https://mvnrepository.com/artifact/com.squareup/javapoet
 //    compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
 
