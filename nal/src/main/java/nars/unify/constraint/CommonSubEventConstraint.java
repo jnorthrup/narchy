@@ -1,8 +1,10 @@
 package nars.unify.constraint;
 
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -24,13 +26,9 @@ public class CommonSubEventConstraint extends RelationConstraint {
         if (xx.op()!=CONJ || yy.op()!=CONJ)
             return true;
 
-        
-        int xxs = xx.subterms().structure();
-        int yys = yy.subterms().structure();
-        if (!(Op.hasAll(xxs, yys) || Op.hasAll(yys, xxs)))
+        if (!Term.commonStructure(xx.subterms(), yy.subterms()))
             return true;
 
-        
         return !haveCommonEvents(xx, yy);
     }
 
@@ -39,30 +37,30 @@ public class CommonSubEventConstraint extends RelationConstraint {
     }
 
     static boolean _haveCommonEvents(Term xx, Term yy) {
-
-        Set<LongObjectPair<Term>> xe = new UnifiedSet<>(4);
-
-        LongObjectPredicate<Term> adder = (when, what) -> {
-            xe.add(PrimitiveTuples.pair(when, what));
-            return true;
-        };
-        scanCommonEvents(xx, adder);
-
-        final boolean[] common = {false};
-        LongObjectPredicate<Term> remover = (when, what) -> {
-            if (xe.remove(PrimitiveTuples.pair(when, what))) {
-                common[0] = true;
-                return false; 
+        if (Op.concurrent(xx.dt()) && Op.concurrent(yy.dt())) {
+            Subterms xxx = xx.subterms();
+            if (xx.subs() < 3) {
+                return yy.subterms().OR(xxx::contains);
+            } else {
+                MutableSet<Term> xs = xxx.toSet();
+                return yy.subterms().OR(xs::contains);
             }
-            return true; 
-        };
+        } else {
 
-        scanCommonEvents(yy, remover);
+            Set<LongObjectPair<Term>> xe = new UnifiedSet<>(4);
 
-        return common[0];
+            LongObjectPredicate<Term> adder = (when, what) -> {
+                xe.add(PrimitiveTuples.pair(when, what));
+                return true;
+            };
+            scan(xx, adder);
+
+            return !scan(yy, (when, what) -> !xe.remove(PrimitiveTuples.pair(when, what)));
+        }
+
     }
 
-    private static boolean scanCommonEvents(Term xx, LongObjectPredicate<Term> adder) {
+    private static boolean scan(Term xx, LongObjectPredicate<Term> adder) {
         return xx.eventsWhile(adder, xx.dt() == DTERNAL ? ETERNAL : 0, true, xx.dt()==DTERNAL, false, 0);
     }
 

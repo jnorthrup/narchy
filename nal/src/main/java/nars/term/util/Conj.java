@@ -18,6 +18,7 @@ import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +57,17 @@ public class Conj extends ByteAnonMap {
 
     public Conj() {
         this(4);
+    }
+
+
+    /** but events are unique */
+    public static Conj shareSameTermMap(Conj x) {
+        return new Conj(x.termToId, x.idToTerm);
+    }
+
+    public Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
+        super(x,y);
+        event = new LongObjectHashMap<>();
     }
 
     public Conj(int n) {
@@ -176,6 +188,17 @@ public class Conj extends ByteAnonMap {
         Conj x = new Conj();
         x.addAuto(t);
         return x;
+    }
+
+    public static Term firstEventTerm(Term x) {
+        if (x.op()!=CONJ)
+            return x;
+        final Term[] w = new Term[1];
+        x.eventsWhile((when, what)->{
+            w[0] = what;
+            return false;
+        }, 0, true, false, false, 0);
+        return w[0];
     }
 
     boolean addAuto(Term t) {
@@ -399,25 +422,29 @@ public class Conj extends ByteAnonMap {
         term = null;
     }
 
-//    static int conflictOrSame(Object e, int id) {
-//        if (e == null) {
-//
-//        } else if (e instanceof RoaringBitmap) {
-//            RoaringBitmap r = (RoaringBitmap) e;
-//            if (r.contains(-id))
-//                return -1;
-//            else if (r.contains(id)) {
-//                return +1;
-//            }
-//        } else if (e instanceof byte[]) {
-//            byte[] r = (byte[]) e;
-//            if (indexOfZeroTerminated(r, (byte) -id) != -1)
-//                return -1;
-//            else if (indexOfZeroTerminated(r, (byte) id) != -1)
-//                return +1;
-//        }
-//        return 0;
-//    }
+    public int conflictOrSame(long at, byte what) {
+        return conflictOrSame( event.get(at), what);
+    }
+
+    static int conflictOrSame(Object e, byte id) {
+        if (e == null) {
+
+        } else if (e instanceof RoaringBitmap) {
+            RoaringBitmap r = (RoaringBitmap) e;
+            if (r.contains(-id))
+                return -1;
+            else if (r.contains(id)) {
+                return +1;
+            }
+        } else if (e instanceof byte[]) {
+            byte[] r = (byte[]) e;
+            if (indexOfZeroTerminated(r, (byte) -id) != -1)
+                return -1;
+            else if (indexOfZeroTerminated(r, id) != -1)
+                return +1;
+        }
+        return 0;
+    }
 
     /**
      * returns false if contradiction occurred, in which case this
@@ -481,6 +508,7 @@ public class Conj extends ByteAnonMap {
             if (at == DTERNAL) //HACK
                 throw new WTF("probably meant at=ETERNAL not DTERNAL");
         }
+
         if (x instanceof Bool) {
             //short circuits
             if (x == True)
@@ -494,12 +522,27 @@ public class Conj extends ByteAnonMap {
             }
         }
 
+        boolean polarity;
+        if (x.op()==NEG) {
+            polarity = false;
+            Term ux = x.unneg();
+            if (ux.op() == CONJ && ux.dt() == DTERNAL && at != ETERNAL) {
+                //parallelize
+                x = ux.dt(0).neg();
+            }
+        } else {
+            polarity = true;
+        }
 
 
-        boolean polarity = x.op()!=NEG;
         byte id = add(polarity ? x : x.unneg());
         if (!polarity) id = (byte) -id;
 
+        switch (addFilter(at, x, id)) {
+            case +1: return true; //ignore and continue
+            case 0: break; //continue
+            case -1: return false; //reject and fail
+        }
 
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
         if (events instanceof byte[]) {
@@ -579,6 +622,18 @@ public class Conj extends ByteAnonMap {
         }
     }
 
+    /** allows subclass implement different behavior.
+     *
+     * return:
+     *   -1: ignore and fail the conjunction
+     *   0: default, continue
+     *   +1: ignore and continue
+     *
+     * */
+    protected int addFilter(long at, Term x, byte id) {
+        return 0;
+    }
+
 
     /**
      * merge an incoming term with a disjunctive sub-expression (occurring at same event time) reductions applied:
@@ -601,10 +656,7 @@ public class Conj extends ByteAnonMap {
                     return false;
                 }
             }
-            if (!eternal && when > 0)
-                return false; //done
-
-            return true;
+            return eternal || when <= 0;
         }, 0, true, true, false, 0);
 
         if (result[0] == False) {
@@ -803,16 +855,20 @@ public class Conj extends ByteAnonMap {
 
     public boolean remove(Term t, long at) {
 
+        byte i = get(t);
+        return remove(at, i);
+    }
+
+    public boolean remove(long at, byte what) {
+        if (what == Byte.MIN_VALUE)
+            return false;
+
         Object o = event.get(at);
         if (o == null)
             return false;
 
 
-        int i = get(t);
-        if (i == Byte.MIN_VALUE)
-            return false;
-
-        if (removeFromEvent(at, o, true, i) != 0) {
+        if (removeFromEvent(at, o, true, what) != 0) {
             term = null;
             return true;
         }

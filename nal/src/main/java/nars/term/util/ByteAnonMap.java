@@ -13,9 +13,14 @@ public class ByteAnonMap {
     /** id -> term */
     protected final FasterList<Term> idToTerm;
 
+    public ByteAnonMap(ObjectByteHashMap<Term> termToId, FasterList<Term> idtoTerm) {
+        this.termToId = termToId;
+        this.idToTerm = idtoTerm;
+    }
+
     public ByteAnonMap(int estSize) {
-        termToId = new ObjectByteHashMap<>(estSize);
-        idToTerm = new FasterList(estSize);
+        this(new ObjectByteHashMap<>(estSize),new FasterList(estSize));
+
     }
 
     public void clear() {

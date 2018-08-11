@@ -138,7 +138,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
         //these must be applied before possible merge on input to derivedTask bag
         t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
-        if (d.concSingle)
+        if (d.concSingle || d.overlapDouble)
             t.setCyclic(true);
         t.pri(priority);
 

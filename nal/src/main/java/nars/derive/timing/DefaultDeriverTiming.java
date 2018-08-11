@@ -26,6 +26,9 @@ public class DefaultDeriverTiming implements BiFunction<Task, Term, long[]> {
 
     @Override
     public long[] apply(Task task, Term term) {
+        if (task.isEternal())
+            return new long[] { ETERNAL, ETERNAL };
+
         long[] tt;
         switch (rng.nextInt(4)) {
             case 0:

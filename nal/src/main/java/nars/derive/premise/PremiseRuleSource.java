@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
-import static nars.subterm.util.Contains.*;
+import static nars.subterm.util.SubtermCondition.*;
 import static nars.unify.op.TaskPunctuation.Belief;
 import static nars.unify.op.TaskPunctuation.Goal;
 

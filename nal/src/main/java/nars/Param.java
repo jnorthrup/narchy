@@ -101,9 +101,9 @@ public abstract class Param {
 
 
     public static final PriMerge termlinkMerge =
-            PriMerge.plus;
+            //PriMerge.plus;
             //PriMerge.max;
-            //PriMerge.or;
+            PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.avgGeoFast;

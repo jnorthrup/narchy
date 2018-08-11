@@ -80,5 +80,8 @@ class MatchConstraintTest {
                 .mustNotOutput(CYCLES, "(((i)|(L))-->happy)", BELIEF, 1f, 1f, 0.81f, 0.81f, ETERNAL);
     }
 
+//    @Test public void testExtractConstantPath() {
+//        $constantPath
+//    }
 
 }

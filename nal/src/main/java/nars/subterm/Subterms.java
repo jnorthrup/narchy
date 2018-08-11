@@ -329,15 +329,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /*@NotNull*/
-    default boolean recurseTermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean addOrRemoved) {
+    default boolean recurseTermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved) {
         final boolean[] r = {false};
         Predicate<Term> selector = s -> {
 
-            if (!addOrRemoved && r[0])
+            if (!untilAddedORwhileNotRemoved && r[0])
                 return false;
 
-            if (inStructure == -1 || ((s.structure() & inStructure) > 0)) {
-                r[0] |= (addOrRemoved) ? t.add(s) : t.remove(s);
+            if (s.hasAny(inStructure)) {
+                r[0] |= (untilAddedORwhileNotRemoved) ? t.add(s) : t.remove(s);
             }
 
             return true;

@@ -713,8 +713,8 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testReducibleImplFactored() {
-        assertEq("((x&|y)=|>z)", "((y &| x) =|> (y &| z))");
-        assertEq("((x&|y)==>z)", "((y &| x) ==> (y &| z))");
+        assertEq("((x&|y)=|>z)", "((x &| y) =|> (y &| z))");
+        assertEq("((x&|y)=|>z)", "((x &| y) ==> (y &| z))");
     }
 
     @Test

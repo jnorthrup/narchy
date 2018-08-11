@@ -11,14 +11,13 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 900;
+    private final int cycles = 800;
 
     @Override
     protected NAR nar() {
@@ -299,14 +298,7 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test
-    void testDisjStructuralDeductionQuestion() {
-        test
-                .input("a?")
-                .believe("(||, a, b)")
-                .mustOutput(cycles, "b", QUESTION)
-        ;
-    }
+
 
 
     @Test
@@ -438,7 +430,24 @@ public class NAL5Test extends NALTest {
 
     }
 
+    @Test
+    void conditional_abduction_viaMultiConditionalSyllogismSimple() {
 
+        test
+            .believe("(x ==> y)")
+            .believe("((z && x) ==> y)")
+            .mustBelieve(cycles, "z", 1.00f, 0.45f /*0.4f*/);
+
+    }
+    @Test
+    void conditional_abduction_viaMultiConditionalSyllogismSimple2() {
+
+        test
+                .believe("((&&,x1,x2) ==> y)")
+                .believe("((&&,x1,x2,z) ==> y)")
+                .mustBelieve(cycles, "z", 1.00f, 0.45f /*0.4f*/);
+
+    }
     @Test
     void conditional_abduction_viaMultiConditionalSyllogism() {
 
@@ -447,21 +456,10 @@ public class NAL5Test extends NALTest {
 
         tester.believe("((robin-->[flying]) ==> bird:robin)");
         tester.believe("((swimmer:robin && (robin-->[flying])) ==> bird:robin)");
-        tester.mustBelieve(cycles * 4, "swimmer:robin", 1.00f, 0.45f /*0.4f*/);
-
-    }
-
-    @Test
-    void conditional_abduction_viaMultiConditionalSyllogismEasier() {
-
-
-        TestNAR tester = test;
-
-        tester.believe("(flying:robin ==> bird:robin)");
-        tester.believe("((swimmer:robin && flying:robin) ==> bird:robin)");
         tester.mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f /*0.4f*/);
 
     }
+
 
     @Test
     void conditional_abduction2_viaMultiConditionalSyllogism() {
@@ -469,12 +467,12 @@ public class NAL5Test extends NALTest {
 
         test
 
-                .believe("<(&&,<robin --> [withWings]>,<robin --> [chirping]>) ==> (robin-->bird)>")
-                .believe("<(&&,<robin --> [flying]>,<robin --> [withWings]>,<robin --> [chirping]>) ==> (robin-->bird)>")
-                .mustBelieve(cycles, "<robin --> [flying]>",
-                        1.00f, 0.45f
-                )
-                .mustNotOutput(cycles, "<robin --> [flying]>", BELIEF, 0f, 0.5f, 0, 1, ETERNAL);
+            .believe("<(&&,<robin --> [withWings]>,<robin --> [chirping]>) ==> (robin-->bird)>")
+            .believe("<(&&,<robin --> [flying]>,<robin --> [withWings]>,<robin --> [chirping]>) ==> (robin-->bird)>")
+            .mustBelieve(cycles, "<robin --> [flying]>",
+                    1.00f, 0.45f
+            )
+            .mustNotOutput(cycles, "<robin --> [flying]>", BELIEF, 0f, 0.5f, 0, 1, ETERNAL);
     }
 
 
@@ -534,7 +532,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    void conditional_induction() {
+    void conditional_induction_described() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<robin --> [chirping]>,<robin --> [flying]>) ==> (robin-->bird)>");
@@ -542,6 +540,20 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "<(&&,<robin --> [chirping]>,<robin --> [withBeak]>) ==> (robin-->bird)>",
                 1.00f, 0.45f);
 
+    }
+    @Test
+    void conditional_induction() {
+        test
+        .believe("((x&&y) ==> z)")
+        .believe("(y ==> a)", 0.9f, 0.9f)
+        .mustBelieve(cycles, "((&&,x,a) ==> z)", 1.00f, 0.45f);
+    }
+    @Test
+    void conditional_abduction() {
+        test
+        .believe("((x && y) ==> z)")
+        .believe("(y ==> z)")
+        .mustBelieve(cycles, "x", 1.00f, 0.45f /*0.4f*/);
     }
 
     @Test

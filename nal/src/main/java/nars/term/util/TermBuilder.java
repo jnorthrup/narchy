@@ -1,7 +1,5 @@
 package nars.term.util;
 
-import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
 import nars.Op;
 import nars.Param;
 import nars.op.mental.AliasConcept;
@@ -21,21 +19,16 @@ import nars.term.util.transform.Retemporalize;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.ListIterator;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Terms.sorted;
 import static nars.time.Tense.*;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * interface for term and subterm builders
@@ -241,117 +234,171 @@ public abstract class TermBuilder {
 
             if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
-                //TODO use some variation of Conj class to determine subj/pred contradiction
-                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
-                subject.eventsWhile((w, t) -> {
-                    se.add(PrimitiveTuples.pair(w, t));
-                    return true;
-                }, 0, true, true, false, 0);
+                if (dt==DTERNAL && subject.dt()!=DTERNAL) {
+                    //parallelize the impl if the subject is a sequence
+                    dt = 0;
+                }
 
-                FasterList<LongObjectPair<Term>> pe = new FasterList(4);
-                int pre = subject.dtRange();
-                boolean dtNotDternal = dt != DTERNAL;
-                int edt = pre + (dtNotDternal ? dt : 0);
+//                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
+//                subject.eventsWhile((w, t) -> {
+//                    se.add(PrimitiveTuples.pair(w, t));
+//                    return true;
+//                }, 0, true, true, false, 0);
+                Conj se = new Conj();
+                se.add(dt != DTERNAL ? 0 : ETERNAL, subject);
 
-                final boolean[] peChange = {false};
-
-
-                boolean contradiction = !predicate.eventsWhile((w, t) -> {
-                    LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
-                    if (se.contains(x)) {
-
-                        peChange[0] = true;
-                    } else if (se.contains(pair(w, t.neg()))) {
-                        return false;
-                    } else {
-                        pe.add(x);
+                final boolean[] subjChange = {false}, predChange = {false};
+                Conj pe = new Conj(se.termToId, se.idToTerm) {  //share same term map
+                    @Override
+                    protected int addFilter(long at, Term x, byte id) {
+                        int f = se.conflictOrSame(at, id);
+                        if (f == +1) {
+                            predChange[0] = true;
+                            return +1; //ignore this term (dont repeat in the predicate)
+                        }
+                        return f;
                     }
-                    return true;
-                }, edt, true, true, false, 0);
-
-                if (contradiction)
+                };
+                if (!pe.add(dt!=DTERNAL ? dt + subject.dtRange() : ETERNAL, predicate))
                     return False;
 
+                if (predChange[0]) {
+                    Term newPred = pe.term();
+                    if (newPred instanceof Bool)
+                        return newPred;
 
-                if ((dt == DTERNAL || dt == 0)) {
-                    for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
-                        LongObjectPair<Term> pex = pi.next();
-                        Term pext = pex.getTwo();
-                        if (pext.op() == CONJ) {
-                            int pdt = pext.dt();
-                            if (pdt == DTERNAL || pdt == 0) {
-                                long at = pex.getOne();
-
-                                RoaringBitmap pextRemovals = null;
-                                Subterms subPexts = pext.subterms();
-                                int subPextsN = subPexts.subs();
-
-                                for (LongObjectPair<Term> sse: se) {
-                                    if (sse.getOne() == at) {
-
-
-                                        Term sset = sse.getTwo();
-
-                                        for (int i = 0; i < subPextsN; i++) {
-                                            Term subPext = subPexts.sub(i);
-                                            Term merge = CONJ.the(dt, new Term[]{sset, subPext});
-                                            if (merge == Null) return Null;
-                                            else if (merge == False) {
-
-                                                return False;
-                                            } else if (merge.equals(sset)) {
-
-                                                if (pextRemovals == null)
-                                                    pextRemovals = new RoaringBitmap();
-                                                pextRemovals.add(i);
-                                            } else {
-
-                                            }
-                                        }
-                                    }
-                                }
-                                if (pextRemovals != null) {
-                                    if (pextRemovals.getCardinality() == subPextsN) {
-
-                                        pi.remove();
-                                    } else {
-                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
-                                    }
-                                    peChange[0] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                if (pe.isEmpty())
-                    return True;
-
-
-                if (peChange[0]) {
-
-                    int pdt = predicate.dt();
-                    Term newPredicate;
-                    if (pe.size() == 1) {
-                        newPredicate = pe.getOnly().getTwo();
-                    } else if (pdt == DTERNAL || pdt == 0) {
-
-                        long cdt = pdt == DTERNAL ? ETERNAL : 0;
-
-                        Conj c = new Conj();
-                        for (LongObjectPair<Term> aPe: pe) {
-                            if (!c.add(cdt, aPe.getTwo()))
-                                break;
-                        }
-                        newPredicate = c.term();
-                    } else {
-                        newPredicate = Conj.conj(pe);
+                    if (dt!=DTERNAL) {
+                        Term f = Conj.firstEventTerm(predicate);
+                        int shift = predicate.subTimeOnly(f);
+                        if (shift == DTERNAL)
+                            return Null; //??
+                        dt += shift;
                     }
 
-                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
-                    return IMPL.the(ndt, subject, newPredicate);
+                    predicate = newPred;
                 }
+                if (subjChange[0]) {
+                    Term newSubj = se.term();
+                    if (newSubj instanceof Bool) {
+                        if (newSubj == True)
+                            return predicate;
+                    }
+                    if (dt!=DTERNAL) {
+                        //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
+                        //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
+                        int dr = newSubj.dtRange() - subject.dtRange();
+                        dt += dr;
+                    }
+                    subject = newSubj;
+                }
+
+//                int pre = subject.dtRange();
+//                boolean dtNotDternal = dt != DTERNAL;
+//                int edt = pre + (dtNotDternal ? dt : 0);
+//
+//                final boolean[] peChange = {false};
+//
+//
+//                boolean contradiction = !predicate.eventsWhile((w, t) -> {
+//                    LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
+//                    if (se.contains(x)) {
+//
+//                        peChange[0] = true;
+//                    } else if (se.contains(pair(w, t.neg()))) {
+//                        return false;
+//                    } else {
+//                        pe.add(x);
+//                    }
+//                    return true;
+//                }, edt, true, true, false, 0);
+//
+//                if (contradiction)
+//                    return False;
+//
+//
+//                if ((dt == DTERNAL || dt == 0)) {
+//                    for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
+//                        LongObjectPair<Term> pex = pi.next();
+//                        Term pext = pex.getTwo();
+//                        if (pext.op() == CONJ) {
+//                            int pdt = pext.dt();
+//                            if (pdt == DTERNAL || pdt == 0) {
+//                                long at = pex.getOne();
+//
+//                                RoaringBitmap pextRemovals = null;
+//                                Subterms subPexts = pext.subterms();
+//                                int subPextsN = subPexts.subs();
+//
+//                                for (LongObjectPair<Term> sse: se) {
+//                                    if (sse.getOne() == at) {
+//
+//
+//                                        Term sset = sse.getTwo();
+//
+//                                        for (int i = 0; i < subPextsN; i++) {
+//                                            Term subPext = subPexts.sub(i);
+//                                            Term merge = CONJ.the(dt, new Term[]{sset, subPext});
+//                                            if (merge == Null) return Null;
+//                                            else if (merge == False) {
+//
+//                                                return False;
+//                                            } else if (merge.equals(sset)) {
+//
+//                                                if (pextRemovals == null)
+//                                                    pextRemovals = new RoaringBitmap();
+//                                                pextRemovals.add(i);
+//                                            } else {
+//
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                                if (pextRemovals != null) {
+//                                    if (pextRemovals.getCardinality() == subPextsN) {
+//
+//                                        pi.remove();
+//                                    } else {
+//                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
+//                                    }
+//                                    peChange[0] = true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//
+//
+//                if (pe.isEmpty())
+//                    return True;
+//
+//
+//                if (peChange[0]) {
+//
+//                    int pdt = predicate.dt();
+//                    Term newPredicate;
+//                    if (pe.size() == 1) {
+//                        newPredicate = pe.getOnly().getTwo();
+//                    } else if (pdt == DTERNAL || pdt == 0) {
+//
+//                        long cdt = pdt == DTERNAL ? ETERNAL : 0;
+//
+//                        Conj c = new Conj();
+//                        for (LongObjectPair<Term> aPe: pe) {
+//                            if (!c.add(cdt, aPe.getTwo()))
+//                                break;
+//                        }
+//                        newPredicate = c.term();
+//                    } else {
+//                        newPredicate = Conj.conj(pe);
+//                    }
+//
+//                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
+                    //return IMPL.the(dt, subject, predicate);
+                boolean neg = predicate.op() == NEG;
+                if (neg) predicate = predicate.unneg();
+
+                return Op.compoundExact(IMPL, dt, subject, predicate).negIf(neg);
+
 
 
             }

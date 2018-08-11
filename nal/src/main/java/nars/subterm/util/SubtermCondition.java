@@ -10,7 +10,7 @@ import static nars.Op.CONJ;
 /**
  * tests various potential relations between a containing term and a subterm
  */
-public enum Contains implements BiPredicate<Term, Term> {
+public enum SubtermCondition implements BiPredicate<Term, Term> {
 
 
     Subterm() {
@@ -37,6 +37,7 @@ public enum Contains implements BiPredicate<Term, Term> {
     },
 
     Event() {
+
         @Override
         public boolean test(Term container, Term x, boolean testNegAlso) {
             if (container.op() != CONJ)
@@ -63,7 +64,7 @@ public enum Contains implements BiPredicate<Term, Term> {
             if (container.contains(x))
                 return true;
 
-            
+
             return container.subterms().hasAny(CONJ) && !container.eventsWhile((when, what) ->
                     !x.equals(what),
         0, true, true, true, 0);
@@ -122,4 +123,5 @@ public enum Contains implements BiPredicate<Term, Term> {
         return test( container, contentP) ||
                 (testNegAlso && test( container,  contentP.neg()));
     }
+
 }
