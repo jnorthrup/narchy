@@ -55,7 +55,7 @@ public abstract class NALTest {
 
         try {
 
-            Param.DEBUG = false;
+
 
 
             t.test.test();

@@ -25,12 +25,14 @@ public interface BeliefTable extends TaskTable {
     static float eternalTaskValue(Task eternal) {
         return eternal.evi();
     }
-    
+
     static float eternalTaskValueWithOriginality(Task eternal) {
         return eternalTaskValue(eternal) * eternal.originality();
     }
 
-    /** set the capacity */
+    /**
+     * set the capacity
+     */
     void capacity(int eternals, int temporals);
 
     /**
@@ -55,7 +57,7 @@ public interface BeliefTable extends TaskTable {
     /**
      * estimates the current truth value from the top task, projected to the specified 'when' time;
      * returns null if no evidence is available
-     *
+     * <p>
      * if the term is temporal, template specifies the specifically temporalized term to seek
      * if template is null then the concept() form of the task's term is
      */
@@ -70,7 +72,7 @@ public interface BeliefTable extends TaskTable {
     }
 
     default void print(/*@NotNull*/ PrintStream out) {
-        this.forEachTask(t -> out.println(t + " " + Arrays.toString(t.stamp()))); 
+        this.forEachTask(t -> out.println(t + " " + Arrays.toString(t.stamp())));
     }
 
     default void print() {
@@ -161,18 +163,20 @@ public interface BeliefTable extends TaskTable {
 
     };
 
-    /** matches, and projects to the specified time-range if necessary */
+    /**
+     * matches, and projects to the specified time-range if necessary
+     */
     default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
         Task m = match(start, end, template, filter, nar);
         if (m == null)
             return null;
-        if (m.containedBy(start,end))
+        if (m.containedBy(start, end))
             return m;
         Task t = Task.project(false, m, start, end, nar, false);
         if (t instanceof TaskProxy) {
             //dither truth
             @Nullable PreciseTruth tt = t.truth().dither(nar);
-            if (tt!=null) {
+            if (tt != null) {
                 t = Task.clone(t, t.term(), tt, t.punc());
             } else {
                 t = null;
@@ -180,15 +184,6 @@ public interface BeliefTable extends TaskTable {
         }
         return t;
     }
-
-    default Task answer(Task r, NAR n) {
-        return answer(r.start(), r.end(), r.term(), null, n);
-    }
-
-
-
-
-
 
 
 
@@ -383,11 +378,6 @@ public interface BeliefTable extends TaskTable {
     /*public float rank(final Task s, final long now) {
         return rankBeliefConfidenceTime(s, now);
     }*/
-
-
-
-
-
 
 
 }

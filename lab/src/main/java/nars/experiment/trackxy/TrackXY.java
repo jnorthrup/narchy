@@ -122,7 +122,7 @@ public class TrackXY extends NAgentX {
             NAR n = nb.get();
 
             n.dtDither.set(dur);
-            n.timeFocus.set(1);
+
 
 //        n.goalPriDefault.set(0.99f);
 //        n.beliefPriDefault.set(0.01f);
@@ -175,7 +175,7 @@ public class TrackXY extends NAgentX {
 //            ), 400, 300);
 
                 //n.log();
-                Param.DEBUG = true;
+
                 n.onTask(tt -> {
                     if (tt instanceof DerivedTask && tt.isGoal()) {
                         System.out.println(tt.proof());

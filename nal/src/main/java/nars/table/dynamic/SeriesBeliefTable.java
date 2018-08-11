@@ -5,10 +5,8 @@ import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
-import nars.control.proto.TaskLinkTask;
-import nars.control.proto.TaskLinkTaskAndEmit;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.ITask;
@@ -126,6 +124,8 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
     public void add(Remember r, NAR n) {
 
         Task x = r.input;
+        assert(!(x instanceof SeriesTask));
+
         if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
             Task y = absorbNonSignal(x);
             if (y == null) {
@@ -204,16 +204,32 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
             super(term, punc, value, start, start, end, stamp);
         }
 
-        @Override
-        public ITask inputSubTask(Task ignored, NAR n) {
-            throw new UnsupportedOperationException();
-        }
+//        @Override
+//        public ITask inputSubTask(Task ignored, NAR n) {
+//            throw new UnsupportedOperationException("use input(concept) for internal storage procedure");
+//        }
 
         /**
          * passive insertion subtask only
          */
-        public TaskLinkTask input(Concept concept) {
-            return new TaskLinkTaskAndEmit(this, priElseZero(), concept);
+        @Deprecated public ITask input(TaskConcept concept) {
+            //return new TaskLinkTaskAndEmit(this, priElseZero(), concept);
+            return new SeriesRemember(this, concept);
+        }
+
+    }
+
+    protected static class SeriesRemember extends Remember {
+
+        public SeriesRemember(SeriesTask task, TaskConcept concept) {
+            super(task, concept);
+            remember(task);
+        }
+
+        @Override
+        protected void input(NAR n) {
+            //DONT. just go straight to postprocessing
         }
     }
+
 }

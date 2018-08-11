@@ -1120,7 +1120,7 @@ public class Conj extends ByteAnonMap {
                 if (x == 0)
                     break;
                 Term s = sub(x, negatives, validator);
-                assert (!(s instanceof Bool));
+                //assert (!(s instanceof Bool));
                 t.add(s);
             }
         } else {

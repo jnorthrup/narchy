@@ -9,13 +9,10 @@ import nars.table.temporal.TemporalBeliefTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.polation.TruthIntegration;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static nars.time.Tense.ETERNAL;
 
 
 /**
@@ -33,22 +30,21 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
 
-
     @Override
     public void add(Remember r, NAR n) {
         table(r.isEternal()).add(r, n);
 
         if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
             if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&
-                    temporal.size()>=temporal.capacity()-1 /* some tolerance for full test */) {
+                    temporal.size() >= temporal.capacity() - 1 /* some tolerance for full test */) {
 
-                r.forgotten.forEach(t ->{
-                   if (!(t instanceof SignalTask) && !t.isEternal()) {
-                       //TODO maybe sort by evi decreasing
-                       Task e = eternal.eternalize(t, temporal.capacity(), temporal.tableDur(), n);
-                       if (e!=null)
+                r.forgotten.forEach(t -> {
+                    if (!(t instanceof SignalTask) && !t.isEternal()) {
+                        //TODO maybe sort by evi decreasing
+                        Task e = eternal.eternalize(t, temporal.capacity(), temporal.tableDur(), n);
+                        if (e != null)
                             eternal.add(r, n, e);
-                   }
+                    }
                 });
             }
         }
@@ -81,26 +77,16 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
 
-
-
-
-
-
-
-
-
-
     @Override
     public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
         if (includeEternal) {
             eternal.forEachTask(x);
         }
-        temporal.whileEach(minT, maxT, (t)-> { x.accept(t); return true; });
+        temporal.whileEach(minT, maxT, (t) -> {
+            x.accept(t);
+            return true;
+        });
     }
-
-
-
-
 
 
     @Override
@@ -120,13 +106,13 @@ public class DefaultBeliefTable implements BeliefTable {
 
     @Override
     public int size() {
-        return eternal.size()  + temporal.size();
+        return eternal.size() + temporal.size();
     }
 
     @Override
     @Deprecated
     public int capacity() {
-        
+
         return eternal.capacity() + temporal.capacity();
     }
 
@@ -136,21 +122,21 @@ public class DefaultBeliefTable implements BeliefTable {
         eternal.setCapacity(eternals);
     }
 
-    @Override
-    public Task sample(long start, long end, Term template, NAR nar) {
-        Task ete = eternal.sample(start, end, template, nar);
-        if (ete!=null && start==ETERNAL)
-            return ete; //eternal sought
-
-        Task tmp = temporal.sample(start, end, template, nar);
-        if (ete == null || tmp!=null && tmp.contains(start,end))
-            return tmp; //interval found
-
-        if (tmp == null) return ete;
-        float e = TruthIntegration.eviInteg(ete,start,end,1);
-        float t = TruthIntegration.eviInteg(tmp,start,end,1);
-        return nar.random().nextFloat() < (t/Math.max(Float.MIN_NORMAL, (e+t))) ? tmp : ete;
-    }
+//    @Override
+//    public Task sample(long start, long end, Term template, NAR nar) {
+//        Task ete = eternal.sample(start, end, template, nar);
+//        if (ete != null && start == ETERNAL)
+//            return ete; //eternal sought
+//
+//        Task tmp = temporal.sample(start, end, template, nar);
+//        if (ete == null || tmp != null && tmp.contains(start, end))
+//            return tmp; //interval found
+//
+//        if (tmp == null) return ete;
+//        float e = TruthIntegration.eviInteg(ete, start, end, 1);
+//        float t = TruthIntegration.eviInteg(tmp, start, end, 1);
+//        return nar.random().nextFloat() < (t / Math.max(Float.MIN_NORMAL, (e + t))) ? tmp : ete;
+//    }
 
     @Override
     public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
@@ -158,7 +144,7 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
     public final TaskTable table(boolean eternalOrTemporal) {
-         return eternalOrTemporal ? eternal : temporal;
+        return eternalOrTemporal ? eternal : temporal;
     }
 
 }

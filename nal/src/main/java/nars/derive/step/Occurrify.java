@@ -376,7 +376,9 @@ public class Occurrify extends TimeGraph {
         return ss;
     }
 
-    /** prefer results which are within the model's range of known absolute timepoints, not outside of it */
+    /**
+     * prefer results which are within the model's range of known absolute timepoints, not outside of it
+     */
     private int filterOOB(ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss <= 1)
@@ -387,13 +389,13 @@ public class Occurrify extends TimeGraph {
         for (Event ee : byTerm.values()) {
             if (!(ee instanceof Absolute))
                 continue;
-            Absolute a = (Absolute)ee;
+            Absolute a = (Absolute) ee;
             long s = a.start();
             if (s == ETERNAL)
                 continue; //skip eternal
             long e = a.end();
-            min=Math.min(min, s);
-            max=Math.max(max, e);
+            min = Math.min(min, s);
+            max = Math.max(max, e);
         }
         if (min == Long.MAX_VALUE) return ss; //nothing could change
 
@@ -416,7 +418,7 @@ public class Occurrify extends TimeGraph {
         }
 
         if (!outside.isEmpty() && (!intersect.isEmpty() || !contained.isEmpty())) {
-            outside.forEach((int o)->solutions.list.remove(o)); //TODO solutions.remove(int)
+            outside.forEach((int o) -> solutions.list.remove(o)); //TODO solutions.remove(int)
             return solutions.size();
         }
         //TODO remove intersects?
@@ -521,32 +523,32 @@ public class Occurrify extends TimeGraph {
             }
         },
 
-        /**
-         * happens in current present focus. no projection
-         */
-        TaskInstant() {
-            @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
-
-                Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(x));
-                if (p != null) {
-
-                    //immediate future, dont interfere with present
-                    int durs = 1;
-                    //2;
-                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur * durs);
-
-                    System.arraycopy(when, 0, p.getTwo(), 0, 2);
-                }
-                return p;
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return occ(d.task);
-            }
-
-        },
+//        /**
+//         * happens in current present focus. no projection
+//         */
+//        TaskInstant() {
+//            @Override
+//            public Pair<Term, long[]> solve(Derivation d, Term x) {
+//
+//                Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(x));
+//                if (p != null) {
+//
+//                    //immediate future, dont interfere with present
+//                    int durs = 1;
+//                    //2;
+//                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur * durs);
+//
+//                    System.arraycopy(when, 0, p.getTwo(), 0, 2);
+//                }
+//                return p;
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return occ(d.task);
+//            }
+//
+//        },
 
 
         TaskPlusBeliefDT() {
@@ -582,7 +584,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x,false));
+                return solveDT(d, x, d.occ.reset(x, false));
             }
 
             @Override
@@ -603,7 +605,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x,false));
+                return solveDT(d, x, d.occ.reset(x, false));
             }
 
             @Override
@@ -624,7 +626,7 @@ public class Occurrify extends TimeGraph {
         Relative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveOccDT(d, x, d.occ.reset(x,false));
+                return solveOccDT(d, x, d.occ.reset(x, false));
             }
 
             @Override

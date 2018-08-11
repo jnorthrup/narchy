@@ -6,12 +6,14 @@ import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Param;
+import nars.Task;
 import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
+import nars.derive.timing.DefaultDeriverTiming;
 import nars.exe.Attention;
 import nars.exe.Causable;
 import nars.link.Activate;
@@ -22,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -39,26 +42,32 @@ import static nars.Op.*;
  */
 abstract public class Deriver extends Causable {
 
+    public final DeriverBudgeting prioritize =
+            new DefaultDeriverBudgeting();
+
+    /** determines the time for beliefs to be matched during premise formation
+     *    input: premise Task, premise belief term
+     *    output: long[2] time interval
+     **/
+    public final BiFunction<Task,Term,long[]> timing;
+
+
+    protected final DerivedTasks derived =
+            new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity);
+
+    protected final ActivatedLinks linked = new ActivatedLinks();
+
+
     @Deprecated private static final AtomicInteger serial = new AtomicInteger();
 
     private static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
-    public final PremiseDeriver rules;
+    protected final PremiseDeriver rules;
 
     /**
      * source of concepts supplied to this for this deriver
      */
     protected final Consumer<Predicate<Activate>> source;
-
-
-    public DeriverBudgeting prioritize =
-            new DefaultDeriverBudgeting();
-
-    protected final DerivedTasks derived =
-            new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity);
-
-    public final ActivatedLinks linked = new ActivatedLinks();
-
 
     private Deriver(NAR nar, String... rules) {
         this(new PremiseDeriverRuleSet(nar, rules));
@@ -89,6 +98,7 @@ abstract public class Deriver extends Causable {
         );
         this.rules = rules;
         this.source = source;
+        this.timing = new DefaultDeriverTiming(nar);
 
         nar.on(this);
     }

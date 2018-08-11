@@ -243,9 +243,11 @@ public class Truthify extends AbstractPred<Derivation> {
 
             case QUEST:
             case QUESTION:
-                single = true;
                 if (d.overlapSingle)
                     return 0;
+
+                single = true;
+
                 break;
 
             default:

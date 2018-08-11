@@ -128,11 +128,10 @@ public enum NALTruth implements TruthFunc {
     InductionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (B.isNegative()) {
+            if (B.isNegative())
                 return Induction.apply(T.neg(), B.neg(), m, minConf);
-            } else {
+            else
                 return Induction.apply(T, B, m, minConf);
-            }
         }
     },
 
@@ -164,7 +163,10 @@ public enum NALTruth implements TruthFunc {
     AbductionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return InductionPB.apply(B, T, m, minConf);
+            if (B.isNegative())
+                return Abduction.apply(T.neg(), B.neg(), m, minConf);
+            else
+                return Abduction.apply(T, B, m, minConf);
         }
     },
 
@@ -399,34 +401,6 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, false);
-        }
-    },
-
-    @SinglePremise /*@AllowOverlap*/ Curiosity() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
-            float conf =
-
-
-//                    Math.min((float)Math.sqrt(n.confMin.floatValue()) + n.confResolution.floatValue(),
-//                            n.confDefault(GOAL))
-
-                    n.confMin.floatValue()
-
-//                    n.confMin.floatValue() * 2
-//                         + n.confResolution.floatValue();
-
-                    //Util.lerp(Util.sqr(n.random().nextFloat()) * 0.5f, minConf, n.confDefault(GOAL));
-
-//                    n.confDefault(GOAL) * 0.5f;
-
-                    //n.confDefault(GOAL);
-            ;
-
-            if (T==null)
-                return $.t(n.random().nextFloat(), conf);
-            else
-                return $.t(T.freq(), conf);
         }
     },
 

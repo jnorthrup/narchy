@@ -1,13 +1,12 @@
 package nars.util.task;
 
+import nars.Op;
 import nars.Task;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.Revision;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -23,39 +22,21 @@ public interface TaskMatch  {
     /** value ranking function */
     FloatFunction<Task> value();
 
-    /** the RNG used if to apply random sampling, null to disable sampling (max first descending) */
-    default @Nullable Random random() {
-        return null;
-    }
-
-    /** answer the strongest available task within the specified range */
-    static TaskMatch best(long start, long end) {
-        return new Best(start, end);
-    }
-
-    static TaskMatch best(long start, long end, Term template, Random rng) {
-        assert(template!=null);
-        return best(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.term())), rng);
-    }
-
-    static TaskMatch best(long start, long end, Random rng) {
-        return best(start, end, t-> 1, rng);
-    }
-    static TaskMatch best(long start, long end, FloatFunction<Task> factor, Random rng) {
-        return new BestWithFactor(start, end, factor, rng);
-    }
 
     /** gets one task, sampled fairly from the available tasks in the
      * given range according to strength */
-    static TaskMatch sampled(long start, long end, @Nullable Term template, @Nullable Random random) {
+    static TaskMatch best(long start, long end, @Nullable Term template) {
         return
-                template == null || (!template.isTemporal()) ?
-                        TaskMatch.best(start, end, random) :
-                        TaskMatch.best(start, end, template, random);
-
+                template == null || !template.hasAny(Op.Temporal) ?
+                        new Best(start, end) :
+                        new BestWithFactor(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.term())));
     }
 
-    /** prefilter */
+    //TODO involving some randomness:
+    //static TaskMatch sampled(long start, long end, @Nullable Term template) {
+
+
+        /** prefilter */
     default boolean filter(Task task) {
         return true;
     }
@@ -84,14 +65,16 @@ public interface TaskMatch  {
             } else {
                 
 
-                int dur = (int)(end - start + 1);
-                value = (Task t) -> (t.isBeliefOrGoal() ?
+                long dur = (end - start + 1);
+                value = t ->
+                    t.isBeliefOrGoal() ?
                         
                         TemporalBeliefTable.value(t, start, end, dur)
+
                         :
-                        
-                        1 + (t.pri() / (1f + (t.minTimeTo(start, end)/((float)dur))))
-                );
+
+                        1 + (t.pri() / (1f + (float)(t.minTimeTo(start, end)/((double)dur)))) //questions
+                ;
             }
         }
 
@@ -125,23 +108,14 @@ public interface TaskMatch  {
     class BestWithFactor extends Best {
 
         private final FloatFunction<Task> factor;
-        @Nullable private final Random random;
         private float lowerLimit = Float.NEGATIVE_INFINITY;
 
-        public BestWithFactor(long start, long end, FloatFunction<Task> factor) {
-            this(start, end, factor, null);
-        }
 
-        public BestWithFactor(long start, long end, FloatFunction<Task> factor, @Nullable Random random) {
+        public BestWithFactor(long start, long end, FloatFunction<Task> factor) {
             super(start, end);
             this.factor = factor;
-            this.random = random;
         }
 
-        @Override
-        public @Nullable Random random() {
-            return random;
-        }
 
         @Override
         public float floatValueOf(Task x) {

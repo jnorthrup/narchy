@@ -67,7 +67,7 @@ class FunctorTest {
 
         TestNAR t = new TestNAR(NARS.tmp());
         t.nar.freqResolution.set(0.25f);
-        Param.DEBUG = true;
+
         t.log();
 
         t.believe("((complexity($1)<->3)==>c3($1))");

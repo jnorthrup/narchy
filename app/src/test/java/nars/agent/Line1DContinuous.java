@@ -19,7 +19,7 @@ import static java.lang.System.out;
 public class Line1DContinuous extends NAgent {
 
     static {
-        Param.DEBUG = false;
+
     }
 
     public interface IntToFloatFunction {

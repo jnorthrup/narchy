@@ -8,14 +8,11 @@ import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.atom.Atom;
-import nars.time.Tense;
-import nars.truth.polation.FocusingLinearTruthPolation;
+import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * NAR Parameters
@@ -70,7 +67,7 @@ public abstract class Param {
     //5;
 
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
@@ -104,9 +101,9 @@ public abstract class Param {
 
 
     public static final PriMerge termlinkMerge =
-            //PriMerge.plus;
+            PriMerge.plus;
             //PriMerge.max;
-            PriMerge.or;
+            //PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.avgGeoFast;
@@ -146,7 +143,7 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static int SIGNAL_LATCH_DUR_MAX = 32;
+    public final static int SIGNAL_LATCH_DUR_MAX = 512;
 
 
     /**
@@ -156,11 +153,6 @@ public abstract class Param {
     public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.0002f;
     public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0004f;
 
-
-    /**
-     * temporal radius (in durations) around the present moment to scan for truth
-     */
-    public final FloatRange timeFocus = new FloatRange(0.5f, 0, 100);
 
     /**
      * when merging dt's, maximum difference in dt in which interpolation is applied to the merge.
@@ -173,37 +165,37 @@ public abstract class Param {
      * creates instance of the default truthpolation implementation
      */
     public static TruthPolation truth(long start, long end, int dur) {
-        //return new LinearTruthPolation(start, end, dur);
-        return new FocusingLinearTruthPolation(start, end, dur);
+        return new LinearTruthPolation(start, end, dur);
+        //return new FocusingLinearTruthPolation(start, end, dur);
     }
 
-    /**
-     * provides a start,end pair of time points for the current focus given the current time and duration
-     */
-    public final long[] timeFocus() {
-        return timeFocus(time());
-    }
-
-    public final long[] timeFocus(long when) {
-        return timeFocus(when, dur());
-    }
-
-    //TODO void timeFocus(when, dur, long[] store)
-
-    public final long[] timeFocus(long when, float dur) {
-        if (when == ETERNAL)
-            return new long[]{ETERNAL, ETERNAL};
-
-        if (when == XTERNAL) {
-            throw new RuntimeException();
-        }
-
-        int f = Math.round(dur * timeFocus.floatValue());
-        int ditherCycles = dtDither();
-        long from = Tense.dither(when - f, ditherCycles);
-        long to = Tense.dither(when + f, ditherCycles);
-        return new long[]{from, to};
-    }
+//    /**
+//     * provides a start,end pair of time points for the current focus given the current time and duration
+//     */
+//    public final long[] timeFocus() {
+//        return timeFocus(time());
+//    }
+//
+//    public final long[] timeFocus(long when) {
+//        return timeFocus(when, dur());
+//    }
+//
+//    //TODO void timeFocus(when, dur, long[] store)
+//
+//    public final long[] timeFocus(long when, float dur) {
+//        if (when == ETERNAL)
+//            return new long[]{ETERNAL, ETERNAL};
+//
+//        if (when == XTERNAL) {
+//            throw new RuntimeException();
+//        }
+//
+//        int f = Math.round(dur * timeFocus.floatValue());
+//        int ditherCycles = dtDither();
+//        long from = Tense.dither(when - f, ditherCycles);
+//        long to = Tense.dither(when + f, ditherCycles);
+//        return new long[]{from, to};
+//    }
 
     /**
      * TTL = 'time to live'
@@ -216,11 +208,11 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 2.5f;
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**
@@ -355,7 +347,7 @@ public abstract class Param {
      */
     public static final int STAMP_CAPACITY = 16;
 
-    public static final IntRange causeCapacity = new IntRange(32, 0, 128);
+    public static final IntRange causeCapacity = new IntRange(64, 0, 128);
 
     /**
      * hard limit for cause capacity in case the runtime parameter otherwise disobeyed

@@ -6,6 +6,8 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.time.Tense.ETERNAL;
+
 /**
  * result truth:
  *      frequency = linear combination of frequency values weighted by evidence;
@@ -81,6 +83,9 @@ public class LinearTruthPolation extends TruthPolation {
             return null;
     }
 
+    public long range() {
+        return start==ETERNAL ? 1 : (end-start)+1;
+    }
 
 }
 

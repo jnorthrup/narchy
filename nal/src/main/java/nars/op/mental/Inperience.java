@@ -197,9 +197,9 @@ abstract public class Inperience extends LeakBack {
             long start = x.start();
             long end;
             if (start == ETERNAL) {
-                long[] focus = nar.timeFocus();
-                start = focus[0];
-                end = focus[1];
+                //start = end = ETERNAL;
+                start = nar.time();
+                end = start + nar.dur();
             } else {
                 start = Tense.dither(start, nar);
                 end = Tense.dither(x.end(), nar);

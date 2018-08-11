@@ -20,5 +20,5 @@
     (&&,X,A..+), (&&,Y,A..+), neq(X,Y), task("!")    |- (Y~X), (Punctuation:Quest, Time:TaskRange)
 
 //identity?
-  ((X-->A) ~ (X-->B)),   X  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
-  ((A-->X) ~ (B-->X)),   X  |- ((A~B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
+  ((X-->A) ~ (X-->B)),   X  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction)
+  ((A-->X) ~ (B-->X)),   X  |- ((A~B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction)

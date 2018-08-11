@@ -279,7 +279,7 @@ public class Revision {
         Task defaultTask;
         if (!forceProjection) {
             defaultTask = (Task) tasks[0];
-            eviMinInteg = range * TruthIntegration.eviAvg(defaultTask, tasks[0].start(), tasks[0].end(), dur);
+//            eviMinInteg = range * TruthIntegration.eviAvg(defaultTask, tasks[0].start(), tasks[0].end(), dur);
         } else {
             defaultTask = null;
         }
@@ -433,7 +433,7 @@ public class Revision {
             return x;
 
 
-        Top<Task> top = new Top<>(t -> TruthIntegration.eviAvg(t, start, end, 1));
+        Top<Task> top = new Top<>(t -> TruthIntegration.eviInteg(t, 1));
 
         if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
 

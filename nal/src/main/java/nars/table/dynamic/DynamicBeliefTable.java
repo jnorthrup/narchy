@@ -38,8 +38,10 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     @Override
     @Nullable
     public Truth truth(long start, long end, Term template, NAR nar) {
+        //TODO calculate with evidence, adding strongest distinct evidence sources like Truthpolation does
+
         Truth d = truthDynamic(start, end, template, nar);
-        if (d!=null && dynamicOverrides()) {
+        if (d != null && dynamicOverrides()) {
             return d;
         }
 
@@ -49,8 +51,8 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         if (e == null || d.equals(e))
             return d;
 
-        
-        return Truth.stronger(d, e); 
+
+        return Truth.stronger(d, e);
     }
 
     /**
@@ -60,69 +62,17 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     protected abstract Truth truthDynamic(long start, long end, Term template, NAR nar);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     protected final byte punc() {
         return beliefOrGoal ? Op.BELIEF : Op.GOAL;
     }
 
 
-    public Truth truthStored(long start, long end, Term template, NAR nar) {
-        return super.truth(start, end, template, nar);
-    }
 
-    @Override
-    public Task sample(long start, long end, Term template, NAR nar) {
-        return matchThe(TaskMatch.sampled(start, end, null, nar.random()), nar);
-    }
 
-    /** default implementation */
+
+    /**
+     * default implementation
+     */
     void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar) {
         Task x = taskDynamic(start, end, term, nar);
         if (x != null)
@@ -149,19 +99,20 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
             if (!dynOnly)
                 temporal.match(m, nar, ss::add);
 
-            
-            if (ss.size()==1) {
-                target.accept(ss.a); 
+
+            if (ss.size() == 1) {
+                target.accept(ss.a);
             } else {
                 if (m.limit() > 1)
                     throw new TODO();
-                ss.sample(target, m.value(), m.random());
+                ss.sample(target, m.value(), nar.random());
             }
         }
     }
 
 
-    /** an implementation can allow this to return true to cause
+    /**
+     * an implementation can allow this to return true to cause
      * a dynamic match, if exist, to totally override any possible
      * otherwise stored temporal or eternal tasks.
      */
@@ -173,16 +124,16 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
         boolean anyTemplate;
-        if (template==null || template.op()!=term.op()) {
+        if (template == null || template.op() != term.op()) {
             template = term;
             anyTemplate = true;
         } else {
-            anyTemplate = false;
+            anyTemplate = !term.hasAny(Op.Temporal);
         }
 
         //TODO apply filter to dynamic results
         Task y = taskDynamic(start, end, template, nar);
-        if (y!=null && dynamicOverrides())
+        if (y != null && dynamicOverrides())
             return y;
 
         Task x = taskStored(start, end, template, filter, nar);
@@ -208,5 +159,8 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         return super.match(start, end, template, filter, nar);
     }
 
+    public final Truth truthStored(long start, long end, Term template, NAR nar) {
+        return super.truth(start, end, template, nar);
+    }
 
 }

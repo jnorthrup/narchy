@@ -179,6 +179,8 @@ public enum Tense {
         //find the min range
         long minRange = Long.MAX_VALUE;
         for(TaskRegion x : t) {
+            if (x == null || x.task().isEternal())
+                continue;
             long r = x.range();
             if (r < minRange)
                 minRange = r;

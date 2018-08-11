@@ -114,7 +114,7 @@ class ImplicationNetworkTest {
 
         NAR n = NARS.tmp();
 
-        //Param.DEBUG = true;
+        //
 
 
         n.believe(IMPL.the(a, b));

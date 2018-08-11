@@ -21,12 +21,11 @@ public class Predict_NARS_Core {
     static float signal;
 
     static IntervalTree<Long, Task> predictions = new IntervalTree<>();
-    static double maxval;
     private static int last = -1;
 
     public static void main(String[] args) throws Narsese.NarseseException {
 
-        Param.DEBUG = false;
+
         int duration = 8;
         float freq = 1.0f / duration * 0.1f;
         int thinkInterval = 24;

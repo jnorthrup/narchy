@@ -9,25 +9,33 @@ import static nars.time.Tense.ETERNAL;
 
 public class TruthIntegration {
 
-    public static float eviAvg(Task x, long start, long end, int dur) {
-        if ((start == end) || start == ETERNAL) {
-            return x.evi(start, dur); //point
+    public static float eviAvg(Task t, int dur) {
+        return eviAvg(t, t.start(), t.end(), dur);
+    }
+
+    public static float eviAvg(Task t, long start, long end, int dur) {
+        if (start == end) {
+            return t.evi(start, dur); //point sample
         } else {
-            return eviInteg(x, start, end, dur) / (end - start); //range
+            return eviInteg(t, start, end, dur) / (1+end-start);
         }
+    }
+
+    public static float eviInteg(Task t, long dur) {
+        return eviInteg(t, t.start(), t.end(), dur);
     }
 
     /**
      * convenience method for selecting evidence integration strategy
      */
-    public static float eviInteg(Task x, long qStart, long qEnd, long dur) {
+    public static float eviInteg(Task t, long qStart, long qEnd, long dur) {
         if (qStart == qEnd) {
 
-            return x.evi(qStart, dur);
+            return t.evi(qStart, dur);
         } else {
-            long tStart = x.start();
+            long tStart = t.start();
             if (tStart == ETERNAL)
-                return x.evi() * (qEnd - qStart + 1);
+                return t.evi() * (qEnd - qStart + 1);
 
 
 
@@ -35,7 +43,7 @@ public class TruthIntegration {
 
 
 
-            long tEnd = x.end();
+            long tEnd = t.end();
 
 
 
@@ -52,12 +60,12 @@ public class TruthIntegration {
 
                     //inner points
                     long qta = qt.a;
-                    if (qta != qStart && qta != qEnd) { //quick test to avoid set add
+                    if (qta > qStart && qta < qEnd) { //quick test to avoid set add
                         pp.add(qta);
                     }
                     long qtb = qt.b;
                     if (qta != qtb) {
-                        if (qtb != qStart && qtb != qEnd) { //quick test to avoid set add
+                        if (qtb > qStart && qtb < qEnd) { //quick test to avoid set add
                             pp.add(qtb);
                         }
                     }
@@ -84,7 +92,7 @@ public class TruthIntegration {
 
 
             //return x.eviIntegRectMid(dur, points);
-            return x.eviIntegTrapezoidal(dur, points);
+            return t.eviIntegTrapezoidal(dur, points);
 
 
         }

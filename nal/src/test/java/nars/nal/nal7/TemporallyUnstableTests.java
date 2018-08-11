@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class TemporallyUnstableTests {
 
 //    static {
-//        Param.DEBUG = true;
+//
 //    }
 
     @Test

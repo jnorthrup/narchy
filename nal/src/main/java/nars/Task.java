@@ -515,7 +515,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 if (dur == 0) {
                     return 0;
                 } else {
-                    return (float) Param.evi(evi(), dist, dur);
+                    return Param.evi(evi(), dist, dur);
                 }
             }
 
@@ -809,16 +809,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     });
 
         }
-        return postProcess(yy, needEval);
-    }
-
-    @Nullable
-    default ITask postProcess(Collection<ITask> yy, boolean needEval) {
         switch (yy.size()) {
             case 0:
                 return null;
             case 1:
-                return needEval ? yy.iterator().next() : ((List<ITask>)yy).get(0); /* avoid creating iterator */
+                return needEval ? yy.iterator().next() : ((List<ITask>) yy).get(0); /* avoid creating iterator */
             default:
                 return new AbstractTask.NARTask((nn) -> yy.forEach(z -> {
                     if (z!=null) //HACK

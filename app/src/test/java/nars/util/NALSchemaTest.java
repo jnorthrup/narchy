@@ -80,7 +80,7 @@ public class NALSchemaTest {
 
         NAR n = NARS.tmp();
 
-        Param.DEBUG = true;
+
         n.log();
         
 

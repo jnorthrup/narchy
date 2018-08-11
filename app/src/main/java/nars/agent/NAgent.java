@@ -84,7 +84,7 @@ public class NAgent extends NARService implements NSense, NAct {
     @Deprecated
     private CauseChannel<ITask> in = null;
 
-    private NAgentCycle cycle =
+    private final NAgentCycle cycle =
             //Cycles.Biphasic;
             Cycles.Interleaved;
 
@@ -477,9 +477,10 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public float dexterity(long when) {
-        long now = nar.time();
-        long d = frameTrigger.next(now) - now;
-        return dexterity(when - d / 2, when + d / 2);
+//        long now = nar.time();
+//        long d = frameTrigger.next(now) - now;
+//        return dexterity(when - d / 2, when + d / 2);
+        return dexterity(when,when);
     }
 
     /**

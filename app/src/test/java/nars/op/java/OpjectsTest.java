@@ -36,7 +36,6 @@ public class OpjectsTest {
         int dur = 1;
         int focus = 4;
 
-        n.timeFocus.set(focus);
         n.time.dur(dur);
 
 

@@ -75,12 +75,12 @@ public class BiPolarAction extends AbstractSensor {
                 return y;
         }
 
-//        //b.
-//        {
-//            Truth y = x.goals().truth(prev, next, null, nar);
-//            if (y != null)
-//                return y;
-//        }
+        //b.
+        {
+            Truth y = x.goals().truth(prev, next, null, nar);
+            if (y != null)
+                return y;
+        }
 
         //c.
 //        {

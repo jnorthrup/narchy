@@ -351,7 +351,7 @@ public class NAL8Test extends NALTest {
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(bad ==> reward)", 0, 0.9f)
                 .mustGoal(cycles, "bad", 1.0f, 0.81f)
-                .mustGoal(cycles, "good", 0.0f, 0.81f)
+                //mustGoal(cycles, "good", 0.0f, 0.81f)
                 //.mustNotOutput(cycles, "good", GOAL, 0f, 1f, 0.8f, 1f, ETERNAL)
         ;
     }
@@ -372,11 +372,11 @@ public class NAL8Test extends NALTest {
 
 
         test
-                .goal("(reward)")
-                .believe("((good) ==> (reward))", 1, 0.9f)
+                .goal("reward")
+                .believe("(good ==> reward)", 1, 0.9f)
 
-                .mustGoal(cycles, "(good)", 1.0f, 0.81f)
-                .mustNotOutput(cycles, "(good)", GOAL, 0.0f, 0.7f, 0.5f, 1f, ETERNAL)
+                .mustGoal(cycles, "good", 1.0f, 0.81f)
+                .mustNotOutput(cycles, "good", GOAL, 0.0f, 0.7f, 0.5f, 1f, ETERNAL)
 
 
         ;
@@ -386,11 +386,11 @@ public class NAL8Test extends NALTest {
     void testInhibitionReverse() {
 
         test
-                .goal("(reward)")
-                .believe("((reward) ==> (good))", 1, 0.9f)
+                .goal("reward")
+                .believe("(reward ==> good)", 1, 0.9f)
 
-                .mustGoal(cycles, "(good)", 1.0f, 0.45f)
-                .mustNotOutput(cycles, "(good)", GOAL, 0.0f, 0.5f, 0.0f, 1f, ETERNAL);
+                .mustGoal(cycles, "good", 1.0f, 0.45f)
+                .mustNotOutput(cycles, "good", GOAL, 0.0f, 0.5f, 0.0f, 1f, ETERNAL);
 
     }
 
@@ -403,7 +403,6 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Disabled
     @Test
     void testGoalSimilaritySpreadingNeg() {
         test
@@ -420,7 +419,6 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Disabled
     @Test
     void testGoalSimilaritySpreadingNegInsideNeg() {
         test

@@ -334,7 +334,7 @@ public class NAL6Test extends NALTest {
     @Test
     void multiple_variable_elimination2() {
 
-        Param.DEBUG = true;
+
         TestNAR tester = test;
         tester.believe("<<$x --> lock> ==> (<#y --> key> && open(#y,$x))>");
         tester.believe("<{lock1} --> lock>");
@@ -586,7 +586,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void abductionBeliefWeakPositiveButNotNegative() {
-        Param.DEBUG = true;
+
         test
                 .log()
                 .believe("(a==>b)", 0.55f, 0.90f)

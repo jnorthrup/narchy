@@ -52,7 +52,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * max allowed truths to be truthpolated in one test
      * must be less than or equal to Stamp.CAPACITY otherwise stamp overflow
      */
-    private static final int TRUTHPOLATION_LIMIT = (Param.STAMP_CAPACITY - 1)/2;
+    private static final int TRUTHPOLATION_LIMIT = (Param.STAMP_CAPACITY - 1);
 
     /**
      * max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task
@@ -72,7 +72,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int SCAN_CONF_OCTAVES_MAX = 1;
     private static final int SCAN_TIME_OCTAVES_MAX = 3;
 
-    private static final int MIN_TASKS_PER_LEAF = 3;
+    private static final int MIN_TASKS_PER_LEAF = 2;
     private static final int MAX_TASKS_PER_LEAF = 4;
     private static final Split<TaskRegion> SPLIT =
             new AxialSplitLeaf<>();
@@ -153,11 +153,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return (TaskRegion r) -> {
 
             long timeDist =
+                    r.minTimeTo(when);
                     //r.midTimeTo(when);
-                    r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
+                    //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
-            float conf = ((float) r.coord(true, 2));
-            return (float) -Param.evi(/*c2wSafe(*/conf,  timeDist, perceptDur);
+            float conf = ((float) r.coord(false, 2));
+            return -Param.evi(/*c2wSafe(*/conf,  timeDist, perceptDur);
 
 //            long regionTimeDist = r.midTimeTo(when);
 //
@@ -213,7 +214,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     abstract protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur);
 
     @Override
-    public void update(SignalTask task, Runnable change) {
+    @Deprecated public void update(SignalTask task, Runnable change) {
         write(treeRW -> {
 
             boolean removed = treeRW.remove(task);
@@ -287,8 +288,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     ImmutableLongSet tStamp = Stamp.toSet(t);
                     Task e = eternals.select(x ->
                             (filter == null || filter.test(x)) &&
-                                    !Stamp.overlapsAny(tStamp, x.stamp()
-                                    ));
+                                    !Stamp.overlapsAny(tStamp, x.stamp()));
                     if (e != null) {
                         return Revision.merge(nar, t, e);
                     } else {
@@ -323,7 +323,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 final int[] limit = {m.limit()};
                 float[] ww = Util.map(tt::pri, new float[tts]);
-                MutableRoulette.run(ww, m.random(), t -> 0, y -> {
+                MutableRoulette.run(ww, nar.random(), t -> 0, y -> {
                     target.accept((Task) (tt.get(y).id));
                     return --limit[0] > 0;
                 });
@@ -349,6 +349,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         /** buffer removal handling until outside of the locked section */
 
         Task input = r.input;
+
 
         /** inserted but not necessarily kept */
         write(treeRW -> {
@@ -677,11 +678,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         @Override
         protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
             FloatFunction<Task> f = taskStrength(start, end, dur);
-            if (template == null) {
-                return x -> f.floatValueOf(x) / x.volume(); //prefer lower complexity variants
-            } else {
-//                int tv = template.volume();
+            if (template != null) {
                 return x -> f.floatValueOf(x) / (1 + TemporalBeliefTable.costDtDiff(template, x.term(), dur));
+            } else {
+                return x -> f.floatValueOf(x) / x.volume(); //prefer lower complexity variants
             }
         }
 

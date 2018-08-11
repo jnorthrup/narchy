@@ -1,9 +1,7 @@
 package nars.control.proto;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -17,7 +15,12 @@ import org.jetbrains.annotations.Nullable;
  * depending on the status of the insertion, activate links
  * in some proportion of the input task's priority.
  */
-public final class Remember extends AbstractTask {
+public class Remember extends AbstractTask {
+
+    @Nullable public static Remember the(Task input, NAR n) {
+        TaskConcept concept = (TaskConcept) n.conceptualize(input);
+        return concept!=null ? new Remember(input, concept) : null;
+    }
 
 
     public Task input;
@@ -27,22 +30,7 @@ public final class Remember extends AbstractTask {
     public final FasterList<Task> forgotten = new FasterList(2);
     public final Concept concept;
 
-    @Nullable public static Remember the(Task input, NAR n) {
 
-
-        Concept concept = n.concept(input.term(), true);
-        if (concept == null) {
-            return null;
-        } else if (!(concept instanceof TaskConcept)) {
-            input.delete();
-            if (Param.DEBUG_EXTRA && input.isBeliefOrGoal()) {
-                throw new TODO("why?: " + input + " does not resolve a TaskConcept:\n" + concept);
-            } else
-                return null;
-        }
-
-        return new Remember(input, concept);
-    }
 
     public Remember(Task task, Concept c) {
         this.input = task;
@@ -57,22 +45,34 @@ public final class Remember extends AbstractTask {
     @Override
     public final ITask next(NAR n) {
 
-        validate(n);
+//        validate(n);
 
         try {
 
-            ((TaskConcept) concept).add(this, n);
+            input(n);
 
         } finally {
-            if (!forgotten.isEmpty() || !remembered.isEmpty()) {
-                next.add(new Commit(forgotten, remembered));
-            }
+
+            commit();
+
             return AbstractTask.of(next);
         }
 
     }
 
-    private void validate(NAR n) {
+    /** finalization and cleanup work */
+    protected void commit() {
+        if (!forgotten.isEmpty() || !remembered.isEmpty()) {
+            next.add(new Commit(forgotten, remembered));
+        }
+    }
+
+    /** attempt to insert into belief table */
+    protected void input(NAR n) {
+        ((TaskConcept) concept).add(this, n);
+    }
+
+//    private void validate(NAR n) {
         //verify dithering
 //        if (Param.DEBUG) {
 //            if (!input.isInput()) {
@@ -81,11 +81,11 @@ public final class Remember extends AbstractTask {
 //                    t.ensureDithered(n);
 //            }
 //        }
-    }
+//    }
 
     //TODO: private static final class ListTask extends FasterList<ITask> extends NativeTask {
 
-    private static final class Commit extends AbstractTask {
+    @Deprecated private static final class Commit extends AbstractTask {
 
         FasterList<Task> forgotten, remembered;
 

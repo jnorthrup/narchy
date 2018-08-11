@@ -160,27 +160,27 @@
 
      (P ==> M), (S ==> M), neq(P,S) |- ((P && S) ==> M), (Belief:IntersectionSym)
         (P ==> M), (S ==> M), neq(P,S), task("?") |- ((P && S) ==> M), (Punctuation:Question)
-     (P ==> M), (S ==> M), neq(P,S) |- ((P || S) ==> M), (Belief:UnionSym)
-        (P ==> M), (S ==> M), neq(P,S), task("?") |- ((P || S) ==> M), (Punctuation:Question)
+     //(P ==> M), (S ==> M), neq(P,S) |- ((P || S) ==> M), (Belief:UnionSym)
+        //(P ==> M), (S ==> M), neq(P,S), task("?") |- ((P || S) ==> M), (Punctuation:Question)
 
                 //...Also:VarIntro)
 
 
      (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized)
         (M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question)
-     (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
-        (M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
+     //(M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
+        //(M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
 
 
 
         //TODO question variations
         ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
-        ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P || S),A..+) ==> X), (Belief:UnionSym)
+        //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P || S),A..+) ==> X), (Belief:UnionSym)
             //(Belief:Implsition, Also:VarIntro)
 
         //TODO question variations
         (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
-        (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
+        //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
             //, (Belief:Implsition, Also:VarIntro)
 
                 //contradiction anonymizer

@@ -26,9 +26,9 @@ public class TasksView implements Timeline2D.TimelineModel<Task> {
         this.tasks = tasks;
     }
 
-    public static void main(String[] args) throws Narsese.NarseseException {
+    public static void main(String[] args) {
 
-        Param.DEBUG = true;
+
 
         NAR n = NARS.tmp();
         n.log();

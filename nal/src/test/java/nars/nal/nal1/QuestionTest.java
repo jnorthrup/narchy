@@ -243,7 +243,7 @@ class QuestionTest {
                 .mustQuest(256, "(P --> M)").test();
     }
 
-    @Test
+    @Disabled @Test
     void testExplicitEternalizationViaQuestion() {
         new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")

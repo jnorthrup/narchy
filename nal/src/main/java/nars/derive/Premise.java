@@ -10,6 +10,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -156,7 +157,6 @@ public class Premise {
 
         NAR n = d.nar;
 
-        Task belief = null;
 
         Concept beliefConcept = beliefTerm.op().conceptualizable ?
                 n.conceptualize(beliefTerm)
@@ -169,92 +169,30 @@ public class Premise {
                 beliefTerm = beliefConcept.term();
             }
 
-            long taskStart =
-                    //Tense.dither(task.start(), n);
-                    task.start();
-            long taskEnd =
-                    //Tense.dither(task.end(), n);
-                    task.end();
 
-            if (!beliefTerm.hasVarQuery()) {
+            if (beliefConcept instanceof TaskConcept) {
 
                 final BeliefTable bb = beliefConcept.beliefs();
-                Predicate<Task> beliefFilter = null;
-                if (task.isQuestionOrQuest()) {
-                    if (beliefConceptCanAnswerTaskConcept) {
 
-                        final BeliefTable answerTable =
-                                (task.isQuest()) ?
-                                        beliefConcept.goals() :
-                                        bb;
+                Predicate<Task> beliefFilter = null; //stampFilter(d);
 
-                        beliefFilter = stampFilter(d);
+                Task belief = null;
 
-                        if (!answerTable.isEmpty()) {
-
-                            Task match = answerTable.answer(taskStart, taskEnd, beliefTerm, beliefFilter, n);
-                            if (!validMatch(match)) match = null;
-                            if (match == null) {
-
-
-                                long[] focus = n.timeFocus();
-                                if (focus[0] != taskStart && focus[1] != taskEnd) {
-
-                                    match = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
-                                    if (!validMatch(match)) match = null;
-                                }
-
-                                if (match == null) {
-                                    //try, allowing overlap
-                                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n);
-                                    if (!validMatch(match)) match = null;
-                                }
-                            }
-
-                            if (match != null) {
-                                assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
-
-
-                                @Nullable Task answered = task.onAnswered(match, n);
-                                if (answered != null) {
-
-                                    d.add(answered);
-
-                                    if (answered.isBelief()) {
-                                        belief = answered;
-                                    }
-
-                                    n.emotion.onAnswer(task, answered);
-                                }
-
-                            }
-                        }
-                    }
+                if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest()) {
+                    belief = tryAnswerQuestionTask(d, beliefTerm, n, beliefConcept, bb, beliefFilter);
                 }
 
-                if ((belief == null) && !bb.isEmpty()) {
+                if (belief == null && !bb.isEmpty()) {
 
-                    if (beliefFilter == null) beliefFilter = stampFilter(d);
+                    long[] focus = timeFocus(d, beliefTerm);
 
+                    Task match = bb.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
+//                    if (match!=null) {
+//                        System.out.println(task.intersects(focus[0], focus[1]) + " " + task + " " + Arrays.toString(focus));
+//                    }
+                    return match;
 
-                    belief = bb.match(taskStart, taskEnd, beliefTerm, beliefFilter, n);
-                    if (!validMatch(belief)) belief = null;
-
-                    if (belief == null) {
-
-                        long[] focus = n.timeFocus();
-                        if (focus[0] != taskStart && focus[1] != taskEnd) {
-
-                            belief = bb.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
-                            if (!validMatch(belief)) belief = null;
-                        }
-                    }
-
-                    if (belief == null) {
-
-                        belief = bb.match(taskStart, taskEnd, beliefTerm, null, n);
-                        if (!validMatch(belief)) belief = null;
-                    }
+                    //if (!validMatch(belief)) belief = null;
 
                 }
             }
@@ -266,7 +204,55 @@ public class Premise {
 //            linkVariable(unifiedBelief, d.nar, beliefConcept);
 //        }
 
-        return belief;
+        return null;
+    }
+
+    private Task tryAnswerQuestionTask(Derivation d, Term beliefTerm, NAR n, Concept beliefConcept, BeliefTable bb, Predicate<Task> beliefFilter) {
+        final BeliefTable answerTable =
+                (task.isQuest()) ?
+                        beliefConcept.goals() :
+                        bb;
+
+        if (!answerTable.isEmpty()) {
+
+            Task match = answerTable.answer(task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n);
+//            if (!validMatch(match))
+//                match = null;
+
+//            if (match == null) {
+//                if (focus[0] != taskStart && focus[1] != taskEnd) {
+//                    match = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
+//                    if (!validMatch(match)) match = null;
+//                }
+//                if (match == null) {
+//                    //try, allowing overlap
+//                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n);
+//                    if (!validMatch(match)) match = null;
+//                }
+//            }
+
+            if (match != null) {
+                assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+
+                @Nullable Task answered = task.onAnswered(match, n);
+                if (answered != null) {
+
+                    d.add(answered);
+
+                    n.emotion.onAnswer(task, answered);
+
+                    if (answered.isBelief())
+                        return answered;
+                }
+
+            }
+        }
+
+        return null;
+    }
+
+    private long[] timeFocus(Derivation d, Term beliefTerm) {
+        return d.deriver.timing.apply(task, beliefTerm);
     }
 
     private void linkVariable(boolean unifiedBelief, NAR n, Concept beliefConcept) {
@@ -296,9 +282,9 @@ public class Premise {
         }
     }
 
-    private boolean validMatch(@Nullable Task x) {
-        return x != null && !x.isDeleted() && !x.equals(task);
-    }
+//    private boolean validMatch(@Nullable Task x) {
+//        return x != null && !x.isDeleted() && !x.equals(task);
+//    }
 
     private Predicate<Task> stampFilter(Derivation d) {
         ImmutableLongSet taskStamp =

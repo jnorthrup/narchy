@@ -33,7 +33,7 @@ public class ThermostatTest {
 
         n.time.dur(DUR);
         n.dtDither.set(1);
-        n.timeFocus.set(4);
+
 
         n.termVolumeMax.set(22);
         n.freqResolution.set(0.05f);

@@ -1,18 +1,18 @@
 package nars.concept.action;
 
+import nars.$;
 import nars.NAR;
-import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.control.channel.CauseChannel;
-import nars.control.proto.TaskLinkTask;
 import nars.table.dynamic.CuriosityGoalTable;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.dynamic.SignalBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.func.NALTruth;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import static nars.Op.GOAL;
@@ -80,24 +80,12 @@ public class GoalActionConcept extends ActionConcept {
 //        }
 
         boolean curi;
-        if (nar.random().nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
+        Random rng = nar.random();
+        if (rng.nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
 
 
-//            float curiConf =
-//
-//
-//                    Math.min(Param.TRUTH_MAX_CONF, nar.confMin.floatValue()
-//
-//                            * 8
-//                    );
-//
-//
-//            curi = true;
-//
-//
-//            goal = Truth.theDithered(nar.random().nextFloat(), c2w(curiConf), nar);
-
-            goal = NALTruth.Curiosity.apply(null, null, nar, 0);
+            float curiConf = nar.confMin.floatValue();
+            goal = $.t(rng.nextFloat(), curiConf);
             goal = goal.ditherFreq(resolution().floatValue());
             curi = true;
 
@@ -136,7 +124,7 @@ public class GoalActionConcept extends ActionConcept {
 //        super.add(r, n);
 //    }
 
-    TaskLinkTask curiosity(Truth truth, long pStart, long pEnd, Concept c, NAR nar) {
+    ITask curiosity(Truth truth, long pStart, long pEnd, TaskConcept c, NAR nar) {
         //SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, curiosityStamp);
 
         SeriesBeliefTable.SeriesTask curiosity =

@@ -33,22 +33,12 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     /**
      * expectation threhold (in range 0.5..1.0 indicating the minimum expectation minimum
      * for desire, and the 1-exp expectation maximum of belief necessary to invoke the action.
-     *
-     *      1.00 - impossible
-     *      0.75 - mid-range
-     *      0.50 - hair-trigger hysterisis
+     * <p>
+     * 1.00 - impossible
+     * 0.75 - mid-range
+     * 0.50 - hair-trigger hysterisis
      */
     public final FloatRange exeThresh;
-
-
-
-
-
-
-
-
-
-
 
 
     static final Logger logger = LoggerFactory.getLogger(AtomicExec.class);
@@ -82,17 +72,9 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     public void update(NAR n) {
 
 
-
-
-
-        
-        
-        
-        
-
-
-        long[] focus = n.timeFocus();
-        
+        long now = n.time();
+        long end = now;
+        long start = now - n.dur();
 
         float exeThresh = this.exeThresh.floatValue();
 
@@ -106,8 +88,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 return;
             }
 
-            long start = focus[0];
-            long end = focus[1];
+
             Truth goalTruth = c.goals().truth(start, end, n);
             if (goalTruth == null || goalTruth.expectation() <= exeThresh) {
                 return; //it may not have been input to the belief table yet so dont delete
@@ -115,7 +96,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
             Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
             if (beliefTruth != null && beliefTruth.expectation() >= exeThresh) {
-                return; 
+                return;
             }
 
             logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
@@ -135,20 +116,19 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     @Override
     public @Nullable Task apply(Task x, NAR n) {
 
-        
 
         Task y = exePrefilter(x);
         if (y == null)
-            return x; 
+            return x;
         if (y != x)
-            return y; 
+            return y;
 
         x = y;
 
         if (x.isCommand()) {
-            
+
             exe.accept(x.term(), n);
-            return null; 
+            return null;
         } else {
 
             active.put(new PLink(x.term().concept() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
@@ -163,7 +143,9 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         }
     }
 
-    /** operator goes into active probing mode */
+    /**
+     * operator goes into active probing mode
+     */
     protected void enable(NAR n) {
         synchronized (this) {
             if (onCycle == null) {
@@ -171,7 +153,10 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             }
         }
     }
-    /** operator leaves active probing mode */
+
+    /**
+     * operator leaves active probing mode
+     */
     protected void disable() {
         synchronized (this) {
             if (onCycle != null) {
@@ -180,43 +165,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

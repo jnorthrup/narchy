@@ -157,7 +157,7 @@ public class NARSpeak {
         n.startFPS(10f);
 
         //n.log();
-        Param.DEBUG = true;
+
         n.onTask(x -> {
            if (x.isGoal() && !x.isInput())
                System.out.println(x.proof());

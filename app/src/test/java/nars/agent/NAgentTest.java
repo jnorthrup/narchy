@@ -57,7 +57,7 @@ public class NAgentTest {
     public void testOscillate() {
 
         NAR n = nar();
-        Param.DEBUG = true;
+
         n.log();
         n.onTask(x -> {
            if (x.isGoal() && !x.isInput())

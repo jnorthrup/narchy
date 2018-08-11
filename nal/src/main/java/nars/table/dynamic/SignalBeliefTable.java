@@ -3,10 +3,10 @@ package nars.table.dynamic;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
-import nars.concept.Concept;
-import nars.control.proto.TaskLinkTask;
+import nars.concept.TaskConcept;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.util.concept.ConceptBuilder;
@@ -54,9 +54,10 @@ public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.Serie
         super(c, beliefOrGoal, EternalTable.EMPTY, t, series);
     }
 
-    public TaskLinkTask add(Truth value, long start, long end, Concept c, NAR nar) {
+    public ITask add(Truth value, long start, long end, TaskConcept c, NAR nar) {
 
         clean(nar);
+
         if (value == null)
             return null;
 

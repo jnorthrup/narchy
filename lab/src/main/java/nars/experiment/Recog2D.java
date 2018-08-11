@@ -67,7 +67,7 @@ public class Recog2D extends NAgentX {
     int imagePeriod = 24;
 
     static {
-        Param.DEBUG = false;
+
     }
 
     public Recog2D(NAR n) {

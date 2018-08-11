@@ -2,7 +2,6 @@ package nars.table;
 
 import jcog.sort.CachedTopN;
 import jcog.sort.Top;
-import jcog.sort.Top2;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
@@ -10,7 +9,6 @@ import nars.term.Term;
 import nars.util.task.TaskMatch;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -61,8 +59,8 @@ public interface TaskTable {
 
         
         int limit = m.limit();
-        Random rng = m.random();
-        if (rng == null) {
+        //Random rng = nar.random();
+        /*if (rng == null) */{
             
             
             assert (limit > 0);
@@ -77,39 +75,41 @@ public interface TaskTable {
                 forEachTask(q::accept);
                 q.forEachItem(target);
             }
-        } else {
-
-            int s = size();
-            if (s == 1) {
-                target.accept(streamTasks().findFirst().get());
-            } else {
-
-                Top2<Task> t = new Top2<>(m.value());
-                forEachTask(t::add);
-
-                if (t.size() <= limit) {
-                    t.forEach(target); 
-                } else {
-                    t.sample(target, m.value(), rng);
-                }
-
-            }
         }
+//        else {
+//
+//            int s = size();
+//            if (s == 1) {
+//                target.accept(streamTasks().findFirst().get());
+//            } else {
+//
+//                Top2<Task> t = new Top2<>(m.value());
+//                forEachTask(t::add);
+//
+//                if (t.size() <= limit) {
+//                    t.forEach(target);
+//                } else {
+//                    t.sample(target, m.value(), rng);
+//                }
+//
+//            }
+//        }
 
     }
 
-    default int match(TaskMatch m, NAR nar, Task[] target) {
+    /** matches, attempting to fill the provided Task[] array */
+    @Deprecated default int match(TaskMatch m, NAR nar, Task[] target) {
         final int[] i = {0};
         match(m, nar, x->{
             //if (x!=null)
-            assert(x!=null);
+            //assert(x!=null);
             target[i[0]++] = x;
         });
         return i[0];
     }
 
-    @Nullable
-    default Task matchThe(TaskMatch m, NAR nar) {
+    /** gets one result */
+    @Nullable default Task matchThe(TaskMatch m, NAR nar) {
         assert(m.limit()==1);
         Task[] x = new Task[1];
         int r = match(m, nar, x);
@@ -121,22 +121,19 @@ public interface TaskTable {
         return match(when, when, template, nar);
     }
 
-    default Task match(long start, long end, Term template, NAR nar) {
+    @Deprecated default Task match(long start, long end, Term template, NAR nar) {
 
         if (isEmpty())
             return null;
 
 
-        return matchThe(TaskMatch.sampled(start, end, template, nar.random()), nar);
+        return matchThe(TaskMatch.best(start, end, template), nar);
     }
 
     default Task sample(long start, long end, Term template, NAR nar) {
 
-        if (isEmpty())
-            return null;
+        return match(start, end, template, nar);
 
-        
-        return matchThe(TaskMatch.sampled(start, end, template, nar.random()), nar);
     }
 
 

@@ -46,7 +46,7 @@ class BooleanTest {
 
         NAR d = NARS.tmp();
         d.freqResolution.set(0.02f);
-        d.termVolumeMax.set(14);
+        d.termVolumeMax.set(16);
 
 
 
@@ -74,14 +74,14 @@ class BooleanTest {
 
 
 
-        d.run(512);
+        d.run(768);
 
         System.out.println(i + " " + j + " ");
         for (int k = 0, outcomesLength = outcomes.length; k < outcomesLength; k++) {
             String s = outcomes[k];
             Concept dc = d.conceptualize(s);
             assertNotNull(dc);
-            @Nullable Task t = d.belief(dc.term(), d.time());
+            @Nullable Task t = d.belief(dc, d.time());
             Truth b = t != null ? t.truth() : null;
 
             System.out.println("\t" + dc.term() + "\t" + s + "\t" + b + "\t" + outcomes[k]);

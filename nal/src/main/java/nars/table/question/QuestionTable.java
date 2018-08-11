@@ -186,10 +186,6 @@ public interface QuestionTable extends TaskTable {
             return existing;
         }
 
-//        @Override
-//        public void priAdd(Task entry, float amount) {
-//
-//        }
 
         @Override
         public Task key(Task value) {
@@ -237,18 +233,18 @@ public interface QuestionTable extends TaskTable {
             return stream();
         }
 
-        @Override
-        public Task sample(long start, long end, Term template, NAR nar) {
-            //commit();
-            switch (size()) {
-                case 0:
-                    return null;
-                case 1:
-                    return next(0, (xx) -> false); //first one
-                default:
-                    return QuestionTable.super.sample(start, end, template, nar);
-            }
-        }
+//        @Override
+//        public Task sample(long start, long end, Term template, NAR nar) {
+//            //commit();
+//            switch (size()) {
+//                case 0:
+//                    return null;
+//                case 1:
+//                    return next(0, (xx) -> false); //first one
+//                default:
+//                    return QuestionTable.super.sample(start, end, template, nar);
+//            }
+//        }
     }
 
 

@@ -89,7 +89,7 @@ class GoalDecompositionTest extends NALTest {
 
     @Test
     void testConjBeliefPos() {
-//        Param.DEBUG = true;
+//
 //        test.log();
         test
                 .input("(&&,a,b). %0.75;0.9%")
@@ -135,7 +135,7 @@ class GoalDecompositionTest extends NALTest {
     @Disabled
     @Test
     void testDisjOpposite() {
-//        Param.DEBUG = true;
+//
 //        test.log();
         //produces output from structural deduction
         test

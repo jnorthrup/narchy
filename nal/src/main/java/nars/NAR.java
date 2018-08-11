@@ -1313,7 +1313,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @Nullable
-    public Task match(Term c, byte punc, long when) {
+    public final Task match(Term c, byte punc, long when) {
         return match(c, punc, when, when);
     }
 

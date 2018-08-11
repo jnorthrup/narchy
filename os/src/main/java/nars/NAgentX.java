@@ -20,7 +20,7 @@ import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -133,8 +133,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        //new CaffeineIndex(64 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(128 * 1024, 4)
+                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        //new HijackConceptIndex(128 * 1024, 4)
 
 
                 )
@@ -198,7 +198,7 @@ abstract public class NAgentX extends NAgent {
 
 //        new NARSpeak.VocalCommentary( a.nar());
 
-        //Param.DEBUG = true;
+        //
 //        a.nar().onTask(x -> {
 //           if (x.isGoal() && !x.isInput())
 //               System.out.println(x.proof());
@@ -273,9 +273,7 @@ abstract public class NAgentX extends NAgent {
             a.curiosity.set(lerp(cur, 0.01f, 0.25f));
         });//.resolution(0.05f);
 
-        m.actionUnipolar($.func("timeFocus", a.id), (f) -> {
-            nar.timeFocus.set(lerp(f, 1f, 16));
-        });//.resolution(0.05f);
+
 
         return m;
     }
@@ -283,7 +281,7 @@ abstract public class NAgentX extends NAgent {
 
     public static void config(NAR n) {
         n.dtDither.set(10);
-        n.timeFocus.set(10);
+
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
@@ -358,8 +356,7 @@ abstract public class NAgentX extends NAgent {
         return senseCamera(id, new Scale(w, pw, ph));
     }
 
-    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Component w, int pw, int ph) throws
-            Narsese.NarseseException {
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Component w, int pw, int ph) {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
 
