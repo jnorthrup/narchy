@@ -5,7 +5,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.term.Term;
-import nars.term.compound.util.Image;
+import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;

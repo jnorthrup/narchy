@@ -8,7 +8,7 @@ import nars.NARS;
 import nars.concept.sensor.Scalar;
 import nars.gui.NARui;
 import nars.time.clock.RealTime;
-import nars.util.signal.BeliefPredict;
+import nars.op.BeliefPredict;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;

@@ -14,7 +14,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.util.Conj;
+import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;

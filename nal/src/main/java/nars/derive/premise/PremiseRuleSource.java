@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
@@ -16,17 +17,16 @@ import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.compound.util.Image;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.match.TermMatchPred;
+import nars.term.util.Image;
+import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.match.Ellipsislike;
 import nars.unify.op.TaskPunctuation;
 import nars.unify.op.TermMatch;
-import nars.util.term.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
@@ -34,12 +34,14 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
 import static nars.subterm.util.Contains.*;
 import static nars.unify.op.TaskPunctuation.Belief;
@@ -49,7 +51,7 @@ import static nars.unify.op.TaskPunctuation.Goal;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseRuleSource extends ProxyTerm implements Function<PremisePatternIndex, PremiseRuleProto> {
+public class PremiseRuleSource extends ProxyTerm implements Function<PatternIndex, PremiseRuleProto> {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
     private final String source;
@@ -80,7 +82,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PremisePatt
 
 
 
-    private static final PremisePatternIndex INDEX = new PremisePatternIndex();
+    private static final PatternIndex INDEX = new PatternIndex();
     protected final Termify termify;
 
     private PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
@@ -102,13 +104,13 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PremisePatt
         Term[] postcon = ref.sub(1).arrayShared();
 
 
-        this.taskPattern = PremisePatternIndex.patternify(precon[0]);
-        this.beliefPattern = PremisePatternIndex.patternify(precon[1]);
+        this.taskPattern = PatternIndex.patternify(precon[0]);
+        this.beliefPattern = PatternIndex.patternify(precon[1]);
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        this.concPattern = PremisePatternIndex.patternify(postcon[0]);
+        this.concPattern = PatternIndex.patternify(postcon[0]);
 
 
 
@@ -588,17 +590,25 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PremisePatt
 
     }
 
+
+    private static final Map<Term, MatchConstraint> constra =
+            new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
+
+    private static final MatchConstraint intern(MatchConstraint x) {
+        MatchConstraint y = constra.putIfAbsent(x.term(), x);
+        return y != null ? y : x;
+    }
     private static MatchConstraint[] theInterned(MutableSet<MatchConstraint> constraints) {
         if (constraints.isEmpty())
             return MatchConstraint.EmptyMatchConstraints;
 
         MatchConstraint[] mc = MatchConstraint.the(constraints);
         for (int i = 0, mcLength = mc.length; i < mcLength; i++)
-            mc[i] = INDEX.intern(mc[i]);
+            mc[i] = intern(mc[i]);
         return mc;
     }
 
-    protected PremiseRuleSource(PremiseRuleSource raw, PremisePatternIndex index) {
+    protected PremiseRuleSource(PremiseRuleSource raw, PatternIndex index) {
         super((index.rule(raw.ref)));
 
         this.termify = raw.termify;
@@ -676,7 +686,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PremisePatt
     }
 
     @Override
-    public PremiseRuleProto apply(PremisePatternIndex i) {
+    public PremiseRuleProto apply(PatternIndex i) {
         return new PremiseRuleProto(this, i);
     }
 

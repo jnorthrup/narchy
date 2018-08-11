@@ -15,7 +15,7 @@ import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.util.concept.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.NotNull;

@@ -12,7 +12,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.util.Image;
+import nars.term.util.Image;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.time.Event;

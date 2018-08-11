@@ -12,7 +12,7 @@ import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.concept.action.BiPolarAction;
 import nars.gui.NARui;
-import nars.util.signal.BeliefPredict;
+import nars.op.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

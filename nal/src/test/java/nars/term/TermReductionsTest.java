@@ -5,7 +5,7 @@ import nars.*;
 import nars.io.NarseseTest;
 import nars.task.util.InvalidTaskException;
 import nars.term.atom.Atomic;
-import nars.term.compound.util.Conj;
+import nars.term.util.Conj;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

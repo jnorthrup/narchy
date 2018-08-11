@@ -5,9 +5,9 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.compound.util.ByteAnonMap;
+import nars.term.util.ByteAnonMap;
 import nars.term.var.UnnormalizedVariable;
-import nars.util.term.transform.TermTransform;
+import nars.term.util.transform.TermTransform;
 import org.jetbrains.annotations.Nullable;
 
 /**

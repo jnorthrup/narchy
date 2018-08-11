@@ -10,7 +10,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.compound.util.Image;
+import nars.term.util.Image;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 

@@ -46,7 +46,7 @@ import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.TimeAware;
-import nars.util.concept.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;

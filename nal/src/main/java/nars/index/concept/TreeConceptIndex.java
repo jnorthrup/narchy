@@ -8,8 +8,8 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.util.term.TermBytes;
-import nars.util.term.TermRadixTree;
+import nars.term.util.TermBytes;
+import nars.term.util.TermRadixTree;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

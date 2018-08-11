@@ -30,7 +30,7 @@ import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.anon.Anon;
 import nars.unify.Unify;
-import nars.util.term.transform.Retemporalize;
+import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;

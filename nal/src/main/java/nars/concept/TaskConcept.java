@@ -12,7 +12,7 @@ import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
-import nars.util.concept.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -22,7 +22,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.compound.util.Conj;
+import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;

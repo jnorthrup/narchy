@@ -17,12 +17,12 @@ import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.util.Image;
+import nars.term.util.Image;
 import nars.term.control.PREDICATE;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
-import nars.util.term.TermHashMap;
+import nars.term.util.TermHashMap;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
@@ -64,7 +64,6 @@ public class Derivation extends PreDerivation {
             };
 
     public final Anon anon;
-
 
 
     private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
@@ -300,10 +299,6 @@ public class Derivation extends PreDerivation {
     public boolean reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
 
-
-
-
-
         if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
 
 
@@ -313,13 +308,7 @@ public class Derivation extends PreDerivation {
         } else {
 
             anon.clear();
-            try {
-                this.taskTerm = anon.put(nextTask.term());
-            } catch (RuntimeException w) {
-                return fatal(nextTask, w);
-            }
-
-
+            this.taskTerm = anon.put(nextTask.term());
             this.taskUniques = anon.uniques();
         }
 
@@ -343,7 +332,7 @@ public class Derivation extends PreDerivation {
         this.taskPunc = nextTask.punc();
         if ((taskPunc == BELIEF || taskPunc == GOAL)) {
             this.taskTruth = nextTask.truth();
-            assert(taskTruth!=null);
+            assert (taskTruth != null);
         } else {
             this.taskTruth = null;
         }
@@ -356,7 +345,7 @@ public class Derivation extends PreDerivation {
             this.beliefTruthDuringTask = nextBelief.truth(taskStart, taskEnd, dur);
             this.beliefStart = nextBelief.start();
 
-            if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(taskStart==ETERNAL || beliefStart==ETERNAL)) {
+            if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(taskStart == ETERNAL || beliefStart == ETERNAL)) {
                 Truth beliefEte = beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, nar);
                 this.beliefTruthDuringTask = Truth.stronger(beliefTruthDuringTask, beliefEte);
             }
@@ -366,7 +355,6 @@ public class Derivation extends PreDerivation {
             this._belief = null;
         }
 
-try {
         if (this._belief != null) {
 
             beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
@@ -378,29 +366,23 @@ try {
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthDuringTask = null;
         }
-} catch (RuntimeException w) {
-    return fatal(nextBelief, w);
-}
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
-        assert (beliefTerm.op() != NEG): nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
-
-
-
+        assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
 
         return true;
     }
 
-    public static boolean fatal(@Nullable Task problemTask, RuntimeException w) {
-        if (problemTask!=null)
-            problemTask.delete();
-        if (Param.DEBUG)
-            throw w;
-        else {
-            logger.warn("{}", w.getMessage());
-            return false;
-        }
-    }
+//    static boolean fatal(@Nullable Task problemTask, RuntimeException w) {
+//        if (problemTask!=null)
+//            problemTask.delete();
+//        if (Param.DEBUG)
+//            throw w;
+//        else {
+//            logger.warn("{}", w.getMessage());
+//            return false;
+//        }
+//    }
 
     /**
      * called after protoderivation has returned some possible Try's
@@ -411,8 +393,6 @@ try {
                 this.belief == null
                         ||
                         this.belief.intersects(taskStart, task.end());
-
-
 
 
         this.termutes.clear();
@@ -450,7 +430,7 @@ try {
         }
 
 
-        this.eternal = (taskStart==ETERNAL) && (_belief == null || _belief.isEternal());
+        this.eternal = (taskStart == ETERNAL) && (_belief == null || _belief.isEternal());
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
 
         this.parentCause = _belief != null ?

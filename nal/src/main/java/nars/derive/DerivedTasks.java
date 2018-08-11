@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.task.NALTask;
-import nars.util.task.TaskBagDrainer;
+import nars.task.util.TaskBagDrainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

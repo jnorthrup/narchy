@@ -15,8 +15,8 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.unify.match.EllipsisMatch;
-import nars.util.term.transform.DirectTermTransform;
-import nars.util.term.transform.TermTransform;
+import nars.term.util.transform.DirectTermTransform;
+import nars.term.util.transform.TermTransform;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;

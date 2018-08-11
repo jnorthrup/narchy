@@ -16,7 +16,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.compound.util.Conj;
+import nars.term.util.Conj;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;

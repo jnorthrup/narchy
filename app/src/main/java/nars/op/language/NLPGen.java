@@ -1,7 +1,7 @@
 package nars.op.language;
 
 import nars.*;
-import nars.derive.premise.PremisePatternIndex;
+import nars.derive.premise.PatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.time.Tense;
@@ -19,7 +19,7 @@ import static nars.Op.VAR_PATTERN;
 public class NLPGen {
 
     final NAR terminal = NARS.shell();
-    final PremisePatternIndex index = new PremisePatternIndex();
+    final PatternIndex index = new PatternIndex();
 
     public interface Rule {
         @NotNull String get(Term t, float freq, float conf, Tense tense);

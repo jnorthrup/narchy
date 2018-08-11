@@ -24,14 +24,14 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
     public NAR nar;
 
     public PremiseDeriverRuleSet(NAR nar, String... rules) {
-        this(new PremisePatternIndex(nar), rules);
+        this(new PatternIndex(nar), rules);
     }
 
-    public PremiseDeriverRuleSet(PremisePatternIndex index, String... rules) {
+    public PremiseDeriverRuleSet(PatternIndex index, String... rules) {
         this(index, PremiseRuleSource.parse(rules));
     }
 
-    private PremiseDeriverRuleSet(PremisePatternIndex patterns, Stream<PremiseRuleSource> parsed) {
+    private PremiseDeriverRuleSet(PatternIndex patterns, Stream<PremiseRuleSource> parsed) {
         assert (patterns.nar != null);
         this.nar = patterns.nar;
         parsed.distinct().map(x -> x.apply(patterns)).forEach(super::add);
@@ -57,7 +57,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
 
     public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
         return new PremiseDeriverRuleSet(
-                new PremisePatternIndex(nar),
+                new PatternIndex(nar),
                 filename.stream().flatMap(n -> PremiseDeriverRuleSet.ruleCache.apply(n).stream()));
     }
 

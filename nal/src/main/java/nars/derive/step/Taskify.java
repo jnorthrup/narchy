@@ -11,7 +11,7 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.term.transform.Retemporalize;
+import nars.term.util.transform.Retemporalize;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

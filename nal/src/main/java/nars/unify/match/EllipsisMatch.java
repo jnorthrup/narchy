@@ -5,7 +5,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
 import nars.unify.Unify;
-import nars.util.term.transform.Retemporalize;
+import nars.term.util.transform.Retemporalize;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;

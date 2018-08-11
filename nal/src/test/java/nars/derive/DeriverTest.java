@@ -8,7 +8,7 @@ import nars.derive.deriver.MatrixDeriver;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.premise.PremisePatternIndex;
+import nars.derive.premise.PatternIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.test.TestNAR;
@@ -71,7 +71,7 @@ class DeriverTest {
     @Test
     void testConclusionWithXTERNAL() {
         NAR n = NARS.shell();
-        PremisePatternIndex idx = new PremisePatternIndex(n) {
+        PatternIndex idx = new PatternIndex(n) {
             @Override
             public @Nullable Termed get(@NotNull Term x, boolean create) {
                 Termed u = super.get(x, create);
@@ -108,7 +108,7 @@ class DeriverTest {
     @Test
     void testAmbiguousPunctuation() {
         assertThrows(Exception.class, () -> {
-            PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(new PremisePatternIndex(NARS.shell()),
+            PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(new PatternIndex(NARS.shell()),
                     "Y, Y |- (?1 &| Y), ()"
             ), null);
         });

@@ -6,7 +6,7 @@
 
 package jcog.data.map;
 
-import sun.misc.Unsafe;
+//import sun.misc.Unsafe;
 
 import java.io.Serializable;
 import java.lang.ref.Reference;
@@ -15,8 +15,11 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.github.benmanes.caffeine.base.UnsafeAccess.UNSAFE;
 
 /**
  * A {@link java.util.ConcurrentMap} supporting user-defined
@@ -417,20 +420,15 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     static final class Segment extends ReentrantLock {
         volatile Node[] table;
-        int count;
+        final AtomicInteger count = new AtomicInteger();
 
         final void decrementCount() {
-            if (--count == 0)
+            if (count.decrementAndGet() == 0)
                 table = null;
         }
 
-        final void clearCount() {
-            count = 0;
-            table = null;
-        }
-
         final void incrementCount() {
-            ++count;
+            count.incrementAndGet();
         }
 
         final Node[] table() {
@@ -441,7 +439,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             int len;
             Node[] tab = table;
             return tab == null ||
-                    ((len = tab.length) - (len >>> 2)) < count ? resizeTable(cchm) : tab;
+                    ((len = tab.length) - (len >>> 2)) < count.get() ? resizeTable(cchm) : tab;
         }
 
         /**
@@ -458,9 +456,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             Node[] newTable = new Node[oldCapacity << 1];
             int sizeMask = newTable.length - 1;
             NodeFactory fac = cchm.factory;
-            for (int i = 0; i < oldCapacity; i++) {
-                Node e = oldTable[i];
-
+            for (Node e : oldTable) {
                 if (e != null) {
                     Node next = e.getLinkage();
                     int idx = e.getLocator() & sizeMask;
@@ -490,20 +486,33 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                             int k = ph & sizeMask;
                             Object pk = p.get();
                             Object pv;
-                            if (pk == null ||
-                                    (pv = p.getValue()) == null)
-                                --count;
+                            if (pk == null || (pv = p.getValue()) == null)
+                                count.decrementAndGet();
                             else
-                                newTable[k] =
-                                        fac.newNode(ph, pk, pv, cchm, newTable[k]);
+                                newTable[k] = fac.newNode(ph, pk, pv, cchm, newTable[k]);
                         }
                     }
                 }
             }
             return table = newTable;
         }
-    }
 
+        public boolean isEmpty() {
+            return count.getOpaque() == 0;
+        }
+
+        public void clear() {
+            if (count.get() > 0) {
+                lock();
+                try {
+                    count.set(0);
+                    table = null;
+                } finally {
+                    unlock();
+                }
+            }
+        }
+    }
 
     static final int SEGMENT_BITS = 6;
     static final int NSEGMENTS = 1 << SEGMENT_BITS;
@@ -703,10 +712,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         AtomicReferenceArray<Segment> segs = segments;
         int index = (hash >>> SEGMENT_SHIFT) & SEGMENT_MASK;
         Segment seg;
-        while ((seg = segs.get(index)) == null) {
+        while ((seg = segs.getAcquire(index)) == null) {
             Segment s2;
-            if (segs.compareAndSet(index, null, s2 = new Segment())) {
-                storeSegment(segs, index, s2);
+            //if (segs.compareAndSet(index, null, s2 = new Segment())) {
+            if (segs.weakCompareAndSetRelease(index, null, s2 = new Segment())) {
+                //segs.setRelease(index, s2);
                 return s2;
             }
         }
@@ -748,8 +758,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (key == null)
             throw new NullPointerException();
         int hash = spreadHash(keyEquivalence.hash(key));
-        Segment seg = traversalSegment(hash);
-        Node r = findNode(key, hash, seg);
+        Node r = findNode(key, hash, traversalSegment(hash));
         return r != null && r.getValue() != null;
     }
 
@@ -790,18 +799,23 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 if (!onlyIfNull || oldValue == null)
                     r.setValue(value);
             } else {
-                Node[] tab = seg.getTableForAdd(this);
-                int i = hash & (tab.length - 1);
-                r = factory.newNode(hash, key, value, this, tab[i]);
-
-
-                storeNode(tab, i, r);
-                seg.incrementCount();
+                store(key, value, hash, seg);
             }
         } finally {
             seg.unlock();
         }
         return oldValue;
+    }
+
+    private void store(K key, V value, int hash, Segment seg) {
+        Node r;
+        Node[] tab = seg.getTableForAdd(this);
+        int i = hash & (tab.length - 1);
+        r = factory.newNode(hash, key, value, this, tab[i]);
+
+
+        storeNode(tab, i, r, seg);
+
     }
 
     /**
@@ -1057,9 +1071,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         int ss = segs.length();
         for (int i = 0; i < ss; ++i) {
             Segment seg = segs.get(i);
-            if (seg != null &&
-                    seg.table() != null &&
-                    seg.count != 0)
+            if (seg != null && !seg.isEmpty())
                 return false;
         }
         return true;
@@ -1079,8 +1091,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         int ss = segs.length();
         for (int i = 0; i < ss; ++i) {
             Segment seg = segs.get(i);
-            if (seg != null && seg.table() != null)
-                sum += seg.count;
+            if (seg != null)
+                sum += seg.count.getOpaque();
         }
         return (sum >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
     }
@@ -1107,8 +1119,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             Segment seg = segs.get(i);
             Node[] tab;
             if (seg != null && (tab = seg.table()) != null) {
-                for (int j = 0; j < tab.length; ++j) {
-                    for (Node p = tab[j];
+                for (Node aTab : tab) {
+                    for (Node p = aTab;
                          p != null;
                          p = p.getLinkage()) {
                         V v = (V) (p.getValue());
@@ -1131,14 +1143,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         int ss = segs.length();
         for (int i = 0; i < ss; ++i) {
             Segment seg = segs.get(i);
-            if (seg != null) {
-                seg.lock();
-                try {
-                    seg.clearCount();
-                } finally {
-                    seg.unlock();
-                }
-            }
+            if (seg != null)
+                seg.clear();
         }
     }
 
@@ -1180,39 +1186,34 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         int hash = spreadHash(keyEquivalence.hash(key));
         Segment seg = traversalSegment(hash);
         Node r = findNode(key, hash, seg);
-        V v = null;
+        V value = null;
         if (r == null) {
             if (seg == null)
                 seg = addSegment(hash);
             seg.lock();
             try {
                 r = findNode(key, hash, seg);
-                if (r == null || (v = (V) (r.getValue())) == null) {
+                if (r == null || (value = (V) (r.getValue())) == null) {
 
-                    v = mappingFunction.map(key);
-                    if (v != null) {
+                    value = mappingFunction.map(key);
+                    if (value != null) {
                         if (r != null)
-                            r.setValue(v);
+                            r.setValue(value);
                         else {
-                            Node[] tab = seg.getTableForAdd(this);
-                            int i = hash & (tab.length - 1);
-                            r = factory.newNode(hash, key, v, this, tab[i]);
-
-                            storeNode(tab, i, r);
-                            seg.incrementCount();
+                            store(key, value, hash, seg);
                         }
                     }
                 }
-            } catch (Throwable e) {
+            } /*catch (Throwable e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
-            } finally {
+            }*/ finally {
                 seg.unlock();
             }
         }
-        if (r != null && v == null)
+        if (r != null && value == null)
             removeIfReclaimed(r);
-        return v;
+        return value;
     }
 
     /**
@@ -1286,12 +1287,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                     seg.decrementCount();
                 }
             } else if (value != null) {
-                Node r =
-                        factory.newNode(hash, key, value, this, tab[i]);
-
-
-                storeNode(tab, i, r);
-                seg.incrementCount();
+                storeNode(tab, i, factory.newNode(hash, key, value, this, tab[i]), seg);
             }
         } finally {
             seg.unlock();
@@ -1807,13 +1803,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
 
-    private static final ReclamationThread reclaim = new ReclamationThread();
+    private static final ReclamationThread reclaim;
 
     static {
-        synchronized (reclaim) {
-            if (!reclaim.isAlive())
-                reclaim.start();
-        }
+        reclaim = new ReclamationThread();
+        reclaim.start();
     }
 
     static final ReferenceQueue<Object> refQueue = reclaim.queue;
@@ -3574,70 +3568,62 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
 
-    static final Unsafe UNSAFE;
+    //    static final Unsafe UNSAFE;
     static final long tableBase;
     static final int tableShift;
 
 
     static {
-        try {
-            UNSAFE = getUnsafe();
-            tableBase = UNSAFE.arrayBaseOffset(Node[].class);
-            int scale = UNSAFE.arrayIndexScale(Node[].class);
-            if ((scale & (scale - 1)) != 0)
-                throw new Error("data type scale not a power of two");
-            tableShift = 31 - Integer.numberOfLeadingZeros(scale);
-
-
-        } catch (Throwable e) {
-            throw new RuntimeException("Could not initialize intrinsics", e);
-        }
+        //try {
+        //UNSAFE = getUnsafe();
+        tableBase = UNSAFE.arrayBaseOffset(Node[].class);
+        int scale = UNSAFE.arrayIndexScale(Node[].class);
+        if ((scale & (scale - 1)) != 0)
+            throw new Error("data type scale not a power of two");
+        tableShift = 31 - Integer.numberOfLeadingZeros(scale);
+//        } catch (Throwable e) {
+//            throw new RuntimeException("Could not initialize intrinsics", e);
+//        }
     }
 
 
     static void storeNode(Node[] table,
-                          int i, Node r) {
+                          int i, Node r, Segment seg) {
         long nodeOffset = ((long) i << tableShift) + tableBase;
         UNSAFE.putOrderedObject(table, nodeOffset, r);
+        seg.incrementCount();
     }
 
-    static void storeSegment(AtomicReferenceArray<Segment> segs,
-                             int i, Segment s) {
-        segs.setRelease(i, s);
-
-
-    }
-
-    /**
-     * Returns a sun.misc.Unsafe.  Suitable for use in a 3rd party package.
-     * Replace with a simple call to Unsafe.getUnsafe when integrating
-     * into a jdk.
-     *
-     * @return a sun.misc.Unsafe
-     */
-    private static sun.misc.Unsafe getUnsafe() {
-        try {
-            return sun.misc.Unsafe.getUnsafe();
-        } catch (SecurityException tryReflectionInstead) {
-        }
-        try {
-            return java.security.AccessController.doPrivileged
-                    (new java.security.PrivilegedExceptionAction<sun.misc.Unsafe>() {
-                        @Override
-                        public sun.misc.Unsafe run() throws Exception {
-                            Class<sun.misc.Unsafe> k = sun.misc.Unsafe.class;
-                            for (java.lang.reflect.Field f : k.getDeclaredFields()) {
-                                f.setAccessible(true);
-                                Object x = f.get(null);
-                                if (k.isInstance(x))
-                                    return k.cast(x);
-                            }
-                            throw new NoSuchFieldError("the Unsafe");
-                        }
-                    });
-        } catch (java.security.PrivilegedActionException e) {
-            throw new RuntimeException("Could not initialize intrinsics",
-                    e.getCause());
-        }
-    }
+    //    /**
+//     * Returns a sun.misc.Unsafe.  Suitable for use in a 3rd party package.
+//     * Replace with a simple call to Unsafe.getUnsafe when integrating
+//     * into a jdk.
+//     *
+//     * @return a sun.misc.Unsafe
+//     */
+//    private static sun.misc.Unsafe getUnsafe() {
+//        try {
+//            return sun.misc.Unsafe.getUnsafe();
+//        } catch (SecurityException tryReflectionInstead) {
+//        }
+//        try {
+//            return java.security.AccessController.doPrivileged
+//                    (new java.security.PrivilegedExceptionAction<sun.misc.Unsafe>() {
+//                        @Override
+//                        public sun.misc.Unsafe run() throws Exception {
+//                            Class<sun.misc.Unsafe> k = sun.misc.Unsafe.class;
+//                            for (java.lang.reflect.Field f : k.getDeclaredFields()) {
+//                                f.setAccessible(true);
+//                                Object x = f.get(null);
+//                                if (k.isInstance(x))
+//                                    return k.cast(x);
+//                            }
+//                            throw new NoSuchFieldError("the Unsafe");
+//                        }
+//                    });
+//        } catch (java.security.PrivilegedActionException e) {
+//            throw new RuntimeException("Could not initialize intrinsics",
+//                    e.getCause());
+//        }
+//    }
 }

@@ -17,38 +17,13 @@ import java.util.function.Predicate;
 /**
  * Generic handler for matching individual Tasks's
  */
-abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
+abstract public class TaskMatch implements Consumer<Task>, Predicate<Task> {
 
     protected final NAR nar;
     private final On on;
     private PREDICATE<Term> term;
-    
+
     private PREDICATE<Byte> punctuation;
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     protected TaskMatch(@NotNull NAR n) {
@@ -70,12 +45,12 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
         return id().toString();
     }
 
-    
+
     public Term id() {
         return $.func(getClass().getSimpleName(),
-            (term), (punctuation)
-                
-            );
+                (term), (punctuation)
+
+        );
     }
 
     public void off() {
@@ -88,21 +63,20 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
     }
 
     @Override
-    public void accept( Task x) {
+    public void accept(Task x) {
 
         test(x);
-
-
 
 
     }
 
 
     protected void onError(SoftException e) {
-        
+
     }
 
-    /** accepts the next match
+    /**
+     * accepts the next match
      *
      * @param task
      * @param xy

@@ -37,10 +37,10 @@ import nars.term.var.NormalizedVariable;
 import nars.time.Tense;
 import nars.unify.Unify;
 import nars.util.SoftException;
-import nars.util.term.transform.MapSubst;
-import nars.util.term.transform.Retemporalize;
-import nars.util.term.transform.TermTransform;
-import nars.util.term.transform.VariableTransform;
+import nars.term.util.transform.MapSubst;
+import nars.term.util.transform.Retemporalize;
+import nars.term.util.transform.TermTransform;
+import nars.term.util.transform.VariableTransform;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -434,18 +434,18 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return compareTo(y.term());
     }
 
-    default int compareTo(Term y) {
+    default int compareTo(Term t) {
 
         //if (this == y) return 0;
-        if (this.equals(y)) return 0;
+        if (this.equals(t)) return 0;
 
 
-        int vc = Integer.compare(y.volume(), this.volume());
+        int vc = Integer.compare(t.volume(), this.volume());
         if (vc != 0)
             return vc;
 
         Op op = this.op();
-        int oc = Integer.compareUnsigned(op.id, y.op().id);
+        int oc = Integer.compareUnsigned(op.id, t.op().id);
         if (oc != 0)
             return oc;
 
@@ -453,18 +453,18 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         if (this instanceof Atomic) {
 
 
-            int h = Integer.compare(hashCode(), y.hashCode());
+            int h = Integer.compare(hashCode(), t.hashCode());
             if (h != 0)
                 return h;
 
             if (this instanceof NormalizedVariable || this instanceof Int) {
                 return 0;
             } else if (this instanceof Int.IntRange) {
-                return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) y).hash64());
+                return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) t).hash64());
             } else /*if (this instanceof Atomic)*/ {
                 return Util.compare(
                         ((Atomic) this).bytes(),
-                        ((Atomic) y).bytes()
+                        ((Atomic) t).bytes()
                 );
             }/* else {
                 throw new UnsupportedOperationException("unimplemented comparison: " + this + ' ' + y);
@@ -473,8 +473,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
         } else {
 
-            int c = Subterms.compare(subterms(), y.subterms());
-            return c != 0 ? c : (op.temporal ? Integer.compare(dt(), y.dt()) : 0);
+            int c = Subterms.compare(subterms(), t.subterms());
+            return c != 0 ? c : (op.temporal ? Integer.compare(dt(), t.dt()) : 0);
         }
     }
 
@@ -762,7 +762,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
             this(op, dt, reason, args);
         }
 
-        public InvalidTermException(Op op, int dt, Subterms args, String reason) {
+        public InvalidTermException(Op op, int dt, Termlike args, String reason) {
             this(op, dt, reason, args.arrayShared());
         }
 

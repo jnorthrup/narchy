@@ -24,7 +24,7 @@ import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
-import nars.util.task.TaskMatch;
+import nars.task.util.TaskRank;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
@@ -304,7 +304,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
     @Override
-    public void match(TaskMatch m, NAR nar, Consumer<Task> target) {
+    public void match(TaskRank m, NAR nar, Consumer<Task> target) {
 
         if (isEmpty())
             return;

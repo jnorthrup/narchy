@@ -18,7 +18,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.dynamic.DynTruth;
-import nars.util.task.series.TaskSeries;
+import nars.task.util.series.TaskSeries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;

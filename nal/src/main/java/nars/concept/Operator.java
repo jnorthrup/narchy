@@ -8,7 +8,7 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.util.concept.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 

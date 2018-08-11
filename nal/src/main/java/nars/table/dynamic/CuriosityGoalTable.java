@@ -6,8 +6,8 @@ import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.task.series.ConcurrentSkiplistTaskSeries;
-import nars.util.task.series.TaskSeries;
+import nars.task.util.series.ConcurrentSkiplistTaskSeries;
+import nars.task.util.series.TaskSeries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ConcurrentSkipListMap;

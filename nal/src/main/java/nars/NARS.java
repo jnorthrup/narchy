@@ -20,9 +20,9 @@ import nars.term.Termed;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
-import nars.util.concept.ConceptAllocator;
-import nars.util.concept.ConceptBuilder;
-import nars.util.concept.DefaultConceptBuilder;
+import nars.concept.util.ConceptAllocator;
+import nars.concept.util.ConceptBuilder;
+import nars.concept.util.DefaultConceptBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

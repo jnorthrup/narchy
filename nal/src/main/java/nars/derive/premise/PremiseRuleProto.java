@@ -32,7 +32,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
     public final Pair<PREDICATE<Derivation>[], DeriveAction> rule;
 
-    public PremiseRuleProto(PremiseRuleSource raw, PremisePatternIndex index) {
+    public PremiseRuleProto(PremiseRuleSource raw, PatternIndex index) {
         super(raw, index);
 
 

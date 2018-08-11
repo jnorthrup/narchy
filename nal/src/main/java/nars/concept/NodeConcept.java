@@ -12,7 +12,7 @@ import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.util.concept.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 
 import java.util.function.Function;
 import java.util.stream.Stream;

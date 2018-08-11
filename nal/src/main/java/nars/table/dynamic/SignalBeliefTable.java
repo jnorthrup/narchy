@@ -9,9 +9,9 @@ import nars.table.temporal.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.concept.ConceptBuilder;
-import nars.util.task.series.ConcurrentSkiplistTaskSeries;
-import nars.util.task.series.TaskSeries;
+import nars.concept.util.ConceptBuilder;
+import nars.task.util.series.ConcurrentSkiplistTaskSeries;
+import nars.task.util.series.TaskSeries;
 
 import java.util.concurrent.ConcurrentSkipListMap;
 

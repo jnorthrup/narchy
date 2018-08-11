@@ -55,7 +55,7 @@ abstract public class Deriver extends Causable {
     protected final DerivedTasks derived =
             new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity);
 
-    protected final ActivatedLinks linked = new ActivatedLinks();
+    public final ActivatedLinks linked = new ActivatedLinks();
 
 
     @Deprecated private static final AtomicInteger serial = new AtomicInteger();

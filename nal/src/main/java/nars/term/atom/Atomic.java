@@ -6,7 +6,7 @@ import nars.$;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.util.term.transform.Retemporalize;
+import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
 

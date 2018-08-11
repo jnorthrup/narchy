@@ -8,7 +8,7 @@ import nars.concept.PermanentConcept;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.util.concept.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;

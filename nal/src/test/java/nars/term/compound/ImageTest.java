@@ -3,7 +3,7 @@ package nars.term.compound;
 import nars.$;
 import nars.term.Term;
 import nars.term.atom.Int;
-import nars.term.compound.util.Image;
+import nars.term.util.Image;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

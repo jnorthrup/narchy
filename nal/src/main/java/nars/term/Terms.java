@@ -7,7 +7,7 @@ import jcog.decide.Roulette;
 import jcog.sort.SortedList;
 import nars.IO;
 import nars.Op;
-import nars.derive.premise.PremisePatternIndex;
+import nars.derive.premise.PatternIndex;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
@@ -306,8 +306,8 @@ public enum Terms {
 
     private static boolean canExtractFixedPath(Term container) {
         return !container.isCommutative()
-                && !(container instanceof PremisePatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive)
-                && !(container instanceof PremisePatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear);
+                && !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive)
+                && !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear);
     }
 }
 

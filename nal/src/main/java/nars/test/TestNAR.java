@@ -6,7 +6,7 @@ import nars.*;
 import nars.task.ITask;
 import nars.task.Tasked;
 import nars.test.condition.NARCondition;
-import nars.test.condition.TaskMatch;
+import nars.test.condition.TaskCondition;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.slf4j.Logger;
@@ -125,7 +125,7 @@ public class TestNAR {
                 if (!quiet) {
                     logger.error("mustNot: {}", t);
                     t.log(logger);
-                    ((TaskMatch) t).matched.forEach(shouldntHave -> logger.error("Must not:\n{}", shouldntHave.proof()));
+                    ((TaskCondition) t).matched.forEach(shouldntHave -> logger.error("Must not:\n{}", shouldntHave.proof()));
                 }
 
 
@@ -355,8 +355,8 @@ public class TestNAR {
 
         float hf = freqTolerance / 2.0f;
         float hc = confTolerance / 2.0f;
-        TaskMatch tc =
-                new TaskMatch(nar,
+        TaskCondition tc =
+                new TaskCondition(nar,
                         cycleStart, cycleEnd,
                         sentenceTerm, punc, freqMin - hf, freqMax + hf, confMin - hc, confMax + hc, time);
 

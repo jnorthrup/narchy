@@ -11,7 +11,7 @@ import nars.table.temporal.TemporalBeliefTable;
 import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.task.TaskMatch;
+import nars.task.util.TaskRank;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +80,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     @Override
-    public void match(TaskMatch m, NAR nar, Consumer<Task> target) {
+    public void match(TaskRank m, NAR nar, Consumer<Task> target) {
         long s = m.start();
         long e = m.end();
         FloatFunction<Task> value = m.value();
