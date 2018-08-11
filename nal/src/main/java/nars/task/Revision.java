@@ -285,7 +285,7 @@ public class Revision {
         }
 
         TruthPolation T = Param.truth(start, end, dur).add(tasks);
-        LongSet stamp = T.filterCyclic();
+
         if (T.size() == 1) {
             if (!forceProjection) {
                 return T.getTask(0);
@@ -293,6 +293,8 @@ public class Revision {
                 return null; //fail
             }
         }
+
+        LongSet stamp = T.filterCyclic();
 
         Truth truth = T.truth(nar);
         if (truth == null)

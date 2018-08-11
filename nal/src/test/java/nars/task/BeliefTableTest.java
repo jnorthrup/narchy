@@ -16,6 +16,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.IMPL;
 import static nars.task.RevisionTest.x;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -291,7 +292,7 @@ class BeliefTableTest {
             long when = t == Present ? 0 : ETERNAL;
 
             for (int dt = 3; dt < 7; dt++) {
-                Task fwd = n.match($.impl($.$("a"), +dt, $.$("b")), BELIEF, when);
+                Task fwd = n.match(IMPL.the($.$("a"), +dt, $.$("b")), BELIEF, when);
                 assertEquals("(a ==>+5 b)", fwd.term().toString());
             }
 

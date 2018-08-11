@@ -115,7 +115,7 @@ class AIMATests {
         });
 
 
-        n.run(8000);
+        n.run(3000);
 //        n.synch();
 
 

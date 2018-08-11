@@ -394,6 +394,37 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return equals(x) ? 0 : DTERNAL;
     }
 
+    /** returns DTERNAL if not found */
+    default int subTimeFirst(Term x) {
+        final int[] time = new int[1];
+        if (subTimesWhile(x, (w)->{
+            //got it
+            time[0] = w;
+            return false;
+        }) > 0) {
+            return time[0];
+        }
+        return DTERNAL;
+    }
+
+    /**
+     *
+     * TODO make generic Predicate<Term> selector
+     * TODO move down to Compound, provide streamlined Atomic impl */
+    default int subTimesWhile(Term match, IntPredicate kontinue) {
+        final int[] hits = {0};
+        eventsWhile((when, what)->{
+            if (what.equals(match)) {
+                hits[0]++;
+                assert(when >= 0 && when < Integer.MAX_VALUE);
+                return kontinue.test((int)when);
+            }
+            return true;
+        }, 0, true, true, false, 0);
+        return hits[0];
+    }
+
+
 
 
     /**

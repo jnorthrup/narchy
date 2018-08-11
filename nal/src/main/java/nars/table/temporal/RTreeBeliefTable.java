@@ -24,7 +24,7 @@ import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
-import nars.task.util.TaskRank;
+import nars.task.util.TaskMatchRank;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
@@ -260,12 +260,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 TruthPolation t = Param.truth(start, end, dur);
                 temporalTasks.forEachItem(t::add);
 
-                LongSet temporalStamp = t.filterCyclic();
                 if (eternal != null && !eternal.isEmpty()) {
+                    LongSet temporalStamp = t.filterCyclic();
                     Task ee = eternal.select(ete -> !Stamp.overlapsAny(temporalStamp, ete.stamp()));
                     if (ee != null) {
                         t.add(ee);
                     }
+                } else if (t.size() > 1) {
+                    t.filterCyclic();
                 }
 
                 return t.truth();
@@ -304,7 +306,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
     @Override
-    public void match(TaskRank m, NAR nar, Consumer<Task> target) {
+    public void match(TaskMatchRank m, NAR nar, Consumer<Task> target) {
 
         if (isEmpty())
             return;
@@ -313,7 +315,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 task(m.value()),
                 (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
                 m::filter)
-                .scan(this, m.start(), m.end());
+                .scan(this, m.timeMin(), m.timeMax());
 
         int tts = tt.size();
         if (tts > 0) {

@@ -205,11 +205,6 @@ public class Conj extends ByteAnonMap {
         return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
     }
 
-//    private static Conj from(Term t, long rootTime) {
-//        Conj x = new Conj();
-//        x.add(rootTime, t);
-//        return x;
-//    }
 
     public static Term conj(FasterList<LongObjectPair<Term>> events) {
         int eventsSize = events.size();

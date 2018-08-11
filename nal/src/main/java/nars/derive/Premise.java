@@ -174,7 +174,7 @@ public class Premise {
 
                 final BeliefTable bb = beliefConcept.beliefs();
 
-                Predicate<Task> beliefFilter = null; //stampFilter(d);
+                Predicate<Task> beliefFilter = (t) -> !t.equals(task);//null; //stampFilter(d);
 
                 Task belief = null;
 

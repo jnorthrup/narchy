@@ -67,7 +67,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * remove components contributing no evidence
      */
     public final TruthPolation filter() {
-        removeIf(x -> update(x) == null);
+        if (size() > 1)
+            removeIf(x -> update(x) == null);
         return this;
     }
 

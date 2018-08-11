@@ -16,7 +16,9 @@
 package org.oakgp.rank;
 
 import jcog.pri.Pri;
+import jcog.pri.ScalarValue;
 import jcog.sort.TopN;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 /**
  * A ranking of evolved objects (sorted immutable collection)
@@ -28,7 +30,8 @@ public final class Ranking extends TopN<Evolved> {
     }
 
     public Ranking(int capacity, boolean reverse) {
-        super(new Evolved[capacity], reverse ? Pri::priNeg : Pri::pri);
+
+        super(new Evolved[capacity], reverse ? Pri::priNeg : ScalarValue.AtomicScalarValue::pri);
     }
 
     public Ranking(Evolved... initial) {
@@ -37,20 +40,5 @@ public final class Ranking extends TopN<Evolved> {
             add(e);
     }
 
-    @Override
-    public boolean add(Evolved e) {
-//        if (!isSorted(rank)) {
-//            throw new RuntimeException("not sorted");
-//        }
-
-        boolean b = super.add(e);
-
-//        if (!isSorted(rank)) {
-//            System.out.println(this);
-//            throw new RuntimeException("not sorted" );
-//        }
-
-        return b;
-    }
 
 }

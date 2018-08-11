@@ -11,8 +11,8 @@ public class FocusingLinearTruthPolation extends LinearTruthPolation {
 
 
     private final static int minDur =
-            //0;
-            1;
+            0;
+            //1;
 
 
     public FocusingLinearTruthPolation(long start, long end, int dur) {

@@ -268,8 +268,8 @@ public abstract class TermBuilder {
                         return newPred;
 
                     if (dt!=DTERNAL) {
-                        Term f = Conj.firstEventTerm(predicate);
-                        int shift = predicate.subTimeOnly(f);
+                        Term f = Conj.firstEventTerm(newPred);
+                        int shift = predicate.subTimeFirst(f);
                         if (shift == DTERNAL)
                             return Null; //??
                         dt += shift;

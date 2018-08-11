@@ -12,13 +12,13 @@ import java.util.function.BiFunction;
 import static nars.time.Tense.ETERNAL;
 
 /** naively applies a variety of methods for calculating time focus targets */
-public class DefaultDeriverTiming implements BiFunction<Task, Term, long[]> {
+public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
 
     private final Time clock;
     private final Random rng;
     private final NAR nar;
 
-    public DefaultDeriverTiming(NAR n) {
+    public AdHocDeriverTiming(NAR n) {
         this.nar = n;
         this.clock = n.time;
         this.rng = n.random();
@@ -26,8 +26,8 @@ public class DefaultDeriverTiming implements BiFunction<Task, Term, long[]> {
 
     @Override
     public long[] apply(Task task, Term term) {
-        if (task.isEternal())
-            return new long[] { ETERNAL, ETERNAL };
+//        if (task.isEternal())
+//            return new long[] { ETERNAL, ETERNAL };
 
         long[] tt;
         switch (rng.nextInt(4)) {

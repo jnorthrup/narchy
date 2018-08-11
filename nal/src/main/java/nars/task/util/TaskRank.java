@@ -1,136 +1,68 @@
 package nars.task.util;
 
-import nars.Op;
+import jcog.math.Longerval;
+import jcog.sort.TopN;
 import nars.Task;
-import nars.table.temporal.TemporalBeliefTable;
-import nars.task.Revision;
-import nars.term.Term;
+import nars.truth.Truth;
+import nars.truth.polation.FocusingLinearTruthPolation;
+import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 import static nars.time.Tense.ETERNAL;
 
-/** query object used for selecting tasks */
-public interface TaskRank {
+/** query object used for selecting tasks.  can be applied to multiple belief tables or other sources of task. */
+public class TaskRank implements Consumer<Task> {
 
-    /** max values to return */
-    int limit();
-    
-    long start();
-    long end();
+    final TopN<Task> tasks;
 
-    /** value ranking function */
-    FloatFunction<Task> value();
+    @Nullable final LongLongPredicate timeFilter;
 
+    static LongLongPredicate time(long start, long end, boolean intersectOrContain, boolean allowEternal) {
+        assert(start!=ETERNAL);
 
-    /** gets one task, sampled fairly from the available tasks in the
-     * given range according to strength */
-    static TaskRank best(long start, long end, @Nullable Term template) {
-        return
-                template == null || !template.hasAny(Op.Temporal) ?
-                        new Best(start, end) :
-                        new BestWithFactor(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.term())));
-    }
-
-    //TODO involving some randomness:
-    //static TaskMatch sampled(long start, long end, @Nullable Term template) {
-
-
-        /** prefilter */
-    default boolean filter(Task task) {
-        return true;
-    }
-
-    class Best implements TaskRank, FloatFunction<Task> {
-        private final long start;
-        private final long end;
-        private final FloatFunction<Task> value;
-
-        public Best(long start, long end) {
-            assert(start <= end);
-            this.start = start;
-            this.end = end;
-
-            if (start == ETERNAL) {
-                
-
-                value = (Task t) -> (t.isBeliefOrGoal() ?
-                        
-                        
-                        t.conf()
+        LongLongPredicate ii =
+                intersectOrContain ?
+                    (s, e) -> Longerval.intersectLength(s, e, start, end) != -1
                         :
-                        
-                        1 + (t.pri() * t.originality())
-                );
-            } else {
-                
+                    (s, e) -> (s >= start && e <= end);
 
-                long dur = (end - start + 1);
-                value = t ->
-                    t.isBeliefOrGoal() ?
-                        
-                        TemporalBeliefTable.value(t, start, end, dur)
-
-                        :
-
-                        1 + (t.pri() / (1f + (float)(t.minTimeTo(start, end)/((double)dur)))) //questions
-                ;
-            }
-        }
-
-        @Override
-        public float floatValueOf(Task x) {
-            return value.floatValueOf(x);
-        }
-
-        @Override
-        public final FloatFunction<Task> value() {
-            return this;
-        }
-
-        @Override
-        public long start() {
-            return start;
-        }
-
-        @Override
-        public long end() {
-            return end;
-        }
-
-        @Override
-        public int limit() {
-            return 1;
-        }
-
-    }
-
-    class BestWithFactor extends Best {
-
-        private final FloatFunction<Task> factor;
-        private float lowerLimit = Float.NEGATIVE_INFINITY;
-
-
-        public BestWithFactor(long start, long end, FloatFunction<Task> factor) {
-            super(start, end);
-            this.factor = factor;
-        }
-
-
-        @Override
-        public float floatValueOf(Task x) {
-
-            float p = super.floatValueOf(x);
-            if (limit()==1) {
-                if (p > lowerLimit)
-                    lowerLimit = p;
-                else if (p < lowerLimit) {
-                    
-                    return Float.NEGATIVE_INFINITY;
-                }
-            }
-
-            return p * factor.floatValueOf(x);
+        if (allowEternal) {
+            return (s,e)->{
+                if (s == ETERNAL) return true; //allow eternal
+                else return ii.accept(s, e);
+            };
+        } else {
+            return ii;
         }
     }
+
+    public TaskRank(int limit, FloatFunction<Task> rank, @Nullable LongLongPredicate timeFilter) {
+        this.tasks = new TopN<>(new Task[limit], rank);
+        this.timeFilter = timeFilter;
+    }
+
+
+    @Override
+    public final void accept(Task task) {
+        if (timeFilter == null || timeFilter.accept(task.start(), task.end())) {
+            tasks.accept(task);
+        }
+    }
+
+    public boolean isEmpty() { return tasks.isEmpty(); }
+
+    @Nullable public Truth truth(long s, long e, int dur) {
+        return isEmpty() ? null : truth(new FocusingLinearTruthPolation(s, e, dur));
+    }
+
+    @Nullable public Truth truth(TruthPolation p) {
+        p.add(tasks);
+        p.filterCyclic();
+        return p.truth();
+    }
+
 }

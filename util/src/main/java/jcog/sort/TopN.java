@@ -8,25 +8,36 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
+import static java.lang.Float.NEGATIVE_INFINITY;
+
 /** warning: this keeps duplicate insertions */
 public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
-    protected final FloatFunction<X> rank;
+    protected final FloatRank<X> rank;
+    private float min;
 
-    public TopN(X[] target, FloatFunction<X> rank) {
+    /** try to use the FloatRank if a scoring function can be interrupted */
+    @Deprecated public TopN(X[] target, FloatFunction<X> rank) {
+        this(target, FloatRank.from(rank));
+    }
+
+    public TopN(X[] target, FloatRank<X> rank) {
         this.items = target;
-        this.rank = rank; 
+        this.rank = rank;
+        this.min = NEGATIVE_INFINITY;
     }
 
     public final float rank(X x) {
-        return rank.floatValueOf(x); 
+        return rank.rank(x, min);
     }
 
-    public final float rankNeg(X x) {
-        return -rank.floatValueOf(x); 
+    /** invert the SortedArray's order so this isnt necessary */
+    @Deprecated private final float rankNeg(X x) {
+        return -rank(x);
     }
 
     public void clear(int newCapacity, IntFunction<X[]> newArray) {
+        min = NEGATIVE_INFINITY;
         if (items == null || items.length != newCapacity) {
             items = newArray.apply(newCapacity);
             size = 0;
@@ -36,7 +47,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     }
 
     @Override
-    public int add(X element, float elementRank, FloatFunction<X> cmp) {
+    public final int add(X element, float elementRank, FloatFunction<X> cmp) {
 
         if (this.size == items.length) {
             if (elementRank >= minValueIfFull()) {
@@ -53,14 +64,15 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     }
 
     @Override
-    public boolean add(X e) {
+    public final boolean add(X e) {
         int r = add(e, this::rankNeg);
-        return r >= 0;
+        if (r >= 0) {
+            commit();
+            return true;
+        }
+        return false;
     }
-    
-    protected boolean add(X e, float elementRank) {
-        return add(e, elementRank, this::rankNeg)!=-1;
-    }
+
 
     @Override
     protected boolean grows() {
@@ -77,9 +89,14 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         add(e);
     }
 
+    private void commit() {
+        min = minValueIfFull();
+    }
+
     public X pop() {
         int s = size();
         if (s == 0) return null;
+        commit();
         return removeFirst();
     }
 
@@ -92,8 +109,9 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         count = Math.min(count, size);
         List<X> x = new FasterList(count);
         for (int i = 0; i < count; i++) {
-            x.add(pop());
+            x.add(removeFirst());
         }
+        commit();
         return x;
     }
 
@@ -103,6 +121,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
         this.items = next;
         this.size = 0;
+        commit();
 
         return current;
     }
@@ -122,7 +141,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     }
 
     public float minValueIfFull() {
-        return size() == capacity() ? minValue() : Float.NEGATIVE_INFINITY;
+        return size() == capacity() ? minValue() : NEGATIVE_INFINITY;
     }
 
     public X top() { return isEmpty() ? null : get(0); }
@@ -134,6 +153,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         if (belowIndex < size) {
             size = belowIndex;
             Arrays.fill(items, size, items.length-1, null);
+            commit();
         }
     }
 

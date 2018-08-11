@@ -30,27 +30,30 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ConjTest {
 
-    @Test void testParallelizeDTERNALWhenInSequence() {
-        assertEq("((a&|b) &&+1 c)","((a&&b) &&+1 c)");
-        assertEq("((a&&b) &&+- c)","((a&&b) &&+- c)"); //xternal: unaffected
-        assertEq("((a&|b) &&+- c)","((a&|b) &&+- c)"); //xternal: unaffected
-        assertEq("(c &&+1 (a&|b))","(c &&+1 (a&&b))");
-        assertEq("((a&|b)&&(c&|d))","((a&|b)&&(c&|d))");
-        assertEq("(&|,a,b,c,d)","((a&&b)&|(c&&d))");
+    @Test
+    void testParallelizeDTERNALWhenInSequence() {
+        assertEq("((a&|b) &&+1 c)", "((a&&b) &&+1 c)");
+        assertEq("((a&&b) &&+- c)", "((a&&b) &&+- c)"); //xternal: unaffected
+        assertEq("((a&|b) &&+- c)", "((a&|b) &&+- c)"); //xternal: unaffected
+        assertEq("(c &&+1 (a&|b))", "(c &&+1 (a&&b))");
+        assertEq("((a&|b)&&(c&|d))", "((a&|b)&&(c&|d))");
+        assertEq("(&|,a,b,c,d)", "((a&&b)&|(c&&d))");
     }
 
-    @Test void testParallelizeImplAFTERSequence() {
-        assertEq("((a&|b)=|>x)","((a &| b) ==> x)");
-        assertEq("((a &&+1 b)=|>x)","((a &&+1 b) ==> x)");
-        assertEq("((a&|b) ==>+- x)","((a &| b) ==>+- x)"); //xternal: unaffected
+    @Test
+    void testParallelizeImplAFTERSequence() {
+        assertEq("((a&|b)=|>x)", "((a &| b) ==> x)");
+        assertEq("((a &&+1 b)=|>x)", "((a &&+1 b) ==> x)");
+        assertEq("((a&|b) ==>+- x)", "((a &| b) ==>+- x)"); //xternal: unaffected
         //assertEq("(x =|> (a &| b))","(x ==> (a &| b))");
         //assertEq("(x =|> (a &&+1 b))","(x ==> (a &&+1 b))");
     }
 
     //WhenInXTERNAL?
-    @Test void testParallelizeNegatedDTERNALWhenInSequence() {
-        assertEq("((--,(a&|b)) &&+1 c)","(--(a&&b) &&+1 c)");
-        assertEq("(c &&+1 (--,(a&|b)))","(c &&+1 --(a&&b))");
+    @Test
+    void testParallelizeNegatedDTERNALWhenInSequence() {
+        assertEq("((--,(a&|b)) &&+1 c)", "(--(a&&b) &&+1 c)");
+        assertEq("(c &&+1 (--,(a&|b)))", "(c &&+1 --(a&&b))");
     }
 
 
@@ -132,6 +135,23 @@ public class ConjTest {
         boolean added = c.add(1, a.neg());
         assertEquals(False, c.term());
     }
+
+
+    @Test
+    void testGroupNonDTemporalParallelComponents() throws Narsese.NarseseException {
+
+
+        Term c1 = $("((--,(ball_left)) &&-270 (ball_right)))");
+
+        assertEquals("((ball_right) &&+270 (--,(ball_left)))", c1.toString());
+        assertEquals(
+                "(((ball_right)&|(ball_left)) &&+270 (--,(ball_left)))",
+
+                parallel($("(ball_left)"), $("(ball_right)"), c1)
+                        .toString());
+
+    }
+
 
     @Test
     void testEventContradictionWithEternal() {
@@ -1644,7 +1664,6 @@ public class ConjTest {
     }
 
 
-
     @Test
     void testCoNegatedSubtermTask() throws Narsese.NarseseException {
 
@@ -1814,7 +1833,6 @@ public class ConjTest {
         }
 
     }
-
 
 
     static final Term x = $.the("x");

@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.term.Term;
-import nars.task.util.TaskRank;
+import nars.task.util.TaskMatchRank;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -53,7 +53,7 @@ public interface TaskTable {
         return streamTasks().toArray(Task[]::new);
     }
 
-    default void match(TaskRank m, NAR nar, Consumer<Task> target) {
+    default void match(TaskMatchRank m, NAR nar, Consumer<Task> target) {
         if (isEmpty())
             return;
 
@@ -98,7 +98,7 @@ public interface TaskTable {
     }
 
     /** matches, attempting to fill the provided Task[] array */
-    @Deprecated default int match(TaskRank m, NAR nar, Task[] target) {
+    @Deprecated default int match(TaskMatchRank m, NAR nar, Task[] target) {
         final int[] i = {0};
         match(m, nar, x->{
             //if (x!=null)
@@ -109,7 +109,7 @@ public interface TaskTable {
     }
 
     /** gets one result */
-    @Nullable default Task matchThe(TaskRank m, NAR nar) {
+    @Nullable default Task matchThe(TaskMatchRank m, NAR nar) {
         assert(m.limit()==1);
         Task[] x = new Task[1];
         int r = match(m, nar, x);
@@ -127,7 +127,7 @@ public interface TaskTable {
             return null;
 
 
-        return matchThe(TaskRank.best(start, end, template), nar);
+        return matchThe(TaskMatchRank.best(start, end, template), nar);
     }
 
     default Task sample(long start, long end, Term template, NAR nar) {

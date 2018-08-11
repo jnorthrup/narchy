@@ -474,15 +474,13 @@ public interface Compound extends Term, IPair, Subterms {
             return null;
 
         RoaringBitmap found = new RoaringBitmap();
-        eventsWhile((when, what)->{
-            if (what.equals(x)) {
-                assert(when >= 0 && when < Integer.MAX_VALUE);
-                found.add((int) when);
-            }
+        if ((subTimesWhile(x, (when)->{
+            found.add(when);
             return true;
-        }, 0, true, true, false, 0);
+        })) == 0)
+            return null;
 
-        return found.isEmpty() ? null : found.toArray();
+        return found.toArray();
     }
 
 
