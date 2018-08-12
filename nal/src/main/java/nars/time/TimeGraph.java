@@ -17,10 +17,10 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -35,7 +35,6 @@ import static jcog.data.graph.search.Search.pathStart;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
-import static org.eclipse.collections.impl.tuple.Tuples.twin;
 
 /**
  * represents a multigraph of events and their relationships
@@ -413,6 +412,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
                         Event[] ab = ae.toArray(new Event[aes]);
+                        ArrayUtils.shuffle(ab, random());
 
                         for (int i = 0; i < ab.length; i++) {
                             for (int j = i + 1; j < ab.length; j++) {
@@ -432,10 +432,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         if (bes > 0) {
 
 
-                            Set<Twin<Event>> uniqueTry = new UnifiedSet<>(4);
+                            //Set<Twin<Event>> uniqueTry = new UnifiedSet<>(4);
                             if (!ae.allSatisfy(ax ->
                                     be.allSatisfyWith((bxx, axx) -> {
-                                        if (uniqueTry.add(twin(axx, bxx))) {
+                                        /*if (uniqueTry.add(twin(axx, bxx)))*/ {
 
                                             if (!solvePairDT(x, axx, bxx, each))
                                                 return false;

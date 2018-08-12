@@ -117,7 +117,7 @@ public class Conj extends ByteAnonMap {
 
         int cdt = conj.dt();
 
-        if (cdt == DTERNAL || cdt == 0) {
+        if (Op.concurrent(cdt)) {
             Term[] csDropped = conj.subterms().termsExcept(event);
             if (csDropped != null) {
                 if (csDropped.length == 1)
@@ -663,7 +663,7 @@ public class Conj extends ByteAnonMap {
 
         if (result[0] == False) {
             //try removing the matching subterm from the disjunction and reconstruct it as the replacement term
-            Term dropped;
+
             if (eternal) {
                 result[0] = Conj.without(disjUnwrapped, x, false);
             } else {
@@ -671,9 +671,9 @@ public class Conj extends ByteAnonMap {
                 result[0] = Conj.conjDrop(disjUnwrapped, x, true, false);
             }
             int dt = eternal ? DTERNAL : 0;
-//            if (result[0].equals(disjUnwrapped))
-//                return Op.compoundExact(CONJ, dt, disjUnwrapped.neg(), x).neg(); //try to prevent loop
-//            else
+            if (result[0].equals(disjUnwrapped))
+                return Op.compoundExact(CONJ, dt, result[0].neg(), x).neg(); //try to prevent loop
+            else
                 return CONJ.the(result[0].neg(), dt, x).neg();
         }
 
@@ -824,8 +824,6 @@ public class Conj extends ByteAnonMap {
      * @return non-zero byte value
      */
     private byte add(Term t) {
-        if (!((t != null && !(t instanceof Bool))))
-            throw new WTF();
         assert (t != null && !(t instanceof Bool));
         return termToId.getIfAbsentPutWithKey(t.unneg(), tt -> {
             //int s = termToId.size();
@@ -1192,7 +1190,7 @@ public class Conj extends ByteAnonMap {
                 int cdt = when == ETERNAL ? DTERNAL : 0;
                 if (Util.or(z->z.dt()==cdt && z.op()==CONJ, t)) {
                     //recurse: still flattening to do
-                    return CONJ.the(cdt, Terms.sorted(t));
+                    return CONJ.the(cdt, t);
                 } else {
                     return Op.compoundExact(CONJ, cdt, Terms.sorted(t));
                 }
