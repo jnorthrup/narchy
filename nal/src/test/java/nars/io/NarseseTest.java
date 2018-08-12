@@ -28,16 +28,14 @@ public class NarseseTest {
         return (T) Narsese.term(s);
     }
 
+    //HACK may need to split this into two functions, one which accepts bool result and others which only accept a thrown exception
     public static void assertInvalidTerms(@NotNull String... inputs) {
         for (String s : inputs) {
             
             try {
                 Term e = term(s);
-                if (e instanceof Bool) {
-                    assertTrue(true);
-                } else {
-                    fail(s + " should not be parseable but got: " + e); 
-                }
+                assertTrue(e instanceof Bool, ()->s + " should not be parseable but got: " + e);
+
             } catch (Narsese.NarseseException | TermException e) {
                 assertTrue(true);
             }

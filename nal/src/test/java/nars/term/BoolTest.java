@@ -195,7 +195,7 @@ public class BoolTest {
 
     @Test
     void testSetTautologies() {
-
+        //TODO
     }
 
     private static final Term x = $$("x");
@@ -264,16 +264,24 @@ public class BoolTest {
         assertEquals(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())) );
     }
 
-    @Test void testDisjFactor1() {
-        assertEquals(x, or(x, and(x, z)));
+
+    @Test void testDisjFactor1PosPos() {
+        assertEquals(x,
+                or(x, and(x, y)));
+    }
+    @Test void testDisjFactor1PosNeg() {
+        assertEquals(or(x,y),
+                or(x, and(x.neg(), y)));
+    }
+    @Test void testDisjFactor1NegPos() {
+        assertEquals(or(x.neg(), y),
+                or(x.neg(), and(x, y)));
+    }
+    @Test void testDisjFactor1NegNeg() {
+        assertEquals(x.neg(),
+                or(x.neg(), and(x.neg(), y)));
     }
 
-    @Test void testDisjFactor1Pos() {
-        assertEquals(x, or(x, and(x, z)));
-    }
-    @Test void testDisjFactor1Neg() {
-        assertEquals(x.neg(), or(x.neg(), and(x.neg(), z)));
-    }
 
     @Test void testDisjFactor3() {
         assertEquals(x, or(and(x, y), and(x, y.neg()), and(x,z)) );

@@ -209,23 +209,32 @@ public abstract class TermBuilder {
             if (subject == False)
                 return Null;
 
-            if (predicate instanceof Bool)
-                return Null;
 
+//            if (subject.hasAny(InvalidImplicationSubj)) //if this is required, subject.isAny is more appropriate
+//                return Null;
 
-            if (predicate.op() == NEG) {
-
-                return IMPL.the(dt, subject, predicate.unneg()).neg();
+            switch (predicate.op()) {
+                case BOOL:
+                    return Null;
+                case NEG:
+                    return statement(IMPL, dt, subject, predicate.unneg()).neg();
+                case IMPL: {
+                    Term newSubj;
+                    Term inner = predicate.sub(0);
+                    if (dt==DTERNAL || dt == XTERNAL) {
+                        newSubj = CONJ.the(subject, dt, inner);
+                    } else {
+                        newSubj = Conj.conjMerge(subject, 0, inner, subject.dtRange() + dt);
+                    }
+                    return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1));
+                }
             }
 
-
-            if (subject.hasAny(InvalidImplicationSubj))
-                return Null;
 
 
             switch (predicate.op()) {
                 case IMPL: {
-                    return IMPL.the(predicate.dt(), CONJ.the(subject, dt, predicate.sub(0)), predicate.sub(1));
+
                 }
 
 
@@ -238,6 +247,7 @@ public abstract class TermBuilder {
                     //parallelize the impl if the subject is a sequence
                     dt = 0;
                 }
+                //TODO simple case when no CONJ or IMPL are present
 
 //                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
 //                subject.eventsWhile((w, t) -> {
@@ -245,21 +255,26 @@ public abstract class TermBuilder {
 //                    return true;
 //                }, 0, true, true, false, 0);
                 Conj se = new Conj();
-                se.add(dt != DTERNAL ? 0 : ETERNAL, subject);
+                se.add(subject.dt() != DTERNAL ? 0 : (dt!=DTERNAL ? 0 : ETERNAL), subject);
 
                 final boolean[] subjChange = {false}, predChange = {false};
+                //TODO extract this to a ConjConflict class
                 Conj pe = new Conj(se.termToId, se.idToTerm) {  //share same term map
                     @Override
                     protected int addFilter(long at, Term x, byte id) {
                         int f = se.conflictOrSame(at, id);
-                        if (f == +1) {
+                        int f2 = (at==ETERNAL || f==-1) ? f : se.conflictOrSame(ETERNAL, id);
+                        if (f == -1 || f2 == -1)
+                            return -1;
+                        if (f == +1 || f2 == +1) {
                             predChange[0] = true;
                             return +1; //ignore this term (dont repeat in the predicate)
                         }
                         return f;
                     }
                 };
-                if (!pe.add(dt!=DTERNAL ? dt + subject.dtRange() : ETERNAL, predicate))
+                long offset = (dt!=DTERNAL) ? dt + subject.dtRange() : (predicate.dt()!=DTERNAL ? 0 : ETERNAL);
+                if (!pe.add(offset, predicate))
                     return False;
 
                 if (predChange[0]) {
@@ -290,6 +305,17 @@ public abstract class TermBuilder {
                         dt += dr;
                     }
                     subject = newSubj;
+                }
+
+                if (subject.op()==NEG && concurrent(dt)) {
+                    //special test for negated subject that may conflict with predicate
+                    Term x = CONJ.the(dt, subject, predicate);
+                    if (x instanceof Bool) {
+                        return x;
+                    } else {
+                        if (x.op()!=CONJ)
+                            return Null; //??
+                    }
                 }
 
 //                int pre = subject.dtRange();
@@ -394,11 +420,17 @@ public abstract class TermBuilder {
 //
 //                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
                     //return IMPL.the(dt, subject, predicate);
-                boolean neg = predicate.op() == NEG;
-                if (neg) predicate = predicate.unneg();
 
-                return Op.compoundExact(IMPL, dt, subject, predicate).negIf(neg);
+//                boolean neg = predicate.op() == NEG;
+//                if (neg) predicate = predicate.unneg();
+//
+//                return Op.compoundExact(IMPL, dt, subject, predicate).negIf(neg);
 
+                if (subjChange[0] || predChange[0]) {
+                    return statement(IMPL, dt, subject, predicate);
+                } else {
+                    return Op.compoundExact(IMPL, dt, subject, predicate);
+                }
 
 
             }

@@ -178,7 +178,7 @@ public class ConjTest {
         c.add(2, z);
         assertEquals(
                 //"((y &&+1 z)&&x)",
-                "((x&&y) &&+1 (x&&z))",
+                "((x&|y) &&+1 (x&|z))",
                 c.term().toString());
 
     }
@@ -293,7 +293,7 @@ public class ConjTest {
     @Test
     void testTemporalConjunctionReduction5() {
         assertEq(
-                "((a&|b) &&+1 b)",
+                "((a&|b)&&(a &&+1 b))",
                 "( (a&|b) && (a &&+1 b) )");
     }
 
@@ -785,7 +785,7 @@ public class ConjTest {
 
     @Test
     public void testReducibleDisjunctionConjunction0() {
-        assertEquals("x", $$("((x||y) && x)").toString());
+        assertEq("x", $$("((x||y) && x)"));
     }
 
     @Test

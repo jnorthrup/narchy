@@ -60,13 +60,15 @@ public class Conj extends ByteAnonMap {
     }
 
 
-    /** but events are unique */
+    /**
+     * but events are unique
+     */
     public static Conj shareSameTermMap(Conj x) {
         return new Conj(x.termToId, x.idToTerm);
     }
 
     public Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
-        super(x,y);
+        super(x, y);
         event = new LongObjectHashMap<>();
     }
 
@@ -191,10 +193,10 @@ public class Conj extends ByteAnonMap {
     }
 
     public static Term firstEventTerm(Term x) {
-        if (x.op()!=CONJ)
+        if (x.op() != CONJ)
             return x;
         final Term[] w = new Term[1];
-        x.eventsWhile((when, what)->{
+        x.eventsWhile((when, what) -> {
             w[0] = what;
             return false;
         }, 0, true, false, false, 0);
@@ -418,7 +420,7 @@ public class Conj extends ByteAnonMap {
     }
 
     public int conflictOrSame(long at, byte what) {
-        return conflictOrSame( event.get(at), what);
+        return conflictOrSame(event.get(at), what);
     }
 
     static int conflictOrSame(Object e, byte id) {
@@ -454,7 +456,7 @@ public class Conj extends ByteAnonMap {
         Op o = x.op();
         if (o == CONJ) {
             int cdt;
-            if (at == ETERNAL && (((cdt = x.dt())!=0) && (cdt!=DTERNAL))) {
+            if (at == ETERNAL && (((cdt = x.dt()) != 0) && (cdt != DTERNAL))) {
                 //sequence or xternal embedded in eternity; add as self contained event
             } else {
                 //potentially decomposable conjunction
@@ -518,7 +520,7 @@ public class Conj extends ByteAnonMap {
         }
 
         boolean polarity;
-        if (x.op()==NEG) {
+        if (x.op() == NEG) {
             polarity = false;
             Term ux = x.unneg();
             if (ux.op() == CONJ && ux.dt() == DTERNAL && at != ETERNAL) {
@@ -534,9 +536,12 @@ public class Conj extends ByteAnonMap {
         if (!polarity) id = (byte) -id;
 
         switch (addFilter(at, x, id)) {
-            case +1: return true; //ignore and continue
-            case 0: break; //continue
-            case -1: return false; //reject and fail
+            case +1:
+                return true; //ignore and continue
+            case 0:
+                break; //continue
+            case -1:
+                return false; //reject and fail
         }
 
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
@@ -617,14 +622,14 @@ public class Conj extends ByteAnonMap {
         }
     }
 
-    /** allows subclass implement different behavior.
-     *
+    /**
+     * allows subclass implement different behavior.
+     * <p>
      * return:
-     *   -1: ignore and fail the conjunction
-     *   0: default, continue
-     *   +1: ignore and continue
-     *
-     * */
+     * -1: ignore and fail the conjunction
+     * 0: default, continue
+     * +1: ignore and continue
+     */
     protected int addFilter(long at, Term x, byte id) {
         return 0;
     }
@@ -656,6 +661,7 @@ public class Conj extends ByteAnonMap {
 
         if (result[0] == False) {
             //try removing the matching subterm from the disjunction and reconstruct it as the replacement term
+            Term dropped;
             if (eternal) {
                 result[0] = Conj.without(disjUnwrapped, x, false);
             } else {
@@ -728,10 +734,10 @@ public class Conj extends ByteAnonMap {
         int cdt = conj.dt();
         if (incoming.op() != CONJ) {
             Subterms cs = conj.subterms();
-            if (cdt==XTERNAL) {
+            if (cdt == XTERNAL) {
                 Set<Term> x = new UnifiedSet(cs.subs());
                 //TODO early termination if invalid term constructed
-                cs.forEach(z -> x.add(CONJ.the(eternal ?  DTERNAL : 0, z, incoming)));
+                cs.forEach(z -> x.add(CONJ.the(eternal ? DTERNAL : 0, z, incoming)));
                 return CONJ.the(XTERNAL, x);
 
             } else if ((cdt == 0 && !eternal) || (eternal && cdt == DTERNAL)) {
@@ -760,8 +766,8 @@ public class Conj extends ByteAnonMap {
                 int dtdt = eternal ? DTERNAL : 0;
 
                 conj.eventsWhile((whn, wht) ->
-                    c.add(whn, CONJ.the(dtdt, wht, incoming)), 0,
-                    true /*false*/, true, false, 0);
+                                c.add(whn, CONJ.the(dtdt, wht, incoming)), 0,
+                        true /*false*/, true, false, 0);
                 Term d = c.term();
                 if (d.equals(conj))
                     return conj;  //no change but the incoming has been absorbed
@@ -784,16 +790,14 @@ public class Conj extends ByteAnonMap {
     }
 
     /**
-     *
      * @param bi
      * @param x
-     * @param eternal
-     *      * @return codes:
-     *      * null - do nothing, no conflict.  add x to the event time
-     *      * True - add the incoming, and annihilated the existing
-     *      * Null/False - entire term is cancelled due to contradiction
-     *      * Op.EmptyProduct - the incoming has no effect on the existing, so return success but apply no change
-     *      * non-null - (simplified) value, possible True, to replace the disjunction with, and then proceed to add x to the event time
+     * @param eternal * @return codes:
+     *                * null - do nothing, no conflict.  add x to the event time
+     *                * True - add the incoming, and annihilated the existing
+     *                * Null/False - entire term is cancelled due to contradiction
+     *                * Op.EmptyProduct - the incoming has no effect on the existing, so return success but apply no change
+     *                * non-null - (simplified) value, possible True, to replace the disjunction with, and then proceed to add x to the event time
      */
     private Term merge(byte bi, Term x, boolean eternal) {
         Term existing = idToTerm.get((bi < 0 ? (-bi) : bi) - 1);
@@ -801,11 +805,11 @@ public class Conj extends ByteAnonMap {
             Term merged;
             if (bi < 0) {
                 merged = disjunctify(existing, x, eternal);
-                if (merged!=null && merged.equalsNeg(existing))
+                if (merged != null && merged.equalsNeg(existing))
                     return Op.EmptyProduct; //no change
             } else {
                 merged = conjoinify(existing, x, eternal);
-                if (merged!=null && merged.equals(existing))
+                if (merged != null && merged.equals(existing))
                     return Op.EmptyProduct; //no change
             }
             //TODO maybe also check for equal or reduction in volume sum
@@ -1187,7 +1191,7 @@ public class Conj extends ByteAnonMap {
                 return t.getOnly();
             default:
                 return Op.compoundExact(CONJ, when == ETERNAL ? DTERNAL : 0, Terms.sorted(t));
-                //return CONJ.the(when == ETERNAL ? DTERNAL : 0, Terms.sorted(t));
+            //return CONJ.the(when == ETERNAL ? DTERNAL : 0, Terms.sorted(t));
         }
 //            default: {
 //                Term theSequence = null;

@@ -263,20 +263,34 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
     @Override
     public Term statement(Op op, int dt, Term subject, Term predicate) {
-        if (op==SIM) {
-            //pre-sort by swapping to avoid saving redundant mappings
-            if (subject.compareTo(predicate)>0) {
-                Term x = predicate;
-                predicate = subject;
-                subject = x;
-            }
-        }
+
 
         Term s = subject.the();
         if (s!=null) {
             Term p = predicate.the();
-            if (p!=null)
-                return statements.apply(InternedCompound.get(op, dt, subject, predicate));
+            if (p!=null) {
+
+                boolean negate = false;
+
+                //quick preparations to reduce # of unique entries
+                switch (op) {
+                    case SIM:
+                        //pre-sort by swapping to avoid saving redundant mappings
+                        if (subject.compareTo(predicate)>0) {
+                            Term x = predicate;
+                            predicate = subject;
+                            subject = x;
+                        }
+                        break;
+                    case IMPL:
+                        negate = (predicate.op()==NEG);
+                        if (negate)
+                            predicate = predicate.unneg();
+                        break;
+                }
+
+                return statements.apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+            }
         }
         return super.statement(op, dt, subject, predicate);
     }

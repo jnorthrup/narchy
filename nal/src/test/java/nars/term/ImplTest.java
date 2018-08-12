@@ -2,13 +2,13 @@ package nars.term;
 
 import nars.$;
 import nars.Narsese;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.Op.False;
-import static nars.Op.Null;
-import static nars.Op.True;
+import static nars.Op.*;
+import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -22,7 +22,7 @@ public class ImplTest {
                 "(--(x &| y) =|> y)",
                 "(--(--x &| y) =|> y)"
         })
-            assertEquals(False, $$(s));
+            assertEq(False, s);
     }
 
     @Test
@@ -43,7 +43,7 @@ public class ImplTest {
 
         for (String cp : new String[]{"&&", "&|", " &&+- "}) {
             assertEq("((x&&y) ==>+1 (y" + cp + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
-            assertEq("(a ==>+1 (b &&+1 (y" + cp + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
+            assertEq("(a ==>+1 (b &&+1 (y" + (cp.equals(" &&+- ") ? cp : "&|") + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
         }
 
 
@@ -79,11 +79,14 @@ public class ImplTest {
 
     }
 
-    @Test void testInvalidCircularImpl() throws Narsese.NarseseException {
+    @Test
+    void testInvalidCircularImpl() throws Narsese.NarseseException {
         assertNotEquals(Null, $("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
         assertEq("(--,(x(intValue,(),1)=|>x(intValue,(),0)))", "(x(intValue,(),1) =|> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
     }
-    @Test void testInvalidCircularImpl2() throws Narsese.NarseseException {
+
+    @Test
+    void testInvalidCircularImpl2() throws Narsese.NarseseException {
         assertEq("(--,(x(intValue,(),1)==>x(intValue,(),0)))", "(x(intValue,(),1) ==> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
     }
 
@@ -134,6 +137,76 @@ public class ImplTest {
                 s,
                 $.$(s).toString());
     }
+
+
+    @Test
+    void implSubjSimultaneousWithTemporalPred() {
+        Term x = $$("((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
+        assertEquals(
+                "((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))",
+                x.toString());
+    }
+
+
+
+
+    @Disabled
+    @Test
+    void testReducedAndInvalidImplications5() {
+
+        assertInvalidTerms("((P==>Q) ==> R)");
+    }
+
+
+    @Test
+    void testReducedAndInvalidImplications2() {
+        assertEq("((P&&R)==>Q)", "(R==>(P==>Q))");
+        assertEq("((R &&+2 P) ==>+1 Q)", "(R ==>+2 (P ==>+1 Q))");
+        assertEq("(((S &&+1 R) &&+2 P) ==>+1 Q)", "((S &&+1 R) ==>+2 (P ==>+1 Q))");
+    }
+
+
+    @Test
+    void testReducedAndInvalidImplications3() {
+        assertEq(True, "(R==>(P==>R))");
+    }
+
+    @Test
+    void testReducedAndInvalidImplications4() {
+        assertEq("(R==>P)", "(R==>(R==>P))");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+            (&,(&,P,Q),R) = (&,P,Q,R)
+            (&,(&,P,Q),(&,R,S)) = (&,P,Q,R,S)
+
+
+            if (term1.op(Op.SET_INT) && term2.op(Op.SET_INT)) {
+
+
+            if (term1.op(Op.SET_EXT) && term2.op(Op.SET_EXT)) {
+
+         */
 
 
 }

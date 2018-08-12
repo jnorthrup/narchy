@@ -426,7 +426,7 @@ public enum Op {
      * specifier for any NAL level
      */
     private static final int ANY_LEVEL = 0;
-    public static final int InvalidImplicationSubj = or(IMPL);
+//    public static final int InvalidImplicationSubj = or(IMPL);
     public static TermBuilder terms =
             //HeapTermBuilder.the;
             new InterningTermBuilder();
