@@ -5,7 +5,7 @@ import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meta.WindowToggleButton;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -20,7 +20,7 @@ public class CycleView implements Runnable {
 
     public final Runnable step;
 
-    public final Label time;
+    public final VectorLabel time;
 
     public final ToggleButton details;
 
@@ -33,7 +33,7 @@ public class CycleView implements Runnable {
 
         step = ()->nar.run(1);
 
-        time = new Label("");
+        time = new VectorLabel("");
 
         details = new WindowToggleButton("Details", nar);
 

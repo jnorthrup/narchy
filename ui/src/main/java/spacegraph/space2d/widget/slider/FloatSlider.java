@@ -11,7 +11,7 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Stacking;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.Widget;
 
 /**
@@ -20,7 +20,7 @@ import spacegraph.space2d.widget.windo.Widget;
  */
 public class FloatSlider extends Widget {
 
-    private final Label label = new Label();
+    private final VectorLabel label = new VectorLabel();
     FloatSupplier input;
     private String labelText = "";
 

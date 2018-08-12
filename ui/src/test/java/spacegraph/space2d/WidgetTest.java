@@ -13,7 +13,7 @@ import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.slider.XYSlider;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 
 import static spacegraph.space2d.container.grid.Gridding.*;
 
@@ -55,7 +55,7 @@ public class WidgetTest {
                                 ), 0.8f
                         ),
                         col(
-                                new Label("label"),
+                                new VectorLabel("label"),
                                 new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
                                 new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)
                         ),

@@ -26,8 +26,8 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
 
     @Override
     public long[] apply(Task task, Term term) {
-//        if (task.isEternal())
-//            return new long[] { ETERNAL, ETERNAL };
+        if (task.isEternal())
+            return new long[] { ETERNAL, ETERNAL };
 
         long[] tt;
         switch (rng.nextInt(4)) {

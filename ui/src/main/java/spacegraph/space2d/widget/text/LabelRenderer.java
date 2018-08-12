@@ -17,14 +17,14 @@ import java.io.IOException;
 import java.util.function.BiConsumer;
 
 @FunctionalInterface
-public interface LabelRenderer extends BiConsumer<Label, GL2> {
+public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
 
     /**
      * hershey vector font renderer
      */
     LabelRenderer Hershey = new LabelRenderer() {
         @Override
-        public void accept(Label label, GL2 gl2) {
+        public void accept(VectorLabel label, GL2 gl2) {
             Draw.bounds(label.bounds, gl2, (gl) -> {
                 label.textColor.apply(gl);
                 gl.glLineWidth(label.textThickness);
@@ -137,7 +137,7 @@ public interface LabelRenderer extends BiConsumer<Label, GL2> {
 
 
         @Override
-        public void accept(Label label, GL2 gl) {
+        public void accept(VectorLabel label, GL2 gl) {
 
             if (this.font == null)
                 return;

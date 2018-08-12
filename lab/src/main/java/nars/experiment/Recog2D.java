@@ -7,7 +7,6 @@ import jcog.learn.MLPMap;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.Param;
 import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -26,6 +25,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.awt.*;
@@ -138,7 +138,7 @@ public class Recog2D extends NAgentX {
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 
-                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i -> new spacegraph.space2d.widget.text.Label(String.valueOf(i)) {
+                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
                     @Override
                     protected void paintBelow(GL2 gl) {
                         Concept c = tv.concepts[i];

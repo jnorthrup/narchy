@@ -13,7 +13,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.*;
 import spacegraph.util.math.v2;
@@ -107,7 +107,7 @@ public class Dyn2DSurfaceTest {
             float ry = s.rngPolar(2);
             float rw = 0.05f + s.rngNormal(0.2f);
             float rh = 0.05f + s.rngNormal(0.2f);
-            s.put(new Label(String.valueOf((char) i)),
+            s.put(new VectorLabel(String.valueOf((char) i)),
                     RectFloat2D.XYWH(rx, ry, rw, rh));
         }
 
@@ -137,12 +137,12 @@ public class Dyn2DSurfaceTest {
 
             Dyn2DSurface s = SpaceGraph.wall(800, 800);
 
-            Dyn2DSurface.PhyWindow a = s.put(new Label("X"), RectFloat2D.XYWH(-0.5f, +0.5f, 0.4f, 0.25f));
-            a.grow(new Label("R"), 1f, 1, new v2(1, 0));
-            a.grow(new Label("L"), 1f, 1, new v2(-1, 0));
-            a.grow(new Label("D"), 1f, 1, new v2(0, +1));
-            a.grow(new Label("U1"), 0.5f, 0.5f, new v2(+0.5f, -1));
-            a.grow(new Label("U2"), 0.5f, 0.5f, new v2(-0.5f, -1));
+            Dyn2DSurface.PhyWindow a = s.put(new VectorLabel("X"), RectFloat2D.XYWH(-0.5f, +0.5f, 0.4f, 0.25f));
+            a.grow(new VectorLabel("R"), 1f, 1, new v2(1, 0));
+            a.grow(new VectorLabel("L"), 1f, 1, new v2(-1, 0));
+            a.grow(new VectorLabel("D"), 1f, 1, new v2(0, +1));
+            a.grow(new VectorLabel("U1"), 0.5f, 0.5f, new v2(+0.5f, -1));
+            a.grow(new VectorLabel("U2"), 0.5f, 0.5f, new v2(-0.5f, -1));
 
 
         }

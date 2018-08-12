@@ -8,7 +8,7 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.Wall;
 import spacegraph.space2d.widget.windo.Windo;
 
@@ -94,7 +94,7 @@ public class TabPane extends Splitting {
                     String msg = t.getMessage();
                     if (msg == null)
                         msg = t.toString();
-                    cx = new Label(msg);
+                    cx = new VectorLabel(msg);
                 }
 
 

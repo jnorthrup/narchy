@@ -4,7 +4,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display
@@ -24,7 +24,7 @@ public class MetaFrame extends Bordering {
 
         Surface n =
                 
-                new Label(name(surface));
+                new VectorLabel(name(surface));
                 
 
 

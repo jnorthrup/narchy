@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.text.BitmapLabel;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
 import java.util.function.Consumer;
@@ -72,7 +72,7 @@ public class PushButton extends AbstractButton {
     }
     public PushButton label(String s) {
         content(
-            new Label(s)
+            new VectorLabel(s)
         );
         return this;
     }

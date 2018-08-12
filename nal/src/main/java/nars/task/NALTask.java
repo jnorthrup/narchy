@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
@@ -9,6 +10,7 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.anon.Anom;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
@@ -39,7 +41,6 @@ public class NALTask extends UnitPri implements Task {
 
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super();
-
 
         if (!term.op().taskable)
             throw new TaskException(term, "invalid term: " + term);

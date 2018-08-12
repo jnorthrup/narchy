@@ -45,8 +45,8 @@ class BooleanTest {
 
 
         NAR d = NARS.tmp();
-        d.freqResolution.set(0.02f);
-        d.termVolumeMax.set(16);
+        d.freqResolution.set(0.1f);
+        d.termVolumeMax.set(10);
 
 
 

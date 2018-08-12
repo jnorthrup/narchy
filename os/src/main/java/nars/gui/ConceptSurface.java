@@ -14,7 +14,7 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.tab.TabPane;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class ConceptSurface extends TabPane {
     public ConceptSurface(Term id, NAR n) {
         super();
         addToggles(Map.of(
-                        id.toString(), () -> new Label(id.toString()),
+                        id.toString(), () -> new VectorLabel(id.toString()),
                         "budget", () -> {
 
                             Plot2D p = new Plot2D(64, Plot2D.Line)

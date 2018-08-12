@@ -21,7 +21,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.tab.TabPane;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.FloatPort;
 import spacegraph.space2d.widget.windo.LabeledPort;
 import spacegraph.space2d.widget.windo.Port;
@@ -57,7 +57,7 @@ public class ProtoWidget extends Widget {
 
     
 
-    private static final Supplier<Surface> TODO = () -> new Label("TODO");
+    private static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
     private static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
 
         add("Keyboard", TODO, "Hardware");

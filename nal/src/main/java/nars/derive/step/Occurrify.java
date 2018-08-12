@@ -127,10 +127,15 @@ public class Occurrify extends TimeGraph {
     }
 
     @Override
-    protected Term dt(Term x, int dt) {
-        int ddt = Tense.dither(dt, d.ditherTime);
+    public int dt(int dt) {
+        return Tense.dither(dt, d.ditherTime);
+    }
+
+    @Override
+    @Deprecated protected Term dt(Term x, int dt) {
+        int ddt = dt(dt);
         Term y = super.dt(x, ddt);
-        if (y instanceof Bool && ddt != dt) {
+        if ((y.op()!=x.op()) && ddt != dt) {
             y = super.dt(x, dt);
         }
         return y;
@@ -369,9 +374,9 @@ public class Occurrify extends TimeGraph {
                 if (solutions.removeIf(t -> t instanceof Relative))
                     ss = solutions.size();
             }
-            if (ss > 1) {
-                return filterOOB(solutions);
-            }
+//            if (ss > 1) {
+//                return filterOOB(solutions);
+//            }
         }
         return ss;
     }
@@ -513,13 +518,12 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return null;
-//                Task t;
-//                if (d.belief!=null && (d.task.isEternal() && !d.belief.isEternal()))
-//                    t = d.belief;
-//                else
-//                    t = d.task;
-//                return new long[]{t.start(), t.end()};
+                Task t;
+                if (d.belief!=null && (d.task.isEternal() && !d.belief.isEternal()))
+                    t = d.belief;
+                else
+                    t = d.task;
+                return new long[]{t.start(), t.end()};
             }
         },
 
@@ -584,7 +588,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, false));
+                return solveDT(d, x, d.occ.reset(x));
             }
 
             @Override
@@ -605,7 +609,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, false));
+                return solveDT(d, x, d.occ.reset(x));
             }
 
             @Override
@@ -626,7 +630,7 @@ public class Occurrify extends TimeGraph {
         Relative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveOccDT(d, x, d.occ.reset(x, false));
+                return solveOccDT(d, x, d.occ.reset(x));
             }
 
             @Override
@@ -804,12 +808,17 @@ public class Occurrify extends TimeGraph {
 
         protected Pair<Term, long[]> solveOccDT(Derivation d, Term x, Occurrify o) {
             ArrayHashSet<Event> solutions = o.solutions(x);
-            Pair<Term, long[]> p = o.solveOccDT(solutions).get();
-            if (p != null && p.getTwo()[0] == TIMELESS) {
-                x = p.getOne();
-                p = null;
+            if (!solutions.isEmpty()) {
+                Pair<Term, long[]> p = o.solveOccDT(solutions).get();
+                if (p != null) {
+                    if (p.getTwo()[0] != TIMELESS) {
+                        return p;
+                    } else {
+                        return solveAuto(p.getOne(), d);
+                    }
+                }
             }
-            return p == null ? solveAuto(d, x) : p;
+            return solveAuto(x, d);
         }
 
 //        protected Pair<Term, long[]> solveOccDTWithGoalOverride(Derivation d, Term x) {
@@ -833,8 +842,8 @@ public class Occurrify extends TimeGraph {
         protected Pair<Term, long[]> solveDT(Derivation d, Term x, Occurrify o) {
             ArrayHashSet<Event> solutions = o.solutions(x);
             Term p = o.solveDT(x, solutions);
-            if (p == null)
-                p = x;
+//            if (p == null)
+//                p = x;
 
             long[] occ = occurrence(d);
             return occ == null ? null : pair(p, occ);
@@ -843,7 +852,7 @@ public class Occurrify extends TimeGraph {
         /**
          * failsafe mode
          */
-        public Pair<Term, long[]> solveAuto(Derivation d, Term x) {
+        public Pair<Term, long[]> solveAuto(Term x, Derivation d) {
 
             if ((d.concPunc == BELIEF || d.concPunc == GOAL) && x.hasXternal())
                 return null;

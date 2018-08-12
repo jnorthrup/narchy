@@ -23,7 +23,7 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.tab.TabPane;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.util.math.Color3f;
 
@@ -71,12 +71,12 @@ public class NARui {
     }
 
 
-    public static Label label(Object x) {
+    public static VectorLabel label(Object x) {
         return label(x.toString());
     }
 
-    public static Label label(String text) {
-        return new Label(text);
+    public static VectorLabel label(String text) {
+        return new VectorLabel(text);
     }
 
     /**
@@ -127,7 +127,7 @@ public class NARui {
 
                         });
                     } else {
-                        return new Label(((Collection)v).size() +  " concepts");
+                        return new VectorLabel(((Collection)v).size() +  " concepts");
                     }
                 });
     }

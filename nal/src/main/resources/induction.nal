@@ -2,13 +2,13 @@
 //  When P and then S happened according to an observation, by induction (weak) it may be that alyways after P, usually S happens.
 //      According to reductions: For implications, the predicate may be allowed an implication, but not subject
 
-   B, A, --is(B,"==>") |- (A ==>+- B), (Belief:Induction, Time:BeliefRelative, Also:VarIntro)
-        B, A, --is(B,"==>") |- (--A ==>+- B), (Belief:InductionPN, Time:BeliefRelative, Also:VarIntro)
+   B, A, --is(A,"==>") |- (A ==>+- B), (Belief:Induction, Time:BeliefRelative, Also:VarIntro)
+        B, A, --is(A,"==>") |- (--A ==>+- B), (Belief:InductionPN, Time:BeliefRelative, Also:VarIntro)
 
-    B, A, --is(A,"==>") |- (B ==>+- A), (Belief:Abduction, Time:TaskRelative, Also:VarIntro)
-        B, A, --is(A,"==>") |- (--B ==>+- A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
+    B, A, --is(B,"==>") |- (B ==>+- A), (Belief:Abduction, Time:TaskRelative, Also:VarIntro)
+        B, A, --is(B,"==>") |- (--B ==>+- A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
 
-    B, A, task("."), --is(A,"==>"), --is(B,"==>")   |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
+    B, A, --is(A,"==>"), --is(B,"==>")   |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
 
     B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(B,task) ~ polarize(A,belief)), (Belief:DifferenceDepolarized, Also:VarIntro, Time:Intersect)
     B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(A,belief) ~ polarize(B,task)), (Belief:DifferenceReverseDepolarized, Also:VarIntro, Time:Intersect)

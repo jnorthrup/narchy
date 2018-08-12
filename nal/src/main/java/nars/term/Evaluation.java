@@ -76,10 +76,6 @@ public class Evaluation {
             return TermTransform.NegObliviousTermTransform.super.transformCompoundUnneg(x);
         }
 
-        @Override
-        public boolean eval() {
-            return false;
-        }
     };
     private static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term, Functor> resolver, boolean wrapBool) {
         ArrayHashSet<Term> all = new ArrayHashSet<>(1);
@@ -386,10 +382,6 @@ public class Evaluation {
             this.resolver = resolver;
         }
 
-        @Override
-        public boolean eval() {
-            return false; //not at this stage
-        }
 
         @Override
         public @Nullable Term transformAtomic(Atomic x) {

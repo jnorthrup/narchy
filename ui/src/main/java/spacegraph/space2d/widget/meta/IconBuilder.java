@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.util.function.Function;
@@ -14,7 +14,7 @@ abstract public class IconBuilder<X> implements Function<X,Surface> {
 
         @Override
         public Surface apply(Object o) {
-            return new Label(o.toString()) {
+            return new VectorLabel(o.toString()) {
 
                 final int classHash = o.getClass().hashCode();
 

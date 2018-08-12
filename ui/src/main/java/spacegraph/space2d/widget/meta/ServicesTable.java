@@ -12,7 +12,7 @@ import spacegraph.space2d.container.grid.GridModel;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.ScrollGrid;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -92,7 +92,7 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
             switch (x) {
                 case 0: {
                     return new Bordering(
-                            new Label(s.toString())
+                            new VectorLabel(s.toString())
                     ).set(Bordering.W, new ServiceToggle(context, s));
                 }
                 case 1: {

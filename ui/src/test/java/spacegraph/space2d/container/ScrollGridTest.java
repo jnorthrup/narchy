@@ -9,7 +9,7 @@ import spacegraph.space2d.container.grid.KeyValueModel;
 import spacegraph.space2d.container.grid.ScrollGrid;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
 
@@ -52,7 +52,7 @@ class ScrollGridTest {
                             };
                             return new Widget(p);
                         } else {
-                            return new Label(s);
+                            return new VectorLabel(s);
                         }
                     }, 8, 4);
 
@@ -82,7 +82,7 @@ class ScrollGridTest {
                             Map.of("wtf", "ok", "sdfj", "xcv", "sdf", "fdfs")
                         ),
                         (x, y, n)->
-                            x == 0 ? new Label(n.toString()) : new CheckBox(n.toString()))
+                            x == 0 ? new VectorLabel(n.toString()) : new CheckBox(n.toString()))
                 , 800, 800);
         }
     }

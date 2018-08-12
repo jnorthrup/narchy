@@ -131,15 +131,22 @@ public class TermTest {
         Term u = $$(t.toString());
         assertEquals(u, t, ()-> is + " unstable:\n0:\t" + t + "\n1:\t" + u);
 
+        try {
+            Term v = u.anon();
+        } catch (Throwable e) {
+            fail(()->e.toString());
+        }
+
         return t;
     }
 
-    public static void assertEq(Term exp, String is) {
-        assertEquals(exp, $$(is), () -> exp + " reduces to " + is);
+    public static void assertEq(Term z, String x) {
+        Term y = $$(x);
+        assertEquals(z, y, () -> x + " reduces to " + y);
     }
 
-    public static void assertEq(String exp, Term is) {
-        assertEquals(exp, is.toString(), () -> exp + " reduces to " + is);
+    public static void assertEq(String y, Term x) {
+        assertEquals(y, x.toString(), () -> y + " reduces to " + x);
     }
 
     @Test

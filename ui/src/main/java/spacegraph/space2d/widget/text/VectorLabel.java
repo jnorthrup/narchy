@@ -10,7 +10,7 @@ import spacegraph.util.math.Color4f;
 /**
  * Created by me on 7/29/16.
  */
-public class Label extends EmptyContainer {
+public class VectorLabel extends EmptyContainer {
 
     protected volatile String text = "(null)";
 
@@ -26,11 +26,11 @@ public class Label extends EmptyContainer {
                                         //NewtGraph;
 
 
-    public Label() {
+    public VectorLabel() {
         this("");
     }
 
-    public Label(String s) {
+    public VectorLabel(String s) {
 
         text(s);
     }
@@ -87,7 +87,7 @@ public class Label extends EmptyContainer {
     }
 
 
-    public Label text(String newValue) {
+    public VectorLabel text(String newValue) {
         if (!newValue.equals(this.text)) {
             this.text = newValue;
             layout();

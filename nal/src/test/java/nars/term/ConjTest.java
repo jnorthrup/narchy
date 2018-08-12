@@ -820,17 +820,7 @@ public class ConjTest {
 
     }
 
-    @Test
-    public void testInvalidSubsequenceComponent() {
-        /*
-        $.38 (--,((--,(((--,x) &&+6 x) &&+1 x))&|(--,x))). 0 %.74;.52%
-        $.50 (--,x). 0⋈1 %.48;.87%
-         */
-        Conj a = new Conj();
-        a.add(0, $$("(--,((--,(((--,x) &&+6 x) &&+1 x))&|(--,x)))"));
-        a.add(0, $$("(--,x)"));
-        assertEquals("(--,x)", a.term().toString()); //TODO check
-    }
+
 
     @Test
     public void testInvalidSubsequenceComponent2() {
@@ -1730,6 +1720,9 @@ public class ConjTest {
 
     }
 
+    @Test void testMoreAnonFails() {
+
+    }
     @Test
     void testCommutizeRepeatingConjunctions() throws Narsese.NarseseException {
         assertEquals("a",

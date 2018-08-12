@@ -14,7 +14,7 @@ import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.Widget;
 
@@ -194,7 +194,7 @@ public class OmniBox extends Widget {
     public static void popup(String src, Object x) {
         Surface surface;
         if (x instanceof String || x.getClass().isPrimitive() || x instanceof Number) {
-            surface = new Label(x.toString());
+            surface = new VectorLabel(x.toString());
         } else {
             surface = new ObjectSurface<>(x);
         }

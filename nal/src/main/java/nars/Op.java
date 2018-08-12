@@ -15,7 +15,9 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
+import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
@@ -23,8 +25,6 @@ import nars.time.Tense;
 import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
-import nars.term.util.TermBuilder;
-import nars.term.util.builder.InterningTermBuilder;
 import org.apache.lucene.util.MathUtil;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.MutableSet;
@@ -428,8 +428,8 @@ public enum Op {
     private static final int ANY_LEVEL = 0;
 //    public static final int InvalidImplicationSubj = or(IMPL);
     public static TermBuilder terms =
-            //HeapTermBuilder.the;
-            new InterningTermBuilder();
+            HeapTermBuilder.the;
+            //new InterningTermBuilder();
 
     public static final int AtomicConstants = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 
@@ -961,8 +961,10 @@ public enum Op {
         assert (x.op() == CONJ);
         int dt = x.dt();
         switch (dt) {
-            case DTERNAL:
             case XTERNAL:
+                throw new UnsupportedOperationException();
+
+            case DTERNAL:
             case 0:
                 return earlyOrLate ? 0 : 1;
 
@@ -995,11 +997,6 @@ public enum Op {
             }
         }
     }
-
-    public static boolean commute(int dt, int subterms) {
-        return subterms > 1 && Op.concurrent(dt);
-    }
-
 
 
     public final Term the(Subterms s) {
@@ -1077,7 +1074,7 @@ public enum Op {
     }
 
     public final Term[] sortedIfNecessary(int dt, Term[] u) {
-        return commutative && commute(dt, u.length) ? sorted(u) : u;
+        return commutative && u.length > 1 && Op.concurrent(dt) ? sorted(u) : u;
     }
 
     public final Term the(/*@NotNull*/ Collection<Term> sub) {

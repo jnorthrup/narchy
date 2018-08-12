@@ -23,7 +23,7 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
 
@@ -118,11 +118,11 @@ public class ExeCharts {
 
     static class CausableWidget extends Widget {
         private final UniExec.InstrumentedCausable c;
-        private final Label label;
+        private final VectorLabel label;
 
         CausableWidget(UniExec.InstrumentedCausable c) {
             this.c = c;
-            label =new Label(c.c.can.id);
+            label =new VectorLabel(c.c.can.id);
             add(label);
 
         }
@@ -201,10 +201,10 @@ public class ExeCharts {
     }
 
     public static Surface runPanel(NAR n) {
-        Label nameLabel;
+        VectorLabel nameLabel;
         LoopPanel control = new NARLoopPanel(n.loop);
         Surface p = new Gridding(
-                nameLabel = new Label(n.self().toString()),
+                nameLabel = new VectorLabel(n.self().toString()),
                 control
         );
         return DurSurface.get(p, n, control::update);

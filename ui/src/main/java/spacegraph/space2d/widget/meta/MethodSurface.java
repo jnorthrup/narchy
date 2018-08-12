@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meta;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -19,7 +19,7 @@ public class MethodSurface extends Gridding {
     private final List<Supplier<?>> parameterSuppliers;
 
     public MethodSurface(Method m, Map<String,Object> defaults) {
-        add(new Label(m.getName()));
+        add(new VectorLabel(m.getName()));
 
         parameterSuppliers = new FasterList<>(m.getParameterCount());
         Parameter[] p = m.getParameters();
@@ -37,7 +37,7 @@ public class MethodSurface extends Gridding {
     protected void edit(Parameter p, Map<String, Object> defaults) {
         Gridding pp = new Gridding();
         String pName = p.getName();
-        pp.add(new Label(pName));
+        pp.add(new VectorLabel(pName));
         Class<?> t = p.getType();
         if (t == float.class) {
             //..

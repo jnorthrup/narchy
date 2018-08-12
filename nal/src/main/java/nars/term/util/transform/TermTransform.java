@@ -144,8 +144,9 @@ public interface TermTransform {
         return y;
     }
 
+    /** enable for inline functor evaluation */
     default boolean eval() {
-        return true;
+        return false;
     }
 
 
@@ -153,9 +154,9 @@ public interface TermTransform {
     /**
      * constructs a new term for a result
      */
-    default Term the(Op op, int dt, TermList t) {
-        return the(op, dt, (Subterms)t);
-    }
+//    default Term the(Op op, int dt, TermList t) {
+//        return the(op, dt, (Subterms)t);
+//    }
 
     default Term the(Op op, int dt, Subterms t) {
         return the(op, dt, t.arrayShared());

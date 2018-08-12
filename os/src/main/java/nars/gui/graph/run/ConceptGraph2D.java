@@ -20,6 +20,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -60,7 +61,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         nodeBuilder((nn)->{
            nn.set(
                new Scale(
-                   new PushButton(nn.id.toString())
+                   new PushButton(new VectorLabel(nn.id.toString()))
                        .click(()-> {
                            Concept t = nn.id;
                            if (t!=null)

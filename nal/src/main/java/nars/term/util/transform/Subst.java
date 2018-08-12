@@ -8,10 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Subst extends TermTransform {
 
-    @Override
-    default boolean eval() {
-        return false;
-    }
 
     /** completely dereferences a term (usually a variable)*/
     default Term resolve(final Term x) {

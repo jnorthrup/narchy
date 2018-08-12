@@ -18,7 +18,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import static nars.Op.BELIEF;
@@ -227,7 +227,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
     @Override
     public Surface menu() {
         return new Gridding(
-            new Label(term.toString()),
+            new VectorLabel(term.toString()),
             new ObjectSurface(durs),
             PushButton.awesome("search-plus").click(() -> NARui.conceptWindow(term, nar))
         );

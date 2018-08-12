@@ -118,22 +118,23 @@ public class NARS {
                 then((nn)->new STMLinkage(nn, 1, false));
             }
 
-            then((nar)->{
+            then((n)->{
 
-                nar.freqResolution.set(0.01f);
-                nar.confResolution.set(0.01f);
+                n.freqResolution.set(0.01f);
+                n.confResolution.set(0.01f);
 
-                nar.termlinkBalance.set(0.5f);
-                nar.termVolumeMax.set(26);
+                n.termlinkBalance.set(0.5f);
+                n.termVolumeMax.set(26);
 
                 //nar.activateConceptRate.set(0.5f);
 
                 //nar.forgetRate.set(0.5f);
 
-                nar.beliefPriDefault.set(0.5f);
-                nar.goalPriDefault.set(0.5f);
-                nar.questionPriDefault.set(0.5f);
-                nar.questPriDefault.set(0.5f);
+                float basePri = 0.1f;
+                n.beliefPriDefault.set(basePri * 0.5f);
+                n.goalPriDefault.set(basePri * 0.5f);
+                n.questionPriDefault.set(basePri * 0.5f);
+                n.questPriDefault.set(basePri * 0.5f);
             });
         }
 
@@ -150,7 +151,7 @@ public class NARS {
                 
                 new MapConceptIndex(
 
-                        new MRUCache<>(16*1024) {
+                        new MRUCache<>(32*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();
@@ -170,7 +171,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(128));
+        attention(()->new Attention(64));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(

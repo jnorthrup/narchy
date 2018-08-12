@@ -1,6 +1,7 @@
 package nars.term.util;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
@@ -386,7 +387,7 @@ public class Conj extends ByteAnonMap {
                 int ls = left.subs(), rs = right.subs();
                 if ((ls > 1 + rs) || (rs > ls)) {
 
-                    return CONJ.the(dt, new Term[]{left, right});
+                    return CONJ.the(left, dt, right);
                 }
             }
         }
@@ -506,19 +507,8 @@ public class Conj extends ByteAnonMap {
                 throw new WTF("probably meant at=ETERNAL not DTERNAL");
         }
 
-        if (x instanceof Bool) {
-            //short circuits
-            if (x == True)
-                return true;
-            else if (x == False) {
-                this.term = False;
-                return false;
-            } else if (x == Null) {
-                this.term = Null;
-                return false;
-            }
-        }
 
+        //test this first
         boolean polarity;
         if (x.op() == NEG) {
             polarity = false;
@@ -531,6 +521,18 @@ public class Conj extends ByteAnonMap {
             polarity = true;
         }
 
+        if (x instanceof Bool) {
+            //short circuits
+            if (x == True)
+                return true;
+            else if (x == False) {
+                this.term = False;
+                return false;
+            } else if (x == Null) {
+                this.term = Null;
+                return false;
+            }
+        }
 
         byte id = add(polarity ? x : x.unneg());
         if (!polarity) id = (byte) -id;
@@ -669,9 +671,9 @@ public class Conj extends ByteAnonMap {
                 result[0] = Conj.conjDrop(disjUnwrapped, x, true, false);
             }
             int dt = eternal ? DTERNAL : 0;
-            if (result[0].equals(disjUnwrapped))
-                return Op.compoundExact(CONJ, dt, disjUnwrapped.neg(), x).neg(); //try to prevent loop
-            else
+//            if (result[0].equals(disjUnwrapped))
+//                return Op.compoundExact(CONJ, dt, disjUnwrapped.neg(), x).neg(); //try to prevent loop
+//            else
                 return CONJ.the(result[0].neg(), dt, x).neg();
         }
 
@@ -822,6 +824,8 @@ public class Conj extends ByteAnonMap {
      * @return non-zero byte value
      */
     private byte add(Term t) {
+        if (!((t != null && !(t instanceof Bool))))
+            throw new WTF();
         assert (t != null && !(t instanceof Bool));
         return termToId.getIfAbsentPutWithKey(t.unneg(), tt -> {
             //int s = termToId.size();
@@ -1158,30 +1162,25 @@ public class Conj extends ByteAnonMap {
             return sub(b[0], null, validator);
         }
 
-        MutableSet<Term> t;
-//        do {
-//        pt = t;
-        t = new UnifiedSet<>(8);
+        MutableSet<Term> t = new UnifiedSet<>(8);
         final boolean[] negatives = {false};
         if (b != null) {
             for (byte x : b) {
                 if (x == 0)
                     break;
                 Term s = sub(x, negatives, validator);
-                //assert (!(s instanceof Bool));
+                if (s instanceof Bool) {
+                    if (s == False || s == Null)
+                        return s;
+                    else {
+                        //ignore True case
+                    }
+                }
                 t.add(s);
             }
         } else {
-            rb.forEach((int termIndex) -> t.add(sub(termIndex, negatives, validator)));
+            throw new TODO();
         }
-
-
-//        if (negatives[0]) {
-//            factorDisj(t, when);
-//        }
-
-//        } while (!t.equals(pt));
-
 
         int ts = t.size();
         switch (ts) {
@@ -1189,393 +1188,19 @@ public class Conj extends ByteAnonMap {
                 return True;
             case 1:
                 return t.getOnly();
-            default:
-                return Op.compoundExact(CONJ, when == ETERNAL ? DTERNAL : 0, Terms.sorted(t));
-            //return CONJ.the(when == ETERNAL ? DTERNAL : 0, Terms.sorted(t));
+            default: {
+                int cdt = when == ETERNAL ? DTERNAL : 0;
+                if (Util.or(z->z.dt()==cdt && z.op()==CONJ, t)) {
+                    //recurse: still flattening to do
+                    return CONJ.the(cdt, Terms.sorted(t));
+                } else {
+                    return Op.compoundExact(CONJ, cdt, Terms.sorted(t));
+                }
+
+            }
+
         }
-//            default: {
-//                Term theSequence = null;
-//                {
-//                    List<Term> sequences = new FasterList(1);
-//                    for (Term x : t) {
-//                        if (x.op() == CONJ) {
-//                            switch (x.dt()) {
-//                                case DTERNAL:
-////                                    if (when == ETERNAL)
-////                                        sequences.add(x);
-////                                    break;
-//                                case 0:
-//                                case XTERNAL:
-//                                default:
-//                                    sequences.add(x);
-//                                    break;
-//                            }
-//                        }
-//                    }
-//                    int sn = sequences.size();
-//                    if (sn > 0 && sn < t.size()) {
-//                        t.removeAll(sequences);
-//
-//                        if (sn > 1) {
-//                            Conj a = new Conj();
-//
-//                            for (Term s : sequences) {
-//                                if (!a.add(when, s))
-//                                    return null;
-//                            }
-//                            theSequence = a.term();
-//
-//                        } else if (sn == 1) {
-//                            theSequence = sequences.get(0);
-//                        }
-//                    } else {
-//                        theSequence = null; //dont do anything
-//                    }
-//                    if (theSequence == Null || theSequence == False)
-//                        return theSequence;
-//                    else {
-//                        if (theSequence == True)
-//                            theSequence = null;
-//                    }
-//                }
-//
-//                if (t.isEmpty())
-//                    return theSequence;
-//
-//                int dt;
-//                if (when == ETERNAL) {
-////                    if (theSequence!=null && theSequence.dt() == 0)
-////                        dt = 0; //exception for promoting dternal to parallel
-////                    else
-//                        dt = DTERNAL;
-//                } else {
-//                    dt = 0;
-//                }
-//
-//
-//                Term z;
-//                switch (t.size()) {
-//                    case 0:
-//                        throw new UnsupportedOperationException();
-//                    case 1:
-//                        z = t.getOnly();
-//                        break;
-//                    default: {
-////                        Term[] tt = Terms.sorted(t); /* sorted iff t is SortedSet */
-////                        if (theSequence == null) {
-////                            return Op.compoundExact(CONJ, dt, tt);
-////                        } else {
-//////                        boolean complex = false;
-//////                        for (Term x : t) {
-//////                            if (x.hasAny(Op.CONJ)) {
-//////                                complex = true;
-//////                                break;
-//////                            }
-//////                        }
-//////                        if (complex) {
-//                            z = CONJ.the(dt, t);
-//////                        } else {
-//////                            z = Op.compoundExact(CONJ, dt, tt);
-//////                        }
-////                        }
-//
-//                        break;
-//                    }
-//
-//                }
-//
-//
-//                if (theSequence != null) {
-//                    if (theSequence.equals(z))
-//                        return theSequence;
-//
-//                    int sdt = theSequence.dt();
-//                    if (sdt == XTERNAL && (dt==0 || dt == DTERNAL || dt == XTERNAL)) {
-//                        Set<Term> az = new UnifiedSet();
-//                        for (Term aa : theSequence.subterms()) {
-//                            Term aazz = CONJ.the(aa, dt, z);
-//                            if (aazz == False)
-//                                return False;
-//                            if (aazz == Null)
-//                                return Null;
-//                            if (aazz!=True)
-//                                az.add(aazz);
-//                        }
-//                        return CONJ.the(XTERNAL, az);
-////                    } else if ((dt==DTERNAL || dt == XTERNAL || dt == 0) && (sdt == DTERNAL || sdt == 0)) {
-////                        //both commutative
-////
-////                        if ((dt == DTERNAL || dt == XTERNAL) && (sdt != DTERNAL ))
-////                            dt = sdt; //most specific dt
-////
-////                        SortedSet<Term> x = theSequence.subterms().toSetSorted();
-////                        if (z.op()==CONJ)
-////                            z.subterms().forEach(x::add);
-////                        else
-////                            x.add(z);
-////
-////                        if (x.size() == 1)
-////                            return x.first();
-////                        else {
-////
-////                            Term[] xx = x.toArray(EmptyTermArray);
-////                            if (Util.and(xxx -> xxx.unneg().op()!=CONJ, xx))
-////                                return Op.compoundExact(CONJ, dt, xx); //build direct
-////                            else
-////                                return CONJ.the(dt, xx); //build with potential reduction
-////                        }
-//                    } else {
-//                        //Distribute (un-factor) z to each component of the sequence
-//                        Conj c = new Conj();
-//                        int dtdt = dt;
-//                        theSequence.eventsWhile((whn, wht) ->
-//                                c.add(whn, CONJ.the(dtdt, wht, z)),
-//                        theSequence.dt()==DTERNAL ? ETERNAL : 0,
-//                    true /*false*/, true, true, 0);
-//                        return c.term();
-//                    }
-//                }
-//
-//                return z;
-//            }
-//        }
-
     }
-
-//    private void factorDisj0(TreeSet<Term> t) {
-//        Iterator<Term> oo = t.iterator();
-//        List<Term> csa = null;
-//        while (oo.hasNext()) {
-//            Term x = oo.next();
-//            if (x.hasAll(NEG.bit | CONJ.bit)) {
-//                if (x.op() == NEG) {
-//                    Term disj = x.unneg();
-//                    if (disj.op() == CONJ && commute(disj.dt(), disj.subs())) {
-//                        SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
-//                        int ds = disjSubs.size();
-//                        if (ds == disj.subs())
-//                            continue; //no change
-//
-//                        oo.remove();
-//
-//                        if (ds > 0) {
-//
-//                            if (csa == null)
-//                                csa = new FasterList<>(1);
-//
-//                            csa.add(CONJ.the(disj.dt(), disjSubs).neg());
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        if (csa != null)
-//            t.addAll(csa);
-//    }
-
-//    private static void factorDisj(Set<Term> t, long when) {
-//
-//        List<Term> d;
-//        boolean stable, stable2;
-//        do {
-//            stable2 = true;
-//            do {
-//
-//                d = disjComponents(t);
-//                if (d == null)
-//                    return; //no change
-//
-//                stable = true;
-//
-//                //1. disj components sharing components that need factored out
-//                if (d.size() > 1) {
-//                    UnifiedMap<Term, MetalBitSet> components = new UnifiedMap();
-//                    final boolean[] hasMultiAppearance = {false};
-//                    for (int i = 0, dSize = d.size(); i < dSize; i++) {
-//                        Term dd = d.get(i);
-//                        int ii = i;
-//                        dd.unneg().subterms().forEach(ddd -> {
-//                            MetalBitSet ap = components.computeIfAbsent(ddd, dddd -> MetalBitSet.bits(dSize));
-//                            ap.set(ii);
-//                            if (ap.cardinality() > 1) {
-//                                hasMultiAppearance[0] = true;
-//                            }
-//                        });
-//                    }
-//                    if (hasMultiAppearance[0]) {
-//                        //select most commonly appearing, and process first.  then proceed to next until none left
-//                        Pair<Term, MetalBitSet> factorable = components.keyValuesView().select(p -> p.getTwo().cardinality() > 1).maxBy(p -> p.getTwo().cardinality());
-//                        Term f = factorable.getOne();
-//                        MetalBitSet b = factorable.getTwo();
-//                        SortedSet<Term> ff = new TreeSet<>(/*cardinality*/);
-//                        for (int i = 0; i < d.size(); i++) {
-//                            if (b.get(i)) {
-//                                Term di = d.get(i);
-//                                ff.add(Conj.without(di.unneg(), f, false));
-//                                boolean rdi = t.remove(di);
-//                                assert (rdi);
-//                            }
-//                        }
-//
-//                        stable = false;
-//
-//                        int dtf = when == ETERNAL ? DTERNAL : 0;
-//                        Term fff = CONJ.the(dtf, f, CONJ.the(dtf, ff).neg()).neg();
-//                        if (fff != True) {
-//                            if ((fff == False) || (fff == Null)) {
-//                                t.clear();
-//                                t.add(fff);
-//                                return;
-//                            } else {
-//                                t.add(fff);
-//                            }
-//                        }
-//                    }
-//                }
-//            } while (!stable);
-//
-//            //2. disj components contradicting non-disjunctive components
-//            {
-//
-//                //test for equal positives
-//                for (Iterator<Term> iterator = d.iterator(); iterator.hasNext(); ) {
-//                    Term disj = iterator.next();
-//                    if (hasEvent(disj.unneg(), t, when, true)) {
-////                SortedSet<Term> disjSubs = dd.toSetSorted(ddd -> t.contains(ddd.neg()));
-////                int ds = disjSubs.size();
-////                if (ds > 0) {
-//                        //remove the entire disjunctive sub-expression
-//                        t.remove(disj);
-//                        iterator.remove();
-//                        stable2 = false;
-//
-//                    }
-//                }
-//
-//            }
-//
-//            {
-//                List<Term> csa = null;
-//
-//                //test for equal negatives
-//                for (Term disj : d) {
-//
-//                    Term du = disj.unneg();
-//
-//
-//                    Term e = matchingEventsRemoved(du, t, when==ETERNAL ? DTERNAL : 0);
-//                    if (e == False || e == Null) {
-//                        t.clear();
-//                        t.add(e);
-//                        return;
-//                    }
-//
-//                    if (e != du && e!=True) {
-//                        stable2 = false;
-//
-//                        t.remove(disj);
-//                        if (csa == null)
-//                            csa = new FasterList<>(1);
-//
-//                        Term f = e.neg();
-//                        if (f == False || f == Null) {
-//                            //short-circuit
-//                            t.clear();
-//                            t.add(f);
-//                            return;
-//                        }
-//
-//                        if (f != True)
-//                            csa.add(f);
-//                    }
-//
-//
-//                }
-//                if (csa != null) {
-//                    t.addAll(csa);
-//
-//                }
-//
-//            }
-//        } while (!stable2);
-//
-//    }
-//
-//    private static Term matchingEventsRemoved(Term d, Set<Term> t, int dt) {
-//        if (d.dt() == DTERNAL /*commute(d.dt(), d.subs())*/) {
-//            SortedSet<Term> s = d.subterms().toSetSortedExcept(t::contains);
-//            if (s.size() < d.subs()) {
-//                return CONJ.the(d.dt(), s.toArray(EmptyTermArray));
-//            }
-//        } else {
-//            //TODO may not be necessary to construct this 'remain' Conj
-////            Conj remain = new Conj();
-//            if (!d.eventsWhile((when, what) -> {
-//                if (dt == DTERNAL || when == 0) { //only need to compare first event if not ETERNAL
-////                    if (what.equals(d))
-////                        return true; //skip, this is what we are comparing against
-//
-//                    if (!t.contains(what)) {
-////                        if (!remain.add(when, what))
-////                            return false;
-//                    } else {
-//                        //contradict
-//                        //remain.term = False;
-//                        return false;
-//                    }
-//                }
-//                return true;
-//            }, 0, true, true, true, 0))
-//                return False;
-////            Term e = remain.term();
-////            if (e.equals(d)) {
-////                return d;
-////            }
-////            return e;
-//        }
-//        return d;
-//    }
-//
-//    private static boolean hasEvent(Term du, Set<Term> t, long at, boolean neg) {
-//        if (commute(du.dt(), du.subs())) {
-//            return du.subterms().OR(ddd -> t.contains(ddd.negIf(neg)));
-//        } else {
-//            final boolean[] found = new boolean[1];
-//            du.eventsWhile((when, what) -> {
-//                if (at == ETERNAL || when == at) {
-//                    if (t.contains(what.negIf(neg))) {
-//                        found[0] = true;
-//                        return false;
-//                    }
-//                }
-//                return true;
-//            }, 0, false, true, false, 0);
-//            return found[0];
-//        }
-//
-//    }
-//
-//    @Nullable
-//    private static List<Term> disjComponents(Set<Term> t) {
-//        List<Term> d = null;
-//        for (Term x : t) {
-//            if (x.hasAll(NEG.bit | CONJ.bit)) {
-//                if (x.op() == NEG) {
-//                    Term disj = x.unneg();
-//                    if (disj.op() == CONJ) {
-//                        int dt = disj.dt();
-//                        /*if ((when == ETERNAL) || (when!=ETERNAL && dt == 0))*/ {
-//                            if (d == null)
-//                                d = new FasterList<>(t.size());
-//                            d.add(x);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return d;
-//    }
-
 
     private Term sub(int termIndex, @Nullable boolean[] negatives, @Nullable IntPredicate validator) {
         assert (termIndex != 0);

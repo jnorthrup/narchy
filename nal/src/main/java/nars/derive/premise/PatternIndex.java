@@ -456,11 +456,19 @@ public class PatternIndex extends MapConceptIndex {
 
     private static final TermTransform.NegObliviousTermTransform Ellipsify = new TermTransform.NegObliviousTermTransform() {
 
+
         @Override
         public @Nullable Term transformCompound(Compound x) {
-            x = (Compound) NegObliviousTermTransform.super.transformCompound(
-                    (Compound) Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x)
-            );
+            Term __x = Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x);
+            if (!(__x instanceof Compound))
+                return __x;
+
+            Term _x = NegObliviousTermTransform.super.transformCompound((Compound) __x);
+            if (!(_x instanceof Compound)) {
+                return _x;
+            }
+
+            x = (Compound) _x;
 
             Term xx;
             boolean neg = x.op() == NEG;

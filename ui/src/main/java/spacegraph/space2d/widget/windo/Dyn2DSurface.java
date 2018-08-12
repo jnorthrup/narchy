@@ -38,7 +38,7 @@ import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.tab.TabPane;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.animate.Animated;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
@@ -417,8 +417,8 @@ public class Dyn2DSurface extends Wall implements Animated {
 
         PushButton deleteButton = new PushButton("x");
         Surface menu = new TabPane(Map.of("o", () -> new Gridding(
-                new Label(source.toString()),
-                new Label(target.toString()),
+                new VectorLabel(source.toString()),
+                new VectorLabel(target.toString()),
                 deleteButton
         )), (l) -> new CheckBox(l) {
             @Override

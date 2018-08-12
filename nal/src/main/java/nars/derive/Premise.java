@@ -174,18 +174,19 @@ public class Premise {
 
                 final BeliefTable bb = beliefConcept.beliefs();
 
-                Predicate<Task> beliefFilter = (t) -> !t.equals(task);//null; //stampFilter(d);
+
 
                 Task belief = null;
 
                 if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest()) {
-                    belief = tryAnswerQuestionTask(d, beliefTerm, n, beliefConcept, bb, beliefFilter);
+                    belief = tryAnswerQuestionTask(d, beliefTerm, n, beliefConcept, bb);
                 }
 
                 if (belief == null && !bb.isEmpty()) {
 
                     long[] focus = timeFocus(d, beliefTerm);
 
+                    Predicate<Task> beliefFilter = beliefFilter();
                     Task match = bb.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
 //                    if (match!=null) {
 //                        System.out.println(task.intersects(focus[0], focus[1]) + " " + task + " " + Arrays.toString(focus));
@@ -207,7 +208,16 @@ public class Premise {
         return null;
     }
 
-    private Task tryAnswerQuestionTask(Derivation d, Term beliefTerm, NAR n, Concept beliefConcept, BeliefTable bb, Predicate<Task> beliefFilter) {
+    private Predicate<Task> beliefFilter() {
+        if (task.stamp().length > 0) {
+            return t -> !t.equals(task);//null; //stampFilter(d);
+        } else {
+            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
+        }
+
+    }
+
+    private Task tryAnswerQuestionTask(Derivation d, Term beliefTerm, NAR n, Concept beliefConcept, BeliefTable bb) {
         final BeliefTable answerTable =
                 (task.isQuest()) ?
                         beliefConcept.goals() :

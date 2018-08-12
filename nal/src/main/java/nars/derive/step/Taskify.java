@@ -44,8 +44,9 @@ public class Taskify extends AbstractPred<Derivation> {
                 ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && !x.hasVarQuery()));
     }
 
-    private static boolean spam(Derivation p, int cost) {
-        p.use(cost);
+    private boolean spam(Derivation d, int cost) {
+        d.use(cost);
+        d.concTerm = null; //erase immediately
         return true;
     }
 
@@ -55,10 +56,11 @@ public class Taskify extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-
-
         Term x0 = d.concTerm;
+
         final byte punc = d.concPunc;
+        assert (punc != 0) : "no punctuation assigned";
+
         if ((punc == BELIEF || punc == GOAL) && x0.hasXternal()) {
             //HACK this is for deficiencies in the temporal solver that can be fixed
             x0 = x0.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
@@ -68,17 +70,20 @@ public class Taskify extends AbstractPred<Derivation> {
             }
         }
 
-        Term x1 = d.anon.get(x0);
-        if (x1==null)
-            throw new NullPointerException(); //return spam(d, Param.TTL_DERIVE_TASK_FAIL);
+        Term x1;
+        try {
+            x1 = d.anon.get(x0);
+            if (x1 == null)
+                throw new NullPointerException(); //return spam(d, Param.TTL_DERIVE_TASK_FAIL);
+        } catch (RuntimeException r) {
+            d.concTerm = null; //HACK
+            return Derivation.fatal(r);
+        }
 
         Term x = Term.forceNormalizeForBelief(x1);
         if (!x.op().conceptualizable)
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
 
-
-
-        assert (punc != 0) : "no punctuation assigned";
 
         Truth tru = d.concTruth;
 

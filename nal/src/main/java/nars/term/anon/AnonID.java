@@ -4,6 +4,7 @@ import nars.Op;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
 
 import static nars.Op.NEG;
@@ -11,7 +12,7 @@ import static nars.Op.NEG;
 /**
  * indicates the term has an anonymous, canonical identifier (16-bit short)
  */
-public interface AnonID extends Term, The {
+public interface AnonID extends Atomic, The {
 
     
     short ATOM_MASK = 0;

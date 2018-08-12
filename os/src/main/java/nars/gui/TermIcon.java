@@ -2,12 +2,12 @@ package nars.gui;
 
 import nars.concept.Concept;
 import nars.term.Termed;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 
 /**
  * Created by me on 11/29/16.
  */
-public class TermIcon extends Label {
+public class TermIcon extends VectorLabel {
 
     private Concept _concept;
 

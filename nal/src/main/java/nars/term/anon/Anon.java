@@ -6,9 +6,11 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.util.ByteAnonMap;
-import nars.term.var.UnnormalizedVariable;
 import nars.term.util.transform.TermTransform;
+import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * term anonymization context, for canonicalization and generification of compounds
@@ -55,18 +57,16 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
         return putOrGet ? put(atomic) : get(atomic);
     }
 
-    @Override
-    public boolean eval() {
-        return false;
-    }
-
     public final Term put(Term x) {
-        if (x instanceof AnonID) {
-            return x;
-        } else if (x instanceof Atomic) {
 
-            if (x instanceof UnnormalizedVariable || x instanceof Int.IntRange)
+        if (x instanceof Atomic) {
+
+            if (x instanceof AnonID)
                 return x;
+
+            if (x instanceof UnnormalizedVariable || x instanceof Int.IntRange) {
+                return x; //HACK
+            }
 
             return Anom.the[intern(x)];
 
@@ -76,34 +76,68 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
     }
 
 
-    void validate(Term x, Term y) {
+    private static final AtomicBoolean validateLock = new AtomicBoolean();
 
-        if (y.op() != x.op())
-            throw new WTF("anon changed op: " + x + " -> " + y);
-        if (y.volume() != x.volume())
-            throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
+    void validate(Term x, Term y, boolean putOrGet) {
 
+        //if (Param.DEBUG) {
+        if (!validateLock.compareAndSet(false,true))
+            return;
+        try {
+
+//            if (termToId.isEmpty() || idToTerm.isEmpty())
+//                throw new WTF("termToId is empty: " + x + " -> " + y);
+
+            if (y.op() != x.op())
+                throw new WTF("anon changed op: " + x + " -> " + y);
+            if (y.volume() != x.volume())
+                throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
+
+
+//            if (putOrGet) {
+//                Term z = get(y);
+//                if (!z.equals(x)) {
+//                    /* temporary for debug: */ get(y);
+//                    throw new WTF("invalid put:\n\t" + x + "\n\t" + y + "\n\t" + z);
+//                }
+//            } else {
+//                Term z = put(y);
+//                if (!z.equals(x))
+//                    throw new WTF("invalid get:\n\t" + x + "\n\t" + y + "\n\t" + z);
+//
+//            }
+        } finally {
+            validateLock.set(false);
+        }
+        //}
     }
 
+
     public final Term get(Term x) {
-        if (x instanceof Anom) {
-            return interned((byte) ((Int) x).id);
-        } else if (x instanceof Compound) {
+        if (x instanceof Compound) {
             return getCompound((Compound) x);
         } else {
-            return x;
+            if (x instanceof Anom) {
+                return interned((byte) ((Int) x).id);
+            } else {
+                return x;
+            }
         }
     }
 
-    protected Term getCompound(Compound c) {
+    protected final Term getCompound(Compound y) {
         putOrGet = false;
-        return transformCompound(c);
+        Term x = transformCompound(y);
+        validate(y, x, false);
+        return x;
     }
 
-    protected Term putCompound(Compound x) {
+    protected final Term putCompound(Compound x) {
         putOrGet = true;
+
         Term y = transformCompound(x);
-        validate(x, y);
+
+        validate(x, y, true);
         return y;
     }
 }

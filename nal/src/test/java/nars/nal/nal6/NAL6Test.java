@@ -3,7 +3,6 @@ package nars.nal.nal6;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Param;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
@@ -27,7 +26,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(18);
         n.confMin.set(0.2f);
         return n;
     }

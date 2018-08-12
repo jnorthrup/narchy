@@ -24,7 +24,7 @@ import spacegraph.space2d.phys.particle.ParticleType;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.slider.XYSlider;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.space2d.widget.windo.Port;
@@ -146,7 +146,7 @@ public class TensorGlow {
 
     public static Gridding haiQWindow(HaiQae q, float[] in) {
         return new Gridding(
-                new Label("HaiQ"),
+                new VectorLabel("HaiQ"),
                 new ObjectSurface(q),
                 new Gridding(VERTICAL,
                         new AutoUpdateMatrixView(in),

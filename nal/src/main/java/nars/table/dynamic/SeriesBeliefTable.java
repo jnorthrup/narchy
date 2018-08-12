@@ -124,7 +124,9 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
     public void add(Remember r, NAR n) {
 
         Task x = r.input;
-        assert(!(x instanceof SeriesTask));
+
+        if (x instanceof SeriesTask)
+            return; //already owned, or was owned
 
         if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
             Task y = absorbNonSignal(x);

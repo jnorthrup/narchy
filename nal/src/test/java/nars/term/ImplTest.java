@@ -30,6 +30,9 @@ public class ImplTest {
         assertEq("((x&|y)=|>z)", "((x &| y) =|> (y &| z))");
         assertEq("((x&|y)=|>z)", "((x &| y) ==> (y &| z))");
     }
+    @Test void toomuchReduction() {
+        assertEq("((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))", "((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))");
+    }
 
     @Test
     void testReducibleImplFactored2() {

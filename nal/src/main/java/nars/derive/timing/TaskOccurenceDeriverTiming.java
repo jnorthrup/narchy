@@ -6,7 +6,7 @@ import nars.term.Term;
 import java.util.function.BiFunction;
 
 /** simply matches the task time exactly. */
-public class TaskTimeDeriverTiming implements BiFunction<Task, Term, long[]> {
+public class TaskOccurenceDeriverTiming implements BiFunction<Task, Term, long[]> {
 
     @Override
     public long[] apply(Task task, Term term) {

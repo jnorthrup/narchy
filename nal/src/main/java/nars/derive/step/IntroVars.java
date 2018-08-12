@@ -19,6 +19,8 @@ public final class IntroVars extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
         final Term x = d.concTerm;
+        if (x == null)
+            return false;
 
 
         @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, d.random);

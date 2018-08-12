@@ -299,16 +299,22 @@ public class Derivation extends PreDerivation {
     public boolean reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
 
-        if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
-
-
-            anon.rollback(taskUniques);
-
-
-        } else {
-
+//        if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
+//
+//
+//            anon.rollback(taskUniques);
+//
+//
+//        } else {
+        {
             anon.clear();
+            try {
             this.taskTerm = anon.put(nextTask.term());
+            } catch (RuntimeException w) {
+                return fatal(nextTask, w);
+            }
+
+
             this.taskUniques = anon.uniques();
         }
 
@@ -355,6 +361,7 @@ public class Derivation extends PreDerivation {
             this._belief = null;
         }
 
+try {
         if (this._belief != null) {
 
             beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
@@ -366,23 +373,32 @@ public class Derivation extends PreDerivation {
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthDuringTask = null;
         }
+} catch (RuntimeException w) {
+    return fatal(nextBelief, w);
+}
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
         assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
 
+
+
+
         return true;
     }
 
-//    static boolean fatal(@Nullable Task problemTask, RuntimeException w) {
-//        if (problemTask!=null)
-//            problemTask.delete();
-//        if (Param.DEBUG)
-//            throw w;
-//        else {
-//            logger.warn("{}", w.getMessage());
-//            return false;
-//        }
-//    }
+    public static boolean fatal(RuntimeException w) {
+        return fatal(null, w);
+    }
+    public static boolean fatal(@Nullable Task problemTask, RuntimeException w) {
+        if (problemTask!=null)
+            problemTask.delete();
+        if (Param.DEBUG)
+            throw w;
+        else {
+            logger.warn("{}", w.getMessage());
+            return false;
+        }
+    }
 
     /**
      * called after protoderivation has returned some possible Try's

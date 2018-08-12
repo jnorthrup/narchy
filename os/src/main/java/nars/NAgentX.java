@@ -20,7 +20,7 @@ import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -133,8 +133,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        //new HijackConceptIndex(128 * 1024, 4)
+                        //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(128 * 1024, 4)
 
 
                 )
@@ -294,11 +294,11 @@ abstract public class NAgentX extends NAgent {
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-        n.beliefPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.5f);
-
-        n.goalPriDefault.set(0.75f);
-        n.questPriDefault.set(0.5f);
+        float basePri = 0.25f;
+        n.beliefPriDefault.set(basePri * 0.5f);
+        n.goalPriDefault.set(basePri * 0.5f);
+        n.questionPriDefault.set(basePri * 0.5f);
+        n.questPriDefault.set(basePri * 0.5f);
 
 
 

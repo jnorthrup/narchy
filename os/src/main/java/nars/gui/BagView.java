@@ -11,7 +11,7 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.BagChart;
 import spacegraph.space2d.widget.tab.TabPane;
-import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.Map;
 
@@ -19,7 +19,7 @@ public class BagView<X extends Prioritized> extends TabPane {
 
     public BagView(String label, Bag<?,X> bag, NAR nar) {
         super(Map.of(
-                        label, () -> new Label(label),
+                        label, () -> new VectorLabel(label),
                         "edit", () -> new Gridding(
                                 new PushButton("clear", () -> bag.clear()),
                                 new PushButton("print", () -> bag.print())

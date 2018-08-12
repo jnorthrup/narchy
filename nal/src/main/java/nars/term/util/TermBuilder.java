@@ -2,7 +2,6 @@ package nars.term.util;
 
 import nars.Op;
 import nars.Param;
-import nars.op.mental.AliasConcept;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
@@ -24,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Terms.sorted;
@@ -210,8 +208,6 @@ public abstract class TermBuilder {
                 return Null;
 
 
-//            if (subject.hasAny(InvalidImplicationSubj)) //if this is required, subject.isAny is more appropriate
-//                return Null;
 
             switch (predicate.op()) {
                 case BOOL:
@@ -232,13 +228,6 @@ public abstract class TermBuilder {
 
 
 
-            switch (predicate.op()) {
-                case IMPL: {
-
-                }
-
-
-            }
 
 
             if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
@@ -307,129 +296,16 @@ public abstract class TermBuilder {
                     subject = newSubj;
                 }
 
-                if (subject.op()==NEG && concurrent(dt)) {
-                    //special test for negated subject that may conflict with predicate
-                    Term x = CONJ.the(dt, subject, predicate);
-                    if (x instanceof Bool) {
-                        return x;
-                    } else {
-                        if (x.op()!=CONJ)
-                            return Null; //??
-                    }
-                }
-
-//                int pre = subject.dtRange();
-//                boolean dtNotDternal = dt != DTERNAL;
-//                int edt = pre + (dtNotDternal ? dt : 0);
-//
-//                final boolean[] peChange = {false};
-//
-//
-//                boolean contradiction = !predicate.eventsWhile((w, t) -> {
-//                    LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
-//                    if (se.contains(x)) {
-//
-//                        peChange[0] = true;
-//                    } else if (se.contains(pair(w, t.neg()))) {
-//                        return false;
-//                    } else {
-//                        pe.add(x);
-//                    }
-//                    return true;
-//                }, edt, true, true, false, 0);
-//
-//                if (contradiction)
-//                    return False;
-//
-//
-//                if ((dt == DTERNAL || dt == 0)) {
-//                    for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
-//                        LongObjectPair<Term> pex = pi.next();
-//                        Term pext = pex.getTwo();
-//                        if (pext.op() == CONJ) {
-//                            int pdt = pext.dt();
-//                            if (pdt == DTERNAL || pdt == 0) {
-//                                long at = pex.getOne();
-//
-//                                RoaringBitmap pextRemovals = null;
-//                                Subterms subPexts = pext.subterms();
-//                                int subPextsN = subPexts.subs();
-//
-//                                for (LongObjectPair<Term> sse: se) {
-//                                    if (sse.getOne() == at) {
-//
-//
-//                                        Term sset = sse.getTwo();
-//
-//                                        for (int i = 0; i < subPextsN; i++) {
-//                                            Term subPext = subPexts.sub(i);
-//                                            Term merge = CONJ.the(dt, new Term[]{sset, subPext});
-//                                            if (merge == Null) return Null;
-//                                            else if (merge == False) {
-//
-//                                                return False;
-//                                            } else if (merge.equals(sset)) {
-//
-//                                                if (pextRemovals == null)
-//                                                    pextRemovals = new RoaringBitmap();
-//                                                pextRemovals.add(i);
-//                                            } else {
-//
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                                if (pextRemovals != null) {
-//                                    if (pextRemovals.getCardinality() == subPextsN) {
-//
-//                                        pi.remove();
-//                                    } else {
-//                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
-//                                    }
-//                                    peChange[0] = true;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//
-//
-//                if (pe.isEmpty())
-//                    return True;
-//
-//
-//                if (peChange[0]) {
-//
-//                    int pdt = predicate.dt();
-//                    Term newPredicate;
-//                    if (pe.size() == 1) {
-//                        newPredicate = pe.getOnly().getTwo();
-//                    } else if (pdt == DTERNAL || pdt == 0) {
-//
-//                        long cdt = pdt == DTERNAL ? ETERNAL : 0;
-//
-//                        Conj c = new Conj();
-//                        for (LongObjectPair<Term> aPe: pe) {
-//                            if (!c.add(cdt, aPe.getTwo()))
-//                                break;
-//                        }
-//                        newPredicate = c.term();
-//                    } else {
-//                        newPredicate = Conj.conj(pe);
-//                    }
-//
-//                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
-                    //return IMPL.the(dt, subject, predicate);
-
-//                boolean neg = predicate.op() == NEG;
-//                if (neg) predicate = predicate.unneg();
-//
-//                return Op.compoundExact(IMPL, dt, subject, predicate).negIf(neg);
 
                 if (subjChange[0] || predChange[0]) {
                     return statement(IMPL, dt, subject, predicate);
                 } else {
-                    return Op.compoundExact(IMPL, dt, subject, predicate);
+                    //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
+                    //TODO valid cases where subj has impl?
+                    if (subject.hasAny(IMPL))
+                        return Null;
+
+                    return compound(IMPL, dt, subject, predicate);
                 }
 
 
@@ -439,34 +315,34 @@ public abstract class TermBuilder {
         }
 
 
-        if ((dtConcurrent || op != IMPL) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
-
-            Predicate<Term> delim = (op == IMPL) ?
-                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
-
-
-            if ((containEachOther(subject, predicate, delim))) {
-
-                return Null;
-            }
-            boolean sa = subject instanceof AliasConcept.AliasAtom;
-            if (sa) {
-                Term sd = ((AliasConcept.AliasAtom) subject).target;
-                if (sd.equals(predicate) || containEachOther(sd, predicate, delim))
-                    return Null;
-            }
-            boolean pa = predicate instanceof AliasConcept.AliasAtom;
-            if (pa) {
-                Term pd = ((AliasConcept.AliasAtom) predicate).target;
-                if (pd.equals(subject) || containEachOther(pd, subject, delim))
-                    return Null;
-            }
-            if (sa && pa) {
-                if (containEachOther(((AliasConcept.AliasAtom) subject).target, ((AliasConcept.AliasAtom) predicate).target, delim))
-                    return Null;
-            }
-
-        }
+//        if ((dtConcurrent || op != IMPL) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
+//
+//            Predicate<Term> delim = (op == IMPL) ?
+//                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
+//
+//
+//            if ((containEachOther(subject, predicate, delim))) {
+//
+//                return Null;
+//            }
+//            boolean sa = subject instanceof AliasConcept.AliasAtom;
+//            if (sa) {
+//                Term sd = ((AliasConcept.AliasAtom) subject).target;
+//                if (sd.equals(predicate) || containEachOther(sd, predicate, delim))
+//                    return Null;
+//            }
+//            boolean pa = predicate instanceof AliasConcept.AliasAtom;
+//            if (pa) {
+//                Term pd = ((AliasConcept.AliasAtom) predicate).target;
+//                if (pd.equals(subject) || containEachOther(pd, subject, delim))
+//                    return Null;
+//            }
+//            if (sa && pa) {
+//                if (containEachOther(((AliasConcept.AliasAtom) subject).target, ((AliasConcept.AliasAtom) predicate).target, delim))
+//                    return Null;
+//            }
+//
+//        }
 
         return op == SIM && subject.compareTo(predicate) > 0 ?
                 compound(op, dt, predicate, subject) :
@@ -488,7 +364,7 @@ public abstract class TermBuilder {
 
 
                     return only instanceof Ellipsislike ?
-                            compoundExact(CONJ, dt, only)
+                            compound(CONJ, dt, only)
                             :
                             only;
                 }
@@ -553,7 +429,7 @@ public abstract class TermBuilder {
 
                     if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
                         //fast construct for simple case, verified above to not contradict itself
-                        return Op.compoundExact(CONJ, dt, sorted(u[0], u[1]));
+                        return compound(CONJ, dt, sorted(u[0], u[1]));
                     }
 
                 }
@@ -594,9 +470,9 @@ public abstract class TermBuilder {
 
                         if (uux.size() == 1) {
                             Term only = uux.getOnly();
-                            return compoundExact(CONJ, XTERNAL, only, only); //repeat
+                            return compound(CONJ, XTERNAL, only, only); //repeat
                         } else {
-                            return compoundExact(CONJ, XTERNAL, sorted(uux));
+                            return compound(CONJ, XTERNAL, sorted(uux));
                         }
                     }
 

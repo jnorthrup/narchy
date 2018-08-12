@@ -16,8 +16,4 @@ public abstract class VariableTransform implements TermTransform.NegObliviousTer
         return x.hasVars() ? TermTransform.NegObliviousTermTransform.super.transformCompound((Compound)x) : x;
     }
 
-    @Override
-    public boolean eval() {
-        return false;
-    }
 }
