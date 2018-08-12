@@ -1,12 +1,11 @@
 package nars.table;
 
-import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
-import nars.task.TaskProxy;
+import nars.task.util.Answer;
+import nars.task.util.TaskRank;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,13 +13,14 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * A model storing, ranking, and projecting beliefs or goals (tasks with TruthValue).
  * It should iterate in top-down order (highest ranking first)
  */
 public interface BeliefTable extends TaskTable {
+
+    BeliefTable Empty = new EmptyBeliefTable();
 
     static float eternalTaskValue(Task eternal) {
         return eternal.evi();
@@ -31,43 +31,38 @@ public interface BeliefTable extends TaskTable {
     }
 
     /**
-     * set the capacity
-     */
-    void capacity(int eternals, int temporals);
-
-    /**
      * minT and maxT inclusive
      * TODO add Predicate<> form of this for early exit
      */
-    void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x);
+    void forEachTask(long minT, long maxT, Consumer<? super Task> x);
 
     /**
      * attempt to insert a task; returns what was input or null if nothing changed (rejected)
      */
     @Override
-    void add(/*@NotNull*/ Remember input,  /*@NotNull*/ NAR nar);
+    void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar);
 
-    @Override
-    default Task match(long start, long end, Term template, NAR nar) {
+    void match(TaskRank t);
+
+    @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+        return Answer.the(start, end, template, filter,nar).task(false);
+    }
+
+
+    default Truth truth(long start, long end, @Nullable Term template, NAR nar) {
+        return Answer.the(start, end, template, null, nar).truth();
+    }
+
+
+    @Deprecated @Override default Task match(long start, long end, Term template, NAR nar) {
         return match(start, end, template, null, nar);
     }
 
-    Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar);
-
-    /**
-     * estimates the current truth value from the top task, projected to the specified 'when' time;
-     * returns null if no evidence is available
-     * <p>
-     * if the term is temporal, template specifies the specifically temporalized term to seek
-     * if template is null then the concept() form of the task's term is
-     */
-    Truth truth(long start, long end, @Nullable Term template, NAR nar);
-
-    default Truth truth(long when, NAR nar) {
+    @Deprecated default Truth truth(long when, NAR nar) {
         return truth(when, when, null, nar);
     }
 
-    default Truth truth(long start, long end, NAR nar) {
+    @Deprecated default Truth truth(long start, long end, NAR nar) {
         return truth(start, end, null, nar);
     }
 
@@ -79,132 +74,13 @@ public interface BeliefTable extends TaskTable {
         print(System.out);
     }
 
-    default float priSum() {
-        return (float) streamTasks().mapToDouble(Prioritized::pri).sum();
+    default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
+        if (isEmpty())
+            return null;
+        Answer r = Answer.the(start, end, template, filter, n);
+        match(r);
+        return r.task(true);
     }
-
-    BeliefTable Empty = new BeliefTable() {
-
-        @Override
-        public Stream<Task> streamTasks() {
-            return Stream.empty();
-        }
-
-        @Override
-        public Task match(long start, long end, Term template, NAR nar) {
-            return null;
-        }
-
-        @Override
-        public Task sample(long start, long end, Term template, NAR nar) {
-            return null;
-        }
-
-        @Override
-        public void forEachTask(Consumer<? super Task> x) {
-
-        }
-
-        @Override
-        public boolean removeTask(Task x) {
-            return false;
-        }
-
-        @Override
-        public int capacity() {
-            return 0;
-        }
-
-        @Override
-        public void capacity(int eternals, int temporals) {
-        }
-
-        @Override
-        public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
-
-        }
-
-        @Override
-        public float priSum() {
-            return 0;
-        }
-
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
-
-        @Override
-        public void add(/*@NotNull*/ Remember input,  /*@NotNull*/ NAR nar) {
-
-        }
-
-        @Override
-        public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-            return null;
-        }
-
-        @Override
-        public void print(/*@NotNull*/ PrintStream out) {
-
-        }
-
-        @Override
-        public Truth truth(long start, long end, Term template, NAR nar) {
-            return null;
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-    };
-
-    /**
-     * matches, and projects to the specified time-range if necessary
-     */
-    default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-        Task m = match(start, end, template, filter, nar);
-        if (m == null)
-            return null;
-        if (m.containedBy(start, end))
-            return m;
-        Task t = Task.project(false, m, start, end, nar, false);
-        if (t instanceof TaskProxy) {
-            //dither truth
-            @Nullable PreciseTruth tt = t.truth().dither(nar);
-            if (tt != null) {
-                t = Task.clone(t, t.term(), tt, t.punc());
-            } else {
-                t = null;
-            }
-        }
-        return t;
-    }
-
-
-
-
-
-    /* simple metric that guages the level of inconsistency between two differnt tables, used in measuring graph intercoherency */
-    /*default float coherenceAgainst(BeliefTable other) {
-        
-        return Float.NaN;
-    }*/
-
-
-
-
-
-
-
-
-
-
-
 
 
 

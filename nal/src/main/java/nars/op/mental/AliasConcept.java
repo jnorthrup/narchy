@@ -6,7 +6,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
-import nars.table.BeliefTable;
+import nars.table.BeliefTables;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -50,12 +50,12 @@ public final class AliasConcept extends TaskConcept {
     }
 
     @Override
-    public BeliefTable beliefs() {
+    public BeliefTables beliefs() {
         return abbr.beliefs();
     }
 
     @Override
-    public BeliefTable goals() {
+    public BeliefTables goals() {
         return abbr.goals();
     }
 

@@ -9,7 +9,7 @@ import jcog.tree.rtree.HyperRegion;
  */
 public class TimeRange implements HyperRegion {
 
-    long start = Long.MIN_VALUE, end = Long.MAX_VALUE;
+    public long start = Long.MIN_VALUE, end = Long.MAX_VALUE;
 
     public TimeRange() {
 
@@ -24,6 +24,7 @@ public class TimeRange implements HyperRegion {
         this.end = e;
         return this;
     }
+
     @Override
     public boolean intersects(HyperRegion x) {
         LongInterval t = (LongInterval)x;

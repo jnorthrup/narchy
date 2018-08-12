@@ -11,7 +11,7 @@ import nars.control.MetaGoal;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
-import nars.table.dynamic.SignalBeliefTable;
+import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -25,8 +25,8 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
 
     protected ActionConcept(Term term, TermLinker linker, NAR n) {
         this(term,
-                new SignalBeliefTable(term, true, n.conceptBuilder),
-                n.conceptBuilder.newTable(term, false), linker,
+                new SensorBeliefTables(term, true, n.conceptBuilder),
+                n.conceptBuilder.newTables(term, false), linker,
                 n);
     }
 
@@ -37,13 +37,13 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
-        ((SignalBeliefTable) beliefs()).setPri(
+        ((SensorBeliefTables) beliefs()).setPri(
                 FloatRange.unit(
                         //Util.or(n.priDefault(BELIEF), n.priDefault(GOAL))
                         n.goalPriDefault //even though the tasks are beliefs
                 )
         );
-        ((SignalBeliefTable) beliefs()).resolution(FloatRange.unit(n.freqResolution));
+        ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
     }
 
     @Override
@@ -57,11 +57,11 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
 
     @Override
     public FloatRange resolution() {
-        return ((SignalBeliefTable) beliefs()).resolution();
+        return ((SensorBeliefTables) beliefs()).resolution();
     }
     @Override
     public FloatRange pri() {
-        return ((SignalBeliefTable) beliefs()).pri();
+        return ((SensorBeliefTables) beliefs()).pri();
     }
 
     @Override

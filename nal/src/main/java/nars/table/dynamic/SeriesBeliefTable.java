@@ -7,23 +7,23 @@ import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
+import nars.table.BeliefTable;
+import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.table.temporal.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.TaskProxy;
 import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
+import nars.task.util.series.TaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.dynamic.DynTruth;
-import nars.task.util.series.TaskSeries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -33,18 +33,18 @@ import static nars.time.Tense.ETERNAL;
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
  * if a stored task is available or not.
  */
-public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTable {
+public class SeriesBeliefTable extends DynamicTaskTable {
 
-    public final TaskSeries<T> series;
+    public final TaskSeries<SeriesTask> series;
 
-    public SeriesBeliefTable(Term c, boolean beliefOrGoal, EternalTable e, TemporalBeliefTable t, TaskSeries<T> s) {
-        super(c, beliefOrGoal, e, t);
+    public SeriesBeliefTable(Term c, boolean beliefOrGoal, TaskSeries<SeriesTask> s) {
+        super(c, beliefOrGoal);
         this.series = s;
     }
 
     @Override
     public int size() {
-        return super.size() + series.size();
+        return series.size();
     }
 
     protected Truthed eval(boolean taskOrJustTruth, long start, long end, NAR nar) {
@@ -83,24 +83,21 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
 
     @Override
     public void clear() {
-        super.clear();
         series.clear();
     }
 
     @Override
-    public Stream<Task> streamTasks() {
-        return Stream.concat(super.streamTasks(), series.stream());
+    public Stream<? extends Task> streamTasks() {
+        return series.stream();
     }
 
     @Override
-    public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
-        super.forEachTask(includeEternal, minT, maxT, x);
+    public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
         series.forEach(minT, maxT, true, x);
     }
 
     @Override
     public void forEachTask(Consumer<? super Task> action) {
-        super.forEachTask(action);
         series.forEach(action);
     }
 
@@ -114,11 +111,6 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
         return (Truth) (eval(false, start, end, nar));
     }
 
-    @Override
-    public void sampleDynamic(long s, long e, Consumer<Task> c, NAR nar) {
-        series.forEach(s, e, false, c);
-    }
-
 
     @Override
     public void add(Remember r, NAR n) {
@@ -129,7 +121,7 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
             return; //already owned, or was owned
 
         if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
-            Task y = absorbNonSignal(x);
+            Task y = absorbNonSignal(x, cleanMargin(n));
             if (y == null) {
                 r.reject();
                 return;
@@ -141,31 +133,39 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
         super.add(r, n);
     }
 
-    public void clean(NAR nar) {
+    /** time margin to shrink the series end length allowing tasks to survive in the "present" before being cleaned */
+    protected int cleanMargin(NAR n) {
+        return n.dur();
+    }
+
+    public void clean(NAR nar, List<BeliefTable> tables) {
         if (!Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS)
             return;
 
-        if (!series.isEmpty() && !temporal.isEmpty()) {
-            try {
-                long sStart = series.start(), sEnd = series.end();
+        if (!series.isEmpty()) {
+                long sStart = series.start(), sEnd = series.end() - cleanMargin(nar);
 
                 List<Task> deleteAfter = new FasterList(4);
-                temporal.whileEach(sStart, sEnd, t -> {
-                    if (t.isDeleted() || absorbNonSignal(t, sStart, sEnd)) {
-                        deleteAfter.add(t);
-                    } else {
-                        //System.out.println(t + " saved");
+                for (TaskTable b : tables) {
+                    if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
+                        b.forEachTask(sStart, sEnd, t -> {
+                            if (t.isDeleted() || absorbNonSignal(t, sStart, sEnd)) {
+                                deleteAfter.add(t);
+                            } else {
+                                //System.out.println(t + " saved");
+                            }
+                        });
                     }
-                    return true;
-                });
-                deleteAfter.forEach(temporal::removeTask);
-            } catch (NoSuchElementException e) {
-                //just in case
-            }
+                    if (!deleteAfter.isEmpty()) {
+                        deleteAfter.forEach(b::removeTask);
+                        deleteAfter.clear();
+                    }
+                }
+
         }
     }
 
-    @Nullable Task absorbNonSignal(Task t) {
+    @Nullable Task absorbNonSignal(Task t, int dur) {
         if (t.isEternal())
             return t; //no change
 
@@ -176,7 +176,7 @@ public abstract class SeriesBeliefTable<T extends Task> extends DynamicBeliefTab
 
         //similar for before the beginning
 
-        if (!series.isEmpty() && absorbNonSignal(t, series.start(), seriesEnd))
+        if (!series.isEmpty() && absorbNonSignal(t, series.start(), seriesEnd - dur))
             return null;
 
         return t;

@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.Param;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
-import nars.table.DefaultBeliefTable;
+import nars.table.BeliefTables;
 import nars.term.Term;
 
 import static jcog.Util.compose;
@@ -58,7 +58,7 @@ public class DetailedReward extends Reward {
             agent.//alwaysWant/*Eternally*/
                     alwaysWantEternally(concept.filter.get(2).term, nar.confDefault(GOAL) * 0.5f); //acute
             for (Signal x : concept.filter) {
-                ((DefaultBeliefTable) x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
+                ((BeliefTables) x.beliefs()).eternal.setCapacity(0); //HACK this should be an Empty table
 
                 //should normally be able to create these beliefs but if you want to filter more broadly:
                 //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table

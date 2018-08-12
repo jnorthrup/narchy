@@ -29,6 +29,7 @@ import nars.Task;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
+import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
@@ -41,7 +42,6 @@ import java.io.PrintStream;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static jcog.Texts.n4;
 import static nars.Op.*;
 
 public interface Concept extends Termed, MetaMap {
@@ -51,9 +51,9 @@ public interface Concept extends Termed, MetaMap {
 
     Bag<Term,PriReference<Term>> termlinks();
 
-    BeliefTable beliefs();
+    BeliefTables beliefs();
 
-    BeliefTable goals();
+    BeliefTables goals();
 
     QuestionTable questions();
 
@@ -227,8 +227,8 @@ public interface Concept extends Termed, MetaMap {
         long now = n.time();
         out.println(term() +
                 "\t" +
-                "belief=" + beliefs().truth(now, n) + " $" + n4(beliefs().priSum()) + " , " +
-                "goal=" +   goals().truth(now, n)+ " $" + n4(goals().priSum())
+                "belief=" + beliefs().truth(now, n) + " $" + " , " +
+                "goal=" +   goals().truth(now, n)+ " $"
         );
     }
 

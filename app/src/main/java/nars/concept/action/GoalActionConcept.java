@@ -4,9 +4,10 @@ import nars.$;
 import nars.NAR;
 import nars.concept.TaskConcept;
 import nars.control.channel.CauseChannel;
+import nars.table.BeliefTables;
 import nars.table.dynamic.CuriosityGoalTable;
 import nars.table.dynamic.SeriesBeliefTable;
-import nars.table.dynamic.SignalBeliefTable;
+import nars.table.dynamic.SensorBeliefTables;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -31,7 +32,7 @@ public class GoalActionConcept extends ActionConcept {
 
     public GoalActionConcept(Term term, NAR n, MotorFunction motor) {
         super(term,
-                new SignalBeliefTable(term, true, n.conceptBuilder),
+                new SensorBeliefTables(term, true, n.conceptBuilder),
                 new CuriosityGoalTable(term, false, n),
                 n);
 
@@ -41,13 +42,13 @@ public class GoalActionConcept extends ActionConcept {
     }
 
     @Override
-    public CuriosityGoalTable goals() {
+    public BeliefTables goals() {
         return (CuriosityGoalTable) super.goals();
     }
 
     @Override
-    public SignalBeliefTable beliefs() {
-        return (SignalBeliefTable) super.beliefs();
+    public BeliefTables beliefs() {
+        return (SensorBeliefTables) super.beliefs();
     }
 
     @Override
@@ -100,7 +101,7 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth feedback = this.motor.apply(null, goal);
 
-        SignalBeliefTable b = beliefs();
+        BeliefTables b = beliefs();
         ITask feedbackBelief = feedback != null ?
                 b.add(feedback, now, next, this, nar) : null;
 

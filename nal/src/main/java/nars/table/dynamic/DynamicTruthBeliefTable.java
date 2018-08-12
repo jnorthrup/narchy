@@ -2,8 +2,6 @@ package nars.table.dynamic;
 
 import nars.NAR;
 import nars.Task;
-import nars.table.eternal.EternalTable;
-import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
@@ -15,22 +13,15 @@ import org.jetbrains.annotations.Nullable;
  * computes dynamic truth according to implicit truth functions
  * determined by recursive evaluation of the compound's sub-component's truths
  */
-public class DynamicTruthBeliefTable extends DynamicBeliefTable {
+public class DynamicTruthBeliefTable extends DynamicTaskTable {
 
     private final DynamicTruthModel model;
 
 
-    public DynamicTruthBeliefTable(Term c, EternalTable e, TemporalBeliefTable t, DynamicTruthModel model, boolean beliefOrGoal) {
-        super(c, beliefOrGoal, e, t);
+    public DynamicTruthBeliefTable(Term c, DynamicTruthModel model, boolean beliefOrGoal) {
+        super(c, beliefOrGoal);
         this.model = model;
     }
-
-    @Override
-    public boolean isEmpty() {
-        /** since this is a dynamic evaluation, we have to assume it is not empty */
-        return false;
-    }
-
 
     @Override
     public Task taskDynamic(long start, long end, Term template, NAR nar) {

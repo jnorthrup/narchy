@@ -17,14 +17,11 @@ import nars.control.proto.Remember;
 import nars.table.eternal.EternalTable;
 import nars.task.Revision;
 import nars.task.signal.SignalTask;
-import nars.task.util.TaskRegion;
-import nars.task.util.TimeConfRange;
-import nars.task.util.TimeRange;
+import nars.task.util.*;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
-import nars.task.util.TaskMatchRank;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
@@ -93,11 +90,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         super(new RTree<>(RTreeBeliefModel.the));
     }
 
-    @Deprecated
-    private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
-
-        return t -> ts.floatValueOf((Task) t);
-    }
+//    @Deprecated
+//    private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
+//
+//        return t -> ts.floatValueOf((Task) t);
+//    }
 
 
     /**
@@ -191,12 +188,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return x.eviEternalized() * x.range();
     }
 
-    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
-        return t -> {
-            Task tt = ((Task) t);
-            return tt.isDeleted() || each.test(tt);
-        };
-    }
+//    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
+//        return t -> {
+//            Task tt = ((Task) t);
+//            return tt.isDeleted() || each.test(tt);
+//        };
+//    }
 
     public static RTreeBeliefTable build(Term concept) {
         if (!concept.hasAny(Op.Temporal)) {
@@ -234,103 +231,113 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return super.isEmpty();
     }
 
+//    @Override
+//    public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
+//
+//
+//        assert (end >= start);
+//
+//        int s = size();
+//        if (s > 0) {
+//
+//
+//            int maxTruths = TRUTHPOLATION_LIMIT;
+//
+//            int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
+//            maxTries = Math.min(s * 2 /* in case the same task is encountered twice HACK*/,
+//                    maxTries);
+//
+//            ExpandingScan temporalTasks = new ExpandingScan(maxTruths, maxTruths,
+//                    task(taskStrength(template, start, end, dur)),
+//                    maxTries)
+//                    .scan(this, start, end);
+//
+//            if (!temporalTasks.isEmpty()) {
+//
+//                TruthPolation t = Param.truth(start, end, dur);
+//                temporalTasks.forEachItem(t::add);
+//
+//                if (eternal != null && !eternal.isEmpty()) {
+//                    LongSet temporalStamp = t.filterCyclic();
+//                    Task ee = eternal.select(ete -> !Stamp.overlapsAny(temporalStamp, ete.stamp()));
+//                    if (ee != null) {
+//                        t.add(ee);
+//                    }
+//                } else if (t.size() > 1) {
+//                    t.filterCyclic();
+//                }
+//
+//                return t.truth();
+//            }
+//        }
+//
+//        return eternal != null ? eternal.strongestTruth() : null;
+//    }
+
+//    @Override
+//    public final Task match(long start, long end, @Nullable Term template, EternalTable eternals, NAR nar, Predicate<Task> filter) {
+//        int s = size();
+//        if (s > 0) {
+//            int dur = nar.dur();
+//            assert (end >= start);
+//
+//            Task t = match(start, end, template, nar, filter, dur);
+//            if (t != null) {
+//                if (eternals != null) {
+//                    ImmutableLongSet tStamp = Stamp.toSet(t);
+//                    Task e = eternals.select(x ->
+//                            (filter == null || filter.test(x)) &&
+//                                    !Stamp.overlapsAny(tStamp, x.stamp()));
+//                    if (e != null) {
+//                        return Revision.merge(nar, t, e);
+//                    } else {
+//                        return t;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return eternals != null ? eternals.select(filter) : null;
+//    }
+
+    //abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
+
     @Override
-    public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
-
-
-        assert (end >= start);
-
-        int s = size();
-        if (s > 0) {
-
-
-            int maxTruths = TRUTHPOLATION_LIMIT;
-
-            int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
-            maxTries = Math.min(s * 2 /* in case the same task is encountered twice HACK*/,
-                    maxTries);
-
-            ExpandingScan temporalTasks = new ExpandingScan(maxTruths, maxTruths,
-                    task(taskStrength(template, start, end, dur)),
-                    maxTries)
-                    .scan(this, start, end);
-
-            if (!temporalTasks.isEmpty()) {
-
-                TruthPolation t = Param.truth(start, end, dur);
-                temporalTasks.forEachItem(t::add);
-
-                if (eternal != null && !eternal.isEmpty()) {
-                    LongSet temporalStamp = t.filterCyclic();
-                    Task ee = eternal.select(ete -> !Stamp.overlapsAny(temporalStamp, ete.stamp()));
-                    if (ee != null) {
-                        t.add(ee);
-                    }
-                } else if (t.size() > 1) {
-                    t.filterCyclic();
-                }
-
-                return t.truth();
-            }
-        }
-
-        return eternal != null ? eternal.strongestTruth() : null;
-    }
-
-    @Override
-    public final Task match(long start, long end, @Nullable Term template, EternalTable eternals, NAR nar, Predicate<Task> filter) {
-        int s = size();
-        if (s > 0) {
-            int dur = nar.dur();
-            assert (end >= start);
-
-            Task t = match(start, end, template, nar, filter, dur);
-            if (t != null) {
-                if (eternals != null) {
-                    ImmutableLongSet tStamp = Stamp.toSet(t);
-                    Task e = eternals.select(x ->
-                            (filter == null || filter.test(x)) &&
-                                    !Stamp.overlapsAny(tStamp, x.stamp()));
-                    if (e != null) {
-                        return Revision.merge(nar, t, e);
-                    } else {
-                        return t;
-                    }
-                }
-            }
-        }
-
-        return eternals != null ? eternals.select(filter) : null;
-    }
-
-    abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
-
-    @Override
-    public void match(TaskMatchRank m, NAR nar, Consumer<Task> target) {
+    public void match(TaskRank m) {
 
         if (isEmpty())
             return;
 
-        ExpandingScan tt = new ExpandingScan(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
-                task(m.value()),
-                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
-                m::filter)
-                .scan(this, m.timeMin(), m.timeMax());
-
-        int tts = tt.size();
-        if (tts > 0) {
-            if (tts == 1) {
-                target.accept((Task) (tt.get(0).id));
-            } else {
-
-                final int[] limit = {m.limit()};
-                float[] ww = Util.map(tt::pri, new float[tts]);
-                MutableRoulette.run(ww, nar.random(), t -> 0, y -> {
-                    target.accept((Task) (tt.get(y).id));
-                    return --limit[0] > 0;
-                });
-            }
+        Predicate<TaskRegion> each = TaskRegion.asTask((Task t) -> {
+            m.accept(t);
+            return true;
+        });
+        if (m.time.intersectOrContain) {
+            whileEachIntersecting(m.time, each);
+        } else {
+            whileEachContaining(m.time, each);
         }
+
+//        ExpandingScan tt = new ExpandingScan(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
+//                m,//task(m.value()),
+//                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
+//                m::filter)
+//                .scan(this, m.timeMin(), m.timeMax());
+//
+//        int tts = tt.size();
+//        if (tts > 0) {
+//            if (tts == 1) {
+//                target.accept((Task) (tt.get(0).id));
+//            } else {
+//
+//                final int[] limit = {m.limit()};
+//                float[] ww = Util.map(tt::pri, new float[tts]);
+//                MutableRoulette.run(ww, nar.random(), t -> 0, y -> {
+//                    target.accept((Task) (tt.get(y).id));
+//                    return --limit[0] > 0;
+//                });
+//            }
+//        }
 
 
     }
@@ -343,7 +350,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     @Override
     public void add(Remember r, NAR n) {
 
-        if (capacity() == 0) {
+        if (capacity == 0) {
             r.reject();
             return;
         }
@@ -605,13 +612,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return root.range();
     }
 
-    @Override
-    public int capacity() {
-        return capacity;
-    }
 
     @Override
-    public Stream<Task> streamTasks() {
+    public Stream<? extends Task> streamTasks() {
         return stream().map(TaskRegion::task);
     }
 
@@ -629,12 +632,24 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     @Override
     public void whileEach(Predicate<? super Task> each) {
-        whileEachIntersecting(root().bounds(), scanWhile(each));
+        whileEachIntersecting(root().bounds(), TaskRegion.asTask(each));
     }
 
     @Override
     public void whileEach(long minT, long maxT, Predicate<? super Task> each) {
-        whileEachIntersecting(new TimeRange(minT, maxT), scanWhile(each));
+        whileEachIntersecting(new TimeRange(minT, maxT), TaskRegion.asTask(each));
+    }
+
+    @Override
+    public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
+        if (minT == Long.MIN_VALUE && maxT == Long.MAX_VALUE) {
+            forEach(TaskRegion.asTask(x));
+        } else {
+            whileEach(minT, maxT, (t)->{
+                x.accept(t);
+                return true;
+            });
+        }
     }
 
     @Override
@@ -660,19 +675,21 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return taskStrength(start, end, dur);
         }
 
-        @Override
-        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
+//        @Override
+//        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
+//
+//            ExpandingScan tt = new ExpandingScan(SIMPLE_EVENT_MATCH_LIMIT, SIMPLE_EVENT_MATCH_LIMIT,
+//                    task(taskStrength(start, end, dur)),
+//                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
+//                    filter)
+//                    .scan(this, start, end);
+//
+//
+//            int n = tt.size();
+//            return n > 0 ? Revision.merge(nar, dur, start, end, false, tt.array(TaskRegion[]::new)) : null;
+//        }
+//
 
-            ExpandingScan tt = new ExpandingScan(SIMPLE_EVENT_MATCH_LIMIT, SIMPLE_EVENT_MATCH_LIMIT,
-                    task(taskStrength(start, end, dur)),
-                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
-                    filter)
-                    .scan(this, start, end);
-
-
-            int n = tt.size();
-            return n > 0 ? Revision.merge(nar, dur, start, end, false, tt.array(TaskRegion[]::new)) : null;
-        }
     }
 
     private static class Complex extends RTreeBeliefTable {
@@ -687,25 +704,25 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
         }
 
-        @Override
-        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
-
-            ExpandingScan tt = new ExpandingScan(COMPLEX_EVENT_MATCH_LIMIT, COMPLEX_EVENT_MATCH_LIMIT,
-                    task(taskStrength(template, start, end, dur)),
-                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
-                    filter)
-                    .scan(this, start, end);
-
-
-            int n = tt.size();
-            if (n == 0)
-                return null;
-
-            TaskRegion[] ttt = tt.array(TaskRegion[]::new);
-
-
-            return Revision.merge(nar, nar.dur(), start, end, false, ttt);
-        }
+//        @Override
+//        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
+//
+//            ExpandingScan tt = new ExpandingScan(COMPLEX_EVENT_MATCH_LIMIT, COMPLEX_EVENT_MATCH_LIMIT,
+//                    task(taskStrength(template, start, end, dur)),
+//                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
+//                    filter)
+//                    .scan(this, start, end);
+//
+//
+//            int n = tt.size();
+//            if (n == 0)
+//                return null;
+//
+//            TaskRegion[] ttt = tt.array(TaskRegion[]::new);
+//
+//
+//            return Revision.merge(nar, nar.dur(), start, end, false, ttt);
+//        }
 
 
     }

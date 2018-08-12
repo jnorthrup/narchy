@@ -3,7 +3,7 @@ package nars.concept.dynamic;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.*;
-import nars.table.dynamic.DynamicBeliefTable;
+import nars.table.dynamic.DynamicTaskTable;
 import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -220,7 +220,7 @@ class DynamicImplTest {
 
                 Truth truth = n.truth(pt_p, BELIEF, 0);
 
-                assertTrue(n.concept(pt_p).beliefs() instanceof DynamicBeliefTable); //match first then concept(), tests if the match was enough to conceptualize
+                assertTrue(n.concept(pt_p).beliefs() instanceof DynamicTaskTable); //match first then concept(), tests if the match was enough to conceptualize
 
                 assertNotNull(task);
 

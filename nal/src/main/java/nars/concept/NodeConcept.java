@@ -6,13 +6,13 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.concept.util.ConceptBuilder;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
-import nars.table.BeliefTable;
+import nars.table.BeliefTables;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.concept.util.ConceptBuilder;
 
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -67,9 +67,9 @@ public class NodeConcept implements Concept {
     }
 
 
-    @Override public BeliefTable beliefs() { return BeliefTable.Empty; }
+    @Override public BeliefTables beliefs() { return BeliefTables.Empty; }
 
-    @Override public BeliefTable goals() { return BeliefTable.Empty; }
+    @Override public BeliefTables goals() { return BeliefTables.Empty; }
 
     @Override public QuestionTable questions() { return QuestionTable.Empty; }
 

@@ -17,7 +17,7 @@ import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
-import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.builder.InterningTermBuilder;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
@@ -420,8 +420,8 @@ public enum Op {
     private static final int ANY_LEVEL = 0;
 //    public static final int InvalidImplicationSubj = or(IMPL);
     public static TermBuilder terms =
-            HeapTermBuilder.the;
-            //new InterningTermBuilder();
+            //HeapTermBuilder.the;
+            new InterningTermBuilder();
 
     public static final int AtomicConstants = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 

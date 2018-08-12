@@ -874,7 +874,7 @@ public class ConjTest {
 
     @Test
     public void testParallelFromEternalIfInXTERNAL() {
-        assertEq("((a&|x) &&+- (a&|y))", "((a&&x) &&+- (a&&y))");
+        assertEq("((a&&x) &&+- (a&&y))", "((a&&x) &&+- (a&&y))");
     }
 
     @Test
@@ -1043,7 +1043,8 @@ public class ConjTest {
 
     @Test
     void testRetemporalization1() throws Narsese.NarseseException {
-        assertEquals("x", $$("((--,(x &&+1 x))&&x)").toString());
+
+        assertEq(False /*"x"*/, $$("((--,(x &&+1 x))&&x)"));
 
         assertEq(
                 "a(x,true)",

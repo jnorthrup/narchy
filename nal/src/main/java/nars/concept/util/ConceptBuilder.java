@@ -9,7 +9,7 @@ import nars.concept.Operator;
 import nars.concept.TaskConcept;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
-import nars.table.BeliefTable;
+import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
@@ -19,6 +19,7 @@ import nars.term.util.Image;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -36,7 +37,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public abstract QuestionTable questionTable(Term term, boolean questionOrQuest);
 
-    public abstract BeliefTable newTable(Term t, boolean beliefOrGoal);
+    public abstract BeliefTables newTables(Term t, boolean beliefOrGoal);
 
     public abstract EternalTable newEternalTable(Term c);
 
@@ -51,12 +52,12 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             return new TaskConcept(t,
 
                     //belief table
-                    new DynamicTruthBeliefTable(t, newEternalTable(t), newTemporalTable(t), dmt, true),
+                    newDynamicBeliefTable(t, dmt, true),
 
                     //goal table
                     goalable(t) ?
-                            new DynamicTruthBeliefTable(t, newEternalTable(t), newTemporalTable(t), dmt, false) :
-                            BeliefTable.Empty,
+                            newDynamicBeliefTable(t, dmt, false) :
+                            BeliefTables.Empty,
 
                     this);
 
@@ -74,6 +75,15 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
             return new TaskConcept(t, this);
         }
+    }
+
+    @NotNull
+    public BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
+        return new BeliefTables(
+                new DynamicTruthBeliefTable(t, dmt, beliefOrGoal),
+                newEternalTable(t),
+                newTemporalTable(t)
+        );
     }
 
     public abstract NodeConcept nodeConcept(final Term t);
@@ -313,17 +323,17 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         @Override
         public TemporalBeliefTable newTemporalTable(Term c) {
-            return TemporalBeliefTable.Empty;
+            return null;
         }
 
         @Override
-        public BeliefTable newTable(Term t, boolean beliefOrGoal) {
-            return BeliefTable.Empty;
+        public BeliefTables newTables(Term t, boolean beliefOrGoal) {
+            return BeliefTables.Empty;
         }
 
         @Override
         public EternalTable newEternalTable(Term c) {
-            return EternalTable.EMPTY;
+            return null;
         }
 
         @Override

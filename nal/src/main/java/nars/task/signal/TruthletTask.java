@@ -3,7 +3,8 @@ package nars.task.signal;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.link.Tasklinks;
-import nars.table.DefaultBeliefTable;
+import nars.table.BeliefTables;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -51,7 +52,7 @@ public class TruthletTask extends SignalTask {
     }
 
     private void update(Concept c, Consumer<TruthletTask> t) {
-        ((DefaultBeliefTable)c.table(punc)).temporal.update(this, ()-> t.accept(TruthletTask.this));
+        ((BeliefTables)c.table(punc)).tableFirst(TemporalBeliefTable.class).update(this, ()-> t.accept(TruthletTask.this));
     }
 
 

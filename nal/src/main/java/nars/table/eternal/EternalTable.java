@@ -11,9 +11,10 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.control.proto.Remember;
-import nars.table.TaskTable;
+import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.Revision;
+import nars.task.util.TaskRank;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -32,42 +33,7 @@ import static nars.time.Tense.ETERNAL;
 /**
  * Created by me on 5/7/16.
  */
-public class EternalTable extends SortedArray<Task> implements TaskTable, FloatFunction<Task> {
-
-    public static final EternalTable EMPTY = new EternalTable(0) {
-
-
-        @Override
-        public boolean removeTask(Task x) {
-            return false;
-        }
-
-        @Override
-        public void add(Remember input, NAR nar) {
-        }
-
-
-        @Override
-        public void setCapacity(int c) {
-
-        }
-
-        @Override
-        public void forEachTask(Consumer<? super Task> action) {
-
-        }
-
-
-        @Override
-        public Iterator<Task> iterator() {
-            return Collections.emptyIterator();
-        }
-
-        @Override
-        public int size() {
-            return 0;
-        }
-    };
+public class EternalTable extends SortedArray<Task> implements BeliefTable, FloatFunction<Task> {
 
 
     public EternalTable(int initialCapacity) {
@@ -103,7 +69,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
-    public Stream<Task> streamTasks() {
+    public Stream<? extends Task> streamTasks() {
 
 
         Object[] list = this.items;
@@ -113,6 +79,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         else {
             return ArrayIterator.stream((Task[]) list, size).filter(Objects::nonNull);
         }
+    }
+
+    @Override
+    public void match(TaskRank t) {
+        forEach(t);
     }
 
     @Override
@@ -240,11 +211,34 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
+    public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
+        forEachTask(x);
+    }
+
+    @Override
     public void add(Remember r, NAR nar) {
 
         Task input = r.input;
 
         add(r, nar, input);
+    }
+
+    @Override
+    public Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+        int n = size();
+        for (int i = 0; i < n; i++) {
+            Task t = get(i);
+            if (t == null)
+                break;
+            if (filter.test(t))
+                return t;
+        }
+        return null;
+    }
+
+    @Override
+    public Truth truth(long start, long end, @Nullable Term template, NAR nar) {
+        return truth();
     }
 
     public void add(Remember r, NAR nar, Task input) {

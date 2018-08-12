@@ -8,6 +8,9 @@ import nars.task.Tasked;
 import nars.truth.TruthFunctions;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 /** 3d cuboid region:
  *      time            start..end              64-bit signed long
  *      frequency:      min..max in [0..1]      32-bit float
@@ -29,6 +32,21 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
      * cost of splitting a node by conf
      */
     float CONF_COST = 4f;
+
+    static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
+        return r -> {
+            Task x = r.task();
+            if (x != null && !x.isDeleted()) each.accept(x);
+        };
+    }
+    static Predicate<TaskRegion> asTask(Predicate<? super Task> each) {
+        return r -> {
+            Task x = r.task();
+            if (x != null && !x.isDeleted()) return each.test(x);
+
+            return true;
+        };
+    }
 
 
     @Override

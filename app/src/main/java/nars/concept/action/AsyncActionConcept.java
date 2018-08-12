@@ -2,7 +2,7 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.link.TermLinker;
-import nars.table.dynamic.SignalBeliefTable;
+import nars.table.dynamic.SensorBeliefTables;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -57,7 +57,7 @@ public class AsyncActionConcept extends ActionConcept {
 //            fg = null;
 
 
-        return ((SignalBeliefTable) beliefs()).add(f, now, next, this, nar);
+        return ((SensorBeliefTables) beliefs()).add(f, now, next, this, nar);
 
     }
 

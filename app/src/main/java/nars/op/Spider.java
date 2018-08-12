@@ -17,7 +17,7 @@ import nars.concept.PermanentConcept;
 import nars.exe.Causable;
 import nars.link.TaskLink;
 import nars.table.BeliefTable;
-import nars.table.DefaultBeliefTable;
+import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.term.Term;
 import org.slf4j.Logger;
@@ -325,13 +325,13 @@ public class Spider extends Causable {
             Concept c = at;
 
             TaskTable table = c.table(punc);
-            if (table instanceof DefaultBeliefTable) {
+            if (table instanceof BeliefTables) {
                 BeliefTable tt = (BeliefTable) table;
                 int s = table.size();
                 if (s > 0) {
                     int ss = (int) Math.max(1, Math.floor(ratio * s));
                     if (ss != s) {
-                        int eteCap = ((DefaultBeliefTable) tt).eternal.capacity(); /* dont affect eternal */
+                        int eteCap = ((BeliefTables) tt).eternal.capacity(); /* dont affect eternal */
                         //"squeeze" temporarily causing compression
                         tt.capacity(
                                 eteCap,

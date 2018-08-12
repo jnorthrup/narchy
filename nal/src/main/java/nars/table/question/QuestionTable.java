@@ -28,12 +28,12 @@ public interface QuestionTable extends TaskTable {
     /*@NotNull*/ QuestionTable Empty = new QuestionTable() {
 
         @Override
-        public Stream<Task> streamTasks() {
+        public Stream<? extends Task> streamTasks() {
             return Stream.empty();
         }
 
         @Override
-        public void add(/*@NotNull*/ Remember t, NAR n) {
+        public void add(/*@NotNull*/ Remember r, NAR n) {
 
         }
 
@@ -68,10 +68,6 @@ public interface QuestionTable extends TaskTable {
 
         }
 
-        @Override
-        public int capacity() {
-            return 0;
-        }
 
         @Override
         public int size() {
@@ -120,14 +116,9 @@ public interface QuestionTable extends TaskTable {
 
         }
 
-        @Override
-        public int capacity() {
-            return capacity;
-        }
-
 
         @Override
-        public Stream<Task> streamTasks() {
+        public Stream<? extends Task> streamTasks() {
             Task[] t = toArray();
             return t.length > 0 ? Stream.of(t) : Stream.empty();
         }
@@ -229,7 +220,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public Stream<Task> streamTasks() {
+        public Stream<? extends Task> streamTasks() {
             return stream();
         }
 

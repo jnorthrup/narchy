@@ -75,7 +75,7 @@ public class TruthWave {
         final int[] size = {0};
 
         //long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
-        b.forEachTask(false, minT, maxT, x -> {
+        b.forEachTask(minT, maxT, x -> {
             int ss = size[0];
             if (ss >= s) { 
                 return;

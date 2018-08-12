@@ -9,7 +9,7 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
-import nars.table.dynamic.SignalBeliefTable;
+import nars.table.dynamic.SensorBeliefTables;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -56,14 +56,14 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     public Signal(Term term, byte punc, FloatSupplier signal, NAR n) {
         super(term,
-                punc == BELIEF ? new SignalBeliefTable(term, true, n.conceptBuilder) : n.conceptBuilder.newTable(term, true),
-                punc == GOAL ? new SignalBeliefTable(term, false, n.conceptBuilder) : n.conceptBuilder.newTable(term, false),
+                punc == BELIEF ? new SensorBeliefTables(term, true, n.conceptBuilder) : n.conceptBuilder.newTables(term, true),
+                punc == GOAL ? new SensorBeliefTables(term, false, n.conceptBuilder) : n.conceptBuilder.newTables(term, false),
                 n.conceptBuilder);
 
         this.source = signal;
 
         setPri(FloatRange.unit(punc == BELIEF ? n.beliefPriDefault : n.goalPriDefault));
-        ((SignalBeliefTable) beliefs()).resolution(FloatRange.unit(n.freqResolution));
+        ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
 
         in = n.newChannel(this);
         n.on(this);
@@ -76,7 +76,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Override
     public final FloatRange resolution() {
-        return ((SignalBeliefTable) beliefs()).resolution();
+        return ((SensorBeliefTables) beliefs()).resolution();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         if (nextValue == nextValue /* not NaN */) {
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
-                return ((SignalBeliefTable) beliefs()).add(nextTruth, start, end, this, n);
+                return ((SensorBeliefTables) beliefs()).add(nextTruth, start, end, this, n);
             }
         }
         return null;
@@ -137,13 +137,13 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         return this;
     }
     public Signal setResolution(FloatRange r) {
-        ((SignalBeliefTable) beliefs()).resolution(r);
+        ((SensorBeliefTables) beliefs()).resolution(r);
         return this;
     }
 
     @Override
     public FloatRange pri() {
-        return ((SignalBeliefTable) beliefs()).pri();
+        return ((SensorBeliefTables) beliefs()).pri();
     }
 
     @Override
@@ -152,7 +152,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     public Signal setPri(FloatRange pri) {
-        ((SignalBeliefTable) beliefs()).setPri(pri);
+        ((SensorBeliefTables) beliefs()).setPri(pri);
         return this;
     }
 

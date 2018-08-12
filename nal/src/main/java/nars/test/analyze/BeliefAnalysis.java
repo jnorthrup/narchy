@@ -4,6 +4,7 @@ import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.link.TaskLink;
@@ -95,8 +96,7 @@ public class BeliefAnalysis implements Termed {
 	}
 	public void print(boolean beliefOrGoal) {
 		BeliefTable table = table(beliefOrGoal);
-		System.out.println((beliefOrGoal ? "Beliefs" : "Goals") + "[@" + nar.time() + "] " + table.size()
-				+ '/' + table.capacity());
+		System.out.println((beliefOrGoal ? "Beliefs" : "Goals") + "[@" + nar.time() + "] " + table.size());
 		table.print(System.out);
 		
 	}
@@ -113,7 +113,7 @@ public class BeliefAnalysis implements Termed {
 
 	/** sum of priorities of the belief table */
 	public float priSum() {
-		return beliefs().priSum();
+		return (float) beliefs().streamTasks().mapToDouble(x->((Task) x).priElseZero()).sum();
 	}
 
 	@NotNull
@@ -134,7 +134,4 @@ public class BeliefAnalysis implements Termed {
 		return nar.time();
 	}
 
-	public int capacity(boolean beliefOrGoal) {
-		return table(beliefOrGoal).capacity();
-	}
 }

@@ -21,10 +21,10 @@ public interface TaskTable {
     /**
      * attempt to insert a task.
      */
-    void add(Remember t, NAR n);
+    void add(Remember r, NAR n);
 
 
-    int capacity();
+
 
 
     /**
@@ -39,6 +39,17 @@ public interface TaskTable {
 
     void forEachTask(Consumer<? super Task> x);
 
+    default void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
+        if (minT == Long.MIN_VALUE && maxT == Long.MAX_VALUE) {
+            forEachTask(x);
+        } else {
+            forEachTask(t -> {
+                if (t.intersects(minT,maxT))
+                    x.accept(t);
+            });
+        }
+    }
+
 
     /**
      * returns true if the task was removed
@@ -47,7 +58,7 @@ public interface TaskTable {
 
     void clear();
 
-    Stream<Task> streamTasks();
+    Stream<? extends Task> streamTasks();
 
     default Task[] toArray() {
         return streamTasks().toArray(Task[]::new);

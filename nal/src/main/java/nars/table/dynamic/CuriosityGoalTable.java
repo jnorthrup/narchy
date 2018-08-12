@@ -2,20 +2,18 @@ package nars.table.dynamic;
 
 import nars.NAR;
 import nars.Param;
-import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
-import nars.term.Term;
-import nars.truth.Truth;
 import nars.task.util.series.ConcurrentSkiplistTaskSeries;
 import nars.task.util.series.TaskSeries;
-import org.jetbrains.annotations.Nullable;
+import nars.term.Term;
+import nars.truth.Truth;
 
 import java.util.concurrent.ConcurrentSkipListMap;
 
 /** goal belief table with side-table for curiosity tasks.  this is so they can be overridden
  * by weaker derivations, and so that they dont interfere with weaker derivations once
  * capacity has been reched.  */
-public class CuriosityGoalTable extends SeriesBeliefTable<SeriesBeliefTable.SeriesTask> {
+public class CuriosityGoalTable extends SeriesBeliefTable {
 
     public CuriosityGoalTable(Term term, boolean beliefOrGoal, NAR n) {
         this(term, beliefOrGoal, n.conceptBuilder.newTemporalTable(term), n);
@@ -47,17 +45,17 @@ public class CuriosityGoalTable extends SeriesBeliefTable<SeriesBeliefTable.Seri
     }
 
     CuriosityGoalTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t, TaskSeries<SeriesTask> series) {
-        super(c, beliefOrGoal, EternalTable.EMPTY, t, series);
+        super(c, beliefOrGoal, series);
     }
 
-    /** prefer stored (derived) truth before dynamic (curiosity) */
-    @Override @Nullable public Truth truth(long start, long end, Term template, NAR nar) {
-        Truth stored = truthStored(start, end, template, nar);
-        if (stored!=null)
-            return stored;
-
-        return truthDynamic(start, end, template, nar);
-    }
+//    /** prefer stored (derived) truth before dynamic (curiosity) */
+//    @Override @Nullable public Truth truth(long start, long end, Term template, NAR nar) {
+//        Truth stored = truthStored(start, end, template, nar);
+//        if (stored!=null)
+//            return stored;
+//
+//        return truthDynamic(start, end, template, nar);
+//    }
 
 
 //        @Override

@@ -11,8 +11,7 @@ import nars.concept.NodeConcept;
 import nars.link.TaskLinkCurveBag;
 import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
-import nars.table.BeliefTable;
-import nars.table.DefaultBeliefTable;
+import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
 import nars.table.temporal.RTreeBeliefTable;
@@ -74,11 +73,11 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
 
     @Override
-    public BeliefTable newTable(Term c, boolean beliefOrGoal) {
+    public BeliefTables newTables(Term c, boolean beliefOrGoal) {
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || goalable(c))) {
-            return new DefaultBeliefTable(newEternalTable(c), newTemporalTable(c));
+            return new BeliefTables(newEternalTable(c), newTemporalTable(c));
         } else {
-            return BeliefTable.Empty;
+            return BeliefTables.Empty;
         }
     }
 

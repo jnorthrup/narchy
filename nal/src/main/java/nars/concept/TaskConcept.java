@@ -5,14 +5,14 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
-import nars.table.BeliefTable;
+import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
-import nars.concept.util.ConceptBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,20 +25,20 @@ import static nars.Op.GOAL;
 
 public class TaskConcept extends NodeConcept implements Concept {
 
-    private final BeliefTable beliefs;
-    private final BeliefTable goals;
+    private final BeliefTables beliefs;
+    private final BeliefTables goals;
     private final QuestionTable quests;
     private final QuestionTable questions;
 
 
-    public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder b) {
+    public TaskConcept(Term term, @Nullable BeliefTables beliefs, @Nullable BeliefTables goals, ConceptBuilder b) {
         this(term, beliefs, goals, b.termlinker(term), b);
     }
 
-    public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, TermLinker linker, ConceptBuilder b) {
+    public TaskConcept(Term term, @Nullable BeliefTables beliefs, @Nullable BeliefTables goals, TermLinker linker, ConceptBuilder b) {
         this(term,
-                beliefs != null ? beliefs : b.newTable(term, true),
-                goals != null ? goals : b.newTable(term, false),
+                beliefs != null ? beliefs : b.newTables(term, true),
+                goals != null ? goals : b.newTables(term, false),
                 b.questionTable(term, true),
                 b.questionTable(term, false),
                 linker,
@@ -47,7 +47,7 @@ public class TaskConcept extends NodeConcept implements Concept {
 
 
     public TaskConcept(Term term, ConceptBuilder b) {
-        this(term, b.newTable(term, true), b.newTable(term, false),
+        this(term, b.newTables(term, true), b.newTables(term, false),
                 b.questionTable(term, true), b.questionTable(term, false),
                 b.termlinker(term),
                 b.newLinkBags(term));
@@ -61,7 +61,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * @param taskLinks
      */
     public TaskConcept(Term term,
-                       BeliefTable beliefs, BeliefTable goals,
+                       BeliefTables beliefs, BeliefTables goals,
                        QuestionTable questions, QuestionTable quests,
                        TermLinker linker,
                        Bag[] bags) {
@@ -89,7 +89,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * and insertion in the middle
      */
     @Override
-    public BeliefTable beliefs() {
+    public BeliefTables beliefs() {
         return beliefs;
     }
 
@@ -97,7 +97,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Desire values on the term, similar to the above one
      */
     @Override
-    public BeliefTable goals() {
+    public BeliefTables goals() {
         return goals;
     }
 

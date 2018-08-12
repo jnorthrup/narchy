@@ -11,9 +11,6 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
@@ -31,16 +28,13 @@ class BeliefTableTest {
         TaskConcept cc = (TaskConcept) n.conceptualize(c);
         assertNotNull(cc, c + " unconceptualized");
 
-        List<Task> tt = cc.beliefs().streamTasks().collect(toList());
-        assertTrue(cc.beliefs() instanceof DynamicTruthBeliefTable || !tt.isEmpty(), c + " not believed");
+        //List<Task> tt = cc.beliefs().streamTasks().collect(toList());
+        assertTrue(cc.beliefs() instanceof DynamicTruthBeliefTable, c + " not dynamic");
 
-        if (!tt.isEmpty()) {
-            Task t = tt.get(0);
-            
-            
-            assertEquals(start, t.start());
-            assertEquals(end, t.end());
-        }
+        Task t = n.belief(cc, start, end);
+        assertNotNull(t);
+        assertEquals(start, t.start());
+        assertEquals(end, t.end());
     }
 
     private static float dtDiff(String x, String y) {
@@ -49,7 +43,6 @@ class BeliefTableTest {
 
     @Test
     void testEternalBeliefRanking() {
-
 
 
         int cap = 10;
@@ -96,7 +89,7 @@ class BeliefTableTest {
         int spacing = 4;
         float conf = 0.9f;
         float[] freqPattern =
-                
+
                 {0, 0.5f, 1f};
         long[] timing =
                 {0, 2, 4};
@@ -125,7 +118,7 @@ class BeliefTableTest {
         for (int i = -margin; i < spacing * c + margin; i++)
             System.out.println(i + "\t" + table.truth(i,    /* relative to zero */  n));
 
-        
+
         for (int i = 0; i < c; i++) {
             long w = timing[i];
             Truth truth = table.truth(w, n);
@@ -136,27 +129,12 @@ class BeliefTableTest {
             assertEquals(fExpected, match.freq(), 0.01f, "exact belief @" + w + " == " + fExpected);
         }
 
-        
+
         for (int i = 1; i < c - 1; i++) {
-            float f = (freqPattern[i-1] + freqPattern[i] + freqPattern[i + 1]) / 3f;
+            float f = (freqPattern[i - 1] + freqPattern[i] + freqPattern[i + 1]) / 3f;
             long w = timing[i];
-            assertEquals(f, table.truth(w, n).freq(), 0.1f, ()->"t=" + w);
+            assertEquals(f, table.truth(w, n).freq(), 0.1f, () -> "t=" + w);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -167,8 +145,7 @@ class BeliefTableTest {
         n.time.dur(5);
         n.inputAt(10, "(x). :|:");
         n.run(11);
-        
-        
+
 
         n.conceptualize("(x)").print();
 
@@ -178,7 +155,7 @@ class BeliefTableTest {
         assertEquals(0.90f, n.beliefTruth("(x)", 10).conf(), 0.1f);
         assertEquals(0.88f, n.beliefTruth("(x)", 11).conf(), 0.1f);
         assertEquals(0.86f, n.beliefTruth("(x)", 12).conf(), 0.1f);
-        
+
 
     }
 
@@ -191,10 +168,10 @@ class BeliefTableTest {
         t.confTolerance(0.1f);
         t.inputAt(1, "x. :|:");
         t.inputAt(2, "y. :|:");
-        t.mustBelieve(5, "(x&|y)", 1f, 0.81f, s->true  /* TODO test occ = 0..3 */);
-        t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, s->true  /* TODO test occ = 0..3 */);
+        t.mustBelieve(5, "(x&|y)", 1f, 0.81f, s -> true  /* TODO test occ = 0..3 */);
+        t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, s -> true  /* TODO test occ = 0..3 */);
         n.onTask(tt -> {
-            if (!tt.isInput() && tt.start()%3!=0 && tt.end()%3!=0 || tt.isBefore(0) || tt.isAfter(3))
+            if (!tt.isInput() && tt.start() % 3 != 0 && tt.end() % 3 != 0 || tt.isBefore(0) || tt.isAfter(3))
                 fail();
         });
         t.test();
@@ -203,20 +180,21 @@ class BeliefTableTest {
     @Test
     void testTemporalIntersection() throws Narsese.NarseseException {
 
-        
+
         NAR n = NARS.tmp();
 
-        
-        n.inputAt(2, "a:x. :|:");
-        n.inputAt(10, "a:y. :|:");
-        n.run(128);
+        n.time.dur(2);
+        int a = 1;
+        int b = 2;
+        n.inputAt(a, "a:x. :|:");
+        n.inputAt(b, "a:y. :|:");
+        n.run(b + 1);
 
         for (String t : new String[]{"a:(x|y)", "a:(x&y)", "a:(x~y)", "a:(y~x)"}) {
-            assertDuration(n, t, 2, 10);
+            assertDuration(n, t, a, b);
         }
 
-        
-        
+
     }
 
     @Test
@@ -242,8 +220,6 @@ class BeliefTableTest {
             n.run(1);
 
 
-            
-
             String abpill = "((a==>b)-->[pill])";
 
             assertEquals("((a ==>+- b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
@@ -255,29 +231,25 @@ class BeliefTableTest {
             String correctMerge = "((a ==>+4 b)-->[pill])";
             cc.beliefs().print();
 
-            
+
             long when = t == Present ? 0 : ETERNAL;
             Task m = cc.beliefs().match(when, null, n);
             assertNotNull(m);
             assertEquals(correctMerge, m.term().toString());
 
 
-            
-
             cc.beliefs().capacity(1, 1);
 
             cc.print();
 
-            
 
-            
             assertEquals(correctMerge, cc.beliefs().match(0, null, n).term().toString());
         }
     }
 
     @Test
     void testBestMatchConjSimple() throws Narsese.NarseseException {
-        
+
     }
 
     @Test
@@ -311,7 +283,7 @@ class BeliefTableTest {
     @Test
     void testDTDiffSame() {
 
-        
+
         float same = dtDiff("(x ==>+5 y)", "(x ==>+5 y)");
         assertEquals(0f, same, 0.001f);
         assertEquals(dtDiff("(x ==>+5 y)", "(x ==>+- y)"), same);
@@ -326,6 +298,7 @@ class BeliefTableTest {
         assertEquals(1, a54, 0.001f);
         assertTrue(a52 > a54);
     }
+
     @Test
     void testConjSequence1() {
 
@@ -339,7 +312,7 @@ class BeliefTableTest {
     @Test
     void testDTImplEmbeddedConj() {
 
-        
+
         float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
         float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
         assertEquals(1, a, 0.1f);

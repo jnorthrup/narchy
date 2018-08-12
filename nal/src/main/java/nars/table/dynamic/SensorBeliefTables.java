@@ -4,22 +4,25 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.concept.TaskConcept;
-import nars.table.eternal.EternalTable;
+import nars.concept.util.ConceptBuilder;
+import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.ITask;
-import nars.term.Term;
-import nars.truth.Truth;
-import nars.concept.util.ConceptBuilder;
 import nars.task.util.series.ConcurrentSkiplistTaskSeries;
 import nars.task.util.series.TaskSeries;
+import nars.term.Term;
+import nars.truth.Truth;
 
 import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
+ * special belief tables implementation
  * dynamically computes matching truths and tasks according to
  * a lossy 1-D wave updated directly by a signal input
  */
-public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.SeriesTask> {
+public class SensorBeliefTables extends BeliefTables {
+
+    private final SeriesBeliefTable series;
 
     /**
      * prioritizes generated tasks
@@ -28,18 +31,18 @@ public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.Serie
 
     private FloatRange res;
 
-    public SignalBeliefTable(Term term, boolean beliefOrGoal, ConceptBuilder b) {
+    public SensorBeliefTables(Term term, boolean beliefOrGoal, ConceptBuilder b) {
         this(term, beliefOrGoal, b.newTemporalTable(term));
     }
 
-    public SignalBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
+    public SensorBeliefTables(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 t, new ConcurrentSkiplistTaskSeries<>(new ConcurrentSkipListMap<>(), /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE) {
                     @Override
-                    protected SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp) {
+                    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp) {
                         nextEnd = Math.max(nextStart, nextEnd); //HACK
-                        SeriesTask nextT = new SeriesTask(
+                        SeriesBeliefTable.SeriesTask nextT = new SeriesBeliefTable.SeriesTask(
                                 term,
                                 punc,
                                 next,
@@ -50,13 +53,14 @@ public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.Serie
                 });
     }
 
-    SignalBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t, TaskSeries<SeriesTask> series) {
-        super(c, beliefOrGoal, EternalTable.EMPTY, t, series);
+    SensorBeliefTables(Term term, boolean beliefOrGoal, TemporalBeliefTable t, TaskSeries s) {
+        super(t, new SeriesBeliefTable(term, beliefOrGoal, s));
+        this.series = tableFirst(SeriesBeliefTable.class);
     }
 
     public ITask add(Truth value, long start, long end, TaskConcept c, NAR nar) {
 
-        clean(nar);
+        series.clean(nar, tables);
 
         if (value == null)
             return null;
@@ -65,7 +69,7 @@ public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.Serie
         if (value==null)
             return null;
 
-        SeriesTask x = series.add(term, punc(), start, end,
+        SeriesBeliefTable.SeriesTask x = series.series.add(series.term, series.punc(), start, end,
                 value, nar.dur(), nar);
 
         if (x!=null) {
@@ -89,12 +93,6 @@ public class SignalBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.Serie
     }
     public void resolution(FloatRange res) {
         this.res = res;
-    }
-
-
-    @Override
-    protected boolean dynamicOverrides() {
-        return true;
     }
 
 }

@@ -225,7 +225,8 @@ public class Premise {
 
         if (!answerTable.isEmpty()) {
 
-            Task match = answerTable.answer(task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n);
+            Task match = answerTable.answer(
+                    task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n);
 //            if (!validMatch(match))
 //                match = null;
 

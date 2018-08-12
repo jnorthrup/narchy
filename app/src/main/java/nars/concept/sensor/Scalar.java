@@ -7,8 +7,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.table.dynamic.DynamicBeliefTable;
-import nars.table.eternal.EternalTable;
+import nars.table.dynamic.DynamicTaskTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -32,8 +31,8 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
 
     public Scalar(Term term, @Nullable LongToFloatFunction belief, @Nullable LongToFloatFunction goal, NAR n) {
         super(term,
-                belief != null ? new ScalarBeliefTable(term, true, belief, n) : n.conceptBuilder.newTable(term, true),
-                goal != null ? new ScalarBeliefTable(term, false, goal, n) : n.conceptBuilder.newTable(term, false),
+                belief != null ? new ScalarBeliefTable(term, true, belief, n) : n.conceptBuilder.newTables(term, true),
+                goal != null ? new ScalarBeliefTable(term, false, goal, n) : n.conceptBuilder.newTables(term, false),
                 n.conceptBuilder);
 
         pri = FloatRange.unit(goal!=null ? n.goalPriDefault : n.beliefPriDefault );
@@ -71,7 +70,7 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
     }
 
     /** samples at time-points */
-    static class ScalarBeliefTable extends DynamicBeliefTable {
+    static class ScalarBeliefTable extends DynamicTaskTable {
 
         FloatRange pri, res;
 
@@ -80,7 +79,7 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
         final long stampStart;
 
         protected ScalarBeliefTable(Term term, boolean beliefOrGoal, LongToFloatFunction value, NAR n) {
-            super(term, beliefOrGoal, EternalTable.EMPTY,
+            super(term, beliefOrGoal,
                     n.conceptBuilder.newTemporalTable(term));
             stampStart = n.time();
 
