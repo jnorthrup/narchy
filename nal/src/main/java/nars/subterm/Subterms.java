@@ -777,8 +777,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return Util.hashCombine(this.hashCodeSubterms(), op);
     }
 
-    @Nullable
-    default Term[] termsExcept(Term x) {
+    /** only removes the next found item. if this is for use in non-commutive term, you may need to call this repeatedly */
+    @Nullable default Term[] termsExcept(Term x) {
         int index = indexOf(x);
         return (index == -1) ? null : termsExcept(index);
     }

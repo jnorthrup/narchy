@@ -297,7 +297,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private Term _statement(InternedCompound c) {
         Term[] s = c.rawSubs.get();
-        return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
+        return super.statement(Op.ops[c.op], c.dt, s);
     }
 
     @Override

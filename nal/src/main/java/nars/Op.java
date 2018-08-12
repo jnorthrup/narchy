@@ -48,7 +48,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public enum Op {
 
 
-    ATOM(".", Op.ANY_LEVEL, OpType.Other),
+    ATOM(".", Op.ANY_LEVEL),
 
     NEG("--", 1, Args.One) {
 
@@ -79,23 +79,16 @@ public enum Op {
 
     },
 
-    INH("-->", 1, OpType.Statement, Args.Two) {
+    INH("-->", 1, Args.Two) {
         @Override
         public Term the(int dt, Term[] u) {
-            assert (u.length == 2): " requires 2 arguments, but got: " + Arrays.toString(u);
-            return terms.statement(this, dt, u[0], u[1]);
+            return terms.statement(this, dt, u);
         }
     },
-    SIM("<->", true, 2, OpType.Statement, Args.Two) {
+    SIM("<->", true, 2, Args.Two) {
         @Override
         public Term the(int dt, Term[] u) {
-            if (u.length == 1) {
-                assert (this == SIM);
-                return u[0] == Null ? Null : True;
-            } else {
-                assert (u.length == 2): " requires 2 arguments, but got: " + Arrays.toString(u);
-                return terms.statement(this, dt, u[0], u[1]);
-            }
+            return terms.statement(this, dt, u);
         }
     },
 
@@ -178,7 +171,7 @@ public enum Op {
 
         @Override
         public final Term the(int dt, Collection<Term> sub) {
-            return compoundExact(this, dt, Terms.sorted(sub));
+            return compound(this, dt, Terms.sorted(sub));
         }
     },
 
@@ -193,7 +186,7 @@ public enum Op {
 
         @Override
         public final Term the(int dt, Collection<Term> sub) {
-            return compoundExact(this, dt, Terms.sorted(sub));
+            return compound(this, dt, Terms.sorted(sub));
         }
     },
 
@@ -201,23 +194,22 @@ public enum Op {
     /**
      * implication
      */
-    IMPL("==>", 5, OpType.Statement, Args.Two) {
+    IMPL("==>", 5, Args.Two) {
         @Override
         public Term the(int dt, Term... u) {
-            assert (u.length == 2);
-            return terms.statement(this, dt, u[0], u[1]);
+            return terms.statement(this, dt, u);
         }
     },
 
 
-    VAR_DEP('#', Op.ANY_LEVEL, OpType.Variable),
-    VAR_INDEP('$', 5 /*NAL5..6 for Indep Vars */, OpType.Variable),
-    VAR_QUERY('?', Op.ANY_LEVEL, OpType.Variable),
-    VAR_PATTERN('%', Op.ANY_LEVEL, OpType.Variable),
+    VAR_DEP('#', Op.ANY_LEVEL),
+    VAR_INDEP('$', 5 /*NAL5..6 for Indep Vars */),
+    VAR_QUERY('?', Op.ANY_LEVEL),
+    VAR_PATTERN('%', Op.ANY_LEVEL),
 
-    INT("+", Op.ANY_LEVEL, OpType.Other),
+    INT("+", Op.ANY_LEVEL),
 
-    BOOL("B", Op.ANY_LEVEL, OpType.Other),
+    BOOL("B", Op.ANY_LEVEL),
 
 
     /**
@@ -472,12 +464,12 @@ public enum Op {
      * character representation if symbol has length 1; else ch = 0
      */
     public final char ch;
-    public final OpType type;
+
     /**
      * arity limits, range is inclusive >= <=
      * TODO replace with an IntPredicate
      */
-    public final int minSize, maxSize;
+    public final int minSubs, maxSubs;
     /**
      * minimum NAL level required to use this operate, or 0 for N/A
      */
@@ -505,33 +497,29 @@ public enum Op {
 
 
 
-    Op(char c, int minLevel, OpType type) {
-        this(c, minLevel, type, Args.None);
+    Op(char c, int minLevel) {
+        this(c, minLevel, Args.None);
     }
 
-    Op(String s, boolean commutative, int minLevel, IntIntPair size) {
-        this(s, commutative, minLevel, OpType.Other, size);
+
+
+    Op(char c, int minLevel, IntIntPair size) {
+        this(Character.toString(c), minLevel, size);
     }
 
-    Op(char c, int minLevel, OpType type, IntIntPair size) {
-        this(Character.toString(c), minLevel, type, size);
-    }
 
+   
+
+
+    Op(String string, int minLevel) {
+        this(string, false /* non-commutive */, minLevel, Args.None);
+    }
 
     Op(String string, int minLevel, IntIntPair size) {
-        this(string, minLevel, OpType.Other, size);
+        this(string, false /* non-commutive */, minLevel, size);
     }
 
-
-    Op(String string, int minLevel, OpType type) {
-        this(string, false /* non-commutive */, minLevel, type, Args.None);
-    }
-
-    Op(String string, int minLevel, OpType type, IntIntPair size) {
-        this(string, false /* non-commutive */, minLevel, type, size);
-    }
-
-    Op(String string, boolean commutative, int minLevel, OpType type, IntIntPair size) {
+    Op(String string, boolean commutative, int minLevel, IntIntPair size) {
 
         this.id = (byte) (ordinal());
         this.str = string;
@@ -540,13 +528,13 @@ public enum Op {
 
         this.commutative = commutative;
         this.minLevel = minLevel;
-        this.type = type;
 
 
-        this.minSize = size.getOne();
-        this.maxSize = size.getTwo();
 
-        this.var = (type == OpType.Variable);
+        this.minSubs = size.getOne();
+        this.maxSubs = size.getTwo();
+
+        this.var = Set.of("$", "#", "?", "%").contains(str);
 
         boolean isImpl = str.equals("==>");
         this.statement = str.equals("-->") || isImpl || str.equals("<->");
@@ -633,7 +621,7 @@ public enum Op {
                     return differ(op, single.arrayShared());
                 }
                 return single instanceof Ellipsislike ?
-                        compoundExact(op, DTERNAL, single) :
+                        compound(op, DTERNAL, single) :
                         Null;
             case 2:
                 Term et0 = t[0], et1 = t[1];
@@ -728,7 +716,7 @@ public enum Op {
             }
         }
 
-        return compoundExact(diffOp, DTERNAL, a, b);
+        return compound(diffOp, DTERNAL, a, b);
     }
 
     /*@NotNull*/
@@ -856,7 +844,7 @@ public enum Op {
                     return intersect(single.arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
-                        compoundExact(intersection, DTERNAL, single) :
+                        compound(intersection, DTERNAL, single) :
                         single;
 
             case 2:
@@ -921,7 +909,7 @@ public enum Op {
         if (aaa == 1)
             return args.first();
         else {
-            return compoundExact(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
+            return compound(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
         }
     }
 
@@ -1099,7 +1087,7 @@ public enum Op {
      * - reduction to another term or True/False/Null
      */
     public Term the(int dt, Term... u) {
-        return compoundExact(this, dt, sortedIfNecessary(dt,u));
+        return compound(this, dt, sortedIfNecessary(dt,u));
     }
 
     /**
@@ -1107,7 +1095,7 @@ public enum Op {
      * no reductions or validations applied
      * use with caution
      */
-    public static Term compoundExact(Op o, int dt, Term... u) {
+    public static Term compound(Op o, int dt, Term... u) {
         return terms.compound(o, dt, u);
     }
 
@@ -1126,14 +1114,6 @@ public enum Op {
         return ((bit & bits) != 0);
     }
 
-    /**
-     * top-level Op categories
-     */
-    public enum OpType {
-        Statement,
-        Variable,
-        Other
-    }
 
     enum Args {
         ;

@@ -122,9 +122,17 @@ public class TermTest {
         return assertEq(is,is);
     }
 
+    public static Term assertEq(Term y, Term x) {
+        return assertEq(y, x.toString(), x);
+    }
+
     public static Term assertEq(String exp, String is) {
         Term t = $$(is);
-        assertEquals(exp, t.toString(), () -> is + " reduces to " + exp);
+        return assertEq(exp, is, t);
+    }
+
+    private static Term assertEq(Object exp, String is, Term t) {
+        assertEquals(exp, exp instanceof String ? t.toString() : t, () -> is + " reduces to " + exp);
 
 
         //test for stability:
@@ -140,9 +148,11 @@ public class TermTest {
         return t;
     }
 
-    public static void assertEq(Term z, String x) {
+    public static Term assertEq(Term z, String x) {
         Term y = $$(x);
         assertEquals(z, y, () -> x + " reduces to " + y);
+        assertEq(z, x, y);
+        return y;
     }
 
     public static void assertEq(String y, Term x) {
@@ -207,7 +217,8 @@ public class TermTest {
         Atomic Y = Atomic.the("y");
         Atomic Z = Atomic.the("z");
         Stream.of(Op.ops).filter(x -> x.commutative).forEach(o -> {
-            assertFalse(o.the(X).isCommutative());
+            if (o.minSubs < 2)
+                assertFalse(o.the(X).isCommutative());
 
             Term xy = o.the(X, Y);
             assertTrue(xy.isCommutative());
@@ -215,7 +226,7 @@ public class TermTest {
             assertEquals(xy, o.the(List.of(Y, X)), () -> "commutivity failed for " + xy);
             assertEquals(xy, o.the(Set.of(Y, X)), () -> "commutivity failed for " + xy);
 
-            if (o.maxSize > 2) {
+            if (o.maxSubs > 2) {
                 Term xyz = o.the(X, Y, Z);
                 assertTrue(xy.isCommutative());
                 assertEquals(xyz, o.the(Y, X, Z), () -> "commutivity failed for " + xyz);

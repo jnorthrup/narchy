@@ -55,18 +55,18 @@ public class BoolTest {
     @Test
     void testStatementTautologies() {
         for (Op o: new Op[]{INH, SIM, IMPL}) {
-            assertEquals(True, o.the(True, True));
-            assertEquals(True, o.the(False, False));
-            assertEquals(Null, o.the(Null, Null));
+            assertEq(True, o.the(True, True));
+            assertEq(True, o.the(False, False));
+            assertEq(Null, o.the(Null, Null));
         }
 
         //allow
-        assertEquals("(x-->true)", INH.the(x, True).toString());
-        assertEquals("(x-->false)", INH.the(x, False).toString());
-        assertEquals("(true-->x)", INH.the(True, x).toString());
-        assertEquals("(false-->x)", INH.the(False, x).toString());
-        assertEquals("(x<->true)", SIM.the(True, x).toString());
-        assertEquals("(x<->false)", SIM.the(False, x).toString());
+        assertEq("(x-->true)", INH.the(x, True));
+        assertEq("(x-->false)", INH.the(x, False));
+        assertEq("(true-->x)", INH.the(True, x));
+        assertEq("(false-->x)", INH.the(False, x));
+        assertEq("(x<->true)", SIM.the(True, x));
+        assertEq("(x<->false)", SIM.the(False, x));
 
         assertEquals(0, True.compareTo(True));
         assertEquals(0, False.compareTo(False));
@@ -74,20 +74,20 @@ public class BoolTest {
 
         assertEquals(-False.compareTo(True), True.compareTo(False));
 
-        assertEquals("((--,x)-->true)", INH.the(x.neg(), True).toString());
+        assertEq("((--,x)-->true)", INH.the(x.neg(), True));
     }
 
 
     @Test
     void testImplicationTautologies() {
-        assertEquals("x", IMPL.the(True, x).toString());
-        assertEquals(Null, IMPL.the(False, x));
-        assertEquals(Null, IMPL.the(Null, x));
-        assertEquals(Null, IMPL.the(x, True));
-        assertEquals(Null, IMPL.the(x, False));
+        assertEq("x", IMPL.the(True, x));
+        assertEq(Null, IMPL.the(False, x));
+        assertEq(Null, IMPL.the(Null, x));
+        assertEq(Null, IMPL.the(x, True));
+        assertEq(Null, IMPL.the(x, False));
 
 
-        assertEquals(Null, IMPL.the(x, Null));
+        assertEq(Null, IMPL.the(x, Null));
     }
 
 
@@ -156,9 +156,9 @@ public class BoolTest {
         assertEq("(((a~b)|x)-->c)", $$("(((a | x)~(b | x)) --> c)"));
 
 
-        assertEquals(Null, $$("((&,x,a)-(&,x,a,b))"));
-        assertEquals(Null, $$("((&,x,a,b)-(&,x,a))"));
-        assertEquals(Null, $$("((&,x,a)-(&,x,a,b))"));
+        assertEq(Null, $$("((&,x,a)-(&,x,a,b))"));
+        assertEq(Null, $$("((&,x,a,b)-(&,x,a))"));
+        assertEq(Null, $$("((&,x,a)-(&,x,a,b))"));
     }
 
     @Test
@@ -206,101 +206,101 @@ public class BoolTest {
     /** Huntington conj/disj tautologies */
     @Test void testConjTautologies() {
         //a∧true == a		# neutral element (Huntington axiom)
-        assertEquals(x, and(x, True));
+        assertEq(x, and(x, True));
         //a∨false == a		# neutral element (Huntington axiom)
-        assertEquals(x, or(x, False));
+        assertEq(x, or(x, False));
         //a∧¬a == false		# complement (Huntington axiom) induces Principium contradictionis
-        assertEquals(False, and(x, x.neg()));
+        assertEq(False, and(x, x.neg()));
         //a∨¬a == true		# complement (Huntington axiom) induces Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
-        assertEquals(True, or(x, x.neg()));
+        assertEq(True, or(x, x.neg()));
 
         //a∧a == a		# idempotent
-        assertEquals(x, and(x, x));
+        assertEq(x, and(x, x));
         //a∨a == a		# idempotent
-        assertEquals(x, or(x, x));
+        assertEq(x, or(x, x));
 
         //a∧false == false	# (dual to neutral element)
-        assertEquals(False, and(False, x));
+        assertEq(False, and(False, x));
         //a∨true == true		# (dual to neutral element)
-        assertEquals(True, or(True, x));
+        assertEq(True, or(True, x));
 
         //a∧(a∨b) == a		# absorbtion
-        assertEquals(x, or(x, and(x, or(x, y))));
+        assertEq(x, or(x, and(x, or(x, y))));
         //a∨(a∧b) == a		# absorbtion <=(a),(c),(idem)
-        assertEquals(x, or(x, or(x, and(x, y))));
+        assertEq(x, or(x, or(x, and(x, y))));
 
         //¬(a∧b) == ¬a∨¬b		# deMorgan
-        assertEquals(or(x.neg(), y.neg()), and(x,y).neg());
+        assertEq(or(x.neg(), y.neg()), and(x,y).neg());
         //¬(a∨b) == ¬a∧¬b		# deMorgan
-        assertEquals(and(x.neg(), y.neg()), or(x,y).neg());
+        assertEq(and(x.neg(), y.neg()), or(x,y).neg());
 
         //half deMorgan
-        assertEquals(or(x, y.neg()), and(x.neg(),y).neg());
+        assertEq(or(x, y.neg()), and(x.neg(),y).neg());
 
-        assertEquals(False, and(False, True));
-        assertEquals(True, and(True, True));
-        assertEquals(False, and(False, False));
-        assertEquals(Null, and(Null, x));
-        assertEquals(Null, and(Null, Null));
+        assertEq(False, and(False, True));
+        assertEq(True, and(True, True));
+        assertEq(False, and(False, False));
+        assertEq(Null, and(Null, x));
+        assertEq(Null, and(Null, Null));
 
     }
 
 
     @Test void testConjFactor2() {
-        assertEquals(False, and(and(x, y), and(x, y.neg())));
+        assertEq(False, and(and(x, y), and(x, y.neg())));
     }
     @Test void testConjFactor3() {
-        assertEquals("(&&,x,y,z)", and(and(x, y), and(x, z)).toString());
+        assertEq("(&&,x,y,z)", and(and(x, y), and(x, z)));
     }
 
     @Test void testDisjFactor2() {
-        assertEquals(x, or(and(x, y), and(x, y.neg())) );
+        assertEq(x, or(and(x, y), and(x, y.neg())) );
     }
     @Test void testDisjFactor2_0() {
-        assertEquals(x, or(x, and(x, y), and(x, y.neg())) );
+        assertEq(x, or(x, and(x, y), and(x, y.neg())) );
     }
 
     @Test void testDisjFactor2Neg() {
-        assertEquals(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())) );
+        assertEq(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())) );
     }
 
 
     @Test void testDisjFactor1PosPos() {
-        assertEquals(x,
+        assertEq(x,
                 or(x, and(x, y)));
     }
     @Test void testDisjFactor1PosNeg() {
-        assertEquals(or(x,y),
+        assertEq(or(x,y),
                 or(x, and(x.neg(), y)));
     }
     @Test void testDisjFactor1NegPos() {
-        assertEquals(or(x.neg(), y),
+        assertEq(or(x.neg(), y),
                 or(x.neg(), and(x, y)));
     }
     @Test void testDisjFactor1NegNeg() {
-        assertEquals(x.neg(),
+        assertEq(x.neg(),
                 or(x.neg(), and(x.neg(), y)));
     }
 
 
     @Test void testDisjFactor3() {
-        assertEquals(x, or(and(x, y), and(x, y.neg()), and(x,z)) );
+        assertEq(x, or(and(x, y), and(x, y.neg()), and(x,z)) );
     }
 
 
     @Test void testHuntington3() {
         //¬(¬a∨b) ∨ ¬(¬a∨¬b) == a	# Hungtington3
-        assertEquals(x, or(or(x.neg(), y).neg(), or(x.neg(), y.neg()).neg()));
+        assertEq(x, or(or(x.neg(), y).neg(), or(x.neg(), y.neg()).neg()));
     }
 
     @Test void testRobbinsAxiom3a() {
         //¬(a∨b) ∨ ¬(a∨¬b) == ¬a	# Robbins Algebra axiom3
-        assertEquals(x.neg(), or( or(x,y).neg(), or(x,y.neg()).neg() ) );
+        assertEq(x.neg(), or( or(x,y).neg(), or(x,y.neg()).neg() ) );
     }
 
     @Test void testRobbinsAxiom3() {
         //¬(¬(a∨b) ∨ ¬(a∨¬b)) == a	# Robbins Algebra axiom3
-        assertEquals(x, or( or(x,y).neg(), or(x,y.neg()).neg() ).neg() );
+        assertEq(x, or( or(x,y).neg(), or(x,y.neg()).neg() ).neg() );
     }
 
 

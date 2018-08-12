@@ -16,7 +16,7 @@ public enum PrintSymbols {
         
         System.out.println("string" + "\t\t" + "rel?" + "\t\t" + "\t\t" + "opener?" + "\t\t" + "closer?");
         for (Op i : Op.values()) {
-            System.out.println(i.str + "\t\t" + i.type);
+            System.out.println(i.str);
 
             symbols++;
         }

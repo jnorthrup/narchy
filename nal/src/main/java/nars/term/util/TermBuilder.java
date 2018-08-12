@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Terms.sorted;
@@ -126,9 +127,9 @@ public abstract class TermBuilder {
         }
 
         int s = t.length;
-        assert (o.maxSize >= s) :
+        assert (o.maxSubs >= s) :
                 "subterm overflow: " + o + ' ' + Arrays.toString(t);
-        assert (o.minSize <= s || hasEllipsis) :
+        assert (o.minSubs <= s || hasEllipsis) :
                 "subterm underflow: " + o + ' ' + Arrays.toString(t);
 
         if (s == 1 && !AnonID.isAnonPosOrNeg(t[0])) {
@@ -198,6 +199,9 @@ public abstract class TermBuilder {
             if ((op == INH || op == SIM) && subject.equalsRoot(predicate))
                 return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
         }
+
+
+        boolean negate = false;
 
         if (op == IMPL) {
 
@@ -295,36 +299,43 @@ public abstract class TermBuilder {
                     }
                     subject = newSubj;
                 }
+                negate = predicate.op()==NEG;
+                if (negate)
+                    predicate = predicate.unneg();
+
+                //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
+                //TODO valid cases where subj has impl?
+                if (subject.hasAny(IMPL))
+                    return Null;
 
 
                 if (subjChange[0] || predChange[0]) {
-                    return statement(IMPL, dt, subject, predicate);
+                    return statement(IMPL, dt, subject, predicate).negIf(negate); //recurse
                 } else {
-                    //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
-                    //TODO valid cases where subj has impl?
-                    if (subject.hasAny(IMPL))
-                        return Null;
-
-                    return compound(IMPL, dt, subject, predicate);
+                    return compound(IMPL, dt, subject, predicate).negIf(negate);
                 }
 
 
             }
 
 
+        } else if (op == SIM) {
+            if (subject.compareTo(predicate) > 0) {
+                //swap order
+                Term x = predicate;
+                predicate = subject;
+                subject = x;
+            }
         }
 
+        if ((op != IMPL || dtConcurrent) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
 
-//        if ((dtConcurrent || op != IMPL) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
-//
-//            Predicate<Term> delim = (op == IMPL) ?
-//                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
-//
-//
-//            if ((containEachOther(subject, predicate, delim))) {
-//
-//                return Null;
-//            }
+            Predicate<Term> delim = (op == IMPL) ?
+                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
+
+            if ((containEachOther(subject, predicate, delim)))
+                return Null;
+
 //            boolean sa = subject instanceof AliasConcept.AliasAtom;
 //            if (sa) {
 //                Term sd = ((AliasConcept.AliasAtom) subject).target;
@@ -341,12 +352,12 @@ public abstract class TermBuilder {
 //                if (containEachOther(((AliasConcept.AliasAtom) subject).target, ((AliasConcept.AliasAtom) predicate).target, delim))
 //                    return Null;
 //            }
-//
-//        }
+        }
 
-        return op == SIM && subject.compareTo(predicate) > 0 ?
-                compound(op, dt, predicate, subject) :
-                compound(op, dt, subject, predicate);
+        Term t = compound(op, dt, subject, predicate);
+        if (negate)
+            t = t.neg();
+        return t;
     }
 
     public Term conj(int dt, Term[] u) {
@@ -548,6 +559,11 @@ public abstract class TermBuilder {
 
 
         return term;
+    }
+
+    public final Term statement(Op op, int dt, Term[] u) {
+        assert (u.length == 2): op + " requires 2 arguments, but got: " + Arrays.toString(u);
+        return statement(op, dt, u[0], u[1]);
     }
 
 }

@@ -519,7 +519,7 @@ public class EllipsisTest {
         Ellipsis b = new EllipsisOneOrMore($.varPattern(1));
 
         for (Op o : Op.values()) {
-            if (o.minSize <= 1) continue;
+            if (o.minSubs <= 1) continue;
 
             if (o.statement) continue;
 

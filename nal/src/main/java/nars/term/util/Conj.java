@@ -249,16 +249,36 @@ public class Conj extends ByteAnonMap {
         return ce.term();
     }
 
-    public static Term without(Term include, Term exclude, boolean includeNeg) {
+    public static Term without(Term include, Term exclude, boolean excludePosNeg) {
         if (include.equals(exclude))
             return True;
-        if (includeNeg && include.equalsNeg(exclude))
+        if (excludePosNeg && include.equalsNeg(exclude))
             return True;
         if (include.op() != CONJ || include.impossibleSubTerm(exclude))
             return include;
 
+        if (Op.concurrent(include.dt())) {
+            //HACK this is messy
+            Subterms s = include.subterms();
+            Term[] ss = null;
+            if (excludePosNeg) {
+                ss = s.termsExcept(exclude.neg());
+                if (ss!=null) {
+                    s = Op.terms.subterms(ss);
+                }
+            }
+
+            ss = s.termsExcept(exclude);
+            if (ss!=null) {
+                return CONJ.the(include.dt(), ss);
+            } else {
+                return include;
+            }
+
+        }
+
         Conj xx = Conj.from(include);
-        if (xx.removeEventsByTerm(exclude, true, includeNeg)) {
+        if (xx.removeEventsByTerm(exclude, true, excludePosNeg)) {
             return xx.term();
         } else {
             return include;
@@ -393,7 +413,7 @@ public class Conj extends ByteAnonMap {
         }
 
 
-        return Op.compoundExact(CONJ, dt, left, right);
+        return Op.compound(CONJ, dt, left, right);
     }
 
     /**
@@ -546,6 +566,8 @@ public class Conj extends ByteAnonMap {
                 return false; //reject and fail
         }
 
+
+
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
         if (events instanceof byte[]) {
             byte[] b = (byte[]) events;
@@ -560,19 +582,22 @@ public class Conj extends ByteAnonMap {
                     Term result = merge(bi, x, at == ETERNAL);
 
                     if (result != null) {
-                        if (result == Op.EmptyProduct)
-                            return true; //unaffected
+                        if (result == Op.True)
+                            return true; //absorbed input
                         if (result == False || result == Null) {
                             this.term = result;
                             return false;
-                        } else if (result == True || result != null) {
+                        } else  {
                             if (i < b.length - 1) {
                                 arraycopy(b, i + 1, b, i, b.length - 1 - i);
                                 i--; //compactify
                             } else
                                 b[i] = 0; //erase disjunction, continue comparing. the result remains eligible for add
-                            if (result != null && result != True)
-                                return addEvent(at, result.negIf(bi < 0));
+                            if (result != null) {
+                                return addEvent(at, result);
+                                //merged.add(result);
+                                //continue
+                            }
                         }
                     }
                 }
@@ -593,34 +618,20 @@ public class Conj extends ByteAnonMap {
             rb.add(id);
             event.put(at, rb);
 
+
             return true;
         } else {
-            RoaringBitmap r = (RoaringBitmap) events;
-            if (!r.contains(-id)) {
-                if (r.first() < 0) {
-                    //duplicate of above
-                    throw new TODO();
-//                    PeekableIntIterator ri = r.getIntIterator();
-//                    byte bi;
-//                    while (ri.hasNext() && (bi = (byte) ri.next()) < 0) {
-//                        Term result = disjunctify(bi, x, at == ETERNAL);
-//                        if (result != null) {
-//                            if (result == True) {
-//                                r.remove(bi);  //erase disjunction, continue comparing. the result remains eligible for add
-//                            } else if (result == False || result == Null) {
-//                                this.term = result; return false;
-//                            } else {
-//                                r.remove(bi);
-//                                r.add(id);//erase existing disjunction, and add the incoming value. then recurse
-//                                return add(at, result.neg(), false);
-//                            }
-//                        }
-//                    }
-                }
-                r.add(id);
-                return true;
-            }
-            return false;
+            throw new TODO();
+//
+//            RoaringBitmap r = (RoaringBitmap) events;
+//            if (!r.contains(-id)) {
+//                if (r.first() < 0) {
+//                    //duplicate of above
+//                }
+//                r.add(id);
+//                return true;
+//            }
+//            return false;
         }
     }
 
@@ -641,18 +652,43 @@ public class Conj extends ByteAnonMap {
      * merge an incoming term with a disjunctive sub-expression (occurring at same event time) reductions applied:
      * ...
      *
-     * @param d - term which is disjunctively negated (now un-negated)
-     * @param x - incoming term, possibly negated
      */
-    private static Term disjunctify(Term disjUnwrapped, Term x, boolean eternal) {
+    private static Term disjunctify(Term existing, Term incoming, boolean eternal) {
+        Term existingUnneg = existing.unneg();
+        Term incomingUnneg = incoming.unneg();
+        if (incoming.op() == NEG && incomingUnneg.op() == CONJ) {
+            return disjunctionVsDisjunction(existingUnneg, incomingUnneg, eternal);
+        } else {
+            return disjunctionVsNonDisjunction(incoming, eternal, existingUnneg);
+        }
+
+//        boolean xIsDisjToo = /*x.op() == NEG && */x.unneg().op() == CONJ;
+//        if (xIsDisjToo) {
+//            Term remain = result[0] != null ? result[0] : disjUnwrapped;
+//            Term after;
+//            if (remain.op() == CONJ) {
+//                //disjunction against disjunction
+//                after = disjunctionVsDisjunction(remain, x.unneg(), eternal);
+//            } else {
+//                //re-curse with the order swapped?
+////                after = disjunctify(x.unneg(), remain, eternal);
+//                after = null;
+//            }
+//            if (after != null)
+//                result[0] = after; //otherwise keep as null
+//        }
+    }
+
+    @Nullable
+    private static Term disjunctionVsNonDisjunction(Term incoming, boolean eternal, Term existingUnneg) {
         final Term[] result = new Term[1];
-        disjUnwrapped.eventsWhile((when, what) -> {
+        existingUnneg.eventsWhile((when, what) -> {
             if (eternal || when == 0) {
-                if (x.equalsNeg(what)) {
+                if (incoming.equalsNeg(what)) {
                     //overlap with the option so annihilate the disj
                     result[0] = True;
                     return false; //stop iterating
-                } else if (x.equals(what)) {
+                } else if (incoming.equals(what)) {
                     //contradict
                     result[0] = False;
                     return false;
@@ -661,38 +697,28 @@ public class Conj extends ByteAnonMap {
             return eternal || when <= 0;
         }, 0, true, true, false, 0);
 
-        if (result[0] == False) {
-            //try removing the matching subterm from the disjunction and reconstruct it as the replacement term
 
+        if (result[0] == True) {
+            return incoming; //disjunction annihilated
+        }
+
+        if (result[0] == False) {
+            //removing the matching subterm from the disjunction and reconstruct it
+            //then merge the incoming term
+
+            Term existingShortened;
             if (eternal) {
-                result[0] = Conj.without(disjUnwrapped, x, false);
+                existingShortened = Conj.without(existingUnneg, incoming, false).neg();
             } else {
                 //carefully remove the contradicting first event
-                result[0] = Conj.conjDrop(disjUnwrapped, x, true, false);
+                existingShortened = Conj.conjDrop(existingUnneg, incoming, true, false).neg();
             }
             int dt = eternal ? DTERNAL : 0;
-            if (result[0].equals(disjUnwrapped))
-                return Op.compoundExact(CONJ, dt, result[0].neg(), x).neg(); //try to prevent loop
-            else
-                return CONJ.the(result[0].neg(), dt, x).neg();
+            return CONJ.the(existingShortened, dt, incoming);
         }
 
-        boolean xIsDisjToo = /*x.op() == NEG && */x.unneg().op() == CONJ;
-        if (xIsDisjToo) {
-            Term remain = result[0] != null ? result[0] : disjUnwrapped;
-            Term after;
-            if (remain.op() == CONJ) {
-                //disjunction against disjunction
-                after = disjunctionVsDisjunction(remain, x.unneg(), eternal);
-            } else {
-                //re-curse with the order swapped?
-//                after = disjunctify(x.unneg(), remain, eternal);
-                after = null;
-            }
-            if (after != null)
-                result[0] = after; //otherwise keep as null
-        }
-        return result[0]; //TODO attach 'x' to a non-Bool replacement?
+        return null; //no interaction
+
     }
 
 
@@ -714,22 +740,31 @@ public class Conj extends ByteAnonMap {
                     while (bbb.hasNext()) {
                         Term bn = bbb.next();
                         if (aa.remove(bn.neg())) {
-                            bbb.remove();
+                            bbb.remove(); //both cases allowed; annihilate both
                             change = true;
                         }
                     }
                     if (change) {
                         //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
-                        Term A = aa.size() == 1 ? aa.getOnly() : CONJ.the(adt, aa);
-                        Term B = bb.size() == 1 ? bb.getOnly() : CONJ.the(bdt, bb);
-                        return A.equals(B) ? A :
-                                CONJ.the(eternal ? DTERNAL : 0, A.neg(), B.neg()).neg();
+
+                        Term A = CONJ.the(adt, aa).neg();
+                        if (A == False || A == Null || aa.equals(bb))
+                            return A;
+
+                        Term B = CONJ.the(bdt, bb).neg();
+                        if (B == True || B == False || B == Null || A.equals(B))
+                            return B;
+
+                        return CONJ.the(eternal ? DTERNAL : 0, A, B);
                     }
                 }
             }
+            return null; //no change
+        } else {
+            //TODO sequence conditions
+            throw new TODO();
+            //return null;
         }
-        //TODO sequence conditions
-        return null;
     }
 
     private static Term conjoinify(Term conj, Term incoming, boolean eternal) {
@@ -747,7 +782,7 @@ public class Conj extends ByteAnonMap {
                 if (cs.containsNeg(incoming))
                     return False; //contradiction
                 else if (cs.contains(incoming))
-                    return Op.EmptyProduct; //present, ignore
+                    return True;; //present, ignore
 
                 return CONJ.the(cdt, cs.toSet().with(incoming));
             } else {
@@ -755,7 +790,7 @@ public class Conj extends ByteAnonMap {
                     if (cs.containsNeg(incoming))
                         return False; //contradiction
                     else if (cs.contains(incoming))
-                        return Op.EmptyProduct; //present, ignore
+                        return Op.True; //present, ignore
                 } else if (cdt == DTERNAL) {
                     if (cs.containsNeg(incoming))
                         return False; //contradiction
@@ -792,32 +827,47 @@ public class Conj extends ByteAnonMap {
     }
 
     /**
-     * @param bi
-     * @param x
+     * @param existingId
+     * @param incoming
      * @param eternal * @return codes:
+     *                * True - absorb and ignore the incoming
+     *                * Null/False - short-circuit annihilation due to contradiction
+     *                * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and add the new merged one
      *                * null - do nothing, no conflict.  add x to the event time
-     *                * True - add the incoming, and annihilated the existing
-     *                * Null/False - entire term is cancelled due to contradiction
-     *                * Op.EmptyProduct - the incoming has no effect on the existing, so return success but apply no change
-     *                * non-null - (simplified) value, possible True, to replace the disjunction with, and then proceed to add x to the event time
      */
-    private Term merge(byte bi, Term x, boolean eternal) {
-        Term existing = idToTerm.get((bi < 0 ? (-bi) : bi) - 1);
-        if (existing.op() == CONJ) {
-            Term merged;
-            if (bi < 0) {
-                merged = disjunctify(existing, x, eternal);
-                if (merged != null && merged.equalsNeg(existing))
-                    return Op.EmptyProduct; //no change
-            } else {
-                merged = conjoinify(existing, x, eternal);
-                if (merged != null && merged.equals(existing))
-                    return Op.EmptyProduct; //no change
-            }
-            //TODO maybe also check for equal or reduction in volume sum
-            return merged;
-        } else
-            return null; //not a conj/disj
+    private Term merge(byte existingId, Term incoming, boolean eternal) {
+        boolean existingPolarity = existingId > 0;
+        Term existingUnneg = idToTerm.get((existingPolarity ? existingId : -existingId) - 1);
+        Term existing = existingUnneg.negIf(!existingPolarity);
+        if (existing.equals(incoming))
+            return True; //exact same
+
+        Term incomingUnneg = incoming.unneg();
+        boolean xConj = incomingUnneg.op() == CONJ;
+        boolean eConj = existingUnneg.op() == CONJ;
+        Term result;
+        if (eConj && xConj) {
+            //TODO decide which is larger
+            result = merge(existing, existingPolarity, incoming, eternal);
+        } else if (eConj) {
+            result = merge(existing, existingPolarity, incoming, eternal);
+        } else if (xConj) {
+            boolean incomingPolarity = incoming.op() != NEG;
+            result = merge(incoming, incomingPolarity, existing, eternal);
+        } else {
+            return null; //neither a conj/disj
+        }
+        if (result!=null && result.equals(existing))
+            return True;
+        return result;
+    }
+
+    private Term merge(Term conj, boolean conjPolarity, Term x, boolean eternal) {
+        if (conjPolarity) {
+            return conjoinify(conj, x, eternal);
+        } else {
+            return disjunctify(conj, x, eternal);
+        }
     }
 
     /**
@@ -1192,7 +1242,7 @@ public class Conj extends ByteAnonMap {
                     //recurse: still flattening to do
                     return CONJ.the(cdt, t);
                 } else {
-                    return Op.compoundExact(CONJ, cdt, Terms.sorted(t));
+                    return Op.compound(CONJ, cdt, Terms.sorted(t));
                 }
 
             }
