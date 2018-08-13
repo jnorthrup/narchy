@@ -45,6 +45,13 @@ public class BeliefTables implements BeliefTable {
         this.tables = tables;
     }
 
+
+    /** this is very important: the result of this may not necessarily correspond with testing size=0.
+     * isEmpty() means something different in dynamic task table cases */
+    @Override public boolean isEmpty() {
+        return tables.allSatisfy(TaskTable::isEmpty);
+    }
+
     @Override
     public void match(TaskRank r) {
         tables.each(t -> t.match(r));

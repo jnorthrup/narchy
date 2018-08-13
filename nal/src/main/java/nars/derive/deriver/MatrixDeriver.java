@@ -129,12 +129,20 @@ public class MatrixDeriver extends Deriver {
     }
 
     protected void premiseUnderivable(Premise p, Derivation d) {
+//        System.out.println(nar.time() + " premise underiveable: " + p + " " + d._belief);
+//        try {
+//            Concept c = nar.concept(p.term());
+//            if (c != null)
+//                System.out.println("\t" + c.beliefs().streamTasks().collect(Collectors.toList()));
+//        } catch (Throwable t) { }
+
+
         //p.termLink.priMult(0.9f); //HACK simple decay
         //TODO use the original concept and tasklink bag to determine appropriate decay
     }
 
     protected void premiseFired(Premise p, Derivation d) {
-
+        //System.out.println(nar.time() + " premise fired: " + p + " " + d._belief);
     }
 
 

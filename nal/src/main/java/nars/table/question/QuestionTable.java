@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * task table used for storing Questions and Quests.
@@ -80,15 +81,22 @@ public interface QuestionTable extends TaskTable {
     void capacity(int newCapacity);
 
     @Override
-    default Answer rankDefault(long start, long end, Term template, int limit, NAR nar) {
+    default Answer rank(long start, long _end, Term template, int limit, NAR nar) {
         //TODO account for template in matching?
+
+        long end;
+        if (start == ETERNAL && _end == ETERNAL)
+            end = TIMELESS; //cover whole range
+        else
+            end = _end;
+
         int dur = nar.dur();
         FloatRank<Task> r =
             (start == ETERNAL) ?
                 (t, m) -> t.pri()
                 :
                 (t, m) -> {
-                    float pri = t.pri();
+                    float pri = t.pri() * t.originality();
                     if (pri == pri && pri > m)
                         return pri * (1 / ((float) (t.minTimeTo(start, end) / ((double) dur))));
                     return Float.NaN;

@@ -648,6 +648,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     @Override
     public boolean removeTask(Task x) {
+        if (x.isEternal())
+            return false;
+
         x.delete();
         return remove(x);
     }

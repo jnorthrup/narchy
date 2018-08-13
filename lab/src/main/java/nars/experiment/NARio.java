@@ -132,8 +132,8 @@ public class NARio extends NAgentX {
         });
 
 
-        initButton();
-        //initBipolar();
+        //initButton();
+        initBipolar();
 
 
         Signal dvx = senseNumberDifference($$("vx(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).

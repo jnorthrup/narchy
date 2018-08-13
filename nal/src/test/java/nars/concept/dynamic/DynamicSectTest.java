@@ -2,7 +2,7 @@ package nars.concept.dynamic;
 
 import nars.*;
 import nars.concept.Concept;
-import nars.table.dynamic.DynamicTruthBeliefTable;
+import nars.table.dynamic.DynamicTruthTable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
@@ -37,7 +37,7 @@ class DynamicSectTest {
         for (long now: new long[]{0, n.time() /* 2 */, ETERNAL}) {
 
             assertTrue(n.conceptualize($("((x|y)-->a)")).beliefs()
-                    .tableFirst(DynamicTruthBeliefTable.class)!=null);
+                    .tableFirst(DynamicTruthTable.class)!=null);
 
 
             assertEquals($.t(1f, 0.81f), n.beliefTruth("((x|y)-->a)", now));
@@ -48,8 +48,8 @@ class DynamicSectTest {
             assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(b-->(x&z))")), now));
 
             Concept xIntNegY = n.conceptualize($("((x|--y)-->a)"));
-            assertTrue(xIntNegY.beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
-            assertTrue(xIntNegY.goals().tableFirst(DynamicTruthBeliefTable.class)!=null);
+            assertTrue(xIntNegY.beliefs().tableFirst(DynamicTruthTable.class)!=null);
+            assertTrue(xIntNegY.goals().tableFirst(DynamicTruthTable.class)!=null);
             assertEquals($.t(0f, 0.81f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
             assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x|--z)-->a)")), now));
         }

@@ -133,8 +133,8 @@ public class NARS {
                 float basePri = 1f;
                 n.beliefPriDefault.set(basePri * 0.5f);
                 n.goalPriDefault.set(basePri * 0.5f);
-                n.questionPriDefault.set(basePri * 0.5f);
-                n.questPriDefault.set(basePri * 0.5f);
+                n.questionPriDefault.set(basePri * 0.1f);
+                n.questPriDefault.set(basePri * 0.1f);
             });
         }
 
@@ -171,7 +171,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(64));
+        attention(()->new Attention(128));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(

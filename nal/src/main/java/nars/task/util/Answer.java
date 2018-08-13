@@ -4,6 +4,7 @@ import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.table.TaskTable;
 import nars.task.Revision;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
@@ -19,9 +20,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.truth.polation.TruthIntegration.valueInEternity;
 import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.TIMELESS;
+import static nars.truth.polation.TruthIntegration.valueInEternity;
 
 /** heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
@@ -39,8 +40,8 @@ public class Answer extends TaskRank {
     @Deprecated public static Answer belief(int limit, long start, long _end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         long end;
-        if (start == ETERNAL)
-            end = XTERNAL; //to cover the whole range of values when ETERNAL,ETERNAL is provided
+        if (start == ETERNAL && _end == ETERNAL)
+            end = TIMELESS; //to cover the whole range of values when ETERNAL,ETERNAL is provided
         else
             end = _end;
 
@@ -134,10 +135,31 @@ public class Answer extends TaskRank {
     }
 
 
+    boolean forceProject;
+//    float confMin = Float.MIN_NORMAL;
+    boolean ditherTruth = false;
+
+    public Answer forceProjection(boolean forceProject) {
+        this.forceProject = forceProject;
+        return this;
+    }
+
+//    public Answer confMin(float confMin) {
+//        this.confMin = confMin;
+//        return this;
+//    }
+
+    public Answer ditherTruth(boolean ditherTruth) {
+        this.ditherTruth = ditherTruth;
+        return this;
+    }
+
     /**
      * matches, and projects to the specified time-range if necessary
+     * note: if forceProject, the result may be null if projection doesnt succeed.
+     *   only useful for precise value summarization for a specific time.
      */
-    @Nullable public Task task(@Nullable Term template, boolean tryProject) {
+    @Nullable public Task task() {
         int s = tasks.size();
         Task t;
         switch (s) {
@@ -151,11 +173,11 @@ public class Answer extends TaskRank {
                 switch (tf.punc()) {
                     case BELIEF:
                     case GOAL:
-                        t = dynTruth().task(template, this::truth, tf.isBelief(), nar);
+                        t = Truth.stronger(dynTask(tf.isBelief()), tf);
                         break;
                     case QUESTION:
                     case QUEST:
-                        t = tf;
+                        t = tasks.first();
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -163,14 +185,13 @@ public class Answer extends TaskRank {
                 break;
             }
         }
-        if (tryProject && t!=null) {
+        if (this.forceProject && t!=null) {
             long ss = time.start;
             if (ss != ETERNAL) { //dont eternalize here
                 long ee = time.end;
                 if (!t.intersects(ss, ee)) {
                     @Nullable SpecialTruthAndOccurrenceTask p = Task.project(t, ss, ee, nar);
-                    if (p!=null)
-                        return p;
+                    return p;
                 }
             }
         }
@@ -195,6 +216,21 @@ public class Answer extends TaskRank {
 //        return t;
     }
 
+    private Task dynTask(boolean beliefOrGoal) {
+
+        @Nullable DynTruth d = dynTruth();
+        TruthPolation tp = Param.truth(time.start, time.end, nar.dur()); tp.ensureCapacity(d.size());
+        d.forEach(r -> tp.add(r.task()));
+        tp.filterCyclic(false);
+        if (tp.size()==1) {
+            return tp.getTask(0);
+        }
+        @Nullable Truth tt = tp.truth(nar);
+        if (tt==null)
+            return null;
+        return d.task(template, tt, beliefOrGoal, ditherTruth, nar);
+    }
+
     /** TODO merge DynTruth and TruthPolation */
     @Nullable @Deprecated protected DynTruth dynTruth() {
         int s = tasks.size();
@@ -211,9 +247,14 @@ public class Answer extends TaskRank {
     }
 
     @Nullable protected Truth truth(DynTruth d, NAR n) {
-        TruthPolation tp = Param.truth(time.start, time.end, n.dur());
+        TruthPolation tp = Param.truth(time.start, time.end, n.dur()); tp.ensureCapacity(d.size());
         d.forEach(r -> tp.add(r.task()));
-        tp.filterCyclic();
+        tp.filterCyclic(false);
         return tp.truth(n);
+    }
+
+    public Answer match(TaskTable t) {
+        t.match(this);
+        return this;
     }
 }

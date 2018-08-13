@@ -194,7 +194,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public boolean removeTask(Task x) {
-
+        if (!x.isEternal())
+            return false;
 
         synchronized (this) {
             x.delete();
@@ -221,19 +222,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Task input = r.input;
 
         add(r, nar, input);
-    }
-
-    @Override
-    public Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        int n = size();
-        for (int i = 0; i < n; i++) {
-            Task t = get(i);
-            if (t == null)
-                break;
-            if (filter.test(t))
-                return t;
-        }
-        return null;
     }
 
     @Override

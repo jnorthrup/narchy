@@ -14,9 +14,7 @@ import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import nars.truth.Stamp;
 import nars.unify.UnifySubst;
-import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -187,13 +185,14 @@ public class Premise {
                     long[] focus = timeFocus(d, beliefTerm);
 
                     Predicate<Task> beliefFilter = beliefFilter();
-                    Task match = bb.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
-//                    if (match!=null) {
-//                        System.out.println(task.intersects(focus[0], focus[1]) + " " + task + " " + Arrays.toString(focus));
-//                    }
-                    return match;
 
-                    //if (!validMatch(belief)) belief = null;
+                    //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
+                    //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
+                    Task match = bb.rank(focus[0], focus[1], beliefTerm, beliefFilter, n)
+                            .match(bb)
+                            .task();
+
+                    return match;
 
                 }
             }
@@ -225,8 +224,11 @@ public class Premise {
 
         if (!answerTable.isEmpty()) {
 
-            Task match = answerTable.answer(
-                    task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n);
+            Task match =
+                answerTable.rank(task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
+                        .ditherTruth(true)
+                        .match(answerTable).task();
+
 //            if (!validMatch(match))
 //                match = null;
 
@@ -293,15 +295,15 @@ public class Premise {
         }
     }
 
-//    private boolean validMatch(@Nullable Task x) {
-//        return x != null && !x.isDeleted() && !x.equals(task);
+////    private boolean validMatch(@Nullable Task x) {
+////        return x != null && !x.isDeleted() && !x.equals(task);
+////    }
+//
+//    private Predicate<Task> stampFilter(Derivation d) {
+//        ImmutableLongSet taskStamp =
+//                Stamp.toSet(task);
+//        return t -> !Stamp.overlapsAny(taskStamp, t.stamp());
 //    }
-
-    private Predicate<Task> stampFilter(Derivation d) {
-        ImmutableLongSet taskStamp =
-                Stamp.toSet(task);
-        return t -> !Stamp.overlapsAny(taskStamp, t.stamp());
-    }
 
 
     @Override

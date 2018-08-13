@@ -8,6 +8,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.action.BiPolarAction;
+import nars.concept.action.GoalActionConcept;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
@@ -15,9 +16,11 @@ import nars.concept.sensor.Signal;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
+import nars.video.CameraSensorView;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,8 +62,8 @@ public class FZero extends NAgentX {
 
 
         c = senseCamera($.func("cam", id), new Scale(() -> fz.image,
-                //24, 24
-                8, 8
+                20, 16
+                //8, 8
 
 
         )/*.blur()*/);//.diff()
@@ -68,15 +71,21 @@ public class FZero extends NAgentX {
                 ;
 
 
-        initToggleLeftRight();
-        initToggleFwdStop();
 
-        //initUnipolarLinear(5f);
-        //initBipolarRotateDirect(false, 0.5f);
+        //initToggleLeftRight();
+        //initToggleFwdStop();
+
+        GoalActionConcept F = initUnipolarLinear(5f);
+        BiPolarAction A = initBipolarRotateDirect(true, 0.5f);
+        window(new Gridding(
+                new CameraSensorView(c, this).withControls(),
+                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
+
         //initBipolarRotateDirect(false, 0.9f);
 
-        //initBipolarRotateRelative(fair, rotFactor);
-        //initBipolarRotateAbsolute(fair);
+
+        //initBipolarRotateRelative(true, 0.3f);
+        //initBipolarRotateAbsolute(true);
 
 
         Signal dVelX = senseNumberDifference($.func("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]);
@@ -251,7 +260,7 @@ public class FZero extends NAgentX {
     public void initBipolarRotateRelative(boolean fair, float rotFactor) {
         final float[] _r = {0};
         final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
-        actionBipolarFrequencyDifferential($.p(/*id, */$.the("turn")), fair, (r0) -> {
+        BiPolarAction R = actionBipolarFrequencyDifferential($.p(/*id, */$.the("turn")), fair, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 
@@ -261,9 +270,10 @@ public class FZero extends NAgentX {
                             rotSpeed * rotFactor;
             return r0;
         });
+        window(NARui.beliefCharts(nar, R.pos, R.neg), 800, 500);
     }
 
-    public void initBipolarRotateDirect(boolean fair, float rotFactor) {
+    public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {
 
         final float[] heading = {0};
         final MiniPID rotFilter = new MiniPID(0.2f, 0.2, 0.2f);
@@ -284,7 +294,7 @@ public class FZero extends NAgentX {
         BiPolarAction A = actionBipolarFrequencyDifferential($.func("rotate", id),
                 fair, d);
 
-        window(NARui.beliefCharts(nar, A.pos, A.neg), 800, 500);
+        return A;
 
 
         //actionUnipolar($.the("heading"), d);
@@ -303,9 +313,9 @@ public class FZero extends NAgentX {
 
     }
 
-    public void initUnipolarLinear(float fwdFactor) {
+    public GoalActionConcept initUnipolarLinear(float fwdFactor) {
         final float[] _a = {0};
-        actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> 0.5f, (a0) -> {
+        return actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> 0.5f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a >= 0.5f) {
                 float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);

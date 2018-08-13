@@ -4,7 +4,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTables;
-import nars.table.dynamic.DynamicTruthBeliefTable;
+import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -305,8 +305,8 @@ class DynamicConjTest {
                 "(--(y-->t) &&+1 --(t-->happy))",
         }) {
             Concept c = n.conceptualize($.$(s));
-            assertTrue(c.beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
-            assertTrue(c.goals().tableFirst(DynamicTruthBeliefTable.class)!=null);
+            assertTrue(c.beliefs().tableFirst(DynamicTruthTable.class)!=null);
+            assertTrue(c.goals().tableFirst(DynamicTruthTable.class)!=null);
         }
 
     }

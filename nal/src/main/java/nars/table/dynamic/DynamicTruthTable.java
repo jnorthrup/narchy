@@ -13,24 +13,32 @@ import org.jetbrains.annotations.Nullable;
  * computes dynamic truth according to implicit truth functions
  * determined by recursive evaluation of the compound's sub-component's truths
  */
-public class DynamicTruthBeliefTable extends DynamicTaskTable {
+public class DynamicTruthTable extends DynamicTaskTable {
 
     private final DynamicTruthModel model;
 
 
-    public DynamicTruthBeliefTable(Term c, DynamicTruthModel model, boolean beliefOrGoal) {
+    public DynamicTruthTable(Term c, DynamicTruthModel model, boolean beliefOrGoal) {
         super(c, beliefOrGoal);
         this.model = model;
     }
 
 
     @Override
-    public Task taskDynamic(long start, long end, Term template, NAR nar) {
+    @Nullable public Task taskDynamic(long start, long end, Term template, NAR nar) {
         if (template == null)
             template = term;
 
         DynTruth yy = model.eval(template, beliefOrGoal, start, end, true /* dont force projection */, nar);
-        return yy != null ? yy.task(template, model, beliefOrGoal, nar) : null;
+
+        if (yy!=null) {
+            Truth t = model.apply(yy, nar);
+            if (t != null) {
+                Term tmplate = template;
+                return (Task)yy.eval(() -> model.reconstruct(tmplate, yy), t, true, beliefOrGoal, nar);
+            }
+        }
+        return null;
     }
 
 

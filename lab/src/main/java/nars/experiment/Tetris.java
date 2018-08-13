@@ -27,9 +27,12 @@ public class Tetris extends NAgentX implements Bitmap2D {
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     static boolean easy = false;
-    public final FloatRange timePerFall = new FloatRange(2f, 1f, 32f);
+    private boolean canFall = false;
+
+    public final FloatRange timePerFall = new FloatRange(3f, 1f, 32f);
     public final Bitmap2DSensor<Bitmap2D> pixels;
     private TetrisState state;
+
 
     public Tetris(NAR nar) {
         this(nar, Tetris.tetris_width, Tetris.tetris_height);
@@ -46,8 +49,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
      */
     public Tetris(NAR n, int width, int height, int timePerFall) {
         super("tetris",
-                //FrameTrigger.fps(10f),
-                FrameTrigger.durs(1),
+                FrameTrigger.fps(10f),
+                //FrameTrigger.durs(1),
                 n);
 
         state = new TetrisState(width, height, timePerFall) {
@@ -127,7 +130,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 b -> state.act(TetrisState.RIGHT, b));
 
         actionPushButton(ROT, () -> state.act(CW));
-        actionPushButton(FALL, () -> state.act(TetrisState.FALL));
+        if (canFall)
+            actionPushButton(FALL, () -> state.act(TetrisState.FALL));
 
     }
 

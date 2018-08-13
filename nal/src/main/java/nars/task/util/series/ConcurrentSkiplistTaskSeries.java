@@ -138,12 +138,14 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
                 return null;
 
             long lastEnd = last.end();
-            if (nextStart - lastEnd <= dur) {
+            double gapDurs = ((double)(nextStart - lastEnd)) / dur;
+            if (gapDurs <= stretchDurs()) {
 
                 //start new task segment
                 nextStart = lastEnd + 1; //stretch behind to meet previous since it is within range
 
-                if ((nextStart - lastStart) / dur <= maxTaskDurs()) {
+                double stretchDurs = ((double)(nextStart - lastStart)) / dur;
+                if (stretchDurs <= latchDur()) {
                     Truth lastEnds = last.truth(lastEnd, dur);
                     if (lastEnds.equals(next)) {
 
@@ -182,8 +184,11 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
     /**
      * maximum durations a steady signal can grow for
      */
-    private long maxTaskDurs() {
-        return Param.SIGNAL_LATCH_DUR_MAX;
+    private float latchDur() {
+        return Param.SIGNAL_LATCH_DUR;
+    }
+    private float stretchDurs() {
+        return Param.SIGNAL_STRETCH_DUR;
     }
 
     abstract protected T newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp);
@@ -217,7 +222,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
     @Override
     public int forEach(long start, long end, int limit, Consumer<T> target) {
         TopN<Task> inner = new TopN<>(new Task[Math.min(size(), limit)],
-                t -> TruthIntegration.eviInteg(t, start, end, (long) 1) //TODO this may be better as a double value comparison, long -> float could be lossy
+                t -> TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
         );
 
         forEach(start, end, false, inner::add);

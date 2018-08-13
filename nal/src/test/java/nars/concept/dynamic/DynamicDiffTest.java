@@ -3,7 +3,7 @@ package nars.concept.dynamic;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.table.dynamic.DynamicTruthBeliefTable;
+import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +19,8 @@ class DynamicDiffTest {
         n.run(1);
         Term xMinY = $("(x ~ y)");
         Term yMinX = $("(y ~ x)");
-        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(xMinY).beliefs().getClass());
-        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(yMinX).beliefs().getClass());
+        assertEquals(DynamicTruthTable.class, n.conceptualize(xMinY).beliefs().getClass());
+        assertEquals(DynamicTruthTable.class, n.conceptualize(yMinX).beliefs().getClass());
         assertEquals(
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );
@@ -38,8 +38,8 @@ class DynamicDiffTest {
         n.run(1);
         Term xMinY = $("c:(x ~ y)");
         Term yMinX = $("c:(y ~ x)");
-        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(xMinY).beliefs().getClass());
-        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(yMinX).beliefs().getClass());
+        assertEquals(DynamicTruthTable.class, n.conceptualize(xMinY).beliefs().getClass());
+        assertEquals(DynamicTruthTable.class, n.conceptualize(yMinX).beliefs().getClass());
         assertEquals(
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );

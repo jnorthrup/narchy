@@ -101,11 +101,15 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     }
 
+    public final LongSet filterCyclic() {
+        return filterCyclic(true);
+    }
+
     /**
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
      */
-    public final LongSet filterCyclic() {
+    @Nullable public final LongSet filterCyclic(boolean provideStampForOneTask) {
         filter();
 
         int s = size();
@@ -118,12 +122,13 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
                 if (Stamp.overlapsAny(get(0).task.stamp(), get(1).task.stamp())) {
                     remove(1);
+                    s = size();
                 }
             }
         }
 
         if (s == 1)
-            return Stamp.toSet(get(0).task);
+            return provideStampForOneTask ? Stamp.toSet(get(0).task) : null;
 
 
         LongHashSet e = new LongHashSet(s * 4);

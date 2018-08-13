@@ -22,6 +22,10 @@ public abstract class DynamicTaskTable extends EmptyBeliefTable {
         this.term = c;
     }
 
+    /** this is very important:  even if size==0 this must return false */
+    @Override public final boolean isEmpty() {
+        return false;
+    }
 
     @Override
     public void match(TaskRank t) {

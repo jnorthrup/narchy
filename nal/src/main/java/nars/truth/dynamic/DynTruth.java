@@ -29,8 +29,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
+import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
@@ -103,14 +105,23 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     public final Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
         return eval(superterm, truthModel, taskOrJustTruth,  beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
     }
+    /** eval without any specific time or truth dithering */
+    public final Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
+        return eval(superterm, t, taskOrJustTruth,  beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
+    }
     /**
      * TODO make Task truth dithering optional
      */
-    private Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+    @Deprecated  private Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
 
         Truth t = truthModel.apply(this, nar);
         if (t == null)
             return null;
+        return eval(()->superterm, t, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
+    }
+
+    public Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+
 
         float evi = t.evi();
 //        if (evi < Math.min(eviMin, c2wSafe(confRes)))
@@ -124,9 +135,20 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         if (taskOrJustTruth) {
 
+            Term content = superterm.get();
+            if (content == null)
+                return null;
+
+            if (content.op() == NEG) {
+                content = content.unneg();
+                f = 1.0f - freq;
+            } else {
+                f = freq;
+            }
+
             long start, end;
             if (size() > 1) {
-                if (superterm.op() == CONJ) {
+                if (content.op() == CONJ) {
                     long min = TIMELESS;
                     long minRange = 0;
                     boolean eternals = false;
@@ -165,19 +187,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 end = only.end();
             }
 
-            if (superterm.op() == NEG) {
-                superterm = superterm.unneg();
-                f = 1.0f - freq;
-            } else {
-                f = freq;
-            }
 
-
-            Term content = truthModel instanceof DynamicTruthModel ?
-                    ((DynamicTruthModel) truthModel).reconstruct(superterm, this) :
-                    superterm;
-            if (content == null)
-                return null;
 
             @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
                     content,
@@ -263,12 +273,26 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return (Truth) eval(term, o, false, beliefOrGoal, n);
     }
 
-    public final Task task(Term term, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
-        return (Task) eval(term, o, true, beliefOrGoal,
-//                n.freqResolution.floatValue(),
-//                n.confResolution.floatValue(),
-//                c2wSafe(n.confMin.floatValue()) /*Float.MIN_NORMAL*/ /*Truth.EVI_MIN*/ ,
-                n);
+    public final Task task(Term term, Truth t, boolean beliefOrGoal, NAR n) {
+        return task(term, t, beliefOrGoal, false, n);
+
+    }
+    public final Task task(Term term, Truth t, boolean beliefOrGoal, boolean ditherTruth, NAR n) {
+        //private Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+        assert(t!=null);
+        float fRes, cRes, eMin;
+        if (ditherTruth) {
+            fRes = n.freqResolution.floatValue();
+            cRes = n.confResolution.floatValue();
+            eMin = c2wSafe(n.confMin.floatValue());
+        } else {
+            fRes = Param.TRUTH_EPSILON;
+            cRes = Float.MIN_NORMAL;
+            eMin = Float.MIN_NORMAL;
+        }
+        return (Task) eval(()->term, t, true, beliefOrGoal,
+                fRes,cRes,eMin, n);
+
     }
 
 

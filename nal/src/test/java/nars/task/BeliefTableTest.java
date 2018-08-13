@@ -3,7 +3,7 @@ package nars.task;
 import nars.*;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
-import nars.table.dynamic.DynamicTruthBeliefTable;
+import nars.table.dynamic.DynamicTruthTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
@@ -30,7 +30,7 @@ class BeliefTableTest {
         assertNotNull(cc, c + " unconceptualized");
 
         //List<Task> tt = cc.beliefs().streamTasks().collect(toList());
-        assertTrue(cc.beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
+        assertTrue(cc.beliefs().tableFirst(DynamicTruthTable.class)!=null);
 
         Task t = n.belief(cc, start, end);
         assertNotNull(t);

@@ -27,7 +27,7 @@ public class TaskRank implements Consumer<Task> {
 
 
     public TaskRank(int limit, FloatRank<Task> rank, TimeRangeFilter time) {
-        this.cache = new CachedFloatFunction<>(1024, rank);
+        this.cache = new CachedFloatFunction<>(64, rank);
         this.tasks = new TopN<>(new Task[limit], cache);
         this.time = time;
 
@@ -55,7 +55,7 @@ public class TaskRank implements Consumer<Task> {
     @Nullable public Truth truth(TruthPolation p) {
         p.ensureCapacity(tasks.size());
         p.add(tasks);
-        p.filterCyclic();
+        p.filterCyclic(false);
         return p.truth();
     }
 

@@ -61,13 +61,13 @@ public abstract class Param {
      *
      *  seems to enable more temporal precision at the cost of more links.
      */
-    public static final boolean TASKLINK_CONCEPT_TERM = false;
+    public static final boolean TASKLINK_CONCEPT_TERM = true;
 
 
     //5;
 
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
@@ -144,7 +144,8 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static int SIGNAL_LATCH_DUR_MAX = 512;
+    public final static float SIGNAL_LATCH_DUR = 64;
+    public final static float SIGNAL_STRETCH_DUR = 4;
 
 
     /**
@@ -166,7 +167,7 @@ public abstract class Param {
      * creates instance of the default truthpolation implementation
      */
     public static TruthPolation truth(long start, long end, int dur) {
-        return new LinearTruthPolation(start, end, dur*2);
+        return new LinearTruthPolation(start, end, dur);
         //return new FocusingLinearTruthPolation(start, end, dur);
     }
 
@@ -213,7 +214,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**

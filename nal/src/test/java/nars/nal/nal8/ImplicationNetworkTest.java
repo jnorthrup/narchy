@@ -30,6 +30,7 @@ class ImplicationNetworkTest {
 
 
 
+        n.log();
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
         n.believe(a);

@@ -3,7 +3,7 @@ package nars.concept.dynamic;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.table.dynamic.DynamicTruthBeliefTable;
+import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
@@ -28,8 +28,8 @@ class DynamicImageTest {
         Term i2 = $("(x --> (z,/,y))");
         assertEquals(t, Image.imageNormalize(i2));
 
-        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(i1).beliefs().getClass());
-        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(i2).beliefs().getClass());
+        assertEquals(DynamicTruthTable.class, n.conceptualize(i1).beliefs().getClass());
+        assertEquals(DynamicTruthTable.class, n.conceptualize(i2).beliefs().getClass());
         assertEquals(
                 "%.75;.50%", n.beliefTruth(i1, n.time()).toString()
         );

@@ -73,16 +73,15 @@ public interface TaskTable {
     }
 
     /** creates a default "best" match strategy for this task table */
-    Answer rankDefault(long start, long end, Term template, int limit, NAR nar);
+    Answer rank(long start, long end, Term template, int limit, NAR nar);
 
     @Deprecated default Task match(long start, long end, Term template, NAR nar) {
 
         if (isEmpty())
             return null;
 
-        Answer r = rankDefault(start, end, template, (this instanceof QuestionTable) ? 1 : Answer.TASK_LIMIT, nar);
-        match(r);
-        return r.task(template, false);
+        return rank(start, end, template, (this instanceof QuestionTable) ? 1 : Answer.TASK_LIMIT, nar)
+                .match(this).task();
     }
 
 

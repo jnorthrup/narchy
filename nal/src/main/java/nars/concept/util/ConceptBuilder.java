@@ -10,7 +10,7 @@ import nars.concept.TaskConcept;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.table.BeliefTables;
-import nars.table.dynamic.DynamicTruthBeliefTable;
+import nars.table.dynamic.DynamicTruthTable;
 import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
@@ -80,7 +80,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return new BeliefTables(
                 newTemporalTable(t),
                 newEternalTable(t),
-                new DynamicTruthBeliefTable(t, dmt, beliefOrGoal)
+                new DynamicTruthTable(t, dmt, beliefOrGoal)
         );
     }
 
