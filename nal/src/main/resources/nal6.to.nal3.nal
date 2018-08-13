@@ -19,6 +19,12 @@
  (&&,X,A..+), (&&,Y,A..+), neq(X,Y), task(".")    |- (Y~X), (Punctuation:Question, Time:TaskRange)
     (&&,X,A..+), (&&,Y,A..+), neq(X,Y), task("!")    |- (Y~X), (Punctuation:Quest, Time:TaskRange)
 
+//comparators
+(A ==> X), (B ==> X), neq(A,B), task(".") |- ((A ~ B) ==> X), (Punctuation:Question)
+(A ==> X), (B ==> X), neq(A,B), task(".") |- ((B ~ A) ==> X), (Punctuation:Question)
+(X ==> A), (X ==> B), neq(A,B), task(".") |- (X ==> (A ~ B)), (Punctuation:Question)
+(X ==> A), (X ==> B), neq(A,B), task(".") |- (X ==> (B ~ A)), (Punctuation:Question)
+
 //identity?
   ((X-->A) ~ (X-->B)),   X  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction)
   ((A-->X) ~ (B-->X)),   X  |- ((A~B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction)

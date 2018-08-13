@@ -39,4 +39,8 @@ public class NAL6ToNAL3BridgeTest extends NALTest {
                 .mustQuestion(cycles, "(b~a)")
         ;
     }
+
+    @Test public void testImplDiffernce() {
+        test.input("(a ==> x).").input("(b ==> x).").mustQuestion(cycles,"((a~b) ==>+- x)");
+    }
 }

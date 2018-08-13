@@ -128,18 +128,7 @@ public interface TaskLink extends Priority, Termed {
                 r.pri(link.priElseZero());
             }
 
-//            if (c != null && r != null && !t.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
-//                if (r.isQuestionOrQuest()) {
-//                    BeliefTable answers = c.tableAnswering(r.punc());
-//                    if (answers instanceof DynamicBeliefTable) {
-//                        //match an answer emulating a virtual self-termlink being matched during premise formation
-//                        Task a = answers.answer(r, n);
-//                        if (a != null) {
-//                            n.input(a);
-//                        }
-//                    }
-//                }
-//            }
+
 
             return r;
 

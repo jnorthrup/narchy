@@ -13,6 +13,8 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
+import nars.table.BeliefTables;
+import nars.table.dynamic.DynamicTaskTable;
 import nars.term.Term;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
@@ -141,6 +143,33 @@ public class Premise {
 //            }
         }
 
+        {
+            //dynamic question answering
+            if (task.isQuestionOrQuest() && !taskTerm.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
+
+
+                TaskConcept c = (TaskConcept) d.nar.conceptualizeDynamic(taskTerm);
+                if (c!=null) {
+                        BeliefTables answers = (BeliefTables) c.tableAnswering(task.punc());
+                            @Nullable DynamicTaskTable aa = answers.tableFirst(DynamicTaskTable.class);
+                            if (aa!=null) {
+
+                                //match an answer emulating a virtual self-termlink being matched during premise formation
+                                Task a = aa.answer(task.start(), task.end(), taskTerm, null, d.nar);
+                                if (a != null) {
+
+                                    a.take(task, a.priElseZero() * task.priElseZero(), true, false);
+
+                                    //decrease tasklink too?
+
+                                    task.onAnswered(a, d.nar);
+                                    d.add(a);
+                                }
+                        }
+                    }
+                }
+
+        }
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, beliefTransformed);
 //        if (belief!=null) {
