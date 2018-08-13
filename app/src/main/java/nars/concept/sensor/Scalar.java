@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
+import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTaskTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
@@ -31,20 +32,28 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
 
     public Scalar(Term term, @Nullable LongToFloatFunction belief, @Nullable LongToFloatFunction goal, NAR n) {
         super(term,
-                belief != null ? new ScalarBeliefTable(term, true, belief, n) : n.conceptBuilder.newTables(term, true),
-                goal != null ? new ScalarBeliefTable(term, false, goal, n) : n.conceptBuilder.newTables(term, false),
+                belief != null ?
+                        new BeliefTables(
+                                new ScalarBeliefTable(term, true, belief, n) ) : n.conceptBuilder.newTable(term, true),
+
+                goal != null ?
+                        new BeliefTables(
+                                new ScalarBeliefTable(term, false, goal, n) ) : n.conceptBuilder.newTable(term, false)
+                ,
                 n.conceptBuilder);
 
         pri = FloatRange.unit(goal!=null ? n.goalPriDefault : n.beliefPriDefault );
         res = FloatRange.unit(n.freqResolution);
 
         if (belief!=null) {
-            ((ScalarBeliefTable) beliefs()).setPri(pri);
-            ((ScalarBeliefTable) beliefs()).setRes(res);
+            ScalarBeliefTable b = beliefs().tableFirst(ScalarBeliefTable.class);
+            b.setPri(pri);
+            b.setRes(res);
         }
         if (goal!=null) {
-            ((ScalarBeliefTable) goals()).setPri(pri);
-            ((ScalarBeliefTable) goals()).setRes(res);
+            ScalarBeliefTable g = goals().tableFirst(ScalarBeliefTable.class);
+            g.setPri(pri);
+            g.setRes(res);
         }
         n.on(this);
     }
@@ -79,8 +88,7 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
         final long stampStart;
 
         protected ScalarBeliefTable(Term term, boolean beliefOrGoal, LongToFloatFunction value, NAR n) {
-            super(term, beliefOrGoal,
-                    n.conceptBuilder.newTemporalTable(term));
+            super(term, beliefOrGoal);
             stampStart = n.time();
 
             this.stampSeed = term.hashCode();

@@ -35,7 +35,9 @@ class DynamicSectTest {
         assertEquals(0f, withNeg.truth().freq());
 
         for (long now: new long[]{0, n.time() /* 2 */, ETERNAL}) {
-            assertTrue(n.conceptualize($("((x|y)-->a)")).beliefs() instanceof DynamicTruthBeliefTable);
+
+            assertTrue(n.conceptualize($("((x|y)-->a)")).beliefs()
+                    .tableFirst(DynamicTruthBeliefTable.class)!=null);
 
 
             assertEquals($.t(1f, 0.81f), n.beliefTruth("((x|y)-->a)", now));
@@ -46,8 +48,8 @@ class DynamicSectTest {
             assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(b-->(x&z))")), now));
 
             Concept xIntNegY = n.conceptualize($("((x|--y)-->a)"));
-            assertTrue(xIntNegY.beliefs() instanceof DynamicTruthBeliefTable);
-            assertTrue(xIntNegY.goals() instanceof DynamicTruthBeliefTable);
+            assertTrue(xIntNegY.beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
+            assertTrue(xIntNegY.goals().tableFirst(DynamicTruthBeliefTable.class)!=null);
             assertEquals($.t(0f, 0.81f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
             assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x|--z)-->a)")), now));
         }

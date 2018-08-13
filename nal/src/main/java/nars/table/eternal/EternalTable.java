@@ -237,11 +237,14 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
-    public Truth truth(long start, long end, @Nullable Term template, NAR nar) {
+    public Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
         return truth();
     }
 
     public void add(Remember r, NAR nar, Task input) {
+        if (!r.input.isEternal())
+            return;
+
         int cap = capacity();
         if (cap == 0) {
             r.forget(input);

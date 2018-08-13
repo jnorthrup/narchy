@@ -2,7 +2,6 @@ package nars.table.temporal;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.decide.MutableRoulette;
 import jcog.pri.Deleteable;
 import jcog.sort.CachedTopN;
 import jcog.sort.Top;
@@ -14,17 +13,12 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
-import nars.table.eternal.EternalTable;
 import nars.task.Revision;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
 import nars.term.Term;
-import nars.truth.Stamp;
-import nars.truth.Truth;
-import nars.truth.polation.TruthPolation;
+import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
-import org.eclipse.collections.api.set.primitive.LongSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -33,34 +27,17 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.WTF.WTF;
-import static nars.table.temporal.TemporalBeliefTable.value;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
 public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    /**
-     * max fraction of the fully capacity table to compute in a single truthpolation
-     */
-    private static final float SCAN_QUALITY =
-            1f;
+//    /**
+//     * max fraction of the fully capacity table to compute in a single truthpolation
+//     */
+//    private static final float SCAN_QUALITY =
+//            1f;
 
-    /**
-     * max allowed truths to be truthpolated in one test
-     * must be less than or equal to Stamp.CAPACITY otherwise stamp overflow
-     */
-    private static final int TRUTHPOLATION_LIMIT = (Param.STAMP_CAPACITY - 1);
-
-    /**
-     * max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task
-     */
-    private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
-
-    private static final int COMPLEX_EVENT_MATCH_LIMIT =
-            SIMPLE_EVENT_MATCH_LIMIT;
-
-
-    private static final int SAMPLE_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             2f;
@@ -150,7 +127,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return (TaskRegion r) -> {
 
             long timeDist =
-                    r.minTimeTo(when);
+                    r.maxTimeTo(when);
                     //r.midTimeTo(when);
                     //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
@@ -176,19 +153,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         };
     }
 
-    static FloatFunction<Task> taskStrength(long start, long end, int dur) {
-        if (start == ETERNAL) {
-            return RTreeBeliefTable::valueInEternity;
-        } else {
-            return x -> value(x, start, end, dur);
-        }
-    }
-
-    private static float valueInEternity(Task x) {
-        return x.eviEternalized() * x.range();
-    }
-
-//    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
+    //    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
 //        return t -> {
 //            Task tt = ((Task) t);
 //            return tt.isDeleted() || each.test(tt);
@@ -205,7 +170,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur, long tableDur) {
         return (Task x) -> (!x.isAfter(now) ? presentAndFutureBoost : 1f) *
-                value(x, when, when, tableDur);
+                TruthIntegration.eviInteg(x, when, when, tableDur);
     }
 
     abstract protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur);
@@ -305,15 +270,22 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     @Override
     public void match(TaskRank m) {
 
-        if (isEmpty())
+        int s = size();
+        if (s == 0)
             return;
+        if (s < COMPLETE_SCAN_SIZE_THRESHOLD) {
+            forEachTask(m);
+        }
+
+
+        //TODO use iterative expansion like already impl, just not adapted for the new TaskRank API
 
         Predicate<TaskRegion> each = TaskRegion.asTask((Task t) -> {
             m.accept(t);
             return true;
         });
         if (m.time.intersectOrContain) {
-            whileEachIntersecting(m.time, each);
+            whileEachIntersecting(expand(m.time, 0.5f), each);
         } else {
             whileEachContaining(m.time, each);
         }
@@ -342,6 +314,23 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     }
 
+    private TimeRange expand(TimeRange time, float lerpToTableExtents) {
+        if (time.start != ETERNAL) { //not already fully expanded?
+            long tableDur = tableDur();
+            long initialRange = time.end - time.start;
+            if (initialRange < tableDur) {
+
+
+                long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
+                if (halfExpand > 0) {
+                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
+                }
+            }
+
+        }
+        return time;
+    }
+
     @Override
     public void setCapacity(int capacity) {
         this.capacity = capacity;
@@ -349,6 +338,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     @Override
     public void add(Remember r, NAR n) {
+
+        if (r.input.isEternal())
+            return;
 
         if (capacity == 0) {
             r.reject();
@@ -439,7 +431,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         Top<TaskRegion> weakest = new Top<>(weakestTask);
 
-        Top<TaskRegion> closest = input != null ? new Top<>(TemporalBeliefTable.mergeability(input, perceptDur)) : null;
+        Top<TaskRegion> closest = input != null ? new Top<>(Answer.mergeability(input, perceptDur)) : null;
 
 
         if (!findEvictable(tree, tree.root(), closest, weakest, weakLeaf))
@@ -555,11 +547,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
 
             case RejectInput: {
-                if (treeRW.remove(I)) {
-                    r.forget(I);
-                    return false;
-                }
-                throw WTF();
+                r.forget(I);
+                return false;
             }
 
             case MergeInputClosest: {
@@ -672,7 +661,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         @Override
         protected FloatFunction<Task> taskStrength(@Nullable Term templateIgnored, long start, long end, int dur) {
-            return taskStrength(start, end, dur);
+            return Answer.taskStrength(start, end, dur);
         }
 
 //        @Override
@@ -696,13 +685,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         @Override
         protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
-            FloatFunction<Task> f = taskStrength(start, end, dur);
-            if (template != null) {
-                return x -> f.floatValueOf(x) / (1 + TemporalBeliefTable.costDtDiff(template, x.term(), dur));
-            } else {
-                return x -> f.floatValueOf(x) / x.volume(); //prefer lower complexity variants
-            }
+            return Answer.ComplexTaskStrength(template, start, end, dur);
         }
+
+
 
 //        @Override
 //        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
@@ -816,7 +802,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
                 otherwise limit by the Leaf capacity */
-            if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= TRUTHPOLATION_LIMIT)) {
+            if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= Answer.TASK_LIMIT)) {
                 table.forEach /*forEachOptimistic*/(this::accept);
                 //TODO this might be faster to add directly then sort the results after
                 //eliminating need for the Cache map

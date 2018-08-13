@@ -4,12 +4,9 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.util.TaskRank;
-import nars.term.Term;
-import nars.truth.Truth;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class EmptyBeliefTable implements BeliefTable {
@@ -24,10 +21,6 @@ public class EmptyBeliefTable implements BeliefTable {
         //nothing
     }
 
-    @Override
-    public Task sample(long start, long end, Term template, NAR nar) {
-        return null;
-    }
 
     @Override
     public void forEachTask(Consumer<? super Task> x) {

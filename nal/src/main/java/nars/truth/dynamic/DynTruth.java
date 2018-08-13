@@ -210,13 +210,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             return Truth.theDithered(freq, freqRes, evi, confRes, w2cSafe(eviMin));
         }
 
-
-
     }
 
     @Override
     public @Nullable Task task() {
-        throw new TODO();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -272,6 +270,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 //                c2wSafe(n.confMin.floatValue()) /*Float.MIN_NORMAL*/ /*Truth.EVI_MIN*/ ,
                 n);
     }
+
 
     static class DynamicTruthTask extends NALTask {
 

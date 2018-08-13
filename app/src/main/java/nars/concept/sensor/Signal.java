@@ -56,8 +56,8 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     public Signal(Term term, byte punc, FloatSupplier signal, NAR n) {
         super(term,
-                punc == BELIEF ? new SensorBeliefTables(term, true, n.conceptBuilder) : n.conceptBuilder.newTables(term, true),
-                punc == GOAL ? new SensorBeliefTables(term, false, n.conceptBuilder) : n.conceptBuilder.newTables(term, false),
+                punc == BELIEF ? new SensorBeliefTables(term, true, n.conceptBuilder) : n.conceptBuilder.newTable(term, true),
+                punc == GOAL ? new SensorBeliefTables(term, false, n.conceptBuilder) : n.conceptBuilder.newTable(term, false),
                 n.conceptBuilder);
 
         this.source = signal;

@@ -73,9 +73,9 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
 
     @Override
-    public BeliefTables newTables(Term c, boolean beliefOrGoal) {
+    public BeliefTables newTable(Term c, boolean beliefOrGoal) {
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || goalable(c))) {
-            return new BeliefTables(newEternalTable(c), newTemporalTable(c));
+            return new BeliefTables(newTemporalTable(c), newEternalTable(c));
         } else {
             return BeliefTables.Empty;
         }

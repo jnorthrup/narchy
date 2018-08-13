@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class SensorBeliefTables extends BeliefTables {
 
-    private final SeriesBeliefTable series;
+    public final SeriesBeliefTable series;
 
     /**
      * prioritizes generated tasks

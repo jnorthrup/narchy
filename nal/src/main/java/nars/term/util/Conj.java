@@ -730,7 +730,7 @@ public class Conj extends ByteAnonMap {
         int adt = a.dt(), bdt = b.dt();
         boolean bothCommute = (adt == 0 || adt == DTERNAL) && (bdt == 0 || bdt == DTERNAL);
         if (bothCommute) {
-            if (Term.commonStructure(a, b)) {
+            {
                 if ((adt == bdt || adt == DTERNAL || bdt == DTERNAL)) {
                     //factor out contradicting subterms
                     MutableSet<Term> aa = a.subterms().toSet();
@@ -762,8 +762,8 @@ public class Conj extends ByteAnonMap {
             return null; //no change
         } else {
             //TODO sequence conditions
-            throw new TODO();
-            //return null;
+            //throw new TODO(a + " vs " + b);
+            return Null; //disallow for now. the complexity might be excessive
         }
     }
 
@@ -841,8 +841,14 @@ public class Conj extends ByteAnonMap {
         Term existing = existingUnneg.negIf(!existingPolarity);
         if (existing.equals(incoming))
             return True; //exact same
+        if (existing.equalsNeg(incoming))
+            return False; //contradiction
 
         Term incomingUnneg = incoming.unneg();
+        if (!Term.commonStructure(existingUnneg, incomingUnneg))
+            return True; //no potential for interaction
+
+
         boolean xConj = incomingUnneg.op() == CONJ;
         boolean eConj = existingUnneg.op() == CONJ;
         Term result;

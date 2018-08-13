@@ -3,14 +3,19 @@ package nars.table.question;
 import jcog.data.NumberX;
 import jcog.data.map.MRUCache;
 import jcog.pri.bag.impl.hijack.PriorityHijackBag;
+import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.table.TaskTable;
+import nars.task.util.Answer;
+import nars.task.util.TimeRangeFilter;
 import nars.term.Term;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static nars.time.Tense.ETERNAL;
 
 /**
  * task table used for storing Questions and Quests.
@@ -42,10 +47,6 @@ public interface QuestionTable extends TaskTable {
             return null;
         }
 
-        @Override
-        public Task sample(long start, long end, Term template, NAR nar) {
-            return null;
-        }
 
         @Override
         public void clear() {
@@ -78,24 +79,40 @@ public interface QuestionTable extends TaskTable {
 
     void capacity(int newCapacity);
 
+    @Override
+    default Answer rankDefault(long start, long end, Term template, int limit, NAR nar) {
+        //TODO account for template in matching?
+        int dur = nar.dur();
+        FloatRank<Task> r =
+            (start == ETERNAL) ?
+                (t, m) -> t.pri()
+                :
+                (t, m) -> {
+                    float pri = t.pri();
+                    if (pri == pri && pri > m)
+                        return pri * (1 / ((float) (t.minTimeTo(start, end) / ((double) dur))));
+                    return Float.NaN;
+                };
+        Answer a = new Answer(limit, r, new TimeRangeFilter(start, end, true), nar);
+        a.template = template;
+        return a;
+    }
+
     /**
      * unsorted, MRU policy.
      * this impl sucks actually
      * TODO make one based on ArrayHashSet
      */
-    class DefaultQuestionTable extends MRUCache<Task, Task> implements QuestionTable {
-
-        final Object lock =
-                this;
+    class MRUMapQuestionTable extends MRUCache<Task, Task> implements QuestionTable {
 
 
-        public DefaultQuestionTable() {
+        public MRUMapQuestionTable() {
             super(0);
         }
 
         @Override
         public void capacity(int newCapacity) {
-            synchronized (lock) {
+            synchronized (this) {
                 setCapacity(newCapacity);
 
 
@@ -107,7 +124,7 @@ public interface QuestionTable extends TaskTable {
         public void add(/*@NotNull*/ Remember r, NAR n) {
             Task u;
             Task t = r.input;
-            synchronized (lock) {
+            synchronized (this) {
                 u = merge(t, t, (prev, next) -> {
                     r.merge(prev);
                     return next;
@@ -129,7 +146,7 @@ public interface QuestionTable extends TaskTable {
             if (s == 0) {
                 return Task.EmptyArray;
             } else {
-                synchronized (lock) {
+                synchronized (this) {
                     return values().toArray(new Task[s]);
                 }
             }
@@ -139,7 +156,7 @@ public interface QuestionTable extends TaskTable {
         @Override
         public void forEachTask(Consumer<? super Task> x) {
             Task[] t = toArray();
-            for (Task y: t) {
+            for (Task y : t) {
                 if (y == null)
                     continue;
                 if (y.isDeleted()) {
@@ -152,14 +169,14 @@ public interface QuestionTable extends TaskTable {
 
         @Override
         public boolean removeTask(Task x) {
-            synchronized (lock) {
+            synchronized (this) {
                 return remove(x) != null;
             }
         }
 
         @Override
         public void clear() {
-            synchronized (lock) {
+            synchronized (this) {
                 super.clear();
             }
         }
@@ -197,8 +214,8 @@ public interface QuestionTable extends TaskTable {
         public void add(Remember r, NAR n) {
             Task x = put(r.input, null);
             if (x != r.input) {
-                if (x!=null) {
-                    assert(x.equals(r.input));
+                if (x != null) {
+                    assert (x.equals(r.input));
                     r.merge(x); //existing
                 } else
                     r.reject();

@@ -19,7 +19,7 @@ import static nars.Op.CONJ;
  */
 public class FilteredScalar extends DemultiplexedScalar {
 
-    public final List<Signal> filter;
+    public final List<Signal> components;
 
     public FilteredScalar(FloatSupplier input, FloatFloatToObjectFunction<Truth> truther, NAR nar, Pair<Term, FloatToFloatFunction>... filters) {
         super(input,
@@ -39,13 +39,13 @@ public class FilteredScalar extends DemultiplexedScalar {
 
         nar.on(this);
 
-        this.filter = List.of(filter);
+        this.components = List.of(filter);
     }
 
 
     @Override
     public Iterator<Signal> iterator() {
-        return filter.iterator();
+        return components.iterator();
     }
 
     /**

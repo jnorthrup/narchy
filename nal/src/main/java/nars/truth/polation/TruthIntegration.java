@@ -14,11 +14,8 @@ public class TruthIntegration {
     }
 
     public static float eviAvg(Task t, long start, long end, int dur) {
-        if (start == end) {
-            return t.evi(start, dur); //point sample
-        } else {
-            return eviInteg(t, start, end, dur) / (1+end-start);
-        }
+        long range = start==ETERNAL ? 1 : 1 + end - start;
+        return eviInteg(t, start, end, dur) / range;
     }
 
     public static float eviInteg(Task t, long dur) {
@@ -29,7 +26,9 @@ public class TruthIntegration {
      * convenience method for selecting evidence integration strategy
      */
     public static float eviInteg(Task t, long qStart, long qEnd, long dur) {
-        if (qStart == qEnd) {
+        if (qStart == ETERNAL) {
+            return t.isEternal() ? t.evi() : t.eviEternalized();
+        } else if (qStart == qEnd) {
 
             return t.evi(qStart, dur);
         } else {
@@ -96,5 +95,9 @@ public class TruthIntegration {
 
 
         }
+    }
+
+    public static float valueInEternity(Task x) {
+        return x.isEternal() ? x.evi() : x.eviEternalized() * x.range();
     }
 }

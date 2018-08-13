@@ -1,16 +1,17 @@
 package nars.table;
 
-import jcog.sort.CachedTopN;
-import jcog.sort.Top;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
+import nars.table.question.QuestionTable;
+import nars.task.util.Answer;
+import nars.task.util.TaskRank;
 import nars.term.Term;
-import nars.task.util.TaskMatchRank;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static nars.time.Tense.ETERNAL;
 
 /**
  * holds a set of ranked question/quests tasks
@@ -40,7 +41,7 @@ public interface TaskTable {
     void forEachTask(Consumer<? super Task> x);
 
     default void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        if (minT == Long.MIN_VALUE && maxT == Long.MAX_VALUE) {
+        if (minT == ETERNAL) {
             forEachTask(x);
         } else {
             forEachTask(t -> {
@@ -64,87 +65,24 @@ public interface TaskTable {
         return streamTasks().toArray(Task[]::new);
     }
 
-    default void match(TaskMatchRank m, NAR nar, Consumer<Task> target) {
+    default void match(TaskRank m) {
         if (isEmpty())
             return;
 
-        
-        int limit = m.limit();
-        //Random rng = nar.random();
-        /*if (rng == null) */{
-            
-            
-            assert (limit > 0);
-            if (limit == 1) {
-                Top<Task> q = new Top<>(m.value());
-                forEachTask(q);
-                Task the = q.the;
-                if (the != null)
-                    target.accept(the);
-            } else {
-                CachedTopN<Task> q = new CachedTopN<>(limit, m.value());
-                forEachTask(q::accept);
-                q.forEachItem(target);
-            }
-        }
-//        else {
-//
-//            int s = size();
-//            if (s == 1) {
-//                target.accept(streamTasks().findFirst().get());
-//            } else {
-//
-//                Top2<Task> t = new Top2<>(m.value());
-//                forEachTask(t::add);
-//
-//                if (t.size() <= limit) {
-//                    t.forEach(target);
-//                } else {
-//                    t.sample(target, m.value(), rng);
-//                }
-//
-//            }
-//        }
-
+        forEachTask(m);
     }
 
-    /** matches, attempting to fill the provided Task[] array */
-    @Deprecated default int match(TaskMatchRank m, NAR nar, Task[] target) {
-        final int[] i = {0};
-        match(m, nar, x->{
-            //if (x!=null)
-            //assert(x!=null);
-            target[i[0]++] = x;
-        });
-        return i[0];
-    }
-
-    /** gets one result */
-    @Nullable default Task matchThe(TaskMatchRank m, NAR nar) {
-        assert(m.limit()==1);
-        Task[] x = new Task[1];
-        int r = match(m, nar, x);
-        return r == 0 ? null : x[0];
-    }
-
-
-    default Task match(long when, Term template, NAR nar) {
-        return match(when, when, template, nar);
-    }
+    /** creates a default "best" match strategy for this task table */
+    Answer rankDefault(long start, long end, Term template, int limit, NAR nar);
 
     @Deprecated default Task match(long start, long end, Term template, NAR nar) {
 
         if (isEmpty())
             return null;
 
-
-        return matchThe(TaskMatchRank.best(start, end, template), nar);
-    }
-
-    default Task sample(long start, long end, Term template, NAR nar) {
-
-        return match(start, end, template, nar);
-
+        Answer r = rankDefault(start, end, template, (this instanceof QuestionTable) ? 1 : Answer.TASK_LIMIT, nar);
+        match(r);
+        return r.task(template, false);
     }
 
 

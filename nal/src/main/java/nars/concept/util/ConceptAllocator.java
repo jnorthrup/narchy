@@ -92,7 +92,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
         if (t instanceof EternalTable) {
             ((EternalTable) t).setCapacity(beliefCap(c, beliefOrGoal, true));
         } else if (t instanceof TemporalBeliefTable) {
-            ((EternalTable) t).setCapacity(beliefCap(c, beliefOrGoal, false));
+            ((TemporalBeliefTable) t).setCapacity(beliefCap(c, beliefOrGoal, false));
         }
     }
 

@@ -335,12 +335,11 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     public final int add(final X element, FloatFunction<X> cmp) {
         float elementRank = cmp.floatValueOf(element);
-        return add(element, cmp, elementRank);
+        return (elementRank == elementRank) ? add(element, cmp, elementRank) : -1;
     }
 
     private int add(X element, FloatFunction<X> cmp, float elementRank) {
-
-        return (elementRank == elementRank) ? add(element, elementRank, cmp) : -1;
+        return add(element, elementRank, cmp);
     }
 
     public int add(X element, float elementRank, FloatFunction<X> cmp) {

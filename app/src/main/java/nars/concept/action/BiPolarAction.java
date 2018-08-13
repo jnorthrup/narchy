@@ -70,14 +70,14 @@ public class BiPolarAction extends AbstractSensor {
     protected Truth truther(TaskConcept x, long prev, long now, long next, NAR nar) {
         //a.
         {
-            Truth y = x.goals().truth(prev, now, null, nar);
+            Truth y = x.goals().truth(prev, now, null,  nar);
             if (y != null)
                 return y;
         }
 
         //b.
         {
-            Truth y = x.goals().truth(prev, next, null, nar);
+            Truth y = x.goals().truth(prev, next, null,  nar);
             if (y != null)
                 return y;
         }

@@ -109,19 +109,21 @@ public class Remember extends AbstractTask {
             //TODO filter next tasks with any involving that task
         }
         add(x, this.forgotten);
+        x.delete();
+        if (input == x)
+            input = null;
     }
 
     public void remember(Task x) {
-        if (forgotten.removeInstance(x)) {
-            //throw new TODO();
-            //TODO filter next tasks with any involving that task
-        }
         if (add(x, this.remembered))
             next.add(new TaskLinkTask(x, concept));
     }
 
 
     public void merge(Task existing) {
+
+        Task input = this.input;
+
         if (existing != input) {
 
             assert (!input.isDeleted()); //dont delete just yet

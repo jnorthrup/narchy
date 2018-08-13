@@ -5,8 +5,10 @@ import jcog.signal.meter.event.CSVOutput;
 import nars.*;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
-import nars.table.BeliefTable;
+import nars.table.BeliefTables;
+import nars.table.eternal.EternalTable;
 import nars.table.temporal.RTreeBeliefTable;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -45,9 +47,10 @@ class RTreeBeliefTableTest {
         
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
-        @NotNull BeliefTable cb = true ? c.beliefs() : c.goals();
-        cb.capacity(0, cap);
+        @NotNull BeliefTables cb = true ? c.beliefs() : c.goals();
 
+        cb.tableFirst(EternalTable.class).setCapacity(0);
+        cb.tableFirst(TemporalBeliefTable.class).setCapacity(cap);
 
         
         System.out.println("points:");
@@ -161,31 +164,31 @@ class RTreeBeliefTableTest {
 
     @Test
     void testProjection() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
+        NAR nar = NARS.shell();
         Term ab = nars.$.$("a:b");
-        TaskConcept AB = (TaskConcept) n.conceptualize(ab);
+        TaskConcept AB = (TaskConcept) nar.conceptualize(ab);
         RTreeBeliefTable r = RTreeBeliefTable.build(ab);
         r.setCapacity(4);
 
-        add(r, AB, 1f, 0.9f, 0, 1, n);
-        add(r, AB, 0f, 0.9f, 2, 3, n);
+        add(r, AB, 1f, 0.9f, 0, 1, nar);
+        add(r, AB, 0f, 0.9f, 2, 3, nar);
 
 
-        assertEquals("%1.0;.90%", r.truth(0, 0, null, null, 1).toString());
-        assertEquals("%1.0;.90%", r.truth(1, 1, null, null, 1).toString());
-        assertEquals("%1.0;.90%", r.truth(0, 1, null, null, 1).toString());
+        assertEquals("%1.0;.90%", r.truth(0, 0, ab, null, nar).toString());
+        assertEquals("%1.0;.90%", r.truth(1, 1, ab, null, nar).toString());
+        assertEquals("%1.0;.90%", r.truth(0, 1, ab, null, nar).toString());
 
-        assertEquals("%0.0;.90%", r.truth(2, 3, null, null, 1).toString());
-        assertEquals("%0.0;.90%", r.truth(3, 3, null, null, 1).toString());
+        assertEquals("%0.0;.90%", r.truth(2, 3, ab, null, nar).toString());
+        assertEquals("%0.0;.90%", r.truth(3, 3, ab, null, nar).toString());
 
-        assertEquals("%.50;.90%", r.truth(1, 2, null, null, 1).toString());
+        assertEquals("%.50;.90%", r.truth(1, 2, ab, null, nar).toString());
 
-        assertEquals("%.33;.87%", r.truth(4, 4, null, null, 1).toString());
-        assertEquals("%.35;.85%", r.truth(4, 5, null, null, 1).toString());
-        assertEquals("%.38;.83%", r.truth(5, 5, null, null, 1).toString());
-        assertEquals("%.40;.79%", r.truth(6, 6, null, null, 1).toString());
-        assertEquals("%.40;.77%", r.truth(5, 8, null, null, 1).toString());
-        assertEquals("%.44;.67%", r.truth(10, 10, null, null, 1).toString());
+        assertEquals("%.33;.87%", r.truth(4, 4, ab, null, nar).toString());
+        assertEquals("%.35;.85%", r.truth(4, 5, ab, null, nar).toString());
+        assertEquals("%.38;.83%", r.truth(5, 5, ab, null, nar).toString());
+        assertEquals("%.40;.79%", r.truth(6, 6, ab, null, nar).toString());
+        assertEquals("%.40;.77%", r.truth(5, 8, ab, null, nar).toString());
+        assertEquals("%.44;.67%", r.truth(10, 10, ab, null, nar).toString());
 
     }
 

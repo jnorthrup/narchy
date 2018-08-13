@@ -38,7 +38,7 @@ public class AsyncActionConcept extends ActionConcept {
 
     @Override
     public float dexterity(long start, long end, NAR n) {
-        Truth t = goals().truth(start, end, null, n);
+        Truth t = goals().truth(start, end, null,  n);
         return t!=null ? t.conf() : 0;
     }
 

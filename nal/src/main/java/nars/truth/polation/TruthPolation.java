@@ -45,6 +45,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     public Term term = null;
 
     TruthPolation(long start, long end, int dur) {
+        super(0);
         this.start = start;
         this.end = end;
 

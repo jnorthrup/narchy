@@ -3,6 +3,7 @@ package nars.concept.dynamic;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
@@ -215,14 +216,14 @@ class DynamicConjTest {
         n.time.dur(8);
         TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
 
-        DynamicTruthBeliefTable xtable = (DynamicTruthBeliefTable) cc.beliefs();
+        BeliefTables xtable = cc.beliefs();
 
 
-        assertEquals(0.81f, xtable.taskDynamic(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f);
-        assertEquals(0.74f, xtable.taskDynamic(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.taskDynamic(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.taskDynamic(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
-        assertEquals(0.62f, xtable.taskDynamic(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
+        assertEquals(0.81f, xtable.match(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f);
+        assertEquals(0.74f, xtable.match(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.match(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.match(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.match(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
 
 
     }
@@ -304,8 +305,8 @@ class DynamicConjTest {
                 "(--(y-->t) &&+1 --(t-->happy))",
         }) {
             Concept c = n.conceptualize($.$(s));
-            assertTrue(c.beliefs() instanceof DynamicTruthBeliefTable);
-            assertTrue(c.goals() instanceof DynamicTruthBeliefTable);
+            assertTrue(c.beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
+            assertTrue(c.goals().tableFirst(DynamicTruthBeliefTable.class)!=null);
         }
 
     }

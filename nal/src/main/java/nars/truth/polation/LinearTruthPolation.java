@@ -36,7 +36,7 @@ public class LinearTruthPolation extends TruthPolation {
 
 
         int s = size();
-        float eAvg, f;
+        float eSum, f;
         switch (s) {
             case 0:
                 return null;
@@ -45,8 +45,8 @@ public class LinearTruthPolation extends TruthPolation {
                 TaskComponent x = update(0);
                 if (x == null)
                     return null;
-                eAvg = x.evi;
-                if (eAvg < Param.TRUTH_MIN_EVI)
+                eSum = x.evi;
+                if (eSum < Param.TRUTH_MIN_EVI)
                     return null;
 
                 f = x.freq;
@@ -54,7 +54,7 @@ public class LinearTruthPolation extends TruthPolation {
             }
             default: {
                 float wFreqSum = 0;
-                eAvg = 0;
+                eSum = 0;
                 for (int i = 0; i < s; i++) {
                     TaskComponent x = update(i);
                     if (x == null)
@@ -62,23 +62,23 @@ public class LinearTruthPolation extends TruthPolation {
 
                     float ee = x.evi;
 
-                    eAvg += ee;
+                    eSum += ee;
 
                     wFreqSum += ee * x.freq;
                 }
-                if (eAvg < Param.TRUTH_MIN_EVI)
+                if (eSum < Param.TRUTH_MIN_EVI)
                     return null;
 
 
-                f = (wFreqSum / eAvg);
+                f = (wFreqSum / eSum);
                 break;
             }
         }
 
 
-        eAvg *= eviFactor;
-        if (eAvg >= Param.TRUTH_MIN_EVI)
-            return PreciseTruth.byEvi(f, eAvg);
+        eSum *= eviFactor;
+        if (eSum >= Param.TRUTH_MIN_EVI)
+            return PreciseTruth.byEvi(f, eSum);
         else
             return null;
     }

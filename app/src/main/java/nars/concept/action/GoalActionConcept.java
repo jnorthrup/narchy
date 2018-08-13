@@ -4,10 +4,8 @@ import nars.$;
 import nars.NAR;
 import nars.concept.TaskConcept;
 import nars.control.channel.CauseChannel;
-import nars.table.BeliefTables;
-import nars.table.dynamic.CuriosityGoalTable;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -33,7 +31,8 @@ public class GoalActionConcept extends ActionConcept {
     public GoalActionConcept(Term term, NAR n, MotorFunction motor) {
         super(term,
                 new SensorBeliefTables(term, true, n.conceptBuilder),
-                new CuriosityGoalTable(term, false, n),
+                n.conceptBuilder.newTable(term, false),
+                //new CuriosityGoalTable(term, false, n),
                 n);
 
         this.motor = motor;
@@ -41,19 +40,12 @@ public class GoalActionConcept extends ActionConcept {
         in = n.newChannel(this);
     }
 
-    @Override
-    public BeliefTables goals() {
-        return (CuriosityGoalTable) super.goals();
-    }
-
-    @Override
-    public BeliefTables beliefs() {
-        return (SensorBeliefTables) super.beliefs();
-    }
 
     @Override
     public float dexterity(long start, long end, NAR n) {
-        Truth t = goals().truthStored(start, end, null, n);
+        Truth t =
+                //goals().truthStored(start, end, null, n);
+                goals().truth(start, end, term,  n);
         return t!=null ? t.conf() : 0;
     }
 
@@ -85,7 +77,10 @@ public class GoalActionConcept extends ActionConcept {
         if (rng.nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
 
 
-            float curiConf = nar.confMin.floatValue();
+            float curiConf =
+                    nar.confMin.floatValue() * 4;
+                    //nar.confMin.floatValue();
+                    //nar.confDefault(GOAL);
             goal = $.t(rng.nextFloat(), curiConf);
             goal = goal.ditherFreq(resolution().floatValue());
             curi = true;
@@ -101,7 +96,7 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth feedback = this.motor.apply(null, goal);
 
-        BeliefTables b = beliefs();
+        SensorBeliefTables b = (SensorBeliefTables) beliefs();
         ITask feedbackBelief = feedback != null ?
                 b.add(feedback, now, next, this, nar) : null;
 
@@ -125,15 +120,16 @@ public class GoalActionConcept extends ActionConcept {
 //        super.add(r, n);
 //    }
 
-    ITask curiosity(Truth truth, long pStart, long pEnd, TaskConcept c, NAR nar) {
-        //SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, curiosityStamp);
+    ITask curiosity(Truth goal, long pStart, long pEnd, TaskConcept c, NAR nar) {
+        SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, nar.evidence());
 
-        SeriesBeliefTable.SeriesTask curiosity =
-                goals().series.add(term, GOAL, pStart, pEnd, truth, nar.dur(), nar);
+//        SeriesBeliefTable.SeriesTask curiosity =
+//                goals().series.add(term, GOAL, pStart, pEnd, truth, nar.dur(), nar);
 
         if (curiosity!=null) {
             curiosity.pri(nar.priDefault(GOAL));
-            return curiosity.input(c);
+            return curiosity;
+            //return curiosity.input(c);
         } else {
             return null;
         }

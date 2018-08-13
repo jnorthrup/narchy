@@ -20,7 +20,7 @@ import nars.exe.Attention;
 import nars.exe.BufferedExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -108,7 +108,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(1024))
+                .attention(() -> new Attention(512))
 
                 //.exe(new UniExec() {
                 .exe(new BufferedExec.WorkerExec(Util.concurrency(), false /* true */))
@@ -133,8 +133,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(128 * 1024, 4)
+                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        //new HijackConceptIndex(128 * 1024, 4)
 
 
                 )
@@ -294,11 +294,11 @@ abstract public class NAgentX extends NAgent {
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-        float basePri = 0.25f;
+        float basePri = 0.5f;
         n.beliefPriDefault.set(basePri * 0.5f);
-        n.goalPriDefault.set(basePri * 0.5f);
-        n.questionPriDefault.set(basePri * 0.5f);
-        n.questPriDefault.set(basePri * 0.5f);
+        n.goalPriDefault.set(basePri * 1f);
+        n.questionPriDefault.set(basePri * 0.1f);
+        n.questPriDefault.set(basePri * 0.25f);
 
 
 
@@ -306,7 +306,7 @@ abstract public class NAgentX extends NAgent {
         n.emotion.want(MetaGoal.Believe, +0.01f);
         n.emotion.want(MetaGoal.Answer, +0.05f);
         n.emotion.want(MetaGoal.Desire, +0.25f);
-        n.emotion.want(MetaGoal.Action, +0.5f);
+        n.emotion.want(MetaGoal.Action, +4f);
     }
 
     public static void initPlugins(NAR n) {

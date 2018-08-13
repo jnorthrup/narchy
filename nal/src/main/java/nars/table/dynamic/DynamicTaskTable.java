@@ -3,8 +3,9 @@ package nars.table.dynamic;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.control.proto.Remember;
 import nars.table.EmptyBeliefTable;
+import nars.task.util.Answer;
+import nars.task.util.TaskRank;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,11 @@ public abstract class DynamicTaskTable extends EmptyBeliefTable {
         this.term = c;
     }
 
+
+    @Override
+    public void match(TaskRank t) {
+        t.accept(taskDynamic(t.time.start, t.time.end, t.template, ((Answer)t).nar ));
+    }
 
 
     /**

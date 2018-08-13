@@ -37,8 +37,8 @@ public class TaskConcept extends NodeConcept implements Concept {
 
     public TaskConcept(Term term, @Nullable BeliefTables beliefs, @Nullable BeliefTables goals, TermLinker linker, ConceptBuilder b) {
         this(term,
-                beliefs != null ? beliefs : b.newTables(term, true),
-                goals != null ? goals : b.newTables(term, false),
+                beliefs != null ? beliefs : b.newTable(term, true),
+                goals != null ? goals : b.newTable(term, false),
                 b.questionTable(term, true),
                 b.questionTable(term, false),
                 linker,
@@ -47,7 +47,7 @@ public class TaskConcept extends NodeConcept implements Concept {
 
 
     public TaskConcept(Term term, ConceptBuilder b) {
-        this(term, b.newTables(term, true), b.newTables(term, false),
+        this(term, b.newTable(term, true), b.newTable(term, false),
                 b.questionTable(term, true), b.questionTable(term, false),
                 b.termlinker(term),
                 b.newLinkBags(term));

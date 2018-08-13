@@ -83,17 +83,23 @@ public interface TaskLink extends Priority, Termed {
 
         public Task get(NAR n, Priority link) {
 
+
+            long start, end;
+            if (when == ETERNAL) start = end = ETERNAL;
+            else {
+                int dur = n.dur();
+                start = Tense.dither(when - dur/2, n);
+                end = Tense.dither(when + dur/2, n);
+            }
+
+            long[] se = new long[] { start , end };
+
             Term t = term.unneg();
-
-            long[] se =
-                    //n.timeFocus(when);
-                    new long[] { when, when };
-
             Concept c = n.conceptualizeDynamic(t);
             Task r;
             if (c != null) {
 
-                r = c.table(punc).sample(se[0], se[1], t, n);
+                r = c.table(punc).match(se[0], se[1], t, n);
 
                 //r = result == null || result.isDeleted() ? null : result;
             } else {

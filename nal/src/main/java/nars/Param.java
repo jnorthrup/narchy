@@ -72,11 +72,12 @@ public abstract class Param {
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
 
-    /**
-     * warning: can interfere with expected test results
-     */
-    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
+//    /**
+//     * warning: can interfere with expected test results
+//     */
+//    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
 
     /**
@@ -165,7 +166,7 @@ public abstract class Param {
      * creates instance of the default truthpolation implementation
      */
     public static TruthPolation truth(long start, long end, int dur) {
-        return new LinearTruthPolation(start, end, dur);
+        return new LinearTruthPolation(start, end, dur*2);
         //return new FocusingLinearTruthPolation(start, end, dur);
     }
 

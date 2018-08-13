@@ -3,7 +3,6 @@ package nars.concept.dynamic;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.*;
-import nars.table.dynamic.DynamicTaskTable;
 import nars.table.dynamic.DynamicTruthBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -22,15 +21,15 @@ class DynamicImplTest {
 
     @Test void eligibleDynamicImpl() {
         //((--,(([add(#1,2)]<->[#1])&|equal(#1,0)))=|>([add(#1,2)]<->[#1]))
-        assertTrue(n.conceptualize($$("((x && y) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable);
-        assertTrue(n.conceptualize($$("(((x,#1) && y) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable); //#1 not shared between components
-        assertFalse(n.conceptualize($$("((#1 && (y,#1)) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable); //raw depvar componnet
-        assertFalse(n.conceptualize($$("(((x,#1) && (y,#1)) ==> a)")).beliefs() instanceof DynamicTruthBeliefTable);
-        assertFalse(n.conceptualize($$("(((x,$1) && y) ==> (a,$1))")).beliefs() instanceof DynamicTruthBeliefTable); //indepvar shared between subj and impl
+        assertTrue(n.conceptualize($$("((x && y) ==> a)")).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
+        assertTrue(n.conceptualize($$("(((x,#1) && y) ==> a)")).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null); //#1 not shared between components
+        assertFalse(n.conceptualize($$("((#1 && (y,#1)) ==> a)")).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null); //raw depvar componnet
+        assertFalse(n.conceptualize($$("(((x,#1) && (y,#1)) ==> a)")).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
+        assertFalse(n.conceptualize($$("(((x,$1) && y) ==> (a,$1))")).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null); //indepvar shared between subj and impl
     }
     @Test void eligibleDynamicImpl2() {
-        assertFalse(n.conceptualize($$("(((x,#1) && y) ==> (a,#1))")).beliefs() instanceof DynamicTruthBeliefTable); //depvar shared between subj and impl
-        assertTrue(n.conceptualize($$("(((x,#1) && (y,#1)) ==> (a,#1))")).beliefs() instanceof DynamicTruthBeliefTable); //all share it
+        assertFalse(n.conceptualize($$("(((x,#1) && y) ==> (a,#1))")).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null); //depvar shared between subj and impl
+        assertTrue(n.conceptualize($$("(((x,#1) && (y,#1)) ==> (a,#1))")).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null); //all share it
     }
 
     @Test
@@ -51,7 +50,7 @@ class DynamicImplTest {
             //AND
             {
                 Term pp = $$("((x && y) ==> a)");
-                assertTrue(n.conceptualize(pp).beliefs() instanceof DynamicTruthBeliefTable);
+                assertTrue(n.conceptualize(pp).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
                 assertEquals($.t(1f, 0.81f), n.beliefTruth(pp, now));
 
                 Term pn = $$("((x && z) ==> a)");
@@ -220,7 +219,7 @@ class DynamicImplTest {
 
                 Truth truth = n.truth(pt_p, BELIEF, 0);
 
-                assertTrue(n.concept(pt_p).beliefs() instanceof DynamicTaskTable); //match first then concept(), tests if the match was enough to conceptualize
+                assertTrue(n.concept(pt_p).beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);; //match first then concept(), tests if the match was enough to conceptualize
 
                 assertNotNull(task);
 

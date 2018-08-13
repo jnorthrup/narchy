@@ -414,22 +414,30 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     static Task project(boolean flexible, @Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
 
         if (!flexible && !(t.isEternal() || t.containedBy(subStart, subEnd))) {
-            @Nullable Longerval intersection = Longerval.intersect(subStart, subEnd, t.start(), t.end());
-            if (intersection != null) {
-
-                subStart = intersection.a;
-                subEnd = intersection.b;
-            }
-
-            subStart = Tense.dither(subStart, n);
-            subEnd = Tense.dither(subEnd, n);
-            Truth tt = t.truth(subStart, subEnd, n.dur());
-
-            return (tt != null) ?
-                    new SpecialTruthAndOccurrenceTask(t, subStart, subEnd, negated, tt.negIf(negated)) : null;
+            return project(t, subStart, subEnd, n, negated);
         }
 
         return negated ? Task.negated(t) : t;
+    }
+    @Nullable
+    static SpecialTruthAndOccurrenceTask project(Task t, long start, long end, NAR n) {
+        return project(t, start, end, n, false);
+    }
+    @Nullable
+    static SpecialTruthAndOccurrenceTask project(Task t, long start, long end, NAR n, boolean negated) {
+        @Nullable Longerval intersection = Longerval.intersect(start, end, t.start(), t.end());
+        if (intersection != null) {
+
+            start = intersection.a;
+            end = intersection.b;
+        }
+
+        start = Tense.dither(start, n);
+        end = Tense.dither(end, n);
+        Truth tt = t.truth(start, end, n.dur());
+
+        return (tt != null) ?
+                new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt.negIf(negated)) : null;
     }
 
     /**

@@ -1,8 +1,10 @@
 package nars.task.util;
 
+import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
 import jcog.sort.TopN;
 import nars.Task;
+import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
@@ -17,22 +19,32 @@ public class TaskRank implements Consumer<Task> {
 
     final TopN<Task> tasks;
 
-    @Nullable
     public final TimeRangeFilter time;
+    private final CachedFloatFunction<Task> cache;
 
 
-    public TaskRank(int limit, FloatRank<Task> rank, @Nullable TimeRangeFilter time) {
-        this.tasks = new TopN<>(new Task[limit], rank);
+    @Deprecated public Term template = null;
+
+
+    public TaskRank(int limit, FloatRank<Task> rank, TimeRangeFilter time) {
+        this.cache = new CachedFloatFunction<>(1024, rank);
+        this.tasks = new TopN<>(new Task[limit], cache);
         this.time = time;
+
     }
 
 
     @Override
     public final void accept(Task task) {
-        if (time == null || time.accept(task.start(), task.end())) {
-            tasks.accept(task);
+        if (task != null) {
+            if (!cache.containsKey(task)) {
+                //if (time == null || time.accept(task.start(), task.end())) {
+                tasks.accept(task);
+            }
         }
+        //}
     }
+
 
     public boolean isEmpty() { return tasks.isEmpty(); }
 
@@ -41,6 +53,7 @@ public class TaskRank implements Consumer<Task> {
     }
 
     @Nullable public Truth truth(TruthPolation p) {
+        p.ensureCapacity(tasks.size());
         p.add(tasks);
         p.filterCyclic();
         return p.truth();

@@ -13,7 +13,7 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 /** warning: this keeps duplicate insertions */
 public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
-    protected final FloatRank<X> rank;
+    public final FloatRank<X> rank;
     private float min;
 
     /** try to use the FloatRank if a scoring function can be interrupted */
@@ -49,12 +49,10 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     @Override
     public final int add(X element, float elementRank, FloatFunction<X> cmp) {
 
-        if (this.size == items.length) {
-            if (elementRank >= minValueIfFull()) {
-                rejectOnEntry(element);
-                return -1; 
-            }
+        if (size == capacity() && elementRank >= minValueIfFull()) {
+            return -1;
         }
+
 
         return super.add(element, elementRank, cmp);
     }
@@ -70,6 +68,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
             commit();
             return true;
         }
+        rejectOnEntry(e);
         return false;
     }
 
@@ -86,7 +85,8 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
     @Override
     public final void accept(X e) {
-        add(e);
+        if (e!=null)
+            add(e);
     }
 
     private void commit() {

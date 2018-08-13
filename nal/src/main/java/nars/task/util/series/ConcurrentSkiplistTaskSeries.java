@@ -5,10 +5,10 @@ import jcog.sort.TopN;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
+import nars.truth.polation.TruthIntegration;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -217,7 +217,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
     @Override
     public int forEach(long start, long end, int limit, Consumer<T> target) {
         TopN<Task> inner = new TopN<>(new Task[Math.min(size(), limit)],
-                t -> TemporalBeliefTable.value(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
+                t -> TruthIntegration.eviInteg(t, start, end, (long) 1) //TODO this may be better as a double value comparison, long -> float could be lossy
         );
 
         forEach(start, end, false, inner::add);

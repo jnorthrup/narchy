@@ -4,7 +4,6 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.util.Answer;
-import nars.task.util.TaskRank;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -42,19 +41,42 @@ public interface BeliefTable extends TaskTable {
     @Override
     void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar);
 
-    void match(TaskRank t);
+
+
+    default Answer rankDefault(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
+        return Answer.belief(Answer.TASK_LIMIT, start, end, template, filter, nar);
+    }
+
+    default Answer rankDefault(long start, long end, Term template, int limit, NAR nar) {
+        return Answer.belief(limit, start, end, template, null, nar);
+    }
+
+    default Task match(long when, Term template, NAR nar) {
+        return match(when, when, template, nar);
+    }
 
     @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return Answer.the(start, end, template, filter,nar).task(false);
+        if (isEmpty())
+            return null;
+        Answer a = rankDefault(start, end, template, filter, nar);
+        match(a);
+        return a.task(template,false);
     }
 
+    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+        if (isEmpty())
+            return null;
+        Answer a = rankDefault(start, end, template, filter, nar);
+        match(a);
+        return a.truth();
+    }
 
     default Truth truth(long start, long end, @Nullable Term template, NAR nar) {
-        return Answer.the(start, end, template, null, nar).truth();
+        return truth(start, end, template, null, nar);
     }
 
 
-    @Deprecated @Override default Task match(long start, long end, Term template, NAR nar) {
+    @Deprecated default Task match(long start, long end, Term template, NAR nar) {
         return match(start, end, template, null, nar);
     }
 
@@ -74,12 +96,12 @@ public interface BeliefTable extends TaskTable {
         print(System.out);
     }
 
-    default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
+    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
         if (isEmpty())
             return null;
-        Answer r = Answer.the(start, end, template, filter, n);
+        Answer r = rankDefault(start, end, template, filter, n);
         match(r);
-        return r.task(true);
+        return r.task(template,true);
     }
 
 

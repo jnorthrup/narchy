@@ -4,6 +4,7 @@ import nars.*;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.dynamic.DynamicTruthBeliefTable;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
@@ -29,7 +30,7 @@ class BeliefTableTest {
         assertNotNull(cc, c + " unconceptualized");
 
         //List<Task> tt = cc.beliefs().streamTasks().collect(toList());
-        assertTrue(cc.beliefs() instanceof DynamicTruthBeliefTable, c + " not dynamic");
+        assertTrue(cc.beliefs().tableFirst(DynamicTruthBeliefTable.class)!=null);
 
         Task t = n.belief(cc, start, end);
         assertNotNull(t);
@@ -104,7 +105,7 @@ class BeliefTableTest {
         assertEquals(timing.length, freqPattern.length);
         int k = 0;
         for (float f : freqPattern) {
-            
+
             b.believe(0.5f, freqPattern[k], conf, timing[k]);
             k++;
         }
@@ -238,7 +239,7 @@ class BeliefTableTest {
             assertEquals(correctMerge, m.term().toString());
 
 
-            cc.beliefs().capacity(1, 1);
+            cc.beliefs().tableFirst(TemporalBeliefTable.class).setCapacity(1);
 
             cc.print();
 
@@ -248,7 +249,7 @@ class BeliefTableTest {
     }
 
     @Test
-    void testBestMatchConjSimple() throws Narsese.NarseseException {
+    void testBestMatchConjSimple() {
 
     }
 

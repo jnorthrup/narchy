@@ -19,7 +19,6 @@ import nars.term.util.Image;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -37,7 +36,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public abstract QuestionTable questionTable(Term term, boolean questionOrQuest);
 
-    public abstract BeliefTables newTables(Term t, boolean beliefOrGoal);
+    public abstract BeliefTables newTable(Term t, boolean beliefOrGoal);
 
     public abstract EternalTable newEternalTable(Term c);
 
@@ -77,16 +76,15 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         }
     }
 
-    @NotNull
-    public BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
+    protected BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
         return new BeliefTables(
-                new DynamicTruthBeliefTable(t, dmt, beliefOrGoal),
+                newTemporalTable(t),
                 newEternalTable(t),
-                newTemporalTable(t)
+                new DynamicTruthBeliefTable(t, dmt, beliefOrGoal)
         );
     }
 
-    public abstract NodeConcept nodeConcept(final Term t);
+    protected abstract NodeConcept nodeConcept(final Term t);
 
     public void on(Conceptor c) {
         conceptors.put(c.term, c);
@@ -327,7 +325,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         }
 
         @Override
-        public BeliefTables newTables(Term t, boolean beliefOrGoal) {
+        public BeliefTables newTable(Term t, boolean beliefOrGoal) {
             return BeliefTables.Empty;
         }
 

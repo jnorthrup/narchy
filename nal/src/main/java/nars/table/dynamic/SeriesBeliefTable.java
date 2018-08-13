@@ -14,6 +14,7 @@ import nars.task.ITask;
 import nars.task.TaskProxy;
 import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.signal.SignalTask;
+import nars.task.util.TaskRank;
 import nars.task.util.TaskRegion;
 import nars.task.util.series.TaskSeries;
 import nars.term.Term;
@@ -40,6 +41,11 @@ public class SeriesBeliefTable extends DynamicTaskTable {
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, TaskSeries<SeriesTask> s) {
         super(c, beliefOrGoal);
         this.series = s;
+    }
+
+    @Override
+    public void match(TaskRank t) {
+        series.forEach(t.time.start, t.time.end, false, t);
     }
 
     @Override
@@ -117,7 +123,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
         Task x = r.input;
 
-        if (x instanceof SeriesTask)
+        if (x.isEternal() || x instanceof SeriesTask)
             return; //already owned, or was owned
 
         if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
@@ -130,7 +136,6 @@ public class SeriesBeliefTable extends DynamicTaskTable {
             }
         }
 
-        super.add(r, n);
     }
 
     /** time margin to shrink the series end length allowing tasks to survive in the "present" before being cleaned */

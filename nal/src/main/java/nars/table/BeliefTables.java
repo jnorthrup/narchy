@@ -1,18 +1,14 @@
 package nars.table;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.list.LimitedFasterList;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.util.TaskRank;
-import nars.term.Term;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -22,7 +18,22 @@ import java.util.stream.Stream;
  */
 public class BeliefTables implements BeliefTable {
 
-    public static final BeliefTables Empty = new BeliefTables(LimitedFasterList.Empty);
+    public static final BeliefTables Empty = new BeliefTables(LimitedFasterList.Empty) {
+        @Override
+        public void match(TaskRank r) {
+
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+    };
 
     public final FasterList<BeliefTable> tables;
 
@@ -41,7 +52,10 @@ public class BeliefTables implements BeliefTable {
 
     @Override
     public void add(Remember r, NAR n) {
-        tables.forEach(t -> t.add(r, n));
+        tables.allSatisfy(t -> {
+            t.add(r, n);
+            return r.input!=null; //if one of the tables cancelled it, stop here
+        });
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
 //            if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&
