@@ -8,7 +8,7 @@ import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.atom.Atom;
-import nars.truth.polation.LinearTruthPolation;
+import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
@@ -167,8 +167,8 @@ public abstract class Param {
      * creates instance of the default truthpolation implementation
      */
     public static TruthPolation truth(long start, long end, int dur) {
-        return new LinearTruthPolation(start, end, dur);
-        //return new FocusingLinearTruthPolation(start, end, dur);
+        //return new LinearTruthPolation(start, end, dur);
+        return new FocusingLinearTruthPolation(start, end, dur);
     }
 
 //    /**

@@ -1,6 +1,7 @@
 package nars.op.mental;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -13,17 +14,19 @@ import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.Conj;
 import nars.term.util.Image;
+import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
-import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static nars.Op.*;
-import static nars.term.atom.Atomic.the;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -36,16 +39,70 @@ import static nars.time.Tense.ETERNAL;
 abstract public class Inperience extends LeakBack {
 
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
-    private static final Atomic believe = the("believe");
-    private static final Atomic want = the("want");
+    private static final Atomic believe = Atomic.the("believe");
+    private static final Atomic want = Atomic.the("want");
 
 
-    private static final Atomic wonder = the("wonder");
-    private static final Atomic evaluate = the("plan");
-    private static final Atomic reflect = the("reflect");
+    private static final Atomic wonder = Atomic.the("wonder");
+    private static final Atomic evaluate = Atomic.the("plan");
+    private static final Atomic reflect = Atomic.the("reflect");
     private static final ImmutableSet<Atomic> operators = Sets.immutable.of(
             believe, want, wonder, evaluate, reflect);
 
+
+    /** semanticize, as much as possible, a term so it can enter higher order
+     * TODO merge with NLPGen stuff
+     * */
+    final TermTransform Described = new TermTransform() {
+
+        private final Atomic events = Atomic.the("so"); //so, then, thus
+        private final Atomic duration = Atomic.the("dur");
+        private final Atomic If = Atomic.the("if");
+        private final Atomic inherits = Atomic.the("is");
+        private final Atomic similar = Atomic.the("alike"); //similarity
+
+        @Override
+        public Term transform(Term term) {
+            switch (term.op()) {
+
+                case INH:
+                    return $.func(inherits, transform(term.sub(0)), transform(term.sub(1)) );
+
+                case SIM:
+                    return $.func(similar, SETe.the(transform(term.sub(0)), transform(term.sub(1)) ));
+
+                case IMPL:
+                    //TODO insert 'dur' for dt()'s
+                    return $.func(events, $.func(If, transform(term.sub(0))), transform(term.sub(1)) );
+
+                case CONJ:
+
+                    if (Conj.concurrent(term.dt())) {
+                        return $.func(events, SETe.the(term.subterms().transformSubs(this)));
+                    } else {
+                        int dur = nar.dur();
+                        List<Term> seq = new FasterList();
+                        final long[] last = {0};
+                        term.eventsWhile((when,what)->{
+                            if (!seq.isEmpty()) {
+                                long interval = when- last[0];
+                                int durs = Math.round(interval/((float)dur));
+                                if (durs > 0) {
+                                    seq.add($.func(duration, $.the(durs)));
+                                }
+                            }
+                            seq.add(transform(what));
+                            last[0] = when;
+                            return true;
+                        },0, false, false, false,0);
+
+                        return $.func(events, seq.toArray(Op.EmptyTermArray));
+
+                    }
+            }
+            return term;
+        }
+    };
 
 
     /**
@@ -88,6 +145,44 @@ abstract public class Inperience extends LeakBack {
 
             return reifyBelief(t, tt, nar);
         }
+
+        @Deprecated protected Term reifyBelief(Task t, Term tt, NAR nar) {
+            Concept c = nar.conceptualizeDynamic(tt.unneg());
+            if (c == null)
+                return Null;
+
+            Term self = nar.self();
+
+            Term taskTerm = t.term();
+            if (t.punc() == BELIEF) {
+                Task belief = ((BeliefTable) c.table(BELIEF))
+                        .answer(t.start(), t.end(), taskTerm, null, nar);
+
+                Term bb = belief != null ? Described.transform(belief.term()) : Described.transform(taskTerm);
+
+
+                if (belief == null)
+                    return Null;
+                return $.func(believe, self, bb.negIf(belief.isNegative()));
+            } else {
+                Task goal = ((BeliefTable) c.table(GOAL))
+                        .answer(t.start(), t.end(), taskTerm, null, nar);
+
+
+                Term gg = goal!=null ? Described.transform(goal.term()) : null;
+                Term want = gg != null ? $.func(Inperience.want, self, gg.negIf(goal.isNegative())) : Null;
+
+//                if (belief == null)
+                    return want;
+//                else {
+//
+//                    return CONJ.the(want, 0, $.func(believe, self, bb.negIf(belief.isNegative())));
+//                }
+            }
+        }
+
+
+
     }
     public static class Want extends Believe {
 
@@ -104,6 +199,8 @@ abstract public class Inperience extends LeakBack {
         protected Term reify(Task t) {
             return reifyBelief(t, t.term().eval(nar, true), nar);
         }
+
+
     }
     public static class Wonder extends Inperience {
 
@@ -218,35 +315,6 @@ abstract public class Inperience extends LeakBack {
         return 0;
     }
 
-    @Deprecated private static Term reifyBelief(Task t, Term tt, NAR nar) {
-        Concept c = nar.conceptualizeDynamic(tt.unneg());
-        if (c == null)
-            return Null;
-
-        Task belief = ((BeliefTable) c.table(BELIEF))
-                .answer(t.start(), t.end(), t.term(), null, nar);
-
-        Term bb = belief != null ? belief.term() : t.term();
-
-        Term self = nar.self();
-        if (t.punc() == BELIEF) {
-            if (belief == null)
-                return Null;
-            return $.func(believe, self, bb.negIf(belief.isNegative()));
-        } else {
-            Task goal = ((BeliefTable) c.table(GOAL))
-                    .answer(t.start(), t.end(), bb, null, nar);
-
-            Term want = goal != null ? $.func(Inperience.want, self, goal.term().negIf(goal.isNegative())) : Null;
-
-            if (belief == null)
-                return want;
-            else {
-
-                return CONJ.the(want, 0, $.func(believe, self, bb.negIf(belief.isNegative())));
-            }
-        }
-    }
 
     @Deprecated private static Term reifyQuestion(Term x, byte punc, NAR nar) {
         //x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);

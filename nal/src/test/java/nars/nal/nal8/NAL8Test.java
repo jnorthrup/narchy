@@ -196,12 +196,12 @@ public class NAL8Test extends NALTest {
         ;
     }
 
-    @Test
-    void testGoalConjunctionDecomposeNeg() {
-        test
-                .goal("(x &&+3 y)", Tense.Present, 0f, 0.9f)
-                .mustNotOutput(cycles, "x", GOAL, 0);
-    }
+//    @Test
+//    void testGoalConjunctionDecomposeNeg() {
+//        test
+//                .goal("(x &&+3 y)", Tense.Present, 0f, 0.9f)
+//                .mustNotOutput(cycles, "x", GOAL, 0);
+//    }
 
     @Disabled
     @Test
@@ -419,13 +419,13 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Test
-    void testGoalSimilaritySpreadingNegInsideNeg() {
-        test
-                .input("--R!")
-                .input("--(G <-> --R).")
-                .mustGoal(cycles, "G", 0.0f, 0.4f);
-    }
+//    @Test
+//    void testGoalSimilaritySpreadingNegInsideNeg() {
+//        test
+//                .input("--R!")
+//                .input("--(G <-> --R).")
+//                .mustGoal(cycles, "G", 0.0f, 0.4f);
+//    }
 
     @Test
     void testGoalSimilaritySpreadingParameter() {
@@ -568,8 +568,8 @@ public class NAL8Test extends NALTest {
 
         test
                 .inputAt(0, "(happy ==>-3 out). :|:")
-                .inputAt(13, "happy! :|:")
-                .mustGoal(cycles, "out", 1f, 0.45f, 10);
+                .inputAt(2, "happy! :|:")
+                .mustGoal(cycles, "out", 1f, 0.45f, (t) -> (t >= 2));
 
 
     }

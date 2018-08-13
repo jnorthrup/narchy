@@ -117,7 +117,7 @@ public class Conj extends ByteAnonMap {
 
         int cdt = conj.dt();
 
-        if (Op.concurrent(cdt)) {
+        if (concurrent(cdt)) {
             Term[] csDropped = conj.subterms().termsExcept(event);
             if (csDropped != null) {
                 if (csDropped.length == 1)
@@ -204,6 +204,16 @@ public class Conj extends ByteAnonMap {
         return w[0];
     }
 
+    public static boolean concurrent(int dt) {
+        switch (dt) {
+            case XTERNAL:
+            case DTERNAL:
+            case 0:
+                return true;
+        }
+        return false;
+    }
+
     boolean addAuto(Term t) {
         return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
     }
@@ -257,7 +267,7 @@ public class Conj extends ByteAnonMap {
         if (include.op() != CONJ || include.impossibleSubTerm(exclude))
             return include;
 
-        if (Op.concurrent(include.dt())) {
+        if (concurrent(include.dt())) {
             //HACK this is messy
             Subterms s = include.subterms();
             Term[] ss = null;
@@ -292,15 +302,33 @@ public class Conj extends ByteAnonMap {
         if (include.equals(exclude))
             return True;
 
-        Conj x = Conj.from(include);
-        int edt = include.dt();
-        boolean[] removed = new boolean[]{false};
-        exclude.eventsWhile((when, what) -> {
-            removed[0] |= x.remove(what, when);
-            return true;
-        }, edt == DTERNAL ? ETERNAL : 0, true, edt == DTERNAL, false, 0);
+        if (exclude.op()!=CONJ)
+            return without(include, exclude, false);
 
-        return removed[0] ? x.term() : include;
+
+        if (concurrent(include.dt()) && concurrent(exclude.dt())) {
+
+            Subterms es = exclude.subterms();
+            @Nullable MutableSet<Term> ii = include.subterms().toSet(i -> !es.contains(i));
+            if (ii.size() < include.subs()) {
+                return CONJ.the(include.dt(), ii);
+            } else {
+                return include; //no change
+            }
+
+        } else {
+
+
+            Conj x = Conj.from(include);
+            int edt = include.dt();
+            boolean[] removed = new boolean[]{false};
+            exclude.eventsWhile((when, what) -> {
+                removed[0] |= x.remove(what, when);
+                return true;
+            }, edt == DTERNAL ? ETERNAL : 0, true, edt == DTERNAL, false, 0);
+
+            return removed[0] ? x.term() : include;
+        }
     }
 
     public static Term conjMerge(Term a, Term b, int dt) {

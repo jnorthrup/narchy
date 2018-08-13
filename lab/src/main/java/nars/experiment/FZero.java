@@ -76,16 +76,19 @@ public class FZero extends NAgentX {
         //initToggleFwdStop();
 
         GoalActionConcept F = initUnipolarLinear(5f);
-        BiPolarAction A = initBipolarRotateDirect(true, 0.5f);
+        BiPolarAction A =
+                //initBipolarRotateDirect(false, 0.9f);
+
+
+                initBipolarRotateRelative(true, 0.5f);
+                //initBipolarRotateAbsolute(true);
+                //initBipolarRotateDirect(true, 0.5f);
+
         window(new Gridding(
                 new CameraSensorView(c, this).withControls(),
                 NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
-        //initBipolarRotateDirect(false, 0.9f);
 
-
-        //initBipolarRotateRelative(true, 0.3f);
-        //initBipolarRotateAbsolute(true);
 
 
         Signal dVelX = senseNumberDifference($.func("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]);
@@ -257,10 +260,10 @@ public class FZero extends NAgentX {
 
     }
 
-    public void initBipolarRotateRelative(boolean fair, float rotFactor) {
+    public BiPolarAction initBipolarRotateRelative(boolean fair, float rotFactor) {
         final float[] _r = {0};
         final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
-        BiPolarAction R = actionBipolarFrequencyDifferential($.p(/*id, */$.the("turn")), fair, (r0) -> {
+        return actionBipolarFrequencyDifferential($.func("turn", id), fair, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 
@@ -270,7 +273,6 @@ public class FZero extends NAgentX {
                             rotSpeed * rotFactor;
             return r0;
         });
-        window(NARui.beliefCharts(nar, R.pos, R.neg), 800, 500);
     }
 
     public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {

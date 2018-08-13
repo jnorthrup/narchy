@@ -190,6 +190,12 @@
                 //(--Y ==> X), (Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==> X), (Belief:IntersectionSym)
                     //, (Belief:Implsition)
 
+    (X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
+    (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
+
+
+    (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
+        (--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
 
     (X ==> Y), ((&&,Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:Deduction)
         (X ==> Y), ((&&,Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionPN)
@@ -198,17 +204,17 @@
 
     ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
-    (X ==> Y), ((&&,X,A..+) ==> Z) |- ((&&,Y,A..+) ==> Z), (Belief:Abduction)
-        (X ==> Y), ((&&,X,A..+) ==> Z) |- ((&&,--Y,A..+) ==> Z), (Belief:AbductionN)
+    ((&&,X,A..+) ==> Z), (X ==> Y)  |- ((&&,Y,A..+) ==> Z), (Belief:Abduction)
+        ((&&,X,A..+) ==> Z), (X ==> Y)  |- ((&&,--Y,A..+) ==> Z), (Belief:AbductionPN)
 
 
-
-    (C ==> Z), X                    |- ((C && X) ==> Z), (Belief:Induction)
-    (C ==> Z), X                    |- ((C && --X) ==> Z), (Belief:InductionPN)
-        //((&&,A..+) ==> C), M,                    |- ((&&,M,A..+) ==> C), (Belief:Induction)
+    (C ==> Z), X, --is(X,"==>") |- ((C && X) ==> Z), (Belief:Induction)
+    (C ==> Z), X, --is(X,"==>") |- ((C && --X) ==> Z), (Belief:InductionPN)
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
         (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && --M) ==> Z), (Belief:InductionPN)
+
+
 
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
@@ -281,18 +287,12 @@
 //   original:   ((&&,A_1..n) =\> C), M, not_implication_or_equivalence(M) |- ((&&,M,A_1..n) =\> C), (Truth:Induction)
 //   original:   ((&&,M,A_1..n) ==> C), ((&&,A,A_1..n) ==> C) |- (A ==> M), (Truth:Induction, Order:ForAllSame)
 
-    (X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
-    (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==> C), (Belief:Deduction)
 
     //(X ==> C), (B ==> M), eventOf(X,M) |- ((conjWithout(X,M) && B) ==> C), (Belief:Deduction)
     //(X ==> C), (B ==> M), eventOfNeg(X,M) |- ((conjWithout(X,--M) && B) ==> C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==> C), (Belief:Deduction)
 
-
-
-    (D ==> Y), (C ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
-        (--D ==> Y), (--C ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
                 //((&&,M,A..+) ==> Y), ((&&,A..+) ==> Y)          |- M, (Belief:AbductionPB)
                 //((&&,M,A) ==> Y),    (A ==> Y)                  |- M, (Belief:AbductionPB)
                     //(--(&&,M,A..+) ==> Y), (--(&&,A..+) ==> Y)  |- M, (Belief:AbductionPB)

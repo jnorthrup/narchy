@@ -1,8 +1,8 @@
 package nars.unify.constraint;
 
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.util.Conj;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -37,7 +37,7 @@ public class CommonSubEventConstraint extends RelationConstraint {
     }
 
     static boolean _haveCommonEvents(Term xx, Term yy) {
-        if (Op.concurrent(xx.dt()) && Op.concurrent(yy.dt())) {
+        if (Conj.concurrent(xx.dt()) && Conj.concurrent(yy.dt())) {
             Subterms xxx = xx.subterms();
             if (xx.subs() < 3) {
                 return yy.subterms().OR(xxx::contains);

@@ -15,6 +15,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
+import nars.term.util.Conj;
 import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
@@ -593,17 +594,6 @@ public enum Op {
     }
 
 
-    public static boolean concurrent(int dt) {
-        switch (dt) {
-            case XTERNAL:
-            case DTERNAL:
-            case 0:
-                return true;
-        }
-        return false;
-    }
-
-
     public static boolean hasNull(Term[] t) {
         for (Term x : t)
             if (x == Null)
@@ -1062,7 +1052,7 @@ public enum Op {
     }
 
     public final Term[] sortedIfNecessary(int dt, Term[] u) {
-        return commutative && u.length > 1 && Op.concurrent(dt) ? sorted(u) : u;
+        return commutative && u.length > 1 && Conj.concurrent(dt) ? sorted(u) : u;
     }
 
     public final Term the(/*@NotNull*/ Collection<Term> sub) {
