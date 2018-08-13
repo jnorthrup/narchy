@@ -201,7 +201,7 @@ public abstract class TermBuilder {
         }
 
 
-        boolean negate = false;
+
 
         if (op == IMPL) {
 
@@ -210,6 +210,9 @@ public abstract class TermBuilder {
                 return predicate;
             if (subject == False)
                 return Null;
+
+            if (predicate.op() == NEG)
+                return statement(IMPL, dt, subject, predicate.unneg()).neg();
 
 
 
@@ -242,79 +245,77 @@ public abstract class TermBuilder {
                 }
                 //TODO simple case when no CONJ or IMPL are present
 
+                if (Term.commonStructure(subject, predicate)) {
 //                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
 //                subject.eventsWhile((w, t) -> {
 //                    se.add(PrimitiveTuples.pair(w, t));
 //                    return true;
 //                }, 0, true, true, false, 0);
-                Conj se = new Conj();
-                se.add(subject.dt() != DTERNAL ? 0 : (dt!=DTERNAL ? 0 : ETERNAL), subject);
+                    Conj se = new Conj();
+                    se.add(subject.dt() != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject);
 
-                final boolean[] subjChange = {false}, predChange = {false};
-                //TODO extract this to a ConjConflict class
-                Conj pe = new Conj(se.termToId, se.idToTerm) {  //share same term map
-                    @Override
-                    protected int addFilter(long at, Term x, byte id) {
-                        int f = se.conflictOrSame(at, id);
-                        int f2 = (at==ETERNAL || f==-1) ? f : se.conflictOrSame(ETERNAL, id);
-                        if (f == -1 || f2 == -1)
-                            return -1;
-                        if (f == +1 || f2 == +1) {
-                            predChange[0] = true;
-                            return +1; //ignore this term (dont repeat in the predicate)
+                    final boolean[] subjChange = {false}, predChange = {false};
+                    //TODO extract this to a ConjConflict class
+                    Conj pe = new Conj(se.termToId, se.idToTerm) {  //share same term map
+                        @Override
+                        protected int addFilter(long at, Term x, byte id) {
+                            int f = se.conflictOrSame(at, id);
+                            int f2 = (at == ETERNAL || f == -1) ? f : se.conflictOrSame(ETERNAL, id);
+                            if (f == -1 || f2 == -1)
+                                return -1;
+                            if (f == +1 || f2 == +1) {
+                                predChange[0] = true;
+                                return +1; //ignore this term (dont repeat in the predicate)
+                            }
+                            return f;
                         }
-                        return f;
+                    };
+                    long offset = (dt != DTERNAL) ? dt + subject.dtRange() : (predicate.dt() != DTERNAL ? 0 : ETERNAL);
+                    if (!pe.add(offset, predicate))
+                        return False;
+
+                    if (predChange[0]) {
+                        Term newPred = pe.term();
+                        if (newPred instanceof Bool)
+                            return newPred;
+
+                        if (dt != DTERNAL) {
+                            Term f = Conj.firstEventTerm(newPred);
+                            int shift = predicate.subTimeFirst(f);
+                            if (shift == DTERNAL)
+                                return Null; //??
+                            dt += shift;
+                        }
+
+                        predicate = newPred;
                     }
-                };
-                long offset = (dt!=DTERNAL) ? dt + subject.dtRange() : (predicate.dt()!=DTERNAL ? 0 : ETERNAL);
-                if (!pe.add(offset, predicate))
-                    return False;
-
-                if (predChange[0]) {
-                    Term newPred = pe.term();
-                    if (newPred instanceof Bool)
-                        return newPred;
-
-                    if (dt!=DTERNAL) {
-                        Term f = Conj.firstEventTerm(newPred);
-                        int shift = predicate.subTimeFirst(f);
-                        if (shift == DTERNAL)
-                            return Null; //??
-                        dt += shift;
+                    if (subjChange[0]) {
+                        Term newSubj = se.term();
+                        if (newSubj instanceof Bool) {
+                            if (newSubj == True)
+                                return predicate;
+                        }
+                        if (dt != DTERNAL) {
+                            //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
+                            //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
+                            int dr = newSubj.dtRange() - subject.dtRange();
+                            dt += dr;
+                        }
+                        subject = newSubj;
                     }
 
-                    predicate = newPred;
+                    //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
+                    //TODO valid cases where subj has impl?
+                    if (subject.hasAny(IMPL))
+                        return Null;
+
+
+                    if (subjChange[0] || predChange[0]) {
+                        return statement(IMPL, dt, subject, predicate); //recurse
+                    } else {
+                        return compound(IMPL, dt, subject, predicate);
+                    }
                 }
-                if (subjChange[0]) {
-                    Term newSubj = se.term();
-                    if (newSubj instanceof Bool) {
-                        if (newSubj == True)
-                            return predicate;
-                    }
-                    if (dt!=DTERNAL) {
-                        //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
-                        //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
-                        int dr = newSubj.dtRange() - subject.dtRange();
-                        dt += dr;
-                    }
-                    subject = newSubj;
-                }
-                negate = predicate.op()==NEG;
-                if (negate)
-                    predicate = predicate.unneg();
-
-                //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
-                //TODO valid cases where subj has impl?
-                if (subject.hasAny(IMPL))
-                    return Null;
-
-
-                if (subjChange[0] || predChange[0]) {
-                    return statement(IMPL, dt, subject, predicate).negIf(negate); //recurse
-                } else {
-                    return compound(IMPL, dt, subject, predicate).negIf(negate);
-                }
-
 
             }
 
@@ -354,10 +355,7 @@ public abstract class TermBuilder {
 //            }
         }
 
-        Term t = compound(op, dt, subject, predicate);
-        if (negate)
-            t = t.neg();
-        return t;
+        return compound(op, dt, subject, predicate);
     }
 
     public Term conj(int dt, Term[] u) {

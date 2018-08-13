@@ -402,7 +402,7 @@ abstract public class NAgentX extends NAgent {
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
         addSensor(c);
         //nar().runLater(() -> {
-            c.readAdaptively(this);
+            c.readAdaptively();
         //});
         return c;
     }

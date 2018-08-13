@@ -10,7 +10,6 @@ import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.task.ITask;
 import nars.task.TaskProxy;
 import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.signal.SignalTask;
@@ -219,7 +218,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         /**
          * passive insertion subtask only
          */
-        @Deprecated public ITask input(TaskConcept concept) {
+        @Deprecated public SeriesRemember input(TaskConcept concept) {
             //return new TaskLinkTaskAndEmit(this, priElseZero(), concept);
             return new SeriesRemember(this, concept);
         }

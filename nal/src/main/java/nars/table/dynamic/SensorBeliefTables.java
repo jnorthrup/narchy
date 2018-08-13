@@ -7,7 +7,6 @@ import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
-import nars.task.ITask;
 import nars.task.util.series.ConcurrentSkiplistTaskSeries;
 import nars.task.util.series.TaskSeries;
 import nars.term.Term;
@@ -29,7 +28,7 @@ public class SensorBeliefTables extends BeliefTables {
      */
     private FloatRange pri;
 
-    private FloatRange res;
+    public FloatRange res;
 
     public SensorBeliefTables(Term term, boolean beliefOrGoal, ConceptBuilder b) {
         this(term, beliefOrGoal, b.newTemporalTable(term));
@@ -58,14 +57,14 @@ public class SensorBeliefTables extends BeliefTables {
         this.series = tableFirst(SeriesBeliefTable.class);
     }
 
-    public ITask add(Truth value, long start, long end, TaskConcept c, NAR nar) {
+    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, NAR nar) {
 
         series.clean(nar, tables);
 
         if (value == null)
             return null;
 
-        value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
+
         if (value==null)
             return null;
 

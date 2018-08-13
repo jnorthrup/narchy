@@ -338,7 +338,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             );
             if (revised != null) {
                 revised.pri(Priority.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
-                ((NALTask) revised).cause = Cause.sample(Param.causeCapacity.intValue(), input, prevBelief);
+                ((NALTask) revised).cause = Cause.merge(Param.causeCapacity.intValue(), input, prevBelief);
 
                 if (Param.DEBUG)
                     revised.log("Insertion Revision");

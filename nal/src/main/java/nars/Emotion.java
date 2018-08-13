@@ -219,7 +219,7 @@ public class Emotion implements Meter {
 
             //HACK append the question as a cause to the task.  ideally this would only happen for dynamic/revised tasks but for all tasks is ok for now
             if (answer instanceof NALTask)
-                ((NALTask) answer).causeMerge(questionTask);
+                ((NALTask) answer).priCauseMerge(questionTask);
         }
 
 

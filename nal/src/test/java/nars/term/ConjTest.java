@@ -695,8 +695,10 @@ public class ConjTest {
     @Test
     void testConjWithoutAllMixEternalAndParallel() {
 
-        Term x = $$("((b&&c)&|(x&&y))");
-        assertEquals("((b&&c)&|(x&&y))", x.toString());
+
+        assertEq(//"((b&&c)&|(x&&y))",
+                "((b&&c)&|(x&&y))",
+                "((b&&c)&|(x&&y))");
 
         Term y = $$("(&|,(b&&c),x)");
         assertEquals("((b&&c)&|x)", y.toString());
@@ -1039,6 +1041,11 @@ public class ConjTest {
                 n.conceptualize(nt).toString());
 
 
+    }
+
+    @Test public void testIndepVarWTF() {
+        assertEq("(x1&&$1)", new Conj().with(ETERNAL, $$("(&&,x1,$1)")).term());
+        assertEq("(x1&|$1)", new Conj().with(0, $$("(&&,x1,$1)")).term());
     }
 
     @Test

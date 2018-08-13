@@ -601,9 +601,14 @@ public interface Compound extends Term, IPair, Subterms {
 
                 level++;
 
-                boolean fwd  = dt >= 0;
-                if (!fwd)
-                    dt = -dt;
+                boolean fwd;
+                if (changeDT) {
+                    fwd=dt >= 0;
+                    if (!fwd)
+                        dt = -dt;
+                } else {
+                    fwd = true;
+                }
 
                 for (int i = 0; i < s; i++) {
                     Term st = tt.sub(fwd ? i : (s-1)-i);

@@ -132,7 +132,7 @@ public class Remember extends AbstractTask {
             //TODO consider forgetting rate
 
             if (existing instanceof NALTask)
-                ((NALTask) existing).causeMerge(input);
+                ((NALTask) existing).priCauseMerge(input);
 
             forget(input);
         }

@@ -5,6 +5,7 @@ import jcog.math.RecycledSummaryStatistics;
 import nars.task.util.TaskRegion;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
+import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -107,7 +108,7 @@ public class Cause implements Comparable<Cause> {
         return Short.compare(id, o.id);
     }
 
-    public static short[] sample(int causeCapacity, TaskRegion... e) {
+    public static short[] merge(int causeCapacity, TaskRegion... e) {
         short[] a = e[0].cause();
         switch (e.length) {
             case 0:
@@ -128,9 +129,9 @@ public class Cause implements Comparable<Cause> {
 
 
 
-                return sample(causeCapacity, a, b);
+                return merge(causeCapacity, a, b);
             default:
-                return sample(causeCapacity,
+                return merge(causeCapacity,
                         Util.map(TaskRegion::cause, short[][]::new,
                             ArrayUtils.removeNulls(e, TaskRegion[]::new))); 
         }
@@ -163,7 +164,7 @@ public class Cause implements Comparable<Cause> {
 
 
 
-    public static short[] sample(int maxLen, short[]... s) {
+    public static short[] merge(int maxLen, short[]... s) {
 
         int ss = s.length;
         assert(ss>0);
@@ -174,13 +175,28 @@ public class Cause implements Comparable<Cause> {
         //quick test for equality
         boolean allEqual = true;
         for (int i = 1; i < ss; i++) {
-            allEqual &= Arrays.equals(s[i-1], s[i]);
+            if (!(allEqual &= Arrays.equals(s[i-1], s[i])))
+                break;
         }
         if (allEqual)
             return s[0];
 
 
+        return mergeFlat(maxLen, s);
+        //return mergeSampled(maxLen, s);
+    }
 
+    public static short[] mergeFlat(int maxLen, short[][] s) {
+        int ss = s.length;
+        ShortHashSet x = new ShortHashSet(ss * maxLen);
+        for (short[] a : s) {
+            x.addAll(a);
+        }
+        return x.toSortedArray();
+    }
+
+    public static short[] mergeSampled(int maxLen, short[][] s) {
+        int ss = s.length;
         int totalItems = 0;
         short[] lastNonEmpty = null;
         int nonEmpties = 0;
@@ -196,8 +212,6 @@ public class Cause implements Comparable<Cause> {
             return lastNonEmpty;
         if (totalItems == 0)
             return ArrayUtils.EMPTY_SHORT_ARRAY;
-
-        
 
 
         AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);
@@ -227,13 +241,6 @@ public class Cause implements Comparable<Cause> {
         assert (lll.length == ls);
         return lll;
     }
-
-
-
-
-
-
-
 
 
     public void commit(RecycledSummaryStatistics[] valueSummary) {

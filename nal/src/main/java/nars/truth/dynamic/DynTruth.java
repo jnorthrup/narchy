@@ -97,7 +97,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     @Override
     @Nullable
     public short[] cause() {
-        return Cause.sample(Param.causeCapacity.intValue(),
+        return Cause.merge(Param.causeCapacity.intValue(),
                 Util.map(0, size(), x -> get(x).cause(), short[][]::new));
     }
 

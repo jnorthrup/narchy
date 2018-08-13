@@ -147,6 +147,13 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testImplicationTrue2() {
+        assertEq(True, "((&&,a,b) ==> a)");
+    }
+    @Test
+    void testImplicationTrue3() {
+
+
+
         assertEq(True, "((&&,x1,$1) ==> $1)");
     }
 

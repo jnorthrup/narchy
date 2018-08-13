@@ -5,7 +5,6 @@ import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
-import nars.agent.NAgent;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.AbstractSensor;
@@ -30,7 +29,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
     public final Bitmap2DConcepts<P> concepts;
     public final P src;
     private final NAR nar;
-    private final CauseChannel<ITask> in;
+    public final CauseChannel<ITask> in;
     public final int width, height;
     private FloatFloatToObjectFunction<Truth> mode;
 
@@ -78,14 +77,14 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
 
     /** manually inputs the contents of the current frame */
     public void input(int dur, FloatFloatToObjectFunction<Truth> mode) {
-        nar.input( concepts.stream(mode, dur, nar) );
+        in.input( concepts.stream(mode, dur, nar) );
     }
 
     protected int dur() {
         return nar.dur();
     }
 
-    public Bitmap2DConcepts.Bitmap2DReader readAdaptively(NAgent agent) {
+    public Bitmap2DConcepts.Bitmap2DReader readAdaptively() {
         return concepts.newReader(in, mode, nar);
     }
 

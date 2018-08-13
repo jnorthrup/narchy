@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
@@ -10,7 +9,6 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.term.anon.Anom;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
@@ -94,14 +92,18 @@ public class NALTask extends UnitPri implements Task {
     /**
      * combine cause: should be called in all Task bags and belief tables on merge
      */
-    public Task causeMerge(Task incoming) {
+    public Task priCauseMerge(Task incoming) {
         if (incoming == this) return this;
 
         (incoming.isInput() ? PriMerge.replace : Param.taskEquivalentMerge).merge(this, incoming);
 
-        if (!Arrays.equals(cause(), incoming.cause())) {
-            int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length);
-            this.cause = Cause.sample(causeCap, this, incoming);
+        return causeMerge(incoming.cause());
+    }
+
+    public Task causeMerge(short[] c) {
+        if (!Arrays.equals(cause(), c)) {
+            int causeCap = Math.min(Param.CAUSE_LIMIT, c.length + cause().length);
+            this.cause = Cause.merge(causeCap, cause, c);
         }
         return this;
     }

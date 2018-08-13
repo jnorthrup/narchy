@@ -492,6 +492,11 @@ public class Conj extends ByteAnonMap {
         return 0;
     }
 
+    public final Conj with(long at, Term x) {
+        add(at, x);
+        return this;
+    }
+
     /**
      * returns false if contradiction occurred, in which case this
      * ConjEvents instance is
@@ -601,12 +606,12 @@ public class Conj extends ByteAnonMap {
             byte[] b = (byte[]) events;
             for (int i = 0; i < b.length; i++) {
                 byte bi = b[i];
-                if (id == -bi)
-                    return false; //contradiction
-                if (id == bi)
-                    return true; //found existing
-
                 if (bi != 0) {
+                    if (id == -bi)
+                        return false; //contradiction
+                    if (id == bi)
+                        return true; //found existing
+
                     Term result = merge(bi, x, at == ETERNAL);
 
                     if (result != null) {
@@ -628,10 +633,7 @@ public class Conj extends ByteAnonMap {
                             }
                         }
                     }
-                }
-
-
-                if (bi == 0) {
+                } else  {
                     //empty slot, take
                     b[i] = id;
                     return true;
@@ -874,7 +876,7 @@ public class Conj extends ByteAnonMap {
 
         Term incomingUnneg = incoming.unneg();
         if (!Term.commonStructure(existingUnneg, incomingUnneg))
-            return True; //no potential for interaction
+            return null; //no potential for interaction
 
 
         boolean xConj = incomingUnneg.op() == CONJ;

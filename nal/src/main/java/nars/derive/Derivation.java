@@ -450,7 +450,7 @@ try {
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
 
         this.parentCause = _belief != null ?
-                Cause.sample(Param.causeCapacity.intValue(), _task, _belief) :
+                Cause.merge(Param.causeCapacity.intValue(), _task, _belief) :
                 _task.cause();
 
         float taskPri = _task.priElseZero();

@@ -6,11 +6,15 @@ import nars.NAR;
 import nars.NARS;
 import nars.concept.TaskConcept;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class CameraSensorTest {
@@ -28,8 +32,16 @@ public class CameraSensorTest {
 
         n.log();
 
-
-
+        //check for cause applied
+        final int[] causesDetected = {0};
+        Term aPixel = $$("x(0,0)");
+        short[] cause = new short[] { c.in.id };
+        n.onTask(t -> {
+           if (t.term().equals(aPixel)) {
+               assertArrayEquals(cause, t.cause());
+               causesDetected[0]++;
+           }
+        });
 
 
         System.out.println("all 0");
@@ -38,7 +50,8 @@ public class CameraSensorTest {
         n.run(1);
         assertEquals(c, f, n.time(),n);
 
-        n.run(3); 
+
+        n.run(3);
 
 
         System.out.println("all 1");
@@ -62,7 +75,10 @@ public class CameraSensorTest {
         n.run(1);
         assertEquals(c, f, n.time(), n);
 
-        
+        assertTrue(causesDetected[0] > 0);
+
+
+
     }
 
     static final float tolerance = 0.47f;

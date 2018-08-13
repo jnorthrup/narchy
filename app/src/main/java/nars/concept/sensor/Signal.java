@@ -124,7 +124,9 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         if (nextValue == nextValue /* not NaN */) {
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
-                return ((SensorBeliefTables) beliefs()).add(nextTruth, start, end, this, n);
+                SensorBeliefTables s = (SensorBeliefTables) beliefs();
+                nextTruth = nextTruth.ditherFreq(Math.max(n.freqResolution.asFloat(), s.res.asFloat()));
+                return s.add(nextTruth, start, end, this, n);
             }
         }
         return null;

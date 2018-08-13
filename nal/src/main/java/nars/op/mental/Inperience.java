@@ -307,7 +307,7 @@ abstract public class Inperience extends LeakBack {
             );
         });
         if (y!=null) {
-            y.causeMerge(x);
+            y.priCauseMerge(x);
             input(y.log("Inperience").priSet(x.priElseZero() * priFactor.floatValue()));
             return 1;
         }

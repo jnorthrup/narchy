@@ -331,7 +331,7 @@ public class Revision {
                 true,
                 Tasked::task, tasks));
 
-        ((NALTask) t).cause(Cause.sample(Param.causeCapacity.intValue(), tasks));
+        ((NALTask) t).cause(Cause.merge(Param.causeCapacity.intValue(), tasks));
 
         return t;
     }

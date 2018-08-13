@@ -23,7 +23,7 @@ public interface DerivedTasks {
     BiFunction<Task, Task, Task> DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
         if (pp instanceof NALTask)
-            ((NALTask) pp).causeMerge(tt);
+            ((NALTask) pp).priCauseMerge(tt);
         if (pp.isCyclic() && !tt.isCyclic()) {
 
             pp.setCyclic(false);

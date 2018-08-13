@@ -22,10 +22,12 @@ import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
+import nars.concept.util.ConceptBuilder;
 import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
+import nars.control.proto.Remember;
 import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.index.concept.ConceptIndex;
@@ -46,7 +48,6 @@ import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.TimeAware;
-import nars.concept.util.ConceptBuilder;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -1491,12 +1492,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     private class TaskChannel extends CauseChannel<ITask> {
 
         private final short ci;
-
+        final short[] uniqueCause;
 
         TaskChannel(Cause cause) {
             super(cause);
             this.ci = cause.id;
-
+            uniqueCause = new short[] {ci};
         }
 
         @Override
@@ -1532,22 +1533,33 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         protected boolean process(Object x) {
             if (x instanceof NALTask) {
                 NALTask t = (NALTask) x;
-                int tcl = t.cause.length;
-                if (tcl == 0) {
+                short[] currentCause = t.cause;
+                int tcl = currentCause.length;
+                switch (tcl) {
+                    case 0:
+                        //shared one-element cause
+                        assert(uniqueCause[0] == ci);
+                        t.cause(uniqueCause);
+                        break;
+                    case 1:
+                        if (currentCause == uniqueCause) {
+                            /* same instance */
+                        } else if (currentCause[0] == ci) {
+                            //replace with shared instance
+                            t.cause(uniqueCause);
+                        }
+                        break;
+                    default:
 
-
-                    t.cause(new short[]{ci});
-                } else {
-                    if (tcl == 1 && t.cause[0] == ci) {
-
-                    } else {
-
-                        short[] tc = Arrays.copyOf(t.cause, tcl + 1);
+                        short[] tc = Arrays.copyOf(currentCause, tcl + 1);
                         tc[tcl] = ci;
                         t.cause(tc);
-                    }
+                        break;
                 }
-            } else return x != null;
+            } else if (x instanceof Remember) {
+                return process(((Remember)x).input);
+            } else
+                return x != null;
 
             return true;
         }
