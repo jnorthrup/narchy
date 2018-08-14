@@ -779,21 +779,21 @@ public class Occurrify extends TimeGraph {
                 //if (o[0] != NOW) {
 //                long range = o[1] - o[0];
 
-                long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
 
                 if (d.concPunc == BELIEF || d.concPunc == GOAL) {
                     //starts and ends before now; entirely past
                     // shift and project to present, "as-if" past-perfect/subjunctive tense
 
                     //discount for projection
-                    float eStartFactor = (float) Param.evi(1, deltaT, d.dur);
+                    long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
+                    float eStartFactor = Param.evi(1, deltaT, d.dur);
                     if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
                         return false; //insufficient evidence
                 }
                 //o[0] = NOW; o[1] = NOW + range;
                 o[0] = NOW;
                 //o[1] = Math.max(o[1], NOW + range);
-                o[1] = Math.max(o[1], NOW + Math.max(0, d.dur - 1));
+                o[1] = Math.max(o[1], NOW + Math.max(0, d.dur )); //allow only fixed time: benefit of the doubt
 
 
             }

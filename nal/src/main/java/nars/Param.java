@@ -46,14 +46,14 @@ public abstract class Param {
             8;
 
     public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 5;
-    public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
+    //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
-    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 256;
+    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
     public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
     /** auto decompose conjunction beliefs and goals on input */
     public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = false;
-    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = false;
+    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = true;
 
     /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
      *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
@@ -64,7 +64,7 @@ public abstract class Param {
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = true;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
@@ -199,7 +199,7 @@ public abstract class Param {
      * TTL = 'time to live'
      */
 
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, 0, TTL_MIN * 16);
 
 
     /**
