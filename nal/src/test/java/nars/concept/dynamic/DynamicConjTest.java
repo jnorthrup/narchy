@@ -78,7 +78,7 @@ class DynamicConjTest {
             assertEquals(1, ttEte.stamp().length);
 
             //truths dont get merged since the dynamic belief will compute for &| and this asked for &&
-            assertEquals("$.50 ((x-->a)&&(y-->a)). 0 %0.0;.90%", ttEte.toString());
+            assertTrue(ttEte.toString().contains("((x-->a)&&(y-->a)). 0 %0.0;.90%"));
 
             Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
             assertTrue($.t(0.00f, 0.90f).equalsIn(tNow, n), ()->"was " + tNow);
@@ -89,7 +89,7 @@ class DynamicConjTest {
             assertEquals(2, n.concept("(a:x && a:y)").beliefs().size());
 
             Task ttNow = n.matchBelief($("(a:x &| a:y)"), now);
-            assertEquals("$.50 ((x-->a)&|(y-->a)). 0 %.27;.94%", ttNow.toString());
+            assertTrue(ttNow.toString().contains("((x-->a)&|(y-->a)). 0 %.27;.94%"));
         }
 
 

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DynamicDiffTest {
     @Test
@@ -38,8 +39,8 @@ class DynamicDiffTest {
         n.run(1);
         Term xMinY = $("c:(x ~ y)");
         Term yMinX = $("c:(y ~ x)");
-        assertEquals(DynamicTruthTable.class, n.conceptualize(xMinY).beliefs().getClass());
-        assertEquals(DynamicTruthTable.class, n.conceptualize(yMinX).beliefs().getClass());
+        assertNotNull(n.conceptualize(xMinY).beliefs().tableFirst(DynamicTruthTable.class));
+        assertNotNull(n.conceptualize(yMinX).beliefs().tableFirst(DynamicTruthTable.class));
         assertEquals(
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );

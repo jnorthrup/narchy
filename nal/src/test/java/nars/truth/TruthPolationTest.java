@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -50,10 +48,11 @@ class TruthPolationTest {
     public void testEvidenceIntegration_ConservedSingleTask_Half_Duration() {
         LinearTruthPolation t = new LinearTruthPolation(0, 10, 1);
         {
-            t.add(t(1f, 0.5f, 0, 10));
+            float conf = 0.5f;
+            t.add(t(1f, conf, 0, 10));
             @Nullable Truth tt = t.truth();
             assertEquals(1f, tt.freq());
-            assertEquals(w2c(c2w(0.5f)/2), tt.conf());
+            assertEquals(conf, tt.conf());
         }
     }
 

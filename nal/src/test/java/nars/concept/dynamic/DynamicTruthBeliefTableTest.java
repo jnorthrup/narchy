@@ -31,7 +31,7 @@ class DynamicTruthBeliefTableTest {
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 10; i++)
             tasks.add(tl.get(n));
-        assertEquals("[$.50 (x&&y). %0.0;.25%]", tasks.toString());
+        assertEquals("[$.25 (x&&y). %0.0;.25%]", tasks.toString());
         tasks.forEach(System.out::println);
     }
 
@@ -45,7 +45,7 @@ class DynamicTruthBeliefTableTest {
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 100; i++)
             tasks.add(tl.get(n));
-        assertEquals("[$.50 (x &&+1 y). 1 %1.0;.81%]", tasks.toString());
+        assertEquals("[$.25 (x &&+1 y). 1 %1.0;.81%]", tasks.toString());
 
     }
 
