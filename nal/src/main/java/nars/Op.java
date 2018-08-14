@@ -13,7 +13,6 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.util.Conj;
 import nars.term.util.TermBuilder;
@@ -620,43 +619,40 @@ public enum Op {
                     return Null;
 
 
-                if (et0.equalsRoot(et1))
+                if (et0.equals(et1))
                     return False;
 
-
-                Op o0 = et0.op();
-                if (et1.equalsNegRoot(et0)) {
-                    if (o0 == NEG || et0 == False)
-                        return False;
-                    else
-                        return True;
-                }
-
-                if (isTrueOrFalse(et0) || isTrueOrFalse(et1))
-                    return Null;
-
-                Op o1 = et1.op();
-
                 //((--,X)~(--,Y)) reduces to (Y~X)
-                if (o0 == NEG && o1 == NEG) {
+                if (et0.op() == NEG && et1.op() == NEG) {
                     //un-neg and swap order
                     Term x = et0.unneg();
                     et0 = et1.unneg();
-                    o0 = et0.op();
                     et1 = x;
-                    o1 = et1.op();
                 }
 
+                Op o0 = et0.op();
+                if (et1.equalsNeg(et0)) {
+                    return o0 == NEG || et0 == False ? False : True;
+                }
+
+
+                /** non-bool vs. bool - invalid */
+                if (isTrueOrFalse(et0) || isTrueOrFalse(et1)) {
+                    return Null;
+                }
+
+                /* deny temporal terms which can collapse degeneratively on conceptualization */
+                if (et0.hasAny(Op.Temporal) && !et0.equals(et0.root()))
+                    return Null;
+                if (et1.hasAny(Op.Temporal) && !et1.equals(et1.root()))
+                    return Null;
+
+
+                Op o1 = et1.op();
 
                 if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
                         || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
                     return Null;
-
-                if (op == DIFFe && et0 instanceof Int.IntRange && o1 == INT) {
-                    Term simplified = ((Int.IntRange) et0).subtract(et1);
-                    if (simplified != Null)
-                        return simplified;
-                }
 
 
                 Op set = op == DIFFe ? SETe : SETi;
@@ -715,19 +711,6 @@ public enum Op {
 
         if (a.equals(b))
             return Null;
-
-        if (o == INT) {
-            if (!(a instanceof Int.IntRange))
-                return Null;
-            else {
-                Term aMinB = ((Int.IntRange) a).subtract(b);
-                if (aMinB != Null) {
-                    if (a.equals(aMinB))
-                        return Null;
-                    return aMinB;
-                }
-            }
-        }
 
 
         int size = a.subs();

@@ -28,7 +28,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     public final FloatRange confImportance = new FloatRange(0.9f, 0f, 1f);
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.25f, 0f, 1f);
 
     public final FloatRange relGrowthExponent = new FloatRange(3f, 0f, 8f);
 

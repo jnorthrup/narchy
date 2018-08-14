@@ -11,7 +11,6 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static nars.Op.INT;
 import static nars.Op.Null;
 import static nars.time.Tense.DTERNAL;
 
@@ -67,16 +65,7 @@ public class SetFunc {
 
         @Override
         public Term apply(Term a, Term b) {
-    
-    
-
-            if (a instanceof Int.IntRange && b.op()==INT) {
-               return ((Int.IntRange)a).intersect(b);
-            }
-
             return intersect(a.op(), a.subterms(), b.subterms());
-    
-    
         }
 
     };

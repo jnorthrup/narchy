@@ -16,9 +16,9 @@ import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
+import nars.term.obj.QuantityTerm;
 import nars.term.util.Conj;
 import nars.term.util.Image;
-import nars.term.obj.QuantityTerm;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeSet;
 
 import static nars.Op.*;
@@ -377,42 +376,6 @@ public class Builtin {
          */
         nar.on(Functor.f1Inline("dropAnySet", (Term t) -> {
             Op oo = t.op();
-
-            if (oo == INT) {
-                if (t instanceof Int.IntRange) {
-
-                    Int.IntRange i = (Int.IntRange) t;
-                    Random rng = nar.random();
-                    if (i.min + 1 == i.max) {
-
-                        return Int.the(rng.nextBoolean() ? i.min : i.max);
-                    } else if (i.min + 2 == i.max) {
-
-                        switch (rng.nextInt(4)) {
-                            case 0:
-                                return Int.the(i.min);
-                            case 1:
-                                return Int.range(i.min, i.min + 1);
-                            case 2:
-                                return Int.range(i.min + 1, i.min + 2);
-                            case 3:
-                                return Int.the(i.max);
-                            default:
-                                throw new UnsupportedOperationException();
-                        }
-                    } else {
-                        int split =
-                                (i.max + i.min) / 2;
-
-                        return (rng.nextBoolean()) ?
-                                Int.range(i.min, split + 1) :
-                                Int.range(split + 1, i.max);
-                    }
-                }
-
-
-                return Null;
-            }
 
             if (!oo.in(SETi.bit | SETe.bit | SECTi.bit | SECTe.bit))
                 return Null;

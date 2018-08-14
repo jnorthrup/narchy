@@ -77,6 +77,8 @@ public class Evaluation {
         }
 
     };
+
+    /** TODO rewrite so that Evaluation is Iterable-like and return that. then it will be like prolog solutions*/
     private static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term, Functor> resolver, boolean wrapBool) {
         ArrayHashSet<Term> all = new ArrayHashSet<>(1);
         Evaluation.solve(e, x, wrapBool, resolver, (y) -> {

@@ -211,14 +211,7 @@ public class IO {
                             throw new TODO();
                     }
                 case INT:
-                    switch (subType(opByte)) {
-                        case 0:
-                            return Int.the(in.readInt());
-                        case 1:
-                            return Int.range(in.readInt(), in.readInt());
-                        default:
-                            throw new TODO();
-                    }
+                    return Int.the(in.readInt());
                 case NEG:
                     return readNegated(in);
                 default:

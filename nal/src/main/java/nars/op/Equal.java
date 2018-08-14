@@ -20,8 +20,11 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     @Override
     public Term applyInline(Subterms args) {
         if (args.subs()==2) {
-            Term x = args.sub(0);
-            Term y = args.sub(1);
+            Term x = args.sub(0), y = args.sub(1);
+
+            if (x == Null || y == Null)
+                return Null;
+
             if (x.equals(y)) return True;
             //if (x instanceof Variable || y instanceof Variable) return null; //undecidable inline
             if (x.hasVars() || y.hasVars())
@@ -34,6 +37,11 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
     @Override
     protected Term apply2(Evaluation e, Term x, Term y) {
+
+        /** null != null, like NaN!=NaN .. it represents an unknokwn or invalid value.  who can know if it equals another one */
+        if (x == Null || y == Null)
+            return Null;
+
         if (x.equals(y))
             return True; //fast equality pre-test
 

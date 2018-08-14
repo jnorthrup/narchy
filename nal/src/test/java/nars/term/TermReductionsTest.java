@@ -178,6 +178,9 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals(p, SECTi.the(p, p));
     }
 
+    @Test void testInvalidDiff_Concept_involving_ConjSeq() {
+        assertEq(Null, "(((y &&+1 x) &&+1 y)~(x~(y &&+- x)))");
+    }
     @Test
     void testDiffIntEqual() {
 

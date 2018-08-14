@@ -488,8 +488,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
             if (this instanceof NormalizedVariable || this instanceof Int) {
                 return 0;
-            } else if (this instanceof Int.IntRange) {
-                return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) t).hash64());
             } else /*if (this instanceof Atomic)*/ {
                 return Util.compare(
                         ((Atomic) this).bytes(),

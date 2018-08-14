@@ -64,7 +64,7 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
             if (x instanceof AnonID)
                 return x;
 
-            if (x instanceof UnnormalizedVariable || x instanceof Int.IntRange) {
+            if (x instanceof UnnormalizedVariable) {
                 return x; //HACK
             }
 
