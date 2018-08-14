@@ -326,27 +326,27 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
     @Nullable
-    static Task clone(Task x, Term newContent) {
+    static NALTask clone(Task x, Term newContent) {
         return clone(x, newContent, x.truth(), x.punc());
     }
 
     @Nullable
-    static Task clone(Task x, byte newPunc) {
+    static NALTask clone(Task x, byte newPunc) {
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
     @Nullable
-    static Task clone(Task x) {
+    static NALTask clone(Task x) {
         return clone(x, x.punc());
     }
 
     @Nullable
-    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
+    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
         return clone(x, newContent, newTruth, newPunc, x.start(), x.end());
     }
 
     @Nullable
-    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
+    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
         return clone(x, newContent, newTruth, newPunc, (c, t) ->
                 new NALTask(c, newPunc, t,
                         x.creation(), start, end,
@@ -355,9 +355,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
     @Nullable
-    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, BiFunction<Term, Truth, Task> taskBuilder) {
+    static <T extends Task> T clone(Task x, Term newContent, Truth newTruth, byte newPunc, BiFunction<Term, Truth, T> taskBuilder) {
 
-        Task y = Task.tryTask(newContent, newPunc, newTruth, taskBuilder);
+        T y = Task.tryTask(newContent, newPunc, newTruth, taskBuilder);
         if (y == null)
             return null;
 
@@ -372,12 +372,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return y;
     }
 
-    static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> withResult) {
+    static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
         return tryTask(t, punc, tr, withResult, !Param.DEBUG_EXTRA);
     }
 
     @Nullable
-    static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> withResult, boolean safe) {
+    static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
         if ((punc == BELIEF || punc == GOAL) && tr.evi() < Float.MIN_NORMAL /*Truth.EVI_MIN*/)
             throw new TaskException(t, "insufficient evidence");
 
@@ -459,7 +459,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //    }
 
     /** leave n null to avoid dithering */
-    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
+    static NALTask eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
         Truth tt = x.truth().eternalized(eviFactor, eviMin, n);
         if (tt == null)
             return null;

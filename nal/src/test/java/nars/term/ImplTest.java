@@ -38,6 +38,9 @@ public class ImplTest {
         assertEq("((b &&+60000 c)=|>(#1 &&+60000 (b&|#1)))",
                 "((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))");
     }
+    @Test void conceptualizability() {
+        assertEq("(( &&+- ,b,c,d) ==>+- b)", $$("((c &&+5 (b&|d)) ==>-10 b)").concept());
+    }
 
     @Test
     void testReducibleImplFactored2() {

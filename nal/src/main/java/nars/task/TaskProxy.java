@@ -124,4 +124,8 @@ public class TaskProxy extends Pri implements Task {
         return task.punc();
     }
 
+    /** produce a concrete non-proxy clone of this */
+    public NALTask the() {
+        return Task.clone(this);
+    }
 }

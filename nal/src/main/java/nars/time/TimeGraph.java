@@ -524,8 +524,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * solution vector for 2-ary CONJ
      */
     private boolean solveConj2DT(Predicate<Event> each, Event a, int dt, Event b) {
+
         long ddt = dt(dt);
 
+        if (ddt!=DTERNAL && ddt!=0) {
+            assert(ddt!=XTERNAL);
+            //swap to correct sequence order
+            if (a.start() > b.start()){
+                Event z = a;
+                a = b;
+                b = z;
+            }
+        }
 
         Term c = Conj.conjMerge(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt) );
         if (c.op() != CONJ && ((ddt == 0) && (dt!=0))) { //undo parallel-ization if the collapse caused an invalid term

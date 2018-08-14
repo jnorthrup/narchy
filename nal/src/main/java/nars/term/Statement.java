@@ -19,7 +19,7 @@ public class Statement {
         if (subject == Null || predicate == Null)
             return Null;
 
-        boolean dtConcurrent = Conj.concurrent(dt);
+        boolean dtConcurrent = Conj.concurrent(dt) && dt!=XTERNAL;
         if (dtConcurrent) {
             if (subject.equals(predicate))
                 return True;

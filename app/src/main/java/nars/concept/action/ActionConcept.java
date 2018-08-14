@@ -64,22 +64,6 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     }
 
     @Override
-    public void add(Remember r, NAR n) {
-        Task t = r.input;
-        if (t.isBeliefOrGoal() && t.isEternal()) {
-            /** reject eternal beliefs and goals of any type
-             * TODO avoid creation of Eternal tables
-             *  */
-            r.reject();
-
-        } else {
-            super.add(r, n);
-        }
-    }
-
-
-
-    @Override
     public void value(Task t, float activation, NAR n) {
 
         super.value(t, activation, n);

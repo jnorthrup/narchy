@@ -130,7 +130,7 @@ public class NARS {
 
                 //nar.forgetRate.set(0.5f);
 
-                float basePri = 0.1f;
+                float basePri = 0.5f; /* warning: changing this for now will affect many tests that have hardcoded priority values.  TODO fix that */
                 n.beliefPriDefault.set(basePri * 0.5f);
                 n.goalPriDefault.set(basePri * 0.5f);
                 n.questionPriDefault.set(basePri * 0.1f);

@@ -14,8 +14,12 @@ import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.Revision;
+import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
-import nars.task.util.*;
+import nars.task.util.Answer;
+import nars.task.util.TaskRegion;
+import nars.task.util.TimeConfRange;
+import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -314,6 +318,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
     }
+    /** TODO refactor as TimeRange method */
     private TimeRange expandLerpToTableBounds(TimeRange time, float lerpToTableExtents) {
         if (time.start != ETERNAL) { //not already fully expanded?
             long tableDur = tableDur();
@@ -330,6 +335,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
         return time;
     }
+    /** TODO refactor as TimeRange method */
     private TimeRange expandFactor(TimeRange time, double factor) {
         if (time.start != ETERNAL) { //not already fully expanded?
 
@@ -360,13 +366,17 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return;
 
         if (capacity == 0) {
-            r.reject();
             return;
         }
 
         /** buffer removal handling until outside of the locked section */
 
-        Task input = r.input;
+        Task input;
+        if (r.input instanceof TaskProxy) {
+            input = ((TaskProxy)r.input).the();
+        } else {
+            input = r.input;
+        }
 
 
         /** inserted but not necessarily kept */
