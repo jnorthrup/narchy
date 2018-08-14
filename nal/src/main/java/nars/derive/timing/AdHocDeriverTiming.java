@@ -3,7 +3,6 @@ package nars.derive.timing;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.time.Time;
 
 import java.util.Random;
@@ -30,22 +29,15 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
             return new long[] { ETERNAL, ETERNAL };
 
         long[] tt;
-        switch (rng.nextInt(4)) {
+        switch (rng.nextInt(3)) {
             case 0:
-                tt = presentDuration(); break;
+                tt = presentDuration(1); break;
             case 1:
                 tt = taskTime(task); break;
             case 2:
-                tt = pastFutureRadius(task, false); break;
-            case 3:
-                tt = pastFutureRadius(task, true); break;
+                tt = pastFutureRadius(task, true, false); break;
             default:
                 throw new UnsupportedOperationException();
-        }
-        if (tt[0]!=ETERNAL) {
-            int d = nar.dtDither();
-            tt[0] = Tense.dither(tt[0], d);
-            tt[1] = Tense.dither(tt[1], d);
         }
 
         return tt;
@@ -53,9 +45,9 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
 
 
 
-    private long[] presentDuration() {
+    private long[] presentDuration(float factor) {
         long now = clock.now();
-        int dur = Math.max(2, clock.dur());
+        int dur = Math.round(factor * clock.dur());
         return new long[] { now - dur/2, now + dur/2 };
     }
 
@@ -63,15 +55,17 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
         return new long[] {t.start(), t.end() };
     }
 
-    private long[] pastFutureRadius(Task t, boolean future) {
+    private long[] pastFutureRadius(Task t, boolean past, boolean future) {
         long[] tt = taskTime(t);
         if (tt[0]==ETERNAL) {
-            return rng.nextBoolean() ? tt : presentDuration();
+            return presentDuration(4);
         } else {
 
             long now = nar.time();
             long range = Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now));
-            if (future) {
+            if (past && future) {
+                return new long[]{now - range, now + range}; //future span
+            } else if (future) {
                 return new long[]{now, now + range}; //future span
             } else {
                 return new long[]{now - range, now}; //past span

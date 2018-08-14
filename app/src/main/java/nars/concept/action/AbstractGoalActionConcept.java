@@ -1,6 +1,7 @@
 package nars.concept.action;
 
 import nars.NAR;
+import nars.Task;
 import nars.link.TermLinker;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
@@ -10,6 +11,8 @@ import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 import static nars.Op.GOAL;
 
@@ -28,7 +31,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     public AbstractGoalActionConcept(Term c, TermLinker linker, NAR n) {
         super(c, linker, n);
-        this.sharedCuriosityEvidence = n.evidence();
+        this.sharedCuriosityEvidence =
+                n.evidence();
+                //Stamp.UNSTAMPED;
     }
 
     protected AbstractGoalActionConcept(Term term, SensorBeliefTables sensorBeliefTables, BeliefTables newTable, NAR n) {
@@ -47,9 +52,17 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
-        TruthPolation a = Answer.relevance(prev, now /*next*/, term, null /* filter curiosity tasks? */, nar)
-                .match(goals())
-                .truthpolation(); //raw not filtered
+        Predicate<Task> withoutCuriosity = t -> t.stamp() != sharedCuriosityEvidence;  /* filter curiosity tasks? */
+
+        TruthPolation a = Answer.relevance(prev, now /*next*/, term, withoutCuriosity, nar).match(goals()).truthpolation();
+        if (a == null) {
+            //try again , allowing curiosity
+            a = Answer.relevance(prev, now /*next*/, term, null, nar).match(goals()).truthpolation();
+        }
+
+        if (a!=null)
+            a = a.filtered();
+
         action = a;
         actionTruth = a!=null ? a.truth() : null;
 //        if (a!=null) {

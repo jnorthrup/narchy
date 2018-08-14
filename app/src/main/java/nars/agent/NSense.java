@@ -234,19 +234,15 @@ public interface NSense {
      */
     default BiPolarAction actionTriState(Term cc, IntPredicate i) {
 
+        float deadZoneFreqRadius =
+                1 / 6f;
 
-        return actionBipolar(cc, true, (float f) -> {
-
-            f = f / 2f + 0.5f;
-
-
-            float deadZoneFreqRadius =
-                    1 / 6f;
+        return actionBipolar(cc, false, (float f) -> {
 
             int s;
-            if (f > 0.5f + deadZoneFreqRadius)
+            if (f > deadZoneFreqRadius)
                 s = +1;
-            else if (f < 0.5f - deadZoneFreqRadius)
+            else if (f < -deadZoneFreqRadius)
                 s = -1;
             else
                 s = 0;

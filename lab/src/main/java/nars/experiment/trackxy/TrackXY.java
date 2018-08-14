@@ -88,9 +88,9 @@ public class TrackXY extends NAgentX {
             this.cam = null;
         }
 
-        actionPushButtonMutex();
+        //actionPushButtonMutex();
         //actionSwitch();
-        //actionTriState();
+        actionTriState();
 
 
         reward(this::act);
@@ -109,7 +109,7 @@ public class TrackXY extends NAgentX {
 
             int dur = 1;
 
-            NARS nb = new NARS()
+            NARS nb = new NARS.DefaultNAR(1, true)
                     .attention(() -> new Attention(64))
                     .exe(new UniExec())
                     .time(new CycleTime().dur(dur))

@@ -308,7 +308,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     /** default reward term builder from String */
     protected Term rewardTerm(String reward) {
-        return $.inh($$(reward), id);
+        return $.func($$(reward), id);
     }
 
     public Off reward(String reward, float min, float max, FloatSupplier rewardFunc) {
@@ -460,6 +460,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected void reinforce(long prev, long now, long next) {
+
         in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
             x.pri(
                     pri.floatValue() * nar.priDefault(x.punc())

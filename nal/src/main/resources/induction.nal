@@ -2,13 +2,18 @@
 //  When P and then S happened according to an observation, by induction (weak) it may be that alyways after P, usually S happens.
 //      According to reductions: For implications, the predicate may be allowed an implication, but not subject
 
-   B, A, --is(A,"==>") |- (A ==>+- B), (Belief:Induction, Time:BeliefRelative, Also:VarIntro)
-        B, A, --is(A,"==>") |- (--A ==>+- B), (Belief:InductionPN, Time:BeliefRelative, Also:VarIntro)
+   B, A, --is(A,"==>") |- (A ==> B), (Belief:Induction, Time:BeliefRelative, Also:VarIntro)
+        B, A, --is(A,"==>") |- (--A ==> B), (Belief:InductionPN, Time:BeliefRelative, Also:VarIntro)
 
-    B, A, --is(B,"==>") |- (B ==>+- A), (Belief:Abduction, Time:TaskRelative, Also:VarIntro)
-        B, A, --is(B,"==>") |- (--B ==>+- A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
+    B, A, --is(B,"==>") |- (B ==> A), (Belief:Abduction, Time:TaskRelative, Also:VarIntro)
+        B, A, --is(B,"==>") |- (--B ==> A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
 
-    B, A, --is(A,"==>"), --is(B,"==>")   |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
+    B, A, --is(A,"==>"), --is(B,"==>")   |- (polarize(B,task) && polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
+
+        //experiment
+        G, B, neq(G,B), task("!") |- (polarize(G, task) && polarize(B, belief)), (Goal:IntersectionDepolarized, Time:Relative)
+
+
 
     B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(B,task) ~ polarize(A,belief)), (Belief:DifferenceDepolarized, Also:VarIntro, Time:Intersect)
     B, A, --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqRCom(A,B) |- (polarize(A,belief) ~ polarize(B,task)), (Belief:DifferenceReverseDepolarized, Also:VarIntro, Time:Intersect)
@@ -30,15 +35,15 @@
 
 
 
-//    B, A, task("."), time(dtEvents),                             --is(A,"==>"),--is(B,"==>") |- (A ==>+- B), (Belief:Induction)
-//    B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B),     --is(A,"==>"),--is(B,"==>") |- varIntro((A ==>+- B)), (Belief:Induction)
-//        B, A, task(negative), task("."), time(dtEvents),                          --is(A,"==>"),--is(B,"==>") |- ((--,%A) ==>+- B), (Belief:InductionN)
-//        B, A, task(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B), --is(A,"==>"),--is(B,"==>") |- varIntro(((--,%A) ==>+- B)), (Belief:InductionN)
+//    B, A, task("."), time(dtEvents),                             --is(A,"==>"),--is(B,"==>") |- (A ==> B), (Belief:Induction)
+//    B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B),     --is(A,"==>"),--is(B,"==>") |- varIntro((A ==> B)), (Belief:Induction)
+//        B, A, task(negative), task("."), time(dtEvents),                          --is(A,"==>"),--is(B,"==>") |- ((--,%A) ==> B), (Belief:InductionN)
+//        B, A, task(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B), --is(A,"==>"),--is(B,"==>") |- varIntro(((--,%A) ==> B)), (Belief:InductionN)
 
-//    B, A, belief(positive), task("."), time(dtEvents),                                --is(B,"==>"),--is(A,"==>") |- (B ==>+- A), (Belief:Abduction)
-//    B, A, belief(positive), task("."), time(dtEventsOrEternals), neqAndCom(A,B),       --is(A,"==>"),--is(B,"==>") |- varIntro((B ==>+- A)), (Belief:Abduction)
-//        B, A, belief(negative), task("."), time(dtEvents),                            --is(B,"==>"),--is(A,"==>") |- ((--,%B) ==>+- A), (Belief:AbductionPN)
-//        B, A, belief(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B),   --is(A,"==>"),--is(B,"==>") |- varIntro(((--,%B) ==>+- A)), (Belief:AbductionPN)
+//    B, A, belief(positive), task("."), time(dtEvents),                                --is(B,"==>"),--is(A,"==>") |- (B ==> A), (Belief:Abduction)
+//    B, A, belief(positive), task("."), time(dtEventsOrEternals), neqAndCom(A,B),       --is(A,"==>"),--is(B,"==>") |- varIntro((B ==> A)), (Belief:Abduction)
+//        B, A, belief(negative), task("."), time(dtEvents),                            --is(B,"==>"),--is(A,"==>") |- ((--,%B) ==> A), (Belief:AbductionPN)
+//        B, A, belief(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B),   --is(A,"==>"),--is(B,"==>") |- varIntro(((--,%B) ==> A)), (Belief:AbductionPN)
 
 
 

@@ -63,8 +63,8 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = true;
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
@@ -98,9 +98,9 @@ public abstract class Param {
 
 
     public static final PriMerge termlinkMerge =
-            PriMerge.plus;
+            //PriMerge.plus;
             //PriMerge.max;
-            //PriMerge.or;
+            PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.avgGeoFast;
@@ -199,14 +199,14 @@ public abstract class Param {
      * TTL = 'time to live'
      */
 
-    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, 0, TTL_MIN * 16);
 
 
     /**
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)

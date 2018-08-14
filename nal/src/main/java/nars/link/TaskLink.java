@@ -5,9 +5,11 @@ import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.table.BeliefTables;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -96,12 +98,37 @@ public interface TaskLink extends Priority, Termed {
 
             Term t = term.unneg();
             Concept c = n.conceptualizeDynamic(t);
-            Task r;
+            Task task;
             if (c != null) {
 
-                r = c.table(punc).match(se[0], se[1], t, n);
+                task = c.table(punc).match(se[0], se[1], t, n);
+                if (task!=null) {
+                    byte punc = task.punc();
+                    //dynamic question answering
+                    Term taskTerm = task.term();
+                    if ((punc==QUESTION || punc == QUEST) && !taskTerm.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
 
-                //r = result == null || result.isDeleted() ? null : result;
+                        BeliefTables aa = (BeliefTables) c.tableAnswering(punc);
+                        /*@Nullable DynamicTaskTable aa = answers.tableFirst(DynamicTaskTable.class);
+                        if (aa!=null)*/ {
+
+                            //match an answer emulating a virtual self-termlink being matched during premise formation
+                            Task q = task;
+                            Task a = aa.answer(q.start(), q.end(), taskTerm, null, n);
+                            if (a != null) {
+
+
+
+                                //decrease tasklink too?
+
+                                q.onAnswered(a, n);
+                                n.input(a);
+                            }
+                        }
+                    }
+
+                }
+
             } else {
                 //TODO if term supports dynamic truth, then possibly conceptualize and then match as above?
 
@@ -122,15 +149,15 @@ public interface TaskLink extends Priority, Termed {
                         throw new UnsupportedOperationException();
                 }
 
-                r = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
+                task = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
                 if (Param.DEBUG)
-                    r.log("Tasklinked");
-                r.pri(link.priElseZero());
+                    task.log("Tasklinked");
+                task.pri(link.priElseZero());
             }
 
 
 
-            return r;
+            return task;
 
         }
     }

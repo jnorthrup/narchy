@@ -18,10 +18,10 @@ public interface Priority extends Prioritized, ScalarValue {
 
     default float take(Priority source, float p, boolean amountOrFraction, boolean copyOrMove) {
         float amount;
-        if (!amountOrFraction) {
-            amount = source.priElseZero() * p;
-        } else {
+        if (amountOrFraction) {
             amount = p;
+        } else {
+            amount = source.priElseZero() * p;
         }
         if (amount < ScalarValue.EPSILON) return 0;
 

@@ -4,10 +4,12 @@ import nars.NAR;
 import nars.NARS;
 import nars.control.MetaGoal;
 import nars.test.impl.DeductiveMeshTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.SortedMap;
 
+@Disabled
 class MetaGoalTest {
 
     @Test
@@ -17,12 +19,9 @@ class MetaGoalTest {
         n.emotion.want(MetaGoal.Believe, 0.05f);
         n.emotion.want(MetaGoal.Perceive, -0.05f);
 
-        n.log();
-
         DeductiveMeshTest m = new DeductiveMeshTest(n, new int[] { 3, 3 }, 3500);
         m.test.test();
         
-
         analyzeCauses(n);
     }
 

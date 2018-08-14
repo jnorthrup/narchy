@@ -8,7 +8,6 @@ import nars.Param;
 import nars.Task;
 import nars.table.TaskTable;
 import nars.task.Revision;
-import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -207,8 +206,7 @@ public class Answer implements Consumer<Task> {
             if (ss != ETERNAL) { //dont eternalize here
                 long ee = time.end;
                 if (t.isEternal() || !t.containedBy(ss, ee)) {
-                    @Nullable SpecialTruthAndOccurrenceTask p = Task.project(t, ss, ee, nar);
-                    return p;
+                    return Task.project(t, ss, ee, nar);
                 }
             }
         }
@@ -250,7 +248,15 @@ public class Answer implements Consumer<Task> {
         if (tt==null)
             return strongest;
 
-        return Truth.stronger(strongest, d.task(template, tt, beliefOrGoal, ditherTruth, nar));
+
+        Task dyn = d.task(template, tt, beliefOrGoal, ditherTruth, nar);
+        if (strongest.isDeleted()) {
+            //which could have occurred by now
+            return dyn;
+        }
+        assert(dyn == null || !dyn.isDeleted());
+
+        return Truth.stronger(strongest, dyn);
     }
 
     /** TODO merge DynTruth and TruthPolation */

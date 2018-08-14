@@ -13,8 +13,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
-import nars.table.BeliefTables;
-import nars.table.dynamic.DynamicTaskTable;
+import nars.task.util.Answer;
 import nars.term.Term;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
@@ -105,6 +104,7 @@ public class Premise {
 
         Term beliefTerm = term();
         Op bo = beliefTerm.op();
+        NAR n = d.nar;
         if (taskTerm.concept().equals(beliefTerm.concept())) {
             beliefConceptCanAnswerTaskConcept = true;
         } else {
@@ -115,7 +115,7 @@ public class Premise {
 
                 Term _beliefTerm = beliefTerm;
                 final Term[] unifiedBeliefTerm = new Term[]{null};
-                UnifySubst u = new UnifySubst(var == VAR_QUERY.bit ? VAR_QUERY : null /* all */, d.nar, (y) -> {
+                UnifySubst u = new UnifySubst(var == VAR_QUERY.bit ? VAR_QUERY : null /* all */, n, (y) -> {
                     if (y.op().conceptualizable) {
                         y = //y.normalize().unneg();
                                 y.unneg();
@@ -141,34 +141,6 @@ public class Premise {
 
             }
 //            }
-        }
-
-        {
-            //dynamic question answering
-            if (task.isQuestionOrQuest() && !taskTerm.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
-
-
-                TaskConcept c = (TaskConcept) d.nar.conceptualizeDynamic(taskTerm);
-                if (c!=null) {
-                        BeliefTables answers = (BeliefTables) c.tableAnswering(task.punc());
-                            @Nullable DynamicTaskTable aa = answers.tableFirst(DynamicTaskTable.class);
-                            if (aa!=null) {
-
-                                //match an answer emulating a virtual self-termlink being matched during premise formation
-                                Task a = aa.answer(task.start(), task.end(), taskTerm, null, d.nar);
-                                if (a != null) {
-
-                                    a.take(task, a.priElseZero() * task.priElseZero(), true, false);
-
-                                    //decrease tasklink too?
-
-                                    task.onAnswered(a, d.nar);
-                                    d.add(a);
-                                }
-                        }
-                    }
-                }
-
         }
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, beliefTransformed);
@@ -217,7 +189,7 @@ public class Premise {
 
                     //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
                     //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-                    Task match = bb.rank(focus[0], focus[1], beliefTerm, beliefFilter, n)
+                    Task match = bb.relevance(focus[0], focus[1], beliefTerm, beliefFilter, n)
                             .match(bb)
                             .task();
 
@@ -254,7 +226,7 @@ public class Premise {
         if (!answerTable.isEmpty()) {
 
             Task match =
-                answerTable.rank(task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
+                Answer.relevance(task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
                         .ditherTruth(true)
                         .match(answerTable).task();
 
@@ -280,8 +252,6 @@ public class Premise {
                 if (answered != null) {
 
                     d.add(answered);
-
-                    n.emotion.onAnswer(task, answered);
 
                     if (answered.isBelief())
                         return answered;

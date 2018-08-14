@@ -11,7 +11,6 @@ import nars.Param;
 import nars.Task;
 import nars.term.Term;
 import nars.unify.Unify;
-import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,8 +130,8 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
 
     @Override
-    public @Nullable Task onAnswered(Task answer, TimeAware timeAware) {
-        Task x = super.onAnswered(answer, timeAware);
+    public @Nullable Task onAnswered(Task answer, NAR n) {
+        Task x = super.onAnswered(answer, n);
         onAnswer(answer);
         return x;
     }

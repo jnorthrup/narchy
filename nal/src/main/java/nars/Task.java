@@ -24,7 +24,6 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.func.NALTruth;
 import nars.truth.polation.TruthIntegration;
-import nars.util.TimeAware;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -34,7 +33,10 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
@@ -420,11 +422,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return negated ? Task.negated(t) : t;
     }
     @Nullable
-    static SpecialTruthAndOccurrenceTask project(Task t, long start, long end, NAR n) {
+    static Task project(Task t, long start, long end, NAR n) {
         return project(t, start, end, n, false);
     }
     @Nullable
-    static SpecialTruthAndOccurrenceTask project(Task t, long start, long end, NAR n, boolean negated) {
+    static Task project(Task t, long start, long end, NAR n, boolean negated) {
+        if (!negated && t.start()==start && t.end()==end)
+            return t;
+
         if (!t.isEternal()) {
             @Nullable Longerval intersection = Longerval.intersect(start, end, t.start(), t.end());
             if (intersection != null) {
@@ -587,7 +592,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * to cancel any matched premise belief.
      */
     @Nullable
-    default Task onAnswered(/*@NotNull*/Task answer, /*@NotNull*/TimeAware timeAware) {
+    default Task onAnswered(/*@NotNull*/Task answer, NAR n) {
+
+        Task question = this;
+
+        answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
+
+        n.emotion.onAnswer(this, answer);
+
         return answer;
     }
 

@@ -22,6 +22,7 @@ package nars.truth;
 
 import com.google.common.collect.Lists;
 import jcog.Util;
+import jcog.WTF;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
@@ -61,14 +62,14 @@ public interface Stamp {
     /*@NotNull*/
     static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
 
-        if (a.length == 0 || a == Stamp.UNSTAMPED_OVERLAPPING) {
-            if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING)
-                return Stamp.UNSTAMPED_OVERLAPPING;
-            else
-                return b;
-        } else if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING) {
-            return a;
-        }
+//        if (a.length == 0 || a == Stamp.UNSTAMPED_OVERLAPPING) {
+//            if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING)
+//                return Stamp.UNSTAMPED_OVERLAPPING;
+//            else
+//                return b;
+//        } else if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING) {
+//            return a;
+//        }
 
         int aLen = a.length, bLen = b.length;
 
@@ -473,13 +474,14 @@ public interface Stamp {
         for (int i = 0, sSize = S; i < sSize; i++) {
             Stamp si = s.get(i);
             long[] x = si.stamp();
-            if (x == UNSTAMPED_OVERLAPPING)
-                continue;
+//            if (x == UNSTAMPED_OVERLAPPING)
+//                continue;
             totalEvidence += x.length;
             ptr[i] = (byte) x.length;
         }
         if (totalEvidence == 0) {
-            return pair(Stamp.UNSTAMPED_OVERLAPPING, 1f);
+            throw new WTF();
+            //return pair(Stamp.UNSTAMPED_OVERLAPPING, 1f);
         }
 
         List<long[]> stamps = Lists.transform(s, Stamp::stamp);
