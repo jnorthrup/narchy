@@ -8,7 +8,7 @@ import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.atom.Atom;
-import nars.truth.polation.FocusingLinearTruthPolation;
+import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
@@ -52,8 +52,8 @@ public abstract class Param {
     public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
     /** auto decompose conjunction beliefs and goals on input */
-    public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = true;
-    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = true;
+    public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = false;
+    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = false;
 
     /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
      *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
@@ -62,10 +62,6 @@ public abstract class Param {
      *  seems to enable more temporal precision at the cost of more links.
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
-
-
-    //5;
-
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
@@ -102,9 +98,9 @@ public abstract class Param {
 
 
     public static final PriMerge termlinkMerge =
-            //PriMerge.plus;
+            PriMerge.plus;
             //PriMerge.max;
-            PriMerge.or;
+            //PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.avgGeoFast;
@@ -167,8 +163,8 @@ public abstract class Param {
      * creates instance of the default truthpolation implementation
      */
     public static TruthPolation truth(long start, long end, int dur) {
-        //return new LinearTruthPolation(start, end, dur);
-        return new FocusingLinearTruthPolation(start, end, dur);
+        return new LinearTruthPolation(start, end, dur);
+        //return new FocusingLinearTruthPolation(start, end, dur);
     }
 
 //    /**
@@ -210,7 +206,7 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 4f;
+    public static float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
@@ -497,11 +493,6 @@ public abstract class Param {
     public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
 
 
-    public static float beliefValue(Task beliefOrGoal) {
-
-        return beliefOrGoal.conf();
-
-    }
 
 
 }

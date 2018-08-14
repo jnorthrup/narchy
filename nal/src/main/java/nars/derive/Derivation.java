@@ -11,18 +11,18 @@ import nars.derive.step.Occurrify;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
-import nars.task.proxy.TaskWithTerm;
+import nars.task.proxy.SpecialTermTask;
 import nars.term.*;
 import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import nars.term.control.PREDICATE;
+import nars.term.util.Image;
+import nars.term.util.TermHashMap;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
-import nars.term.util.TermHashMap;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
@@ -39,7 +39,6 @@ import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
-import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 
@@ -174,7 +173,7 @@ public class Derivation extends PreDerivation {
     public transient short[] parentCause;
     public transient boolean concSingle;
     public transient float parentComplexitySum;
-    public transient float premiseEviSingle, premiseEviDouble;
+    public transient float taskEvi, beliefEvi;
     public transient long[] concOcc;
     public transient Truth concTruth;
     public transient byte concPunc;
@@ -325,7 +324,7 @@ public class Derivation extends PreDerivation {
             this.taskStamp = Stamp.toSet(nextTask);
         }
         if (this._task == null || this._task != nextTask) {
-            this.task = new TaskWithTerm(taskTerm, nextTask);
+            this.task = new SpecialTermTask(taskTerm, nextTask);
         }
 
         long taskStart = nextTask.start();
@@ -348,15 +347,18 @@ public class Derivation extends PreDerivation {
         long taskEnd = nextTask.end();
         if (nextBelief != null) {
             this.beliefTruthRaw = nextBelief.truth();
-            this.beliefTruthDuringTask = nextBelief.truth(taskStart, taskEnd, dur);
             this.beliefStart = nextBelief.start();
 
-            if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(taskStart == ETERNAL || beliefStart == ETERNAL)) {
-                Truth beliefEte = beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, nar);
-                this.beliefTruthDuringTask = Truth.stronger(beliefTruthDuringTask, beliefEte);
+            this.beliefTruthProjectedToTask = nextBelief.truth(taskStart, taskEnd, dur);
+
+            if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(beliefStart == ETERNAL && !beliefTruthProjectedToTask.equals(beliefTruthRaw))) {
+                this.beliefTruthProjectedToTask = Truth.stronger(
+                        beliefTruthProjectedToTask,
+                        beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, null /* dont dither */)
+                );
             }
 
-            this._belief = beliefTruthRaw != null || beliefTruthDuringTask != null ? nextBelief : null;
+            this._belief = beliefTruthRaw != null || beliefTruthProjectedToTask != null ? nextBelief : null;
         } else {
             this._belief = null;
         }
@@ -365,13 +367,13 @@ try {
         if (this._belief != null) {
 
             beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
-            this.belief = new TaskWithTerm(beliefTerm, nextBelief);
+            this.belief = new SpecialTermTask(beliefTerm, nextBelief);
         } else {
 
             this.beliefTerm = anon.put(this._beliefTerm = nextBeliefTerm);
             this.beliefStart = TIMELESS;
             this.belief = null;
-            this.beliefTruthRaw = this.beliefTruthDuringTask = null;
+            this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
         }
 } catch (RuntimeException w) {
     return fatal(nextBelief, w);
@@ -460,11 +462,8 @@ try {
                         Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
 
 
-        this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : Float.NaN;
-        this.premiseEviDouble = beliefTruthRaw != null ?
-
-                premiseEviSingle + beliefTruthRaw.evi() :
-                premiseEviSingle;
+        this.taskEvi = taskTruth != null ? taskTruth.evi() : 0;
+        this.beliefEvi = beliefTruthProjectedToTask != null ? beliefTruthProjectedToTask.evi() : 0;
 
 
         setTTL(ttl);
@@ -604,7 +603,7 @@ try {
 
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {
-        float e = ratio * c2wSafe(concTruth.conf());
+        float e = ratio * concTruth.evi();
         if (eternalize)
             e = Math.max(concTruth.eviEternalized(), e);
         return concTruthEvi(e);

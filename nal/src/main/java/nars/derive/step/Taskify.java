@@ -85,9 +85,10 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
 
 
-        Truth tru = d.concTruth;
+        Truth tru;
 
         if (punc == BELIEF || punc == GOAL) {
+            tru = d.concTruth;
             if (tru.conf() < d.confMin)
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 
@@ -96,6 +97,8 @@ public class Taskify extends AbstractPred<Derivation> {
             if (tru == null)
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 
+        } else {
+            tru = null; //questions and quests
         }
 
 
@@ -135,7 +138,7 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
 
-        float priority = d.deriver.prioritize.pri(t, d);
+        float priority = d.deriver.prioritize.pri(t, tru, d);
         if (priority != priority) {
             d.nar.emotion.deriveFailPrioritize.increment();
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);

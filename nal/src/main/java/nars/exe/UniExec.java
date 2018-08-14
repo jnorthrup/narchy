@@ -7,7 +7,6 @@ import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
-import jcog.random.SplitMix64Random;
 import jcog.service.Service;
 import nars.NAR;
 import nars.control.DurService;
@@ -24,8 +23,8 @@ public class UniExec extends AbstractExec {
     int WORK_PER_CYCLE = 1;
 
     final Focus.DefaultRevaluator revaluator =
-            new Focus.AERevaluator(new SplitMix64Random(1));
-            //new Focus.DefaultRevaluator();
+            //new Focus.AERevaluator(new SplitMix64Random(1));
+            new Focus.DefaultRevaluator();
 
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 

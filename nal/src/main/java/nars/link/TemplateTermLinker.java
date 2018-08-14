@@ -43,10 +43,18 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         return stream();
     }
 
+    public static TermLinker of(Term term) {
+        return of(term, layers(term));
+    }
+
+    public static TermLinker of(Term term, Term... additional) {
+        return of(term, layers(term), additional);
+    }
+
     /**
      * default recursive termlink templates constructor
      */
-    public static TermLinker of(Term term) {
+    public static TermLinker of(Term term, int layers, Term... additional) {
 
         if (term.subs() > 0) {
 
@@ -57,7 +65,10 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
             ArrayHashSet<Term> tc = new ArrayHashSet<>(term.volume() /* estimate */);
 
-            add(term, tc, 0, term, layers(term) );
+            add(term, tc, 0, term,  layers);
+
+            for (Term a : additional)
+                tc.add(a);
 
             int tcs = tc.size();
             if (tcs > 0)
@@ -136,8 +147,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                             Op.INH.bit
                     ) && x.hasAny(Op.VAR_INDEP))
                         return +1;
-                    if (depth > 1 && !x.hasAny(Op.VAR_INDEP))
-                        return -1;
+//                    if (depth > 1 && !x.hasAny(Op.VAR_INDEP))
+//                        return -1;
                     break;
                 case INH:
                     if (depth == 1 && x.isAny(Op.SectBits | SetBits | Op.DiffBits | Op.PROD.bit ))
@@ -146,14 +157,14 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 case CONJ:
                     if (depth ==1 && (xo.statement && x.hasAny(Op.VAR_DEP)))
                         return +1; //necessary for certain NAL6 unification cases
-                    if (depth > 1 && !x.hasAny(Op.VAR_DEP))
-                        return -1; //event subterm without any var dep, dont actually recurse
+//                    if (depth > 1 && !x.hasAny(Op.VAR_DEP))
+//                        return -1; //event subterm without any var dep, dont actually recurse
                     break;
                 case IMPL:
                     if ( (xo.statement && x.hasAny(Op.VariableBits) ) || (depth == 1 && xo==CONJ))
                         return +1;
-                    if (depth > 1 && (!x.hasAny(Op.VariableBits) && xo!=CONJ))
-                        return -1;
+//                    if (depth > 1 && (!x.hasAny(Op.VariableBits) && xo!=CONJ))
+//                        return -1;
 
 //                    if (depth ==1 && (xo ==CONJ || (xo.statement)))
 //                        return +1;
@@ -223,7 +234,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
 
             default:
-                throw new UnsupportedOperationException("unhandled operator type: " + x.op());
+                /** atomics,etc */
+                return 0;
 
         }
     }

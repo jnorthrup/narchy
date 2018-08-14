@@ -22,7 +22,7 @@ public abstract class PreDerivation extends Unify {
     public byte taskPunc;
 
     public Truth taskTruth;
-    public Truth beliefTruthRaw, beliefTruthDuringTask;
+    public Truth beliefTruthRaw, beliefTruthProjectedToTask;
 
     /**
      * choices mapping the available post targets
@@ -36,7 +36,7 @@ public abstract class PreDerivation extends Unify {
     }
 
     public boolean hasBeliefTruth() {
-        return beliefTruthRaw !=null || beliefTruthDuringTask!=null;
+        return beliefTruthRaw !=null || beliefTruthProjectedToTask !=null;
     }
 
 }

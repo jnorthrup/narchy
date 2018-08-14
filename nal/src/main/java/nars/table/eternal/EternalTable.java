@@ -14,14 +14,16 @@ import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.Revision;
-import nars.task.util.TaskRank;
+import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -82,7 +84,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
-    public void match(TaskRank t) {
+    public void match(Answer t) {
         forEach(t);
     }
 
@@ -217,59 +219,18 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
-    public void add(Remember r, NAR nar) {
+    public final void add(Remember r, NAR nar) {
+        if (!containsOrNotEternal(r))
+            reviseOrTryInsertion(r, nar);
+    }
+
+    public void reviseOrTryInsertion(Remember r, NAR nar) {
+        Object[] list = this.items;
 
         Task input = r.input;
 
-        add(r, nar, input);
-    }
-
-    @Override
-    public Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return truth();
-    }
-
-    public void add(Remember r, NAR nar, Task input) {
-        if (!r.input.isEternal())
-            return;
-
-        int cap = capacity();
-        if (cap == 0) {
-            r.forget(input);
-            /*if (input.isInput())
-                throw new RuntimeException("input task rejected (0 capacity): " + input + " "+ this + " " + this.capacity());*/
-            return;
-        }
-
-
-        /**
-         * @return null: no revision could be applied
-         * ==newBelief: existing duplicate found
-         * non-null: revised task
-         */
-
-        Object[] list = this.items;
-
         Task oldBelief = null;
         Truth conclusion = null;
-
-        Truth newBeliefTruth = input.truth();
-
-        synchronized (this) {
-            for (Object aList: list) {
-                if (aList == null)
-                    break;
-
-                Task x = (Task) aList;
-                if (x.equals(input)) {
-
-                /*if (x!=y && x.isInput())
-                    throw new RuntimeException("different input task instances with same stamp");*/
-                    r.merge(x);
-                    return;
-                }
-            }
-        }
 
         for (Object aList: list) {
             if (aList == null)
@@ -295,6 +256,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 Truth xt = x.truth();
 
+                Truth newBeliefTruth = input.truth();
 
                 Truth yt = Revision.revise(newBeliefTruth, xt, 1f, conclusion == null ? 0 : conclusion.evi());
                 if (yt == null)
@@ -360,6 +322,51 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             }
             //could not insertion revision
         }
+    }
+
+    public boolean containsOrNotEternal(Remember r) {
+        //scan list for existing equal task
+        Object[] list = this.items;
+
+        Task input = r.input;
+        Task existing = null;
+
+
+        if (!input.isEternal())
+            return true;
+
+        //synchronized (this) {
+        for (Object aList : list) {
+            if (aList == null)
+                break;
+
+            Task x = (Task) aList;
+            if (x.equals(input)) {
+                existing = x;
+                break;
+            }
+        }
+        //}
+        if (existing != null) {
+            r.merge(existing);
+            return true;
+        }
+
+
+        int cap = capacity();
+        if (cap == 0) {
+            r.forget(input);
+            /*if (input.isInput())
+                throw new RuntimeException("input task rejected (0 capacity): " + input + " "+ this + " " + this.capacity());*/
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
+        return truth();
     }
 
 

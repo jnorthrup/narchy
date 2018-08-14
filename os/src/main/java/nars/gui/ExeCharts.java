@@ -39,7 +39,7 @@ public class ExeCharts {
 
         int s = nar.causes.size();
 
-        FloatRange gain = new FloatRange(20f, 0f, 20f);
+        FloatRange gain = new FloatRange(1f, 0f, 5f);
 
         BitmapMatrixView bmp = new BitmapMatrixView((i) ->
                 Util.tanhFast(
@@ -74,8 +74,8 @@ public class ExeCharts {
         CheckBox auto = new CheckBox("Auto");
         auto.set(false);
 
-        float min = -4f;
-        float max = +4f;
+        float min = -1f;
+        float max = +1f;
 
         float[] want = n.emotion.want;
         Gridding g = grid(

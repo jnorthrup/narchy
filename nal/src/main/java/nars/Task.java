@@ -10,7 +10,7 @@ import nars.control.proto.Remember;
 import nars.op.stm.ConjClustering;
 import nars.subterm.Subterms;
 import nars.task.*;
-import nars.task.proxy.SpeciaTermTask;
+import nars.task.proxy.SpecialNegatedTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
@@ -425,15 +425,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
     @Nullable
     static SpecialTruthAndOccurrenceTask project(Task t, long start, long end, NAR n, boolean negated) {
-        @Nullable Longerval intersection = Longerval.intersect(start, end, t.start(), t.end());
-        if (intersection != null) {
+        if (!t.isEternal()) {
+            @Nullable Longerval intersection = Longerval.intersect(start, end, t.start(), t.end());
+            if (intersection != null) {
 
-            start = intersection.a;
-            end = intersection.b;
+                start = intersection.a;
+                end = intersection.b;
+            }
+
+            start = Tense.dither(start, n);
+            end = Tense.dither(end, n);
         }
-
-        start = Tense.dither(start, n);
-        end = Tense.dither(end, n);
         Truth tt = t.truth(start, end, n.dur());
 
         return (tt != null) ?
@@ -444,14 +446,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * creates negated proxy of a task
      */
     static Task negated(@Nullable Task t) {
-        return new SpeciaTermTask(t);
+        return new SpecialNegatedTermTask(t);
     }
 
 //    static Task eternalized(Task tx) {
 //        return eternalized(tx, 1);
 //    }
 
-    static Task eternalized(Task x, float eviFactor, float eviMin, NAR n) {
+    /** leave n null to avoid dithering */
+    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
         Truth tt = x.truth().eternalized(eviFactor, eviMin, n);
         if (tt == null)
             return null;
@@ -708,17 +711,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     @Nullable
     default Truth truth(long targetStart, long targetEnd, int dur) {
 
+        if (isEternal())
+            return truth();
+        else {
 
-        float eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
+            float eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
-        if (eve > Param.TRUTH_MIN_EVI) {
-            return PreciseTruth.byEvi(
-                    freq() /* TODO interpolate frequency wave */,
-                    eve);
+            if (eve > Param.TRUTH_MIN_EVI) {
+                return PreciseTruth.byEvi(
+                        freq() /* TODO interpolate frequency wave */,
+                        eve);
 
-
+            }
+            return null;
         }
-        return null;
     }
 
     @Nullable
@@ -1031,8 +1037,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 && first != ETERNAL && first != XTERNAL
                 /*&& last != ETERNAL */ && last != XTERNAL);
 
-        float X = 1 + (last - first);
-        float dx = X / n;
+        float X = 1+(last - first);
+        float dx = X / (n-1);
 
 
         float e = 0;
@@ -1040,8 +1046,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         e += evi(last, dur) / 2;
         for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
             long ti = times[i];
-            if (!(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]))
-                throw new RuntimeException("invalid time point for evi integration");
+            //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
             e += evi(ti, dur);
         }
 

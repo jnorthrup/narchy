@@ -13,11 +13,22 @@ import static nars.Op.BELIEF;
 import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.w2c;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class TruthPolationTest {
 
     int serial = 0;
     static final Term x = $$("x");
+
+    @Test
+    public void testEqualEvidenceInSubInterval_of_Task() {
+        //TODO repeat test for TruthletTask to test trapezoidal integration
+        NALTask T = t(1f, 0.5f, 0, 4);
+        assertEquals(T.truth(), T.truth(2, 1));
+        assertEquals(T.truth(), T.truth(0, 4, 1));
+        assertEquals(T.truth(), T.truth(2, 3, 1));
+        assertNotEquals(T.truth(), Truth.weaker(T.truth(), T.truth(2, 5, 1)));
+    }
 
     @Test
     public void testEvidenceIntegration_ConservedSingleTask_Full_Duration() {

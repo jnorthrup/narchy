@@ -72,8 +72,8 @@ public class FZero extends NAgentX {
 
 
 
-        //initToggleLeftRight();
-        //initToggleFwdStop();
+//        initToggleLeftRight();
+//        initToggleFwdStop();
 
         GoalActionConcept F = initUnipolarLinear(5f);
         BiPolarAction A =
@@ -103,9 +103,9 @@ public class FZero extends NAgentX {
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         $.prop($.func("ang", id), $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                4,
+                11,
                 DigitizedScalar.FuzzyNeedle
-        ).resolution(0.02f);
+        ).resolution(0.1f);
 
 
 

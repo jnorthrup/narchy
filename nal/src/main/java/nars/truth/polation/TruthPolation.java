@@ -11,6 +11,7 @@ import nars.Task;
 import nars.task.Revision;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
+import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -103,6 +104,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     public final LongSet filterCyclic() {
         return filterCyclic(true);
+    }
+
+    public final TruthPolation filtered() {
+        filterCyclic(false);
+        return this;
     }
 
     /**
@@ -288,7 +294,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     /** refined time involving the actual contained tasks.  the pre-specified interval may be larger but
      * after filtering tasks, it may have shrunk.
      */
-    public long[] taskRange() {
+    public TimeRange taskRange() {
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
 
         for (TaskComponent x : this) {
@@ -305,16 +311,16 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         }
 
         if (s == Long.MAX_VALUE)
-            return new long[] { ETERNAL, ETERNAL }; //unchanged, must be due to eternal content only
+            return TimeRange.ETERNAL; //unchanged, must be due to eternal content only
         else if (start == ETERNAL)
-            return new long[] { s, e };
+            return new TimeRange(new long[] { s, e });
         else {
             long[] t = new long[]{
                     Math.max(s, start), Math.min(e, end)
             };
             if (t[0] > t[1])
                 throw new WTF();
-            return t;
+            return new TimeRange(t);
         }
     }
 

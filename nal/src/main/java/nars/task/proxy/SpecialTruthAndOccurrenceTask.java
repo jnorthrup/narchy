@@ -5,12 +5,16 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-/** accepts replacement truth and occurrence time for a proxied task */
+/**
+ * accepts replacement truth and occurrence time for a proxied task
+ */
 public class SpecialTruthAndOccurrenceTask extends SpecialOccurrenceTask {
 
     private final boolean negatedContentTerm;
 
-    /** either Truth, Function<Task,Truth>, or null */
+    /**
+     * either Truth, Function<Task,Truth>, or null
+     */
     private final Truth truth;
 
     public SpecialTruthAndOccurrenceTask(Task task, long start, long end, boolean negatedContentTerm, Truth truth) {
@@ -29,22 +33,6 @@ public class SpecialTruthAndOccurrenceTask extends SpecialOccurrenceTask {
     @Override
     public @Nullable Truth truth() {
         return truth;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 }

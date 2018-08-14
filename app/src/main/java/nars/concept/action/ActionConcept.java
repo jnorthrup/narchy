@@ -2,7 +2,6 @@ package nars.concept.action;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
@@ -86,9 +85,8 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
         super.value(t, activation, n);
 
         if (t.isGoal()) {
-            long now = n.time();
-            if (!t.isBefore(now - n.dur() / 2)) {
-                MetaGoal.Action.learn(t.cause(), Param.beliefValue(t) * activation, n.causes);
+            if (t.start() >= n.time() - n.dur() / 2) {
+                MetaGoal.Action.learn(t.cause(), t.conf(), n.causes);
             }
         }
     }

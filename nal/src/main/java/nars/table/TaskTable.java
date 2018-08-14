@@ -5,7 +5,6 @@ import nars.Task;
 import nars.control.proto.Remember;
 import nars.table.question.QuestionTable;
 import nars.task.util.Answer;
-import nars.task.util.TaskRank;
 import nars.term.Term;
 
 import java.util.function.Consumer;
@@ -65,7 +64,7 @@ public interface TaskTable {
         return streamTasks().toArray(Task[]::new);
     }
 
-    default void match(TaskRank m) {
+    default void match(Answer m) {
         if (isEmpty())
             return;
 

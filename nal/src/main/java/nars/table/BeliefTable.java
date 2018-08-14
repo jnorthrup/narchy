@@ -44,11 +44,11 @@ public interface BeliefTable extends TaskTable {
 
 
     default Answer rank(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-        return Answer.belief(Answer.TASK_LIMIT, start, end, template, filter, nar);
+        return Answer.relevance(Answer.TASK_LIMIT, start, end, template, filter, nar);
     }
 
     default Answer rank(long start, long end, Term template, int limit, NAR nar) {
-        return Answer.belief(limit, start, end, template, null, nar);
+        return Answer.relevance(limit, start, end, template, null, nar);
     }
 
     default Task match(long when, Term template, NAR nar) {
@@ -58,17 +58,23 @@ public interface BeliefTable extends TaskTable {
     @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
         return !isEmpty() ? rank(start, end, template, filter, nar).match(this).task() : null;
     }
-
-    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
         if (isEmpty())
             return null;
-        Answer a = rank(start, end, template, filter, nar);
-        match(a);
-        return a.truth();
+        return rank(start, end, template, filter, n).
+                forceProjection(true). /* the virtual task we compute the truth from will need to match the given time */
+                match(this).task();
+    }
+    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
+        if (isEmpty())
+            return null;
+        return rank(start, end, template, filter, n).
+                match(this).
+                truth();
     }
 
-    default Truth truth(long start, long end, @Nullable Term template, NAR nar) {
-        return truth(start, end, template, null, nar);
+    default Truth truth(long start, long end, @Nullable Term template, NAR n) {
+        return truth(start, end, template, null, n);
     }
 
 
@@ -92,13 +98,7 @@ public interface BeliefTable extends TaskTable {
         print(System.out);
     }
 
-    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
-        if (isEmpty())
-            return null;
-        Answer r = rank(start, end, template, filter, n);
-        match(r);
-        return r.forceProjection(true).task();
-    }
+
 
 
 

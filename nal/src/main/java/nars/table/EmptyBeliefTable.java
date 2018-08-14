@@ -3,7 +3,7 @@ package nars.table;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
-import nars.task.util.TaskRank;
+import nars.task.util.Answer;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -17,7 +17,7 @@ public class EmptyBeliefTable implements BeliefTable {
     }
 
     @Override
-    public void match(TaskRank t) {
+    public void match(Answer t) {
         //nothing
     }
 

@@ -7,11 +7,9 @@ import nars.$;
 import nars.NAR;
 import nars.agent.NAct;
 import nars.agent.NSense;
-import nars.concept.TaskConcept;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
 import nars.link.TemplateTermLinker;
-import nars.link.TermLinker;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -24,7 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 import static nars.Op.BELIEF;
-import static nars.Op.SETe;
+import static nars.Op.PROD;
 import static nars.agent.NAct.NEG;
 import static nars.agent.NAct.PLUS;
 
@@ -43,59 +41,38 @@ public class BiPolarAction extends AbstractSensor {
         float update(Truth pos, Truth neg, long prev, long now);
     }
 
-    public final AsyncActionConcept pos, neg;
+    public final AbstractGoalActionConcept pos, neg;
 
     public BiPolarAction(BooleanToObjectFunction<Term> id, Polarization model, FloatToFloatFunction motor, NAR nar) {
         this(id.valueOf(true), id.valueOf(false), model, motor, nar);
     }
     public BiPolarAction(Term id, Polarization model, FloatToFloatFunction motor, NAR nar) {
-        this(posOrNeg -> $.p(id, posOrNeg ? PLUS : NEG), model, motor, nar);
+        this(posOrNeg ->
+                //$.p(id, posOrNeg ? PLUS : NEG)
+                $.inh(id, posOrNeg ? PLUS : NEG)
+                , model, motor, nar);
     }
 
     //TODO BooleanObjectFunction<Term> term namer
     public BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR nar) {
-        super(SETe.the(pos, neg), nar);
+        super(PROD.the(pos, neg), nar);
 
         feedback = nar.newChannel(id);
 
-        TermLinker sharedLinker = TemplateTermLinker.of(id); //so they cross-activate
-        this.pos = new AsyncActionConcept(pos, sharedLinker, nar);
-        this.neg = new AsyncActionConcept(neg, sharedLinker, nar);
+
+        this.pos = new AbstractGoalActionConcept(pos, TemplateTermLinker.of(pos, 4, neg), nar);
+        this.neg = new AbstractGoalActionConcept(neg, TemplateTermLinker.of(neg, 4, pos), nar);
 
         this.model = model;
         this.motor = motor;
 
     }
 
-    protected Truth truther(TaskConcept x, long prev, long now, long next, NAR nar) {
-        //a.
-        {
-            Truth y = x.goals().truth(prev, now, null,  nar);
-            if (y != null)
-                return y;
-        }
-
-        //b.
-        {
-            Truth y = x.goals().truth(prev, next, null,  nar);
-            if (y != null)
-                return y;
-        }
-
-        //c.
-//        {
-//            Truth y = x.beliefs().truth(now, next, null, nar); //self fulfilling prophecy
-//            if (y!=null)
-//                return y;
-//        }
-
-        return null;
-    }
 
     @Override
     public void update(long prev, long now, long next, NAR nar) {
-        Truth p = truther(pos, prev, now, next, nar);
-        Truth n = truther(neg, prev, now, next, nar);
+        Truth p = pos.actionTruth();
+        Truth n = neg.actionTruth();
         float x = model.update(p, n, prev, now);
         if (x==x)
             x = Util.clamp(x, -1f, +1f);
@@ -149,7 +126,7 @@ public class BiPolarAction extends AbstractSensor {
         }
 
 
-        feedback.input(pos.feedback(Pb, Pg, now, next, nar), neg.feedback(Nb, Ng, now, next, nar));
+        feedback.input(pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar));
     }
 
     @Override

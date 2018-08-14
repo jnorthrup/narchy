@@ -57,19 +57,18 @@ public class SensorBeliefTables extends BeliefTables {
         this.series = tableFirst(SeriesBeliefTable.class);
     }
 
-    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, NAR nar) {
-
-        series.clean(nar, tables);
-
-        if (value == null)
-            return null;
+    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, NAR n) {
 
 
         if (value==null)
             return null;
 
+        value = value.ditherFreq(Math.max(n.freqResolution.asFloat(), res.asFloat()));
+
+        series.clean(n, tables);
+
         SeriesBeliefTable.SeriesTask x = series.series.add(series.term, series.punc(), start, end,
-                value, nar.dur(), nar);
+                value, n.dur(), n);
 
         if (x!=null) {
             x.pri(pri.asFloat());

@@ -125,6 +125,14 @@ public interface Truth extends Truthed {
             return a.evi() >= b.evi() ? a : b;
     }
 
+    static <T extends Truthed> T weaker(@Nullable T a, @Nullable T b) {
+        if (b == null)
+            return b;
+        if (a == null)
+            return a;
+        return a.evi() <= b.evi() ? a : b;
+    }
+
     static float freq(float f, float epsilon) {
         assert (f == f) : "invalid freq: " + f;
         return Util.unitize(Util.round(f, epsilon));

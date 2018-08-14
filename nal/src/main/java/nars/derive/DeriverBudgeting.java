@@ -1,6 +1,8 @@
 package nars.derive;
 
 import nars.Task;
+import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 
 /** stateless, storing any state information in the Derivation instance */
 public interface DeriverBudgeting {
@@ -15,10 +17,11 @@ public interface DeriverBudgeting {
      * just returns the priority.  should not set the priority of the task
      *
      * @param t the derived task
+     * @param derivedTruth - the undithered truth calculation is provided for accuracy.  use this instead of task.truth
      * @param d the derivation context
      * @return priority, or NaN to filter (cancel) this derived result
      */
-    float pri(Task t, Derivation d);
+    float pri(Task t, @Nullable Truth derivedTruth, Derivation d);
 
 
 

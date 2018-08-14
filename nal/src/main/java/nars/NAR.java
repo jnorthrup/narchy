@@ -1526,7 +1526,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         @Override
         public void input(Iterator<? extends ITask> xx) {
-
             NAR.this.input((Iterable) (() -> Iterators.filter(xx, this::process)));
         }
 

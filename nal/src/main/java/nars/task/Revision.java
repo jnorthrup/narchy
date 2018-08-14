@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import static java.lang.Long.MAX_VALUE;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 
@@ -245,7 +244,7 @@ public class Revision {
     @Nullable
     public static Task merge(NAR nar, TaskRegion... tt) {
         assert tt.length > 1;
-        long[] u = Tense.union(tt);
+        long[] u = Tense.dither(Tense.union(tt), nar);
         return merge(nar, nar.dur(), u[0], u[1], true, tt);
     }
 
@@ -255,22 +254,6 @@ public class Revision {
 
 //        tasks = ArrayUtils.removeNulls(tasks, Task[]::new);
 
-        if (start == ETERNAL) {
-            long minStart = MAX_VALUE;
-            long maxStart = Long.MIN_VALUE;
-            for (TaskRegion z : tasks) {
-                long zs = z.start();
-                if (zs != ETERNAL) {
-                    minStart = Math.min(minStart, zs);
-                    maxStart = Math.max(maxStart, z.end());
-                }
-            }
-            if (minStart != MAX_VALUE) {
-
-                start = minStart;
-                end = maxStart;
-            }
-        }
 
         /*Truth.EVI_MIN*/
 
@@ -310,13 +293,13 @@ public class Revision {
             return defaultTask;
 
         byte punc = T.punc();
-
-
         Task t = Task.tryTask(T.term, punc, cTruth, (c, tr) -> {
-                    long[] taskRange = T.taskRange();
+
+
+
                     return new NALTask(c, punc,
                             tr,
-                            nar.time(), Tense.dither(taskRange[0], nar), Tense.dither(taskRange[1],nar),
+                            nar.time(), start, end,
                             Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
                     );
                 }

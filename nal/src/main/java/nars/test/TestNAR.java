@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 
@@ -38,7 +37,7 @@ public class TestNAR {
     /**
      * holds mustNot (negative) conditions which are tested at the end
      */
-    private final List<NARCondition> failsIfAny = $.newArrayList();
+    private final FasterList<NARCondition> failsIfAny = new FasterList();
     public boolean quiet = false;
     public boolean trace = true;
     public boolean requireConditions = true;
@@ -62,7 +61,8 @@ public class TestNAR {
     private float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
     private Topic<Tasked>[] outputEvents;
     private boolean finished;
-    private boolean exitOnAllSuccess = true;
+    //private boolean exitOnAllSuccess = true;
+    private boolean exitOnFirstMustNot = true;
     private boolean reportStats = false;
 
     public TestNAR(NAR nar) {
@@ -103,9 +103,9 @@ public class TestNAR {
         else
             trace = null;
 
-        if (exitOnAllSuccess) {
+        //if (exitOnAllSuccess) {
             new EarlyExit(1);
-        }
+        //}
 
         long startTime = nar.time();
 
@@ -281,7 +281,7 @@ public class TestNAR {
      */
 
     public TestNAR mustNotOutputAnything() {
-        exitOnAllSuccess = false;
+        //exitOnAllSuccess = false;
         requireConditions = false;
         nar.onTask(c -> {
             if (!c.isInput())
@@ -343,7 +343,7 @@ public class TestNAR {
         return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, must);
     }
 
-    private TestNAR mustEmit(Topic<Tasked>[] c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean mustOrMustNot) throws Narsese.NarseseException {
 
 
         if (freqMin == -1)
@@ -367,10 +367,10 @@ public class TestNAR {
 
         finished = false;
 
-        if (must) {
+        if (mustOrMustNot) {
             succeedsIfAll.add(tc);
         } else {
-            exitOnAllSuccess = false;
+            //exitOnAllSuccess = false;
             failsIfAny.add(tc);
         }
 
@@ -569,7 +569,6 @@ public class TestNAR {
         return this;
     }
 
-
     public TestNAR test(/* for use with JUnit */) {
         return run(0);
     }
@@ -591,9 +590,11 @@ public class TestNAR {
         @Override
         public void accept(NAR nar) {
 
-            if (++cycle % checkResolution == 0 && !succeedsIfAll.isEmpty()) {
-
+            if (++cycle % checkResolution == 0) {
                 if (succeedsIfAll.allSatisfy(NARCondition::isTrue))
+                    stop();
+
+                if (failsIfAny.anySatisfy(NARCondition::isTrue))
                     stop();
             }
 

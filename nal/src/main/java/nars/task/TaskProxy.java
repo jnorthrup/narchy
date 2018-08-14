@@ -1,19 +1,40 @@
 package nars.task;
 
-import nars.Param;
+import jcog.pri.Pri;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-public class TaskProxy implements Task {
+/** implementations are immutable but will usually have a different hash and
+  * equality than the origin task. hashcode here is calculated lazily.
+ * the only mutable components are the hashcode and the cyclic status which is optionally inherited from the source.
+ * */
+public class TaskProxy extends Pri implements Task {
 
     public final Task task;
+
+    private int hash = 0;
+
+    private volatile boolean cyclic = false;
 
     public TaskProxy(Task task) {
         if (task==null)
             throw new NullPointerException();
         this.task = task;
+
+        float p = task.pri();
+        if (p!=p)
+            delete();
+        else
+            pri(p);
+
+        if (inheritCyclic() && task.isCyclic())
+            setCyclic(true);
+    }
+
+    protected boolean inheritCyclic() {
+        return true;
     }
 
     @Override
@@ -28,7 +49,7 @@ public class TaskProxy implements Task {
 
     @Override
     public void setCyclic(boolean b) {
-        
+        this.cyclic = b;
     }
 
     /** produce a concrete, non-proxy clone */
@@ -38,7 +59,7 @@ public class TaskProxy implements Task {
 
     @Override
     public boolean isCyclic() {
-        return task.isCyclic();
+        return cyclic;
     }
 
     @Override
@@ -48,13 +69,16 @@ public class TaskProxy implements Task {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
         return obj instanceof Task && Task.equal(this, (Task) obj);
     }
 
     @Override
     public int hashCode() {
-        return Task.hash(term(), truth(), punc(), start(), end(), stamp());
+        int h = this.hash;
+        if (h == 0)
+            return this.hash = Task.hash(term(), truth(), punc(), start(), end(), stamp());
+        else
+            return h;
     }
 
     @Override
@@ -62,23 +86,8 @@ public class TaskProxy implements Task {
         return task.cause();
     }
 
-    @Override
-    public float pri(float p) {
-        if (Param.DEBUG)
-            throw new UnsupportedOperationException();
-        return p;
-    }
 
-    @Override
-    public boolean delete() {
-        //task.delete() ??
-        return false;
-    }
 
-    @Override
-    public float pri() {
-        return task.pri();
-    }
 
     @Override
     public double coord(boolean maxOrMin, int dimension) {

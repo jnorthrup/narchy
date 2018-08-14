@@ -1,6 +1,8 @@
 package nars.task.util;
 
+import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
+import jcog.sort.TopN;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -11,12 +13,14 @@ import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
+import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -26,18 +30,29 @@ import static nars.truth.polation.TruthIntegration.valueInEternity;
 
 /** heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
-public class Answer extends TaskRank {
+public class Answer implements Consumer<Task> {
 
     public final static int TASK_LIMIT = Param.STAMP_CAPACITY-1;
 
     public final NAR nar;
+    public TimeRangeFilter time;
+    public Term template = null;
+    protected CachedFloatFunction<Task> cache;
+    TopN<Task> tasks;
+    int limit;
+    FloatRank<Task> rank;
 
-    @Deprecated public static Answer belief(long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
-        return belief(TASK_LIMIT, start, end, template, filter, nar);
+    public void clear() {
+        cache.clear();
+        tasks.clear();
+    }
+
+    @Deprecated public static Answer relevance(long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+        return relevance(TASK_LIMIT, start, end, template, filter, nar);
     }
 
     /** for belief or goals (not questions / quests */
-    @Deprecated public static Answer belief(int limit, long start, long _end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    @Deprecated public static Answer relevance(int limit, long start, long _end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         long end;
         if (start == ETERNAL && _end == ETERNAL)
@@ -69,20 +84,22 @@ public class Answer extends TaskRank {
                 return rr.rank(t, m);
             };
         }
-        Answer b = belief(limit, new TimeRangeFilter(start, end, true), r, nar);
+        Answer b = relevance(limit, new TimeRangeFilter(start, end, true), r, nar);
         b.template = template;
         return b;
     }
 
 
 
-    public static Answer belief(int limit, @Nullable TimeRangeFilter  timeFilter, FloatRank<Task> rank, NAR nar) {
+    public static Answer relevance(int limit, @Nullable TimeRangeFilter  timeFilter, FloatRank<Task> rank, NAR nar) {
         return new Answer(limit, rank, timeFilter, nar);
     }
 
-    public Answer(int limit, FloatRank<Task> rank, @Nullable TimeRangeFilter timeFilter, NAR nar) {
-        super(limit, rank, timeFilter);
+    public Answer(int limit, FloatRank<Task> rank, @Nullable TimeRangeFilter time, NAR nar) {
         this.nar = nar;
+        rank(rank);
+        limit(limit);
+        time(time);
     }
 
     public static FloatFunction<TaskRegion> mergeability(Task x, float tableDur) {
@@ -173,11 +190,11 @@ public class Answer extends TaskRank {
                 switch (tf.punc()) {
                     case BELIEF:
                     case GOAL:
-                        t = Truth.stronger(dynTask(tf.isBelief()), tf);
+                        t = dynTask(tf);
                         break;
                     case QUESTION:
                     case QUEST:
-                        t = tasks.first();
+                        t = tf;
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -189,7 +206,7 @@ public class Answer extends TaskRank {
             long ss = time.start;
             if (ss != ETERNAL) { //dont eternalize here
                 long ee = time.end;
-                if (!t.intersects(ss, ee)) {
+                if (t.isEternal() || !t.containedBy(ss, ee)) {
                     @Nullable SpecialTruthAndOccurrenceTask p = Task.project(t, ss, ee, nar);
                     return p;
                 }
@@ -216,19 +233,24 @@ public class Answer extends TaskRank {
 //        return t;
     }
 
-    private Task dynTask(boolean beliefOrGoal) {
+    private Task dynTask(Task sample) {
+
+        boolean beliefOrGoal = sample.isBelief(); //else its a goal
 
         @Nullable DynTruth d = dynTruth();
-        TruthPolation tp = Param.truth(time.start, time.end, nar.dur()); tp.ensureCapacity(d.size());
-        d.forEach(r -> tp.add(r.task()));
-        tp.filterCyclic(false);
+
+        TruthPolation tp = truthpolation(d).filtered();
+
+        Task strongest = tp.getTask(0);
         if (tp.size()==1) {
-            return tp.getTask(0);
+            return strongest;
         }
+
         @Nullable Truth tt = tp.truth(nar);
         if (tt==null)
-            return null;
-        return d.task(template, tt, beliefOrGoal, ditherTruth, nar);
+            return strongest;
+
+        return Truth.stronger(strongest, d.task(template, tt, beliefOrGoal, ditherTruth, nar));
     }
 
     /** TODO merge DynTruth and TruthPolation */
@@ -241,20 +263,74 @@ public class Answer extends TaskRank {
         return d;
     }
 
+
     @Nullable public Truth truth() {
-        DynTruth d = dynTruth();
-        return d != null ? truth(d, nar) : null;
+        TruthPolation p = truthpolation();
+        @Nullable TruthPolation t = p!=null ? p.filtered() : null;
+        return t != null ? t.truth(nar) : null;
     }
 
-    @Nullable protected Truth truth(DynTruth d, NAR n) {
-        TruthPolation tp = Param.truth(time.start, time.end, n.dur()); tp.ensureCapacity(d.size());
+    @Nullable public TruthPolation truthpolation() {
+        DynTruth d = dynTruth();
+        if (d == null) return null;
+        return truthpolation(d);
+    }
+
+    /** this does not filter cyclic; do that manually */
+    private TruthPolation truthpolation(DynTruth d) {
+        TruthPolation tp = Param.truth(time.start, time.end, nar.dur());
+        tp.ensureCapacity(d.size());
         d.forEach(r -> tp.add(r.task()));
-        tp.filterCyclic(false);
-        return tp.truth(n);
+        return tp;
     }
 
     public Answer match(TaskTable t) {
+        if (cache == null) {
+            this.cache = new CachedFloatFunction<>(64, rank);
+            this.tasks = new TopN<>(new Task[limit], cache);
+        } else {
+            clear();
+        }
         t.match(this);
         return this;
+    }
+
+    public Answer rank(FloatRank<Task> rank) {
+        this.rank = rank;
+        return this;
+    }
+
+    public Answer limit(int limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public Answer time(TimeRangeFilter time) {
+        this.time = time;
+        return this;
+    }
+
+    @Override
+    public final void accept(Task task) {
+        if (task != null) {
+            if (!cache.containsKey(task)) {
+                //if (time == null || time.accept(task.start(), task.end())) {
+                tasks.accept(task);
+            }
+        }
+        //}
+    }
+
+    public boolean isEmpty() { return tasks.isEmpty(); }
+
+    @Nullable public Truth truth(long s, long e, int dur) {
+        return isEmpty() ? null : truth(new FocusingLinearTruthPolation(s, e, dur));
+    }
+
+    @Nullable public Truth truth(TruthPolation p) {
+        p.ensureCapacity(tasks.size());
+        p.add(tasks);
+        p.filterCyclic(false);
+        return p.truth();
     }
 }

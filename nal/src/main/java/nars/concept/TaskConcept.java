@@ -3,7 +3,6 @@ package nars.concept;
 import jcog.data.list.FasterList;
 import jcog.pri.bag.Bag;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
@@ -102,8 +101,6 @@ public class TaskConcept extends NodeConcept implements Concept {
     }
 
 
-
-
     /**
      * Directly process a new task, if belief tables agree to store it.
      * Called exactly once on each task.
@@ -116,34 +113,9 @@ public class TaskConcept extends NodeConcept implements Concept {
 
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
-            MetaGoal p = punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire;
-            p.learn(t.cause(), Param.beliefValue(t) * activation, n.causes);
+            (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
+                    .learn(t.cause(), t.conf(), n.causes);
         }
-
-
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -170,7 +142,7 @@ public class TaskConcept extends NodeConcept implements Concept {
         if (includeGoals) c++;
         if (includeQuestions) c++;
         if (includeQuests) c++;
-        assert(c>0);
+        assert (c > 0);
 
         List<TaskTable> tables = new FasterList(c);
 
@@ -181,16 +153,16 @@ public class TaskConcept extends NodeConcept implements Concept {
 
         return tables.stream().flatMap(TaskTable::streamTasks)
                 //.filter(Objects::nonNull)
-        ;
+                ;
     }
 
 
     @Override
     public void delete(NAR nar) {
-        if (beliefs!=null) beliefs.clear();
-        if (goals!=null) goals.clear();
-        if (questions!=null) questions.clear();
-        if (quests!=null) quests.clear();
+        if (beliefs != null) beliefs.clear();
+        if (goals != null) goals.clear();
+        if (questions != null) questions.clear();
+        if (quests != null) quests.clear();
         super.delete(nar);
     }
 

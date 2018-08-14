@@ -660,7 +660,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
                 .inputAt(when, "b! |")
-                .mustGoal(when * 8, subjPred[0], 1f, 0.45f,
+                .mustGoal(when * 32, subjPred[0], 1f, 0.45f,
                         (t) -> t >= goalAt)
 
         ;

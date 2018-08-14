@@ -183,7 +183,7 @@ public class Truthify extends AbstractPred<Derivation> {
                 return d.beliefTruthRaw;
 
             case Task:
-                return d.beliefTruthDuringTask;
+                return d.beliefTruthProjectedToTask;
 
             //case Union: throw new TODO();
             default:

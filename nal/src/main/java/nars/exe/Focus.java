@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.control.Cause;
 import nars.control.Traffic;
@@ -21,14 +22,11 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * https:
  * http:
- *   https:
- *
  * https:
- *
- *
- *
+ * <p>
+ * https:
  */
-public class Focus  { //extends AtomicRoulette<Causable>
+public class Focus { //extends AtomicRoulette<Causable>
 
 //    /** note: more granularity increases the potential dynamic range
 //     * (ratio of high to low prioritization). */
@@ -354,7 +352,6 @@ public class Focus  { //extends AtomicRoulette<Causable>
             rbm.contrastive_divergence(cur, learning_rate, learning_iters);
 
 
-
             for (int i = 0; i < numCauses; i++) {
 
                 float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
@@ -381,13 +378,13 @@ public class Focus  { //extends AtomicRoulette<Causable>
         /**
          * hidden to visible neuron ratio
          */
-        private final float hiddenMultipler = 0.05f;
+        private final float hiddenMultipler = 0.25f;
 
         private float[] tmp;
 
         public AERevaluator(Random rng) {
             super();
-            this.momentum = 0.9f;
+            this.momentum.set(0.95f);
             this.rng = rng;
         }
 
@@ -399,7 +396,7 @@ public class Focus  { //extends AtomicRoulette<Causable>
                 return;
 
             if (ae == null || ae.inputs() != numCauses) {
-                int numHidden = Math.max(2, Math.round(hiddenMultipler * numCauses));
+                int numHidden = Math.max(16, Math.round(hiddenMultipler * numCauses));
 
                 ae = new Autoencoder(numCauses, numHidden, rng);
                 tmp = new float[numHidden];
@@ -410,15 +407,6 @@ public class Focus  { //extends AtomicRoulette<Causable>
             float err = ae.put(val, learning_rate, NOISE, 0f, true, false);
 
 
-
-
-
-
-
-
-
-
-
         }
     }
 
@@ -427,22 +415,13 @@ public class Focus  { //extends AtomicRoulette<Causable>
         final static double minUpdateDurs = 1f;
 
 
-        float momentum =
-
-                0.5f;
-
-
-
+        public final FloatRange momentum = FloatRange.unit(0.9f);
 
         volatile long lastUpdate = ETERNAL;
         /**
          * intermediate calculation buffer
          */
         float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
-
-
-
-
 
 
         @Override
@@ -462,16 +441,13 @@ public class Focus  { //extends AtomicRoulette<Causable>
             lastUpdate = time;
 
 
-
-
-
             int cc = causes.size();
 
             if (val.length != cc) {
                 val = new float[cc];
             }
 
-            for (Cause cause: causes) {
+            for (Cause cause : causes) {
                 cause
 
                         .commitFast();
@@ -481,13 +457,7 @@ public class Focus  { //extends AtomicRoulette<Causable>
             int goals = goal.length;
 
 
-
-
-
-
-
-
-            final float momentum = (float) Math.pow(this.momentum, dt);
+            final float momentum = (float) Math.pow(this.momentum.floatValue(), dt);
             for (int i = 0; i < cc; i++) {
                 Cause c = causes.get(i);
 
@@ -498,19 +468,6 @@ public class Focus  { //extends AtomicRoulette<Causable>
                 for (int j = 0; j < goals; j++) {
                     v += goal[j] * cg[j].last;
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                 float prev = val[i];

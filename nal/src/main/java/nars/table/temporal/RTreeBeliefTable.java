@@ -38,9 +38,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //    private static final float SCAN_QUALITY =
 //            1f;
 
+    static final float MATCH_QUALITY = 0.25f;
 
-    private static final float PRESENT_AND_FUTURE_BOOST =
-            2f;
+    private static final float PRESENT_AND_FUTURE_BOOST = 4f;
 
 
     private static final int SCAN_CONF_OCTAVES_MAX = 1;
@@ -268,7 +268,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     //abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
     @Override
-    public void match(TaskRank m) {
+    public void match(Answer m) {
 
         int s = size();
         if (s == 0)
@@ -285,7 +285,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return true;
         });
         if (m.time.intersectOrContain) {
-            whileEachIntersecting(expand(m.time, 0.5f), each);
+
+            whileEachIntersecting(expandLerpToTableBounds(m.time, MATCH_QUALITY), each);
         } else {
             whileEachContaining(m.time, each);
         }
@@ -313,8 +314,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
     }
-
-    private TimeRange expand(TimeRange time, float lerpToTableExtents) {
+    private TimeRange expandLerpToTableBounds(TimeRange time, float lerpToTableExtents) {
         if (time.start != ETERNAL) { //not already fully expanded?
             long tableDur = tableDur();
             long initialRange = time.end - time.start;
@@ -322,6 +322,23 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
                 long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
+                if (halfExpand > 0) {
+                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
+                }
+            }
+
+        }
+        return time;
+    }
+    private TimeRange expandFactor(TimeRange time, double factor) {
+        if (time.start != ETERNAL) { //not already fully expanded?
+
+            long initialRange = time.end - time.start;
+            if (initialRange > 0) {
+
+
+                //long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
+                long halfExpand = Math.round(initialRange * factor)/2;
                 if (halfExpand > 0) {
                     return new TimeRange(time.start - halfExpand, time.end + halfExpand);
                 }
@@ -595,10 +612,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     @Override
     public long tableDur() {
         TaskRegion root = (TaskRegion) root().bounds();
-        if (root == null)
-            return 0;
-        else
-            return root.range();
+        return root == null ? 0 : root.range();
     }
 
 

@@ -2,6 +2,7 @@ package nars.nal.nal7;
 
 import nars.$;
 import nars.Narsese;
+import nars.Param;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -24,13 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private int cycles = 400;
+    private int cycles = 700;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         //test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(22);
+        test.nar.termVolumeMax.set(18);
         //test.nar.confMin.set(0.1f);
     }
 
@@ -212,9 +213,12 @@ public class NAL7Test extends NALTest {
 
     @Test
     void testDropAnyEventSimple2ba() {
+        Param.DEBUG = true;
         test
-                .inputAt(1, "(happy &&+4120 (i &&+1232 (--,i))). :|:")
+                .log()
+                .inputAt(1, "(happy &&+4120 (i &&+1232 (--,i))). |")
                 .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "(happy &&+5352 (--,i))", BELIEF, -1231)
                 .mustNotOutput(cycles, "(happy &&+4120 i)", BELIEF, 1233)
                 .mustNotOutput(cycles, "(i&&happy)", BELIEF, 1)
         ;
@@ -1182,13 +1186,16 @@ public class NAL7Test extends NALTest {
         */
 
         test
-                .inputAt(1, "(a &&+5 c). :|:")
+                .inputAt(1, "(a &&+4 c). :|:")
                 .inputAt(3, "b. :|:")
-                .mustBelieve(cycles,
-                        "((a &&+2 b) &&+3 c)",
+                .mustBelieve(cycles, "(a &&+4 c)",
                         1f, 0.81f, 1)
-                .mustNotOutput(cycles,
-                        "(b &&+3 (a &&+5 c))", BELIEF, (t) -> t == 1 || t == ETERNAL);
+                .mustBelieve(cycles, "(b &&+2 c)",
+                        1f, 0.81f, 3)
+                .mustBelieve(cycles, "((a &&+2 b) &&+2 c)",
+                        1f, 0.81f, 1)
+                .mustNotOutput(cycles, "(b &&+3 (a &&+4 c))",
+                        BELIEF, (t) -> t == 1 || t == ETERNAL);
     }
 
     @Test

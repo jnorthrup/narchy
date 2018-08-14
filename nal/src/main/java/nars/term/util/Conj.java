@@ -310,7 +310,7 @@ public class Conj extends ByteAnonMap {
 
             Subterms es = exclude.subterms();
             @Nullable MutableSet<Term> ii = include.subterms().toSet(i -> !es.contains(i));
-            if (ii.size() < include.subs()) {
+            if (ii!=null && (ii.size() < include.subs())) {
                 return CONJ.the(include.dt(), ii);
             } else {
                 return include; //no change
@@ -338,6 +338,7 @@ public class Conj extends ByteAnonMap {
     }
 
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
+
         Conj c = new Conj();
 //        if (aStart == bStart) {
 //            if (c.addAuto(a)) {

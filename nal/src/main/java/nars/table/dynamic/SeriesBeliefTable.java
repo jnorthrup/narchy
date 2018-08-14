@@ -13,7 +13,7 @@ import nars.table.eternal.EternalTable;
 import nars.task.TaskProxy;
 import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.signal.SignalTask;
-import nars.task.util.TaskRank;
+import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.series.TaskSeries;
 import nars.term.Term;
@@ -43,7 +43,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
     }
 
     @Override
-    public void match(TaskRank t) {
+    public void match(Answer t) {
         series.forEach(t.time.start, t.time.end, false, t);
     }
 
@@ -225,7 +225,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     }
 
-    protected static class SeriesRemember extends Remember {
+    public static class SeriesRemember extends Remember {
 
         public SeriesRemember(SeriesTask task, TaskConcept concept) {
             super(task, concept);

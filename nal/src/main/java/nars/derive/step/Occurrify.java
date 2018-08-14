@@ -272,15 +272,21 @@ public class Occurrify extends TimeGraph {
         UnifiedSet<Term> pp = nextPos;
         UnifiedSet<Term> nn = nextNeg;
 
-        BiConsumer<Term, Compound> gather = (sub, sup) -> {
+        BiConsumer<Term, Compound> require = (sub, sup) -> {
             if (sub.op() == NEG) nn.add(sub.unneg());
             else if (sup == null || sup.op() != NEG)
                 pp.add(sub); //dont add the inner positive unneg'd term of a negation
         };
-        pattern.recurseTerms(gather);
-        taskTerm.recurseTerms(gather);
-        if (!single)
-            beliefTerm.recurseTerms(gather);
+        pattern.recurseTerms(require);
+
+        BiConsumer<Term, Compound> provide = (sub, sup) -> {
+            if (sub.op() == NEG) nn.remove(sub.unneg());
+            else if (sup == null || sup.op() != NEG)
+                pp.remove(sub); //dont add the inner positive unneg'd term of a negation
+        };
+        taskTerm.recurseTerms(provide);
+        if (!single && (!pp.isEmpty() || !nn.isEmpty()))
+            beliefTerm.recurseTerms(provide);
 
         pp.intersectInto(nn, autoNegNext);
 

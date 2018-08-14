@@ -95,6 +95,11 @@ public enum Tense {
 
     public static long dither(long t, int dither) {
         if (dither > 1) {
+            //if (Param.DEBUG) {
+                //HACK
+                if (t == DTERNAL || t==XTERNAL)
+                    throw new WTF("maybe you meant ETERNAL or TIMELESS");
+            //}
             if (t == ETERNAL) return ETERNAL;
             else if (t == TIMELESS) return TIMELESS;
             else return Util.round(t, dither); 
@@ -109,6 +114,14 @@ public enum Tense {
 
     public static long dither(long t, NAR nar) {
         return dither(t, nar.dtDither());
+    }
+
+    /** modifies the input array */
+    public static long[] dither(long[] t, NAR nar) {
+        int d = nar.dtDither();
+        t[0] = dither(t[0], d);
+        t[1] = dither(t[1], d);
+        return t;
     }
 
     public static int dither(int dt, int dither) {

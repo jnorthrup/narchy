@@ -3,16 +3,24 @@ package nars.task.util;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.tree.rtree.HyperRegion;
+import nars.time.Tense;
 
 /**
  * only valid for comparison during rtree iteration
  */
-public class TimeRange implements HyperRegion {
+public class TimeRange implements HyperRegion, LongInterval {
+
+    public static final TimeRange ETERNAL = new TimeRange(Tense.ETERNAL, Tense.ETERNAL);
 
     public long start = Long.MIN_VALUE, end = Long.MAX_VALUE;
 
     public TimeRange() {
 
+    }
+
+    public TimeRange(long[] t) {
+        this(t[0], t[1]);
+        assert(t.length==2);
     }
 
     public TimeRange(long s, long e) {
@@ -54,4 +62,13 @@ public class TimeRange implements HyperRegion {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public long start() {
+        return start;
+    }
+
+    @Override
+    public long end() {
+        return end;
+    }
 }

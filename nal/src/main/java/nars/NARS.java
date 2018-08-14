@@ -130,7 +130,7 @@ public class NARS {
 
                 //nar.forgetRate.set(0.5f);
 
-                float basePri = 1f;
+                float basePri = 0.1f;
                 n.beliefPriDefault.set(basePri * 0.5f);
                 n.goalPriDefault.set(basePri * 0.5f);
                 n.questionPriDefault.set(basePri * 0.1f);

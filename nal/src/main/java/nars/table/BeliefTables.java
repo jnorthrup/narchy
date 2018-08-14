@@ -5,7 +5,7 @@ import jcog.data.list.LimitedFasterList;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
-import nars.task.util.TaskRank;
+import nars.task.util.Answer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -20,7 +20,7 @@ public class BeliefTables implements BeliefTable {
 
     public static final BeliefTables Empty = new BeliefTables(LimitedFasterList.Empty) {
         @Override
-        public void match(TaskRank r) {
+        public void match(Answer r) {
 
         }
 
@@ -53,7 +53,7 @@ public class BeliefTables implements BeliefTable {
     }
 
     @Override
-    public void match(TaskRank r) {
+    public void match(Answer r) {
         tables.each(t -> t.match(r));
     }
 

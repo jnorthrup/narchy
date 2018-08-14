@@ -433,17 +433,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
                             //Set<Twin<Event>> uniqueTry = new UnifiedSet<>(4);
-                            if (!ae.allSatisfy(ax ->
-                                    be.allSatisfyWith((bxx, axx) -> {
-                                        /*if (uniqueTry.add(twin(axx, bxx)))*/ {
+                            if (!ae.allSatisfy(ax -> {
+                                if (!be.allSatisfyWith((bxx, axx) -> {
+                                    /*if (uniqueTry.add(twin(axx, bxx)))*/
+                                    if (!solvePairDT(x, axx, bxx, each))
+                                        return false;
 
-                                            if (!solvePairDT(x, axx, bxx, each))
-                                                return false;
-                                        }
+                                    return true; //keep on trying
 
-                                        return true; //keep on trying
-
-                                    }, ax)))
+                                }, ax))
+                                    return false;
+                                return true;
+                            }))
                                 return false;
 
                         }
@@ -511,6 +512,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         int dt = dt(a, b);
 
         if (x.op() == CONJ) {
+
             return solveConj2DT(each, a, dt, b);
         } else {
             //for impl and other types cant assume occurrence corresponds with subject
@@ -522,13 +524,15 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * solution vector for 2-ary CONJ
      */
     private boolean solveConj2DT(Predicate<Event> each, Event a, int dt, Event b) {
-        int ddt = dt(dt);
-        Term c = CONJ.the(a.id, ddt, b.id); //try dithered first
-        if (c.op() != CONJ && ddt != dt) {
-            c = CONJ.the(a.id, dt, b.id);
-            if (c.op().conceptualizable) {
-                return solveOccurrence(c, a.start(), durMerge(a, b), each);
-            }
+        long ddt = dt(dt);
+
+
+        Term c = Conj.conjMerge(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt) );
+        if (c.op() != CONJ && ((ddt == 0) && (dt!=0))) { //undo parallel-ization if the collapse caused an invalid term
+            c = Conj.conjMerge(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt) );
+        }
+        if (c.op().conceptualizable) {
+            return solveOccurrence(c, a.start(), durMerge(a, b), each);
         }
         return true; //keep trying
     }

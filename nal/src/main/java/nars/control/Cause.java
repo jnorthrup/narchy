@@ -5,8 +5,8 @@ import jcog.math.RecycledSummaryStatistics;
 import nars.task.util.TaskRegion;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
-import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -182,10 +182,11 @@ public class Cause implements Comparable<Cause> {
             return s[0];
 
 
-        return mergeFlat(maxLen, s);
-        //return mergeSampled(maxLen, s);
+        //return mergeFlat(maxLen, s);
+        return mergeSampled(maxLen, s, true);
     }
 
+    /** this isnt good because the maps can grow beyond the capacity
     public static short[] mergeFlat(int maxLen, short[][] s) {
         int ss = s.length;
         ShortHashSet x = new ShortHashSet(ss * maxLen);
@@ -193,9 +194,9 @@ public class Cause implements Comparable<Cause> {
             x.addAll(a);
         }
         return x.toSortedArray();
-    }
+    }*/
 
-    public static short[] mergeSampled(int maxLen, short[][] s) {
+    public static short[] mergeSampled(int maxLen, short[][] s, boolean deduplicate) {
         int ss = s.length;
         int totalItems = 0;
         short[] lastNonEmpty = null;
@@ -215,7 +216,7 @@ public class Cause implements Comparable<Cause> {
 
 
         AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);
-
+        RoaringBitmap r = deduplicate ? new RoaringBitmap() : null;
         int ls = 0;
         int n = 0;
         int done;
@@ -225,7 +226,11 @@ public class Cause implements Comparable<Cause> {
             for (short[] c : s) {
                 int cl = c.length;
                 if (n < cl) {
-                    if (ll.add/*adder.accept*/(c[cl - 1 - n])) {
+                    short next = c[cl - 1 - n];
+                    if (deduplicate)
+                        if (!r.checkedAdd(next))
+                            continue;
+                    if (ll.add/*adder.accept*/(next)) {
                         if (++ls >= maxLen)
                             break main;
                     }
@@ -236,9 +241,9 @@ public class Cause implements Comparable<Cause> {
             n++;
         } while (done < ss);
 
-        assert (ls > 0);
+        //assert (ls > 0);
         short[] lll = ll.toArray();
-        assert (lll.length == ls);
+        //assert (lll.length == ls);
         return lll;
     }
 
