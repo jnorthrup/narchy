@@ -7,10 +7,10 @@ import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
+import nars.term.Statement;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
-import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.transform.CompoundNormalization;
@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Terms.sorted;
@@ -186,176 +185,6 @@ public abstract class TermBuilder {
 
         return y;
 
-    }
-
-    public Term statement(Op op, int dt, Term subject, Term predicate) {
-        if (subject == Null || predicate == Null)
-            return Null;
-
-        boolean dtConcurrent = Conj.concurrent(dt) && dt!=XTERNAL;
-        if (dtConcurrent) {
-            if (subject.equals(predicate))
-                return True;
-            if ((op == INH || op == SIM) && subject.equalsRoot(predicate))
-                return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
-        }
-
-
-
-
-        if (op == IMPL) {
-
-
-            if (subject == True)
-                return predicate;
-            if (subject == False)
-                return Null;
-
-            if (predicate.op() == NEG)
-                return statement(IMPL, dt, subject, predicate.unneg()).neg();
-
-
-
-            switch (predicate.op()) {
-                case BOOL:
-                    return Null;
-                case NEG:
-                    return statement(IMPL, dt, subject, predicate.unneg()).neg();
-                case IMPL: {
-                    Term newSubj;
-                    Term inner = predicate.sub(0);
-                    if (dt==DTERNAL || dt == XTERNAL) {
-                        newSubj = CONJ.the(subject, dt, inner);
-                    } else {
-                        newSubj = Conj.conjMerge(subject, 0, inner, subject.dtRange() + dt);
-                    }
-                    return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1));
-                }
-            }
-
-
-
-
-
-            if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
-
-                if (dt==DTERNAL && subject.dt()!=DTERNAL) {
-                    //parallelize the impl if the subject is a sequence
-                    dt = 0;
-                }
-                //TODO simple case when no CONJ or IMPL are present
-
-                if (Term.commonStructure(subject, predicate)) {
-//                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
-//                subject.eventsWhile((w, t) -> {
-//                    se.add(PrimitiveTuples.pair(w, t));
-//                    return true;
-//                }, 0, true, true, false, 0);
-                    Conj se = new Conj();
-                    se.add(subject.dt() != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject);
-
-                    final boolean[] subjChange = {false}, predChange = {false};
-                    //TODO extract this to a ConjConflict class
-                    Conj pe = new Conj(se.termToId, se.idToTerm) {  //share same term map
-                        @Override
-                        protected int addFilter(long at, Term x, byte id) {
-                            int f = se.conflictOrSame(at, id);
-                            int f2 = (at == ETERNAL || f == -1) ? f : se.conflictOrSame(ETERNAL, id);
-                            if (f == -1 || f2 == -1)
-                                return -1;
-                            if (f == +1 || f2 == +1) {
-                                predChange[0] = true;
-                                return +1; //ignore this term (dont repeat in the predicate)
-                            }
-                            return f;
-                        }
-                    };
-                    long offset = (dt != DTERNAL) ? dt + subject.dtRange() : (predicate.dt() != DTERNAL ? 0 : ETERNAL);
-                    if (!pe.add(offset, predicate))
-                        return False;
-
-                    if (predChange[0]) {
-                        Term newPred = pe.term();
-                        if (newPred instanceof Bool)
-                            return newPred;
-
-                        if (dt != DTERNAL) {
-                            Term f = Conj.firstEventTerm(newPred);
-                            int shift = predicate.subTimeFirst(f);
-                            if (shift == DTERNAL)
-                                return Null; //??
-                            dt += shift;
-                        }
-
-                        predicate = newPred;
-                    }
-                    if (subjChange[0]) {
-                        Term newSubj = se.term();
-                        if (newSubj instanceof Bool) {
-                            if (newSubj == True)
-                                return predicate;
-                        }
-                        if (dt != DTERNAL) {
-                            //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
-                            //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
-                            int dr = newSubj.dtRange() - subject.dtRange();
-                            dt += dr;
-                        }
-                        subject = newSubj;
-                    }
-
-                    //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
-                    //TODO valid cases where subj has impl?
-                    if (subject.hasAny(IMPL))
-                        return Null;
-
-
-                    if (subjChange[0] || predChange[0]) {
-                        return statement(IMPL, dt, subject, predicate); //recurse
-                    } else {
-                        return compound(IMPL, dt, subject, predicate);
-                    }
-                }
-
-            }
-
-
-        } else if (op == SIM) {
-            if (subject.compareTo(predicate) > 0) {
-                //swap order
-                Term x = predicate;
-                predicate = subject;
-                subject = x;
-            }
-        }
-
-        if ((op != IMPL || dtConcurrent) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
-
-            Predicate<Term> delim = (op == IMPL) ?
-                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
-
-            if ((containEachOther(subject, predicate, delim)))
-                return Null;
-
-//            boolean sa = subject instanceof AliasConcept.AliasAtom;
-//            if (sa) {
-//                Term sd = ((AliasConcept.AliasAtom) subject).target;
-//                if (sd.equals(predicate) || containEachOther(sd, predicate, delim))
-//                    return Null;
-//            }
-//            boolean pa = predicate instanceof AliasConcept.AliasAtom;
-//            if (pa) {
-//                Term pd = ((AliasConcept.AliasAtom) predicate).target;
-//                if (pd.equals(subject) || containEachOther(pd, subject, delim))
-//                    return Null;
-//            }
-//            if (sa && pa) {
-//                if (containEachOther(((AliasConcept.AliasAtom) subject).target, ((AliasConcept.AliasAtom) predicate).target, delim))
-//                    return Null;
-//            }
-        }
-
-        return compound(op, dt, subject, predicate);
     }
 
     public Term conj(int dt, Term[] u) {
@@ -557,6 +386,10 @@ public abstract class TermBuilder {
 
 
         return term;
+    }
+
+    protected Term statement(Op op, int dt, Term subject, Term predicate) {
+        return Statement.statement(op, dt, subject, predicate, this);
     }
 
     public final Term statement(Op op, int dt, Term[] u) {

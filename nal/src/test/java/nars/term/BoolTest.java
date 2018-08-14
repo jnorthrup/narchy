@@ -243,8 +243,12 @@ public class BoolTest {
         assertEq(Null, and(Null, x));
         assertEq(Null, and(Null, Null));
 
+
     }
 
+    @Test void wtfAndAnotherOne() {
+        assertEq(and(y, x.neg()), and(y, and(x,y).neg()));
+    }
 
     @Test void testConjFactor2() {
         assertEq(False, and(and(x, y), and(x, y.neg())));

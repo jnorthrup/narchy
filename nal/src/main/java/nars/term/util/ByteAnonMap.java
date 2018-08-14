@@ -8,10 +8,10 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 public class ByteAnonMap {
 
     /** term -> id */
-    protected final ObjectByteHashMap<Term> termToId;
+    public final ObjectByteHashMap<Term> termToId;
 
     /** id -> term */
-    protected final FasterList<Term> idToTerm;
+    public final FasterList<Term> idToTerm;
 
     public ByteAnonMap(ObjectByteHashMap<Term> termToId, FasterList<Term> idtoTerm) {
         this.termToId = termToId;

@@ -270,28 +270,28 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Term p = predicate.the();
             if (p!=null) {
 
-//                boolean negate = false;
-//
-//                //quick preparations to reduce # of unique entries
-//                switch (op) {
-//                    case SIM:
-//                        //pre-sort by swapping to avoid saving redundant mappings
-//                        if (subject.compareTo(predicate)>0) {
-//                            Term x = predicate;
-//                            predicate = subject;
-//                            subject = x;
-//                        }
-//                        break;
-//                    case IMPL:
-//                        negate = (predicate.op()==NEG);
-//                        if (negate)
-//                            predicate = predicate.unneg();
-//                        break;
-//                }
-//
-//                return statements.apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+                boolean negate = false;
 
-                return statements.apply(InternedCompound.get(op, dt, subject, predicate));
+                //quick preparations to reduce # of unique entries
+                switch (op) {
+                    case SIM:
+                        //pre-sort by swapping to avoid saving redundant mappings
+                        if (subject.compareTo(predicate)>0) {
+                            Term x = predicate;
+                            predicate = subject;
+                            subject = x;
+                        }
+                        break;
+                    case IMPL:
+                        negate = (predicate.op()==NEG);
+                        if (negate)
+                            predicate = predicate.unneg();
+                        break;
+                }
+
+                return statements.apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+
+                //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
             }
         }
         return super.statement(op, dt, subject, predicate);

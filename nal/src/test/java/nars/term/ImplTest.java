@@ -16,22 +16,27 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 /** tests specific to implication compounds TODO */
 public class ImplTest {
     @Test
-    public void testInvalidImpls() {
-        for (String s : new String[]{
-                "(--y =|> y)",
-                "(--(x &| y) =|> y)",
-                "(--(--x &| y) =|> y)"
-        })
-            assertEq(False, s);
+    public void testInvalidImpl1() {
+        assertEq(False, "(--y =|> y)");
+    }
+    @Test
+    public void testInvalidImpl2() {
+        assertEq(False, "(--(x &| y) =|> y)");
+    }
+    @Test
+    public void testInvalidImpl3() {
+        assertEq(False, "(--(--x &| y) =|> y)");
     }
 
     @Test
     void testReducibleImplFactored() {
         assertEq("((x&|y)=|>z)", "((x &| y) =|> (y &| z))");
-        assertEq("((x&|y)=|>z)", "((x &| y) ==> (y &| z))");
+        assertEq("((x&|y)==>z)", "((x &| y) ==> (y &| z))");
     }
     @Test void toomuchReduction() {
-        assertEq("((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))", "((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))");
+        /** this took some thought but it really is consistent with the system */
+        assertEq("((b &&+60000 c)=|>(#1 &&+60000 (b&|#1)))",
+                "((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))");
     }
 
     @Test
@@ -45,8 +50,9 @@ public class ImplTest {
     void testReducibleImplFactoredPredShouldRemainIntact() {
 
         for (String cp : new String[]{"&&", "&|", " &&+- "}) {
-            assertEq("((x&&y) ==>+1 (y" + cp + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
-            assertEq("(a ==>+1 (b &&+1 (y" + (cp.equals(" &&+- ") ? cp : "&|") + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
+            String xternal = cp.equals(" &&+- ") ? cp : "&|";
+            assertEq("((x&&y) ==>+1 (y" + xternal + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
+            assertEq("(a ==>+1 (b &&+1 (y" + xternal + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
         }
 
 
@@ -64,6 +70,8 @@ public class ImplTest {
 
     @Test
     void testReducibleImplConjCoNeg() {
+        assertEq(False, "((y &| --x) ==> x)");
+
         for (String i : new String[]{"==>", "=|>"}) {
             for (String c : new String[]{"&&", "&|"}) {
                 assertEq(False, "(x " + i + " (y " + c + " --x))");

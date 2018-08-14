@@ -597,7 +597,7 @@ public interface Compound extends Term, IPair, Subterms {
                 int s = tt.subs();
                 long t = offset;
 
-                boolean changeDT = t != ETERNAL && t != TIMELESS;
+                boolean changeDT = t != ETERNAL && t != TIMELESS && dt!=0 /* motionless in time */;
 
                 level++;
 
