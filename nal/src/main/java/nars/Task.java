@@ -844,7 +844,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             case 1:
                 return yy.getOnly();
             default:
-                return new AbstractTask.ArrayTask(yy.toArray(Task.EmptyArray));
+                return AbstractTask.of(yy);
         }
     }
 

@@ -87,7 +87,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
                     if (y.op()==INT) {
                         //"equal(add(#x,a),b)"
                         e.is(xa[0], Int.the( ((Int)y).id - ((Int)xa[1]).id ));
-                        return null;
+                        return True;
                     }
                 }
             }

@@ -7,23 +7,31 @@ import jcog.version.Versioning;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
+import nars.subterm.Subterms;
 import nars.term.atom.Atomic;
 import nars.term.util.transform.DirectTermTransform;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectBytePredicate;
+import org.eclipse.collections.api.set.MutableSet;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.ATOM;
+import static nars.Op.Null;
 
 public class Evaluation {
 
-    private final FunctorSet functors;
+    private final OperationSet operations;
     private final ObjectBytePredicate<Term> each;
     private final Term term;
+    private final Term x;
+    private final Term y;
     private List<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
 
     private Versioning v;
@@ -38,19 +46,108 @@ public class Evaluation {
 
     @Nullable public static Evaluation eval(Term x, Function<Term, Functor> resolver, ObjectBytePredicate<Term> each) {
         if (possiblyNeedsEval(x)) {
-            FunctorSet y = new FunctorSet(resolver).discover(x);
+            OperationSet y = new OperationSet(resolver).discover(x);
             if (!y.isEmpty())
                 return new Evaluation(x, y, each);
         }
         return null;
     }
 
-    private Evaluation(Term x, FunctorSet f, ObjectBytePredicate<Term> each) {
+    private Evaluation(Term x, OperationSet operations, ObjectBytePredicate<Term> each) {
         this.term = x;
         this.each = each;
-        this.functors = f;
-        f.sortDecreasingVolume();
+        this.operations = operations.sortDecreasingVolume();
+        this.x = x;
+
+        ensureReady();
+
+        int freeVariables = operations.argVars.size();
+
+        //iterate until stable
+        Term cur = x, prev;
+        int vEnd, vStart;
+        main: do {
+            prev = cur;
+            ListIterator<Term> ii = this.operations.listIterator();
+            vStart = v.now();
+            while (ii.hasNext()) {
+                Term a = ii.next();
+                Term func = a.sub(1);
+                Subterms args = a.sub(0).subterms();
+                Term z = ((BiFunction<Evaluation, Subterms, Term>) func).apply(this, args);
+                if (z!=a && z!=null) {
+
+                    if (z == Null) {
+                        cur = z; //poisoned
+                        break main;
+                    }
+
+                    boolean removeEntry = false;
+                    if (Functor.isFunc(z)) {
+
+                        //still a functor, but different. update it
+
+                        //run the functor resolver for any new functor terms which may have appeared
+                        Term zf = Functor.func(z);
+                        if (!(zf instanceof Functor)) {
+                            //try resolving
+                            Term zz = operations.transform(z);
+                            if (zz == z) {
+                                //not evaluable.
+                                removeEntry = true;
+                            } else {
+                                z = zz;
+                            }
+                        }
+
+
+                    } else {
+                        removeEntry = true;
+                    }
+
+                    //TODO
+                    //forward substitute any terms that may contain this term.
+                    //the dependencies of a given term can be precomputed in the operation discovery process in a simple DAG
+
+
+                    Term cur2 = cur.replace(a, z);
+                    cur = cur2; //accept change
+
+                    if (!cur.op().conceptualizable)
+                        break main; //reached a terminal state
+
+                    if (removeEntry) {
+                        //remove from list
+
+                        ii.remove();
+
+                    } else {
+                        ii.set(z);
+
+                    }
+
+                }
+            }
+            vEnd = v.now();
+            if (vEnd!=vStart && subst.size()>=freeVariables && operations.argVars.allSatisfy(subst::containsKey)) {
+                break; //all variables have been specified
+            }
+        } while ((cur != prev) || (vEnd != vStart));
+
+        this.y = cur; //store intermediate state
+
+        //if termutators, collect all results. otherwise 'cur' is the only result to return
+        //if (!termutator.isEmpty()) {
+            //throw new TODO();
+        //} else {
+        assert(y!=null);
+        if (!x.equals(y))
+            each.accept(y, (byte)1);
+        //}
+
     }
+
+
 
     /** returns first true result. returns null if no solutions */
     public static Term solveFirst(Term x, NAR n) {
@@ -326,21 +423,28 @@ public class Evaluation {
 
     /** discovers functors within the provided term, or the term itself.
      * transformation results should not be interned, that is why DirectTermTransform used here */
-    private static final class FunctorSet extends ArrayHashSet<Term> implements DirectTermTransform {
+    private static final class OperationSet extends ArrayHashSet<Term> implements DirectTermTransform {
 
         private final Function<Term, Functor> resolver;
+        public final MutableSet<Variable> argVars = new UnifiedSet(0);
 
-        FunctorSet(Function<Term, Functor> resolver) {
+        OperationSet(Function<Term, Functor> resolver) {
             this.resolver = resolver;
         }
 
-        public FunctorSet discover(Term x) {
+        public OperationSet discover(Term x) {
             x.recurseTerms(s->s.hasAll(Op.FuncBits), (xx)->{
                 if (!contains(xx)) {
                     if (Functor.isFunc(xx)) {
                         Term yy = this.transform(xx);
                         if (yy!=xx || yy.sub(1) instanceof Functor) {
-                            add(yy);
+                            if (add(yy)) {
+                                yy.sub(0).recurseTerms((s -> s.hasVars()), (s -> {
+                                    if (s instanceof Variable)
+                                        argVars.add((Variable)s);
+                                    return true;
+                                }), null);
+                            }
                         }
                     }
                 }
@@ -367,9 +471,10 @@ public class Evaluation {
             return x;
         }
 
-        public void sortDecreasingVolume() {
+        public OperationSet sortDecreasingVolume() {
             if (size() > 1)
                 ((FasterList<Term>)list).sortThisByInt(Termlike::volume);
+            return this;
         }
     }
 }

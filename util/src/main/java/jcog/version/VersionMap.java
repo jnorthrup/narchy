@@ -214,8 +214,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     @Override
     public final boolean containsKey(Object key) {
-        throw new UnsupportedOperationException(); 
-        
+        return map.containsKey(key);
     }
 
     @NotNull

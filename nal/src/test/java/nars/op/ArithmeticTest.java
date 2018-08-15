@@ -30,7 +30,6 @@ class ArithmeticTest {
 
     @Test
     void testAdd() {
-        NAR t = NARS.shell();
         assertEval(Int.the(2), "add(1,1)");
         assertEval(Int.the(1), "add(2,-1)");
         assertEval($.varDep(1), "add(#1,0)");

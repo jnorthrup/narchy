@@ -351,9 +351,9 @@ public abstract class Param {
      * Maximum length of the evidental base of the Stamp, a power of 2
      * TODO IntRange
      */
-    public static final int STAMP_CAPACITY = 16;
+    public static final int STAMP_CAPACITY = 8;
 
-    public static final IntRange causeCapacity = new IntRange(64, 0, 128);
+    public static final IntRange causeCapacity = new IntRange(32, 0, 128);
 
     /**
      * hard limit for cause capacity in case the runtime parameter otherwise disobeyed

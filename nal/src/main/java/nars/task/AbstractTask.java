@@ -1,11 +1,13 @@
 package nars.task;
 
 import com.google.common.primitives.Longs;
-import jcog.data.list.FasterList;
 import jcog.pri.Priority;
 import nars.NAR;
+import org.eclipse.collections.api.set.MutableSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -17,15 +19,23 @@ import java.util.function.Consumer;
 public abstract class AbstractTask implements ITask, Priority {
 
     @Nullable
-    public static ITask of(@Nullable FasterList<ITask> next) {
+    public static ITask of(@Nullable Collection<ITask> next) {
         if (next == null) return null;
         switch (next.size()) {
             case 0:
                 return null;
-            case 1:
-                return next.get(0);
-            default:
-                return new ArrayTask(next.toArrayRecycled(ITask[]::new));
+            case 1: {
+                if (next instanceof List)
+                    return ((List<ITask>)next).get(0);
+                else if (next instanceof MutableSet)
+                    return ((MutableSet<ITask>)next).getOnly();
+                else
+                    return next.iterator().next();
+                //TODO SortedSet.getFirst() etc
+            }
+            default: {
+                return new TasksCollection(next);
+            }
         }
     }
 
@@ -143,11 +153,32 @@ public abstract class AbstractTask implements ITask, Priority {
         }
 
     }
+    public final static class TasksCollection extends AbstractTask {
+        private final Collection<ITask> tasks;
 
-    public final static class ArrayTask extends AbstractTask {
+        public TasksCollection(Collection<ITask> x) {
+            this.tasks = x;
+        }
+
+        @Override
+        public ITask next(NAR n) {
+            //FasterList<ITask> next = null;
+            for (ITask t: tasks) {
+                t.run(n);
+//                ITask p = t.next(n);
+//                if (p!=null) {
+//                    if (next == null) next = new FasterList(1);
+//                    next.add(p);
+//                }
+            }
+            return null;
+        }
+
+    }
+    public final static class TasksArray extends AbstractTask {
         private final ITask[] tasks;
 
-        public ArrayTask(ITask[] x) {
+        private TasksArray(ITask[] x) {
             this.tasks = x;
         }
 
