@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.ATOM;
+import static nars.Op.False;
 import static nars.Op.Null;
 
 public class Evaluation {
@@ -40,11 +41,13 @@ public class Evaluation {
 
     ///ArrayHashSet<Term> seen = new ArrayHashSet<>(1); //deduplicator,TODO use different deduplication strategies including lossy ones (Bagutator)
 
-    @Nullable public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
+    @Nullable
+    public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
         return eval(x, nar::functor, each);
     }
 
-    @Nullable public static Evaluation eval(Term x, Function<Term, Functor> resolver, Predicate<Term> each) {
+    @Nullable
+    public static Evaluation eval(Term x, Function<Term, Functor> resolver, Predicate<Term> each) {
         if (possiblyNeedsEval(x)) {
             Evaluables y = new Evaluables(resolver).discover(x);
             if (!y.isEmpty())
@@ -55,29 +58,39 @@ public class Evaluation {
         return null;
     }
 
-    private Evaluation(Term x, Evaluables operations, Predicate<Term> each) {
+    private Evaluation(Term x, Evaluables ops, Predicate<Term> each) {
         this.term = x;
         this.each = each;
-        this.operations = operations.sortDecreasingVolume();
+        this.operations = ops.sortDecreasingVolume();
         this.x = x;
 
         ensureReady();
 
-        int freeVariables = operations.vars.size();
+        int freeVariables = ops.vars.size();
+
+
+
 
         //iterate until stable
         Term y = x, prev;
-        int vEnd, vStart;
-        main: do {
+        int vStart;
+        main:
+        do {
             prev = y;
             ListIterator<Term> ii = this.operations.listIterator();
             vStart = v.now();
             while (ii.hasNext()) {
                 Term a = ii.next();
+                if (a == False) {
+                    ii.remove();
+                    continue;
+                }
                 Term func = a.sub(1);
                 Subterms args = a.sub(0).subterms();
                 Term z = ((BiFunction<Evaluation, Subterms, Term>) func).apply(this, args);
-                if (z!=a && z!=null) {
+                if (z == null) {
+                    ii.remove(); //no direct change, but may be change in substituted variables, handled below
+                } else if (z != a) {
 
                     if (z == Null) {
                         y = z; //poisoned
@@ -91,9 +104,11 @@ public class Evaluation {
 
                         //run the functor resolver for any new functor terms which may have appeared
                         Term zf = Functor.func(z);
+
+
                         if (!(zf instanceof Functor)) {
                             //try resolving
-                            Term zz = operations.transform(z);
+                            Term zz = ops.transform(z);
                             if (zz == z) {
                                 //not evaluable.
                                 removeEntry = true;
@@ -112,46 +127,94 @@ public class Evaluation {
                     //the dependencies of a given term can be precomputed in the operation discovery process in a simple DAG
 
 
-                    y = y.replace(a, z);
-
-                    if (!y.op().conceptualizable)
-                        break main; //reached a terminal state
 
                     if (removeEntry) {
 
                         ii.remove();
-                        if (operations.isEmpty())
-                            break main;
 
                     } else {
                         ii.set(z);
-
                     }
 
+
+                    //pendingRewrites.add(new Term[]{a, z});
+                    Term finalZ = z;
+                    ops.list.replaceAll(o -> o.replace(a, finalZ));
+                    y = y .replace(a, finalZ);
+
+                    int vEnd = v.now();
+                    if (vEnd != vStart) {
+                        ops.list.replaceAll(o -> o.replace(subst));
+                        y = y.replace(subst);
+                        vStart = vEnd;
+
+                        ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
+
+//                if (subst.size() >= freeVariables && ops.vars.allSatisfy(subst::containsKey)) {
+//                    break; //all variables have been specified
+//                }
+                    }
+
+                    if (!y.op().taskable)
+                        break main;
+
+                    ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
+
+                    continue main; //restart
+
+                }
+
+                int vEnd = v.now();
+                if (vEnd != vStart) {
+                    ops.list.replaceAll(o -> o.replace(subst));
+                    y = y.replace(subst);
+                    vStart = vEnd;
+
+                    ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
+
+//                if (subst.size() >= freeVariables && ops.vars.allSatisfy(subst::containsKey)) {
+//                    break; //all variables have been specified
+//                }
                 }
             }
-            vEnd = v.now();
-            if (vEnd!=vStart && subst.size()>=freeVariables && operations.vars.allSatisfy(subst::containsKey)) {
-                break; //all variables have been specified
-            }
-        } while ((y != prev) || (vEnd != vStart));
 
-        assert(y!=null);
 
-        y = y.replace(subst);
+
+
+
+
+
+
+
+        } while (!ops.isEmpty() && (y != prev));
+
+        assert (y != null);
+
 
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         /*if (!termutator.isEmpty()) {
             throw new TODO();
-        } else */{
+        } else */
+        {
             each.test(y);
         }
 
     }
 
+//    private Term rewrite(List<Term[]> rewrites, Term x) {
+//        if (rewrites.isEmpty())
+//            return x;
+//        Term y = x;
+//        //TODO compile these into one replacement transform
+//        for (Term[] rw : rewrites)
+//            y = y.replace(rw[0], rw[1]).replace(subst);
+//        return y;
+//    }
 
 
-    /** returns first result. returns null if no solutions */
+    /**
+     * returns first result. returns null if no solutions
+     */
     public static Term solveFirst(Term x, NAR n) {
         Term[] y = new Term[1];
         Evaluation.eval(x, n, (what) -> {
@@ -162,9 +225,9 @@ public class Evaluation {
     }
 
 
-
-
-    /** gathers results from one truth set, ex: +1 (true) */
+    /**
+     * gathers results from one truth set, ex: +1 (true)
+     */
     public static Set<Term> solveAll(Term x, NAR n) {
         final Set[] yy = {null};
         Evaluation.eval(x, n, (y) -> {
@@ -187,12 +250,6 @@ public class Evaluation {
             termutator = new FasterList<>(1);
         }
     }
-
-
-
-
-
-
 
 
 //    private Term _eval(Term c) {
@@ -409,11 +466,9 @@ public class Evaluation {
         termutator.add(r);
     }
 
-    public static Predicate<VersionMap<Term,Term>> assign(Term x, Term y) {
+    public static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
         return (subst) -> subst.tryPut(x, y);
     }
-
-
 
 
     private static boolean possiblyNeedsEval(Term x) {
@@ -421,9 +476,10 @@ public class Evaluation {
     }
 
 
-
-    /** discovers functors within the provided term, or the term itself.
-     * transformation results should not be interned, that is why DirectTermTransform used here */
+    /**
+     * discovers functors within the provided term, or the term itself.
+     * transformation results should not be interned, that is why DirectTermTransform used here
+     */
     private static final class Evaluables extends ArrayHashSet<Term> implements DirectTermTransform {
 
         private final Function<Term, Functor> resolver;
@@ -434,7 +490,7 @@ public class Evaluation {
         }
 
         public Evaluables discover(Term x) {
-            x.recurseTerms(s->s.hasAll(Op.FuncBits), xx->{
+            x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
                 if (!contains(xx)) {
                     if (Functor.isFunc(xx)) {
                         Term yy = this.transform(xx);
@@ -455,7 +511,7 @@ public class Evaluation {
 
             x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
                 if (s instanceof Variable)
-                    vars.add((Variable)s);
+                    vars.add((Variable) s);
                 return true;
             }), null);
         }
@@ -477,7 +533,7 @@ public class Evaluation {
 
         public Evaluables sortDecreasingVolume() {
             if (size() > 1)
-                ((FasterList<Term>)list).sortThisByInt(Termlike::volume);
+                ((FasterList<Term>) list).sortThisByInt(Termlike::volume);
             return this;
         }
     }

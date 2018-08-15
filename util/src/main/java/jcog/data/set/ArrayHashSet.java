@@ -313,13 +313,15 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
         @Override
         public void remove() {
+            arrayListIterator.remove();
             boolean removed = set.remove(lastElementProvided);
-            assert (removed);
-            if (set.isEmpty()) {
-                set = emptySet();
+            if (removed) {
+                //assert (removed);
+                if (set.isEmpty()) {
+                    set = emptySet();
+                }
             }
 
-            arrayListIterator.remove();
         }
 
         @Override

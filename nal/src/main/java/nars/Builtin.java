@@ -19,6 +19,7 @@ import nars.term.atom.Int;
 import nars.term.obj.QuantityTerm;
 import nars.term.util.Conj;
 import nars.term.util.Image;
+import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -279,8 +280,8 @@ public class Builtin {
         /** dynamic term builder - useful for NAR specific contexts like clock etc.. */
         nar.on(Functor.f("term", (Subterms s) -> {
             Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
-            Term[] args = s.sub(1).subterms().arrayClone();
-            if (s.subs() > 2) {
+            Term[] args = s.sub(1).subterms().arrayShared();
+            if (args.length == 2) {
                 if (o.temporal) {
 
                     Term dtTerm = s.sub(2);
@@ -288,13 +289,8 @@ public class Builtin {
                         dtTerm = QuantityTerm.the(dtTerm);
                     }
 
-                    long dt = nar.time.toCycles(((QuantityTerm) dtTerm).quant);
-                    if (Math.abs(dt) < Integer.MAX_VALUE - 2) {
-                        return o.the((int) dt, args);
-                    } else {
-                        throw new UnsupportedOperationException("time unit too large for 32-bit DT interval");
-                    }
-
+                    int dt = Tense.occToDT(nar.time.toCycles(((QuantityTerm) dtTerm).quant));
+                    return o.the(dt, args);
                 }
 
                 throw new UnsupportedOperationException("unrecognized modifier argument: " + s);

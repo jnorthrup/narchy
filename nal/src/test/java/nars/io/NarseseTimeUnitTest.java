@@ -109,22 +109,24 @@ class NarseseTimeUnitTest {
 
     @Test
     void testTimeDeltaUnits() {
-        
+
         assertEquals(
-            "term(\"&&\",(a,b),(day,1))",
-            $$("(a &&+1day b)").toString()
+                "term(\"&&\",(a,b),(day,1))",
+                $$("(a &&+1day b)").toString()
         );
 
-        
+
         assertEquals("(a &&+86400000 b)",
                 $$("(a &&+1day b)").eval(n).toString()
         );
 
-        
+
         assertEquals("(a &&+129600000 b)",
                 $$("(a &&+1.5days b)").eval(n).toString()
         );
-
+    }
+    @Test
+    void testTimeDeltaUnits2() {
         assertEquals("((c &&+259200000 b) &&+604800000 a)",
                 $$("(a &&-1week (b &&-3days c))").eval(n).toString()
         );
