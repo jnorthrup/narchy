@@ -52,7 +52,7 @@ class OperatorTest {
 
         StringBuilder b = new StringBuilder();
         n.log(b);
-        n.input("the(sys)");
+        n.input("log(the(sys))");
 
         String s = b.toString();
         assertTrue(s.contains("→("), ()->s);

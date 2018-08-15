@@ -31,6 +31,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.eclipse.collections.impl.factory.primitive.ByteLists;
@@ -2360,5 +2361,19 @@ public enum Util {
             if (--current == -1) return cap - 1;
         }
         return current;
+    }
+
+    /** if the collection is known to be of size==1, get that item in a possibly better-than-default way
+     *  according to the Collection's implementation */
+    @Nullable public static <X> X only(@NotNull Collection<X> next) {
+        if (next instanceof List)
+            return ((List<X>)next).get(0);
+        else if (next instanceof MutableSet)
+            return ((MutableSet<X>)next).getOnly();
+        else if (next instanceof SortedSet)
+            return ((SortedSet<X>)next).first();
+        else
+            return next.iterator().next();
+        //TODO SortedSet.getFirst() etc
     }
 }

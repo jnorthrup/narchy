@@ -18,8 +18,12 @@ import org.jetbrains.annotations.Nullable;
 public class Remember extends AbstractTask {
 
     @Nullable public static Remember the(Task input, NAR n) {
-        TaskConcept concept = (TaskConcept) n.conceptualize(input);
-        return concept!=null ? new Remember(input, concept) : null;
+        if (!input.isCommand()) {
+            TaskConcept concept = (TaskConcept) n.conceptualize(input);
+            return concept != null ? new Remember(input, concept) : null;
+        } else {
+            return null;
+        }
     }
 
 
@@ -97,8 +101,8 @@ public class Remember extends AbstractTask {
         @Override
         public ITask next(NAR n) {
             forgotten.forEach(Task::delete);
-            remembered.forEach(n.eventTask::emit);
-            return null;
+
+            return Reaction.the(remembered);
         }
     }
 
@@ -164,8 +168,11 @@ public class Remember extends AbstractTask {
 
     private static boolean add(Task x, FasterList<Task> f) {
         if (x!=null) {
-            if (!f.isEmpty() && f.containsInstance(x))
-                return false;
+            if (!f.isEmpty()) {
+                if (f.containsInstance(x)) {
+                    return false;
+                }
+            }
 
             f.add(x);
             return true;

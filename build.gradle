@@ -93,17 +93,12 @@ subprojects {
         options.encoding = 'UTF-8'
         options.incremental = true // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
         options.fork = true
+        
 //        options.debugOptions.debugLevel = "source,lines,vars"
 //        options.debug=true
 //        options.compilerArgs << '-verbose'
 
     }
-
-//    dependencies {
-//        //TODO keep in sync with util/build.gradle junit deps
-//        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.0-M1'
-//        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.0-M1'
-//    }
 
     test {
         ignoreFailures = true

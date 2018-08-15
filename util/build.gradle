@@ -29,10 +29,10 @@ dependencies {
 
     compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.4.0'
 
-    compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.0-M1'
-    compile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.3.0-M1'
-    compile group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.3.0-M1'
-    compile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.3.0-M1'
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.0-RC1'
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.3.0-RC1'
+    compile group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.3.0-RC1'
+    compile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.3.0-RC1'
 //    compile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.1'
 //    compile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.0.2'
 
@@ -54,7 +54,7 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-vfs2', version: '2.2'
 
     // https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-core
-    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.25.0'
+    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.25.1'
 
 //// https://mvnrepository.com/artifact/com.squareup/javapoet
 //    compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'

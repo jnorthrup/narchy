@@ -32,6 +32,6 @@ public class UnevaluatedTask extends NALTask {
 //    }
     @Override
     public ITask next(NAR n) {
-        return inputSubTask(this, n);
+        return perceive(this, n);
     }
 }

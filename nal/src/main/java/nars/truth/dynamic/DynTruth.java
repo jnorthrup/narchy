@@ -305,7 +305,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         }
 
         @Override
-        public ITask inputSubTask(Task result, NAR n) {
+        public ITask perceive(Task result, NAR n) {
             return new TaskLinkTask(this);
         }
 

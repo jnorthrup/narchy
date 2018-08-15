@@ -4,10 +4,8 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import jcog.pri.Priority;
-import nars.concept.Concept;
-import nars.concept.Operator;
+import nars.control.Perceive;
 import nars.control.proto.Remember;
-import nars.op.stm.ConjClustering;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.SpecialNegatedTermTask;
@@ -22,12 +20,10 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.func.NALTruth;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
@@ -36,12 +32,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -181,8 +175,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         Op o = t.op();
 
-        if (o == NEG || !o.conceptualizable)
-            return fail(t, "not conceptualizable", safe);
+        if (o == NEG || !o.taskable)
+            return fail(t, "not taskable", safe);
 
         if (t.hasAny(Op.VAR_PATTERN))
             return fail(t, "term has pattern variables", safe);
@@ -353,6 +347,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                         x.creation(), start, end,
                         x.stamp()
                 ));
+    }
+
+    @Nullable
+    static <T extends Task> T clone(Task x, Term newContent, BiFunction<Term, Truth, T> taskBuilder) {
+        return clone(x, newContent, x.truth(), x.punc(), taskBuilder);
     }
 
     @Nullable
@@ -708,8 +707,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      */
     default boolean isInput() {
         return stamp().length <= 1 && !isCyclic();
-
-
     }
 
     default boolean isEternal() {
@@ -824,17 +821,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         MutableSet<ITask> yy = new UnifiedSet<>(1);
 
-        //preprocess the original task
-        preProcess(x, yy, n);
+
 
         final int FORK_LIMIT = 8; //dunno
 
         final int[] forked = {0};
-        Evaluation.eval(x, n, (y, truth)-> {
-            if (truth > 0) {
+        Evaluation.eval(x, n, (y)-> {
+
+            if (Perceive.tryPerceive(this, y, yy, n)) {
                 forked[0]++;
-                preProcess(y, yy, n);
             }
+
             return forked[0] < FORK_LIMIT;
         });
 
@@ -848,163 +845,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
     }
 
-    default void preProcess(Term y, Collection<ITask> queue, NAR n) {
-
-
-        boolean cmd = isCommand();
-
-
-        Term x = term();
-        if (!x.equals(y)) {
-
-
-//            if (Operator.func(y).equals(TRUE)) {
-//                throw new UnsupportedOperationException();
-//                if (isQuestionOrQuest()) {
-//
-//                    y = Operator.arg(y, 0);
-//
-//
-//                    byte p = isQuestion() ? BELIEF : GOAL;
-//
-//                    @Nullable Task result = clone(this, y, $.t(1f, n.confDefault(p)), p);
-//
-//
-//                    if (result != null) {
-//
-//                        float pBeforeDrain = priElseZero();
-//                        pri(0);
-//                        queue.add(inputStrategy(result));
-//
-//                        queue.add(new NativeTask.NARTask(nn -> {
-//                            Tasklinks.linkTask(
-//                                    new TaskLink.GeneralTaskLink(result, nn, pBeforeDrain / 2f),
-//                                    concept(nn, true).tasklinks(),
-//                                    null);
-//
-//                        }));
-//                    } else {
-//
-//                    }
-//
-//                } else {
-//
-//                    y = Operator.arg(y, 0);
-//                    if (!y.equals(x)) {
-//                        Task tc = clone(this, y, truth(), punc());
-//                        if (!equals(tc)) {
-//                            //queue.add(inputStrategy(tc));
-//                            queue.add(tc);
-//                        }
-//                    }
-//
-//                }
-          /*  } else*/
-            {
-                @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(),
-
-                        !isInput() || !Param.DEBUG_EXTRA
-                );
-                        /* the evaluated result here acts as a memoization of possibly many results
-                           depending on whether the functor is purely static in which case
-                           it would be the only one.
-                         */
-
-                if (yy != null) {
-                    Term yyz = yy.getOne();
-                    @Nullable Task result;
-
-
-                    result = clone(this, yyz.negIf(yy.getTwo()));
-
-
-                    if (result != null) {
-                        //queue.add(inputStrategy(result));
-                        //pri(0);
-
-                        queue.add(result);
-                        return; //transformed
-                    }
-                }
-            }
-        }
-
-        if (!cmd) {
-            queue.add(inputSubTask(this, n));
-        }
-
-
-        if (cmd || (isGoal() && !isEternal())) {
-
-
-            Pair<Operator, Term> o = Functor.ifFunc(y, (i) -> {
-                Concept operation = n.concept(i);
-                return operation instanceof Operator ? (Operator) operation : null;
-            });
-            if (o != null) {
-                try {
-
-                    Task yy = o.getOne().model.apply(this, n);
-                    if (yy != null && !this.equals(yy)) {
-                        queue.add(yy);
-                    }
-                } catch (Throwable xtt) {
-
-                    queue.add(Operator.error(this, xtt, n.time()));
-                    return;
-                }
-                if (cmd) {
-                    n.eventTask.emit(this);
-                    return;
-                }
-
-            }
-
-            if (cmd) {
-
-                n.out(term());
-            }
-        }
-
-        byte p = punc();
-        if (op()==CONJ  && (dt()!=DTERNAL && dt()!=XTERNAL) && !isEternal() && ((p==BELIEF  && Param.AUTO_DECOMPOSE_CONJ_BELIEF) ||
-                (p == GOAL && Param.AUTO_DECOMPOSE_CONJ_GOAL))) {
-            if (!(this instanceof ConjClustering.STMClusterTask)) { //HACK
-                Truth reducedTruth = NALTruth.StructuralDeduction.apply(truth(), null, n, n.confMin.floatValue());
-                if (reducedTruth!=null)
-                    reducedTruth.dither(n);
-                if (reducedTruth != null) {
-                    long s = start();
-                    long range = end() - s;
-                    List<Task> subTasks = new FasterList(2);
-
-                    term().eventsWhile((when, what) -> {
-                        assert(!what.equals(term()));
-
-                        Task t = Task.clone(this, what, reducedTruth, p, Tense.dither(when, n), Tense.dither(when + range, n));
-
-                        if (t!=null)
-                            subTasks.add(t);
-                        return true;
-                    }, s, true, false, false, 0);
-
-                    if (!subTasks.isEmpty()) {
-                        int ns = subTasks.size();
-                        float pr = (reducedTruth.conf()/conf()) * priElseZero() / ns;
-                        for (Task ss : subTasks) {
-                            ss.pri(0);
-                            ss.take(this, pr, true, false);
-                            //ss.setCyclic(true);
-                        }
-                        queue.addAll(subTasks);
-                    }
-                }
-            }
-        }
-
-    }
-
-    default ITask inputSubTask(Task result, NAR n) {
+    default ITask perceive(Task result, NAR n) {
         return Remember.the(result, n);
     }
 
@@ -1015,20 +856,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     short[] cause();
 
 
-    /**
-     * evaluate the midpoint value of every pair of times, and then multiply by x area between them
-     */
-    default float eviIntegRectMid(long dur, long... times) {
-        float e = 0;
-        for (int i = 1, timesLength = times.length; i < timesLength; i++) {
-            long a = times[i - 1];
-            long b = times[i];
-            assert (b > a);
-            long ab = (a + b) / 2L;
-            e += (b - a) * evi(ab, dur);
-        }
-        return e;
-    }
+//    /**
+//     * evaluate the midpoint value of every pair of times, and then multiply by x area between them
+//     */
+//    default float eviIntegRectMid(long dur, long... times) {
+//        float e = 0;
+//        for (int i = 1, timesLength = times.length; i < timesLength; i++) {
+//            long a = times[i - 1];
+//            long b = times[i];
+//            assert (b > a);
+//            long ab = (a + b) / 2L;
+//            e += (b - a) * evi(ab, dur);
+//        }
+//        return e;
+//    }
 
 
     /** maybe */

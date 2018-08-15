@@ -110,6 +110,10 @@ class ArithmeticTest {
     }
 
     static void assertSolves(String q, String a) throws Narsese.NarseseException {
+        //1.
+        assertEval($$(a),  q);
+
+        //2.
         NAR n = NARS.tmp(2);
         //n.termVolumeMax.set(14);
         TestNAR t = new TestNAR(n);
@@ -144,7 +148,7 @@ class ArithmeticTest {
         NAR n = NARS.tmp(6);
         new ArithmeticIntroduction(8, n);
 
-        final int cycles = 2000;
+        final int cycles = 500;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);

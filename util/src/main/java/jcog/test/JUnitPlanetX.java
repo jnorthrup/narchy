@@ -7,10 +7,8 @@ import jcog.io.arff.ARFF;
 import org.eclipse.collections.api.tuple.Pair;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.engine.descriptor.*;
 import org.junit.jupiter.engine.execution.JupiterEngineExecutionContext;
-import org.junit.jupiter.engine.execution.ThrowableCollector;
 import org.junit.jupiter.engine.extension.ExtensionRegistry;
 import org.junit.platform.commons.util.BlacklistedExceptions;
 import org.junit.platform.commons.util.ClassLoaderUtils;
@@ -19,6 +17,7 @@ import org.junit.platform.engine.*;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.engine.support.hierarchical.Node;
+import org.junit.platform.engine.support.hierarchical.ThrowableCollector;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.TestExecutionListener;
@@ -173,7 +172,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
         JupiterEngineExecutionContext ctx = new JupiterEngineExecutionContext(this, req.getConfigurationParameters()) {
 
-            final ThrowableCollector throwCollector = new ThrowableCollector() {
+            final ThrowableCollector throwCollector = new ThrowableCollector((x) -> true) {
                 @Override
                 public void execute(Executable executable) {
                     throw new UnsupportedOperationException("unused");

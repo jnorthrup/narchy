@@ -1,13 +1,14 @@
 package nars.task;
 
 import com.google.common.primitives.Longs;
+import jcog.Util;
 import jcog.pri.Priority;
 import nars.NAR;
-import org.eclipse.collections.api.set.MutableSet;
+import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -25,16 +26,10 @@ public abstract class AbstractTask implements ITask, Priority {
             case 0:
                 return null;
             case 1: {
-                if (next instanceof List)
-                    return ((List<ITask>)next).get(0);
-                else if (next instanceof MutableSet)
-                    return ((MutableSet<ITask>)next).getOnly();
-                else
-                    return next.iterator().next();
-                //TODO SortedSet.getFirst() etc
+                return Util.only(next);
             }
             default: {
-                return new TasksCollection(next);
+                return new TasksArray(next.toArray(ITask[]::new), true);
             }
         }
     }
@@ -153,33 +148,43 @@ public abstract class AbstractTask implements ITask, Priority {
         }
 
     }
-    public final static class TasksCollection extends AbstractTask {
-        private final Collection<ITask> tasks;
+//    public final static class TasksCollection extends AbstractTask {
+//        private final Collection<ITask> tasks;
+//
+//        public TasksCollection(Collection<ITask> x) {
+//            this.tasks = x;
+//            if (x.size() > 3) {
+//                //sort by the task type
+//            }
+//        }
+//
+//        @Override
+//        public ITask next(NAR n) {
+//            //FasterList<ITask> next = null;
+//            for (ITask t: tasks) {
+//                t.run(n);
+////                ITask p = t.next(n);
+////                if (p!=null) {
+////                    if (next == null) next = new FasterList(1);
+////                    next.add(p);
+////                }
+//            }
+//            return null;
+//        }
+//
+//    }
 
-        public TasksCollection(Collection<ITask> x) {
-            this.tasks = x;
-        }
-
-        @Override
-        public ITask next(NAR n) {
-            //FasterList<ITask> next = null;
-            for (ITask t: tasks) {
-                t.run(n);
-//                ITask p = t.next(n);
-//                if (p!=null) {
-//                    if (next == null) next = new FasterList(1);
-//                    next.add(p);
-//                }
-            }
-            return null;
-        }
-
-    }
+    /** execute the given tasks */
     public final static class TasksArray extends AbstractTask {
         private final ITask[] tasks;
 
-        private TasksArray(ITask[] x) {
+        private TasksArray(ITask[] x, boolean anyOrder) {
             this.tasks = x;
+
+            //sort by type, emulating loop unrolling by batching the set of tasks by their type.
+            if (anyOrder && x.length > 2) {
+                Arrays.sort(x, Comparators.byIntFunction((ITask z)->z.getClass().hashCode()));
+            }
         }
 
         @Override

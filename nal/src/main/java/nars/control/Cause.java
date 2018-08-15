@@ -183,7 +183,7 @@ public class Cause implements Comparable<Cause> {
 
 
         //return mergeFlat(maxLen, s);
-        return mergeSampled(maxLen, s, true);
+        return mergeSampled(maxLen, s, false);
     }
 
     /** this isnt good because the maps can grow beyond the capacity

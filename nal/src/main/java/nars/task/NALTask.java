@@ -102,7 +102,7 @@ public class NALTask extends UnitPri implements Task {
 
     public Task causeMerge(short[] c) {
         if (!Arrays.equals(cause(), c)) {
-            int causeCap = Math.min(Param.CAUSE_LIMIT, c.length + cause().length);
+            int causeCap = Math.min(Param.causeCapacity.intValue(), c.length + cause().length);
             this.cause = Cause.merge(causeCap, cause, c);
         }
         return this;

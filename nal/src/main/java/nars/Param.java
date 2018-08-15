@@ -353,15 +353,11 @@ public abstract class Param {
      */
     public static final int STAMP_CAPACITY = 8;
 
-    public static final IntRange causeCapacity = new IntRange(32, 0, 128);
-
-    /**
-     * hard limit for cause capacity in case the runtime parameter otherwise disobeyed
-     */
-    public static final int CAUSE_LIMIT = (causeCapacity.max);
+    /** TODO make this NAR-specific */
+    public static final IntRange causeCapacity = new IntRange(64, 0, 128);
 
 
-    public final static int UnificationStackMax = 96;
+    public final static int UnificationStackMax = 128;
 
 
     public static final boolean DEBUG_TASK_LOG = true;
@@ -372,7 +368,6 @@ public abstract class Param {
     public static final float TRUTH_EPSILON = 0.01f;
     public static final float TRUTH_MAX_CONF = 1f - TRUTH_EPSILON;
     public static final float TRUTH_MIN_EVI = Float.MIN_NORMAL;
-    public static final float TRUTH_MAX_EVI = Float.MAX_VALUE;
 
 
     /**

@@ -1438,9 +1438,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     }
 
-    public final void out(Object x) {
-        eventTask.emit(Operator.log(time(), x));
-    }
 
     /**
      * invokes any pending tasks without advancing the clock
