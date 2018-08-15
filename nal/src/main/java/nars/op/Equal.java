@@ -51,13 +51,13 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         if (xVar ^ yVar) {
             if (xVar) {
                 if (e != null) {
-                    e.replace(x, y);
+                    e.is(x, y);
                     //return True;
                 }
                 return null;
             } else {
                 if (e != null) {
-                    e.replace(y, x);
+                    e.is(y, x);
                     //return True;
                 }
                 return null;
@@ -86,7 +86,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
                 if (xa.length == 2 && xa[1].op()==INT && xa[0].op().var) {
                     if (y.op()==INT) {
                         //"equal(add(#x,a),b)"
-                        e.replace(xa[0], Int.the( ((Int)y).id - ((Int)xa[1]).id ));
+                        e.is(xa[0], Int.the( ((Int)y).id - ((Int)xa[1]).id ));
                         return null;
                     }
                 }

@@ -24,10 +24,10 @@ class ListFuncTest {
 
         assertEquals(
                 Set.of($$("(x,y)")),
-                Evaluation.solveAll($$("append((x),(y))"), n));
+                Evaluation.solveAllTrue($$("append((x),(y))"), n));
         assertEquals(
                 Set.of($$("append(#x,(y))")),
-                Evaluation.solveAll($$("append(#x,(y))"), n));
+                Evaluation.solveAllTrue($$("append(#x,(y))"), n));
 
     }
 
@@ -39,12 +39,12 @@ class ListFuncTest {
         
         assertEquals(
                 Set.of($$("append((x),(y),(x,y))")),
-                Evaluation.solveAll($$("append((x),(y),#what)"), n));
+                Evaluation.solveAllTrue($$("append((x),(y),#what)"), n));
 
         
         assertEquals(
                 Set.of($$("(append((x),(y),(x,y)) && ((x,y)<->solution))")),
-                Evaluation.solveAll($$("(append((x),(y),#what) && (#what<->solution))"), n));
+                Evaluation.solveAllTrue($$("(append((x),(y),#what) && (#what<->solution))"), n));
 
     }
 
@@ -56,15 +56,15 @@ class ListFuncTest {
 
         assertEquals(
                 Set.of($$("append((x),(y),(x,y))")),
-                Evaluation.solveAll($$("append((x),(y),(x,y))"), n));
+                Evaluation.solveAllTrue($$("append((x),(y),(x,y))"), n));
 
         assertEquals(
                 Set.of($$("append(x,y,(x,y))")),
-                Evaluation.solveAll($$("append(x,y,(x,y))"), n));
+                Evaluation.solveAllTrue($$("append(x,y,(x,y))"), n));
 
         assertEquals(
                 Set.of($$("append((x),(y),(x,y,z))").neg()),
-                Evaluation.solveAll($$("append((x),(y),(x,y,z))"), n));
+                Evaluation.solveAllTrue($$("append((x),(y),(x,y,z))"), n));
 
     }
 
@@ -76,22 +76,22 @@ class ListFuncTest {
         
         assertEquals(
                 Set.of($$("append((x),(y),(x,y))")),
-                Evaluation.solveAll($$("append((x),#what,(x,y))"), n));
+                Evaluation.solveAllTrue($$("append((x),#what,(x,y))"), n));
 
         
         assertEquals(
                 Set.of($$("append(x,(y),(x,y))")),
-                Evaluation.solveAll($$("append(x,#what,(x,y))"), n));
+                Evaluation.solveAllTrue($$("append(x,#what,(x,y))"), n));
 
         
         assertEquals(
                 Set.of(Null),
-                Evaluation.solveAll($$("append((z),#what,(x,y))"), n));
+                Evaluation.solveAllTrue($$("append((z),#what,(x,y))"), n));
 
         
         assertEquals(
                 Set.of($$("(append((x),(),(x)) && (()<->solution))")),
-                Evaluation.solveAll($$("(append((x),#what,(x)) && (#what<->solution))"), n));
+                Evaluation.solveAllTrue($$("(append((x),#what,(x)) && (#what<->solution))"), n));
 
     }
 
@@ -107,41 +107,46 @@ class ListFuncTest {
                         $$("append((x),(y,z),(x,y,z))"),
                         $$("append((),(x,y,z),(x,y,z))")
                 ),
-                Evaluation.solveAll($$("append(#x,#y,(x,y,z))"), n));
+                Evaluation.solveAllTrue($$("append(#x,#y,(x,y,z))"), n));
     }
     @Test
-    void testAppendHeadAndTailMulti() {
-        
+    void testAppendHeadAndTailMulti1() {
 
 
         assertEquals(
-            Set.of(
-                    $$("(append((),(x,y),(x,y)),append((a),(b),(a,b)))"),
-                    $$("(append((x),(y),(x,y)),append((),(a,b),(a,b)))"),
-                    $$("(append((),(x,y),(x,y)),append((a,b),(),(a,b)))"),
-                    $$("(append((x),(y),(x,y)),append((a,b),(),(a,b)))"),
-                    $$("(append((x,y),(),(x,y)),append((a,b),(),(a,b)))"),
-                    $$("(append((),(x,y),(x,y)),append((),(a,b),(a,b)))"),
-                    $$("(append((x),(y),(x,y)),append((a),(b),(a,b)))"),
-                    $$("(append((x,y),(),(x,y)),append((a),(b),(a,b)))"),
-                    $$("(append((x,y),(),(x,y)),append((),(a,b),(a,b)))")
-            ),
-            Evaluation.solveAll($$("(append(#x,#y,(x,y)), append(#a,#b,(a,b)))"), n));
+                Set.of(
+                        $$("(append((),(x,y),(x,y)),append((a),(b),(a,b)))"),
+                        $$("(append((x),(y),(x,y)),append((),(a,b),(a,b)))"),
+                        $$("(append((),(x,y),(x,y)),append((a,b),(),(a,b)))"),
+                        $$("(append((x),(y),(x,y)),append((a,b),(),(a,b)))"),
+                        $$("(append((x,y),(),(x,y)),append((a,b),(),(a,b)))"),
+                        $$("(append((),(x,y),(x,y)),append((),(a,b),(a,b)))"),
+                        $$("(append((x),(y),(x,y)),append((a),(b),(a,b)))"),
+                        $$("(append((x,y),(),(x,y)),append((a),(b),(a,b)))"),
+                        $$("(append((x,y),(),(x,y)),append((),(a,b),(a,b)))")
+                ),
+                Evaluation.solveAllTrue($$("(append(#x,#y,(x,y)), append(#a,#b,(a,b)))"), n));
 
+    }
+    @Test
+    void testAppendHeadAndTailMulti2() {
         assertEquals(
                 Set.of(
                         $$("(append((),(x,y),(x,y)),append((),(x,b),(x,b)))"),
                         $$("(append((x),(y),(x,y)),append((x),(b),(x,b)))")
                 ),
-                Evaluation.solveAll($$("(append(#x,#y,(x,y)), append(#x,#b,(x,b)))"), n));
+                Evaluation.solveAllTrue($$("(append(#x,#y,(x,y)), append(#x,#b,(x,b)))"), n));
+    }
 
+    @Test
+    void testAppendHeadAndTailMulti3() {
         assertEquals(
                 Set.of(
                         (Term)False,
                         $$("(append((),(x,y),(x,y)) && append((),(x,b),(x,b)))"),
                         $$("(append((x),(y),(x,y)) && append((x),(b),(x,b)))")
                 ),
-                Evaluation.solveAll($$("(&&,append(#x,#y,(x,y)),append(#a,#b,(x,b)),equal(#x,#a))"), n));
+                Evaluation.solveAllTrue($$("(&&,append(#x,#y,(x,y)),append(#a,#b,(x,b)),equal(#x,#a))"), n));
 
     }
 
@@ -153,11 +158,11 @@ class ListFuncTest {
         
         assertEquals(
                 Set.of($$("append((x),(y),(x,y))")),
-                Evaluation.solveAll($$("append(#what,(y),(x,y))"), n));
+                Evaluation.solveAllTrue($$("append(#what,(y),(x,y))"), n));
 
         assertEquals(
                 Set.of($$("append((),(x,y),(x,y))")),
-                Evaluation.solveAll($$("append(#what,(x,y),(x,y))"), n));
+                Evaluation.solveAllTrue($$("append(#what,(x,y),(x,y))"), n));
 
     }
 
@@ -193,13 +198,13 @@ class ListFuncTest {
          */
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(64);
+        n.termVolumeMax.set(48);
 
         int levels =
                 2;
                 
 
-        n.log();
+        //n.log();
         n.input("hanoi(0,#A,#B,#C,()).");
         n.input(
                 "((&&" +

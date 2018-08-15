@@ -26,16 +26,17 @@ import nars.truth.func.NALTruth;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -816,39 +817,38 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default ITask next(NAR n) {
 
 
-        Collection<ITask> yy;
+
 
         Term x = term();
 
-        boolean needEval = Evaluation.possiblyNeedsEval(x);
-        if (!needEval) {
-            yy = new FasterList<>(1);
-            preProcess(n, x, yy);
-        } else {
-            yy = new LinkedHashSet<>(4);
-            Evaluation.solve(null, x, false, n::functor,
-                    z -> {
-                        if (z.volume() < n.termVolumeMax.intValue()) {
-                            preProcess(n, z, yy);
-                        }
-                        return true;
-                    });
 
-        }
+        MutableSet<ITask> yy = new UnifiedSet<>(1);
+
+        //preprocess the original task
+        preProcess(x, yy, n);
+
+        final int FORK_LIMIT = 8; //dunno
+
+        final int[] forked = {0};
+        Evaluation.eval(x, n, (y, truth)-> {
+            if (truth > 0) {
+                forked[0]++;
+                preProcess(y, yy, n);
+            }
+            return forked[0] < FORK_LIMIT;
+        });
+
         switch (yy.size()) {
             case 0:
                 return null;
             case 1:
-                return needEval ? yy.iterator().next() : ((List<ITask>) yy).get(0); /* avoid creating iterator */
+                return yy.getOnly();
             default:
-                return new AbstractTask.NARTask((nn) -> yy.forEach(z -> {
-                    if (z!=null) //HACK
-                        z.run(nn);
-                }));
+                return new AbstractTask.ArrayTask(yy.toArray(Task.EmptyArray));
         }
     }
 
-    default void preProcess(NAR n, Term y, Collection<ITask> queue) {
+    default void preProcess(Term y, Collection<ITask> queue, NAR n) {
 
 
         boolean cmd = isCommand();

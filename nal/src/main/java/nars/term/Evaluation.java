@@ -1,406 +1,375 @@
 package nars.term;
 
-import jcog.data.iterator.ArrayIterator;
-import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
-import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.concept.Operator;
-import nars.subterm.Subterms;
+import nars.Param;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.control.AbstractPred;
-import nars.unify.match.EllipsisMatch;
 import nars.term.util.transform.DirectTermTransform;
-import nars.term.util.transform.TermTransform;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectBytePredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
-import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.ATOM;
 
 public class Evaluation {
 
-    private static final Functor TRUE = new Functor.TheAbstractInlineFunctor1Inline("\"" + True + '"', x->null);
-
-//    static final ThreadLocal<Evaluation> eval = ThreadLocal.withInitial(Evaluation::new);
-
-    private List<Predicate<VersionMap<Term, Term>>[]> proc = null;
+    private final FunctorSet functors;
+    private final ObjectBytePredicate<Term> each;
+    private final Term term;
+    private List<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
 
     private Versioning v;
 
     private VersionMap<Term, Term> subst;
 
-    private boolean wrapBool = false;
+    ///ArrayHashSet<Term> seen = new ArrayHashSet<>(1); //deduplicator,TODO use different deduplication strategies including lossy ones (Bagutator)
 
-    private Evaluation() {
-
+    @Nullable public static Evaluation eval(Term x, NAR nar, ObjectBytePredicate<Term> each) {
+        return eval(x, nar::functor, each);
     }
 
-    private void ensureReady() {
-        if (v == null) {
-             v = new Versioning<>(16, 128);
-             subst = new VersionMap<>(v);
-             proc = new FasterList<>(1);
+    @Nullable public static Evaluation eval(Term x, Function<Term, Functor> resolver, ObjectBytePredicate<Term> each) {
+        if (possiblyNeedsEval(x)) {
+            FunctorSet y = new FunctorSet(resolver).discover(x);
+            if (!y.isEmpty())
+                return new Evaluation(x, y, each);
         }
+        return null;
     }
 
-
-    private static Evaluation start(boolean wrapBool) {
-        return new Evaluation().wrapBool(wrapBool);
+    private Evaluation(Term x, FunctorSet f, ObjectBytePredicate<Term> each) {
+        this.term = x;
+        this.each = each;
+        this.functors = f;
+        f.sortDecreasingVolume();
     }
 
-    private static ArrayHashSet<Term> solveAll(Evaluation e, Term x, NAR nar) {
-        return solveAll(e, x, nar::functor, true);
-    }
-
-    public static ArrayHashSet<Term> solveAll(Term x, NAR nar) {
-        return solveAll(null, x, nar);
-    }
-
-    private static final TermTransform trueUnwrapper = new TermTransform.NegObliviousTermTransform() {
-        @Override
-        public @Nullable Term transformCompoundUnneg(Compound x) {
-            if (Functor.func(x).equals(TRUE)) {
-                return transform(Operator.arg(x, 0));
+    /** returns first true result. returns null if no solutions */
+    public static Term solveFirst(Term x, NAR n) {
+        Term[] y = new Term[1];
+        Evaluation.eval(x, n, (what, truth) -> {
+            if (truth == +1) {
+                y[0] = what;
             }
-            return TermTransform.NegObliviousTermTransform.super.transformCompoundUnneg(x);
-        }
-
-    };
-
-    /** TODO rewrite so that Evaluation is Iterable-like and return that. then it will be like prolog solutions*/
-    private static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term, Functor> resolver, boolean wrapBool) {
-        ArrayHashSet<Term> all = new ArrayHashSet<>(1);
-        Evaluation.solve(e, x, wrapBool, resolver, (y) -> {
-            y = (wrapBool && possiblyNeedsEval(y)) ? trueUnwrapper.transform(y) : y;
-            all.add(y);
             return true;
         });
-        return !all.isEmpty() ? all : ArrayHashSet.EMPTY;
+        return y[0];
     }
 
-    public static boolean solve(@Nullable Evaluation e, Term x, boolean wrapBool, Function<Term,Functor> resolver, Predicate<Term> each) {
-        Term y = needsEvaluation(x, resolver);
-        if (y == null)
-            return each.test(x);
-        else
-            return (e != null ? e.wrapBool(wrapBool) : Evaluation.start(wrapBool)).get(y, each);
+
+    public static ArrayHashSet<Term> solveAllTrue(Term x, NAR n) {
+        return solveAll(x, (byte)1, n);
     }
 
-    @Nullable
-    private static Term needsEvaluation(Term x, Function<Term,Functor> context) {
-
-        if (!possiblyNeedsEval(x))
-            return null;
-
-        MyFunctorResolver ft = new MyFunctorResolver(context);
-        Term y = ft.transform(x);
-
-        if (y == Null) {
-            return Null;
-        }
-
-        if (!ft.hasFunctor) {
-            return null;
-        }
-
-        //TODO add flag if all functors involved are InlineFunctor
-
+    /** gathers results from one truth set, ex: +1 (true) */
+    public static ArrayHashSet<Term> solveAll(Term x, byte truthSelect, NAR n) {
+        ArrayHashSet<Term> y = new ArrayHashSet();
+        Evaluation.eval(x, n, (what, truth) -> {
+            if (truth == truthSelect) {
+                y.add(what);
+            }
+            return true;
+        });
         return y;
     }
 
-    public static boolean possiblyNeedsEval(Term x) {
-        return x.hasAll(Op.FuncBits);
-    }
 
-    public static Term solveAny(Term x, Evaluation e, Function<Term,Functor> resolver, Random random, boolean wrapBool) {
-        ArrayHashSet<Term> results = solveAll(e, x, resolver, wrapBool);
-        return results.get(random);
-    }
-
-    private Term eval(Term x) {
-        return boolWrap(x, _eval(x));
-    }
-
-    private Term boolWrap(Term x, Term y) {
-        if (!(y instanceof Bool) || !wrapBool) {
-            return y; //no change
-        }
-
-        if (y == Null)
-            return Null;
-        else {
-            // if (y == True || y == False || y.hasAny(Op.BOOL)) {
-            {
-//                    boolean hasFalse = y == False; || y.ORrecurse(t -> t == False);
-//            if (hasFalse)
-//                z = False; //TODO maybe record what part causes the falsity
-
-                //determined absolutely true or false: implies that this is the answer to a question
-                return $.func(TRUE, y == False ? x.neg() : x);
-
-                //return hasFalse ? False : True;
-            }
+    private void ensureReady() {
+        if (v == null) {
+            v = new Versioning<>(Param.UnificationStackMax, Param.EVALUATION_TTL);
+            subst = new VersionMap<>(v);
+            termutator = new FasterList<>(1);
         }
     }
 
-    private Term _eval(Term c) {
-        Op o = c.op();
-        if (o == NEG) {
-            Term xu = c.unneg();
-            Term yu = _eval(xu);
-            if (xu != yu)
-                return yu.neg();
-            return c; //unchanged
-        }
-
-        /*if (hasAll(opBits))*/
-
-        /*if (subterms().hasAll(opBits))*/
-
-        Subterms uu = c.subterms();
-        Term[] xy = null;
 
 
-        int ellipsisAdds = 0, ellipsisRemoves = 0;
-
-        boolean evalConjOrImpl = !wrapBool && (o == CONJ || o == IMPL);
-        int polarity = 0;
-
-        for (int i = 0, n = uu.subs(); i < n; i++) {
-            Term xi = xy != null ? xy[i] : uu.sub(i);
-            Term yi = possiblyNeedsEval(xi) ? _eval(xi) : xi;
-            if (yi == Null)
-                return Null;
-            if (evalConjOrImpl && yi instanceof Bool && (i == 0 /* impl subj only */ || o == CONJ)) {
-                if (yi == True) {
-                    polarity = +1;
-                } else /*if (yi == False)*/ {
-                    if (o == IMPL)
-                        return Null;
-                    polarity = -1;
-                    break;
-                }
-            } else {
-                if (xi != yi) {
-                    yi = boolWrap(xi, yi);
-                }
-            }
-
-            if (xi != yi) {
-                if (yi == null) {
-
-                } else {
 
 
-                    if (yi instanceof EllipsisMatch) {
-                        int ys = yi.subs();
-                        ellipsisAdds += ys;
-                        ellipsisRemoves++;
-                    }
-
-                    if (xi!=yi) {
-                        if (xy == null) {
-                            xy = c.arrayClone();
-                        }
-                        xy[i] = yi;
-                    }
-                }
-            }
-        }
-
-        if (polarity != 0) {
-            if (o == CONJ) {
-                if (polarity < 0) {
-                    return False; //short circuit
-                }
-            } else if (o == IMPL) {
-                assert(polarity > 0); //False and Null already handled
-                return xy[1];
-            }
-        }
 
 
-        Term u;
-        if (xy != null) {
-            if (ellipsisAdds > 0) {
 
-                xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
-            }
-
-            u = o.the(c.dt(), xy);
-            o = u.op();
-            uu = u.subterms();
-        } else {
-            u = c;
-        }
-
-
-        if (o == INH && uu.hasAll(Op.FuncInnerBits)) {
-            Term pred, subj;
-            if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
-
-                Term v = ((BiFunction<Evaluation, Subterms, Term>) pred).apply(this, subj.subterms());
-                if (v != null) {
-                    if (v instanceof AbstractPred) {
-                        u = $.the(((Predicate) v).test(null));
-                    } else {
-                        u = v;
-                    }
-                } /* else v == null, no change */
-            }
-        }
-
-//        if (u != c && (u.equals(c) && u.getClass() == c.getClass()))
-//            return c;
-
-        return u;
-    }
-
-    private Evaluation wrapBool(boolean wrapBool) {
-        this.wrapBool = wrapBool;
-        return this;
-    }
+//    private Term _eval(Term c) {
+//        Op o = c.op();
+//        if (o == NEG) {
+//            Term xu = c.unneg();
+//            Term yu = _eval(xu);
+//            if (xu != yu)
+//                return yu.neg();
+//            return c; //unchanged
+//        }
+//
+//        /*if (hasAll(opBits))*/
+//
+//        /*if (subterms().hasAll(opBits))*/
+//
+//        Subterms uu = c.subterms();
+//        Term[] xy = null;
+//
+//
+//        int ellipsisAdds = 0, ellipsisRemoves = 0;
+//
+//        boolean evalConjOrImpl = !wrapBool && (o == CONJ || o == IMPL);
+//        int polarity = 0;
+//
+//        for (int i = 0, n = uu.subs(); i < n; i++) {
+//            Term xi = xy != null ? xy[i] : uu.sub(i);
+//            Term yi = possiblyNeedsEval(xi) ? _eval(xi) : xi;
+//            if (yi == Null)
+//                return Null;
+//            if (evalConjOrImpl && yi instanceof Bool && (i == 0 /* impl subj only */ || o == CONJ)) {
+//                if (yi == True) {
+//                    polarity = +1;
+//                } else /*if (yi == False)*/ {
+//                    if (o == IMPL)
+//                        return Null;
+//                    polarity = -1;
+//                    break;
+//                }
+//            } else {
+//                if (xi != yi) {
+//                    yi = boolWrap(xi, yi);
+//                }
+//            }
+//
+//            if (xi != yi) {
+//                if (yi == null) {
+//
+//                } else {
+//
+//
+//                    if (yi instanceof EllipsisMatch) {
+//                        int ys = yi.subs();
+//                        ellipsisAdds += ys;
+//                        ellipsisRemoves++;
+//                    }
+//
+//                    if (xi != yi) {
+//                        if (xy == null) {
+//                            xy = c.arrayClone();
+//                        }
+//                        xy[i] = yi;
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (polarity != 0) {
+//            if (o == CONJ) {
+//                if (polarity < 0) {
+//                    return False; //short circuit
+//                }
+//            } else if (o == IMPL) {
+//                assert (polarity > 0); //False and Null already handled
+//                return xy[1];
+//            }
+//        }
+//
+//
+//        Term u;
+//        if (xy != null) {
+//            if (ellipsisAdds > 0) {
+//
+//                xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
+//            }
+//
+//            u = o.the(c.dt(), xy);
+//            o = u.op();
+//            uu = u.subterms();
+//        } else {
+//            u = c;
+//        }
+//
+//
+//        if (o == INH && uu.hasAll(Op.FuncInnerBits)) {
+//            Term pred, subj;
+//            if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
+//
+//                Term v = ((BiFunction<Evaluation, Subterms, Term>) pred).apply(this, subj.subterms());
+//                if (v != null) {
+//                    if (v instanceof AbstractPred) {
+//                        u = $.the(((Predicate) v).test(null));
+//                    } else {
+//                        u = v;
+//                    }
+//                } /* else v == null, no change */
+//            }
+//        }
+//
+////        if (u != c && (u.equals(c) && u.getClass() == c.getClass()))
+////            return c;
+//
+//        return u;
+//    }
 
     private Evaluation clear() {
-        if (v!=null) {
-            proc.clear();
+        if (v != null) {
+            termutator.clear();
             v.reset();
             subst.clear();
         }
         return this;
     }
 
-    private boolean get(Term _x, Predicate<Term> each) {
+//    private boolean get(Term _x, Predicate<Term> each) {
+//
+//        Term x = eval(_x);
+//
+//        int np = procs();
+//        if (np == 0)
+//            return each.test(x); //done
+//
+//        Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
+//
+//        Iterable[] aa = new Iterable[np];
+//        for (int i = 0; i < np; i++)
+//            aa[i] = ArrayIterator.iterable(termutator.get(i));
+//
+//        pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(Predicate[]::new, aa);
+//
+//        int start = v.now();
+//
+//        nextPermute:
+//        while (pp.hasNext()) {
+//
+//
+//
+//            v.revert(start);
+//
+//            Predicate<VersionMap<Term, Term>>[] n = pp.next();
+//            assert (n.length > 0);
+//
+//            for (Predicate p : n) {
+//                if (!p.test(subst)) {
+//                    return each.test(False);
+//                    //continue nextPermute;
+//                }
+//            }
+//
+//            Term y = x.replace(subst);
+//            if (y == null)
+//                continue;
+//
+//            Term z = eval(y);
+//
+//            int ps = procs();
+//            if (z != null && np == ps && !each.test(z))
+//                return false;
+//
+//            if (np < ps) {
+//                int before = v.now();
+//                if (!get(z, each))
+//                    return false;
+//                v.revert(before);
+//            }
+//
+//        }
+//
+//
+//        return true;
+//    }
+//
 
-        Term x = eval(_x);
 
-        int np = procs();
-        if (np == 0)
-            return each.test(x); //done
-
-        Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
-
-        Iterable[] aa = new Iterable[np];
-        for (int i = 0; i < np; i++)
-            aa[i] = ArrayIterator.iterable(proc.get(i));
-
-        pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(Predicate[]::new, aa);
-
-        int start = v.now();
-
-        nextPermute:
-        while (pp.hasNext()) {
-
-            Term y;
-
-            v.revert(start);
-
-            Predicate<VersionMap<Term, Term>>[] n = pp.next();
-            assert (n.length > 0);
-
-            for (Predicate p : n) {
-                if (!p.test(subst)) {
-                    return each.test(False);
-                    //continue nextPermute;
-                }
-            }
-
-            y = x.replace(subst);
-            if (y == null)
-                continue;
-
-            Term z = eval(y);
-
-            int ps = procs();
-            if (z != null && np == ps && !each.test(z))
-                return false;
-
-            if (np < ps) {
-                int before = v.now();
-                if (!get(z, each))
-                    return false;
-                v.revert(before);
-            }
-
-        }
-
-
-        return true;
+    /**
+     * assign 1 variable
+     * returns false if it could not be assigned (enabling callee fast-fail)
+     */
+    public boolean is(Term x, Term y) {
+        return subst.tryPut(x, y);
     }
 
-    private int procs() {
-        List<Predicate<VersionMap<Term, Term>>[]> p = this.proc;
-        return p!=null ? p.size() : 0;
+    /**
+     * assign 2-variables at once.
+     * returns false if it could not be assigned (enabling callee fast-fail)
+     */
+    public boolean is(Term x, Term xx, Term y, Term yy) {
+        return subst.tryPut(x, xx) && subst.tryPut(y, yy);
+    }
+
+    /**
+     * 2-ary AND
+     */
+    public Predicate<VersionMap<Term, Term>> assign(Term x, Term xx, Term y, Term yy) {
+        return m -> m.tryPut(x, xx) && m.tryPut(y, yy);
     }
 
 
-    public void replace(Term x, Term xx) {
-        replace(subst(x, xx));
-    }
-
-    public void replace(Term x, Term xx, Term y, Term yy) {
-        replace(subst(x, xx, y, yy));
-    }
-
-    public void replace(Predicate... r) {
+    /**
+     * OR, forked
+     */
+    public void isAny(Collection<Predicate<VersionMap<Term, Term>>> r) {
         ensureReady();
-        proc.add(r);
+        termutator.add(r);
     }
 
-    private static Predicate<VersionMap<Term, Term>> subst(Term x, Term xx) {
-        return (m) -> {
-            Term px = m.get(x);
-            if (px != null) {
-                return px.equals(xx);
-            } else {
-                m.tryPut(x, xx);
-                return true;
-            }
-        };
-    }
-
-    public static Predicate<VersionMap<Term, Term>> subst(Term x, Term xx, Term y, Term yy) {
-        return (m) -> subst(x, xx).test(m) && subst(y, yy).test(m);
+    public static Predicate<VersionMap<Term,Term>> assign(Term x, Term y) {
+        return (subst) -> subst.tryPut(x, y);
     }
 
 
-    private static final class MyFunctorResolver implements DirectTermTransform {
+
+
+    private static boolean possiblyNeedsEval(Term x) {
+        return x.hasAll(Op.FuncBits);
+    }
+
+
+
+    /** discovers functors within the provided term, or the term itself.
+     * transformation results should not be interned, that is why DirectTermTransform used here */
+    private static final class FunctorSet extends ArrayHashSet<Term> implements DirectTermTransform {
 
         private final Function<Term, Functor> resolver;
-        boolean hasFunctor;
 
-        MyFunctorResolver(Function<Term,Functor> resolver) {
+        FunctorSet(Function<Term, Functor> resolver) {
             this.resolver = resolver;
         }
+
+        public FunctorSet discover(Term x) {
+            x.recurseTerms(s->s.hasAll(Op.FuncBits), (xx)->{
+                if (!contains(xx)) {
+                    if (Functor.isFunc(xx)) {
+                        Term yy = this.transform(xx);
+                        if (yy!=xx || yy.sub(1) instanceof Functor) {
+                            add(yy);
+                        }
+                    }
+                }
+                return true;
+            }, null);
+            return this;
+        }
+
+
 
 
         @Override
         public @Nullable Term transformAtomic(Atomic x) {
             if (x instanceof Functor) {
-                hasFunctor = true;
                 return x;
             }
 
             if (x.op() == ATOM) {
                 Functor f = resolver.apply(x);
-                if (f!=null) {
-                    hasFunctor = true;
+                if (f != null) {
                     return f;
                 }
             }
             return x;
         }
 
+        public void sortDecreasingVolume() {
+            if (size() > 1)
+                ((FasterList<Term>)list).sortThisByInt(Termlike::volume);
+        }
     }
 }

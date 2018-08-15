@@ -41,8 +41,8 @@ class ArithmeticTest {
     @Test
     void testAddCommutive() throws Narsese.NarseseException {
         NAR t = NARS.shell();
-        String fwd = $.$("add(#x,1)").eval(t, false).toString();
-        String rev = $.$("add(1,#x)").eval(t, false).toString();
+        String fwd = $.$("add(#x,1)").eval(t).toString();
+        String rev = $.$("add(1,#x)").eval(t).toString();
         assertEquals("add(#1,1)", fwd);
         assertEquals(fwd, rev);
 
@@ -91,7 +91,7 @@ class ArithmeticTest {
 
     static void assertEval(Term out, String in) {
         assertEquals( out,
-                $$(in).eval(NARS.shell(), false)
+                $$(in).eval(NARS.shell())
         );
     }
 

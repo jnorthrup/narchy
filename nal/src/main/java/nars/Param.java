@@ -75,6 +75,8 @@ public abstract class Param {
     /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
     public static final float ETERNAL_DERIVE_TO_PRESENT_RADIUS_DURS = 1;
 
+    public static final int EVALUATION_TTL = 32;
+
 //    /**
 //     * warning: can interfere with expected test results
 //     */

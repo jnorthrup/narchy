@@ -11,7 +11,8 @@
     B, A, --is(A,"==>"), --is(B,"==>")   |- (polarize(B,task) && polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
 
         //experiment
-        G, B, neq(G,B), task("!") |- (polarize(G, task) && polarize(B, belief)), (Goal:IntersectionDepolarized, Time:Relative)
+        //G, B, neq(G,B), task("!") |- (polarize(G, task) && polarize(B, belief)), (Goal:IntersectionDepolarized, Time:Relative)
+          //G, B, neq(G,B), task("!") |- (--polarize(G, task) && polarize(B, belief)), (Goal:IntersectionDepolarized, Time:Relative)
 
 
 

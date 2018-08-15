@@ -1,7 +1,7 @@
 package nars.op;
 
 import jcog.TODO;
-import jcog.Util;
+import jcog.version.VersionMap;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -11,8 +11,11 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Int;
 
+import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
 import static nars.Op.*;
 
 /**
@@ -72,33 +75,34 @@ public enum ListFunc {
 
             int l = xy.subs();
             if (l == 0) {
-                e.replace(
+                e.is(
                         x, Op.EmptyProduct,
                         y, Op.EmptyProduct
                 );
                 return null;
             } else if (l == 1) {
-                e.replace(
-                        Evaluation.subst(
-                                x, Op.EmptyProduct,
-                                y, xy),
-                        Evaluation.subst(
-                                x, xy,
-                                y, Op.EmptyProduct)
+                e.is(
 
+                                x, Op.EmptyProduct,
+                                y, xy
+                );
+                e.is(
+
+                                x, xy,
+                                y, Op.EmptyProduct
                 );
                 return null;
             } else {
                 Subterms xys = xy.subterms();
-                e.replace(
-                        Util.map(-1, l, finalI ->
-                                        Evaluation.subst(
-                                                x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                                                y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
-                                ,
-                                Predicate[]::new
 
-                        ));
+                Collection<Predicate<VersionMap<Term,Term>>> OR = IntStream.range(-1, l).mapToObj(finalI ->
+                        e.assign(
+                                x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                                y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
+                ).collect(toList());
+
+                e.isAny( OR );
+
                 return null;
             }
 
@@ -119,10 +123,10 @@ public enum ListFunc {
             if (remainderLength >= 0) {
                 if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
                     if (remainderLength == 0) {
-                        e.replace(x, Op.EmptyProduct);
+                        e.is(x, Op.EmptyProduct);
                         return null;
                     } else {
-                        e.replace(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys)));
+                        e.is(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys)));
                         return null;
                     }
                 }
@@ -148,10 +152,10 @@ public enum ListFunc {
                 if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
 
                     if (remainderLength == 0) {
-                        e.replace(y, Op.EmptyProduct);
+                        e.is(y, Op.EmptyProduct);
                         return null;
                     } else {
-                        e.replace(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs)));
+                        e.is(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs)));
                         return null;
                     }
                 }

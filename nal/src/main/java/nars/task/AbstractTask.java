@@ -25,7 +25,7 @@ public abstract class AbstractTask implements ITask, Priority {
             case 1:
                 return next.get(0);
             default:
-                return new AbstractTaskSequence(next.toArrayRecycled(ITask[]::new));
+                return new ArrayTask(next.toArrayRecycled(ITask[]::new));
         }
     }
 
@@ -144,10 +144,10 @@ public abstract class AbstractTask implements ITask, Priority {
 
     }
 
-    private final static class AbstractTaskSequence extends AbstractTask {
+    public final static class ArrayTask extends AbstractTask {
         private final ITask[] tasks;
 
-        AbstractTaskSequence(ITask[] x) {
+        public ArrayTask(ITask[] x) {
             this.tasks = x;
         }
 

@@ -139,7 +139,7 @@ abstract public class Inperience extends LeakBack {
         @Override
         protected Term reify(Task t) {
             Term ss = t.term();
-            Term tt = ss.eval(nar, true);
+            Term tt = ss.eval(nar);
             if (!tt.op().conceptualizable)
                 tt = ss; //use the task as-is, ignore the eval result
 
@@ -197,7 +197,7 @@ abstract public class Inperience extends LeakBack {
 
         @Override
         protected Term reify(Task t) {
-            return reifyBelief(t, t.term().eval(nar, true), nar);
+            return reifyBelief(t, t.term().eval(nar), nar);
         }
 
 
@@ -215,7 +215,7 @@ abstract public class Inperience extends LeakBack {
 
         @Override
         protected Term reify(Task t) {
-            return reifyQuestion(t.term().eval(nar, true), t.punc(), nar);
+            return reifyQuestion(t.term().eval(nar), t.punc(), nar);
         }
     }
     public static class Plan extends Inperience {
@@ -231,7 +231,7 @@ abstract public class Inperience extends LeakBack {
 
         @Override
         protected Term reify(Task t) {
-            return reifyQuestion(t.term().eval(nar, true), t.punc(), nar);
+            return reifyQuestion(t.term().eval(nar), t.punc(), nar);
         }
     }
 

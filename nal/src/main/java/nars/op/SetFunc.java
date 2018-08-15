@@ -142,7 +142,7 @@ public class SetFunc {
 
             private Term eval(Term t, Atomic atom) {
                 Term tt = $.func(atom, t);
-                return tt.eval(nar, false);
+                return tt.eval(nar);
             }
 
             @Override
@@ -162,7 +162,7 @@ public class SetFunc {
                     if (missing.size() == 1) {
                         Term[] xxx = xx.terms((n, xs) -> xs.op().var);
                         if (xxx.length == 1) {
-                            e.replace(xxx[0], missing.get(0));
+                            e.is(xxx[0], missing.get(0));
                             return null;
                         }
                     }

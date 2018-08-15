@@ -43,8 +43,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
     }
 
-    public static Term func(Term operation) {
-        return (operation.hasAll(Op.FuncBits) && operation.op()==INH && operation.sub(0).op()==PROD ) ? operation.sub(1) : Op.Null;
+    public static Term func(Term x) {
+        return isFunc(x) ?  x.sub(1) : Op.Null;
+    }
+    public static boolean isFunc(Term x) {
+        return (x.hasAll(Op.FuncBits) && x.op()==INH && x.sub(0).op()==PROD );
     }
 
     public static Term[] funcArgsArray(Term x) {
@@ -407,7 +410,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(x);
                     if (XY!=null) {
-                        e.replace(y, XY);
+                        e.is(y, XY);
                         return null;
                     } else {
                         return null; 
@@ -417,7 +420,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 if (x.hasAny(Op.VariableBits)) {
                     Term X = uncompute(x, y);
                     if (X!=null) {
-                        e.replace(x, X);
+                        e.is(x, X);
                         return null;
                     } else {
                         return null; 
@@ -487,7 +490,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(x, param);
                     if (XY!=null) {
-                        e.replace(y, XY);
+                        e.is(y, XY);
                         return null;
                     } else {
                         return null; 
@@ -497,7 +500,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 if (x.hasAny(Op.VariableBits)) {
                     Term X = uncompute(e, x, param, y);
                     if (X!=null) {
-                        e.replace(x, X);
+                        e.is(x, X);
                         return null;
                     } else {
                         return null; 
@@ -560,7 +563,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(e, x, y);
                     if (XY!=null) {
-                        e.replace(xy, XY);
+                        e.is(xy, XY);
                         return null;
                     } else {
                         return null; 

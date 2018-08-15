@@ -51,7 +51,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.*;
 
 import static nars.Op.*;
@@ -516,19 +515,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return this;
     }
 
-    /**
-     * for safety, dont override this method. override evalSafe
-     */
 
-    default Term eval(Evaluation e, Function<Term, Functor> resolver, Random rng, boolean wrapBool) {
-        if (!Evaluation.possiblyNeedsEval(this))
-            return this;
-        return Evaluation.solveAny(this, e, resolver, rng, wrapBool);
-    }
-
-
-    default Term eval(NAR nar, boolean wrapBool) {
-        return eval(null, nar::functor, nar.random(), wrapBool);
+    default Term eval(NAR nar) {
+        return Evaluation.solveFirst(this, nar);
     }
 
 
