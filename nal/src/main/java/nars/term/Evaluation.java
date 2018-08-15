@@ -18,12 +18,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.ATOM;
-import static nars.Op.False;
 import static nars.Op.Null;
 
 public class Evaluation {
@@ -66,7 +64,7 @@ public class Evaluation {
 
         ensureReady();
 
-        int freeVariables = ops.vars.size();
+//        int freeVariables = ops.vars.size();
 
 
 
@@ -81,66 +79,61 @@ public class Evaluation {
             vStart = v.now();
             while (ii.hasNext()) {
                 Term a = ii.next();
-                if (a == False) {
-                    ii.remove();
-                    continue;
-                }
-                Term func = a.sub(1);
-                Subterms args = a.sub(0).subterms();
-                Term z = ((BiFunction<Evaluation, Subterms, Term>) func).apply(this, args);
-                if (z == null) {
-                    ii.remove(); //no direct change, but may be change in substituted variables, handled below
-                } else if (z != a) {
-
-                    if (z == Null) {
-                        y = z; //poisoned
-                        break main;
-                    }
-
-                    boolean removeEntry = false;
-                    if (Functor.isFunc(z)) {
-
-                        //still a functor, but different. update it
-
-                        //run the functor resolver for any new functor terms which may have appeared
-                        Term zf = Functor.func(z);
 
 
-                        if (!(zf instanceof Functor)) {
-                            //try resolving
-                            Term zz = ops.transform(z);
-                            if (zz == z) {
-                                //not evaluable.
-                                removeEntry = true;
-                            } else {
-                                z = zz;
-                            }
+                boolean removeEntry;
+
+                if (Functor.isFunc(a)) {
+
+                    //still a functor, but different. update it
+
+                    //run the functor resolver for any new functor terms which may have appeared
+                    Term af = Functor.func(a);
+
+
+                    if (!(af instanceof Functor)) {
+                        //try resolving
+                        Term aa = ops.transform(a);
+                        if (aa == a) {
+                            //not evaluable.
+                            removeEntry = true;
+                        } else {
+                            a = aa;
                         }
+                    }
+                    removeEntry = false;
+                } else {
+                    removeEntry = true;
+                }
 
 
-                    } else {
-                        removeEntry = true;
+
+                if (!removeEntry) {
+                    Functor func = (Functor) a.sub(1);
+                    Subterms args = a.sub(0).subterms();
+                    Term z = func.apply(this, args);
+                    if (z == null) {
+                        if (v.now() != vStart) {
+                            removeEntry = true; //HACK if the functor set substitutions, dont call it again.
+                        }
+                    } else if (z != a) {
+                        if (z == Null) {
+                            y = z; //poisoned
+                            break main;
+                        }
                     }
 
-                    //TODO
-                    //forward substitute any terms that may contain this term.
-                    //the dependencies of a given term can be precomputed in the operation discovery process in a simple DAG
+                    if(z!=null) {
+                        if (!removeEntry)
+                            ii.set(z);
 
-
-
-                    if (removeEntry) {
-
-                        ii.remove();
-
-                    } else {
-                        ii.set(z);
+                        //pendingRewrites.add(new Term[]{a, z});
+                        Term finalA = a;
+                        ops.list.replaceAll(o -> o.replace(finalA, z));
+                        y = y.replace(a, z);
                     }
 
 
-                    //pendingRewrites.add(new Term[]{a, z});
-                    Term finalZ = z;
-                    ops.list.replaceAll(o -> o.replace(a, finalZ));
-                    y = y .replace(a, finalZ);
 
                     int vEnd = v.now();
                     if (vEnd != vStart) {
@@ -155,12 +148,25 @@ public class Evaluation {
 //                }
                     }
 
-                    if (!y.op().taskable)
+                    if (!y.op().conceptualizable)
                         break main;
 
                     ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
 
                     continue main; //restart
+
+                }
+
+
+                //TODO
+                //forward substitute any terms that may contain this term.
+                //the dependencies of a given term can be precomputed in the operation discovery process in a simple DAG
+
+
+
+                if (removeEntry) {
+
+                    ii.remove();
 
                 }
 

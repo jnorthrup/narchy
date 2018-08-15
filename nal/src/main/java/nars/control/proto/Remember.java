@@ -130,7 +130,7 @@ public class Remember extends AbstractTask {
 
         if (existing != input) {
 
-            assert (!input.isDeleted()); //dont delete just yet
+            //assert (!input.isDeleted()); //dont delete just yet
 
             //TODO decide how much to re-activate
             //TODO consider forgetting rate

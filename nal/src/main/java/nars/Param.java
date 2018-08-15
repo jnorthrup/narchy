@@ -160,11 +160,10 @@ public abstract class Param {
 
 
     /**
-     * when merging dt's, maximum difference in dt in which interpolation is applied to the merge.
-     * otherwise temporal information is discarded because it would be too inaccurate to simply
-     * choose an intermediate dt (ex: average value, or at random)
+     * when merging dt's, maximum difference in dt allowed
+     * determined according to the ratio of the dt difference compared to the smaller dt of the two being merged
      */
-    public final FloatRange intermpolationDurLimit = new FloatRange(2, 0, 128 /* no practical upper limit really */);
+    public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 2 /* no practical upper limit really */);
 
     /**
      * creates instance of the default truthpolation implementation

@@ -13,7 +13,9 @@ import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
+import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
+import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 
@@ -65,25 +67,25 @@ public class NARio extends NAgentX {
 
         Bitmap2DSensor ccb;
         addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.02f);
-//
+
 //        AutoConceptualizer ac;
 //        addSensor(ac = new AutoConceptualizer(new FasterList(ccb.concepts), true, 8 , this.nar));
 //        nar.runLater(()->{
-//            SpaceGraph.window(            new BitmapMatrixView(ac.ae.W) {
+//            SpaceGraph.window(new BitmapMatrixView(ac.ae.W) {
 //                {
-//                    onFrame(()-> update());
+//                    onFrame(this::update);
 //                }
 //            }, 500, 500);
 //        });
 
 
-//        onFrame(()->cc.update());
-//        int nx = 4;
-//        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
-//            return new float[]{/*cc.X, cc.Y, */cc.Z};
-//        }, 24, this);
-//        camAE.alpha(0.05f);
-//        SpaceGraph.window(camAE.newChart(), 500, 500);//
+        onFrame(()->cc.update());
+        int nx = 4;
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
+            return new float[]{/*cc.X, cc.Y, */cc.Z};
+        }, 24, this);
+        camAE.alpha(0.05f);
+        SpaceGraph.window(camAE.newChart(), 500, 500);
 
         try {
             final int tileMax = 3; //0..4

@@ -214,7 +214,7 @@ public class Builtin {
 
             Equal.the,
 
-            Functor.f2("if", (condition, conseq) -> {
+            Functor.f2("ifThen", (condition, conseq) -> {
                 if (condition.hasVars()) return null;
                 else {
                     if (condition.equals(True))

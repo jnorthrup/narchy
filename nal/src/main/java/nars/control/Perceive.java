@@ -38,7 +38,7 @@ public enum Perceive { ;
     public static boolean tryPerceive(Task input, Term y, Collection<ITask> queue, NAR n) {
 
         if (y == Null) {
-            logger.info("nonsense {}", input);
+            //logger.debug("nonsense {}", input);
             return false;
         }
 

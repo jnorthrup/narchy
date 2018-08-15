@@ -175,35 +175,42 @@ public class Revision {
 
     /** merge delta */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
-        if (adt >= 0 == bdt >= 0 && (float) Math.abs(adt - bdt) /nar.dur() <= nar.intermpolationDurLimit.floatValue()) {
-            //merge if they are the same sign or within a some number of durations
+        if (adt >= 0 == bdt >= 0) { //same sign
+            int delta = Math.abs(adt - bdt);
+            int min = Math.min(Math.abs(adt), Math.abs(bdt));
+            float ratio = ((float)delta)/min;
+            if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
 
-            long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
-            assert Math.abs(abdt) < Integer.MAX_VALUE;
 
-            return (int) abdt;
+                long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
+                assert Math.abs(abdt) < Integer.MAX_VALUE;
 
-        } else {
-            //different directions and exceed a duration in difference.
-            //discard temporal information by resorting to eternity
-            return DTERNAL;
+                return (int) abdt;
+
+            }
         }
+
+
+        //different directions and exceed a duration in difference.
+        //discard temporal information by resorting to eternity
+        return DTERNAL;
+
     }
-    /** merge occurrence */
-    public static long merge(long at, long bt, float aProp, NAR nar) {
-        long dt;
-        long diff = Math.abs(at - bt);
-        if (diff == 1) {
-            return choose(at, bt, aProp, nar.random());
-        }
-        if ((float) diff /nar.dur() <= nar.intermpolationDurLimit.floatValue()) {
-            //merge if within a some number of durations
-            dt = Util.lerp(aProp, bt, at);
-        } else {
-            dt = ETERNAL;
-        }
-        return dt;
-    }
+//    /** merge occurrence */
+//    public static long merge(long at, long bt, float aProp, NAR nar) {
+//        long dt;
+//        long diff = Math.abs(at - bt);
+//        if (diff == 1) {
+//            return choose(at, bt, aProp, nar.random());
+//        }
+//        if ((float) diff /nar.dur() <= nar.intermpolationRangeLimit.floatValue()) {
+//            //merge if within a some number of durations
+//            dt = Util.lerp(aProp, bt, at);
+//        } else {
+//            dt = ETERNAL;
+//        }
+//        return dt;
+//    }
 
 //    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
 //        return (rng.nextFloat() < aProp) ? a : b;
