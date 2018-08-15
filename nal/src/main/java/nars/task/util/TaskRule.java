@@ -86,7 +86,7 @@ public class TaskRule extends TaskMatch {
             final MySubUnify match = new MySubUnify(x);
 
             try {
-                match.unify(input, x.term(), true);
+                match.unify(input, x.term());
             } catch (TermException | TaskException e) {
                 onError(e);
             }

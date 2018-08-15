@@ -22,14 +22,14 @@ import static nars.time.Tense.ETERNAL;
 class NAL8EternalMixTest extends NALTest {
 
     public static final LongPredicate WHEN_REALIZED = t -> t > 0;
-    private final int cycles = 500;
+    private final int cycles = 200;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
-        test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(30);
+        //test.nar.confResolution.set(0.04f); //coarse
+        test.nar.termVolumeMax.set(20);
     }
 
     @Test

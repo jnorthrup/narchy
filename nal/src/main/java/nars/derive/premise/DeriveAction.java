@@ -22,7 +22,7 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
     static DeriveAction action(AND<Derivation> POST) {
 
         PremiseRuleProto.RuleCause cause = ((Taskify) AND.last(
-                ((UnifyTerm.UnifySubtermThenConclude)
+                ((UnifyTerm.NextUnifyTransform)
                 AND.last(POST)
         ).eachMatch)).channel;
 

@@ -107,7 +107,7 @@ public class PJ implements MethodHandler {
         Theory class_t = metaClass.getTheory();
         
         
-        PrologInvocationContext ctx = new PrologInvocationContext(method, args);        
+        PrologInvocationContext ctx = new PrologInvocationContext(method);
         /* theory = class_theory + method_theory + fields_theories */
         WithTermifiable withTermifiable = metaClass.getJavaClass().getAnnotation(WithTermifiable.class);
         if (withTermifiable != null) {

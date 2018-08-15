@@ -49,9 +49,9 @@ public class Daemon {
     }
 
     static String getOpt(String[] args,String prefix){
-        for (int i=0; i<args.length; i++)
-        if (args[i].startsWith(prefix))
-            return args[i].substring(prefix.length());
+        for (String arg : args)
+            if (arg.startsWith(prefix))
+                return arg.substring(prefix.length());
         return null;
     }
 }

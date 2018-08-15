@@ -22,14 +22,14 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-abstract public class BufferedExec extends UniExec {
+abstract public class MultiExec extends UniExec {
 
     public static final float MIN_BUFFER_AVAILABILITY = 0.1f;
     public final int totalConcurrency;
 
     protected volatile long idleTimePerCycle;
 
-    public BufferedExec(int concurrency) {
+    public MultiExec(int concurrency) {
         this.totalConcurrency = concurrency;
     }
 
@@ -87,7 +87,7 @@ abstract public class BufferedExec extends UniExec {
 
         if (nar.time instanceof RealTime) {
             double throttle = nar.loop.throttle.floatValue();
-            double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
+            double cycleNS = ((RealTime) nar.time).cycleSeconds() * 1.0E9;
 
             //TODO better idle calculation in each thread / worker
             idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
@@ -102,7 +102,7 @@ abstract public class BufferedExec extends UniExec {
 
     protected void onCycle(NAR nar) {
 
-        nar.time.scheduled(this::executeLater);
+        nar.time.schedule(this::executeLater);
 
 
     }
@@ -236,7 +236,7 @@ abstract public class BufferedExec extends UniExec {
 //    }
 
 
-    public static class WorkerExec extends BufferedExec {
+    public static class WorkerExec extends MultiExec {
 
         public final int threads;
         final boolean affinity;
@@ -311,8 +311,6 @@ abstract public class BufferedExec extends UniExec {
                 workers.clear();
 
                 exe.shutdownNow();
-
-
 
                 sync();
 

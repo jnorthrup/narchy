@@ -21,6 +21,7 @@ import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,15 +175,15 @@ public abstract class Library implements Serializable {
             mapPrimitives.put(PrologPrimitive.DIRECTIVE, new FasterList<>());
             mapPrimitives.put(FUNCTOR, new FasterList<>());
             mapPrimitives.put(PrologPrimitive.PREDICATE, new FasterList<>());
-            
-            
-            for (int i = 0; i < mlist.length; i++) {
-                String name = mlist[i].getName();
-                
-                Class<?>[] clist = mlist[i].getParameterTypes();
-                Class<?> rclass = mlist[i].getReturnType();
+
+
+            for (Method aMlist : mlist) {
+                String name = aMlist.getName();
+
+                Class<?>[] clist = aMlist.getParameterTypes();
+                Class<?> rclass = aMlist.getReturnType();
                 String returnTypeName = rclass.getName();
-                
+
                 int type;
                 switch (returnTypeName) {
                     case "boolean":
@@ -197,35 +198,33 @@ public abstract class Library implements Serializable {
                     default:
                         continue;
                 }
-                
-                int index=name.lastIndexOf('_');
-                if (index!=-1) {
+
+                int index = name.lastIndexOf('_');
+                if (index != -1) {
                     try {
                         int arity = Integer.parseInt(name.substring(index + 1, name.length()));
-                        
+
                         if (clist.length == arity) {
                             boolean valid = true;
-                            for (int j=0; j<arity; j++) {
+                            for (int j = 0; j < arity; j++) {
                                 if (!(Term.class.isAssignableFrom(clist[j]))) {
                                     valid = false;
                                     break;
                                 }
                             }
                             if (valid) {
-                                String rawName = name.substring(0,index);
+                                String rawName = name.substring(0, index);
                                 String key = rawName + '/' + arity;
-                                PrologPrimitive prim = new PrologPrimitive(type, key, this, mlist[i], arity);
+                                PrologPrimitive prim = new PrologPrimitive(type, key, this, aMlist, arity);
                                 mapPrimitives.get(type).add(prim);
-                                
-                                
-                                
+
+
                                 if (synonyms != null) {
                                     String[] stringFormat = {"directive", "predicate", "functor"};
-                                    for (int j = 0; j< synonyms.length; j++){
-                                        String[] map = synonyms[j];
-                                        if (map[1].equals(rawName) && map[2].equals(stringFormat[type])){
+                                    for (String[] map : synonyms) {
+                                        if (map[1].equals(rawName) && map[2].equals(stringFormat[type])) {
                                             key = map[0] + '/' + arity;
-                                            prim = new PrologPrimitive(type, key, this, mlist[i], arity);
+                                            prim = new PrologPrimitive(type, key, this, aMlist, arity);
                                             mapPrimitives.get(type).add(prim);
                                         }
                                     }
@@ -236,7 +235,7 @@ public abstract class Library implements Serializable {
                         ex.printStackTrace();
                     }
                 }
-                
+
             }
             return mapPrimitives;
         } catch (Exception ex) {

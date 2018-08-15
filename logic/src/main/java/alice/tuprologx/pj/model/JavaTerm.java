@@ -11,6 +11,7 @@ package alice.tuprologx.pj.model;
 
 import alice.tuprologx.pj.annotations.Termifiable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Vector;
 /**
@@ -154,7 +155,7 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
     @Override
     public <Z> Z toJava() {
         try {                
-            Object po = _class.newInstance();
+            Object po = _class.getConstructor().newInstance();
             java.beans.BeanInfo binfo = java.beans.Introspector.getBeanInfo(_class);
             
             java.util.Iterator<Term<?>> it = _properties.iterator();
@@ -174,7 +175,7 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
         }
         catch (Exception e) {
             throw new UnsupportedOperationException(e);
-        }            
+        }
     }
 
     static boolean matches(alice.tuprolog.Term t) {

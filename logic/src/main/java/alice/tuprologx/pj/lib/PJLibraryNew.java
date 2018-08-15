@@ -169,7 +169,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        return !(!(o instanceof Method));
+        return o instanceof Method;
     }
 
     public boolean is_iterable_1(Term method) {
@@ -200,7 +200,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        return !(!(o instanceof Field));
+        return o instanceof Field;
     }
     
     public boolean marshal_2(Term term, Term marshalledTerm) {

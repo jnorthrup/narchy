@@ -20,21 +20,21 @@ public class InspectionUtils
 	 */
 	public static Method searchForMethod(Class<?> type, String methodName, Class<?>... parms) {
 	    Method[] methods = type.getMethods();
-	    for(int i = 0; i < methods.length; i++) {
-	        
-	        if( !methods[i].getName().equals(methodName))
-	            continue;
+        for (Method method : methods) {
 
-	        Class<?>[] types = methods[i].getParameterTypes();
+            if (!method.getName().equals(methodName))
+                continue;
 
-	        
-	        if( types.length != parms.length )
-	            continue;
+            Class<?>[] types = method.getParameterTypes();
 
-	        
-	        if(alice.util.InspectionUtils.areTypesCompatible(types, parms))
-	            return methods[i];
-	        }
+
+            if (types.length != parms.length)
+                continue;
+
+
+            if (InspectionUtils.areTypesCompatible(types, parms))
+                return method;
+        }
 	    return null;
 	}
 	

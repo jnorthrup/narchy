@@ -40,7 +40,6 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
     private ArrayList<Term> elementi;
 
 
-
     public Term makeTermFroms(List<ExecutionContext> eclist) {
         int levels = eclist.size();
         if (levels < 1) return null;
@@ -54,11 +53,11 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
                 ArrayList<Term> sub = new ArrayList<>();
                 for (SubTree sgt : ec.getSubGoalStore().getSubGoals()) {
                     if (!sgt.isLeaf()) {
-                        
+
                         cerca(sgt);
                         sub.addAll(elementi);
                     } else {
-                        
+
                         sub.add((Term) sgt);
                     }
                 }

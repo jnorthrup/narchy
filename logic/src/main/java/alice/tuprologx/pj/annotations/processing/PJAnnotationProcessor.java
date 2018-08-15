@@ -249,7 +249,7 @@ public class PJAnnotationProcessor extends ElementScanner6<Void,Void> implements
                 requiredType = parameters.get(0);
             }
             else if (signature.outputTree.variables.size() == 2) {
-                requiredType = types.getDeclaredType(teCompound2,parameters.toArray(new TypeMirror[parameters.size()]));
+                requiredType = types.getDeclaredType(teCompound2,parameters.toArray(new TypeMirror[0]));
             }                    
             else {
                 requiredType = nilType;
@@ -320,7 +320,7 @@ public class PJAnnotationProcessor extends ElementScanner6<Void,Void> implements
             for (TypeMirror t : dt.getTypeArguments()) {
                 types.add(env.getTypeUtils().getWildcardType(env.getTypeUtils().getDeclaredType(teTerm, generalize(t)),null));
             }
-            return env.getTypeUtils().getDeclaredType((TypeElement)dt.asElement(),types.toArray(new TypeMirror[types.size()]));            
+            return env.getTypeUtils().getDeclaredType((TypeElement)dt.asElement(),types.toArray(new TypeMirror[0]));
         }
         else {
             return baseType;
@@ -502,7 +502,7 @@ public class PJAnnotationProcessor extends ElementScanner6<Void,Void> implements
                     currentToken = lexer.nextToken();                
                 }
                 catch (Exception e) {}
-                return types.toArray(new TypeMirror[types.size()]);
+                return types.toArray(new TypeMirror[0]);
             }
             return new TypeMirror[0];
         }

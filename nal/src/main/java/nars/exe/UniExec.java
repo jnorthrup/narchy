@@ -224,8 +224,9 @@ public class UniExec extends AbstractExec {
 
     protected void onCycle(NAR nar) {
 
-        nar.time.scheduled(this::executeNow);
         sync();
+        nar.time.schedule(this::executeNow);
+
         can.forEachValue(c->
             c.c.next(nar, WORK_PER_CYCLE)
         );

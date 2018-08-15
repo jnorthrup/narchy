@@ -43,20 +43,23 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 public abstract class Unify extends Versioning implements Subst {
 
     protected final static Logger logger = LoggerFactory.getLogger(Unify.class);
-    @Nullable
-    private final Op type;
-    public final Set<Termutator> termutes = new LinkedHashSet(4, 0.99f);
-    public final VersionMap<Variable, Term> xy;
-    public Random random;
+
+
     /**
-     * temporal tolerance; if -1, then it is not tested
+     * accumulates the next segment of the termutation stack
      */
-    public int dur = -1;
+    public final Set<Termutator> termutes = new LinkedHashSet(4, 0.99f);
+
+    public final VersionMap<Variable, Term> xy;
+    public final Random random;
 
     /**
      * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)
      */
-    public boolean symmetric = true;
+    public boolean symmetric = false;
+
+    public final Op type;
+
     private final int typeBits;
 
 
@@ -65,22 +68,22 @@ public abstract class Unify extends Versioning implements Subst {
      * @param random
      */
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
-        this(type, random, stackMax, initialTTL,
-                new TermHashMap()
-        );
+        this(type, random, stackMax);
+        setTTL(initialTTL);
     }
 
-    protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL, Map/*<Variable,Versioned<Term>>*/ termMap) {
-        super(stackMax, initialTTL);
+    protected Unify(@Nullable Op type, Random random, int stackMax) {
+        this(type, random, stackMax, new TermHashMap());
+    }
 
+    protected Unify(@Nullable Op type, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {
+        super(stackMax);
 
         this.random = random;
         this.type = type;
-        this.typeBits = type==null ? Op.VariableBits : type.bit;
+        this.typeBits = type == null ? Op.VariableBits : type.bit;
 
-        xy = new ConstrainedVersionMap(this, termMap);
-
-
+        this.xy = new ConstrainedVersionMap(this, termMap);
     }
 
     /**
@@ -96,7 +99,7 @@ public abstract class Unify extends Versioning implements Subst {
      *
      * @return whether to continue on any subsequent matches
      */
-    public abstract void tryMatch();
+    protected abstract void tryMatch();
 
 
     public final boolean tryMutate(Termutator[] chain, int next) {
@@ -122,14 +125,23 @@ public abstract class Unify extends Versioning implements Subst {
         return !(x instanceof Variable) ? null : xy.get(x);
     }
 
-    /** completely dereferences a term (usually a variable)*/
+    /**
+     * completely dereferences a term (usually a variable)
+     */
     public final Term resolve(final Term x) {
         Term /*Variable*/ z = x, y;
-        while (z instanceof Variable && (y = xy.get(z))!=null) {
+        while (z instanceof Variable && (y = xy.get(z)) != null) {
             //assert(y!=z && y!=x);
             z = y;
         }
         return z;
+    }
+
+    /**
+     * default usage: invokes the match callback if successful
+     */
+    public final void unify(Term x, Term y) {
+        unify(x, y, true);
     }
 
     /**
@@ -140,16 +152,16 @@ public abstract class Unify extends Versioning implements Subst {
      * <p>
      * NOT thread safe, use from single thread only at a time
      */
-    public Unify unify(Term x, Term y, boolean finish) {
+    public final boolean unify(Term x, Term y, boolean finish) {
 
 
         if (x.unify(y, this)) {
             if (finish) {
                 tryMatches();
             }
-
+            return true;
         }
-        return this;
+        return false;
     }
 
 

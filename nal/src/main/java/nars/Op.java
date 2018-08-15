@@ -641,7 +641,8 @@ public enum Op {
                     return Null;
                 }
 
-                /* deny temporal terms which can collapse degeneratively on conceptualization */
+                /* deny temporal terms which can collapse degeneratively on conceptualization
+                *  TODO - for SET/SECT also? */
                 if (et0.hasAny(Op.Temporal) && !et0.equals(et0.root()))
                     return Null;
                 if (et1.hasAny(Op.Temporal) && !et1.equals(et1.root()))

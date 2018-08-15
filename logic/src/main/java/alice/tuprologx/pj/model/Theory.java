@@ -177,7 +177,7 @@ public class Theory extends List<Clause<?,?>> {
             if (c.match(name,arity))
                 temp.add(c);
         }
-        return temp.toArray(new Clause<?,?>[temp.size()]);
+        return temp.toArray(new Clause<?, ?>[0]);
     }
     
     @Override

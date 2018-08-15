@@ -761,24 +761,16 @@ public class Occurrify extends TimeGraph {
             if (o[0] == ETERNAL) {
                 if (d.task.isEternal() && (d.belief == null || d.belief.isEternal()))
                     return true; //both task and belief are eternal; keep eternal
-//
-//                //pretend in present
-//                //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
 
-                o[0] = NOW;
-                o[1] = NOW + Math.max(0, d.dur - 1);
-                //o[0] = NOW-d.dur/2;  o[1] = NOW + d.dur/2;
+                int rad = Math.round(d.dur * Param.ETERNAL_DERIVE_TO_PRESENT_RADIUS_DURS);
+                o[0] = NOW - rad;
+                o[1] = NOW + rad;
                 return true;
             }
 
-            if (o[0] >= NOW) {
-
-            }
-
             if (o[0] < NOW && o[1] < NOW) {
-                //if (o[0] != NOW) {
-//                long range = o[1] - o[0];
 
+                int dur = d.dur;
 
                 if (d.concPunc == BELIEF || d.concPunc == GOAL) {
                     //starts and ends before now; entirely past
@@ -786,16 +778,13 @@ public class Occurrify extends TimeGraph {
 
                     //discount for projection
                     long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
-                    float eStartFactor = Param.evi(1, deltaT, d.dur);
+                    float eStartFactor = Param.evi(1, deltaT, dur);
                     if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
                         return false; //insufficient evidence
                 }
-                //o[0] = NOW; o[1] = NOW + range;
-                o[0] = NOW;
-                //o[1] = Math.max(o[1], NOW + range);
-                o[1] = Math.max(o[1], NOW + Math.max(0, d.dur )); //allow only fixed time: benefit of the doubt
 
-
+                o[0] = Math.min(o[0], NOW - dur);
+                o[1] = Math.max(o[1], NOW + dur); //allow only fixed time: benefit of the doubt
             }
 
             return true;

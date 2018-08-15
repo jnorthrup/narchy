@@ -154,7 +154,7 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
             termList.add(Term.unmarshal(s.sub(i)));
         }
         
-        return Cons.make(s.name(),termList.toArray(new Term<?>[termList.size()]));
+        return Cons.make(s.name(),termList.toArray(new Term<?>[0]));
     }
 
     static boolean matches(alice.tuprolog.Term t) {

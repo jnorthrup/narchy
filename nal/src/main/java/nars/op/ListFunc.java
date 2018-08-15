@@ -15,6 +15,41 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 
+/**
+ * Prolog contains its own library of list programs, such as:
+ * append(X, Y, Z)
+ * appending
+ * Y
+ *  onto
+ * X
+ * gives
+ * Z
+ * reverse(X, Y)
+ * reverse of
+ * X
+ *  is
+ * Y
+ * length(X, N)
+ * length of
+ * X
+ *  is
+ * N
+ * member(U, X)
+ * U
+ *  is in
+ * X
+ * non_member
+ * (U, X)
+ * U
+ *  is not in
+ * X
+ * sort(X, Y
+ * )
+ * sorting
+ * X
+ *  gives
+ * Y
+ */
 public enum ListFunc {
     ;
 

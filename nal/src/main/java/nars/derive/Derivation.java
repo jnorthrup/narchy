@@ -179,51 +179,17 @@ public class Derivation extends PreDerivation {
     public transient byte concPunc;
     public transient Term concTerm;
     public transient Task _task, task, _belief, belief;
+    public transient int dur;
 
     /**
      * if using this, must set: nar, index, random, DerivationBudgeting
      */
     public Derivation() {
         super(
-
-                VAR_PATTERN
-                , null, Param.UnificationStackMax, 0,
-                new TermHashMap()
-
+                VAR_PATTERN, new SplitMix64Random(1), Param.UnificationStackMax, new TermHashMap()
         );
 
-        this.random = new SplitMix64Random(1);
-
-
         this.anon = new Anon(ANON_INITIAL_CAPACITY);
-//        this.anon = new CachedAnon(ANON_INITIAL_CAPACITY, 64 * 1024) {
-//            @Override
-//            protected boolean cacheGet() {
-//                return false;
-//            }
-////
-////            @Override
-////            public Term put(Term x) {
-////                if (x instanceof Atom) {
-////                    Termed f = staticFunctors.get(x);
-////                    if (f != null)
-////                        x = (Term)f;
-////                }
-////                return super.put(x);
-////            }
-//
-//        };
-
-//        this.termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
-//            x = anon.get(x);
-//            if (x == null)
-//                return Null;
-//
-//            Term y = $.func(_tlRandom, x).eval(nar, false);
-//            if (y != null && y.op().conceptualizable)
-//                return anon.put(y);
-//            return Null;
-//        });
     }
 
     @Override

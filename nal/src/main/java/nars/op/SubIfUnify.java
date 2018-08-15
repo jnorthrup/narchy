@@ -18,7 +18,6 @@ import java.util.Random;
 
 import static nars.Op.Null;
 import static nars.Op.VAR_DEP;
-import static nars.Param.TTL_UNIFY;
 
 /**
  * substituteIfUnifies....(term, varFrom, varTo)
@@ -68,7 +67,6 @@ import static nars.Param.TTL_UNIFY;
  * <patham9_> allow dep-var unify on ind-var unify, but not vice versa.
  * <patham9_> and require at least one dep-var to be unified in dep-var unification.
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
- *
  */
 public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
@@ -88,11 +86,8 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
     public Term apply(Evaluation e, /*@NotNull*/ Subterms a) {
 
 
-        
         boolean strict = false;
         @Nullable Op op = null;
-
-        
 
 
         int pp = a.subs();
@@ -101,12 +96,8 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             if (ai.equals(Subst.STRICT))
                 strict = true;
             else if (ai.equals(INDEP_VAR)) {
-                
-                
-                
-                
-                
-                
+
+
             } else if (ai.equals(DEP_VAR)) {
                 op = VAR_DEP;
 
@@ -117,44 +108,41 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
         /** term being transformed if x unifies with y */
         Term c = a.sub(0);
-        
-        
 
-        Term x = Image.imageNormalize( a.sub(1) );
-        
 
-        Term y = Image.imageNormalize( a.sub(2) );
-        
+        Term x = Image.imageNormalize(a.sub(1));
+
+
+        Term y = Image.imageNormalize(a.sub(2));
+
 
         if (x.equals(y)) {
-            return strict ? Null : c; 
+            return strict ? Null : c;
         }
 
         Term output;
         if (c.equals(x)) {
-            
+
             output = y;
         } else {
 
             boolean tryUnify =
-                        (op == null && x.hasAny(Op.VariableBits))
+                    (op == null && x.hasAny(Op.VariableBits))
                             ||
-                        (op != null && x.hasAny(op));
+                            (op != null && x.hasAny(op));
 
             if (!tryUnify/* && mustSubstitute()*/) {
-                output = null; 
+                output = null;
             } else {
-                SubUnify su = new MySubUnify(op, strict);
-                output = su.tryMatch(c, x, y);
-                parent.use(TTL_UNIFY + (parent.ttl - su.ttl));
+                int ttl = parent.nar.subUnifyTTL.intValue();
+                SubUnify u = new MySubUnify(op, strict);
+                output = u.tryMatch(c, x, y, ttl);
+                parent.use(ttl - u.ttl);
             }
 
             if (output == null) {
 
-                    return Null;
-
-
-
+                return Null;
 
 
             }
@@ -168,125 +156,23 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         private final boolean strict;
 
         MySubUnify(@Nullable Op op, boolean strict) {
-            super(parent.random, op, parent.ttl);
+            super(parent.random, op);
             this.strict = strict;
         }
 
         @Override
         protected boolean tryMatch(Term result) {
             if (!strict || !result.equals(transformed)) {
-                
+
 
                 this.xy.forEach(parent.untransform::put);
-                
 
-                
-                
+
                 return true;
             }
             return false;
         }
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -302,8 +188,8 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         private Term result;
 
 
-        public SubUnify(Random rng, @Nullable Op type, int ttl) {
-            super(type, rng, Param.UnificationStackMax, ttl);
+        public SubUnify(Random rng, @Nullable Op type) {
+            super(type, rng, Param.UnificationStackMax);
             symmetric = false;
         }
 
@@ -316,15 +202,11 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             if (transformed != null) {
                 Term result = transform(transformed);
                 if (result != null && tryMatch(result)) {
-                
 
-    
-    
-                        this.result = result;
-                        stop();
-    
-    
-    
+
+                    this.result = result;
+                    stop();
+
 
                 }
             }
@@ -332,17 +214,19 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
 
         @Nullable
-        public Term tryMatch(@Nullable Term transformed, Term x, Term y) {
+        public Term tryMatch(@Nullable Term transformed, Term x, Term y, int ttl) {
             this.transformed = transformed;
             this.result = null;
-            unify(x, y, true);
+            setTTL(ttl); assert(ttl > 0);
+
+            unify(x, y);
 
             return result;
         }
 
-            protected boolean tryMatch(Term result) {
-                return true;
-            }
+        protected boolean tryMatch(Term result) {
+            return true;
+        }
 
     }
 }

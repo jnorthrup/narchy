@@ -144,9 +144,7 @@ public class BasicLibrary extends Library {
     public boolean get_operators_list_1(Term argument) {
         Term arg = argument.term();
         Struct list = Struct.emptyList();
-        java.util.Iterator<Operator> it = engine.operators().iterator();
-        while (it.hasNext()) {
-            Operator o = it.next();
+        for (Operator o : engine.operators()) {
             list = new Struct(new Struct("op", new NumberTerm.Int(o.prio),
                     new Struct(o.type), new Struct(o.name)), list);
         }

@@ -17,7 +17,7 @@ import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.Attention;
-import nars.exe.BufferedExec;
+import nars.exe.MultiExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
@@ -111,7 +111,7 @@ abstract public class NAgentX extends NAgent {
                 .attention(() -> new Attention(512))
 
                 //.exe(new UniExec() {
-                .exe(new BufferedExec.WorkerExec(Util.concurrency(), false /* true */))
+                .exe(new MultiExec.WorkerExec(Util.concurrency(), false /* true */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,

@@ -309,9 +309,9 @@ public final class MethodFinder {
      */
     private void loadConstructors() {
         Constructor<?>[] ctors = clazz.getConstructors();
-        for (int i = 0; i < ctors.length; ++i) {
-            ctorList.add(ctors[i]);
-            paramMap.put(ctors[i], ctors[i].getParameterTypes());
+        for (Constructor<?> ctor : ctors) {
+            ctorList.add(ctor);
+            paramMap.put(ctor, ctor.getParameterTypes());
         }
     }
 
@@ -321,9 +321,9 @@ public final class MethodFinder {
     private void loadMethods() {
         
         List<Member> allMethods = getAllMethods();
-        Method[] methods = allMethods.toArray(new Method[allMethods.size()]);
-        for (int i = 0; i < methods.length; ++i) {
-            Method m = methods[i];
+        Method[] methods = allMethods.toArray(new Method[0]);
+        for (Method method : methods) {
+            Method m = method;
             String methodName = m.getName();
             Class<?>[] paramTypes = m.getParameterTypes();
             List<Member> list = methodMap.computeIfAbsent(methodName, k -> new ArrayList<>());

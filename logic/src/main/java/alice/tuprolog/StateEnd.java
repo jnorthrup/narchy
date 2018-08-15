@@ -169,8 +169,8 @@ public class StateEnd extends State {
 
             if (((Struct) query).subs() > 2 && ((Struct) query).sub(2) instanceof Struct) { 
                 
-                Boolean findSamePredicateIndicator = false;
-                Boolean find = false; 
+                boolean findSamePredicateIndicator = false;
+                boolean find = false;
                 Term initGoalBag = null;
                 while (tgoal instanceof Var && ((Var) tgoal).link() != null) {
                     tgoal = ((Var) tgoal).link();
@@ -232,9 +232,9 @@ public class StateEnd extends State {
                     ArrayList<Term> initGoalBagListOrdered = new ArrayList<>();
                     if (((Struct) query).name().equals("setof")) {
                         ArrayList<String> initGoalBagListVar = new ArrayList<>();
-                        for (int m = 0; m < initGoalBagList.size(); m++) {
-                            if (initGoalBagList.get(m) instanceof Var)
-                                initGoalBagListVar.add(((Var) initGoalBagList.get(m)).name());
+                        for (Term anInitGoalBagList : initGoalBagList) {
+                            if (anInitGoalBagList instanceof Var)
+                                initGoalBagListVar.add(((Var) anInitGoalBagList).name());
                         }
                         
                         List<Term> left = new ArrayList<>();
@@ -260,8 +260,8 @@ public class StateEnd extends State {
                             for (int y = 0; y < left.size(); y++) {
                                 
                                 boolean search = false;
-                                for (int r = 0; r < left_temp.size(); r++) {
-                                    if (left_temp.get(r).toString().equals(left.get(y).toString()))
+                                for (Term aLeft_temp : left_temp) {
+                                    if (aLeft_temp.toString().equals(left.get(y).toString()))
                                         search = true;
                                 }
                                 if (search) {
@@ -441,11 +441,11 @@ public class StateEnd extends State {
                     
                     
                     Term var = it.next();
-                    for (int y = 0; y < a.length; y++) {
-                        Var vv = (Var) a[y];
+                    for (Object anA : a) {
+                        Var vv = (Var) anA;
                         Term vLink = vv.link();
                         if (vLink != null && vLink.isEqual(var)/*&& !(var.toString().startsWith("_"))*/) {
-                            
+
                             lGoalVar.add(vv.name());
                         }
                     }
@@ -488,29 +488,28 @@ public class StateEnd extends State {
                     
                     
                     bagVarName = null;
-                    for (int y = 0; y < a.length; y++) {
-                        Var vv = (Var) a[y];
+                    for (Object anA : a) {
+                        Var vv = (Var) anA;
                         Var vv_link = structValue(vv, i);
-                        
+
                         if (vv_link.isEqual(t)) {
-                            
-                            
+
+
                             if (bagVarName == null) {
                                 bagVarName = vv.getOriginalName();
                                 goalSolution = vv;
                             }
-                            
-                            
-                            
+
+
                             if (vv_link.link() != null && vv_link.link() instanceof Struct) {
                                 Struct s = substituteVar((Struct) vv_link.link(), lSolVar, lgoalBOVar);
-                                
+
                             } else {
                                 int index = lSolVar.indexOf(resVar.name());
-                                
-                                
+
+
                                 setStructValue(vv, i, new Var(lgoalBOVar.get(index)));
-                                
+
                             }
                         }
                     }

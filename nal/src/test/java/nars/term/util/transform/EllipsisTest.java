@@ -78,7 +78,7 @@ public class EllipsisTest {
 
                 System.out.println(seed + ": " + x + " unify " + y + " => " + r);
 
-                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax, 128, new TermHashMap()) {
+                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax, new TermHashMap()) {
 
                     @Override
                     public void tryMatch() {
@@ -128,6 +128,7 @@ public class EllipsisTest {
                     }
                 };
 
+                f.setTTL(128);
                 f.unify(x, y, true);
 
 
@@ -422,7 +423,7 @@ public class EllipsisTest {
                 }
             };
 
-            f.unify(X, Y, true);
+            f.unify(X, Y);
 
             results.forEach(System.out::println);
             assertEquals(expect, results.size(), ()->"insufficient permutations for: " + X + " .. " + Y);

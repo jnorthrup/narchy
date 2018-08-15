@@ -386,13 +386,11 @@ public class TheoryManager {
     @Deprecated
     public /*synchronized*/ String getTheory(boolean onlyDynamic) {
         StringBuilder buffer = new StringBuilder();
-        for (Iterator<ClauseInfo> dynamicClauses = dynamicDBase.iterator(); dynamicClauses.hasNext(); ) {
-            ClauseInfo d = dynamicClauses.next();
+        for (ClauseInfo d : dynamicDBase) {
             buffer.append(d.toString(engine.ops)).append('\n');
         }
         if (!onlyDynamic)
-            for (Iterator<ClauseInfo> staticClauses = staticDBase.iterator(); staticClauses.hasNext(); ) {
-                ClauseInfo d = staticClauses.next();
+            for (ClauseInfo d : staticDBase) {
                 buffer.append(d.toString(engine.ops)).append('\n');
             }
         return buffer.toString();

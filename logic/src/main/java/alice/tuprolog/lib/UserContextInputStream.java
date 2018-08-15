@@ -94,8 +94,8 @@ public class UserContextInputStream extends InputStream {
     private void fireReadCalled() {
         ReadEvent event = new ReadEvent(this);
 
-        for (int i1 = 0, readListenersSize = readListeners.size(); i1 < readListenersSize; i1++) {
-            readListeners.get(i1).readCalled(event);
+        for (ReadListener readListener : readListeners) {
+            readListener.readCalled(event);
         }
 
     }

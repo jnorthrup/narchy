@@ -115,7 +115,7 @@ public class Premise {
 
                 Term _beliefTerm = beliefTerm;
                 final Term[] unifiedBeliefTerm = new Term[]{null};
-                UnifySubst u = new UnifySubst(var == VAR_QUERY.bit ? VAR_QUERY : null /* all */, n, (y) -> {
+                UnifySubst u = new UnifySubst(var == VAR_QUERY.bit ? VAR_QUERY : null /* all */, n.random(), (y) -> {
                     if (y.op().conceptualizable) {
                         y = //y.normalize().unneg();
                                 y.unneg();
@@ -127,11 +127,11 @@ public class Premise {
                         }
                     }
                     return true;
-                }, matchTTL);
+                });
 
-                u.symmetric = true;
+                //u.symmetric = true;
 
-                beliefConceptCanAnswerTaskConcept = u.unify(beliefTerm, taskTerm, true).matches() > 0;
+                beliefConceptCanAnswerTaskConcept = u.transform(beliefTerm, beliefTerm, taskTerm, matchTTL) > 0;
 
                 if (unifiedBeliefTerm[0] != null) {
                     beliefTerm = unifiedBeliefTerm[0];

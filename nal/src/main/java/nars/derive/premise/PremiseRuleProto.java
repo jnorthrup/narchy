@@ -49,10 +49,10 @@ public class PremiseRuleProto extends PremiseRuleSource {
         final List<PREDICATE<Derivation>> post = new FasterList<>(8);
 
         if (taskPattern.equals(beliefPattern)) {
-            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
+            post.add(new UnifyTerm.NextUnifyTransform(0, taskPattern, conc));
         } else {
-            post.add(new UnifyTerm.UnifySubterm(0, taskPattern));
-            post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern, conc));
+            post.add(new UnifyTerm.NextUnify(0, taskPattern));
+            post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
         }
 
         MutableSet<MatchConstraint> constraints = raw.CONSTRAINTS.toSet();

@@ -4,19 +4,20 @@ package jcog.version;
  * versioning context that holds versioned instances
  * a maximum stack size is provided at construction and will not be exceeded
  */
-public class Versioning<X>
-        
-        /*FasterList<Versioned<X>>*/ {
+public class Versioning<X> {
 
     private final Versioned[] items;
     protected int size = 0;
 
     public int ttl;
 
-    public Versioning(int stackMax, int initialTTL) {
-        
+    public Versioning(int stackMax) {
         this.items = new Versioned[stackMax];
         assert(stackMax > 0);
+    }
+
+    public Versioning(int stackMax, int initialTTL) {
+        this(stackMax);
         setTTL(initialTTL);
     }
 

@@ -225,7 +225,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         
     }
 
-    public static final VersionMap Empty = new VersionMap(new Versioning<>(1, 0), 0, 0) {
+    public static final VersionMap Empty = new VersionMap(new Versioning<>(1), 0, 0) {
 
         @Override
         public boolean tryPut(Object key, Object value) {

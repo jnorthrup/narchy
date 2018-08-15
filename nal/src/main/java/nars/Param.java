@@ -68,7 +68,12 @@ public abstract class Param {
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
+
+
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
+
+    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
+    public static final float ETERNAL_DERIVE_TO_PRESENT_RADIUS_DURS = 1;
 
 //    /**
 //     * warning: can interfere with expected test results
@@ -200,13 +205,14 @@ public abstract class Param {
      */
 
     public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange subUnifyTTL = new IntRange(3, 1, 10);
 
 
     /**
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)

@@ -128,11 +128,11 @@ public class Prolog {
     public Prolog(String... libs) {
         this(false, new MutableClauseIndex());
         if (libs != null) {
-            for (int i = 0; i < libs.length; i++) {
+            for (String lib : libs) {
                 try {
-                    addLibrary(libs[i]);
+                    addLibrary(lib);
                 } catch (InvalidLibraryException e) {
-                    logger.error("loading {}: {}", libs[i], e);
+                    logger.error("loading {}: {}", lib, e);
                 }
             }
         }
@@ -574,7 +574,7 @@ public class Prolog {
      */
     protected void spy(State s, Engine e) {
         
-        if (spy && spyListeners.size() > 0) {
+        if (spy && !spyListeners.isEmpty()) {
             ExecutionContext ctx = e.currentContext;
             if (ctx != null) {
                 int i = 0;
@@ -654,8 +654,8 @@ public class Prolog {
 
         OutputEvent e = new OutputEvent(this, m);
         synchronized (outputListeners) {
-            for (int i = 0; i < outputListenersSize; i++) {
-                outputListeners.get(i).onOutput(e);
+            for (OutputListener outputListener : outputListeners) {
+                outputListener.onOutput(e);
             }
         }
     }
@@ -899,8 +899,8 @@ public class Prolog {
      * @param e the event
      */
     private void notifySpy(SpyEvent e) {
-        for (int i = 0, spyListenersSize = spyListeners.size(); i < spyListenersSize; i++) {
-            spyListeners.get(i).onSpy(e);
+        for (SpyListener spyListener : spyListeners) {
+            spyListener.onSpy(e);
         }
     }
 
@@ -912,9 +912,9 @@ public class Prolog {
      * @param e the event
      */
     protected void notifyException(ExceptionEvent e) {
-        
-        for (int i = 0, exceptionListenersSize = exceptionListeners.size(); i < exceptionListenersSize; i++) {
-            exceptionListeners.get(i).onException(e);
+
+        for (ExceptionListener exceptionListener : exceptionListeners) {
+            exceptionListener.onException(e);
         }
         logger.error("{} {}", e.getSource(), e.getMsg());
     }

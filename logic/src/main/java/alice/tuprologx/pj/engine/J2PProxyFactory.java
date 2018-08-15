@@ -187,8 +187,7 @@ public class J2PProxyFactory extends ProxyFactory {
             sbuf.append(':');
             if (interfaces != null) {
                 int len = interfaces.length;
-                for (int i = 0; i < len; i++)
-                    sbuf.append(interfaces[i].getName()).append(',');
+                for (Class<?> anInterface : interfaces) sbuf.append(anInterface.getName()).append(',');
             }
 
             return sbuf.toString();
@@ -662,8 +661,7 @@ public class J2PProxyFactory extends ProxyFactory {
     private void makeConstructors(String thisClassName, ClassFile cf,
             ConstPool cp, String classname) throws DuplicateMemberException {
         Constructor<?>[] cons = superClass.getDeclaredConstructors();
-        for (int i = 0; i < cons.length; i++) {
-            Constructor<?> c = cons[i];
+        for (Constructor<?> c : cons) {
             int mod = c.getModifiers();
             if (!Modifier.isFinal(mod) && !Modifier.isPrivate(mod)
                     && isVisible(mod, classname, c)) {
@@ -720,8 +718,7 @@ public class J2PProxyFactory extends ProxyFactory {
 
     private static HashMap<String,Method> getMethods(Class<?> superClass, Class<?>... interfaceTypes) {
         HashMap<String,Method> hash = new HashMap<>();
-        for (int i = 0; i < interfaceTypes.length; i++)
-            getMethods(hash, interfaceTypes[i]);
+        for (Class<?> interfaceType : interfaceTypes) getMethods(hash, interfaceType);
 
         getMethods(hash, superClass);
         return hash;
@@ -729,19 +726,18 @@ public class J2PProxyFactory extends ProxyFactory {
 
     private static void getMethods(HashMap<String,Method> hash, Class<?> clazz) {
         Class<?>[] ifs = clazz.getInterfaces();
-        for (int i = 0; i < ifs.length; i++)
-            getMethods(hash, ifs[i]);
+        for (Class<?> anIf : ifs) getMethods(hash, anIf);
 
         Class<?> parent = clazz.getSuperclass();
         if (parent != null)
             getMethods(hash, parent);
 
         Method[] methods = clazz.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i++)
-            if (!Modifier.isPrivate(methods[i].getModifiers())) {
-                Method m = methods[i];
+        for (Method method : methods)
+            if (!Modifier.isPrivate(method.getModifiers())) {
+                Method m = method;
                 String key = m.getName() + ':' + RuntimeSupport.makeDescriptor(m);
-                hash.put(key, methods[i]);
+                hash.put(key, method);
             }
     }
 
@@ -884,8 +880,7 @@ public class J2PProxyFactory extends ProxyFactory {
                                          int offset) {
         int stacksize = 0;
         int n = params.length;
-        for (int i = 0; i < n; ++i)
-            stacksize += addLoad(code, stacksize + offset, params[i]);
+        for (Class<?> param : params) stacksize += addLoad(code, stacksize + offset, param);
 
         return stacksize;
     }

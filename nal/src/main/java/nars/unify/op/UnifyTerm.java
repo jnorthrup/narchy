@@ -31,21 +31,24 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
      * to return false and interrupt the procedure when unification fails
      * in the first stage.
      */
-    public static final class UnifySubterm extends UnifyTerm {
+    public static final class NextUnify extends UnifyTerm {
 
         /**
          * which premise component, 0 (task) or 1 (belief)
          */
         private final int subterm;
 
-        public UnifySubterm(int subterm, Term pattern) {
+        public NextUnify(int subterm, Term pattern) {
             super($.func("unify", UnifyTerm.label(subterm), pattern), pattern);
             this.subterm = subterm;
         }
 
         @Override
         public final boolean test(Derivation d) {
-            return d.use(Param.TTL_UNIFY) && pattern.unify(subterm == 0 ? d.taskTerm : d.beliefTerm, d);
+            if (d.use(Param.TTL_UNIFY)) {
+                return d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false);
+            }
+            return false;
         }
 
     }
@@ -54,7 +57,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
      * returns false if the deriver is noticed to have depleted TTL,
      * thus interrupting all further work being done by it.
      */
-    public static final class UnifySubtermThenConclude extends UnifyTerm {
+    public static final class NextUnifyTransform extends UnifyTerm {
 
         /**
          * which premise component, 0 (task) or 1 (belief)
@@ -64,7 +67,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
         private static final Atomic UNIFY = Atomic.the("unify");
 
-        public UnifySubtermThenConclude(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PREDICATE<Derivation> eachMatch) {
+        public NextUnifyTransform(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PREDICATE<Derivation> eachMatch) {
             super($.funcFast(UNIFY, label(subterm), pattern, eachMatch), pattern);
             this.subterm = subterm;
             this.eachMatch = eachMatch;

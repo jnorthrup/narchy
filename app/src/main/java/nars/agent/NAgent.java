@@ -153,16 +153,16 @@ public class NAgent extends NARService implements NSense, NAct {
     public void alwaysWant(Termed x, float confFactor) {
         //long[] evidenceShared = nar.evidence();
 
-        always.add((prev, now, next) -> {
+        always.add((prev, now, next) ->
 
-            return new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
+            new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
                     now, next,
                     //evidenceShared
                     nar.evidence()
                     //Stamp.UNSTAMPED
 
-            );
-        });
+            )
+        );
 
     }
 

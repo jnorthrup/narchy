@@ -191,10 +191,10 @@ final class ClassUtilities {
         
         
         Class<?>[] interfaces = aClass.getInterfaces();
-        for (int i = 0; i < interfaces.length; ++i) {
+        for (Class<?> anInterface1 : interfaces) {
             overriddenMethod = null;
-            if (classIsAccessible(interfaces[i])) {
-                overriddenMethod = getMethod(methodName, parameterTypes, interfaces[i]);
+            if (classIsAccessible(anInterface1)) {
+                overriddenMethod = getMethod(methodName, parameterTypes, anInterface1);
                 if (overriddenMethod != null) {
                     return overriddenMethod;
                 }
@@ -208,9 +208,9 @@ final class ClassUtilities {
                 return overriddenMethod;
             }
         }
-        
-        for (int i = 0; i < interfaces.length; ++i) {
-            overriddenMethod = getAccessibleMethodFrom(interfaces[i], methodName, parameterTypes);
+
+        for (Class<?> anInterface : interfaces) {
+            overriddenMethod = getAccessibleMethodFrom(anInterface, methodName, parameterTypes);
             if (overriddenMethod != null) {
                 return overriddenMethod;
             }

@@ -1,8 +1,8 @@
 package alice.tuprolog;
 
 
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class TermQueue {
 
@@ -16,7 +16,7 @@ public class TermQueue {
 
     private boolean searchLoop(Term t, Prolog engine, boolean block, boolean remove, EngineRunner er) {
         synchronized (queue) {
-            boolean found = false;
+            boolean found;
             do {
                 found = search(t, engine, remove);
                 if (found) return true;
@@ -34,7 +34,7 @@ public class TermQueue {
 
     private boolean search(Term t, Prolog engine, boolean remove) {
         synchronized (queue) {
-            ListIterator<Term> it = queue.listIterator();
+            Iterator<Term> it = queue.iterator();
             while (it.hasNext()) {
                 if (engine.unify(t, it.next())) {
                     

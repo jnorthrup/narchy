@@ -104,8 +104,8 @@ public enum PremiseDeriverCompiler {
             PremiseDeriver r = (PremiseDeriver) p;
             r.print(out, indent);
 
-        } else if (p instanceof UnifyTerm.UnifySubtermThenConclude) {
-            UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude) p;
+        } else if (p instanceof UnifyTerm.NextUnifyTransform) {
+            UnifyTerm.NextUnifyTransform u = (UnifyTerm.NextUnifyTransform) p;
             out.println("unify(" + UnifyTerm.label(u.subterm) + "," + u.pattern + ") {");
             print(u.eachMatch, out, indent + 2);
             TermTrie.indent(indent);

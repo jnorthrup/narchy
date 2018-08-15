@@ -30,9 +30,9 @@ public abstract class PreDerivation extends Unify {
     public final RoaringBitmap can = new RoaringBitmap();
     public short[] will = ArrayUtils.EMPTY_SHORT_ARRAY;
 
-    public PreDerivation(@Nullable Op type, Random random, int stackMax, int initialTTL, Map<Term, Versioned<Term>> termMap) {
-        super(type, random, stackMax, initialTTL, termMap);
-        //varSymmetric = false;
+    public PreDerivation(@Nullable Op type, Random random, int stackMax, Map<Term, Versioned<Term>> termMap) {
+        super(type, random, stackMax, termMap);
+        symmetric = false;
     }
 
     public boolean hasBeliefTruth() {

@@ -69,8 +69,8 @@ public class PrologMetaClass {
             PrologClass pa = cl.getAnnotation(PrologClass.class);
             if (pa != null) {
                 String[] clauses = pa.clauses();
-                for (int i = 0; i < clauses.length;i++) {
-                    theory+=clauses[i]+ '\n';
+                for (String clause : clauses) {
+                    theory += clause + '\n';
                 }                                   
             }
             cl = cl.getSuperclass(); 

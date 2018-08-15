@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.lang.reflect.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 /**
  * 
@@ -151,10 +152,8 @@ public class OOLibrary extends Library {
     public void onSolveBegin(Term goal) {
         currentObjects.clear();
         currentObjects_inverse.clear();
-        Iterator<Map.Entry<Object,Struct>> it = staticObjects_inverse.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Object,Struct> en = it.next();
-            bindDynamicObject( en.getValue(), en.getKey());
+        for (Map.Entry<Object, Struct> en : staticObjects_inverse.entrySet()) {
+            bindDynamicObject(en.getValue(), en.getKey());
         }
         preregisterObjects();
     }
@@ -583,7 +582,7 @@ public class OOLibrary extends Library {
 	        	stringURLs = "[";
 	     
 	        	for (URL url : urls) {
-	        		File file = new File(java.net.URLDecoder.decode(url.getFile(), "UTF-8"));
+	        		File file = new File(java.net.URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8));
 	        		stringURLs = stringURLs + '\'' + file.getPath() + "',";
 				}
 	        	
@@ -1865,19 +1864,19 @@ public class OOLibrary extends Library {
 
     private static Constructor<?> mostSpecificConstructor(Vector<Constructor<?>> constructors)
             throws NoSuchMethodException {
-        for (int i = 0; i != constructors.size(); i++) {
-            for (int j = 0; j != constructors.size(); j++) {
-                if ((i != j)
-                        && (moreSpecific(constructors.elementAt(i)
-                                , constructors.elementAt(j)))) {
+        int cs = constructors.size();
+        for (int i = 0; i != cs; i++) {
+            for (int j = 0; j != cs; j++) {
+                if ((i != j) && (moreSpecific(constructors.elementAt(i), constructors.elementAt(j)))) {
                     constructors.removeElementAt(j);
+                    cs--;
                     if (i > j)
                         i--;
                     j--;
                 }
             }
         }
-        if (constructors.size() == 1)
+        if (cs == 1)
             return constructors.elementAt(0);
         else
             throw new NoSuchMethodException(">1 most specific constructor");

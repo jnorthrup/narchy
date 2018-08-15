@@ -13,9 +13,6 @@ import alice.tuprolog.Solution;
 import alice.tuprolog.Var;
 import alice.tuprologx.pj.model.Term;
 
-import java.util.List;
-import java.util.Vector;
-
 /**
  *
  * @author Maurizio
@@ -61,12 +58,12 @@ public class PrologSolution<Q extends Term<?>, S extends Term<?>> /*implements I
         return Term.unmarshal(retValue);
     }
 
-    public List<Term<?>> getBindingVars() throws alice.tuprolog.NoSolutionException {
-        List<alice.tuprolog.Var> retValue = _solveInfo.getBindingVars();
-        Vector<Term<?>> bindings = new Vector<>();
-        for (alice.tuprolog.Term t : retValue) {
-            bindings.add(Term.unmarshal(t));
-        }
-        return bindings;
-    }
+//    public List<Term<?>> getBindingVars() throws alice.tuprolog.NoSolutionException {
+//        List<alice.tuprolog.Var> retValue = _solveInfo.getBindingVars();
+//        Vector<Term<?>> bindings = new Vector<>();
+//        for (alice.tuprolog.Term t : retValue) {
+//            bindings.add(Term.unmarshal(t));
+//        }
+//        return bindings;
+//    }
 }

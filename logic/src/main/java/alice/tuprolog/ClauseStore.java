@@ -12,7 +12,7 @@ import java.util.ListIterator;
  * A list of clauses belonging to the same family as a goal. A family is
  * composed by clauses with the same functor and arity.
  */
-public class ClauseStore {
+public final class ClauseStore {
 
 
     private OneWayList<ClauseInfo> clauses;
@@ -88,10 +88,8 @@ public class ClauseStore {
      */
     private static List<Term> deunify(List<Var> varsToDeunify, @Nullable List<Term> saveUnifications) {
 
-        
-        
-        for (int i = 0, varsToDeunifySize = varsToDeunify.size(); i < varsToDeunifySize; i++) {
-            Var v = varsToDeunify.get(i);
+
+        for (Var v : varsToDeunify) {
             if (saveUnifications != null)
                 saveUnifications.add(v.link());
             v.link = null;

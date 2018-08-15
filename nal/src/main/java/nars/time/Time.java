@@ -88,7 +88,7 @@ public abstract class Time implements Clock, Serializable {
      * drain scheduled tasks ready to be executed
      */
     @Nullable
-    public void scheduled(Consumer<SchedTask> each) {
+    public void schedule(Consumer<SchedTask> each) {
 
         long now = now();
         int s = incoming.size();
@@ -129,7 +129,7 @@ public abstract class Time implements Clock, Serializable {
      * flushes the pending work queued for the current time
      */
     public void synch(NAR n) {
-        scheduled(n::input);
+        schedule(n::input);
     }
 
 

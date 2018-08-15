@@ -83,7 +83,7 @@ public abstract class AbstractDynamicClassLoader extends ClassLoader
 	}
 
 	public Class<?>[] getLoadedClasses() {
-		return classCache.values().toArray(new Class[classCache.size()]);
+		return classCache.values().toArray(new Class[0]);
 	}
 	
 

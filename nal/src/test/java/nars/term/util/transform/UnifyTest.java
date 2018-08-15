@@ -80,7 +80,7 @@ public class UnifyTest {
 
             Unify sub = new Unify(type,
                     new XorShift128PlusRandom(1),
-                    Param.UnificationStackMax, INITIAL_TTL, new TermHashMap()) {
+                    Param.UnificationStackMax, new TermHashMap()) {
 
 
                 @Override
@@ -113,7 +113,8 @@ public class UnifyTest {
                 }
             };
 
-            sub.unify(t1, t2, true);
+            sub.setTTL(INITIAL_TTL);
+            sub.unify(t1, t2);
 
             sub.revert(0);
 
@@ -804,7 +805,7 @@ public class UnifyTest {
             }
         };
 
-        f.unify(b, a, true);
+        f.unify(b, a);
 
         assertEquals(matched.get(), matches);
 

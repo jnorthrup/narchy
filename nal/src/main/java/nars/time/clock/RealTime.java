@@ -3,7 +3,6 @@ package nars.time.clock;
 import jcog.Texts;
 import jcog.exe.Loop;
 import nars.NAR;
-import nars.time.Tense;
 import nars.time.Time;
 import org.jetbrains.annotations.NotNull;
 import tec.uom.se.quantity.time.TimeQuantities;
@@ -68,8 +67,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public final void cycle(NAR n) {
-        //last = t.getAndSet(realtime() - start);
-        last = t.getAndSet(Tense.dither(realtime(),n) - Tense.dither(start, n));
+        last = t.getAndSet(realtime() - start);
     }
 
     @Override
@@ -111,6 +109,7 @@ public abstract class RealTime extends Time {
     }
 
 
+
     @Override
     public int dur() {
         return dur;
@@ -131,6 +130,10 @@ public abstract class RealTime extends Time {
         return (float) unitsToSeconds(dur());
     }
 
+    public double cycleSeconds() {
+        return (float) unitsToSeconds(1);
+    }
+
     /** get real-time frames per duration */
     public float durRatio(Loop l) {
         float fps = l.getFPS();
@@ -149,6 +152,8 @@ public abstract class RealTime extends Time {
         double s = TimeQuantities.toTimeUnitSeconds(q).doubleValue(null);
         return Math.round(s * unitsPerSecond);
     }
+
+
 
     /** decisecond (0.1) accuracy */
     public static class DS extends RealTime {
