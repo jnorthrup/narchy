@@ -27,7 +27,6 @@ import static nars.Op.*;
 public class Evaluation {
 
     private final Evaluables operations;
-    private final Predicate<Term> each;
     private final Term term;
     private final Term x;
 
@@ -58,11 +57,9 @@ public class Evaluation {
 
     private Evaluation(Term x, Evaluables ops, Predicate<Term> each) {
         this.term = x;
-        this.each = each;
         this.operations = ops.sortDecreasingVolume();
         this.x = x;
 
-        ensureReady();
 
 //        int freeVariables = ops.vars.size();
 
@@ -74,13 +71,11 @@ public class Evaluation {
         do {
             prev = y;
             ListIterator<Term> ii = this.operations.listIterator();
-            vStart = v.now();
+            vStart = now();
             tried = 0;
             while (ii.hasNext()) {
 
-
                 Term a = ii.next();
-
 
                 boolean removeEntry, eval;
 
@@ -119,7 +114,7 @@ public class Evaluation {
                     Subterms args = a.sub(0).subterms();
 
                     z = func.apply(this, args);
-                    substitutions = v.now() != vStart;
+                    substitutions = now() != vStart;
                     if (z == null && substitutions) {
                         removeEntry = true;
                     }
@@ -139,11 +134,9 @@ public class Evaluation {
 
 
                     if (z != null) {
-                        Term y0 = y;
                         y = y.replace(a, z);
                     }
                     if (substitutions) {
-                        Term y0 = y;
                         y = y.replace(subst);
                     }
 
@@ -196,6 +189,10 @@ public class Evaluation {
             each.test(y);
         }
 
+    }
+
+    private int now() {
+        return v!=null ? v.now() : -1;
     }
 
 //    private Term rewrite(List<Term[]> rewrites, Term x) {
@@ -446,6 +443,7 @@ public class Evaluation {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public boolean is(Term x, Term y) {
+        ensureReady();
         return subst.tryPut(x, y);
     }
 
@@ -454,6 +452,7 @@ public class Evaluation {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public boolean is(Term x, Term xx, Term y, Term yy) {
+        ensureReady();
         return subst.tryPut(x, xx) && subst.tryPut(y, yy);
     }
 

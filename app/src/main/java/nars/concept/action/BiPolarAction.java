@@ -149,7 +149,7 @@ public class BiPolarAction extends AbstractSensor {
         private float coherenceRange = 0.5f;
         private final boolean fair;
 
-        boolean latch = true;
+        boolean latch = false;
 
         /** adjustable q+ lowpass filters */
         final FloatAveraged fp = new FloatAveraged(0.99f, true);
@@ -159,7 +159,7 @@ public class BiPolarAction extends AbstractSensor {
         public DefaultPolarization(boolean fair, NSense s) {
             this.fair = fair;
             curiosity = ((NAct) s).curiosity();
-            freqOrExp = true;
+            freqOrExp = false;
             this.nar = s.nar();
         }
 

@@ -12,7 +12,6 @@ import java.util.Set;
 
 import static nars.$.$$;
 import static nars.Op.False;
-import static nars.Op.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ListFuncTest {
@@ -71,25 +70,26 @@ class ListFuncTest {
 
     @Test
     void testAppendTail() {
-        
 
 
-        
         assertEquals(
                 Set.of($$("append((x),(y),(x,y))")),
                 Evaluation.solveAll($$("append((x),#what,(x,y))"), n));
 
-        
+
         assertEquals(
                 Set.of($$("append(x,(y),(x,y))")),
                 Evaluation.solveAll($$("append(x,#what,(x,y))"), n));
 
-        
+    }
+    @Test void appendNoSolution() {
         assertEquals(
-                Set.of(Null),
+                Set.of(),
                 Evaluation.solveAll($$("append((z),#what,(x,y))"), n));
+    }
 
-        
+    @Test void appendEmptyListIsOnlySolution() {
+
         assertEquals(
                 Set.of($$("(append((x),(),(x)) && (()<->solution))")),
                 Evaluation.solveAll($$("(append((x),#what,(x)) && (#what<->solution))"), n));
@@ -98,9 +98,6 @@ class ListFuncTest {
 
     @Test
     void testAppendHeadAndTail() {
-        
-
-
         assertEquals(
                 Set.of(
                         $$("append((x,y,z),(),(x,y,z))"),
@@ -110,6 +107,7 @@ class ListFuncTest {
                 ),
                 Evaluation.solveAll($$("append(#x,#y,(x,y,z))"), n));
     }
+
     @Test
     void testAppendHeadAndTailMulti1() {
 

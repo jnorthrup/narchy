@@ -221,148 +221,157 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Event event = x.id();
         Term eventTerm = event.id;
 
-        if (byTerm.put(eventTerm, event)) {
+
+        Collection<Event> ee = byTerm.get(eventTerm);
+        if (ee.isEmpty())
             onNewTerm(eventTerm);
+
+        if (!ee.add(event))
+            return; //already present
+
+        if (decomposeAddedEvent(event)) {
+            int edt = eventTerm.dt();
+
+
+            switch (eventTerm.op()) {
+
+
+                case IMPL:
+
+                    Term subj = eventTerm.sub(0);
+                    Term pred = eventTerm.sub(1);
+
+                    Event se = know(subj);
+                    Event pe = know(pred);
+
+                    if (edt == DTERNAL) {
+
+                        link(se, ETERNAL, pe);
+
+                        subj.eventsWhile((w, y) -> {
+                            link(know(y), ETERNAL, pe);
+                            return true;
+                        }, 0, true, false, false, 0);
+
+                        pred.eventsWhile((w, y) -> {
+                            link(se, ETERNAL, know(y));
+                            return true;
+                        }, 0, true, false, false, 0);
+
+                    } else if (edt != XTERNAL) {
+
+                        int st = subj.dtRange();
+
+
+                        link(se, (edt + st), pe);
+
+                        subj.eventsWhile((w, y) -> {
+                            link(know(y), edt + st - w, pe);
+                            return true;
+                        }, 0, true, false, false, 0);
+
+                        pred.eventsWhile((w, y) -> {
+                            link(se, edt + st + w, know(y));
+                            return true;
+                        }, 0, true, false, false, 0);
+
+                    }
+
+
+                    break;
+                case CONJ:
+
+
+                    long eventStart = event.start();
+                    long eventEnd = event.end();
+
+                    switch (edt) {
+                        case XTERNAL:
+                            for (Term sub : eventTerm.subterms()) {
+                                know(sub);
+                                //link(event, TimeSpan.TS_ETERNAL, know(sub));
+                            }
+                            break;
+
+                        case 0:
+                        case DTERNAL:
+
+                            Subterms es = eventTerm.subterms();
+                            int esn = es.subs();
+                            //Event prevEvent = null;
+
+                            long superSubDT = edt == 0 ? 0 /* left aligned parallel */ : ETERNAL;
+                            for (int i = 0; i < esn; i++) {
+                                Term next = es.sub(i);
+                                Event nextEvent = knowComponent(next, eventStart, eventEnd);
+                                //                            if (i == 0) {
+                                //                                prevEvent = nextEvent;
+                                //                                continue;
+                                //                            }
+
+                                //link(prevEvent, ETERNAL, nextEvent);
+                                //prevEvent = nextEvent;
+                                link(event, superSubDT, nextEvent);
+                            }
+
+                            break;
+                        //                    case 0:
+                        //
+                        //
+                        //                        boolean timed = eventStart != ETERNAL;
+                        //                        for (Term s : eventTerm.subterms()) {
+                        //                            Event t = edt == 0 ?
+                        //                                    knowComponent(s, 0, eventStart, eventEnd) :
+                        //                                    (timed ? know(s, eventStart, eventEnd) :
+                        //                                            know(s));
+                        //                            if (t != null) {
+                        //                                link(event, (edt == 0 || timed) ? 0 : ETERNAL,
+                        //                                        t
+                        //                                );
+                        //                            } else {
+                        //
+                        //                            }
+                        //                        }
+                        //                        break;
+                        default:
+
+                            if (eventStart != ETERNAL && eventStart != TIMELESS) {
+                                //chain the events to the absolute parent
+                                long range = eventEnd - eventStart;
+                                eventTerm.eventsWhile((w, y) -> {
+
+                                    link(event, w - eventStart, know(y, w, w + range));
+                                    return true;
+                                }, eventStart, true, false, false, 0);
+                            } else {
+                                //chain the events together relatively
+                                final Event[] prev = {null};
+                                final long[] prevDT = {0};
+                                eventTerm.eventsWhile((w, y) -> {
+                                    Event next = know(y);
+                                    if (prev[0] == null) {
+                                        link(event, 0, next); //chain the starting event to the beginning of the compound superterm
+                                        assert (w == 0);
+                                    } else {
+                                        link(prev[0], w - prevDT[0], next);
+                                        prevDT[0] += w;
+                                    }
+                                    prev[0] = next;
+                                    return true;
+                                }, 0, false, false, false, 0);
+                            }
+
+                            break;
+                    }
+
+                    break;
+            }
         }
 
+    }
 
-        int edt = eventTerm.dt();
-
-
-        switch (eventTerm.op()) {
-
-
-            case IMPL:
-
-                Term subj = eventTerm.sub(0);
-                Term pred = eventTerm.sub(1);
-
-                Event se = know(subj);
-                Event pe = know(pred);
-
-                if (edt == DTERNAL) {
-
-                    link(se, ETERNAL, pe);
-
-                    subj.eventsWhile((w, y) -> {
-                        link(know(y), ETERNAL, pe);
-                        return true;
-                    }, 0, true, false, false, 0);
-
-                    pred.eventsWhile((w, y) -> {
-                        link(se, ETERNAL, know(y));
-                        return true;
-                    }, 0, true, false, false, 0);
-
-                } else if (edt != XTERNAL) {
-
-                    int st = subj.dtRange();
-
-
-                    link(se, (edt + st), pe);
-
-                    subj.eventsWhile((w, y) -> {
-                        link(know(y), edt + st - w, pe);
-                        return true;
-                    }, 0, true, false, false, 0);
-
-                    pred.eventsWhile((w, y) -> {
-                        link(se, edt + st + w, know(y));
-                        return true;
-                    }, 0, true, false, false, 0);
-
-                }
-
-
-                break;
-            case CONJ:
-
-
-                long eventStart = event.start();
-                long eventEnd = event.end();
-
-                switch (edt) {
-                    case XTERNAL:
-                        for (Term sub : eventTerm.subterms()) {
-                            know(sub);
-                            //link(event, TimeSpan.TS_ETERNAL, know(sub));
-                        }
-                        break;
-
-                    case 0:
-                    case DTERNAL:
-
-                        Subterms es = eventTerm.subterms();
-                        int esn = es.subs();
-                        //Event prevEvent = null;
-
-                        long superSubDT = edt == 0 ? 0 /* left aligned parallel */ : ETERNAL;
-                        for (int i = 0; i < esn; i++) {
-                            Term next = es.sub(i);
-                            Event nextEvent = knowComponent(next, eventStart, eventEnd);
-//                            if (i == 0) {
-//                                prevEvent = nextEvent;
-//                                continue;
-//                            }
-
-                            //link(prevEvent, ETERNAL, nextEvent);
-                            //prevEvent = nextEvent;
-                            link(event, superSubDT, nextEvent);
-                        }
-
-                        break;
-//                    case 0:
-//
-//
-//                        boolean timed = eventStart != ETERNAL;
-//                        for (Term s : eventTerm.subterms()) {
-//                            Event t = edt == 0 ?
-//                                    knowComponent(s, 0, eventStart, eventEnd) :
-//                                    (timed ? know(s, eventStart, eventEnd) :
-//                                            know(s));
-//                            if (t != null) {
-//                                link(event, (edt == 0 || timed) ? 0 : ETERNAL,
-//                                        t
-//                                );
-//                            } else {
-//
-//                            }
-//                        }
-//                        break;
-                    default:
-
-                        if (eventStart != ETERNAL && eventStart != TIMELESS) {
-                            //chain the events to the absolute parent
-                            long range = eventEnd - eventStart;
-                            eventTerm.eventsWhile((w, y) -> {
-
-                                link(event, w - eventStart, know(y, w, w + range));
-                                return true;
-                            }, eventStart, true, false, false, 0);
-                        } else {
-                            //chain the events together relatively
-                            final Event[] prev = {null};
-                            final long[] prevDT = {0};
-                            eventTerm.eventsWhile((w, y) -> {
-                                Event next = know(y);
-                                if (prev[0] == null) {
-                                    link(event, 0, next); //chain the starting event to the beginning of the compound superterm
-                                    assert (w == 0);
-                                } else {
-                                    link(prev[0], w - prevDT[0], next);
-                                    prevDT[0] += w;
-                                }
-                                prev[0] = next;
-                                return true;
-                            }, 0, false, false, false, 0);
-                        }
-
-                        break;
-                }
-
-                break;
-        }
-
+    protected boolean decomposeAddedEvent(Event event) {
+        return true;
     }
 
     protected void onNewTerm(Term t) {

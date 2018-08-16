@@ -88,7 +88,7 @@ public class FZero extends NAgentX {
                 //initBipolarRotateDirect(false, 0.9f);
 
 
-                initBipolarRotateRelative(true, 0.5f);
+                initBipolarRotateRelative(false, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(true, 0.5f);
 
