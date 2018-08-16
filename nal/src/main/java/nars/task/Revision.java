@@ -22,6 +22,7 @@ import nars.truth.Truthed;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.set.primitive.LongSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class Revision {
     }
 
 
+    @NotNull
     static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
         if (a.equals(b) && bOffset == 0)
@@ -104,7 +106,7 @@ public class Revision {
                 Term bi = bb.sub(i);
                 if (!ai.equals(bi)) {
                     Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
-                    if (y == null || y instanceof Bool && !(ai instanceof Bool))
+                    if (y instanceof Bool)
                         return Null;
 
                     if (!ai.equals(y)) {
@@ -176,27 +178,19 @@ public class Revision {
      * merge delta
      */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
-        if (adt >= 0 == bdt >= 0) { //same sign
+        /*if (adt >= 0 == bdt >= 0)*/ { //require same sign ?
             int delta = Math.abs(adt - bdt);
-            int min = Math.min(Math.abs(adt), Math.abs(bdt));
-            float ratio = ((float) delta) / min;
+            int range = Math.min(Math.abs(adt), Math.abs(bdt));
+            float ratio = ((float) delta) / range;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
-
-
-                long abdt = Util.lerp(aProp, bdt, adt); // (((long) adt) + (bdt)) / 2L;
-                assert Math.abs(abdt) < Integer.MAX_VALUE;
-
-                return (int) abdt;
-
+                return Util.lerp(aProp, bdt, adt);
             }
         }
 
-
-        //different directions and exceed a duration in difference.
         //discard temporal information by resorting to eternity
         return DTERNAL;
-
     }
+
 //    /** merge occurrence */
 //    public static long merge(long at, long bt, float aProp, NAR nar) {
 //        long dt;
@@ -341,7 +335,7 @@ public class Revision {
         return dtDiff(a, b, 1);
     }
 
-    static float dtDiff(Term a, Term b, int depth) {
+    private static float dtDiff(Term a, Term b, int depth) {
         if (a.equals(b)) return 0f;
 
 
@@ -388,8 +382,7 @@ public class Revision {
 
         } else {
 
-            int adt = a.dt();
-            int bdt = b.dt();
+            int adt = a.dt(), bdt = b.dt();
             if (adt != bdt) {
                 if (adt == XTERNAL || bdt == XTERNAL) {
                     //zero, match
@@ -399,8 +392,8 @@ public class Revision {
                     boolean ad = adt == DTERNAL;
                     boolean bd = bdt == DTERNAL;
                     if (!ad && !bd) {
-                        float range = Math.min(Math.abs(adt), Math.abs(bdt));
-                        int delta = Math.abs(Math.abs(adt) - Math.abs(bdt));
+                        int range = Math.min(Math.abs(adt), Math.abs(bdt));
+                        float delta = Math.abs(Math.abs(adt - bdt));
                         d += (delta / range);
                     } else {
                         int range = Math.abs(ad ? b.dt() : a.dt());

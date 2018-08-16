@@ -3,7 +3,6 @@ package nars.derive.premise;
 import jcog.Util;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.byt.ByteHijackMemoize;
-import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
@@ -96,7 +95,7 @@ public class PremiseDeriver implements Predicate<Derivation> {
         if (fanOut > 0) {
 
 
-            int branchTTL = d.nar.deriveBranchTTL.intValue();
+            int branchTTL = d.ttl;
                                 //* fanOut;
 
             d.setTTL(branchTTL);
@@ -112,9 +111,6 @@ public class PremiseDeriver implements Predicate<Derivation> {
                     assert (d.now() == 0);
 
                     MutableRoulette.run(maybe, d.random, wi -> 0, b -> {
-
-                        if (d.ttl < Param.TTL_MIN)
-                            return false;
 
                         test(d, can[b]);
 

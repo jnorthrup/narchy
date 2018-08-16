@@ -25,7 +25,7 @@ public class SignalTask extends UnevaluatedTask {
 
     @Override
     public final boolean isInput() {
-        return false;
+        return true;
     }
 
     @Override

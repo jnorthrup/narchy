@@ -16,10 +16,12 @@ import nars.concept.sensor.Signal;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
+import nars.video.AutoclassifiedBitmap;
 import nars.video.CameraSensorView;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
@@ -70,6 +72,12 @@ public class FZero extends NAgentX {
                 //.resolution(0.05f);
                 ;
 
+        int nx = 4;
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), c.src, nx, nx, (subX, subY) -> {
+            return new float[]{/*cc.X, cc.Y*/};
+        }, 8, this);
+        camAE.alpha(0.05f);
+        SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
 //        initToggleLeftRight();

@@ -15,6 +15,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.atom.Atom;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.obj.QuantityTerm;
 import nars.term.util.Conj;
@@ -215,12 +216,25 @@ public class Builtin {
             Equal.the,
 
             Functor.f2("ifThen", (condition, conseq) -> {
-                if (condition.hasVars()) return null;
+                if (!condition.equals(True)) {
+                    if (condition==Null)
+                        return Null;
+                    return null;
+                } else
+                    return conseq;
+            }),
+
+            Functor.f3("ifThenElse", (condition, ifTrue, ifFalse) -> {
+                if (!(condition instanceof Bool))
+                    return null;
                 else {
-                    if (condition.equals(True))
-                        return conseq;
+                    if (condition == True)
+                        return ifTrue;
+                    else if (condition == False)
+                        return ifFalse;
+                    else
+                        return Null;
                 }
-                return Null;
             }),
 
             Functor.f3("ifOrElse", (condition, conseqTrue, conseqFalse) -> {

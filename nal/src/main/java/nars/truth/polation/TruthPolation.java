@@ -224,15 +224,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             float diff = dtDiff(a, b);
             if (!Float.isFinite(diff))
                 return 0;
-            if (diff > 0) {
-                differenceFactor = Param.evi(1f,
-                        Math.round(diff / 2f) /* /2 since it is shared between the two */,
-                        Math.max(1, dur) /* cant be zero */);
-            } else {
 
+            differenceFactor = 1f / (1f + diff);
 
-                differenceFactor = 1f;
-            }
 
             Term theFirst = first;
             Term finalSecond = second;

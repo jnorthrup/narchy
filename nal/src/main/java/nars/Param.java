@@ -205,9 +205,9 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, 0, TTL_MIN * 16);
-    public final IntRange subUnifyTTLMax = new IntRange(6, 1, 64);
-    public final IntRange matchTTL = new IntRange(4, 1, 16);
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange subUnifyTTLMax = new IntRange( 2, 1, 64);
+    public final IntRange matchTTL = new IntRange(2, 1, 16);
 
     /**
      * extends the time all unit tests are allowed to run for.

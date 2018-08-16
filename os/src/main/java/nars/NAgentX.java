@@ -291,19 +291,19 @@ abstract public class NAgentX extends NAgent {
         n.activateConceptRate.set(0.9f);
 
 
-        n.beliefConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.95f);
         n.goalConfDefault.set(0.9f);
 
-        float basePri = 0.05f;
+        float basePri = 0.25f;
         n.beliefPriDefault.set(basePri * 0.5f);
         n.goalPriDefault.set(basePri * 1f);
         n.questionPriDefault.set(basePri * 0.1f);
-        n.questPriDefault.set(basePri * 0.25f);
+        n.questPriDefault.set(basePri * 0.2f);
 
 
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
-        n.emotion.want(MetaGoal.Believe, +0.05f);
+        n.emotion.want(MetaGoal.Believe, 0f);
         n.emotion.want(MetaGoal.Answer, +0.1f);
         n.emotion.want(MetaGoal.Desire, +0.5f);
         n.emotion.want(MetaGoal.Action, +1f);
@@ -320,16 +320,16 @@ abstract public class NAgentX extends NAgent {
 
         //new STMLinkage(n, 1, false);
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 3, 16);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(32, n);
 
         {
             new Inperience.Believe(n, 32);
             new Inperience.Want(n, 32);
-            new Inperience.Wonder(n, 8);
-            new Inperience.Plan(n, 8);
+            new Inperience.Wonder(n, 16);
+            new Inperience.Plan(n, 16);
         }
 
 
@@ -340,7 +340,7 @@ abstract public class NAgentX extends NAgent {
             e.printStackTrace();
         }
 
-//        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
+        //new Abbreviation(n, "z", 5, 9, 0.1f, 8);
     }
 
 

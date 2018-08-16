@@ -9,6 +9,7 @@ import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.util.transform.DirectTermTransform;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -21,8 +22,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.ATOM;
-import static nars.Op.Null;
+import static nars.Op.*;
 
 public class Evaluation {
 
@@ -67,21 +67,22 @@ public class Evaluation {
 //        int freeVariables = ops.vars.size();
 
 
-
-
         //iterate until stable
         Term y = x, prev;
-        int vStart;
+        int vStart, tried;
         main:
         do {
             prev = y;
             ListIterator<Term> ii = this.operations.listIterator();
             vStart = v.now();
+            tried = 0;
             while (ii.hasNext()) {
+
+
                 Term a = ii.next();
 
 
-                boolean removeEntry;
+                boolean removeEntry, eval;
 
                 if (Functor.isFunc(a)) {
 
@@ -90,109 +91,99 @@ public class Evaluation {
                     //run the functor resolver for any new functor terms which may have appeared
                     Term af = Functor.func(a);
 
+                    removeEntry = false;
+
+                    eval = true;
 
                     if (!(af instanceof Functor)) {
                         //try resolving
                         Term aa = ops.transform(a);
                         if (aa == a) {
-                            //not evaluable.
+                            //no change. no such functor
                             removeEntry = true;
+                            eval = false;
                         } else {
                             a = aa;
                         }
                     }
-                    removeEntry = false;
+
                 } else {
+                    eval = false;
                     removeEntry = true;
                 }
 
-
-
-                if (!removeEntry) {
+                Term z;
+                boolean substitutions;
+                if (!removeEntry && eval) {
                     Functor func = (Functor) a.sub(1);
                     Subterms args = a.sub(0).subterms();
-                    Term z = func.apply(this, args);
-                    if (z == null) {
-                        if (v.now() != vStart) {
-                            removeEntry = true; //HACK if the functor set substitutions, dont call it again.
-                        }
-                    } else if (z != a) {
-                        if (z == Null) {
-                            y = z; //poisoned
-                            break main;
-                        }
+
+                    z = func.apply(this, args);
+                    substitutions = v.now() != vStart;
+                    if (z == null && substitutions) {
+                        removeEntry = true;
                     }
 
-                    if(z!=null) {
-                        if (!removeEntry)
-                            ii.set(z);
-
-                        //pendingRewrites.add(new Term[]{a, z});
-                        Term finalA = a;
-                        ops.list.replaceAll(o -> o.replace(finalA, z));
-                        y = y.replace(a, z);
-                    }
-
-
-
-                    int vEnd = v.now();
-                    if (vEnd != vStart) {
-                        ops.list.replaceAll(o -> o.replace(subst));
-                        y = y.replace(subst);
-                        vStart = vEnd;
-
-                        ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
-
-//                if (subst.size() >= freeVariables && ops.vars.allSatisfy(subst::containsKey)) {
-//                    break; //all variables have been specified
-//                }
-                    }
-
-                    if (!y.op().conceptualizable)
-                        break main;
-
-                    ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
-
-                    continue main; //restart
-
+                } else {
+                    substitutions = false;
+                    z = a;
                 }
-
-
-                //TODO
-                //forward substitute any terms that may contain this term.
-                //the dependencies of a given term can be precomputed in the operation discovery process in a simple DAG
-
-
 
                 if (removeEntry) {
-
                     ii.remove();
+                }
+
+
+                if ((z != null && z != a) || substitutions) {
+                    tried++;
+
+
+                    if (z != null) {
+                        Term y0 = y;
+                        y = y.replace(a, z);
+                    }
+                    if (substitutions) {
+                        Term y0 = y;
+                        y = y.replace(subst);
+                    }
+
+                    //pendingRewrites.add(new Term[]{a, z});
+                    Term finalA = a;
+                    ops.list.replaceAll(o -> {
+                        Term p, q;
+                        if (z != null) {
+                            p = o.replace(finalA, z);
+                            if (o != p && !Functor.isFunc(p))
+                                return Null;
+                        } else
+                            p = o;
+
+                        if (substitutions) {
+                            q = p.replace(subst);
+                            if (p != q && !Functor.isFunc(q))
+                                return Null;
+                        } else
+                            q = p;
+
+                        return q;
+                    });
+
+
+                    if (!y.op().conceptualizable || ops.isEmpty())
+                        break main;
+                    else {
+                        ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
+                        break; //changed so start again
+                    }
 
                 }
 
-                int vEnd = v.now();
-                if (vEnd != vStart) {
-                    ops.list.replaceAll(o -> o.replace(subst));
-                    y = y.replace(subst);
-                    vStart = vEnd;
 
-                    ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
 
-//                if (subst.size() >= freeVariables && ops.vars.allSatisfy(subst::containsKey)) {
-//                    break; //all variables have been specified
-//                }
-                }
             }
 
 
-
-
-
-
-
-
-
-        } while (!ops.isEmpty() && (y != prev));
+        } while ((y != prev) || (tried > 0));
 
         assert (y != null);
 
@@ -240,7 +231,17 @@ public class Evaluation {
             if (yy[0] == null) {
                 yy[0] = new UnifiedSet<>(1);
             }
-            yy[0].add(y);
+            if (y instanceof Bool) {
+                if (y == True)
+                    yy[0].add(x);
+                else if (y == False)
+                    yy[0].add(x.neg());
+                else {
+                    //Null, but continue..
+                }
+            } else {
+                yy[0].add(y);
+            }
             return true;
         });
 

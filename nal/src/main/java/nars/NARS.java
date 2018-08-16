@@ -133,8 +133,8 @@ public class NARS {
                 float basePri = 0.5f; /* warning: changing this for now will affect many tests that have hardcoded priority values.  TODO fix that */
                 n.beliefPriDefault.set(basePri * 0.5f);
                 n.goalPriDefault.set(basePri * 0.5f);
-                n.questionPriDefault.set(basePri * 0.1f);
-                n.questPriDefault.set(basePri * 0.1f);
+                n.questionPriDefault.set(basePri * 0.2f);
+                n.questPriDefault.set(basePri * 0.2f);
             });
         }
 
@@ -171,7 +171,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(128));
+        attention(()->new Attention(64));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(
@@ -201,27 +201,27 @@ public class NARS {
                         ),
                         //questions
                         curve(Concept::volume,
-                          1, 12,
-                                12, 8,
+                          1, 8,
+                                12, 6,
                                 24, 4
                         ),
                         //quests
                         curve(Concept::volume,
-                                1, 12,
-                                12, 8,
+                                1, 8,
+                                12, 6,
                                 24, 4
                         ),
                         //termlinks
                         curve(Concept::volume,
-                                1, 64,
-                                8,32,
+                                1, 32,
+                                8,24,
                                 24,12,
                                 48,8
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 64,
-                                8,32,
+                                1, 32,
+                                8,24,
                                 24,12,
                                 48,8
                         ))

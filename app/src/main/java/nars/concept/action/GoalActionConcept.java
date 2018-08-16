@@ -11,6 +11,10 @@ import nars.truth.Truth;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import static nars.Op.GOAL;
+import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.w2c;
+
 
 /**
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
@@ -52,8 +56,9 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
         Random rng = nar.random();
         if (rng.nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
             float curiConf =
-                    nar.confMin.floatValue() * 4;
+                    //nar.confMin.floatValue() * 4;
                     //nar.confMin.floatValue();
+                    w2c(c2w(nar.confDefault(GOAL))/2);
                     //nar.confDefault(GOAL);
             goal = $.t(rng.nextFloat(), curiConf);
             goal = goal.ditherFreq(resolution().floatValue());
@@ -62,9 +67,11 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
             curi = false;
         }
 
+        Truth fb = this.motor.apply(null, goal);
+
         in.input(
             Stream.of(
-                    feedback(this.motor.apply(null, goal), now, next, nar),
+                    feedback(fb, now, next, nar),
                     (curi ? curiosity(goal, prev, now, nar) : null))
 
 

@@ -116,17 +116,13 @@ public class Answer implements Consumer<Task> {
         }
     }
 
-    public static float costDtDiff(Term template, Term x) {
-        return Revision.dtDiff(template, x);
-    }
-
     public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, @Nullable Term template) {
         return (x,min) -> {
             float base = (1 + strength.rank(x, min));
             if (base < min || base!=base)
                 return Float.NaN;
 
-            return base * (1 + 1/ costDtDiff(template, x.term()));
+            return base * (1 + 1/ Revision.dtDiff(template, x.term()));
         };
     }
 
@@ -247,6 +243,8 @@ public class Answer implements Consumer<Task> {
         boolean beliefOrGoal = sample.isBelief(); //else its a goal
 
         @Nullable DynTruth d = dynTruth();
+        if (d.isEmpty())
+            return null;
 
         TruthPolation tp = truthpolation(d).filtered();
 

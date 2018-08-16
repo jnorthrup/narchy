@@ -39,7 +39,7 @@ class FunctorTest {
         assertTrue(n.beliefTruth($$("[a,b]"), ETERNAL)!=null);
     }
 
-    @Test
+    @Disabled @Test
     void testAdd1() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
 
@@ -74,7 +74,7 @@ class FunctorTest {
 
 
 
-        t.mustBelieve(1024, "c3(x:y)", 1f, 0.81f);
+        t.mustBelieve(128, "c3(x:y)", 1f, 0.81f);
 
 
 
@@ -84,11 +84,13 @@ class FunctorTest {
 
     }
 
+    static final int cycles = 64;
+
+
     @Test
     void testFunctor2() throws Narsese.NarseseException {
         
 
-        int TIME = 512;
         TestNAR t = new TestNAR(NARS.tmp());
 
         
@@ -96,9 +98,9 @@ class FunctorTest {
         t.believe("(equal(complexity($1),complexity($2)) ==> c({$1,$2}))");
         t.ask("c({x, y})");
         t.ask("c({x, (x)})");
-        t.mustBelieve(TIME, "equal(complexity((x)),complexity(x))", 0f, 0.90f);
-        t.mustBelieve(TIME, "c({x,y})", 1f, 0.81f);
-        t.mustBelieve(TIME, "c({x,(x)})", 0f, 0.81f);
+        t.mustBelieve(cycles, "equal(complexity((x)),complexity(x))", 0f, 0.90f);
+        t.mustBelieve(cycles, "c({x,y})", 1f, 0.81f);
+        t.mustBelieve(cycles, "c({x,(x)})", 0f, 0.81f);
         t.test();
     }
 
@@ -108,7 +110,7 @@ class FunctorTest {
         NAR d = NARS.tmp();
         d.input("(add($x,1,$y) ==> ($y <-> inc($x))).");
         d.input("((inc(2) <-> $x) ==> its($x)).");
-        d.run(64);
+        d.run(cycles);
     }
 
     @Test

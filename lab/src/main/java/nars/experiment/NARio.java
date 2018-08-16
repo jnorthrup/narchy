@@ -79,7 +79,7 @@ public class NARio extends NAgentX {
 //        });
 
 
-        onFrame(()->cc.update());
+        onFrame(cc::update);
         int nx = 4;
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};

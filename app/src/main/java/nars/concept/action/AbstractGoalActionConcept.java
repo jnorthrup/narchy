@@ -27,23 +27,21 @@ public class AbstractGoalActionConcept extends ActionConcept {
     protected volatile @Nullable TruthPolation action;
     protected volatile @Nullable Truth actionTruth;
 
-    private final long[] sharedCuriosityEvidence;
+    /** truth calculated (in attempt to) excluding curiosity */
+    protected volatile @Nullable Truth actionTruthAuthentic;
+
 
     public AbstractGoalActionConcept(Term c, TermLinker linker, NAR n) {
         super(c, linker, n);
-        this.sharedCuriosityEvidence =
-                n.evidence();
-                //Stamp.UNSTAMPED;
     }
 
     protected AbstractGoalActionConcept(Term term, SensorBeliefTables sensorBeliefTables, BeliefTables newTable, NAR n) {
         super(term, sensorBeliefTables, newTable, n);
-        this.sharedCuriosityEvidence = n.evidence();
     }
 
     @Override
     public float dexterity(long start, long end, NAR n) {
-        Truth t = this.actionTruth;
+        Truth t = this.actionTruthAuthentic;
         return t!=null ? t.conf() : 0;
     }
 
@@ -52,33 +50,44 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
-        Predicate<Task> withoutCuriosity = t -> t.stamp() != sharedCuriosityEvidence;  /* filter curiosity tasks? */
+        Predicate<Task> withoutCuriosity = t -> !(t instanceof SeriesBeliefTable.SeriesTask);  /* filter curiosity tasks? */
 
-        TruthPolation a = Answer.relevance(true, prev, now /*next*/, term, withoutCuriosity, nar).match(goals()).truthpolation();
-        if (a == null) {
-            //try again , allowing curiosity
-            a = Answer.relevance(true, prev, now /*next*/, term, null, nar).match(goals()).truthpolation();
+
+        TruthPolation aWithCuri = Answer.
+                relevance(true, prev, now /*next*/, term, null, nar).match(goals()).truthpolation();
+        Truth actionNonAuthentic;
+        if (aWithCuri!=null) {
+            aWithCuri = aWithCuri.filtered();
+            actionNonAuthentic = aWithCuri.truth();
+        } else
+            actionNonAuthentic = null;
+
+        TruthPolation aWithoutCuri = Answer.
+                relevance(true, prev, now /*next*/, term, withoutCuriosity, nar).match(goals()).truthpolation();
+        if (aWithoutCuri!=null) {
+            aWithoutCuri = aWithoutCuri.filtered();
+            actionTruth = actionTruthAuthentic = aWithoutCuri.truth();
+            action = aWithoutCuri;
+        } else {
+            actionTruthAuthentic = null;
+            actionTruth = actionNonAuthentic;
+            action = aWithCuri;
         }
 
-        if (a!=null)
-            a = a.filtered();
-
-        action = a;
-        actionTruth = a!=null ? a.truth() : null;
 //        if (a!=null) {
 //            System.out.println(a);
 //        }
     }
 
 
-    @Nullable SeriesBeliefTable.SeriesTask curiosity(Truth goal, long pStart, long pEnd, NAR nar) {
-        SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, sharedCuriosityEvidence);
+    @Nullable SeriesBeliefTable.SeriesTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
+        SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, n.evidence());
 
 //        SeriesBeliefTable.SeriesTask curiosity =
 //                goals().series.add(term, GOAL, pStart, pEnd, truth, nar.dur(), nar);
 
         if (curiosity!=null) {
-            curiosity.pri(nar.priDefault(GOAL));
+            curiosity.pri(n.priDefault(GOAL));
             return curiosity;
             //return curiosity.input(c);
         } else {

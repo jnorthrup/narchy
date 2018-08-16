@@ -4,6 +4,8 @@ import com.google.common.collect.Iterables;
 import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatRange;
+import jcog.signal.wave2d.Bitmap2D;
+import jcog.util.IntIntToFloatFunction;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -27,7 +29,7 @@ import static nars.$.$$;
 import static nars.truth.TruthFunctions.w2c;
 
 /**
- * Created by me on 9/22/16.
+ * similar to a convolutional autoencoder
  */
 public class AutoclassifiedBitmap extends AbstractSensor {
 
@@ -43,7 +45,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
     private final MetaBits metabits;
     
 
-    private final float[][] pixIn;
+    private final IntIntToFloatFunction pixIn;
 
     private final boolean[][][] pixEnable;
     private final float[][] pixConf;
@@ -108,27 +110,38 @@ public class AutoclassifiedBitmap extends AbstractSensor {
     public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
         this($$(root), pixIn, sw, sh, metabits, states, agent);
     }
+
+    public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+        this(root, (x,y)->pixIn[x][y],
+                pixIn.length,pixIn[0].length,
+                sw, sh, metabits, states, agent);
+    }
+    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+        this(root, b::brightness,
+                b.width(),b.height(),
+                sw, sh, metabits, states, agent);
+    }
     /**
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
-    public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+    public AutoclassifiedBitmap(Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, NAgent agent) {
         super(root, agent.nar());
-        ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, states, agent.random());
+        ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, features, agent.random());
 
         this.metabits = metabits;
         this.agent = agent;
 
         this.pixIn = pixIn;
         this.sw = sw; 
-        this.sh = sh; 
-        ph = pixIn[0].length;
-        pw = pixIn.length;
-        this.nw = (int) Math.ceil(pw / ((float) sw)); 
+        this.sh = sh;
+        this.pw = pw;
+        this.ph = ph;
+        this.nw = (int) Math.ceil(pw / ((float) sw));
         this.nh = (int) Math.ceil(ph / ((float) sh)); 
         this.in = new float[ae.x.length];
         this.pixRecon = new float[pw][ph];
 
-        this.pixEnable = new boolean[nw][nh][states];
+        this.pixEnable = new boolean[nw][nh][features];
         this.pixConf = new float[nw][nh];
 
 
@@ -139,7 +152,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
         for (int i = 0; i< nw; i++) {
             for (int j = 0; j < nh; j++) {
                 Term coord = coord(r, i, j);
-                for (int k = 0; k < states; k++) {
+                for (int k = 0; k < features; k++) {
                     Term term = $.prop(coord, $.the(k));
                     int ii = i;  int jj = j; int kk = k;
                     signals.add(
@@ -182,12 +195,12 @@ public class AutoclassifiedBitmap extends AbstractSensor {
                     if (d >= pw)
                         break;
 
-                    float[] col = pixIn[d];
+
                     for (int sj = 0; sj < sh; sj++) {
 
                         int c = sj + oj;
 
-                        in[p++] = c < ph ? col[c] : 0;
+                        in[p++] = c < ph ? pixIn.value(d, c) : 0;
 
                     }
                 }
