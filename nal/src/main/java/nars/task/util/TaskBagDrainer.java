@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.Task;
 import nars.task.AbstractTask;
 import nars.task.ITask;
-import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
+import nars.term.Functor;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -14,12 +14,17 @@ public class TaskBagDrainer extends AbstractTask {
     final AtomicBoolean busy = new AtomicBoolean(false);
     private final Bag<Task, Task> bag;
     private final boolean singleton;
-    private final IntToIntFunction rate;
 
-    public TaskBagDrainer(Bag<Task, Task> tasks, boolean singleton, IntToIntFunction rate) {
+    /**
+     * (size, capacity) -> numToDrain
+     */
+    private final Functor.IntIntToIntFunction rateControl;
+
+
+    public TaskBagDrainer(Bag<Task, Task> tasks, boolean singleton, Functor.IntIntToIntFunction rateControl) {
         this.bag = tasks;
         this.singleton = singleton;
-        this.rate = rate;
+        this.rateControl = rateControl;
     }
 
     @Override
@@ -30,8 +35,7 @@ public class TaskBagDrainer extends AbstractTask {
 
         try {
 
-            int s = bag.size();
-            int n = rate.applyAsInt(s);
+            int n = rateControl.apply(bag.size(), bag.capacity());
             if (n > 0) {
                 bag.pop(null, n, nar::input);
             }

@@ -1372,15 +1372,14 @@ public enum Util {
     }
 
     public static float clamp(float f, float min, float max) {
-        assertFinite(f); assertFinite(min); assertFinite(max);
-        //assert(min <= max);
+        assertFinite(f); assertFinite(min); assertFinite(max); assert(min <= max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;
     }
 
     public static double clamp(double f, double min, double max) {
-        assertFinite(f); assertFinite(min); assertFinite(max);
+        assertFinite(f); assertFinite(min); assertFinite(max); assert(min <= max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;
@@ -1395,12 +1394,14 @@ public enum Util {
     }
 
     public static int clamp(int i, int min, int max) {
+        assert(min <= max);
         if (i < min) i = min;
         if (i > max) i = max;
         return i;
     }
 
     public static long clamp(long i, long min, long max) {
+        assert(min <= max);
         if (i < min) i = min;
         if (i > max) i = max;
         return i;
@@ -1459,23 +1460,23 @@ public enum Util {
      * adaptive spinlock behavior
      * see: https:
      */
-    public static void pauseNext(int previousContiguousPauses) {
-        if (previousContiguousPauses < 512) {
+    public static void pauseNextIterative(int previousContiguousPauses) {
+        if (previousContiguousPauses < 64 /*512*/) {
             onSpinWait();
-        } else if (previousContiguousPauses < 1024) {
+        } else if (previousContiguousPauses < 128 /*1024*/) {
 
 
-            if ((previousContiguousPauses & 0x7) == 0) {
+            if ((previousContiguousPauses & 31) == 0) {
 
-
+                //System.out.println("yield after: " + previousContiguousPauses);
                 Thread.yield();
 
             } else {
                 onSpinWait();
             }
-        } else if (previousContiguousPauses < 2048) {
+        } else if (previousContiguousPauses < 256 /*2048*/) {
 
-            if ((previousContiguousPauses & 0x3) == 0) {
+            if ((previousContiguousPauses & 15) == 0) {
                 Thread.yield();
             } else {
                 onSpinWait();
@@ -1485,6 +1486,16 @@ public enum Util {
             Thread.yield();
         }
     }
+    /**
+     * adaptive spinlock behavior
+     * see: https:
+     */
+    public static void pauseNextCountDown(long timeRemainNS) {
+        if (timeRemainNS < 10 * (1000 /* uS */))
+            onSpinWait();
+        else
+            Thread.yield();
+    }
 
     public static void sleepMS(long periodMS) {
         sleepNS(periodMS * 1_000_000);
@@ -1492,28 +1503,31 @@ public enum Util {
 
 
     public static void sleepNS(long periodNS) {
-        if (periodNS > 100000) {
+        if (periodNS > 1_000_000_000/1000/2  /*0.5ms */) {
             LockSupport.parkNanos(periodNS);
             return;
         }
 
-        final long thresholdNS = 10000; /** 10uS = 0.01ms */
+        final long thresholdNS = 1000; /** 1uS = 0.001ms */
         if (periodNS <= thresholdNS)
             return;
 
-
-
         long end = System.nanoTime() + periodNS;
-        long remainNS = end - System.nanoTime();
-        while (remainNS > thresholdNS) {
+        //long remainNS = end - System.nanoTime();
+        int pauses = 0;
+        long now;
+        while ((now = System.nanoTime()) < end) {
+            Util.pauseNextCountDown(end - now);
+        //while (remainNS > thresholdNS) {
 
 //            if (remainNS <= 500000 /** 100uS = 0.5ms */) {
 //                Thread.yield();
 //            } else {
-                Thread.onSpinWait();
+//                Thread.onSpinWait();
 //            }
+            //Util.pauseNextIterative(pauses++);
 
-            remainNS = end - System.nanoTime();
+            //remainNS = end - System.nanoTime();
         }
 
     }

@@ -54,10 +54,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         Predicate<Task> withoutCuriosity = t -> t.stamp() != sharedCuriosityEvidence;  /* filter curiosity tasks? */
 
-        TruthPolation a = Answer.relevance(prev, now /*next*/, term, withoutCuriosity, nar).match(goals()).truthpolation();
+        TruthPolation a = Answer.relevance(true, prev, now /*next*/, term, withoutCuriosity, nar).match(goals()).truthpolation();
         if (a == null) {
             //try again , allowing curiosity
-            a = Answer.relevance(prev, now /*next*/, term, null, nar).match(goals()).truthpolation();
+            a = Answer.relevance(true, prev, now /*next*/, term, null, nar).match(goals()).truthpolation();
         }
 
         if (a!=null)

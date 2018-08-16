@@ -86,7 +86,9 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     }
 
     @Override
-    public TemporalBeliefTable newTemporalTable(Term c) { return RTreeBeliefTable.build(c);     }
+    public TemporalBeliefTable newTemporalTable(Term c) {
+        return new RTreeBeliefTable();
+    }
 
     @Override
     public QuestionTable questionTable(Term term, boolean questionOrQuest) {

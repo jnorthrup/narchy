@@ -134,7 +134,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             if (!tryUnify/* && mustSubstitute()*/) {
                 output = null;
             } else {
-                int ttl = parent.nar.subUnifyTTL.intValue();
+                int ttl = parent.nar.subUnifyTTLMax.intValue();
                 SubUnify u = new MySubUnify(op, strict);
                 output = u.tryMatch(c, x, y, ttl);
                 parent.use(ttl - u.ttl);

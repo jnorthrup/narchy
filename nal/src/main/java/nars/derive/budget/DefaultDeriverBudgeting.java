@@ -25,10 +25,10 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
      * how important is it to retain conf (evidence).
      * leniency towards uncertain derivations
      */
-    public final FloatRange confImportance = new FloatRange(0.9f, 0f, 1f);
+    public final FloatRange confImportance = new FloatRange(0.5f, 0f, 1f);
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.25f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.1f, 0f, 1f);
 
     public final FloatRange relGrowthExponent = new FloatRange(3f, 0f, 8f);
 
@@ -75,7 +75,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             return Util.lerp(confImportance.floatValue(), 1, confLossFactor);
         }
 
-        throw new WTF("spontaneous belief/goal evidence generated from only question parent task");
+        throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");
         //return 1; //
     }
 }

@@ -24,9 +24,6 @@ public interface TaskTable {
     void add(Remember r, NAR n);
 
 
-
-
-
     /**
      * number of items in this collection
      */
@@ -39,12 +36,15 @@ public interface TaskTable {
 
     void forEachTask(Consumer<? super Task> x);
 
+    /**
+     * TODO add 'intersects or contains' option
+     */
     default void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
         if (minT == ETERNAL) {
             forEachTask(x);
         } else {
             forEachTask(t -> {
-                if (t.intersects(minT,maxT))
+                if (t.intersects(minT, maxT))
                     x.accept(t);
             });
         }
@@ -71,15 +71,14 @@ public interface TaskTable {
         forEachTask(m);
     }
 
-    /** creates a default "best" match strategy for this task table */
-    Answer rank(long start, long end, Term template, int limit, NAR nar);
-
-    @Deprecated default Task match(long start, long end, Term template, NAR nar) {
+    @Deprecated
+    default Task match(long start, long end, Term template, NAR nar) {
 
         if (isEmpty())
             return null;
 
-        return rank(start, end, template, (this instanceof QuestionTable) ? 1 : Answer.TASK_LIMIT, nar)
+        boolean belief = !(this instanceof QuestionTable);
+        return Answer.relevance(belief, belief ? Answer.TASK_LIMIT : 1, start, end, template, null, nar)
                 .match(this).task();
     }
 

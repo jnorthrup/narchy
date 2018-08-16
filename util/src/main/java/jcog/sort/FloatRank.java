@@ -1,6 +1,9 @@
 package jcog.sort;
 
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 @FunctionalInterface public interface FloatRank<X> extends FloatFunction<X> {
     /**
@@ -14,7 +17,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
     float rank(X x, float min);
 
     /** adapter which ignores the minimum */
-    static <X> FloatRank<X> from(FloatFunction<X> f) {
+    static <X> FloatRank<X> the(FloatFunction<X> f) {
         return (x, min) -> f.floatValueOf(x);
     }
 
@@ -22,5 +25,29 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
     @Override
     default float floatValueOf(X x) {
         return rank(x, Float.NEGATIVE_INFINITY);
+    }
+
+    default FloatRank<X> filter(@Nullable Predicate<X> filter) {
+        if (filter == null) return this;
+        return new FilteredFloatRank<>(filter, this);
+
+    }
+
+    final class FilteredFloatRank<X> implements FloatRank<X> {
+
+        private @Nullable final Predicate<X> filter;
+        private final FloatRank<X> rank;
+
+        public FilteredFloatRank(@Nullable Predicate<X> filter, FloatRank<X> rank) {
+            this.filter = filter;
+            this.rank = rank;
+        }
+
+        @Override
+        public float rank(X t, float m) {
+            if (filter != null && !filter.test(t))
+                return Float.NaN;
+            return rank.floatValueOf(t);
+        }
     }
 }

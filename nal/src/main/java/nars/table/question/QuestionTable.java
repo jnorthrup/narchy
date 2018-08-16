@@ -3,20 +3,14 @@ package nars.table.question;
 import jcog.data.NumberX;
 import jcog.data.map.MRUCache;
 import jcog.pri.bag.impl.hijack.PriorityHijackBag;
-import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.table.TaskTable;
-import nars.task.util.Answer;
-import nars.task.util.TimeRangeFilter;
 import nars.term.Term;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 
 /**
  * task table used for storing Questions and Quests.
@@ -80,31 +74,9 @@ public interface QuestionTable extends TaskTable {
 
     void capacity(int newCapacity);
 
-    @Override
-    default Answer rank(long start, long _end, Term template, int limit, NAR nar) {
-        //TODO account for template in matching?
 
-        long end;
-        if (start == ETERNAL && _end == ETERNAL)
-            end = TIMELESS; //cover whole range
-        else
-            end = _end;
 
-        int dur = nar.dur();
-        FloatRank<Task> r =
-            (start == ETERNAL) ?
-                (t, m) -> t.pri()
-                :
-                (t, m) -> {
-                    float pri = t.pri() * t.originality();
-                    if (pri == pri && pri > m)
-                        return pri * (1 / ((float) (t.minTimeTo(start, end) / ((double) dur))));
-                    return Float.NaN;
-                };
-        Answer a = new Answer(limit, r, new TimeRangeFilter(start, end, true), nar);
-        a.template = template;
-        return a;
-    }
+
 
     /**
      * unsorted, MRU policy.

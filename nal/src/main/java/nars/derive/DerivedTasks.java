@@ -1,6 +1,5 @@
 package nars.derive;
 
-import jcog.Util;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -86,7 +85,9 @@ public interface DerivedTasks {
         };
 
         private final TaskBagDrainer derivedTasksDrainer = new TaskBagDrainer(tasks, true,
-                s-> Util.clamp((int) (Math.ceil(s * Param.DerivedTaskBagDrainRate)), 1, s)
+                (size, capacity) -> {
+                    return Math.min(size, Math.round(capacity * Param.DerivedTaskBagDrainRateLimit));
+                }
         );
 
         public DerivedTasksBag(int capacity) {

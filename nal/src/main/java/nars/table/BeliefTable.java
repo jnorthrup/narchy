@@ -42,35 +42,30 @@ public interface BeliefTable extends TaskTable {
     void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar);
 
 
-
-    default Answer relevance(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-        return Answer.relevance(Answer.TASK_LIMIT, start, end, template, filter, nar);
-    }
-
-    default Answer rank(long start, long end, Term template, int limit, NAR nar) {
-        return Answer.relevance(limit, start, end, template, null, nar);
-    }
-
     default Task match(long when, Term template, NAR nar) {
         return match(when, when, template, nar);
     }
 
-    @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return !isEmpty() ? relevance(start, end, template, filter, nar).match(this).task() : null;
+    @Nullable
+    default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+        return !isEmpty() ? Answer.relevance(true, Answer.TASK_LIMIT, start, end, template, filter, nar)
+                .match(this).task() : null;
     }
-    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
+
+    @Nullable
+    default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
         if (isEmpty())
             return null;
-        return relevance(start, end, template, filter, n).
+        return Answer.relevance(true, Answer.TASK_LIMIT, start, end, template, filter, n).
                 forceProjection(true). /* the virtual task we compute the truth from will need to match the given time */
                 match(this).task();
     }
+
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
         if (isEmpty())
             return null;
-        return relevance(start, end, template, filter, n).
-                match(this).
-                truth();
+        return Answer.relevance(true, Answer.TASK_LIMIT, start, end, template, filter, n).
+                match(this).truth();
     }
 
     default Truth truth(long start, long end, @Nullable Term template, NAR n) {
@@ -78,15 +73,18 @@ public interface BeliefTable extends TaskTable {
     }
 
 
-    @Deprecated default Task match(long start, long end, Term template, NAR nar) {
+    @Deprecated
+    default Task match(long start, long end, Term template, NAR nar) {
         return match(start, end, template, null, nar);
     }
 
-    @Deprecated default Truth truth(long when, NAR nar) {
+    @Deprecated
+    default Truth truth(long when, NAR nar) {
         return truth(when, when, null, nar);
     }
 
-    @Deprecated default Truth truth(long start, long end, NAR nar) {
+    @Deprecated
+    default Truth truth(long start, long end, NAR nar) {
         return truth(start, end, null, nar);
     }
 
@@ -97,181 +95,6 @@ public interface BeliefTable extends TaskTable {
     default void print() {
         print(System.out);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*public float rank(final Task s, final long now) {
-        return rankBeliefConfidenceTime(s, now);
-    }*/
 
 
 }

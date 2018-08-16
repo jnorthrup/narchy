@@ -35,11 +35,11 @@ public abstract class Param {
      * size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
      * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
      */
-    public static final int DerivedTaskBagCapacity = 2048;
-    public static final float DerivedTaskBagDrainRate =
-            //1f;
-            0.5f;
-            //0.33f;
+    public static final int DerivedTaskBagCapacity = 1024;
+
+
+    /** max percent of capacity allowed input */
+    public static final float DerivedTaskBagDrainRateLimit = 0.5f;
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
@@ -63,7 +63,7 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
@@ -147,8 +147,8 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static float SIGNAL_LATCH_DUR = 64;
-    public final static float SIGNAL_STRETCH_DUR = 4;
+    public final static float SIGNAL_LATCH_DUR = 32;
+    public final static float SIGNAL_STRETCH_DUR = 1;
 
 
     /**
@@ -162,8 +162,9 @@ public abstract class Param {
     /**
      * when merging dt's, maximum difference in dt allowed
      * determined according to the ratio of the dt difference compared to the smaller dt of the two being merged
+     * probably values less than 0.5 are safe
      */
-    public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 2 /* no practical upper limit really */);
+    public final FloatRange intermpolationRangeLimit = new FloatRange(0.25f, 0, 2 /* no practical upper limit really */);
 
     /**
      * creates instance of the default truthpolation implementation
@@ -204,16 +205,15 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-
     public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, 0, TTL_MIN * 16);
-    public final IntRange subUnifyTTL = new IntRange(3, 1, 10);
-
+    public final IntRange subUnifyTTLMax = new IntRange(6, 1, 64);
+    public final IntRange matchTTL = new IntRange(4, 1, 16);
 
     /**
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
@@ -350,7 +350,7 @@ public abstract class Param {
      * Maximum length of the evidental base of the Stamp, a power of 2
      * TODO IntRange
      */
-    public static final int STAMP_CAPACITY = 8;
+    public static final int STAMP_CAPACITY = 16;
 
     /** TODO make this NAR-specific */
     public static final IntRange causeCapacity = new IntRange(64, 0, 128);

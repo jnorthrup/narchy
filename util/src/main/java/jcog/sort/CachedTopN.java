@@ -21,7 +21,7 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
     }
 
     public CachedTopN(NLink<X>[] target, FloatFunction<X> rank) {
-        super(new TopN<>(target, FloatRank.from(ScalarValue.AtomicScalarValue::pri)));
+        super(new TopN<>(target, FloatRank.the(ScalarValue.AtomicScalarValue::pri)));
         this.rank = rank;
     }
 

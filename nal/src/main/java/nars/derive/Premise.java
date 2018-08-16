@@ -189,7 +189,7 @@ public class Premise {
 
                     //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
                     //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-                    Task match = bb.relevance(focus[0], focus[1], beliefTerm, beliefFilter, n)
+                    Task match = Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, n)
                             .match(bb)
                             .task();
 
@@ -226,7 +226,7 @@ public class Premise {
         if (!answerTable.isEmpty()) {
 
             Task match =
-                Answer.relevance(task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
+                Answer.relevance(true, task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
                         .ditherTruth(true)
                         .match(answerTable).task();
 

@@ -16,21 +16,26 @@ import static nars.Op.BELIEF;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DynamicImplTest {
-    NAR n = NARS.shell();
+class DynamicImplTest extends AbstractDynamicBeliefTest {
 
     @Test void eligibleDynamicImpl() {
         //((--,(([add(#1,2)]<->[#1])&|equal(#1,0)))=|>([add(#1,2)]<->[#1]))
-        assertTrue(n.conceptualize($$("((x && y) ==> a)")).beliefs().tableFirst(DynamicTruthTable.class)!=null);
-        assertTrue(n.conceptualize($$("(((x,#1) && y) ==> a)")).beliefs().tableFirst(DynamicTruthTable.class)!=null); //#1 not shared between components
-        assertFalse(n.conceptualize($$("((#1 && (y,#1)) ==> a)")).beliefs().tableFirst(DynamicTruthTable.class)!=null); //raw depvar componnet
-        assertFalse(n.conceptualize($$("(((x,#1) && (y,#1)) ==> a)")).beliefs().tableFirst(DynamicTruthTable.class)!=null);
-        assertFalse(n.conceptualize($$("(((x,$1) && y) ==> (a,$1))")).beliefs().tableFirst(DynamicTruthTable.class)!=null); //indepvar shared between subj and impl
+        String t = "((x && y) ==> a)";
+        assertDynamicTable(t);
+        assertDynamicTable("(((x,#1) && y) ==> a)"); //#1 not shared between components
+        assertFalse(isDynamicTable("((#1 && (y,#1)) ==> a)")); //raw depvar componnet
+        assertFalse(isDynamicTable("(((x,#1) && (y,#1)) ==> a)"));
+        assertFalse(isDynamicTable("(((x,$1) && y) ==> (a,$1))")); //indepvar shared between subj and impl
     }
+
+
+
     @Test void eligibleDynamicImpl2() {
-        assertFalse(n.conceptualize($$("(((x,#1) && y) ==> (a,#1))")).beliefs().tableFirst(DynamicTruthTable.class)!=null); //depvar shared between subj and impl
-        assertTrue(n.conceptualize($$("(((x,#1) && (y,#1)) ==> (a,#1))")).beliefs().tableFirst(DynamicTruthTable.class)!=null); //all share it
+        assertFalse(isDynamicTable("(((x,#1) && y) ==> (a,#1))")); //depvar shared between subj and impl
+        String s = "(((x,#1) && (y,#1)) ==> (a,#1))";
+        assertDynamicTable(s); //all share it
     }
+
 
     @Test
     void testDynamicImplSubj() throws Narsese.NarseseException {
@@ -50,7 +55,7 @@ class DynamicImplTest {
             //AND
             {
                 Term pp = $$("((x && y) ==> a)");
-                assertTrue(n.conceptualize(pp).beliefs().tableFirst(DynamicTruthTable.class)!=null);
+                assertTrue(isDynamicTable(pp));
                 assertEquals($.t(1f, 0.81f), n.beliefTruth(pp, now));
 
                 Term pn = $$("((x && z) ==> a)");

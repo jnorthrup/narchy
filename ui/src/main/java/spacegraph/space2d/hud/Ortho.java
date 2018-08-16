@@ -618,7 +618,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
 
         public float camX(float x) {
-            return Util.clamp(x, camXmin, camXmax);
+            return Util.clamp(x, camXmin, Math.max(camXmin, camXmax));
         }
 
         public float motionSq() {

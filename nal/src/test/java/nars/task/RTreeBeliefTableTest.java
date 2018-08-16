@@ -118,7 +118,7 @@ class RTreeBeliefTableTest {
         NAR n = NARS.shell();
         Term ab = nars.$.$("a:b");
         TaskConcept X = (TaskConcept) n.conceptualize(ab);
-        RTreeBeliefTable r = RTreeBeliefTable.build(ab);
+        RTreeBeliefTable r = new RTreeBeliefTable();
         r.setCapacity(4);
 
         assertEquals(0, r.size());
@@ -167,7 +167,7 @@ class RTreeBeliefTableTest {
         NAR nar = NARS.shell();
         Term ab = nars.$.$("a:b");
         TaskConcept AB = (TaskConcept) nar.conceptualize(ab);
-        RTreeBeliefTable r = RTreeBeliefTable.build(ab);
+        RTreeBeliefTable r = new RTreeBeliefTable();
         r.setCapacity(4);
 
         add(r, AB, 1f, 0.9f, 0, 1, nar);

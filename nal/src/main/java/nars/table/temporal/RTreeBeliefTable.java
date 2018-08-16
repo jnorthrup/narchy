@@ -9,7 +9,6 @@ import jcog.sort.Top2;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
@@ -20,7 +19,6 @@ import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
-import nars.term.Term;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +32,7 @@ import static jcog.WTF.WTF;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
-public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
+public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
 //    /**
 //     * max fraction of the fully capacity table to compute in a single truthpolation
@@ -42,9 +40,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //    private static final float SCAN_QUALITY =
 //            1f;
 
-    static final float MATCH_QUALITY = 0.25f;
+    static final float MATCH_QUALITY = 0.33f;
 
-    private static final float PRESENT_AND_FUTURE_BOOST = 4f;
+    private static final float PRESENT_AND_FUTURE_BOOST = 2f;
 
 
     private static final int SCAN_CONF_OCTAVES_MAX = 1;
@@ -67,7 +65,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     protected int capacity;
 
 
-    private RTreeBeliefTable() {
+    public RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
     }
 
@@ -164,20 +162,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //        };
 //    }
 
-    public static RTreeBeliefTable build(Term concept) {
-        if (!concept.hasAny(Op.Temporal)) {
-            return new RTreeBeliefTable.Simple();
-        } else {
-            return new RTreeBeliefTable.Complex();
-        }
-    }
-
     static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur, long tableDur) {
         return (Task x) -> (!x.isAfter(now) ? presentAndFutureBoost : 1f) *
                 TruthIntegration.eviInteg(x, when, when, tableDur);
     }
 
-    abstract protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur);
+
 
     @Override
     @Deprecated public void update(SignalTask task, Runnable change) {
@@ -458,7 +448,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         Top<TaskRegion> weakest = new Top<>(weakestTask);
 
-        Top<TaskRegion> closest = input != null ? new Top<>(Answer.mergeability(input, perceptDur)) : null;
+        Top<TaskRegion> closest = input != null ? new Top<>(Answer.mergeability(input)) : null;
 
 
         if (!findEvictable(tree, tree.root(), closest, weakest, weakLeaf))
@@ -683,63 +673,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         forEachTask(t -> out.println(t.toString(true)));
         stats().print(out);
     }
-
-    private static class Simple extends RTreeBeliefTable {
-
-        @Override
-        protected FloatFunction<Task> taskStrength(@Nullable Term templateIgnored, long start, long end, int dur) {
-            return Answer.taskStrength(start, end, dur);
-        }
-
-//        @Override
-//        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
-//
-//            ExpandingScan tt = new ExpandingScan(SIMPLE_EVENT_MATCH_LIMIT, SIMPLE_EVENT_MATCH_LIMIT,
-//                    task(taskStrength(start, end, dur)),
-//                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
-//                    filter)
-//                    .scan(this, start, end);
-//
-//
-//            int n = tt.size();
-//            return n > 0 ? Revision.merge(nar, dur, start, end, false, tt.array(TaskRegion[]::new)) : null;
-//        }
-//
-
-    }
-
-    private static class Complex extends RTreeBeliefTable {
-
-        @Override
-        protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
-            return Answer.ComplexTaskStrength(template, start, end, dur);
-        }
-
-
-
-//        @Override
-//        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
-//
-//            ExpandingScan tt = new ExpandingScan(COMPLEX_EVENT_MATCH_LIMIT, COMPLEX_EVENT_MATCH_LIMIT,
-//                    task(taskStrength(template, start, end, dur)),
-//                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
-//                    filter)
-//                    .scan(this, start, end);
-//
-//
-//            int n = tt.size();
-//            if (n == 0)
-//                return null;
-//
-//            TaskRegion[] ttt = tt.array(TaskRegion[]::new);
-//
-//
-//            return Revision.merge(nar, nar.dur(), start, end, false, ttt);
-//        }
-
-
-    }
-
 
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 

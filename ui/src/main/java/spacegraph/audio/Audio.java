@@ -238,7 +238,7 @@ public class Audio implements Runnable {
         while (alive) {
 
             if (listenerMixer.isEmpty()) {
-                Util.pauseNext(idle++);
+                Util.pauseNextIterative(idle++);
             } else {
                 idle = 0;
             }

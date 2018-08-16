@@ -4,6 +4,7 @@ import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
 import jcog.sort.TopN;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.table.TaskTable;
@@ -17,6 +18,7 @@ import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -25,7 +27,6 @@ import java.util.function.Predicate;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
-import static nars.truth.polation.TruthIntegration.valueInEternity;
 
 /** heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
@@ -46,12 +47,12 @@ public class Answer implements Consumer<Task> {
         tasks.clear();
     }
 
-    @Deprecated public static Answer relevance(long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
-        return relevance(TASK_LIMIT, start, end, template, filter, nar);
+    @Deprecated public static Answer relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+        return relevance(beliefOrQuestion, beliefOrQuestion ? TASK_LIMIT : 1, start, end, template, filter, nar);
     }
 
     /** for belief or goals (not questions / quests */
-    @Deprecated public static Answer relevance(int limit, long start, long _end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    @Deprecated public static Answer relevance(boolean beliefOrQuestion, int limit, long start, long _end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         long end;
         if (start == ETERNAL && _end == ETERNAL)
@@ -60,39 +61,23 @@ public class Answer implements Consumer<Task> {
             end = _end;
 
         int dur = nar.dur();
+
+        FloatRank<Task> strength =
+                beliefOrQuestion ?
+                    FloatRank.the(beliefStrength(start, end, dur)) : questionStrength(start, end, dur);
+
         FloatRank<Task> r;
         if (template == null || !template.hasAny(Temporal)) {
-            if (start == ETERNAL) {
-                r = (t, m) -> {
-                    if (filter!=null && !filter.test(t))
-                        return Float.NaN;
-                    return t.isEternal() ? t.evi() : valueInEternity(t);
-                };
-            } else {
-                r = (t, m) -> {
-                    if (filter!=null && !filter.test(t))
-                        return Float.NaN;
-                    return TruthIntegration.eviInteg(t, start, end, dur);
-                };
-            }
+            r = FloatRank.the(strength);
         } else {
-            FloatRank<Task> rr = ComplexTaskStrength(template, start, end, dur);
-            r = (t, m) -> {
-                if (filter!=null && !filter.test(t))
-                    return Float.NaN;
-                return rr.rank(t, m);
-            };
+            r = complexTaskStrength(strength, template);
         }
-        Answer b = relevance(limit, new TimeRangeFilter(start, end, true), r, nar);
+
+        Answer b = new Answer(limit, r.filter(filter), new TimeRangeFilter(start, end, true), nar);
         b.template = template;
         return b;
     }
 
-
-
-    public static Answer relevance(int limit, @Nullable TimeRangeFilter  timeFilter, FloatRank<Task> rank, NAR nar) {
-        return new Answer(limit, rank, timeFilter, nar);
-    }
 
     public Answer(int limit, FloatRank<Task> rank, @Nullable TimeRangeFilter time, NAR nar) {
         this.nar = nar;
@@ -101,53 +86,79 @@ public class Answer implements Consumer<Task> {
         time(time);
     }
 
-    public static FloatFunction<TaskRegion> mergeability(Task x, float tableDur) {
+    public static FloatFunction<TaskRegion> mergeability(Task x) {
         ImmutableLongSet xStamp = Stamp.toSet(x);
 
         long xStart = x.start();
         long xEnd = x.end();
 
-        return (TaskRegion _y) -> {
-            Task y = (Task) _y;
+        FloatFunction<TaskRegion> f = (TaskRegion t) -> {
 
-            if (Stamp.overlapsAny(xStamp, y.stamp()))
+            if (Stamp.overlapsAny(xStamp, ((Task) t).stamp()))
                 return Float.NaN;
 
-
             return
-                    (1f / (1f +
-                            (Math.abs(y.start() - xStart) + Math.abs(y.end() - xEnd)) / tableDur))
+                    (1 + 1f / (1f +
+                            (Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd))));
+        };
 
-                    ;
+        Term xt = x.term();
+        if (xt.hasAny(Op.Temporal)) {
+
+            return (t) -> {
+                float v1 = f.floatValueOf(t);
+                if (v1!=v1) return Float.NaN;
+
+                return 1f / (1f + Revision.dtDiff(xt, ((Task)t).term()));
+            };
+        } else {
+            return f;
+        }
+    }
+
+    public static float costDtDiff(Term template, Term x) {
+        return Revision.dtDiff(template, x);
+    }
+
+    public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, @Nullable Term template) {
+        return (x,min) -> {
+            float base = (1 + strength.rank(x, min));
+            if (base < min || base!=base)
+                return Float.NaN;
+
+            return base * (1 + 1/ costDtDiff(template, x.term()));
         };
     }
 
-    public static float costDtDiff(Term template, Term x, int dur) {
-        return Revision.dtDiff(template, x) / (dur /* * dur*/);
-    }
-
-    public static FloatRank<Task> ComplexTaskStrength(@Nullable Term template, long start, long end, int dur) {
-        FloatFunction<Task> f = taskStrength(start, end, dur);
-        if (template != null && template.hasAny(Temporal)) {
-            return (x,min) -> {
-                float base = (1 + f.floatValueOf(x));
-                if (base < min)
-                    return Float.NaN;
-
-                return base * (1 + 1/ costDtDiff(template, x.term(), dur));
-            };
-        } else {
-            return (x,min) -> f.floatValueOf(x);
-                    //  / x.volume(); //prefer lower complexity variants
-        }
-    }
-
-    public static FloatFunction<Task> taskStrength(long start, long end, int dur) {
+    public static FloatFunction<Task> beliefStrength(long start, long end, int dur) {
         if (start == ETERNAL) {
-            return TruthIntegration::valueInEternity;
+            return eternalTaskStrength();
         } else {
-            return x -> TruthIntegration.eviInteg(x, start, end, dur);
+            return temporalTaskStrength(start, end, dur);
         }
+    }
+    public static FloatRank<Task> questionStrength(long start, long end, int dur) {
+
+        return
+                (start == ETERNAL) ?
+                        (t, m) -> t.pri()
+                        :
+                        (t, m) -> {
+                            float pri = t.pri(); // * t.originality();
+                            if (pri == pri && pri > m)
+                                return pri * (1 / ((float) (t.minTimeTo(start, end) / ((double) dur))));
+                            return Float.NaN;
+                        };
+
+    }
+
+    @NotNull
+    public static FloatFunction<Task> eternalTaskStrength() {
+        return TruthIntegration::valueInEternity;
+    }
+
+    public static FloatFunction<Task> temporalTaskStrength(long start, long end, int dur) {
+        return x -> TruthIntegration.eviInteg(x, start, end, dur);
     }
 
 

@@ -97,22 +97,19 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
 
             int branchTTL = d.nar.deriveBranchTTL.intValue();
+                                //* fanOut;
+
+            d.setTTL(branchTTL);
 
             switch (fanOut) {
                 case 1: {
-                    d.setTTL(Math.max(Param.TTL_MIN, branchTTL));
-                    return test(d, can[0]);
+                    test(d, can[0]);
+                    return d.revertLive(1);
                 }
                 default: {
 
                     @Deprecated int before = d.now();
                     assert (d.now() == 0);
-
-
-                    d.ttl = Math.max(Param.TTL_MIN, Math.round(branchTTL
-                            //* Math.log(2+fanOut)
-                            * (fanOut*0.25f)
-                    ));
 
                     MutableRoulette.run(maybe, d.random, wi -> 0, b -> {
 

@@ -1,5 +1,6 @@
 package nars.derive.deriver;
 
+import com.netflix.servo.monitor.Counter;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
@@ -97,6 +98,7 @@ public class MatrixDeriver extends Deriver {
 
         premises.forEach(p -> {
 
+            Counter counter;
             if (p.match(d, matchTTL)) {
 
                 if (rules.derivable(d)) {
@@ -104,18 +106,19 @@ public class MatrixDeriver extends Deriver {
                     d.derive(deriveTTL);
 
                     premiseFired(p, d);
-                    d.nar.emotion.premiseFire.increment();
+                    counter = n.emotion.premiseFire;
 
                 } else {
                     premiseUnderivable(p, d);
-                    n.emotion.premiseUnderivable.increment();
+                    counter = n.emotion.premiseUnderivable;
                 }
 
             } else {
                 premiseUnmatched(p);
-                n.emotion.premiseFailMatch.increment();
+                counter = n.emotion.premiseFailMatch;
             }
 
+            counter.increment();
         });
 
         premises.clear();
@@ -152,7 +155,7 @@ public class MatrixDeriver extends Deriver {
         int premisesRemain[] = new int[]{premisesMax};
         int premisePerConceptRemain[] = new int[1];
 
-        int tasklinks = (int) Math.ceil(premisesMax / ((float) termLinksPerTaskLink));
+        int tasklinks = Math.max(1, Math.round(premisesMax / ((float) termLinksPerTaskLink)));
 
 
         @Deprecated BiPredicate<Task, PriReference<Term>> continueHypothesizing = (tasklink, termlink) ->

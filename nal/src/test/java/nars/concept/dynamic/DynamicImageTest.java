@@ -1,9 +1,6 @@
 package nars.concept.dynamic;
 
-import nars.NAR;
-import nars.NARS;
 import nars.Narsese;
-import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
@@ -13,10 +10,9 @@ import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DynamicImageTest {
+class DynamicImageTest extends AbstractDynamicBeliefTest {
     @Test
     void testImageIdentity() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
         String x = "((x,y)-->z)";
         Term t = $$(x);
         n.believe(x, 0.75f, 0.50f);
@@ -28,16 +24,17 @@ class DynamicImageTest {
         Term i2 = $("(x --> (z,/,y))");
         assertEquals(t, Image.imageNormalize(i2));
 
-        assertEquals(DynamicTruthTable.class, n.conceptualize(i1).beliefs().getClass());
-        assertEquals(DynamicTruthTable.class, n.conceptualize(i2).beliefs().getClass());
+        assertDynamicTable(i1);
+        assertDynamicTable(i2);
+
         assertEquals(
                 "%.75;.50%", n.beliefTruth(i1, n.time()).toString()
         );
         assertEquals(
-                "$.50 (y-->(z,x,/)). %.75;.50%", n.match(i1, BELIEF, n.time()).toString()
+                "(y-->(z,x,/)). %.75;.50%", n.match(i1, BELIEF, n.time()).toStringWithoutBudget()
         );
         assertEquals(
-                "$.50 (x-->(z,/,y)). %.75;.50%", n.match(i2, BELIEF, n.time()).toString()
+                "(x-->(z,/,y)). %.75;.50%", n.match(i2, BELIEF, n.time()).toStringWithoutBudget()
         );
     }
 }

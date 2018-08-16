@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.Texts;
 import jcog.Util;
 import jcog.pri.Priority;
 import jcog.sort.Top;
@@ -161,9 +160,9 @@ public class Revision {
 
         } else if (adt == DTERNAL || bdt == DTERNAL) {
 
-            dt = DTERNAL;
+            dt = adt == DTERNAL ? bdt : adt;
+            //dt = DTERNAL;
             //dt = choose(adt, bdt, aProp, nar.random());
-            //dt = (adt == DTERNAL) ? bdt : adt;
 
         } else {
             dt = merge(adt, bdt, aProp, nar);
@@ -173,12 +172,14 @@ public class Revision {
         return Tense.dither(dt, nar);
     }
 
-    /** merge delta */
+    /**
+     * merge delta
+     */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
         if (adt >= 0 == bdt >= 0) { //same sign
             int delta = Math.abs(adt - bdt);
             int min = Math.min(Math.abs(adt), Math.abs(bdt));
-            float ratio = ((float)delta)/min;
+            float ratio = ((float) delta) / min;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
 
 
@@ -212,12 +213,13 @@ public class Revision {
 //        return dt;
 //    }
 
-//    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
+    //    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
 //        return (rng.nextFloat() < aProp) ? a : b;
 //    }
     static int choose(int a, int b, float aProp, /*@NotNull*/ Random rng) {
         return rng.nextFloat() < aProp ? a : b;
     }
+
     static long choose(long a, long b, float aProp, /*@NotNull*/ Random rng) {
         return rng.nextFloat() < aProp ? a : b;
     }
@@ -303,7 +305,6 @@ public class Revision {
         Task t = Task.tryTask(T.term, punc, cTruth, (c, tr) -> {
 
 
-
                     return new NALTask(c, punc,
                             tr,
                             nar.time(), start, end,
@@ -357,49 +358,59 @@ public class Revision {
         float d = 0;
 
         boolean aSubsEqualsBSubs = aa.equals(bb);
-        if (a.op() == CONJ && !aSubsEqualsBSubs) {
+//        if (a.op() == CONJ && !aSubsEqualsBSubs) {
+//
+//            Conj c = new Conj();
+//            String as = Conj.sequenceString(a, c).toString();
+//            String bs = Conj.sequenceString(b, c).toString();
+//
+//            int levDist = Texts.levenshteinDistance(as, bs);
+//            float seqDiff = (float) levDist / Math.min(as.length(), bs.length());
+//
+//
+//            float rangeDiff = Math.max(1f, Math.abs(a.dtRange() - b.dtRange()));
+//
+//            d += (1f + rangeDiff) * (1f + seqDiff);
+//
+//            return Float.POSITIVE_INFINITY;
+//
+//        } else {
+        if (!aSubsEqualsBSubs) {
+            if (aa.subs() != bb.subs())
+                return Float.POSITIVE_INFINITY;
 
-            Conj c = new Conj();
-            String as = Conj.sequenceString(a, c).toString();
-            String bs = Conj.sequenceString(b, c).toString();
-
-            int levDist = Texts.levenshteinDistance(as, bs);
-            float seqDiff = (float) levDist / Math.min(as.length(), bs.length());
-
-
-            float rangeDiff = Math.max(1f, Math.abs(a.dtRange() - b.dtRange()));
-
-            d += (1f + rangeDiff) * (1f + seqDiff);
+            for (int i = 0; i < len; i++) {
+                float dx = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+                if (!Float.isFinite(dx))
+                    return Float.POSITIVE_INFINITY;
+                d += dx;
+            }
 
         } else {
-            if (!aSubsEqualsBSubs) {
-                if (aa.subs() != bb.subs())
-                    return Float.POSITIVE_INFINITY;
 
-                for (int i = 0; i < len; i++)
-                    d += dtDiff(aa.sub(i), bb.sub(i), depth + 1);
-            } else {
+            int adt = a.dt();
+            int bdt = b.dt();
+            if (adt != bdt) {
+                if (adt == XTERNAL || bdt == XTERNAL) {
+                    //zero, match
+                    d += Float.MIN_NORMAL;
+                } else {
 
-                int adt = a.dt();
-                int bdt = b.dt();
-                if (adt != bdt) {
-                    if (adt == XTERNAL || bdt == XTERNAL) {
-                        //zero, match
+                    boolean ad = adt == DTERNAL;
+                    boolean bd = bdt == DTERNAL;
+                    if (!ad && !bd) {
+                        float range = Math.min(Math.abs(adt), Math.abs(bdt));
+                        int delta = Math.abs(Math.abs(adt) - Math.abs(bdt));
+                        d += (delta / range);
                     } else {
-
-                        boolean ad = adt == DTERNAL;
-                        boolean bd = bdt == DTERNAL;
-                        if (!ad && !bd)
-                            d += Math.abs(adt - bdt);
-                        else if (adt == DTERNAL)
-                            d += 1f + Math.abs(bdt) / 2f; //one is dternal the other is not, record at least some difference
-                        else if (bdt == DTERNAL)
-                            d += 1f + Math.abs(adt) / 2f; //one is dternal the other is not, record at least some difference
+                        int range = Math.abs(ad ? b.dt() : a.dt());
+                        d += 1f / range; //one is dternal the other is not, record at least some difference (1 time unit)
                     }
                 }
-
             }
+
         }
+
 
         return d / depth;
     }

@@ -18,7 +18,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
     /** try to use the FloatRank if a scoring function can be interrupted */
     @Deprecated public TopN(X[] target, FloatFunction<X> rank) {
-        this(target, FloatRank.from(rank));
+        this(target, FloatRank.the(rank));
     }
 
     public TopN(X[] target, FloatRank<X> rank) {
