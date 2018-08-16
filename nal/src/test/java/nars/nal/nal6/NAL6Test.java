@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1000;
+    private static final int cycles = 800;
 
     @BeforeEach
     void setup() {
@@ -27,7 +27,7 @@ public class NAL6Test extends NALTest {
     protected NAR nar() {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(18);
-        n.confMin.set(0.2f);
+        n.confMin.set(0.3f);
         return n;
     }
 
@@ -551,10 +551,11 @@ public class NAL6Test extends NALTest {
     void second_variable_introduction_induction() {
 
         TestNAR tester = test;
+        test.nar.termVolumeMax.set(14);
 
         tester.believe("(open($1,lock1) ==> key:$1)");
         tester.believe("open(lock,lock1)");
-        tester.mustBelieve(cycles*2,
+        tester.mustBelieve(cycles,
                 "((open(lock,#1) && open($2,#1)) ==> key:$2)",
                 1.00f, 0.81f);
 
@@ -891,16 +892,17 @@ public class NAL6Test extends NALTest {
 
 
     @Test
-    void recursionSmall() throws nars.Narsese.NarseseException {
+    void recursionSmall() {
 
+        test.nar.termVolumeMax.set(10);
 
         test
                 .believe("num:x", 1.0f, 0.9f)
                 .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
                 //.ask("num(((x)))")
                 .mustBelieve(cycles, "num(x)", 1.0f, 1.0f, 0.81f, 1.0f)
-                .mustBelieve(cycles*2, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
-                .mustBelieve(cycles*3, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
+                .mustBelieve(cycles, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
+                .mustBelieve(cycles*2, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
 
 
         ;

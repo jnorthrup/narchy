@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.Op.False;
+import static nars.Op.Null;
 import static nars.term.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -440,9 +440,9 @@ public class TemporalTermTest {
     @Test
     void testDiffOfTemporalConj() {
         Term x = $$("((x&|y)~(y &&+1 x))");
-        assertEquals(False, x); 
+        assertEquals(Null, x);
         Term xNeg = $$("(--(x&|y)~(y &&+1 x))");
-        assertEquals(False, xNeg); 
+        assertEquals(Null, xNeg);
 
     }
     @Test

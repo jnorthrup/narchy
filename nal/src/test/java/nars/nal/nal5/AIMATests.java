@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.io.SparkLine;
 import nars.*;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -63,8 +64,9 @@ class AIMATests {
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(13);
+        n.termVolumeMax.set(16);
         n.freqResolution.set((float) truthRes);
+//        n.confMin.set(0.02f);
 
         n.believe("(P ==> Q)",
                 "((L && M) ==> P)",
@@ -82,15 +84,16 @@ class AIMATests {
     void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.25f);
+        n.freqResolution.set(0.1f);
         n.confMin.set(0.1f);
 
         //n.activateConceptRate.set(0.5f);
 //        n.beliefPriDefault.set(0.3f);
-        n.questionPriDefault.set(0.55f);
+        n.beliefPriDefault.set(0.25f);
+        n.questionPriDefault.set(0.99f);
 
-        n.termVolumeMax.set(28);
-//        n.log();
+        n.termVolumeMax.set(22);
+       // n.log();
 
 
         n.believe(
@@ -106,18 +109,22 @@ class AIMATests {
         );
 
 
-        n.question($.$(
-                //"Criminal:?x"
-                "Criminal(?x)"
+        @Nullable Task Q = n.question($.$(
+                "Criminal:?x"
+                //"Criminal(?x)"
 
         ), ETERNAL, (q, a) -> {
             System.out.println(a);
         });
 
+        n.run(1);
+        n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
+        n.concept("Criminal").print();
 
         n.run(7000);
 //        n.synch();
 
+        n.concept(Q).print();
 
         Task y = n.belief($.$("Criminal(West)"));
         assertNotNull(y);

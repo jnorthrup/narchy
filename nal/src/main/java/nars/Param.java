@@ -43,7 +43,7 @@ public abstract class Param {
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
-            8;
+           8;
 
     public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 5;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
@@ -64,13 +64,13 @@ public abstract class Param {
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-//    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
     /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
     public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;

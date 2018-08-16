@@ -160,7 +160,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         boolean _truth = truth;
         Term ct = t.term();
 
-        if (!ct.hasAny(Op.AtomicConstants))
+        if (!ct.hasAny(Op.AtomicConstant))
             return; 
 
         beliefs.computeIfAbsent(ct, (pp) -> {

@@ -89,7 +89,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     static final String VERSION = "NARchy v?.?";
     static final int FILE_STREAM_BUFFER_SIZE = 16 * 1024;
-    private static final Set<String> loggedEvents = Set.of("eventTask");
+    private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
     public final Exec exe;
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();

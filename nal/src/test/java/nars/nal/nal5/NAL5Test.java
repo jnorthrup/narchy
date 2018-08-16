@@ -799,5 +799,51 @@ public class NAL5Test extends NALTest {
     }
 
 
+    @Test public void testImplSubjQuestioned() {
+        test
+                .input("(x ==> y)?")
+                .mustQuestion(cycles, "x")
+                .mustQuestion(cycles, "y")
+        ;
+    }
+    @Test public void testImplNegSubjQuestioned() {
+        test
+                .input("(--x ==> y)?")
+                .mustQuestion(cycles, "x")
+                .mustQuestion(cycles, "y")
+        ;
+    }
+    @Test public void testImplConjSubjQuestioned() {
+        test
+                .input("((a && b) ==> y)?")
+                .mustQuestion(cycles, "(a && b)")
+        ;
+    }
+
+    @Test public void testAnonymousAbduction() {
+        test
+                .believe("(x ==> #1)")
+                .mustBelieve(cycles, "x", 1f, 0.45f)
+        ;
+    }
+    @Test public void testAnonymousAbductionNeg() {
+        test
+                .believe("(--x ==> #1)")
+                .mustBelieve(cycles, "x", 0f, 0.45f)
+        ;
+    }
+    @Test public void testAnonymousDeduction() {
+        test
+                .believe("(#1 ==> x)")
+                .mustBelieve(cycles, "x", 1f, 0.81f)
+        ;
+    }
+    @Test public void testAnonymousDeductionNeg() {
+        test
+                .believe("(#1 ==> --x)")
+                .mustBelieve(cycles, "x", 0f, 0.81f)
+        ;
+    }
+
 }
 

@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
+import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -136,7 +137,7 @@ public class FZero extends NAgentX {
             return r;
         });
 
-        reward("noCollide", ()->Util.equals(FZeroGame.FULL_POWER, fz.power, 1f) ? +1 : -1 ); //dont bump edges
+        reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
 
 //        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
 //                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);

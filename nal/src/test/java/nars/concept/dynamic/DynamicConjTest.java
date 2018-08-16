@@ -81,7 +81,10 @@ class DynamicConjTest {
             assertTrue(ttEte.toString().contains("((x-->a)&&(y-->a)). 0 %0.0;.90%"));
 
             Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
-            assertTrue($.t(0.00f, 0.90f).equalsIn(tNow, n), ()->"was " + tNow);
+            assertTrue(
+                    //$.t(0.00f, 0.90f)
+                    $.t(0.32f, 0.87f)
+                            .equalsIn(tNow, n), ()->"was " + tNow + " at " + now);
 
         }
         {

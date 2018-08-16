@@ -28,7 +28,7 @@ public abstract class DynamicTaskTable extends EmptyBeliefTable {
 
     @Override
     public void match(Answer t) {
-        t.accept(taskDynamic(t.time.start, t.time.end, t.template, ((Answer)t).nar ));
+        t.accept(taskDynamic(t.time.start, t.time.end, t.template, t.nar ));
     }
 
 

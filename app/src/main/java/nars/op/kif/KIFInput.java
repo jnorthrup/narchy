@@ -62,7 +62,7 @@ public class KIFInput {
         public Stream<Task> apply(InputStream i) {
             try {
                 return new KIFInput(i).beliefs.stream().map(b ->
-                        new CommandTask($.func(Op.BELIEF_TERM, b)));
+                        new CommandTask($.func(Op.Belief, b)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -90,7 +90,7 @@ public class KIFInput {
     
     
     private static final boolean includePredArgCounts = false;
-    private static final Set<Term> predExclusions = Set.of(
+    private static final Set<Term> predExclusions = java.util.Set.of(
             
             $$("UnaryPredicate"),
             $$("BinaryPredicate"),$$("TernaryPredicate"),
@@ -575,12 +575,12 @@ public class KIFInput {
 
         MutableSet<Term> aVars = new VarOnlySet();
         if (a instanceof Compound)
-            ((Compound) a).recurseTermsToSet(Op.VariableBits, aVars, true);
+            ((Compound) a).recurseTermsToSet(Op.Variable, aVars, true);
         else if (a.op().var)
             aVars.add(a);
         MutableSet<Term> bVars = new VarOnlySet();
         if (b instanceof Compound)
-            ((Compound) b).recurseTermsToSet(Op.VariableBits, bVars, true);
+            ((Compound) b).recurseTermsToSet(Op.Variable, bVars, true);
         else if (b.op().var)
             bVars.add(b);
 

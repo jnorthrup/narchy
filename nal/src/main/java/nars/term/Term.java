@@ -753,11 +753,5 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         }
     }
 
-    /** returns subterms transformed by the provided transform  */
-    default Subterms subterms(TermTransform termTransform) {
-        return subterms().transformSubs(termTransform);
-    }
-
-
 }
 

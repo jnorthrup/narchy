@@ -201,10 +201,10 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         //quick pre-test
         Subterms tt = t.subterms();
-        if (!tt.hasAny(Op.SectBits | Op.DiffBits | Op.PROD.bit))
+        if (!tt.hasAny(Op.Sect | Op.Diff | Op.PROD.bit))
             return null;
 
-        if ((tt.OR(s -> s.isAny(Op.SectBits | Op.DiffBits)))) {
+        if ((tt.OR(s -> s.isAny(Op.Sect | Op.Diff)))) {
 
 
             DynamicTruthModel dmt = null;

@@ -113,7 +113,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 Term decomposed = stmtCommon(!subjOrPred, superterm);
                 Op op = superterm.op();
 
-                if (decomposed.op().isAny(Op.SectBits)) {
+                if (decomposed.op().isAny(Op.Sect)) {
                     return decomposed.subterms().AND(
                             y -> each.accept(stmtDecompose(op, subjOrPred, y, common), start, end)
                     );

@@ -77,6 +77,7 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
+
         boolean belief = !(this instanceof QuestionTable);
         return Answer.relevance(belief, belief ? Answer.TASK_LIMIT : 1, start, end, template, null, nar)
                 .match(this).task();

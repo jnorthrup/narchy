@@ -12,11 +12,11 @@ import nars.The;
 import nars.subterm.util.DisposableTermList;
 import nars.subterm.util.TermList;
 import nars.term.*;
+import nars.term.util.transform.MapSubst;
+import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
-import nars.term.util.transform.MapSubst;
-import nars.term.util.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.set.MutableSet;
@@ -30,6 +30,8 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import static nars.Op.*;
 
 
 /**
@@ -86,7 +88,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int commonStructure = aa.structure() & bb.structure();
         if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.VariableBits);
+            commonStructure = commonStructure & ~(Op.Variable);
 
         if (commonStructure == 0)
             return false;
@@ -101,7 +103,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int commonStructure = a.structure() & b.structure();
         if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.VariableBits);
+            commonStructure = commonStructure & ~(Op.Variable);
 
         if (commonStructure == 0)
             return false;
@@ -797,16 +799,25 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
+    /** dont override */
+    @Nullable default /* final */ Subterms transformSubs(TermTransform f) {
+        return transformSubs(f, ATOM);
+    }
+
     /**
      * returns 'x' unchanged if no changes were applied,
      * returns 'y' if changes
      * returns null if untransformable
+     *
+     * superOp is optional (use ATOM as the super-op to disable its use),
+     * providing a hint about the target operator the subterms is being constructed for
+     * this allows certain fail-fast cases
      */
-    @Nullable
-    default Subterms transformSubs(TermTransform f) {
-        int s = subs();
+    default Subterms transformSubs(TermTransform f,  Op superOp) {
 
         TermList y = null;
+
+        int s = subs();
 
         for (int i = 0; i < s; i++) {
 
@@ -814,62 +825,70 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             Term yi = f.transform(xi);
 
-            if (yi == null)
+            if (yi == null || yi == Null)
                 return null;
 
+            //these fail-fast cases must be consistent with the term construction process.
+            //TODO add more
+            switch (superOp) {
+                case CONJ:
+                    //cant skip the True yet
+                    if (yi == False)
+                        return Op.FalseSubterm;
+                    break;
+                case IMPL:
+                    if (i==0 && yi == False)
+                        return null;
+                    break;
+//                case INH:
+//                case SIM:
+//                    //TODO when on 2nd term, compare with the first term (either from the source subterms, or the target if it was transformed)
+//                    //then it can tell if it reduces to True, False etc
+//                    break;
+            }
+
             if (yi instanceof EllipsisMatch) {
+
                 EllipsisMatch xe = (EllipsisMatch) yi;
                 int xes = xe.subs();
-
-                if (y == null) {
-                    y = new DisposableTermList(s - 1 + xes /*estimate */, i);
-                }
-
                 if (xes > 0) {
+                    if (y == null)
+                        y = new DisposableTermList(s - 1 + xes /*estimate */, i);
+                    else
+                        y.ensureExtraCapacity(xes);
+
                     for (int j = 0; j < xes; j++) {
                         @Nullable Term k = f.transform(xe.sub(j));
-                        if (k == null) {
+                        assert(!(k instanceof EllipsisMatch)): "recursive EllipsisMatch unsupported";
+                        if (k == null || k == Null) {
                             return null;
                         } else {
-                            y.add(k);
+                            y.addWithoutResizeCheck(k);
                         }
                     }
                 }
 
             } else {
 
-                if (xi != yi /*&& (yi.getClass() != xi.getClass() || !xi.equals(yi))*/) {
-
-//                    if (!(yi instanceof Functor) && xi.equals(yi))
-//                        System.err.println(xi + " " + yi);
-
-                    if (y == null) {
+                if (xi != yi) {
+                    if (y == null)
                         y = new DisposableTermList(s, i);
-                    }
                 }
 
                 if (y != null)
-                    y.add(yi);
+                    y.addWithoutResizeCheck(yi);
 
             }
 
         }
 
+
         if (y != null) {
-
-
-            int ys = y.size();
-            for (int i = 0; i < ys; i++) {
-                if (y.get(i) == null)
-                    y.set(i, sub(i));
-                else
-                    break; //stop at first non-null subterm
-            }
+            y.fillNullsWith(this);
             return y;
         } else
             return this;
     }
-
 
     default boolean these() {
         return AND(x -> x instanceof The);

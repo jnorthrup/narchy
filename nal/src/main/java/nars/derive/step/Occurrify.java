@@ -792,24 +792,24 @@ public class Occurrify extends TimeGraph {
                 return true;
             }
 
-//            if (o[0] < NOW && o[1] < NOW) {
-//
-//                int dur = d.dur;
-//
-//                if (d.concPunc == BELIEF || d.concPunc == GOAL) {
-//                    //starts and ends before now; entirely past
-//                    // shift and project to present, "as-if" past-perfect/subjunctive tense
-//
-//                    //discount for projection
-//                    long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
-//                    float eStartFactor = Param.evi(1, deltaT, dur);
-//                    if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
-//                        return false; //insufficient evidence
-//                }
-//
-//                o[0] = NOW;
-//                o[1] = NOW + rad; //allow only fixed time: benefit of the doubt
-//            }
+            if (o[0] < NOW && o[1] < NOW) {
+
+                int dur = d.dur;
+
+                if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+                    //starts and ends before now; entirely past
+                    // shift and project to present, "as-if" past-perfect/subjunctive tense
+
+                    //discount for projection
+                    long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
+                    float eStartFactor = Param.evi(1, deltaT, dur);
+                    if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
+                        return false; //insufficient evidence
+                }
+
+                o[0] = NOW;
+                o[1] = NOW + rad; //allow only fixed time: benefit of the doubt
+            }
 
             return true;
         }

@@ -31,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -224,14 +223,14 @@ public class TermTest {
             assertTrue(xy.isCommutative());
             assertEquals(xy, o.the(Y, X), () -> "commutivity failed for " + xy);
             assertEquals(xy, o.the(List.of(Y, X)), () -> "commutivity failed for " + xy);
-            assertEquals(xy, o.the(Set.of(Y, X)), () -> "commutivity failed for " + xy);
+            assertEquals(xy, o.the(java.util.Set.of(Y, X)), () -> "commutivity failed for " + xy);
 
             if (o.maxSubs > 2) {
                 Term xyz = o.the(X, Y, Z);
                 assertTrue(xy.isCommutative());
                 assertEquals(xyz, o.the(Y, X, Z), () -> "commutivity failed for " + xyz);
                 assertEquals(xyz, o.the(List.of(Y, X, Z)), () -> "commutivity failed for " + xyz);
-                assertEquals(xyz, o.the(Set.of(Y, X, Z)), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(java.util.Set.of(Y, X, Z)), () -> "commutivity failed for " + xyz);
                 assertEquals(xyz, o.the(X, Z, Y), () -> "commutivity failed for " + xyz);
                 assertEquals(xyz, o.the(X, Y, Z), () -> "commutivity failed for " + xyz);
                 assertEquals(xyz, o.the(Z, Y, X), () -> "commutivity failed for " + xyz);
@@ -241,7 +240,7 @@ public class TermTest {
                 Term wxyz = o.the(W, X, Y, Z);
                 assertEquals(wxyz, o.the(Y, W, X, Z), () -> "commutivity failed for " + wxyz);
                 assertEquals(wxyz, o.the(List.of(Y, W, X, Z)), () -> "commutivity failed for " + wxyz);
-                assertEquals(wxyz, o.the(Set.of(Y, W, X, Z)), () -> "commutivity failed for " + wxyz);
+                assertEquals(wxyz, o.the(java.util.Set.of(Y, W, X, Z)), () -> "commutivity failed for " + wxyz);
                 //TODO other permutes
             }
         });

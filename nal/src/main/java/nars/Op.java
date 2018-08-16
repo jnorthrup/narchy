@@ -318,6 +318,8 @@ public enum Op {
      */
     public static final Bool False = new Bool("false", (byte)0) {
 
+
+
         final int rankBoolFalse = Term.opX(BOOL, (short) 1);
 
         @Override
@@ -377,30 +379,31 @@ public enum Op {
             return True;
         }
     };
+
+    public static final int AtomicConstant = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
+
     public static final VarDep ImgInt = new ImDep((byte) 126, (byte) '\\');
     public static final VarDep ImgExt = new ImDep((byte) 127, (byte) '/');
-    public static final int DiffBits = Op.DIFFe.bit | Op.DIFFi.bit;
-    public static final int SectBits = or(Op.SECTe, Op.SECTi);
-    public static final int SetBits = or(Op.SETe, Op.SETi);
+    public static final int Diff = Op.DIFFe.bit | Op.DIFFi.bit;
+    public static final int Sect = or(Op.SECTe, Op.SECTi);
+    public static final int Set = or(Op.SETe, Op.SETi);
 
     /** events are defined as the non-conjunction sub-components of conjunctions, or the term itself if it is not a conj */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
+    public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
 
-    /** condition is defined as being either an event, or a pre/post condition of an implication */
-    public static final int Conditional = or(Op.CONJ, Op.IMPL);
-
-
-    public static final Atom BELIEF_TERM = (Atom) Atomic.the(String.valueOf((char) BELIEF));
-    public static final Atom GOAL_TERM = (Atom) Atomic.the(String.valueOf((char) GOAL));
-    public static final Atom QUESTION_TERM = (Atom) Atomic.the(String.valueOf((char) QUESTION));
-    public static final Atom QUEST_TERM = (Atom) Atomic.the(String.valueOf((char) QUEST));
-    public static final Atom QUE_TERM = (Atom) Atomic.the(String.valueOf((char) QUESTION) + (char) QUEST);
+    public static final Atom Belief = (Atom) Atomic.the(String.valueOf((char) BELIEF));
+    public static final Atom Goal = (Atom) Atomic.the(String.valueOf((char) GOAL));
+    public static final Atom Question = (Atom) Atomic.the(String.valueOf((char) QUESTION));
+    public static final Atom Quest = (Atom) Atomic.the(String.valueOf((char) QUEST));
+    public static final Atom Que = (Atom) Atomic.the(String.valueOf((char) QUESTION) + (char) QUEST);
 
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Term EmptyProduct = new CachedCompound.SimpleCachedCompoundWithBytes(Op.PROD, EmptySubterms);
-    public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1];
+
+
     static final ImmutableMap<String, Op> stringToOperator;
     /**
      * ops across which reflexivity of terms is allowed
@@ -419,11 +422,20 @@ public enum Op {
      */
     private static final int ANY_LEVEL = 0;
 //    public static final int InvalidImplicationSubj = or(IMPL);
+
+
     public static TermBuilder terms =
             //HeapTermBuilder.the;
             new InterningTermBuilder();
 
-    public static final int AtomicConstants = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
+
+
+    /** True wrapped in a subterm as the only element */
+    public static final Subterms TrueSubterm = Op.terms.subterms(True);
+
+    /** False wrapped in a subterm as the only element */
+    public static final Subterms FalseSubterm = Op.terms.subterms(False);
+
 
     static {
         for (Op o : Op.values()) {
@@ -534,7 +546,7 @@ public enum Op {
         this.minSubs = size.getOne();
         this.maxSubs = size.getTwo();
 
-        this.var = Set.of("$", "#", "?", "%").contains(str);
+        this.var = java.util.Set.of("$", "#", "?", "%").contains(str);
 
         boolean isImpl = str.equals("==>");
         this.statement = str.equals("-->") || isImpl || str.equals("<->");
@@ -547,7 +559,7 @@ public enum Op {
 
         this.bit = (1 << ordinal());
 
-        final Set<String> ATOMICS = Set.of(".", "+", "B");
+        final Set<String> ATOMICS = java.util.Set.of(".", "+", "B");
         this.atomic = var || ATOMICS.contains(str);
 
         boolean isBool = str.equals("B");

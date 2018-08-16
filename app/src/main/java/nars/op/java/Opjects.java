@@ -124,7 +124,7 @@ public class Opjects extends DefaultTermizer {
             new ConcurrentFastIteratingHashSet<>(new MethodExec[0]);
 
 
-    public static final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
+    public static final Set<String> methodExclusions = Sets.newConcurrentHashSet(java.util.Set.of(
             "hashCode",
             "notify",
             "notifyAll",

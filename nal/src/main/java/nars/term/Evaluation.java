@@ -288,6 +288,7 @@ public class Evaluation {
             if (yy[0] == null) {
                 yy[0] = new UnifiedSet<>(1);
             }
+            //TODO extract this to a 'wrap' method
             if (y instanceof Bool) {
                 if (y == True)
                     yy[0].add(x);
@@ -303,7 +304,7 @@ public class Evaluation {
         });
 
         Set z = yy[0];
-        return z == null ? Set.of(x) : yy[0];
+        return z == null ? java.util.Set.of(x) : yy[0];
     }
 
 

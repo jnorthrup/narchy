@@ -1,7 +1,6 @@
 package nars.link;
 
 import jcog.data.NumberX;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
@@ -51,9 +50,10 @@ public class Tasklinks {
         int nTargets = targets.size();
         assert(nTargets > 0);
 
-        float pEach = Math.max(ScalarValue.EPSILON,
-                priTransferred / nTargets
-        );
+//        float pEach = Math.max(ScalarValue.EPSILON,
+//                priTransferred / nTargets
+//        );
+        float pEach = priTransferred; //no division
 
         TaskLink.Tasklike tlSeed = tasklink.id;
 

@@ -417,7 +417,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     }
                 }
             } else {
-                if (x.hasAny(Op.VariableBits)) {
+                if (x.hasAny(Op.Variable)) {
                     Term X = uncompute(x, y);
                     if (X!=null) {
                         e.is(x, X);
@@ -497,7 +497,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     }
                 }
             } else {
-                if (x.hasAny(Op.VariableBits)) {
+                if (x.hasAny(Op.Variable)) {
                     Term X = uncompute(e, x, param, y);
                     if (X!=null) {
                         e.is(x, X);

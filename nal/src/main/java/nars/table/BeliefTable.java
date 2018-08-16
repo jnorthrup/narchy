@@ -73,7 +73,6 @@ public interface BeliefTable extends TaskTable {
     }
 
 
-    @Deprecated
     default Task match(long start, long end, Term template, NAR nar) {
         return match(start, end, template, null, nar);
     }

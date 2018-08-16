@@ -187,6 +187,8 @@ public interface Atomic extends Term {
                 return True;
             case "false":
                 return False;
+            case "null":
+                return Null;
             default:
                 if (isQuoteNecessary(id))
                     return $.quote(id);

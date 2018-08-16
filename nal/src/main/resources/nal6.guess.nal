@@ -18,9 +18,13 @@
 
 //conj/impl question reduction
 
-    (C ==> X), X, task("?"), is(C,"&&")   |- (dropAnyEvent(C) ==> X), (Punctuation:Question)
+    (A ==> B), B, task("?"), is(C,"&&")      |- A, (Punctuation:Question)
+    (A ==> B), A, task("?"), is(C,"&&")      |- B, (Punctuation:Question)
+      (--A ==> B), A, task("?"), is(C,"&&")  |- B, (Punctuation:Question)
+
     (X ==> C), X, task("?"), is(C,"&&")   |- (X ==> dropAnyEvent(C)), (Punctuation:Question)
-    (--C ==> X), X, task("?"), is(C,"&&") |- (dropAnyEvent(--C) ==> X), (Punctuation:Question)
+    (C ==> X), X, task("?"), is(C,"&&")   |- (dropAnyEvent(C) ==> X), (Punctuation:Question)
+      (--C ==> X), X, task("?"), is(C,"&&") |- (dropAnyEvent(--C) ==> X), (Punctuation:Question)
 
 
 //mutex induction from conjunction events

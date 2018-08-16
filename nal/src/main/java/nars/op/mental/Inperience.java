@@ -78,7 +78,7 @@ abstract public class Inperience extends LeakBack {
                 case CONJ:
 
                     if (Conj.concurrent(term.dt())) {
-                        return $.func(events, SETe.the(term.subterms().transformSubs(this)));
+                        return $.func(events, SETe.the(term.subterms().transformSubs(this, SETe)));
                     } else {
                         int dur = nar.dur();
                         List<Term> seq = new FasterList();

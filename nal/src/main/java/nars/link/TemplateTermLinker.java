@@ -20,8 +20,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static nars.Op.CONJ;
-import static nars.Op.SetBits;
+import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
 
 /** default general-purpose termlink template impl. for compound terms
@@ -113,9 +112,11 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             tc.add(x);
         }
 
-        maxDepth += extraDepth(depth, root, x);
+        boolean stopping = xo.atomic || !xo.conceptualizable;
+        if (!stopping)
+            maxDepth += deeper(depth, root, x);
 
-        if ((++depth >= maxDepth) || xo.atomic || !xo.conceptualizable)
+        if ((++depth >= maxDepth) || stopping)
             return;
 
         Subterms bb = x.subterms();
@@ -137,43 +138,50 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     }
 
     /** depth extensions */
-    private static int extraDepth(int depth, Term root, Term x) {
-        if (depth >= 1 && depth <= 2) {
-            Op xo = x.op();
-            switch (root.op()) {
-                case SIM:
-                    if (depth == 1 && x.isAny(
-                            //Op.SectBits | Op.SetBits | Op.DiffBits | Op.PROD.bit | Op.INH.bit
-                            Op.INH.bit
-                    ) && x.hasAny(Op.VAR_INDEP))
-                        return +1;
-//                    if (depth > 1 && !x.hasAny(Op.VAR_INDEP))
-//                        return -1;
-                    break;
-                case INH:
-                    if (depth == 1 && x.isAny(Op.SectBits | SetBits | Op.DiffBits | Op.PROD.bit ))
-                        return +1;
-                    break;
-                case CONJ:
-                    if (depth ==1 && (xo.statement && x.hasAny(Op.VAR_DEP)))
-                        return +1; //necessary for certain NAL6 unification cases
+    private static int deeper(int depth, Term root, Term x) {
+
+        if (depth < 1 || depth >= 4)
+            return 0; //no change
+
+        Op xo = x.op();
+        switch (root.op()) {
+            case SIM:
+            case INH:
+//                if (depth == 1 && x.isAny(Op.SectBits | SetBits | Op.DiffBits | PROD.bit ))
+//                    return +1;
+                if (depth ==1 && x.hasAny(Op.Variable))
+                    return +1;
+                break;
+            case CONJ:
+//                if (depth <=2 && xo.isAny(INH.bit | SETe.bit | SETi.bit | INH.bit) )
+                if (depth <=2 && x.hasAny(Op.Variable) )
+                    return +1;
+//                    return +1;
+//                    if (depth ==1 && (xo.statement && x.hasAny(Op.VAR_DEP)))
+//                        return +1; //necessary for certain NAL6 unification cases
 //                    if (depth > 1 && !x.hasAny(Op.VAR_DEP))
 //                        return -1; //event subterm without any var dep, dont actually recurse
-                    break;
-                case IMPL:
-                    if ( (xo.statement && x.hasAny(Op.VariableBits) ) || (depth == 1 && xo==CONJ))
-                        return +1;
-//                    if (depth > 1 && (!x.hasAny(Op.VariableBits) && xo!=CONJ))
+                break;
+            case IMPL:
+                if (depth >=1 && depth <=3 && ((x.hasAny(Op.Variable) || xo.isAny(  Op.CONJ.bit))))
+                    return +1;
+//                if (depth <=3 && xo.isAny(INH.bit | SETe.bit | SETi.bit | INH.bit) )
+//                    return +1;
+//                    if (depth == 1 && (xo.statement && x.hasAny(Op.VariableBits) ) )
+//                        return +1;
+//                    if (depth > 1 && (!xo.isAny(CONJ.bit | SETe.bit | SETi.bit | PROD.bit)) && !x.hasAny(Op.VariableBits))
 //                        return -1;
+//                    if (depth >= 1 && depth <= 2 && xo.isAny(CONJ.bit | SETe.bit | SETi.bit | PROD.bit | INH.bit))
+//                        return +1;
 
 //                    if (depth ==1 && (xo ==CONJ || (xo.statement)))
 //                        return +1;
 //                    if (depth > 1 && !x.hasAny(Op.VAR_INDEP))
 //                        return -1;
 
-                    break;
-            }
+                break;
         }
+
         return 0;
     }
 
@@ -219,11 +227,10 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             }
 
             case IMPL:
-//                if (x./*subterms().*/hasAny(Op.CONJ.bit)) {
-//                    if (x.hasAny(Op.INH.bit))
-//                        return 4;
-//                    else
-                        return 2;
+//                if (x./*subterms().*/hasAny(Op.CONJ.bit))
+//                    return 3;
+//                else
+                    return 2;
 //                }
 
 

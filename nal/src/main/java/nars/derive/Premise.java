@@ -71,7 +71,7 @@ public class Premise {
      */
     final static int var =
             //Op.VAR_QUERY.bit;
-              Op.VariableBits; //all
+              Op.Variable; //all
 
 
     /**

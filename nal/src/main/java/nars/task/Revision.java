@@ -181,7 +181,7 @@ public class Revision {
         /*if (adt >= 0 == bdt >= 0)*/ { //require same sign ?
             int delta = Math.abs(adt - bdt);
             int range = Math.min(Math.abs(adt), Math.abs(bdt));
-            float ratio = ((float) delta) / range;
+            float ratio = ((float) delta) / (1+range);
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
                 return Util.lerp(aProp, bdt, adt);
             }
@@ -394,10 +394,10 @@ public class Revision {
                     if (!ad && !bd) {
                         int range = Math.min(Math.abs(adt), Math.abs(bdt));
                         float delta = Math.abs(Math.abs(adt - bdt));
-                        d += (delta / range);
+                        d += (delta / (1+range));
                     } else {
                         int range = Math.abs(ad ? b.dt() : a.dt());
-                        d += 1f / range; //one is dternal the other is not, record at least some difference (1 time unit)
+                        d += 1f / (1+range); //one is dternal the other is not, record at least some difference (1 time unit)
                     }
                 }
             }

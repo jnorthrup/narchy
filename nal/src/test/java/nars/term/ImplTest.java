@@ -42,6 +42,7 @@ public class ImplTest {
         assertEq("(( &&+- ,b,c,d) ==>+- b)", $$("((c &&+5 (b&|d)) ==>-10 b)").concept());
     }
 
+
     @Test
     void testReducibleImplFactored2() {
         assertEq("((x&&y)==>z)", "((y && x) ==> (y && z))");

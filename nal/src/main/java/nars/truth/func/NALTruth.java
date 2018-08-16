@@ -371,6 +371,15 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+    @SinglePremise @AllowOverlap
+    StructuralAbduction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+
+            return Abduction.apply($.t(1f, confDefault(m)), T, m, minConf);
+        }
+    },
+
     @AllowOverlap
     BeliefStructuralAbduction() {
         @Override

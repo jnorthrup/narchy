@@ -405,29 +405,28 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public boolean add(X newItem) {
-        if (this.items.length == this.size) {
-            this.ensureCapacityForAdd();
-        }
+        ensureExtraCapacity(1);
         addWithoutResizeCheck(newItem);
         return true;
     }
 
     public int addAndGetSize(X newItem) {
-        int s;
-        if (this.items.length == (s = this.size)) {
-            this.ensureCapacityForAdd();
-        }
+        ensureExtraCapacity(1);
         addWithoutResizeCheck(newItem);
-        return s + 1;
+        return size;
     }
 
-    private void ensureCapacityForAdd() {
-        this.items = (X[]) (
-                (this.items.length == 0) ?
-                        newArray(INITIAL_SIZE_IF_GROWING_FROM_EMPTY)
-                        :
-                        this.copyItemsWithNewCapacity(sizePlusFiftyPercent(this.size))
-        );
+    public void ensureExtraCapacity(int num) {
+        X[] ii = this.items;
+        int s = 0, l = ii.length;
+        if (l == 0 || (l < ((s = this.size)+num))) {
+            this.items = (X[]) (
+                    (l == 0) ?
+                            newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
+                            :
+                            this.copyItemsWithNewCapacity(sizePlusFiftyPercent(s+num))
+            );
+        }
     }
 
     private Object[] copyItemsWithNewCapacity(int newCapacity) {
@@ -693,6 +692,7 @@ public class FasterList<X> extends FastList<X> {
     public void setSize(int s) {
         this.size = s;
     }
+
 
 
     /**

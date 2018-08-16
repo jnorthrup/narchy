@@ -111,4 +111,16 @@ public class TermList extends FasterList<Term> implements Subterms {
         return new Term[newCapacity];
     }
 
+    public void fillNullsWith(Subterms src) {
+        int ys = size();
+
+        Term[] ii = items;
+        for (int i = 0; i < ys; i++) {
+            if (ii[i] == null) {
+                ii[i] = src.sub(i);
+            } else
+                break; //stop at first non-null subterm
+        }
+    }
+
 }

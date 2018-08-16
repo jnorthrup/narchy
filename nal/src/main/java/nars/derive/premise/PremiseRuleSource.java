@@ -296,7 +296,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                 case "notSet":
                     /** deprecated soon */
-                    matchNot(X, new TermMatch.Is(Op.SetBits));
+                    matchNot(X, new TermMatch.Is(Op.Set));
                     break;
 
 
@@ -861,9 +861,9 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
         DoublePremiseRequired(boolean ifBelief, boolean ifGoal, boolean ifQuestionOrQuest) {
             super($.func(key,
-                    ifBelief ? Op.BELIEF_TERM : Op.EmptyProduct,
-                    ifGoal ? Op.GOAL_TERM : Op.EmptyProduct,
-                    ifQuestionOrQuest ? Op.QUE_TERM : Op.EmptyProduct));
+                    ifBelief ? Op.Belief : Op.EmptyProduct,
+                    ifGoal ? Op.Goal : Op.EmptyProduct,
+                    ifQuestionOrQuest ? Op.Que : Op.EmptyProduct));
             this.ifBelief = ifBelief;
             this.ifGoal = ifGoal;
             this.ifQuestionOrQuest = ifQuestionOrQuest;

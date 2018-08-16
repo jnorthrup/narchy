@@ -81,7 +81,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         this.random = random;
         this.type = type;
-        this.typeBits = type == null ? Op.VariableBits : type.bit;
+        this.typeBits = type == null ? Op.Variable : type.bit;
 
         this.xy = new ConstrainedVersionMap(this, termMap);
     }

@@ -13,6 +13,7 @@ import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
+import nars.table.question.HijackQuestionTable;
 import nars.table.question.QuestionTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
@@ -94,7 +95,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     public QuestionTable questionTable(Term term, boolean questionOrQuest) {
         Op o = term.op();
         if (questionOrQuest ? o.beliefable : o.goalable) {
-            return new QuestionTable.HijackQuestionTable(0, 3);
+            return new HijackQuestionTable(0, 3);
         } else {
             return QuestionTable.Empty;
         }

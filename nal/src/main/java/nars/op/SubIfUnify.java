@@ -127,7 +127,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         } else {
 
             boolean tryUnify =
-                    (op == null && x.hasAny(Op.VariableBits))
+                    (op == null && x.hasAny(Op.Variable))
                             ||
                             (op != null && x.hasAny(op));
 

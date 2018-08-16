@@ -39,11 +39,14 @@ public class Statement {
                 return Null;
             //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
             //TODO valid cases where subj has impl?
-            if (subject.hasAny(IMPL))
-                return Null;
 
             switch (predicate.op()) {
                 case BOOL:
+                    //reduce to the subject as a general condition for the superclass to utilize
+                    if (predicate == True)
+                        return subject;
+                    if (predicate == False)
+                        return subject.neg();
                     return Null;
                 case NEG:
                     return statement(IMPL, dt, subject, predicate.unneg(), builder).neg();//recurse
@@ -57,6 +60,9 @@ public class Statement {
                     return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1), builder); //recurse
                 }
             }
+
+            if (subject.hasAny(IMPL))
+                return Null;
 
 
 
