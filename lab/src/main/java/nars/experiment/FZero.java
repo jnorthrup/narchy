@@ -17,7 +17,6 @@ import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
-import nars.video.CameraSensorView;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -31,7 +30,7 @@ import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
 import static nars.Op.INH;
-import static nars.agent.FrameTrigger.durs;
+import static nars.agent.FrameTrigger.fps;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -41,7 +40,7 @@ public class FZero extends NAgentX {
 
     public static final double DRAG = 0.98;
     private final FZeroGame fz;
-    public final Bitmap2DSensor<Scale> c;
+    public Bitmap2DSensor<Scale> c;
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
@@ -55,25 +54,25 @@ public class FZero extends NAgentX {
 
     public FZero(NAR n) {
         super("fz",
-                //fps(fps/2),
-                durs(1),
+                fps(fps),
                 n);
 
 
         this.fz = new FZeroGame();
 
 
-        c = senseCamera($.func("cam", id), new Scale(() -> fz.image,
+        Scale vision = new Scale(() -> fz.image,
                 20, 16
                 //8, 8
-
-
-        )/*.blur()*/);//.diff()
+        );
+        onFrame(()->vision.update());
+        vision.update();
+        //c = senseCamera($.func("cam", id), vision/*.blur()*/);//.diff()
                 //.resolution(0.05f);
                 ;
 
         int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), c.src, nx, nx, (subX, subY) -> {
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), vision, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y*/};
         }, 8, this);
         camAE.alpha(0.05f);
@@ -85,15 +84,13 @@ public class FZero extends NAgentX {
 
         GoalActionConcept F = initUnipolarLinear(5f);
         BiPolarAction A =
-                //initBipolarRotateDirect(false, 0.9f);
-
-
-                initBipolarRotateRelative(false, 1f);
+                //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
-                //initBipolarRotateDirect(true, 0.5f);
+                //initBipolarRotateDirect(false, 0.9f);
+                initBipolarRotateDirect(false, 0.5f);
 
         window(new Gridding(
-                new CameraSensorView(c, this).withControls(),
+                //new CameraSensorView(c, this).withControls(),
                 NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
 

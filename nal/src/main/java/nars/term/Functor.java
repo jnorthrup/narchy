@@ -579,7 +579,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     Term XY = compute(e, x, y);
                     if (XY==null || XY.equals(xy)) {
                         
-                        return True;
+                        return null; //true, keep
                     } else {
                         
                         return False;

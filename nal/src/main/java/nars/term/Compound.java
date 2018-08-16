@@ -727,6 +727,8 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean equalsRoot(Term x) {
         if (this.equals(x))
             return true;
+        if (!x.hasAny(Op.Temporal))
+            return false;
 
         
         if (

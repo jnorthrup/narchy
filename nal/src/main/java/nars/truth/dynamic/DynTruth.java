@@ -175,8 +175,9 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
 
                 } else {
-                    long[] u = //Tense.union(this.array());
-                            Tense.intersection(this.array());
+                    long[] u =
+                            Tense.union(this.array());
+                            //Tense.intersection(this.array());
                     start = u[0];
                     end = u[1];
                 }

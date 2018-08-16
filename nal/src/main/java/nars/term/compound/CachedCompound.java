@@ -46,7 +46,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
 
         @Override
         public boolean equalsRoot(Term x) {
-            return x instanceof SimpleCachedCompound ? equals(x) : equals(x.root());
+            return x instanceof SimpleCachedCompound ? equals(x) : (!x.hasAny(Op.Temporal) ? false : equals(x.root()));
         }
 
         @Override

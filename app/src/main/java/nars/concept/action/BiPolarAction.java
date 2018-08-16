@@ -21,6 +21,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Float.MIN_NORMAL;
 import static nars.Op.BELIEF;
 import static nars.Op.PROD;
 import static nars.agent.NAct.NEG;
@@ -155,6 +156,7 @@ public class BiPolarAction extends AbstractSensor {
         final FloatAveraged fp = new FloatAveraged(0.99f, true);
         /** adjustable q- lowpass filters */
         final FloatAveraged fn = new FloatAveraged(0.99f, true);
+        private boolean normalize = false;
 
         public DefaultPolarization(boolean fair, NSense s) {
             this.fair = fair;
@@ -175,20 +177,26 @@ public class BiPolarAction extends AbstractSensor {
             if (nq!=nq) ng = latch ? fn.floatValue() : 0;
             else ng = fn.valueOf(nq);
 
+            float pe = c(pos), ne = c(neg);
+            float eMax = Math.max(pe, ne);
+
+            //TODO make as an adaptive AGC
+            if (normalize && eMax > MIN_NORMAL) {
+                pe/=eMax;
+                ne/=eMax;
+            }
 
             float x = (pg - ng);
 
             //System.out.println(pg + "|" + ng + "=" + x);
 
             if (fair) {
-                float pe = c(pos), ne = c(neg);
-                float cMax = Math.max(pe, ne);
-                float cMin = Math.min(pe, ne);
-                float coherence = (cMax > Float.MIN_NORMAL) ? cMin / cMax : 0;
+                float eMin = Math.min(pe, ne);
+                float coherence = (eMax > MIN_NORMAL) ? eMin / eMax : 0;
 
-                assert(coherence <= 1f): "strange coherence=" + coherence;
+//                assert(coherence <= 1f): "strange coherence=" + coherence;
 
-                x = Util.lerp(coherenceRange, coherence * x, x);
+                x = Util.lerp(coherence, 0, coherenceRange) * x;
 
 
             }
@@ -211,7 +219,7 @@ public class BiPolarAction extends AbstractSensor {
 
         /** confidence/evidence strength.  could be truth conf or evidence, zero if null. used in determining coherence */
         public float c(Truth t) {
-            return t != null ? t.conf() : 0;
+            return t != null ? t.evi() : 0;
         }
 
         /** "Q" desire/value function. produces the scalar summary of the goal truth desire that will be

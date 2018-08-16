@@ -63,8 +63,8 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+//    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
@@ -73,9 +73,10 @@ public abstract class Param {
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
 
     /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
-    public static final float ETERNAL_DERIVE_TO_PRESENT_RADIUS_DURS = 1;
+    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
 
     public static final int EVALUATION_TTL = 32;
+//    public static final int EVALUATION_MAX_TERMUTATORS = 8;
 
 //    /**
 //     * warning: can interfere with expected test results

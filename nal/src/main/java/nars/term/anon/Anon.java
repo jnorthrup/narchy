@@ -1,6 +1,7 @@
 package nars.term.anon;
 
 import jcog.WTF;
+import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -80,18 +81,18 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
 
     void validate(Term x, Term y, boolean putOrGet) {
 
-        //if (Param.DEBUG) {
-        if (!validateLock.compareAndSet(false,true))
-            return;
-        try {
+        if (Param.DEBUG) {
+            if (!validateLock.compareAndSet(false, true))
+                return;
+            try {
 
 //            if (termToId.isEmpty() || idToTerm.isEmpty())
 //                throw new WTF("termToId is empty: " + x + " -> " + y);
 
-            if (y.op() != x.op())
-                throw new WTF("anon changed op: " + x + " -> " + y);
-            if (y.volume() != x.volume())
-                throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
+                if (y.op() != x.op())
+                    throw new WTF("anon changed op: " + x + " -> " + y);
+                if (y.volume() != x.volume())
+                    throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
 
 
 //            if (putOrGet) {
@@ -106,10 +107,10 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
 //                    throw new WTF("invalid get:\n\t" + x + "\n\t" + y + "\n\t" + z);
 //
 //            }
-        } finally {
-            validateLock.set(false);
+            } finally {
+                validateLock.set(false);
+            }
         }
-        //}
     }
 
 

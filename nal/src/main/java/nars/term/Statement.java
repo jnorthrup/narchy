@@ -142,6 +142,9 @@ public class Statement {
 
 
         } else if (op == SIM) {
+            if (subject instanceof Bool || predicate instanceof Bool) {
+
+            }
             if (subject.compareTo(predicate) > 0) {
                 //swap order
                 Term x = predicate;

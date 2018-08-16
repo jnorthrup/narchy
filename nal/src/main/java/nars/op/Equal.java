@@ -54,18 +54,18 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
                     e.is(x, y);
                     //return True;
                 }
-                return null;
             } else {
                 if (e != null) {
                     e.is(y, x);
                     //return True;
                 }
-                return null;
             }
+            return null;
+        } else if (xVar && yVar) {
+            return null;
+        } else {
+            return False;
         }
-
-
-        return super.apply2(e, x, y);
     }
 
 

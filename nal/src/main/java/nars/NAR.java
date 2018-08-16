@@ -590,8 +590,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 Task t = (Task) v;
                 long now = time();
                 return
-                        (past && t.isBefore(now)) ||
-                                (present && t.isAfter(now)) ||
+                        (past && t.endsBefore(now)) ||
+                                (present && t.startsAfter(now)) ||
                                 (future && t.isDuring(now));
             }
             return false;

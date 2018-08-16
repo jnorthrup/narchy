@@ -57,25 +57,21 @@ public interface LongInterval {
     /**
      * if starts after the given time
      */
-    default boolean isAfter(long when) {
-        return isAfter(when, 0);
-    }
-
-    default boolean isAfter(long when, int margin) {
-        long e = start();
-        return e == ETERNAL || e - margin > when;
+    default boolean startsAfter(long when) {
+        long s = start();
+        return s == ETERNAL || s > when;
     }
 
     /**
      * if ends before the specified time
      */
-    default boolean isBefore(long when) {
-        return isBefore(when, 0);
-    }
-
-    default boolean isBefore(long when, int margin) {
+    default boolean endsBefore(long when) {
         long e = end();
-        return e == ETERNAL || e + margin < when;
+        return e == ETERNAL || e < when;
+    }
+    default boolean endsAfter(long when) {
+        long e = end();
+        return e == ETERNAL || e > when;
     }
 
     default boolean isDuringAny(long... when) {

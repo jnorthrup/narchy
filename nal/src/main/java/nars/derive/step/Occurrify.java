@@ -58,7 +58,7 @@ public class Occurrify extends TimeGraph {
 
     public static final TaskTimeMerge mergeDefault =
             //TaskTimeMerge.Intersect;
-            TaskTimeMerge.TaskImmediate;
+            TaskTimeMerge.Default;
 
 
     public static final ImmutableMap<Term, TaskTimeMerge> merge;
@@ -516,7 +516,7 @@ public class Occurrify extends TimeGraph {
          * Task Dominant. the belief's temporality is secondary, unless task is eternal and belief is temporal
          * modulating the task.
          */
-        TaskImmediate() {
+        Default() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
 
@@ -534,12 +534,25 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                Task t;
-                if (d.belief!=null && (d.task.isEternal() && !d.belief.isEternal()))
-                    t = d.belief;
-                else
-                    t = d.task;
-                return new long[]{t.start(), t.end()};
+                Task T = d._task;
+                Task B = d._belief;
+                long ts = d.taskStart;
+                long bs = d.beliefStart;
+                if (ts != ETERNAL && bs != ETERNAL) {
+                    if (d.concSingle || d.concPunc == GOAL)
+                        return new long[]{ ts, T.end()};
+
+                    //union
+                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                    return new long[]{i.a, i.b};
+                } else if (ts == ETERNAL && bs!=ETERNAL) {
+                    return new long[]{ bs, B.end()};
+                } else if (ts != ETERNAL && bs == ETERNAL) {
+                    return new long[]{ ts, T.end()};
+                } else {
+                    return new long[] { ETERNAL, ETERNAL };
+                }
+
             }
         },
 
@@ -710,7 +723,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                Longerval i = Longerval.union(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
+                Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
                 return new long[]{i.a, i.b};
             }
 
@@ -769,34 +782,34 @@ public class Occurrify extends TimeGraph {
 
             long NOW = d.time;
 
+            int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
             if (o[0] == ETERNAL) {
                 if (d.task.isEternal() && (d.belief == null || d.belief.isEternal()))
                     return true; //both task and belief are eternal; keep eternal
 
-                int rad = Math.round(d.dur * Param.ETERNAL_DERIVE_TO_PRESENT_RADIUS_DURS);
                 o[0] = NOW - rad;
                 o[1] = NOW + rad;
                 return true;
             }
 
-            if (o[0] < NOW && o[1] < NOW) {
-
-                int dur = d.dur;
-
-                if (d.concPunc == BELIEF || d.concPunc == GOAL) {
-                    //starts and ends before now; entirely past
-                    // shift and project to present, "as-if" past-perfect/subjunctive tense
-
-                    //discount for projection
-                    long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
-                    float eStartFactor = Param.evi(1, deltaT, dur);
-                    if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
-                        return false; //insufficient evidence
-                }
-
-                o[0] = Math.min(o[0], NOW - dur);
-                o[1] = Math.max(o[1], NOW + dur); //allow only fixed time: benefit of the doubt
-            }
+//            if (o[0] < NOW && o[1] < NOW) {
+//
+//                int dur = d.dur;
+//
+//                if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+//                    //starts and ends before now; entirely past
+//                    // shift and project to present, "as-if" past-perfect/subjunctive tense
+//
+//                    //discount for projection
+//                    long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
+//                    float eStartFactor = Param.evi(1, deltaT, dur);
+//                    if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
+//                        return false; //insufficient evidence
+//                }
+//
+//                o[0] = NOW;
+//                o[1] = NOW + rad; //allow only fixed time: benefit of the doubt
+//            }
 
             return true;
         }

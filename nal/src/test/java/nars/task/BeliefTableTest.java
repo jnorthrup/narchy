@@ -35,7 +35,7 @@ class BeliefTableTest {
         Task t = n.belief(cc, start, end);
         assertNotNull(t);
         assertEquals(start, t.start());
-        assertEquals(end, t.end());
+        assertEquals(end, t.end(), ()-> t + " but end should be: " + end + "\n" + t.proof());
     }
 
     private static float dtDiff(String x, String y) {
@@ -172,16 +172,17 @@ class BeliefTableTest {
         t.mustBelieve(5, "(x&|y)", 1f, 0.81f, s -> true  /* TODO test occ = 0..3 */);
         t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, s -> true  /* TODO test occ = 0..3 */);
         n.onTask(tt -> {
-            if (!tt.isInput() && tt.start() % 3 != 0 && tt.end() % 3 != 0 || tt.isBefore(0) || tt.isAfter(3))
+            if (!tt.isInput() && tt.start() % 3 != 0 && tt.end() % 3 != 0 || tt.endsBefore(0) || tt.startsAfter(3))
                 fail();
         });
         t.test();
     }
 
     @Test
-    void testTemporalIntersection() throws Narsese.NarseseException {
+    void testTemporalUnion() throws Narsese.NarseseException {
 
 
+        Param.DEBUG = true;
         NAR n = NARS.tmp();
 
         n.time.dur(2);
@@ -190,6 +191,7 @@ class BeliefTableTest {
         n.inputAt(a, "a:x. :|:");
         n.inputAt(b, "a:y. :|:");
         n.run(b + 1);
+
 
         for (String t : new String[]{"a:(x|y)", "a:(x&y)", "a:(x~y)", "a:(y~x)"}) {
             assertDuration(n, t, a, b);
@@ -295,9 +297,9 @@ class BeliefTableTest {
 
         float a52 = dtDiff("(x ==>+5 y)", "(x ==>+2 y)");
         float a54 = dtDiff("(x ==>+5 y)", "(x ==>+4 y)");
-        assertEquals(3, a52, 0.001f);
-        assertEquals(1, a54, 0.001f);
         assertTrue(a52 > a54);
+        assertEquals(1.5f, a52, 0.001f);
+        assertEquals(0.25f, a54, 0.001f);
     }
 
     @Test

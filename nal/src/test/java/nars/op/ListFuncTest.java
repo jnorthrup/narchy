@@ -4,14 +4,12 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.term.Evaluation;
-import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static nars.$.$$;
-import static nars.Op.False;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ListFuncTest {
@@ -141,7 +139,6 @@ class ListFuncTest {
     void testAppendHeadAndTailMulti3() {
         assertEquals(
                 Set.of(
-                        (Term)False,
                         $$("(append((),(x,y),(x,y)) && append((),(x,b),(x,b)))"),
                         $$("(append((x),(y),(x,y)) && append((x),(b),(x,b)))")
                 ),

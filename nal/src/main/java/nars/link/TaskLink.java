@@ -5,11 +5,9 @@ import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.table.BeliefTables;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -103,29 +101,29 @@ public interface TaskLink extends Priority, Termed {
 
                 task = c.table(punc).match(se[0], se[1], t, n);
                 if (task!=null) {
-                    byte punc = task.punc();
-                    //dynamic question answering
-                    Term taskTerm = task.term();
-                    if ((punc==QUESTION || punc == QUEST) && !taskTerm.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
-
-                        BeliefTables aa = (BeliefTables) c.tableAnswering(punc);
-                        /*@Nullable DynamicTaskTable aa = answers.tableFirst(DynamicTaskTable.class);
-                        if (aa!=null)*/ {
-
-                            //match an answer emulating a virtual self-termlink being matched during premise formation
-                            Task q = task;
-                            Task a = aa.answer(q.start(), q.end(), taskTerm, null, n);
-                            if (a != null) {
-
-
-
-                                //decrease tasklink too?
-
-                                q.onAnswered(a, n);
-                                n.input(a);
-                            }
-                        }
-                    }
+//                    byte punc = task.punc();
+//                    //dynamic question answering
+//                    Term taskTerm = task.term();
+//                    if ((punc==QUESTION || punc == QUEST) && !taskTerm.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
+//
+//                        BeliefTables aa = (BeliefTables) c.tableAnswering(punc);
+//                        /*@Nullable DynamicTaskTable aa = answers.tableFirst(DynamicTaskTable.class);
+//                        if (aa!=null)*/ {
+//
+//                            //match an answer emulating a virtual self-termlink being matched during premise formation
+//                            Task q = task;
+//                            Task a = aa.answer(q.start(), q.end(), taskTerm, null, n);
+//                            if (a != null) {
+//
+//
+//
+//                                //decrease tasklink too?
+//
+//                                q.onAnswered(a, n);
+//                                n.input(a);
+//                            }
+//                        }
+//                    }
 
                 }
 

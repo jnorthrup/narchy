@@ -1,5 +1,6 @@
 package nars.term;
 
+import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
@@ -16,7 +17,6 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
@@ -26,11 +26,13 @@ import static nars.Op.*;
 
 public class Evaluation {
 
-    private final Evaluables operations;
+
     private final Term term;
     private final Term x;
+    private final Predicate<Term> each;
+    private final Function<Term, Functor> resolver;
 
-    private List<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
+    private FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
 
     private Versioning v;
 
@@ -57,21 +59,76 @@ public class Evaluation {
 
     private Evaluation(Term x, Evaluables ops, Predicate<Term> each) {
         this.term = x;
-        this.operations = ops.sortDecreasingVolume();
         this.x = x;
+        this.each = each;
+        this.resolver = ops.resolver;
+
+        ops.sortDecreasingVolume();
+
+        eval(x,ops);
+    }
+
+    private void termute(Term y, Predicate<Term> each) {
+
+        int before = v.now();
+
+        if (termutator.size() == 1) {
+            Iterable<Predicate<VersionMap<Term, Term>>> t = termutator.get(0);
+            termutator.clear();
+            for (Predicate tt : t) {
+                if (tt.test(subst)) {
+                    Term z = y.replace(subst);
+                    //if (z!=y) {
+                        if (!each.test(z)) { //TODO check for new solvable sub-components
+                            break;
+                        }
+                    //}
+                }
+                v.revert(before);
+            }
+        } else {
+            CartesianIterator<Predicate<VersionMap<Term,Term>>> ci = new CartesianIterator<>(Predicate[]::new, termutator.toArray(Iterable[]::new));
+            termutator.clear();
+            nextProduct: while (ci.hasNext()) {
+
+                v.revert(before);
+
+                Predicate<VersionMap<Term,Term>>[] c = ci.next();
+
+                for (Predicate<VersionMap<Term,Term>> cc : c) {
+                    if (!cc.test(subst))
+                        break nextProduct;
+                }
+
+                //all components applied successfully
+
+                Term z = y.replace(subst);
+                if (z!=y) {
+                    Evaluables ez = new Evaluables(resolver).discover(z);
+                    if (!ez.isEmpty()) {
+                        eval(z, ez); //recurse
+                    } else {
+                        if (!each.test(z))
+                            return; //CUT
+                    }
+
+                }
+                //}
+            }
+        }
+    }
 
 
-//        int freeVariables = ops.vars.size();
-
-
+    private void eval(Term x, Evaluables ops) {
         //iterate until stable
         Term y = x, prev;
-        int vStart, tried;
+        int vStart, tried, mutStart;
         main:
         do {
             prev = y;
-            ListIterator<Term> ii = this.operations.listIterator();
+            ListIterator<Term> ii = ops.listIterator();
             vStart = now();
+            mutStart = termutators();
             tried = 0;
             while (ii.hasNext()) {
 
@@ -108,19 +165,20 @@ public class Evaluation {
                 }
 
                 Term z;
-                boolean substitutions;
+                boolean substAdded, mutAdded;
                 if (!removeEntry && eval) {
                     Functor func = (Functor) a.sub(1);
                     Subterms args = a.sub(0).subterms();
 
                     z = func.apply(this, args);
-                    substitutions = now() != vStart;
-                    if (z == null && substitutions) {
+                    substAdded = now() != vStart;
+                    mutAdded = mutStart != termutators();
+                    if (z == null && (substAdded||mutAdded)) {
                         removeEntry = true;
                     }
 
                 } else {
-                    substitutions = false;
+                    substAdded = mutAdded = false;
                     z = a;
                 }
 
@@ -129,14 +187,14 @@ public class Evaluation {
                 }
 
 
-                if ((z != null && z != a) || substitutions) {
+                if ((z != null && z != a) || substAdded) {
                     tried++;
 
 
                     if (z != null) {
                         y = y.replace(a, z);
                     }
-                    if (substitutions) {
+                    if (substAdded) {
                         y = y.replace(subst);
                     }
 
@@ -151,7 +209,7 @@ public class Evaluation {
                         } else
                             p = o;
 
-                        if (substitutions) {
+                        if (substAdded) {
                             q = p.replace(subst);
                             if (p != q && !Functor.isFunc(q))
                                 return Null;
@@ -180,15 +238,17 @@ public class Evaluation {
 
         assert (y != null);
 
-
         //if termutators, collect all results. otherwise 'cur' is the only result to return
-        /*if (!termutator.isEmpty()) {
-            throw new TODO();
-        } else */
-        {
+        int ts = termutators();
+        if (ts > 0) {
+            termute(y, each);
+        } else {
             each.test(y);
         }
+    }
 
+    private int termutators() {
+        return termutator!=null ? termutator.size() : 0;
     }
 
     private int now() {
@@ -251,7 +311,7 @@ public class Evaluation {
         if (v == null) {
             v = new Versioning<>(Param.UnificationStackMax, Param.EVALUATION_TTL);
             subst = new VersionMap<>(v);
-            termutator = new FasterList<>(1);
+            termutator = new FasterList(1);
         }
     }
 
