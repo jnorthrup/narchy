@@ -162,8 +162,7 @@ public class SetFunc {
                     if (missing.size() == 1) {
                         Term[] xxx = xx.terms((n, xs) -> xs.op().var);
                         if (xxx.length == 1) {
-                            e.is(xxx[0], missing.get(0));
-                            return null;
+                            return e.is(xxx[0], missing.get(0)) ? null : Null;
                         }
                     }
                 }

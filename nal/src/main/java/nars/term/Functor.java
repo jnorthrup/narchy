@@ -410,8 +410,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(x);
                     if (XY!=null) {
-                        e.is(y, XY);
-                        return null;
+                        return e.is(y, XY) ?
+                                null : Null;
                     } else {
                         return null; 
                     }
@@ -420,8 +420,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 if (x.hasAny(Op.Variable)) {
                     Term X = uncompute(x, y);
                     if (X!=null) {
-                        e.is(x, X);
-                        return null;
+                        return e.is(x, X) ?
+                            null : Null;
                     } else {
                         return null; 
                     }
@@ -431,12 +431,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     if (XY == null)
                         return null;  
                     else if (XY.equals(y)) {
-                        
-                        
                         return True;
                     } else {
                         
-                        return False;
+                        return Null;
                     }
                 }
             }
@@ -490,8 +488,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(x, param);
                     if (XY!=null) {
-                        e.is(y, XY);
-                        return null;
+                        return e.is(y, XY) ? null : Null;
                     } else {
                         return null; 
                     }
@@ -500,8 +497,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 if (x.hasAny(Op.Variable)) {
                     Term X = uncompute(e, x, param, y);
                     if (X!=null) {
-                        e.is(x, X);
-                        return null;
+                        return e.is(x, X) ? null : Null;
                     } else {
                         return null; 
                     }
@@ -511,7 +507,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     if (XY==null) {
                         return null; 
                     } else {
-                        return XY.equals(y) ? True  : False;
+                        return XY.equals(y) ? True  : Null;
                     }
                 }
             }
@@ -563,8 +559,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(e, x, y);
                     if (XY!=null) {
-                        e.is(xy, XY);
-                        return null;
+                        return e.is(xy, XY) ? null : Null;
                     } else {
                         return null; 
                     }
@@ -577,12 +572,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else if (!yVar && !xVar) {
                     
                     Term XY = compute(e, x, y);
-                    if (XY==null || XY.equals(xy)) {
+                    assert(XY!=null);
+                    if (XY.equals(xy)) {
                         
                         return null; //true, keep
                     } else {
                         
-                        return False;
+                        return Null;
                     }
                 } else {
                     return computeFromXY(e, x, y, xy);
@@ -608,10 +604,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
             super(atom);
         }
 
+
         @Override
         protected Term apply2(Evaluation e, Term x, Term y) {
-            if (!(x.op()==INT && y.op()==INT) && x.compareTo(y) > 0) {
-                return $.func((Atomic) term(), y, x);
+            if (x.compareTo(y) > 0) {
+                //return $.func((Atomic) term(), y, x);
+                Term z = x;
+                x = y;
+                y = z;
             }
 
             return super.apply2(e, x, y);

@@ -171,8 +171,7 @@ public enum MathFunc { ;
 
                 Term X = uncompute(XY, Y);
 
-                e.is(x, X);
-                return null;
+                return e.is(x, X) ? null : Null;
             }
             return null; 
         }

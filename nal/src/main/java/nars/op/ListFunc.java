@@ -75,23 +75,9 @@ public enum ListFunc {
 
             int l = xy.subs();
             if (l == 0) {
-                e.is(
-                        x, Op.EmptyProduct,
-                        y, Op.EmptyProduct
-                );
-                return null;
+                return e.is(x, Op.EmptyProduct,y, Op.EmptyProduct) ? null : Null;
             } else if (l == 1) {
-                e.is(
-
-                                x, Op.EmptyProduct,
-                                y, xy
-                );
-                e.is(
-
-                                x, xy,
-                                y, Op.EmptyProduct
-                );
-                return null;
+                return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : Null;
             } else {
                 Subterms xys = xy.subterms();
 
@@ -123,18 +109,13 @@ public enum ListFunc {
             if (remainderLength >= 0) {
                 if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
                     if (remainderLength == 0) {
-                        e.is(x, Op.EmptyProduct);
-                        return null;
+                        return e.is(x, Op.EmptyProduct) ? null : Null;
                     } else {
-                        e.is(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys)));
-                        return null;
+                        return e.is(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys))) ? null : Null;
                     }
                 }
             }
-            return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
-                    null
-                    :
-                    Null;
+            return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Null;
         }
 
         @Override
@@ -152,18 +133,13 @@ public enum ListFunc {
                 if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
 
                     if (remainderLength == 0) {
-                        e.is(y, Op.EmptyProduct);
-                        return null;
+                        return e.is(y, Op.EmptyProduct) ? null : Null;
                     } else {
-                        e.is(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs)));
-                        return null;
+                        return e.is(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Null;
                     }
                 }
             }
-            return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
-                    null
-                    :
-                    Null;
+            return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Null;
         }
     };
 

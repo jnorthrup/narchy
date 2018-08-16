@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 
 import static nars.$.$$;
-import static nars.Op.False;
+import static nars.Op.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** arithmetic operators and arithmetic introduction tests */
@@ -85,7 +85,7 @@ class ArithmeticTest {
 
     @Test
     void testContradictionResultsInFalse() {
-        assertEval(False, "(add(1,1,#2) && add(#2,1,1))");
+        assertEval(Null, "(add(1,1,#2) && add(#2,1,1))");
     }
 
     static void assertEval(Term out, String in) {

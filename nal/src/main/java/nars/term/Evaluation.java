@@ -47,7 +47,7 @@ public class Evaluation {
 
     @Nullable
     public static Evaluation eval(Term x, Function<Term, Functor> resolver, Predicate<Term> each) {
-        if (possiblyNeedsEval(x)) {
+        if (canEval(x)) {
             Evaluables y = new Evaluables(resolver).discover(x);
             if (!y.isEmpty())
                 return new Evaluation(x, y, each);
@@ -68,7 +68,7 @@ public class Evaluation {
         eval(x,ops);
     }
 
-    private void termute(Term y, Predicate<Term> each) {
+    private boolean termute(Term y, Predicate<Term> each) {
 
         int before = v.now();
 
@@ -80,7 +80,7 @@ public class Evaluation {
                     Term z = y.replace(subst);
                     //if (z!=y) {
                         if (!each.test(z)) { //TODO check for new solvable sub-components
-                            break;
+                            return false;
                         }
                     //}
                 }
@@ -104,22 +104,22 @@ public class Evaluation {
 
                 Term z = y.replace(subst);
                 if (z!=y) {
-                    Evaluables ez = new Evaluables(resolver).discover(z);
-                    if (!ez.isEmpty()) {
+                    Evaluables ez;
+                    if (canEval(z) && !(ez = new Evaluables(resolver).discover(z)).isEmpty()) {
                         eval(z, ez); //recurse
                     } else {
                         if (!each.test(z))
-                            return; //CUT
+                            return false; //CUT
                     }
 
                 }
-                //}
             }
         }
+        return true;
     }
 
 
-    private void eval(Term x, Evaluables ops) {
+    private boolean eval(Term x, Evaluables ops) {
         //iterate until stable
         Term y = x, prev;
         int vStart, tried, mutStart;
@@ -171,9 +171,12 @@ public class Evaluation {
                     Subterms args = a.sub(0).subterms();
 
                     z = func.apply(this, args);
+                    if (z == Null) {
+                        return each.test(Null);
+                    }
                     substAdded = now() != vStart;
                     mutAdded = mutStart != termutators();
-                    if (z == null && (substAdded||mutAdded)) {
+                    if ((z == null && (substAdded||mutAdded)) || (z == True)) {
                         removeEntry = true;
                     }
 
@@ -241,10 +244,14 @@ public class Evaluation {
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         int ts = termutators();
         if (ts > 0) {
-            termute(y, each);
+            return termute(y, each);
         } else {
-            each.test(y);
+            if (y!=Null) {
+                if (!each.test(y))
+                    return false;
+            }
         }
+        return true;
     }
 
     private int termutators() {
@@ -272,6 +279,10 @@ public class Evaluation {
     public static Term solveFirst(Term x, NAR n) {
         Term[] y = new Term[1];
         Evaluation.eval(x, n, (what) -> {
+            if (what instanceof Bool) {
+                if (y[0]!=null)
+                    return true; //ignore and continue try to find a non-bool solution
+            }
             y[0] = what;
             return false;
         });
@@ -292,9 +303,9 @@ public class Evaluation {
             if (y instanceof Bool) {
                 if (y == True)
                     yy[0].add(x);
-                else if (y == False)
-                    yy[0].add(x.neg());
-                else {
+                else if (y == False) {
+                    //yy[0].add(x.neg());
+                } else {
                     //Null, but continue..
                 }
             } else {
@@ -527,6 +538,7 @@ public class Evaluation {
 
     /**
      * OR, forked
+     * TODO limit when # termutators exceed limit
      */
     public void isAny(Collection<Predicate<VersionMap<Term, Term>>> r) {
         ensureReady();
@@ -538,7 +550,7 @@ public class Evaluation {
     }
 
 
-    private static boolean possiblyNeedsEval(Term x) {
+    private static boolean canEval(Term x) {
         return x.hasAll(Op.FuncBits);
     }
 

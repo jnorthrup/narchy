@@ -419,8 +419,8 @@
     (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
     (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
 
-    Y, (&&,X,A..+)      |- subIfUnifiesAny((&&,  X,A..+),X,Y), (Belief:Deduction, Goal:DesireWeak)
-    Y, (&&,--X,A..+)     |- subIfUnifiesAny((&&,--X,A..+),X,Y), (Belief:DeductionN, Goal:DesireWeakN)
+    Y, (&&,X,A..+)      |- subIfUnifiesAny((&&,  X,A..+),X,Y), (Belief:Deduction)
+    Y, (&&,--X,A..+)     |- subIfUnifiesAny((&&,--X,A..+),X,Y), (Belief:DeductionN)
 
 //Anonymous Deduction and Abduction
     (#1 ==> X), X         |- X, (Belief:StructuralReduction)
