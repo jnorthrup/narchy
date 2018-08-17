@@ -465,11 +465,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         }
 
         Term apply1(Term x, Term parameter) {
-            if (x.op().var)
-                return null; 
-            else {
-                return compute(x, parameter); 
-            }
+            return !x.op().var ? compute(x, parameter) : null;
         }
 
         protected abstract Term compute(Term x, Term parameter);
@@ -504,10 +500,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     
                     Term XY = compute(x, param);
-                    if (XY==null) {
-                        return null; 
-                    } else {
+                    if (XY != null) {
                         return XY.equals(y) ? True  : Null;
+                    } else {
+                        return null;
                     }
                 }
             }

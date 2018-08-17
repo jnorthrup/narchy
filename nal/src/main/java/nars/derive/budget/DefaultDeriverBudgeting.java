@@ -49,17 +49,19 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     float factorComplexity(Task t, Derivation d) {
         float pCompl = d.parentComplexitySum;
         float dCompl = t.voluplexity();
-        float penalty = 1; //base penalty (relative to parent complexity)
         float relGrowthCostFactor =
                 //pCompl / (pCompl + dCompl);
-                1f / (1f + (penalty + Math.max(0, (dCompl - pCompl))) / pCompl);
+                //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);
+                1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
+                //1f-Util.unitize((dCompl - pCompl) / pCompl );
+
 
         return (float) Math.pow(relGrowthCostFactor, relGrowthExponent.floatValue());
     }
 
     float factorPolarity(Truth derivedTruth) {
         float polarity = derivedTruth.polarity();
-        return 1f - ((1f - polarity) * polarityImportance.floatValue());
+        return Util.lerp(polarity, 1f - polarityImportance.floatValue(), 1f);
     }
 
     float factorConfidence(Truth derivedTruth, Derivation d) {
@@ -69,9 +71,9 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             float pConf = w2cSafe(pEvi);
             float dConf = derivedTruth.conf();
 
-            float confLossFactor = Util.unitize((pConf - dConf) / pConf);
+            float confLossFactor = 1f-Util.unitize((pConf - dConf) / pConf);
 
-            return Util.lerp(confImportance.floatValue(), 1, confLossFactor);
+            return Util.lerp(confLossFactor, 1f-confImportance.floatValue(), 1);
         }
 
         throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");

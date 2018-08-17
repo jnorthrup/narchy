@@ -74,19 +74,13 @@ public class NAL4MultistepTest extends NALTest {
 
         TestNAR tester = test;
         
-        
-        tester.believe("<sky --> blue>",1.0f,0.9f); 
-        tester.believe("<tom --> cat>",1.0f,0.9f); 
-        tester.believe("<(tom,sky) --> likes>",1.0f,0.9f); 
 
-
-
-        tester.ask("<(cat,blue) --> likes>"); 
-        
-        
-
-
-        tester.mustBelieve(time, "<(cat,blue) --> likes>", 1.0f, 0.45f); 
+        test.nar.termVolumeMax.set(10);
+        tester.believe("blue:sky",1.0f,0.9f);
+        tester.believe("cat:tom",1.0f,0.9f);
+        tester.believe("likes(tom,sky)",1.0f,0.9f);
+        tester.ask("likes(cat,blue)");
+        tester.mustBelieve(time, "likes(cat,blue)", 1.0f, 0.45f);
 
     }
 

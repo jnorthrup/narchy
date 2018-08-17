@@ -136,8 +136,10 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (taskOrJustTruth) {
 
             Term content = superterm.get();
-            if (content == null)
-                throw new NullPointerException("template is null; missing information how to build");
+            if (content == null) {
+                //throw new NullPointerException("template is null; missing information how to build");
+                return null;
+            }
 
             Op op = content.op();
             if (op == NEG) {

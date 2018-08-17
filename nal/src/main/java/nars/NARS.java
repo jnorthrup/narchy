@@ -188,8 +188,8 @@ public class NARS {
                         ),
                         //beliefs tmp
                         curve(Concept::volume,
-                                1, 96,
-                                8,32,
+                                1, 72,
+                                8,48,
                                 16, 16
                         ),
                         //goals ete
@@ -200,8 +200,8 @@ public class NARS {
                         ),
                         //goals tmp
                         curve(Concept::volume,
-                                1, 96,
-                                8,32,
+                                1, 72,
+                                8,48,
                                 16, 16
                         ),
                         //questions
@@ -218,17 +218,17 @@ public class NARS {
                         ),
                         //termlinks
                         curve(Concept::volume,
-                                1, 32,
-                                8,24,
-                                24,12,
-                                48,8
+                                1, 48,
+                                8,32,
+                                24,24,
+                                48,16
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 32,
-                                8,24,
-                                24,12,
-                                48,8
+                                1, 48,
+                                8,32,
+                                24,24,
+                                48,16
                         ))
         );
 

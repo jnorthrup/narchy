@@ -45,7 +45,7 @@ public abstract class Param {
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
-           8;
+           16;
 
     public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 5;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
@@ -55,7 +55,7 @@ public abstract class Param {
 
     /** auto decompose conjunction beliefs and goals on input */
     public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = false;
-    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = true;
+    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = false;
 
     /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
      *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
@@ -208,9 +208,9 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, 0, TTL_MIN * 16);
-    public final IntRange subUnifyTTLMax = new IntRange( 2, 1, 64);
-    public final IntRange matchTTL = new IntRange(2, 1, 16);
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 64);
+    public final IntRange matchTTL = new IntRange(8, 1, 16);
 
     /**
      * extends the time all unit tests are allowed to run for.

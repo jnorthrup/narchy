@@ -6,16 +6,16 @@
     (I --> P), X, is(P,"*"), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?") |- imageInt((I-->P),X), (Punctuation:Question)
     (I --> P), X, is(P,"*"), --subOf(P,\), subsMin(P,2), subOf(P,X), task("@") |- imageInt((I-->P),X), (Punctuation:Quest)
 
-//raw image question
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X) |- imageExt((P-->?1),X), (Belief:Identity, Goal:Identity)
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X), task("?") |- imageExt((P-->?1),X), (Punctuation:Question)
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X), task("@") |- imageExt((P-->?1),X), (Punctuation:Quest)
+
 
 //image structural transform reverse
 (X --> P), X, is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
-    //in(P,"#") is a hack to detect / or \
+    (X --> P), X, task("?"), is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Punctuation:Question)
+    (X --> P), X, task("@"), is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Punctuation:Quest)
 (P --> X), X, is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
-    //in(P,"#") is a hack to detect / or \
+    (P --> X), X, task("?"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Punctuation:Question)
+    (P --> X), X, task("@"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Punctuation:Quest)
+
 
 //TODO int
 
