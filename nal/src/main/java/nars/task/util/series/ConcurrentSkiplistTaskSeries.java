@@ -122,7 +122,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
     }
 
     @Override
-    public T add(Term term, byte punc, long nextStart, long nextEnd, Truth next, int dur, NAR nar) {
+    public T add(Truth next, long nextStart, long nextEnd, int dur, Term term, byte punc, NAR nar) {
 
         T nextT = null;
 
@@ -133,25 +133,33 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
             T last = lastEntry.getValue();
             //lastEntryKey = lastEntry.getKey();
             long lastStart = last.start();
-            if (lastStart > nextStart)
+            long lastEnd = last.end();
+            if (lastEnd > nextStart)
                 return null;
 
-            long lastEnd = last.end();
             double gapDurs = ((double)(nextStart - lastEnd)) / dur;
             if (gapDurs <= stretchDurs()) {
 
-                //start new task segment
-                nextStart = lastEnd + 1; //stretch behind to meet previous since it is within range
-
-                double stretchDurs = ((double)(nextStart - lastStart)) / dur;
+                double stretchDurs = ((double)(nextEnd - lastStart)) / dur;
                 if (stretchDurs <= latchDur()) {
                     Truth lastEnds = last.truth(lastEnd, dur);
                     if (lastEnds.equals(next)) {
-
-                        nextStart = lastStart; //start from even further, the last task's start
-                        last.setEnd(nextStart);
+                        //stretch
+                        last.setEnd(nextEnd);
+                        return last;
                     }
                 }
+
+                //form new task either because the value changed, or because the latch duration was exceeded
+                long mid = (lastEnd + nextStart)/2L;
+                assert(mid >= lastEnd): lastEnd + " " + mid + " "+ nextStart;
+                last.setEnd(mid);
+                nextStart = mid+1; //start the new task directly after the midpoint between its start and the end of the last task
+                nextEnd = Math.max(nextStart, nextEnd);
+
+            } else {
+                //form new task at the specified interval, regardless of the previous task since it was excessively long ago
+                //TODO maybe grow the previous task half a gap duration
             }
 
         }

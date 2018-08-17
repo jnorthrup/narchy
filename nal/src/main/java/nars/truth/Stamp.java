@@ -26,6 +26,7 @@ import jcog.WTF;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
+import nars.Task;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
@@ -145,11 +146,14 @@ public interface Stamp {
         return new LongHashSet(task.stamp()).toImmutable();
     }
 
-
-
-
-
-
+    static LongHashSet toSet(int capacity, Task... t) {
+        LongHashSet e = new LongHashSet(capacity);
+        for (Task tt : t) {
+            for (long ss : tt.stamp())
+                e.add(ss);
+        }
+        return e;
+    }
 
 
     boolean isCyclic();

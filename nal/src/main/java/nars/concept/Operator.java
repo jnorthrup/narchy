@@ -1,6 +1,7 @@
 package nars.concept;
 
 import nars.*;
+import nars.concept.util.ConceptBuilder;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
@@ -8,7 +9,6 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.concept.util.ConceptBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 

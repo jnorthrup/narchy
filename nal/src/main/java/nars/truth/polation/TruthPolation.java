@@ -107,51 +107,79 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
     public final TruthPolation filtered() {
-        filterCyclic(false);
+        return filtered(null);
+    }
+
+    public final TruthPolation filtered(@Nullable Task against) {
+        filterCyclic(against, false);
         return this;
+    }
+
+    @Nullable public final LongSet filterCyclic(boolean provideStampIfOneTask) {
+        return filterCyclic(null, provideStampIfOneTask);
     }
 
     /**
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
      */
-    @Nullable public final LongSet filterCyclic(boolean provideStampForOneTask) {
+    @Nullable public final LongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
         filter();
 
         int s = size();
+        if (s == 0)
+            return null;
 
-        if (s > 1) {
-            sortThisByFloat(tc -> -tc.evi);
+        sortThisByFloat(tc -> -tc.evi);
 
+        if (selected == null)
+            selected = get(0).task; //strongest
 
-            if (s == 2) {
-
-                if (Stamp.overlapsAny(get(0).task.stamp(), get(1).task.stamp())) {
-                    remove(1);
-                    s = size();
+        if (s == 2) {
+            Task a = get(0).task;
+            Task b = get(1).task;
+            long[] as = a.stamp();
+            long[] bs = b.stamp();
+            if (Stamp.overlapsAny(as, bs)) {
+                if (a == selected) remove(1); else remove(0);
+                return (provideStamp ? Stamp.toSet(selected) : null);
+            } else {
+                if (provideStamp) {
+                    return Stamp.toSet(as.length + bs.length, a, b);
+                } else {
+                    return null;
                 }
             }
+        } else {
+
+            LongHashSet e = Stamp.toSet(s * Param.STAMP_CAPACITY/2, selected);
+
+            Task theSelected = selected;
+            removeIf(tc -> {
+                Task tt = tc.task;
+                if (tt == theSelected)
+                    return false; //skip and keep
+
+                long[] stamp = tt.stamp();
+                for (int i = 0, stampLength = stamp.length; i < stampLength; i++) {
+                    long ss = stamp[i];
+                    if (!e.add(ss)) {
+                        //remove any contributed unique stamp components added for this task that overlaps
+                        if (i > 0) {
+                            for (int j = 0; j < i; j++) {
+                                boolean removed = e.remove(stamp[j]);
+                                assert(removed);
+                            }
+                        }
+                        return true;
+                    }
+                }
+
+                return false;
+            });
+
+            return provideStamp ? e : null;
         }
-
-        if (s == 1)
-            return provideStampForOneTask ? Stamp.toSet(get(0).task) : null;
-
-
-        LongHashSet e = new LongHashSet(s * 4);
-        removeIf(tc -> {
-            long[] stamp = tc.task.stamp();
-
-
-            for (long ss : stamp) {
-                if (!e.add(ss))
-                    return true;
-            }
-
-
-            return false;
-        });
-
-        return e;
     }
 
 

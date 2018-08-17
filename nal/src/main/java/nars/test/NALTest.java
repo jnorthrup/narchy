@@ -2,7 +2,6 @@ package nars.test;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;

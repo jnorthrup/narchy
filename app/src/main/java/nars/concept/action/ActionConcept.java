@@ -7,7 +7,6 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
-import nars.control.proto.Remember;
 import nars.link.TermLinker;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;

@@ -11,7 +11,6 @@ package alice.tuprologx.pj.model;
 
 import alice.tuprologx.pj.annotations.Termifiable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Vector;
 /**

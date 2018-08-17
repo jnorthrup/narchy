@@ -3,7 +3,6 @@ package nars.agent;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;

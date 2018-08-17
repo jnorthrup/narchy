@@ -12,6 +12,7 @@ import nars.The;
 import nars.subterm.util.DisposableTermList;
 import nars.subterm.util.TermList;
 import nars.term.*;
+import nars.term.Variable;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;

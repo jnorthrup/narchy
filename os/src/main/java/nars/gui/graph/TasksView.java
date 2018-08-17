@@ -1,7 +1,9 @@
 package nars.gui.graph;
 
 import com.jogamp.opengl.GL2;
-import nars.*;
+import nars.NAR;
+import nars.NARS;
+import nars.Task;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Scale;

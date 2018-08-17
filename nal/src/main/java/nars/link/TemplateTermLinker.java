@@ -20,7 +20,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
 import static nars.time.Tense.XTERNAL;
 
 /** default general-purpose termlink template impl. for compound terms

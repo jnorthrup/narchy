@@ -29,9 +29,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.WTF.WTF;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 

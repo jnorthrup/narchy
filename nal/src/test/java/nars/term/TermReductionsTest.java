@@ -12,9 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.*;
 import static nars.Op.*;
-import static nars.term.TermTest.assertEq;
-import static nars.term.TermTest.assertValid;
-import static nars.term.TermTest.assertValidTermValidConceptInvalidTaskContent;
+import static nars.term.TermTest.*;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 

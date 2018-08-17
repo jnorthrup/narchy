@@ -71,7 +71,7 @@ public class Premise {
      */
     final static int var =
             //Op.VAR_QUERY.bit;
-              Op.Variable; //all
+            Op.Variable; //all
 
 
     /**
@@ -153,51 +153,44 @@ public class Premise {
 
     @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
 
-
         NAR n = d.nar;
 
-
         Concept beliefConcept = beliefTerm.op().conceptualizable ?
-                n.conceptualize(beliefTerm)
-                :
-                null;
+                    n.concept(beliefTerm)
+                    //n.conceptualize(beliefTerm)
+                    //n.conceptualizeDynamic(beliefTerm)
+                    :
+                    null;
 
-        if (beliefConcept != null) {
-            if (beliefConcept instanceof AliasConcept) {
-                beliefConcept = ((AliasConcept) beliefConcept).abbr;
-                beliefTerm = beliefConcept.term();
-            }
+        if (beliefConcept == null)
+            return null;
 
+        if (beliefConcept instanceof AliasConcept)
+            beliefTerm = (beliefConcept = ((AliasConcept) beliefConcept).abbr).term(); //dereference alias
 
-            if (beliefConcept instanceof TaskConcept) {
+        if (!(beliefConcept instanceof TaskConcept))
+            return null;
 
-                final BeliefTable bb = beliefConcept.beliefs();
+        Task belief = null;
 
+        final BeliefTable bb = beliefConcept.beliefs();
+        if (bb.isEmpty())
+            return null;
 
+        if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest())
+            belief = tryAnswerQuestionTask(d, beliefTerm, beliefConcept, bb, n);
 
-                Task belief = null;
-
-                if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest()) {
-                    belief = tryAnswerQuestionTask(d, beliefTerm, n, beliefConcept, bb);
-                }
-
-                if (belief == null && !bb.isEmpty()) {
-                    return tryMatch(d, beliefTerm, n, bb);
-                }
-            }
-
-
-        }
+        if (belief == null)
+            belief = tryMatch(d, beliefTerm, bb, n);
 
 //        if (unifiedBelief && belief!=null) {
 //            linkVariable(unifiedBelief, d.nar, beliefConcept);
 //        }
 
-        return null;
+        return belief;
     }
 
-    @Nullable
-    private Task tryMatch(Derivation d, Term beliefTerm, NAR n, BeliefTable bb) {
+    private Task tryMatch(Derivation d, Term beliefTerm, BeliefTable bb, NAR n) {
         long[] focus = timeFocus(d, beliefTerm);
 
         Predicate<Task> beliefFilter = beliefFilter();
@@ -206,7 +199,7 @@ public class Premise {
         //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
         Task match = Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, n)
                 .match(bb)
-                .task(false,false,  false);
+                .task(false, true, false);
 
         return match;
     }
@@ -220,7 +213,7 @@ public class Premise {
 
     }
 
-    private Task tryAnswerQuestionTask(Derivation d, Term beliefTerm, NAR n, Concept beliefConcept, BeliefTable bb) {
+    private Task tryAnswerQuestionTask(Derivation d, Term beliefTerm, Concept beliefConcept, BeliefTable bb, NAR n) {
         final BeliefTable answerTable =
                 (task.isQuest()) ?
                         beliefConcept.goals() :
@@ -229,9 +222,9 @@ public class Premise {
         if (!answerTable.isEmpty()) {
 
             Task match =
-                Answer.relevance(true, task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
-                        .ditherTruth(true)
-                        .match(answerTable).task(true, true, true);
+                    Answer.relevance(true, task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
+                            .ditherTruth(true)
+                            .match(answerTable).task(true, true, true);
 
 //            if (!validMatch(match))
 //                match = null;

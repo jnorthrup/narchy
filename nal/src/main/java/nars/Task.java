@@ -13,6 +13,7 @@ import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.*;
+import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.var.VarIndep;
 import nars.time.Tense;

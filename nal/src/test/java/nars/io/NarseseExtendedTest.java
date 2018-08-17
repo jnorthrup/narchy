@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.Op.False;
-import static nars.Op.Null;
-import static nars.Op.True;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.Present;
 import static org.junit.jupiter.api.Assertions.*;

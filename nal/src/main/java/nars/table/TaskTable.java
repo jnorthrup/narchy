@@ -6,8 +6,10 @@ import nars.control.proto.Remember;
 import nars.table.question.QuestionTable;
 import nars.task.util.Answer;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
@@ -71,17 +73,23 @@ public interface TaskTable {
         forEachTask(m);
     }
 
-    @Deprecated
-    default Task match(long start, long end, Term template, NAR nar) {
-
-        if (isEmpty())
-            return null;
-
-
-        boolean belief = !(this instanceof QuestionTable);
-        return Answer.relevance(belief, belief ? Answer.TASK_LIMIT : 1, start, end, template, null, nar)
-                .match(this).task(true, true , false);
+    @Nullable default Task match(long when, Term template, NAR nar) {
+        return match(when, when, template, nar);
     }
+    @Nullable default Task match(long start, long end, Term template, NAR nar) { return match(start, end, template, null, nar); }
+    @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+        return !isEmpty() ? Answer.relevance(!(this instanceof QuestionTable), Answer.TASK_LIMIT, start, end, template, filter, nar)
+                .match(this).task(false, true, false) : null;
+    }
+
+    @Nullable default Task answer(long start, long end, Term template, NAR n) {
+        return answer(start, end, template, null, n);
+    }
+    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
+        return !isEmpty() ? Answer.relevance(!(this instanceof QuestionTable), Answer.TASK_LIMIT, start, end, template, filter, n).
+                match(this).task(true, true, true) : null;
+    }
+
 
     @Deprecated
     default Task sample(long start, long end, Term template, NAR nar) {
@@ -89,8 +97,8 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
-        boolean belief = !(this instanceof QuestionTable);
-        return Answer.relevance(belief, Answer.TASK_LIMIT, start, end, template, null, nar)
+        return Answer.relevance(!(this instanceof QuestionTable),
+                Answer.TASK_LIMIT, start, end, template, null, nar)
                 .match(this).task(false, false, false);
     }
 }

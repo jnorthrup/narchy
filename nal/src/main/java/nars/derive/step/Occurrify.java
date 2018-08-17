@@ -12,9 +12,9 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
+import nars.term.util.Image;
 import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -696,10 +697,10 @@ public class Occurrify extends TimeGraph {
                     return new long[]{d.beliefStart, d.belief.end()};
                 } else {
 
-                    Longerval i = Longerval.intersect(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
+                    Longerval i = Longerval.intersect(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
                     if (i == null) {
                         //if (Param.DEBUG)
-                        assert(false == intersectFilter.test(d));
+                        //assert(false == intersectFilter.test(d));
                         throw WTF("shouldnt happen");
                     }
                     return new long[]{i.a, i.b};

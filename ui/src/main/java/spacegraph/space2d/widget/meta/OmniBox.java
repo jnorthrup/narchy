@@ -14,8 +14,8 @@ import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.HashMap;

@@ -180,8 +180,6 @@ public class Answer implements Consumer<Task> {
      *   only useful for precise value summarization for a specific time.
      */
     public Task task(boolean topOrSample, boolean tryMerge, boolean forceProject) {
-        if (!topOrSample && tryMerge)
-            throw new UnsupportedOperationException();
 
         int s = tasks.size();
         Task t;
@@ -192,18 +190,18 @@ public class Answer implements Consumer<Task> {
                 t = tasks.get(0);
                 break;
             default: {
-                @Nullable Task tf = taskFirst(topOrSample);
-                switch (tf.punc()) {
+                @Nullable Task root = taskFirst(topOrSample);
+                switch (root.punc()) {
                     case BELIEF:
                     case GOAL:
                         if (tryMerge)
-                            t = taskMerge(tf.isBelief());
+                            t = taskMerge(root);
                         else
-                            t = tf;
+                            t = root;
                         break;
                     case QUESTION:
                     case QUEST:
-                        t = tf;
+                        t = root;
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -233,32 +231,28 @@ public class Answer implements Consumer<Task> {
         }
     }
 
-    private Task taskMerge(boolean beliefOrGoal) {
+    private Task taskMerge(@Nullable Task root) {
 
         @Nullable DynTruth d = dynTruth();
-        if (d.isEmpty())
-            return null;
+        if (d.size() <= 1)
+            return root;
 
-        TruthPolation tp = truthpolation(d).filtered();
-
-        Task strongest = tp.getTask(0);
-        if (tp.size()==1) {
-            return strongest;
-        }
+        TruthPolation tp = truthpolation(d).filtered(root);
+        if (tp.size()==1)
+            return root;
 
         @Nullable Truth tt = tp.truth(nar);
         if (tt==null)
-            return strongest;
+            return root;
 
-
+        boolean beliefOrGoal = root.isBelief();
         Task dyn = d.task(tp.term, tt, beliefOrGoal, ditherTruth, nar);
-        if (strongest.isDeleted()) {
-            //which could have occurred by now
-            return dyn;
-        }
-        assert(dyn == null || !dyn.isDeleted());
+        if (dyn == null)
+            return root;
+        if (root.isDeleted())
+            return dyn; //which could have occurred by now
 
-        return Truth.stronger(strongest, dyn);
+        return Truth.stronger(root, dyn);
     }
 
     /** TODO merge DynTruth and TruthPolation */

@@ -13,8 +13,8 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
-import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.*;
 import spacegraph.util.math.v2;
 

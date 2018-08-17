@@ -3,9 +3,6 @@ package nars.task.util;
 import jcog.math.Longerval;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 
-import static jcog.math.LongInterval.ETERNAL;
-import static nars.time.Tense.TIMELESS;
-
 public class TimeRangeFilter extends TimeRange implements LongLongPredicate {
 
     public final boolean intersectOrContain;

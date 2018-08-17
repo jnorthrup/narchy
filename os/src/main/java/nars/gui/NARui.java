@@ -23,8 +23,8 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.tab.TabPane;
-import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.math.Color3f;
 
 import java.util.Collection;

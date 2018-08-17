@@ -7,6 +7,7 @@ import nars.Op;
 import nars.index.concept.MapConceptIndex;
 import nars.subterm.Subterms;
 import nars.term.*;
+import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.compound.CachedCompound;

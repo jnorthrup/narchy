@@ -8,6 +8,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -191,8 +192,8 @@ public interface TaskLink extends Priority, Termed {
         public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
             long when = t.isEternal() ? ETERNAL : Tense.dither(
 
-                    t.mid()
-                    //+ tt.dtRange() / 2
+                    !(t instanceof SeriesBeliefTable.SeriesTask) ? t.mid() : t.start() //use early alignment for stretchable SeriesTask otherwise it will spam the TaskLink bag whenever it stretches
+
                     , n);
             return seed(
                     (Param.TASKLINK_CONCEPT_TERM ? t.term().concept() : t.term())

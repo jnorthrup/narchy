@@ -65,10 +65,12 @@ public class SensorBeliefTables extends BeliefTables {
 
         value = value.ditherFreq(Math.max(n.freqResolution.asFloat(), res.asFloat()));
 
-        series.clean(n, tables);
+        SeriesBeliefTable.SeriesTask x = series.series.add(value,
+                start, end, n.dur(),
+                series.term, series.punc(),
+                n);
 
-        SeriesBeliefTable.SeriesTask x = series.series.add(series.term, series.punc(), start, end,
-                value, n.dur(), n);
+        series.clean(n, tables);
 
         if (x!=null) {
             x.pri(pri.asFloat());

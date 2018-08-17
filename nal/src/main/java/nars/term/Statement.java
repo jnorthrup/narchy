@@ -8,9 +8,7 @@ import nars.term.util.TermBuilder;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 
 /** statements include: inheritance -->, similarity <->, and implication ==> */
 public class Statement {

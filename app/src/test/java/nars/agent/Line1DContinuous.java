@@ -3,7 +3,6 @@ package nars.agent;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.sensor.Signal;
 import nars.term.atom.Atomic;

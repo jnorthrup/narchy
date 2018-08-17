@@ -222,11 +222,11 @@ class DynamicConjTest {
         BeliefTables xtable = cc.beliefs();
 
 
-        assertEquals(0.81f, xtable.match(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f);
-        assertEquals(0.74f, xtable.match(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.match(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.match(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
-        assertEquals(0.62f, xtable.match(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
+        assertEquals(0.81f, xtable.answer(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f);
+        assertEquals(0.74f, xtable.answer(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.answer(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
 
 
     }

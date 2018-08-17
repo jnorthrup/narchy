@@ -13,6 +13,7 @@ import nars.op.Subst;
 import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTermTask;
 import nars.term.*;
+import nars.term.Variable;
 import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;

@@ -42,23 +42,7 @@ public interface BeliefTable extends TaskTable {
     void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar);
 
 
-    default Task match(long when, Term template, NAR nar) {
-        return match(when, when, template, nar);
-    }
 
-    @Nullable
-    default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return !isEmpty() ? Answer.relevance(true, Answer.TASK_LIMIT, start, end, template, filter, nar)
-                .match(this).task(true, true, false) : null;
-    }
-
-    @Nullable
-    default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
-        if (isEmpty())
-            return null;
-        return Answer.relevance(true, Answer.TASK_LIMIT, start, end, template, filter, n).
-                match(this).task(true, true, true); /* the virtual task we compute the truth from will need to match the given time */
-    }
 
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
         if (isEmpty())
@@ -72,9 +56,6 @@ public interface BeliefTable extends TaskTable {
     }
 
 
-    default Task match(long start, long end, Term template, NAR nar) {
-        return match(start, end, template, null, nar);
-    }
 
     @Deprecated
     default Truth truth(long when, NAR nar) {

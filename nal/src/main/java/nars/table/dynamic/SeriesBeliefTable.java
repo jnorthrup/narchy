@@ -69,9 +69,10 @@ public class SeriesBeliefTable extends DynamicTaskTable {
                 //adjust the start, end time to match the tasks found
                 long s = d.start();
                 if (s != ETERNAL) {
-                    long e = d.end();
                     start = s;
-                    end = e;
+                    end = d.end();
+                } else {
+                    start = end = ETERNAL;
                 }
             }
         }

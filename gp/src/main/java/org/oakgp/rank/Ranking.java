@@ -18,7 +18,6 @@ package org.oakgp.rank;
 import jcog.pri.Pri;
 import jcog.pri.ScalarValue;
 import jcog.sort.TopN;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 /**
  * A ranking of evolved objects (sorted immutable collection)

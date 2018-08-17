@@ -35,7 +35,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
-import nars.term.util.transform.TermTransform;
 import nars.term.util.transform.VariableTransform;
 import nars.term.var.NormalizedVariable;
 import nars.time.Tense;
