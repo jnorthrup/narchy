@@ -1,10 +1,13 @@
 package jcog.sort;
 
 import jcog.data.list.FasterList;
+import jcog.decide.Roulette;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
@@ -32,7 +35,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     }
 
     /** invert the SortedArray's order so this isnt necessary */
-    @Deprecated private final float rankNeg(X x) {
+    @Deprecated private float rankNeg(X x) {
         return -rank(x);
     }
 
@@ -174,4 +177,19 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     public boolean isFull() {
         return size()>=capacity();
     }
+
+    /** roulette select */
+    @Nullable
+    public X get(Random rng){
+        int n = size();
+        switch (n) {
+            case 0:
+                return null;
+            case 1:
+                return get(0);
+            default:
+                return get(Roulette.selectRoulette(n, i -> rank(get(i)), rng));
+        }
+    }
+
 }

@@ -175,7 +175,6 @@ public final class MutableRoulette {
             int idle = 0;
             float wi;
             while ((((wi = w[i = Util.next(i, direction, count)]) > EPSILON) && (distance = (distance - wi)) > EPSILON)) {
-
                 if (idle++ == count + 1)
                     return -1; //emergency bailout: WTF
             }

@@ -43,7 +43,7 @@ public class Mario extends Sprite {
     private boolean mayJump;
     private boolean ducking;
     private boolean sliding;
-    private int jumpTime;
+    public int jumpTime;
     private float xJumpSpeed;
     private float yJumpSpeed;
     private boolean canShoot;

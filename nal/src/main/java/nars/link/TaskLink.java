@@ -99,7 +99,7 @@ public interface TaskLink extends Priority, Termed {
             Task task;
             if (c != null) {
 
-                task = c.table(punc).match(se[0], se[1], t, n);
+                task = c.table(punc).sample(se[0], se[1], t, n);
                 if (task!=null) {
 //                    byte punc = task.punc();
 //                    //dynamic question answering

@@ -80,8 +80,17 @@ public interface TaskTable {
 
         boolean belief = !(this instanceof QuestionTable);
         return Answer.relevance(belief, belief ? Answer.TASK_LIMIT : 1, start, end, template, null, nar)
-                .match(this).task();
+                .match(this).task(true, true , false);
     }
 
+    @Deprecated
+    default Task sample(long start, long end, Term template, NAR nar) {
 
+        if (isEmpty())
+            return null;
+
+        boolean belief = !(this instanceof QuestionTable);
+        return Answer.relevance(belief, Answer.TASK_LIMIT, start, end, template, null, nar)
+                .match(this).task(false, false, false);
+    }
 }

@@ -13,14 +13,6 @@ public enum Roulette {
     ;
 
 
-
-
-
-
-
-
-
-
     public static int selectRoulette(float[] x, Random rng) {
         return selectRoulette(x.length, (n) -> x[n], rng);
     }
@@ -30,24 +22,10 @@ public enum Roulette {
      * Returns the selected index based on the weights(probabilities)
      */
     public static int selectRoulette(int weightCount, IntToFloatFunction weight, Random rng) {
-        
+
         assert (weightCount > 0);
         return selectRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -55,16 +33,24 @@ public enum Roulette {
      */
     public static int selectRoulette(final int count, IntToFloatFunction weight, float weight_sum, Random rng) {
 
-        int i = rng.nextInt(count); 
-        assert (i >= 0);
+
         if (weight_sum < ScalarValue.EPSILON) {
-            return i; 
+            return rng.nextInt(count); //flat
         }
 
-        float distance = rng.nextFloat() * weight_sum;
-        boolean dir = rng.nextBoolean(); 
+        float distanceFactor = rng.nextFloat();
+        int i;
+        boolean dir;
+        if (distanceFactor <= 0.5f) {
+            dir = true; i = 0; //count up
+        } else {
+            dir = false; i = count-1; //count down
+            distanceFactor = 1 - distanceFactor;
+        }
 
-        while ((distance = distance - weight.valueOf(i)) > 0) {
+        float distance = distanceFactor * weight_sum;
+
+        while ((distance = distance - weight.valueOf(i)) > Float.MIN_NORMAL) {
             if (dir) {
                 if (++i == count) i = 0;
             } else {
@@ -74,9 +60,6 @@ public enum Roulette {
 
         return i;
     }
-
-
-
 
 
 }

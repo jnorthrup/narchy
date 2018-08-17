@@ -182,19 +182,7 @@ public class Premise {
                 }
 
                 if (belief == null && !bb.isEmpty()) {
-
-                    long[] focus = timeFocus(d, beliefTerm);
-
-                    Predicate<Task> beliefFilter = beliefFilter();
-
-                    //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
-                    //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-                    Task match = Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, n)
-                            .match(bb)
-                            .task();
-
-                    return match;
-
+                    return tryMatch(d, beliefTerm, n, bb);
                 }
             }
 
@@ -206,6 +194,21 @@ public class Premise {
 //        }
 
         return null;
+    }
+
+    @Nullable
+    private Task tryMatch(Derivation d, Term beliefTerm, NAR n, BeliefTable bb) {
+        long[] focus = timeFocus(d, beliefTerm);
+
+        Predicate<Task> beliefFilter = beliefFilter();
+
+        //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
+        //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
+        Task match = Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, n)
+                .match(bb)
+                .task(false,false,  false);
+
+        return match;
     }
 
     private Predicate<Task> beliefFilter() {
@@ -228,7 +231,7 @@ public class Premise {
             Task match =
                 Answer.relevance(true, task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
                         .ditherTruth(true)
-                        .match(answerTable).task();
+                        .match(answerTable).task(true, true, true);
 
 //            if (!validMatch(match))
 //                match = null;

@@ -49,7 +49,7 @@ public interface BeliefTable extends TaskTable {
     @Nullable
     default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
         return !isEmpty() ? Answer.relevance(true, Answer.TASK_LIMIT, start, end, template, filter, nar)
-                .match(this).task() : null;
+                .match(this).task(true, true, false) : null;
     }
 
     @Nullable
@@ -57,8 +57,7 @@ public interface BeliefTable extends TaskTable {
         if (isEmpty())
             return null;
         return Answer.relevance(true, Answer.TASK_LIMIT, start, end, template, filter, n).
-                forceProjection(true). /* the virtual task we compute the truth from will need to match the given time */
-                match(this).task();
+                match(this).task(true, true, true); /* the virtual task we compute the truth from will need to match the given time */
     }
 
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {

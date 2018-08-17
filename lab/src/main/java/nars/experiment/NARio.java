@@ -217,8 +217,12 @@ public class NARio extends NAgentX {
                 n -> mario.scene.key(Mario.KEY_LEFT, n),
                 n -> mario.scene.key(Mario.KEY_RIGHT, n));
 
-        actionToggle($$("jump(nario)"),
-                n -> mario.scene.key(Mario.KEY_JUMP, n));
+        actionPushButton($$("jump(nario)"),
+                n -> {
+                    mario.scene.key(Mario.KEY_JUMP, n);
+                    Scene s = mario.scene;
+                    return s instanceof LevelScene ? ((LevelScene)s).mario.jumpTime > 0 : false;
+                });
         actionToggle($$("down(nario)"),
                 n -> mario.scene.key(Mario.KEY_DOWN, n));
         actionToggle($$("speed(nario)"),

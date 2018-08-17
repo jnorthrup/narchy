@@ -27,12 +27,16 @@ import java.util.function.Predicate;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /** heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
 public class Answer implements Consumer<Task> {
 
-    public final static int TASK_LIMIT = Param.STAMP_CAPACITY-1;
+    public final static int TASK_LIMIT =
+            //Param.STAMP_CAPACITY-1;
+            Param.STAMP_CAPACITY/2;
+
 
     public final NAR nar;
     public TimeRangeFilter time;
@@ -40,7 +44,14 @@ public class Answer implements Consumer<Task> {
     protected CachedFloatFunction<Task> cache;
     TopN<Task> tasks;
     int limit;
-    FloatRank<Task> rank;
+    final FloatRank<Task> rank;
+
+    public Answer(int limit, FloatRank<Task> rank, NAR nar) {
+        this.nar = nar;
+        this.rank = rank;
+        limit(limit);
+    }
+
 
     public void clear() {
         cache.clear();
@@ -73,18 +84,16 @@ public class Answer implements Consumer<Task> {
             r = complexTaskStrength(strength, template);
         }
 
-        Answer b = new Answer(limit, r.filter(filter), new TimeRangeFilter(start, end, true), nar);
-        b.template = template;
-        return b;
+        return new Answer(limit, r.filter(filter), nar)
+                .time(new TimeRangeFilter(start, end, true))
+                .template(template);
     }
 
-
-    public Answer(int limit, FloatRank<Task> rank, @Nullable TimeRangeFilter time, NAR nar) {
-        this.nar = nar;
-        rank(rank);
-        limit(limit);
-        time(time);
+    public Answer template(Term template) {
+        this.template = template;
+        return this;
     }
+
 
     public static FloatFunction<TaskRegion> mergeability(Task x) {
         ImmutableLongSet xStamp = Stamp.toSet(x);
@@ -150,27 +159,15 @@ public class Answer implements Consumer<Task> {
 
     @NotNull
     public static FloatFunction<Task> eternalTaskStrength() {
-        return TruthIntegration::valueInEternity;
+        return x -> w2cSafe(x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
     }
 
     public static FloatFunction<Task> temporalTaskStrength(long start, long end, int dur) {
-        return x -> TruthIntegration.eviInteg(x, start, end, dur);
+        return x -> w2cSafe(TruthIntegration.eviInteg(x, start, end, dur));
     }
 
-
-    boolean forceProject;
-//    float confMin = Float.MIN_NORMAL;
     boolean ditherTruth = false;
 
-    public Answer forceProjection(boolean forceProject) {
-        this.forceProject = forceProject;
-        return this;
-    }
-
-//    public Answer confMin(float confMin) {
-//        this.confMin = confMin;
-//        return this;
-//    }
 
     public Answer ditherTruth(boolean ditherTruth) {
         this.ditherTruth = ditherTruth;
@@ -182,21 +179,27 @@ public class Answer implements Consumer<Task> {
      * note: if forceProject, the result may be null if projection doesnt succeed.
      *   only useful for precise value summarization for a specific time.
      */
-    @Nullable public Task task() {
+    public Task task(boolean topOrSample, boolean tryMerge, boolean forceProject) {
+        if (!topOrSample && tryMerge)
+            throw new UnsupportedOperationException();
+
         int s = tasks.size();
         Task t;
         switch (s) {
             case 0:
                 return null;
             case 1:
-                t = tasks.first();
+                t = tasks.get(0);
                 break;
             default: {
-                @Nullable Task tf = tasks.first();
+                @Nullable Task tf = taskFirst(topOrSample);
                 switch (tf.punc()) {
                     case BELIEF:
                     case GOAL:
-                        t = dynTask(tf);
+                        if (tryMerge)
+                            t = taskMerge(tf.isBelief());
+                        else
+                            t = tf;
                         break;
                     case QUESTION:
                     case QUEST:
@@ -208,7 +211,8 @@ public class Answer implements Consumer<Task> {
                 break;
             }
         }
-        if (this.forceProject && t!=null) {
+
+        if (forceProject && t!=null) {
             long ss = time.start;
             if (ss != ETERNAL) { //dont eternalize here
                 long ee = time.end;
@@ -219,28 +223,17 @@ public class Answer implements Consumer<Task> {
         }
 
         return t;
-
-//        Task m = match(start, end, template, filter, nar);
-//        if (m == null)
-//            return null;
-//        if (m.containedBy(start, end))
-//            return m;
-//        Task t = Task.project(false, m, start, end, nar, false);
-//        if (t instanceof TaskProxy) {
-//            //dither truth
-//            @Nullable PreciseTruth tt = t.truth().dither(nar);
-//            if (tt != null) {
-//                t = Task.clone(t, t.term(), tt, t.punc());
-//            } else {
-//                t = null;
-//            }
-//        }
-//        return t;
     }
 
-    private Task dynTask(Task sample) {
+    private Task taskFirst(boolean topOrSample) {
+        if (topOrSample) {
+            return tasks.get(0);
+        } else{
+            return tasks.get(nar.random());
+        }
+    }
 
-        boolean beliefOrGoal = sample.isBelief(); //else its a goal
+    private Task taskMerge(boolean beliefOrGoal) {
 
         @Nullable DynTruth d = dynTruth();
         if (d.isEmpty())
@@ -310,10 +303,7 @@ public class Answer implements Consumer<Task> {
         return this;
     }
 
-    public Answer rank(FloatRank<Task> rank) {
-        this.rank = rank;
-        return this;
-    }
+
 
     public Answer limit(int limit) {
         this.limit = limit;

@@ -109,7 +109,4 @@ public class TruthIntegration {
         }
     }
 
-    public static float valueInEternity(Task x) {
-        return x.isEternal() ? x.evi() : x.eviEternalized() * x.range();
-    }
 }
