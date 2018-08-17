@@ -206,11 +206,26 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     public static final class SeriesTask extends SignalTask {
 
+        /** current endpoint */
+        long e;
+
         public SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
             super(term, punc, value, start, start, end, stamp);
+            if (stamp.length != 1)
+                throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
+            this.e = end;
         }
 
-//        @Override
+        public void setEnd(long e) {
+            this.e = e;
+        }
+
+        @Override
+        public long end() {
+            return e;
+        }
+
+        //        @Override
 //        public ITask inputSubTask(Task ignored, NAR n) {
 //            throw new UnsupportedOperationException("use input(concept) for internal storage procedure");
 //        }

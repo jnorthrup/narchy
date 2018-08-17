@@ -5,6 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.action.BiPolarAction;
+import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
@@ -217,12 +218,20 @@ public class NARio extends NAgentX {
                 n -> mario.scene.key(Mario.KEY_LEFT, n),
                 n -> mario.scene.key(Mario.KEY_RIGHT, n));
 
-        actionPushButton($$("jump(nario)"),
+        GoalActionConcept j = actionPushButton($$("jump(nario)"),
                 n -> {
-                    mario.scene.key(Mario.KEY_JUMP, n);
+                    boolean wasPressed = mario.scene.key(Mario.KEY_JUMP, n);
                     Scene s = mario.scene;
-                    return s instanceof LevelScene ? ((LevelScene)s).mario.jumpTime > 0 : false;
+                    boolean jumping = s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime != 0 : false;
+                    //System.out.println(jumping + " " + (s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0));
+                    if (wasPressed && !jumping) {
+                        mario.scene.key(Mario.KEY_JUMP, false); //release key
+                        return false;
+                    }
+                    return (!wasPressed) || jumping;
                 });
+        window(NARui.beliefCharts(nar, j), 800, 800);
+
         actionToggle($$("down(nario)"),
                 n -> mario.scene.key(Mario.KEY_DOWN, n));
         actionToggle($$("speed(nario)"),

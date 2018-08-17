@@ -264,13 +264,13 @@ public class Derivation extends PreDerivation {
     public boolean reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
 
-//        if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
-//
-//
-//            anon.rollback(taskUniques);
-//
-//
-//        } else {
+        if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
+
+
+            anon.rollback(taskUniques);
+
+
+        } else
         {
             anon.clear();
             try {

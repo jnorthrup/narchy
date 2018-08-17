@@ -11,8 +11,11 @@ public abstract class Scene implements SoundSource {
     public Audio sound;
     public static boolean[] keys = new boolean[16];
 
-    public void key(int key, boolean isPressed) {
+
+    public boolean key(int key, boolean isPressed) {
+        boolean wasPressed = keys[key];
         keys[key] = isPressed;
+        return wasPressed;
     }
 
     public final void setSound(Audio sound) {

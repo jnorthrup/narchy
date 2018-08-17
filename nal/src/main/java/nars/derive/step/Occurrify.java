@@ -699,6 +699,7 @@ public class Occurrify extends TimeGraph {
                     Longerval i = Longerval.intersect(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
                     if (i == null) {
                         //if (Param.DEBUG)
+                        assert(false == intersectFilter.test(d));
                         throw WTF("shouldnt happen");
                     }
                     return new long[]{i.a, i.b};

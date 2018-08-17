@@ -302,11 +302,11 @@ public interface NAct {
 
     }
 
-    default void actionPushButton(Term t, BooleanToBooleanFunction on) {
-        actionPushButton(t, () -> 0.5f /*+ nar().freqResolution.get()*/, on);
+    default GoalActionConcept actionPushButton(Term t, BooleanToBooleanFunction on) {
+        return actionPushButton(t, () -> 0.5f /*+ nar().freqResolution.get()*/, on);
     }
 
-    default void actionPushButton(Term t, FloatSupplier thresh, BooleanToBooleanFunction on) {
+    default GoalActionConcept actionPushButton(Term t, FloatSupplier thresh, BooleanToBooleanFunction on) {
 
 
         FloatToFloatFunction ifGoalMissing =
@@ -320,6 +320,7 @@ public interface NAct {
                     0f;
         });
         b.resolution(1f);
+        return b;
     }
 
 

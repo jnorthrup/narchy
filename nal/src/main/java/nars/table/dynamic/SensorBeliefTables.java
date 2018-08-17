@@ -39,14 +39,14 @@ public class SensorBeliefTables extends BeliefTables {
                 //TODO impl time series with concurrent ring buffer from gluegen
                 t, new ConcurrentSkiplistTaskSeries<>(new ConcurrentSkipListMap<>(), /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE) {
                     @Override
-                    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp) {
+                    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
                         nextEnd = Math.max(nextStart, nextEnd); //HACK
                         SeriesBeliefTable.SeriesTask nextT = new SeriesBeliefTable.SeriesTask(
                                 term,
                                 punc,
                                 next,
                                 nextStart, nextEnd,
-                                removePrev ? lastStamp : nar.evidence());
+                                nar.evidence());
                         return nextT;
                     }
                 });

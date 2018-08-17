@@ -5,6 +5,7 @@ import jcog.sort.TopN;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements TaskSeries<T> {
+abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask> implements TaskSeries<T> {
 
     /**
      * tasks are indexed by their midpoint. since the series
@@ -127,12 +128,10 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
 
 
         Map.Entry<Long, T> lastEntry = at.lastEntry();
-        boolean removePrev = false;
-        long lastStamp[] = null;
-        long lastEntryKey;
+        boolean stretchPrev = false;
         if (next != null && lastEntry != null) {
             T last = lastEntry.getValue();
-            lastEntryKey = lastEntry.getKey();
+            //lastEntryKey = lastEntry.getKey();
             long lastStart = last.start();
             if (lastStart > nextStart)
                 return null;
@@ -150,35 +149,29 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
                     if (lastEnds.equals(next)) {
 
                         nextStart = lastStart; //start from even further, the last task's start
-                        lastStamp = last.stamp();
-                        removePrev = true;
+                        last.setEnd(nextStart);
                     }
                 }
             }
 
-        } else {
-            lastEntryKey = Long.MIN_VALUE;
         }
 
         //assert(nextStart <= nextEnd);
 
-        if (next != null) {
-            nextT = newTask(term, punc, nextStart, nextEnd, next, nar, removePrev, lastStamp);
+        if (!stretchPrev && next != null) {
+            nextT = newTask(term, punc, nextStart, nextEnd, next, nar);
+            if (nextT == null)
+                return null;
         }
 
         synchronized (this) {
-            if (removePrev)
-                at.remove(lastEntryKey);
 
-            if (nextT != null)
-                at.put((nextStart + nextEnd) / 2L, nextT);
+            at.put((nextStart + nextEnd) / 2L, nextT);
 
             compress();
+
+            return nextT;
         }
-
-
-        return nextT;
-
     }
 
     /**
@@ -191,7 +184,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends Task> implements Ta
         return Param.SIGNAL_STRETCH_DUR;
     }
 
-    abstract protected T newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar, boolean removePrev, long[] lastStamp);
+    abstract protected T newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar);
 
     void compress() {
         int toRemove = ( at.size()) - cap;
