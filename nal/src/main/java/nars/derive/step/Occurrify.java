@@ -545,9 +545,9 @@ public class Occurrify extends TimeGraph {
                     //union
                     Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
                     return new long[]{i.a, i.b};
-                } else if (ts == ETERNAL && bs!=ETERNAL) {
+                } else if (ts == ETERNAL && B!=null && bs!=ETERNAL) {
                     return new long[]{ bs, B.end()};
-                } else if (ts != ETERNAL && bs == ETERNAL) {
+                } else if (ts != ETERNAL && (B == null || bs == ETERNAL)) {
                     return new long[]{ ts, T.end()};
                 } else {
                     return new long[] { ETERNAL, ETERNAL };
@@ -690,16 +690,19 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                if (d.concSingle) {
+                if (d.concSingle || (d.belief==null || d.beliefStart == ETERNAL)) {
                     return new long[]{d.taskStart, d.task.end()};
-                }
+                } else if (d.taskStart == ETERNAL && d.belief!=null) {
+                    return new long[]{d.beliefStart, d.belief.end()};
+                } else {
 
-                Longerval i = Longerval.intersect(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
-                if (i == null) {
-                    //if (Param.DEBUG)
-                    throw WTF("shouldnt happen");
+                    Longerval i = Longerval.intersect(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
+                    if (i == null) {
+                        //if (Param.DEBUG)
+                        throw WTF("shouldnt happen");
+                    }
+                    return new long[]{i.a, i.b};
                 }
-                return new long[]{i.a, i.b};
             }
 
             @Override
@@ -875,80 +878,86 @@ public class Occurrify extends TimeGraph {
 
             if ((d.concPunc == BELIEF || d.concPunc == GOAL) && x.hasXternal())
                 return null;
-
-            Task task = d.task;
-            Task belief = d.concSingle ? null : d.belief;
-            long s, e;
-        /*if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
-            
-            s = task.start();
-            e = task.end();
-        } else*/
-            boolean taskConj =
-                    !(task.term().op() == CONJ);
-
-            if (task.isEternal()) {
-                if (belief == null || belief.isEternal()) {
-
-                    s = e = ETERNAL;
-                } else {
-                    if (taskConj) {
-                        s = belief.start();
-                        e = belief.end();
-                    } else {
-
-                        return null;
-                    }
-                }
+            long[] u = occurrence(d);
+            if (u != null) {
+                return pair(x, u);
             } else {
-                if (belief == null) {
-
-                    s = task.start();
-                    e = task.end();
-
-                } else if (belief.isEternal()) {
-                    if (!task.isEternal()) {
-
-                        s = task.start();
-                        e = task.end();
-                    } else {
-                        s = e = ETERNAL;
-                    }
-
-
-                } else {
-                    byte p = d.concPunc;
-                    if ((p == BELIEF || p == GOAL)) {
-                        boolean taskEvi = !task.isQuestionOrQuest();
-                        boolean beliefEvi = !belief.isQuestionOrQuest();
-                        if (taskEvi && beliefEvi) {
-                            long[] u = occurrence(d);
-                            if (u != null) {
-                                s = u[0];
-                                e = u[1];
-                            } else {
-                                return null;
-                            }
-                        } else if (taskEvi) {
-                            s = task.start();
-                            e = task.end();
-                        } else if (beliefEvi) {
-                            s = belief.start();
-                            e = belief.end();
-                        } else {
-                            throw new UnsupportedOperationException("evidence from nowhere?");
-                        }
-                    } else {
-
-                        Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
-                        s = u.start();
-                        e = u.end();
-                    }
-                }
+                return null;
             }
 
-
-            return pair(x, new long[]{s, e});
+//            Task task = d.task;
+//            Task belief = d.concSingle ? null : d.belief;
+//            long s, e;
+//        /*if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
+//
+//            s = task.start();
+//            e = task.end();
+//        } else*/
+//            boolean taskConj =
+//                    !(task.term().op() == CONJ);
+//
+//            if (task.isEternal()) {
+//                if (belief == null || belief.isEternal()) {
+//
+//                    s = e = ETERNAL;
+//                } else {
+//                    if (taskConj) {
+//                        s = belief.start();
+//                        e = belief.end();
+//                    } else {
+//
+//                        return null;
+//                    }
+//                }
+//            } else {
+//                if (belief == null) {
+//
+//                    s = task.start();
+//                    e = task.end();
+//
+//                } else if (belief.isEternal()) {
+//                    if (!task.isEternal()) {
+//
+//                        s = task.start();
+//                        e = task.end();
+//                    } else {
+//                        s = e = ETERNAL;
+//                    }
+//
+//
+//                } else {
+//                    byte p = d.concPunc;
+//                    if ((p == BELIEF || p == GOAL)) {
+//                        boolean taskEvi = !task.isQuestionOrQuest();
+//                        boolean beliefEvi = !belief.isQuestionOrQuest();
+//                        if (taskEvi && beliefEvi) {
+//                            long[] u = occurrence(d);
+//                            if (u != null) {
+//                                s = u[0];
+//                                e = u[1];
+//                            } else {
+//                                return null;
+//                            }
+//                        } else if (taskEvi) {
+//                            s = task.start();
+//                            e = task.end();
+//                        } else if (beliefEvi) {
+//                            s = belief.start();
+//                            e = belief.end();
+//                        } else {
+//                            throw new UnsupportedOperationException("evidence from nowhere?");
+//                        }
+//                    } else {
+//
+//                        Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
+//                        s = u.start();
+//                        e = u.end();
+//                    }
+//                }
+//            }
+//
+//
+//            return pair(x, new long[]{s, e});
 
         }
 

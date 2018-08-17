@@ -213,31 +213,40 @@ class BeliefTableTest {
 
     @Test
     void testConceptualizationIntermpolation() throws Narsese.NarseseException {
+
+
         for (Tense t : new Tense[]{Present, Eternal}) {
-            NAR n = NARS.tmp();
-            n.log();
+            NAR n = NARS.shell();
+            //n.log();
             n.time.dur(8);
 
-            n.believe("((a ==>+2 b)-->[pill])", t, 1f, 0.9f);
-            n.believe("((a ==>+6 b)-->[pill])", t, 1f, 0.9f);
+            //extreme example: too far distance, so results in DTERNAL
+            assertEquals(DTERNAL, Revision.chooseDT(1,100,0.5f,n));
+
+            int a = 2;
+            int b = 4;
+            int ab = 3; //expected
+
+            assertEquals(ab, Revision.chooseDT(a,b,0.5f,n));
+
+            n.believe("((a ==>+" + a + " b)-->[pill])", t, 1f, 0.9f);
+            n.believe("((a ==>+" + b + " b)-->[pill])", t, 1f, 0.9f);
             n.run(1);
 
 
             String abpill = "((a==>b)-->[pill])";
-
             assertEquals("((a ==>+- b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
             assertEquals("((a ==>+- b)-->[pill])", $$(abpill).concept().toString());
 
             TaskConcept cc = (TaskConcept) n.conceptualize(abpill);
             assertNotNull(cc);
 
-            String correctMerge = "((a ==>+4 b)-->[pill])";
+            String correctMerge = "((a ==>+" + ab +" b)-->[pill])";
             cc.beliefs().print();
 
 
             long when = t == Present ? 0 : ETERNAL;
             Task m = cc.beliefs().match(when, null, n);
-            assertNotNull(m);
             assertEquals(correctMerge, m.term().toString());
 
 
@@ -258,7 +267,7 @@ class BeliefTableTest {
     @Test
     void testBestMatchImplSimple() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present/*, Eternal*/}) {
-            NAR n = NARS.tmp();
+            NAR n = NARS.shell();
 
             n.believe("(a ==>+0 b)", t, 1f, 0.9f);
             n.believe("(a ==>+5 b)", t, 1f, 0.9f);
@@ -285,11 +294,15 @@ class BeliefTableTest {
 
     @Test
     void testDTDiffSame() {
-
-
-        float same = dtDiff("(x ==>+5 y)", "(x ==>+5 y)");
-        assertEquals(0f, same, 0.001f);
-        assertEquals(dtDiff("(x ==>+5 y)", "(x ==>+- y)"), same);
+        assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==>+5 y)"), 0.001f);
+    }
+    @Test
+    void testDTDiffVariety() {
+        assertEquals(0.05f, dtDiff("(x ==>+5 y)", "(x ==>+- y)"), 0.01f);
+        assertEquals(0.1f, dtDiff("(x ==>+5 y)", "(x ==> y)"), 0.01f);
+        assertEquals(0.4f, dtDiff("(x ==>+5 y)", "(x ==>+3 y)"), 0.01f);
+        assertEquals(0.8f, dtDiff("(x ==>+5 y)", "(x ==>+1 y)"), 0.01f);
+        assertEquals(1f, dtDiff("(x ==>+5 y)", "(x =|> y)"), 0.01f);
     }
 
     @Test
@@ -298,8 +311,8 @@ class BeliefTableTest {
         float a52 = dtDiff("(x ==>+5 y)", "(x ==>+2 y)");
         float a54 = dtDiff("(x ==>+5 y)", "(x ==>+4 y)");
         assertTrue(a52 > a54);
-        assertEquals(1.5f, a52, 0.001f);
-        assertEquals(0.25f, a54, 0.001f);
+        assertEquals(0.6f, a52, 0.001f);
+        assertEquals(0.2f, a54, 0.001f);
     }
 
     @Test
@@ -307,8 +320,8 @@ class BeliefTableTest {
 
         float a52 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+2 y) &&+1 z)");
         float a54 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+4 y) &&+1 z)");
-        assertEquals(4.66f, a52, 0.01f);
-        assertEquals(2, a54, 0.001f);
+        assertEquals(0.3, a52, 0.01f);
+        assertEquals(0.1f, a54, 0.001f);
         assertTrue(a52 > a54);
     }
 
@@ -318,8 +331,8 @@ class BeliefTableTest {
 
         float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
         float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
-        assertEquals(1, a, 0.1f);
-        assertEquals(0.5f, b, 0.1f);
+        assertEquals(0.5f, a, 0.1f);
+        assertEquals(0.25f, b, 0.1f);
     }
 
 }

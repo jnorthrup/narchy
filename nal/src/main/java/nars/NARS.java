@@ -6,6 +6,9 @@ import jcog.data.map.MRUCache;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.concept.util.ConceptAllocator;
+import nars.concept.util.ConceptBuilder;
+import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.Attention;
@@ -20,9 +23,6 @@ import nars.term.Termed;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
-import nars.concept.util.ConceptAllocator;
-import nars.concept.util.ConceptBuilder;
-import nars.concept.util.DefaultConceptBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -135,6 +135,11 @@ public class NARS {
                 n.goalPriDefault.set(basePri * 0.5f);
                 n.questionPriDefault.set(basePri * 0.2f);
                 n.questPriDefault.set(basePri * 0.2f);
+
+//                n.emotion.want(MetaGoal.Perceive, -0.01f);
+//                n.emotion.want(MetaGoal.Believe, 0.1f);
+//                n.emotion.want(MetaGoal.Desire, 0.1f);
+
             });
         }
 

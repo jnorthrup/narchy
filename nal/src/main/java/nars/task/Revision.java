@@ -180,8 +180,8 @@ public class Revision {
     static int merge(int adt, int bdt, float aProp, NAR nar) {
         /*if (adt >= 0 == bdt >= 0)*/ { //require same sign ?
             int delta = Math.abs(adt - bdt);
-            int range = Math.min(Math.abs(adt), Math.abs(bdt));
-            float ratio = ((float) delta) / (1+range);
+            int range = Math.max(Math.abs(adt), Math.abs(bdt));
+            float ratio = ((float) delta) / range;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
                 return Util.lerp(aProp, bdt, adt);
             }
@@ -351,8 +351,7 @@ public class Revision {
 
         float d = 0;
 
-        boolean aSubsEqualsBSubs = aa.equals(bb);
-//        if (a.op() == CONJ && !aSubsEqualsBSubs) {
+        //        if (a.op() == CONJ && !aSubsEqualsBSubs) {
 //
 //            Conj c = new Conj();
 //            String as = Conj.sequenceString(a, c).toString();
@@ -369,7 +368,8 @@ public class Revision {
 //            return Float.POSITIVE_INFINITY;
 //
 //        } else {
-        if (!aSubsEqualsBSubs) {
+        if (!aa.equals(bb)) {
+
             if (aa.subs() != bb.subs())
                 return Float.POSITIVE_INFINITY;
 
@@ -386,24 +386,28 @@ public class Revision {
             if (adt != bdt) {
                 if (adt == XTERNAL || bdt == XTERNAL) {
                     //zero, match
-                    d += Float.MIN_NORMAL;
+                    int other = adt == XTERNAL ? b.dt() : a.dt();
+                    float range = other!=DTERNAL ? Math.max(1, Math.abs(other)) : 0.5f;
+                    d += 0.25f / range; //undercut the DT option
                 } else {
 
                     boolean ad = adt == DTERNAL;
                     boolean bd = bdt == DTERNAL;
+                    int range;
+                    float delta;
                     if (!ad && !bd) {
-                        int range = Math.min(Math.abs(adt), Math.abs(bdt));
-                        float delta = Math.abs(Math.abs(adt - bdt));
-                        d += (delta / (1+range));
+                        range = Math.max(Math.abs(adt), Math.abs(bdt));
+                        delta = Math.abs(Math.abs(adt - bdt));
                     } else {
-                        int range = Math.abs(ad ? b.dt() : a.dt());
-                        d += 1f / (1+range); //one is dternal the other is not, record at least some difference (1 time unit)
+                        range = Math.max(1, Math.abs(ad ? b.dt() : a.dt()));
+                        delta = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
                     }
+                    assert(delta > 0 && range > 0);
+                    d += delta / range;
                 }
             }
 
         }
-
 
         return d / depth;
     }

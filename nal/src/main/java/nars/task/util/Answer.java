@@ -258,7 +258,7 @@ public class Answer implements Consumer<Task> {
             return strongest;
 
 
-        Task dyn = d.task(template, tt, beliefOrGoal, ditherTruth, nar);
+        Task dyn = d.task(tp.term, tt, beliefOrGoal, ditherTruth, nar);
         if (strongest.isDeleted()) {
             //which could have occurred by now
             return dyn;

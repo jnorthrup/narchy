@@ -7,7 +7,9 @@ import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
+import nars.task.util.TaskRegion;
 import nars.term.atom.Atom;
+import nars.time.Tense;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -63,7 +65,7 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
@@ -165,7 +167,7 @@ public abstract class Param {
      * determined according to the ratio of the dt difference compared to the smaller dt of the two being merged
      * probably values less than 0.5 are safe
      */
-    public final FloatRange intermpolationRangeLimit = new FloatRange(0.25f, 0, 2 /* no practical upper limit really */);
+    public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 1);
 
     /**
      * creates instance of the default truthpolation implementation
@@ -206,7 +208,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, 0, TTL_MIN * 16);
     public final IntRange subUnifyTTLMax = new IntRange( 2, 1, 64);
     public final IntRange matchTTL = new IntRange(2, 1, 16);
 
@@ -286,6 +288,13 @@ public abstract class Param {
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
     public final IntRange dtDither = new IntRange(1, 1, 1024);
+
+    /** how occurrence time is computed for dynamic truth tasks */
+    public static long[] DynamicTruthTimeMerge(TaskRegion[] components) {
+        return
+            Tense.union(components);
+            //Tense.intersection(components);
+    }
 
     /**
      * number of time units (cycles) to dither into

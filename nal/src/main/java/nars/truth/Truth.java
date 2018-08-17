@@ -144,7 +144,7 @@ public interface Truth extends Truthed {
     }
 
     static float confSafe(float c, float epsilon) {
-        if (epsilon == 0)
+        if (epsilon <= Float.MIN_NORMAL)
             return c;
 
         return Util.clamp(

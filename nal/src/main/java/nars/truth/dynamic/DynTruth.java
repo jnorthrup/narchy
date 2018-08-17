@@ -137,10 +137,12 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
             Term content = superterm.get();
             if (content == null)
-                return null;
+                throw new NullPointerException("template is null; missing information how to build");
 
-            if (content.op() == NEG) {
+            Op op = content.op();
+            if (op == NEG) {
                 content = content.unneg();
+                op = content.op();
                 f = 1.0f - freq;
             } else {
                 f = freq;
@@ -148,7 +150,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
             long start, end;
             if (size() > 1) {
-                if (content.op() == CONJ) {
+                if (op == CONJ) {
                     long min = TIMELESS;
                     long minRange = 0;
                     boolean eternals = false;
@@ -175,9 +177,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
 
                 } else {
-                    long[] u =
-                            Tense.union(this.array());
-                            //Tense.intersection(this.array());
+                    long[] u = Param.DynamicTruthTimeMerge(this.array());
                     start = u[0];
                     end = u[1];
                 }

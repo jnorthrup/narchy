@@ -636,13 +636,14 @@ public enum Util {
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
      */
     public static float round(float value, float epsilon) {
-        assertFinite(epsilon);
-        assertFinite(value);
-        if (epsilon == 0) return value;
+        assertFinite(epsilon); assertFinite(value);
+        if (epsilon <= Float.MIN_NORMAL) return value;
         else return Math.round(value / epsilon) * epsilon;
     }
 
     public static double round(double value, double epsilon) {
+        assertFinite(epsilon); assertFinite(value);
+        if (epsilon <= Double.MIN_NORMAL) return value;
         return Math.round(value / epsilon) * epsilon;
     }
 
@@ -657,9 +658,6 @@ public enum Util {
         return dither * Math.round(((double) x) / dither);
     }
 
-    public static float floor(float value, float epsilon) {
-        return (float) (Math.floor(value / epsilon) * epsilon);
-    }
 
     public static int floatToInt(float f, int discretness) {
         return Math.round(f * discretness);

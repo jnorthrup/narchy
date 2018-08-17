@@ -22,7 +22,6 @@ import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,7 +62,7 @@ public class FZero extends NAgentX {
 
 
         Scale vision = new Scale(() -> fz.image,
-                20, 16
+                20, 15
                 //8, 8
         );
         onFrame(()->vision.update());
@@ -72,7 +71,7 @@ public class FZero extends NAgentX {
                 //.resolution(0.05f);
                 ;
 
-        int nx = 4;
+        int nx = 5;
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), vision, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y*/};
         }, 8, this);
@@ -80,38 +79,41 @@ public class FZero extends NAgentX {
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
-//        initToggleLeftRight();
+        initToggleLeftRight();
 //        initToggleFwdStop();
 
         GoalActionConcept F = initUnipolarLinear(5f);
-        BiPolarAction A =
-                //initBipolarRotateRelative(true, 1f);
-                //initBipolarRotateAbsolute(true);
-                //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.5f);
 
-        window(new Gridding(
-                //new CameraSensorView(c, this).withControls(),
-                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
+        //initTankContinuous();
+//        BiPolarAction A =
+//                //initBipolarRotateRelative(true, 1f);
+//                //initBipolarRotateAbsolute(true);
+//                //initBipolarRotateDirect(false, 0.9f);
+//                initBipolarRotateDirect(false, 0.5f);
+//
+//        window(new Gridding(
+//                //new CameraSensorView(c, this).withControls(),
+//                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
 
 
 
-        Signal dVelX = senseNumberDifference($.func("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]);
-        Signal dVelY = senseNumberDifference($.func("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]);
-        Signal dAccel = senseNumberDifference($.func("accel", id), () -> (float) fz.vehicleMetrics[0][6]);
+        float r = 0.05f;
+        Signal dVelX = senseNumberDifference($.func("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
+        Signal dVelY = senseNumberDifference($.func("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
+        Signal dAccel = senseNumberDifference($.func("accel", id), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
         FloatSupplier playerAngle = Util.compose(() -> (float) fz.playerAngle,
                 new FloatAveraged(0.5f, true));
-        Signal dAngVel = senseNumberDifference($.func("vel", id, $$("ang")), playerAngle);
+        Signal dAngVel = senseNumberDifference($.func("ang", id, $$("dTheta")), playerAngle).resolution(r);
 
         AbstractSensor ang = senseNumber(angle ->
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
-                        $.prop($.func("ang", id), $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+                        $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                11,
+                9,
                 DigitizedScalar.FuzzyNeedle
-        ).resolution(0.1f);
+        ).resolution(r);
 
 
 
@@ -125,7 +127,7 @@ public class FZero extends NAgentX {
 
             fz.update();
 
-            float r = Util.clamp(
+            float race = Util.clamp(
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
                             deltaDistance / (fps * 0.2f)), -1f, +1f);
@@ -134,7 +136,7 @@ public class FZero extends NAgentX {
 
             fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 
-            return r;
+            return race;
         });
 
         reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
