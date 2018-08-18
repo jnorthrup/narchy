@@ -419,31 +419,29 @@ public interface Compound extends Term, IPair, Subterms {
     default Term replace(Term from, Term to) {
         if (this.equals(from))
             return to;
-        if (!impossibleSubTerm(from)) {
 
-            Subterms oldSubs = subterms();
-            Subterms newSubs = oldSubs.replaceSubs(from, to);
-            if (newSubs == null)
-                return Null;
-            if (newSubs!=oldSubs) {
-                int dt = dt();
-                Op o = op();
-                if (newSubs instanceof TermList) {
-                    return o.the(dt,
-                            ((TermList) newSubs) /* force collection pathway */
-                    );
-                } else {
+
+        Subterms oldSubs = subterms();
+        Subterms newSubs = oldSubs.replaceSubs(from, to);
+        if (newSubs == null || newSubs == Null)
+            return Null;
+        if (newSubs!=oldSubs) {
+            int dt = dt();
+            Op o = op();
+            if (newSubs instanceof TermList) {
+                return o.the(dt, ((TermList) newSubs).arrayKeep());
+            } else {
 //                    if (o.commutative) {
 //                        //force reconstruct as may have changed
 //                        //TODO see if this is necessary esp. in direct transform mode
-                        return o.the(dt, newSubs.arrayShared());
+                return o.the(dt, newSubs);
 //                    } else {
 //                        /* Subterms as-is */
 //                        return Op.terms.theCompound(o, dt, newSubs);
 //                    }
-                }
             }
         }
+
         return this;
     }
 

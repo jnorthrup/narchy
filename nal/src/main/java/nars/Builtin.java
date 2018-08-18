@@ -62,6 +62,7 @@ public class Builtin {
 
 
             ListFunc.append,
+            ListFunc.reverse,
             ListFunc.sub,
             ListFunc.subs,
 

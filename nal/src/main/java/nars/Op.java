@@ -1012,7 +1012,11 @@ public enum Op {
 
 
     public final Term the(Subterms s) {
-        return the(s.arrayShared());
+        return the(DTERNAL, s);
+    }
+
+    public final Term the(int dt, Subterms s) {
+        return the(dt, s.arrayShared());
     }
 
     public final Term the(/*@NotNull*/ Term... u) {

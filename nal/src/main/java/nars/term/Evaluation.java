@@ -304,7 +304,7 @@ public class Evaluation {
                 if (y == True)
                     yy[0].add(x);
                 else if (y == False) {
-                    //yy[0].add(x.neg());
+                    yy[0].add(x.neg());
                 } else {
                     //Null, but continue..
                 }

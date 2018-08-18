@@ -17,8 +17,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
+import static nars.Op.INH;
 import static nars.Op.PROD;
-import static nars.time.Tense.DTERNAL;
 
 /** File and URL access interface (through VFS) */
 public class FileFunc {
@@ -122,7 +122,7 @@ public class FileFunc {
 
         Term path = $.p((String[])(pathComponents.toArray(ArrayUtils.EMPTY_STRING_ARRAY)));
         return (authority == null || authority.isEmpty()) ?
-                $.inh(path, scheme) : $.inh( PROD.the(DTERNAL,$.inh(path, /*TODO parse*/$.the(authority))), scheme);
+                $.inh(path, scheme) : $.inh( PROD.the(INH.the(path, /*TODO parse*/$.the(authority))), scheme);
     }
 
 

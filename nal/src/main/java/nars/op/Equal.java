@@ -1,5 +1,6 @@
 package nars.op;
 
+import nars.$;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Evaluation;
@@ -15,6 +16,10 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
     private Equal() {
         super("equal");
+    }
+
+    public static Term the(Term x, Term y) {
+        return $.func(the, x, y);
     }
 
     @Override final protected Term apply2(Evaluation e, Term x, Term y) {

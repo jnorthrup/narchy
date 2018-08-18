@@ -5,11 +5,9 @@ import jcog.version.VersionMap;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Evaluation;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Terms;
+import nars.term.*;
 import nars.term.atom.Int;
+import nars.term.util.Conj;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -144,6 +142,34 @@ public enum ListFunc {
     };
 
 
+    public static Functor reverse = new Functor.UnaryBidiFunctor("reverse") {
+
+        @Override
+        protected Term compute(Term x) {
+            Op o = x.op();
+            switch (o) {
+                case PROD:
+                    if (x.subs() > 1)
+                        return PROD.the(x.subterms().reversed());
+                    break;
+                case INH:
+                case IMPL:
+                    return o.the(x.dt(),x.subterms().reversed());
+                case CONJ:
+                    int dt = x.dt();
+                    if (!Conj.concurrent(dt))
+                        return x.dt(-dt);
+                    break;
+            }
+            return null;
+        }
+
+        @Override
+        protected Term uncompute(Term x, Term y) {
+            return compute(y);
+        }
+    };
+
     public static Functor sub = Functor.f2("sub", (x, n) -> {
         if (n.op() == INT) {
             return x.sub(((Int) n).id, Null);
@@ -151,6 +177,7 @@ public enum ListFunc {
             return null;
         }
     });
+
     public static Functor subs = Functor.f2Or3("subs", (Term[] args) -> {
         if (args.length == 2) {
 

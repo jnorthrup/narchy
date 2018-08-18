@@ -122,16 +122,7 @@ public abstract class UnitCompound implements Compound {
         assert(nextDT == DTERNAL);
         return this;
     }
-    public Term replace(Term from, Term to) {
-        if (this.equals(from))
-            return to;
 
-        Term s;
-        if ((s = sub()).equals(from) && !s.equals(to)) {
-            return op().the(s);
-        }
-        return this;
-    }
 
     @Override
     public boolean isTemporal() {

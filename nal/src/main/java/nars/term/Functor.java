@@ -12,6 +12,7 @@ import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.link.TermLinker;
+import nars.op.Equal;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -397,11 +398,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         protected abstract Term compute(Term x);
 
         /** override for reversible functions, though it isnt required */
-        Term uncompute(Term x, Term y) {
+        protected Term uncompute(Term x, Term y) {
             return null;
         }
 
-        Term apply2(Evaluation e, Term x, Term y) {
+        protected Term apply2(Evaluation e, Term x, Term y) {
             boolean xVar = x.op().var;
             if (y.op().var) {
                 
@@ -427,15 +428,16 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     }
                 } else {
                     
-                    Term XY = compute(x);
-                    if (XY == null)
+                    Term yActual = compute(x);
+                    if (yActual == null)
                         return null;  
-                    else if (XY.equals(y)) {
-                        return True;
-                    } else {
-                        
-                        return Null;
-                    }
+                    else
+                        return Equal.the(y,yActual);
+//                        if (XY.equals(y)) {
+//                        return True;
+//                    } else {
+//                        return False;
+//                    }
                 }
             }
         }

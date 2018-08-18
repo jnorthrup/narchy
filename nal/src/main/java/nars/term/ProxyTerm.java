@@ -46,10 +46,10 @@ public class ProxyTerm implements Compound {
 
     @Override
     public Term unneg() {
-        return differentValueOrThis(ref.unneg());
+        return ifDifferentElseThis(ref.unneg());
     }
 
-    final Term differentValueOrThis(Term u) {
+    final Term ifDifferentElseThis(Term u) {
         if (u == ref)
             return this; //continue proxying
         else
@@ -59,12 +59,12 @@ public class ProxyTerm implements Compound {
 
     @Override
     public @Nullable Term replace(Map<? extends Term, Term> m) {
-        return differentValueOrThis(ref.replace(m));
+        return ifDifferentElseThis(ref.replace(m));
     }
 
     @Override
     public Term replace(Term from, Term to) {
-        return differentValueOrThis(ref.replace(from, to));
+        return ifDifferentElseThis(ref.replace(from, to));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ProxyTerm implements Compound {
 
     @Override
     public @Nullable Term normalize() {
-        return differentValueOrThis(ref.normalize());
+        return ifDifferentElseThis(ref.normalize());
     }
 
     @Override
@@ -115,12 +115,12 @@ public class ProxyTerm implements Compound {
 
     @Override
     public Term root() {
-        return differentValueOrThis(ref.root());
+        return ifDifferentElseThis(ref.root());
     }
 
     @Override
     public Term concept() {
-        return differentValueOrThis(ref.concept());
+        return ifDifferentElseThis(ref.concept());
     }
     
     @Override
