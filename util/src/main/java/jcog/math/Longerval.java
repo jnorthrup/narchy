@@ -115,6 +115,11 @@ public class Longerval implements LongInterval {
 		else return a > b ? null : new Longerval(a, b);
 	}
 
+	public static Longerval intersection(long myA, long myB, long otherA, long otherB) {
+		long a = max(myA, otherA), b = min(myB, otherB);
+		return a > b ? null : new Longerval(a, b);
+	}
+
 	/** Return the longerval with elements from this not in other;
 	 *  other must not be totally enclosed (properly contained)
 	 *  within this, which would result in two disjoint longervals
@@ -153,10 +158,10 @@ public class Longerval implements LongInterval {
 	}
 
 
-	@Nullable public static Longerval intersect(long x1, long x2, long y1, long y2) {
-		assert(x1!=TIMELESS && x1!=ETERNAL && y1!=TIMELESS && y1!=ETERNAL);
-		return new Longerval(x1, x2).intersection(y1, y2);
-	}
+//	@Nullable public static Longerval intersect(long x1, long x2, long y1, long y2) {
+
+//		return internew Longerval(x1, x2).intersection(y1, y2);
+//	}
 	public static Longerval union(long x1, long x2, long y1, long y2) {
 		assert(x1!=TIMELESS && x1!=ETERNAL && y1!=TIMELESS && y1!=ETERNAL);
 		return new Longerval(x1, x2).union(y1, y2);

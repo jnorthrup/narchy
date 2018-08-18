@@ -2,6 +2,7 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.set.ArrayHashSet;
+import jcog.data.set.MetalLongSet;
 import jcog.pri.ScalarValue;
 import jcog.random.SplitMix64Random;
 import nars.*;
@@ -25,7 +26,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -168,7 +168,7 @@ public class Derivation extends PreDerivation {
     private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;
     private transient int taskUniques;
-    private transient ImmutableLongSet taskStamp;
+    private transient MetalLongSet taskStamp;
     public transient boolean overlapDouble, overlapSingle;
     public transient float pri;
     public transient short[] parentCause;

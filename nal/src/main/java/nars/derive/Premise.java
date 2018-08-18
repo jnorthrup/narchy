@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.BELIEF;
 import static nars.Op.VAR_QUERY;
 
 /**
@@ -62,7 +61,7 @@ public class Premise {
                         ((termLink.hashCode() & 0b00000000000011111111111111111111));
     }
 
-    public Term term() {
+    public Term beliefTerm() {
         return termLink.get();
     }
 
@@ -102,7 +101,7 @@ public class Premise {
         boolean beliefConceptCanAnswerTaskConcept = false;
         boolean beliefTransformed = false;
 
-        Term beliefTerm = term();
+        Term beliefTerm = beliefTerm();
         Op bo = beliefTerm.op();
         NAR n = d.nar;
         if (taskTerm.concept().equals(beliefTerm.concept())) {
@@ -129,7 +128,7 @@ public class Premise {
                     return true;
                 });
 
-                //u.symmetric = true;
+                u.symmetric = true;
 
                 beliefConceptCanAnswerTaskConcept = u.transform(beliefTerm, beliefTerm, taskTerm, matchTTL) > 0;
 
@@ -173,15 +172,22 @@ public class Premise {
 
         Task belief = null;
 
-        final BeliefTable bb = beliefConcept.beliefs();
-        if (bb.isEmpty())
-            return null;
+        final BeliefTable beliefTable = beliefConcept.beliefs();
+        final BeliefTable answerTable =
+                (task.isQuest()) ?
+                        beliefConcept.goals() :
+                        beliefTable;
 
-        if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest())
-            belief = tryAnswerQuestionTask(d, beliefTerm, beliefConcept, bb, n);
+        if (answerTable == beliefTable) {
+            if (beliefTable.isEmpty())
+                return null; //no beliefs
+        }
+
+        if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest() && (task.isQuestion() || !answerTable.isEmpty()))
+            belief = tryAnswer(beliefTerm, answerTable, d);
 
         if (belief == null)
-            belief = tryMatch(d, beliefTerm, bb, n);
+            belief = tryMatch(beliefTerm, beliefTable, d);
 
 //        if (unifiedBelief && belief!=null) {
 //            linkVariable(unifiedBelief, d.nar, beliefConcept);
@@ -190,61 +196,42 @@ public class Premise {
         return belief;
     }
 
-    private Task tryMatch(Derivation d, Term beliefTerm, BeliefTable bb, NAR n) {
+    private Predicate<Task> beliefFilter() {
+        if (task.stamp().length == 0) {
+            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
+        } else {
+            return t -> !t.equals(task);//null; //stampFilter(d);
+        }
+
+    }
+
+    private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
         long[] focus = timeFocus(d, beliefTerm);
 
         Predicate<Task> beliefFilter = beliefFilter();
 
         //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
         //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-        Task match = Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, n)
+        return Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, d.nar)
                 .match(bb)
                 .task(false, true, false);
-
-        return match;
     }
 
-    private Predicate<Task> beliefFilter() {
-        if (task.stamp().length > 0) {
-            return t -> !t.equals(task);//null; //stampFilter(d);
-        } else {
-            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
-        }
 
-    }
+    private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
 
-    private Task tryAnswerQuestionTask(Derivation d, Term beliefTerm, Concept beliefConcept, BeliefTable bb, NAR n) {
-        final BeliefTable answerTable =
-                (task.isQuest()) ?
-                        beliefConcept.goals() :
-                        bb;
 
         if (!answerTable.isEmpty()) {
 
             Task match =
-                    Answer.relevance(true, task.start(), task.end(), beliefTerm, null /*beliefFilter*/, n)
+                    Answer.relevance(true, task.start(), task.end(), beliefTerm, null /*beliefFilter*/, d.nar)
                             .ditherTruth(true)
                             .match(answerTable).task(true, true, true);
 
-//            if (!validMatch(match))
-//                match = null;
-
-//            if (match == null) {
-//                if (focus[0] != taskStart && focus[1] != taskEnd) {
-//                    match = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
-//                    if (!validMatch(match)) match = null;
-//                }
-//                if (match == null) {
-//                    //try, allowing overlap
-//                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n);
-//                    if (!validMatch(match)) match = null;
-//                }
-//            }
-
             if (match != null) {
-                assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+                //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-                @Nullable Task answered = task.onAnswered(match, n);
+                @Nullable Task answered = task.onAnswered(match, d.nar);
                 if (answered != null) {
 
                     d.add(answered);
@@ -265,7 +252,7 @@ public class Premise {
 
     private void linkVariable(boolean unifiedBelief, NAR n, Concept beliefConcept) {
         if (unifiedBelief) {
-            Concept originalBeliefConcept = n.conceptualize(term());
+            Concept originalBeliefConcept = n.conceptualize(beliefTerm());
             if (originalBeliefConcept != null) {
                 Concept taskConcept = n.concept(task.term(), true);
 
@@ -304,7 +291,7 @@ public class Premise {
     @Override
     public boolean equals(Object obj) {
         return this == obj ||
-                (hashCode() == obj.hashCode() && ((Premise) obj).task.equals(task) && ((Premise) obj).term().equals(term()));
+                (hashCode() == obj.hashCode() && ((Premise) obj).task.equals(task) && ((Premise) obj).beliefTerm().equals(beliefTerm()));
     }
 
     @Override
@@ -316,7 +303,7 @@ public class Premise {
     public String toString() {
         return "Premise(" +
                 task +
-                " * " + term() +
+                " * " + beliefTerm() +
                 ')';
     }
 

@@ -379,8 +379,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     @Nullable
     static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
-        if ((punc == BELIEF || punc == GOAL) && tr.evi() < Float.MIN_NORMAL /*Truth.EVI_MIN*/)
-            throw new TaskException(t, "insufficient evidence");
+        if (punc == BELIEF || punc == GOAL) {
+            if (tr == null)
+                throw new TaskException(t, "null truth but required for belief or goal");
+            if (tr.evi() < Float.MIN_NORMAL /*Truth.EVI_MIN*/)
+                throw new TaskException(t, "insufficient evidence");
+        }
 
         ObjectBooleanPair<Term> x = tryContent(t, punc, safe);
         return x != null ? withResult.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null) : null;
@@ -432,7 +436,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             return t;
 
         if (!t.isEternal()) {
-            @Nullable Longerval intersection = Longerval.intersect(start, end, t.start(), t.end());
+            @Nullable Longerval intersection = Longerval.intersection(start, end, t.start(), t.end());
             if (intersection != null) {
 
                 start = intersection.a;
@@ -900,6 +904,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         e += evi(last, dur) / 2;
         for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
             long ti = times[i];
+            if (ti == times[i-1])
+                continue; //duplicate time point, skip
             //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
             e += evi(ti, dur);
         }

@@ -88,7 +88,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * and the position that the key is in or the first EMPTY position found
      */
     private int index(int key) {
-        
+
         final int hash = key & 0x7fffffff;
 
         int[] k = this.keys;
@@ -96,31 +96,30 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
         int i = hash % len;
 
-        
+
         MetalBitSet s = this.status;
         if (!s.get(i) || k[i] == key)
             return i;
 
-        
+
         final int c = 1 + (hash % (len - 2));
 
-        while (true)
-        {
-            
+        while (true) {
+
             i -= c;
             if (i < 0)
                 i += len;
-            
+
             if (!s.get(i) || k[i] == key)
                 return i;
         }
     }
 
     private void enlargeIfNeeded() {
-        if (size+1 < keys.length * loadFactor)
+        if (size + 1 < keys.length * loadFactor)
             return;
 
-        
+
         final MetalBitSet oldSatus = status;
         final int[] oldKeys = keys;
 
@@ -158,9 +157,8 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
         if (status.get(valOrFreeIndex))
             return false;
 
-        
-        int i = valOrFreeIndex;
 
+        int i = valOrFreeIndex;
 
 
         status.set(i);
@@ -179,29 +177,16 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
     @Override
     public boolean contains(Object o) {
-        if (o != null && o instanceof Integer)
+        if (o instanceof Integer)
             return contains(((Integer) o).intValue());
         else
             return false;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public Iterator<Integer> iterator() {
-        
+
         int START = 0;
         while (START < keys.length && !status.get(START))
             START++;
@@ -242,36 +227,36 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      */
     static final int[] twinPrimesP2 =
             {
-                    7, 
-                    13, 
-                    19, 
-                    43, 
-                    73, 
-                    139, 
-                    271, 
-                    523, 
-                    1033, 
-                    2083, 
-                    4129, 
-                    8221, 
-                    16453, 
-                    32803, 
-                    65539, 
-                    131113, 
-                    262153, 
-                    524353, 
-                    1048891, 
-                    2097259, 
-                    4194583, 
-                    8388619, 
-                    16777291, 
-                    33554503, 
-                    67109323, 
-                    134217781, 
-                    268435579, 
-                    536871019, 
-                    1073741833, 
-                    2147482951, 
+                    7,
+                    13,
+                    19,
+                    43,
+                    73,
+                    139,
+                    271,
+                    523,
+                    1033,
+                    2083,
+                    4129,
+                    8221,
+                    16453,
+                    32803,
+                    65539,
+                    131113,
+                    262153,
+                    524353,
+                    1048891,
+                    2097259,
+                    4194583,
+                    8388619,
+                    16777291,
+                    33554503,
+                    67109323,
+                    134217781,
+                    268435579,
+                    536871019,
+                    1073741833,
+                    2147482951,
             };
 
 
@@ -293,16 +278,16 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
         @Override
         public Integer next() {
-            
+
             final int oldPos = prevPos = pos++;
-            
+
             int pos = this.pos;
             MetalBitSet s = SimpleIntSet.this.status;
             int[] k = SimpleIntSet.this.keys;
             while (pos < k.length && !s.get(pos))
                 pos++;
             this.pos = pos;
-            
+
             return k[oldPos];
         }
 

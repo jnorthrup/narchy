@@ -10,9 +10,11 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.compound.LazyCompound;
 import nars.term.var.UnnormalizedVariable;
+import nars.unify.match.Ellipsis;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * I = input term type, T = transformable subterm type
@@ -31,7 +33,7 @@ public interface TermTransform {
             return transformCompound((Compound)x, out);
         } else {
             @Nullable Term y = transformAtomic((Atomic) x);
-            if (y == null)
+            if (y == null || y == Null)
                 return false;
             out.add(y);
             return true;
@@ -50,20 +52,8 @@ public interface TermTransform {
      * transform pathway for compounds
      */
     default Term transformCompound(Compound x) {
-        Op xo = x.op();
-
-        Subterms xx = x.subterms();
-        Subterms yy = xx.transformSubs(this, xo);
-        if (yy == xx)
-            return x; //no change
-        if (yy == null)
-            return Null;
-        if (xo == CONJ && yy == Op.FalseSubterm)
-            return False;
-
-        return transformedCompound(x, xo, x.dt(), xx, yy);
+        return transformCompound(x, null, XTERNAL);
     }
-
 
     /**
      * should not be called directly except by implementations of TermTransform
@@ -71,17 +61,34 @@ public interface TermTransform {
     @Nullable
     default Term transformCompound(Compound x, Op op, int dt) {
 
-        Subterms xx = x.subterms();
-        Subterms yy = xx.transformSubs(this, op);
-        if (yy == xx && x.op() == op && x.dt() == dt)
-            return x; //no change
+        boolean sameOpAndDT = op == null;
+        Op xop = x.op();
+        Op targetOp = sameOpAndDT ? xop : op;
 
+        Subterms xx = x.subterms();
+        Subterms yy = xx.transformSubs(this, targetOp);
         if (yy == null)
             return Null;
-        if (op == CONJ && yy == Op.FalseSubterm)
-            return False;
 
-        else return transformedCompound(x, op, dt, xx, yy);
+        if (yy == xx && (sameOpAndDT || (x.op() == targetOp && x.dt() == dt)))
+            return x; //no change
+
+        if (targetOp == CONJ) {
+            if (yy == Op.FalseSubterm) return False;
+            switch (yy.subs()) {
+                case 0: return True;
+                case 1: {
+                    Term yyy = yy.sub(0);
+                    if (!(yyy instanceof Ellipsis))
+                        return yyy;
+                }
+            }
+        }
+
+        if (sameOpAndDT) {
+            dt = x.dt();
+        }
+        return transformedCompound(x, targetOp, dt, xx, yy);
     }
 
 
@@ -110,10 +117,9 @@ public interface TermTransform {
         Term y;
         //Subterms xx = x.subterms();
         if (yy != xx) {
-            Term[] a = ((TermList) yy).arraySharedKeep();
+            Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
             if (op == INH && eval() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
-                Term pred = a[1];
-                Term args = a[0];
+                Term pred = a[1], args = a[0];
                 Term v = ((Functor.InlineFunctor) pred).applyInline(args);
                 if (v != null)
                     return v;
@@ -121,8 +127,7 @@ public interface TermTransform {
             y = the(op, dt, a); //transformed subterms
         } else if (op != x.op()) {
             if (op == INH && eval() && xx.sub(1) instanceof Functor.InlineFunctor && xx.sub(0).op()==PROD) {
-                Term pred = xx.sub(1);
-                Term args = xx.sub(0);
+                Term pred = xx.sub(1), args = xx.sub(0);
                 Term v = ((Functor.InlineFunctor) pred).applyInline(args);
                 if (v != null)
                     return v;
@@ -215,23 +220,17 @@ public interface TermTransform {
             if (x.op()==NEG) {
                 Term xx = x.unneg();
                 Term yy = transform(xx);
-                if (yy == null)
-                    return null;
-                if (yy==xx)
-                    return x; 
-                else {
-                    return yy.neg();
-                }
+                if (yy == null || yy == Null)
+                    return Null;
+
+                return yy == xx ? x : yy.neg();
+
             } else {
-                return transformCompoundUnneg(x);
+                return TermTransform.super.transformCompound(x);
             }
 
         }
 
-        /** transforms a compound that has been un-negged */
-        @Nullable default Term transformCompoundUnneg(Compound x) {
-            return TermTransform.super.transformCompound(x);
-        }
     }
 
 }

@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.data.set.MetalLongSet;
 import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
 import jcog.sort.TopN;
@@ -17,7 +18,6 @@ import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +96,7 @@ public class Answer implements Consumer<Task> {
 
 
     public static FloatFunction<TaskRegion> mergeability(Task x) {
-        ImmutableLongSet xStamp = Stamp.toSet(x);
+        MetalLongSet xStamp = Stamp.toSet(x);
 
         long xStart = x.start();
         long xEnd = x.end();

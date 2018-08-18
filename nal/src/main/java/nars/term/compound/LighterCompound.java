@@ -69,7 +69,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
 
     @Override
     public Term[] arrayShared() {
-        return arraySharedKeep();
+        return arrayKeep();
     }
 
     @Override

@@ -9,7 +9,6 @@ import nars.Op;
 import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
-import nars.table.BeliefTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -155,7 +154,7 @@ abstract public class Inperience extends LeakBack {
 
             Term taskTerm = t.term();
             if (t.punc() == BELIEF) {
-                Task belief = ((BeliefTable) c.table(BELIEF))
+                Task belief = c.table(BELIEF)
                         .answer(t.start(), t.end(), taskTerm, null, nar);
 
                 Term bb = belief != null ? Described.transform(belief.term()) : Described.transform(taskTerm);
@@ -165,7 +164,7 @@ abstract public class Inperience extends LeakBack {
                     return Null;
                 return $.func(believe, self, bb.negIf(belief.isNegative()));
             } else {
-                Task goal = ((BeliefTable) c.table(GOAL))
+                Task goal = c.table(GOAL)
                         .answer(t.start(), t.end(), taskTerm, null, nar);
 
 
@@ -271,8 +270,7 @@ abstract public class Inperience extends LeakBack {
         if (nextTerm.op() == INH) {
             Term nextTermInh = Image.imageNormalize(nextTerm);
             Term pred = nextTermInh.sub(1);
-            if (pred.op() == ATOM && operators.contains(pred))
-                return false;
+            return pred.op() != ATOM || !operators.contains(pred);
         }
 
         return true;
@@ -286,11 +284,14 @@ abstract public class Inperience extends LeakBack {
         if (!c.op().conceptualizable)
             return 0;
 
-        float polarity = x.isQuestionOrQuest() ? 0.5f : Math.abs(x.freq() - 0.5f) * 2f;
-        PreciseTruth t = $.t(1, Util.lerp(polarity, nar.confMin.floatValue(), nar.confDefault(Op.BELIEF))).dither(nar);
+        float polarity = x.isQuestionOrQuest() ? 0.5f : x.polarity();
+        PreciseTruth t = $.t(1, Util.lerp(polarity, nar.confMin.floatValue()*2, nar.confDefault(Op.BELIEF))).dither(nar);
+        if (t == null)
+            return 0;
+
         byte punc = puncResult();
 
-        SignalTask y = (SignalTask) Task.tryTask(c, punc, t, (tt, tr)->{
+        SignalTask y = Task.tryTask(c, punc, t, (tt, tr)->{
             long start = x.start();
             long end;
             if (start == ETERNAL) {

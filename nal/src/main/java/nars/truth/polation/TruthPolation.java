@@ -4,6 +4,7 @@ import jcog.Paper;
 import jcog.Skill;
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.data.set.MetalLongSet;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -15,8 +16,6 @@ import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import org.eclipse.collections.api.set.primitive.LongSet;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -102,7 +101,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     }
 
-    public final LongSet filterCyclic() {
+    public final MetalLongSet filterCyclic() {
         return filterCyclic(true);
     }
 
@@ -115,7 +114,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return this;
     }
 
-    @Nullable public final LongSet filterCyclic(boolean provideStampIfOneTask) {
+    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask) {
         return filterCyclic(null, provideStampIfOneTask);
     }
 
@@ -123,7 +122,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
      */
-    @Nullable public final LongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
+    @Nullable public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
         filter();
 
         int s = size();
@@ -152,7 +151,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             }
         } else {
 
-            LongHashSet e = Stamp.toSet(s * Param.STAMP_CAPACITY/2, selected);
+            MetalLongSet e = Stamp.toSet(s * Param.STAMP_CAPACITY/2, selected);
 
             Task theSelected = selected;
             removeIf(tc -> {

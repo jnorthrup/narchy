@@ -3,6 +3,7 @@ package nars.truth.dynamic;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
 import nars.NAR;
@@ -23,8 +24,6 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.TimeAware;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -40,7 +39,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
 
-    private LongHashSet evi = null;
+    private MetalLongSet evi = null;
 
     public DynTruth(int initialCap) {
         super(initialCap);
@@ -207,7 +206,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                     r.getOne(), beliefOrGoal,
                     tr,
                     nar, Tense.dither(start, nar), Tense.dither(end, nar),
-                    this.evi.toArray());
+                    this.evi.toSortedArray());
 
 
             dyn.cause = cause();
@@ -233,7 +232,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     @Override
     public void clear() {
         super.clear();
-        evi.clear();
+        if (evi!=null)
+            evi.clear();
     }
 
     @Override
@@ -243,19 +243,17 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     @Override
-    public boolean add(@NotNull TaskRegion newItem) {
+    public boolean add(TaskRegion newItem) {
 
         super.add(newItem);
 
-        if (newItem != null) {
-            long[] stamp = ((Stamp) newItem).stamp();
+        if (evi == null)
+            evi = new MetalLongSet(Param.STAMP_CAPACITY);
 
-            if (evi == null)
-                evi = new LongHashSet(stamp.length * 2 /* estimate */);
+        long[] stamp = ((Stamp) newItem).stamp();
+        evi.addAll(stamp);
 
-            evi.addAll(stamp);
 
-        }
 
         return true;
     }

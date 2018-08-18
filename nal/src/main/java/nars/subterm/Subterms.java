@@ -886,8 +886,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
         if (y != null) {
-            y.fillNullsWith(this);
-            return y;
+            return y.commit(this, superOp);
         } else
             return this;
     }

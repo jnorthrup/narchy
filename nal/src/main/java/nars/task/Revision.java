@@ -1,6 +1,7 @@
 package nars.task;
 
 import jcog.Util;
+import jcog.data.set.MetalLongSet;
 import jcog.pri.Priority;
 import jcog.sort.Top;
 import nars.NAR;
@@ -21,7 +22,6 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
-import org.eclipse.collections.api.set.primitive.LongSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -280,7 +280,7 @@ public class Revision {
             }
         }
 
-        LongSet stamp = T.filterCyclic();
+        MetalLongSet stamp = T.filterCyclic();
 
         Truth truth = T.truth(nar);
         if (truth == null)
@@ -302,7 +302,7 @@ public class Revision {
                     return new NALTask(c, punc,
                             tr,
                             nar.time(), start, end,
-                            Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+                            Stamp.sample(Param.STAMP_CAPACITY, stamp.toSortedArray() /* TODO account for relative evidence contributions */, nar.random())
                     );
                 }
         );

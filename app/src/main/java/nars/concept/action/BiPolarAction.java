@@ -72,6 +72,8 @@ public class BiPolarAction extends AbstractSensor {
 
     @Override
     public void update(long prev, long now, long next, NAR nar) {
+        pos.update(prev, now, next, nar);
+        neg.update(prev, now, next, nar);
         Truth p = pos.actionTruth();
         Truth n = neg.actionTruth();
         float x = model.update(p, n, prev, now);

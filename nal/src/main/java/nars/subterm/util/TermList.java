@@ -8,6 +8,9 @@ import nars.term.Term;
 import java.util.Collection;
 import java.util.List;
 
+import static nars.Op.CONJ;
+import static nars.Op.True;
+
 /** mutable subterms, used in intermediate operations */
 public class TermList extends FasterList<Term> implements Subterms {
 
@@ -103,7 +106,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     /** use this only if the TermList is done being modified */
-    public Term[] arraySharedKeep() {
+    public Term[] arrayKeep() {
         return toArrayRecycled(Term[]::new);
     }
 
@@ -111,16 +114,38 @@ public class TermList extends FasterList<Term> implements Subterms {
         return new Term[newCapacity];
     }
 
-    public void fillNullsWith(Subterms src) {
+    /** finalization step on constructing a Subterm */
+    public Subterms commit(Subterms src, Op superOp) {
         int ys = size();
 
+        //replace prefix nulls with the input's values
+        //any other modifications specific to the superOp type
+
         Term[] ii = items;
-        for (int i = 0; i < ys; i++) {
-            if (ii[i] == null) {
-                ii[i] = src.sub(i);
-            } else
-                break; //stop at first non-null subterm
+
+        if (superOp == CONJ) {
+            for (int i = 0; i < ys; i++) {
+                Term j;
+                if ((j = ii[i]) == null)
+                    ii[i] = j = src.sub(i);
+                if (j == True) {
+                    remove(i--);
+                    ys--;
+                }
+            }
+        } else {
+            for (int i = 0; i < ys; i++) {
+                if (ii[i] == null)
+                    ii[i] = src.sub(i);
+                else
+                    break; //stop at first non-null subterm
+            }
         }
+
+        if (ys == 0)
+            return Op.EmptySubterms;
+        else
+            return this;
     }
 
 }

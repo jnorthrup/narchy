@@ -23,12 +23,12 @@ package nars.truth;
 import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.set.MetalLongSet;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
 import nars.Task;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
@@ -142,17 +142,28 @@ public interface Stamp {
         return toSetArray(c, maxLen);
     }
 
-    static ImmutableLongSet toSet(Stamp task) {
-        return new LongHashSet(task.stamp()).toImmutable();
+    static MetalLongSet toSet(Stamp task) {
+        return new MetalLongSet(task.stamp());
     }
 
-    static LongHashSet toSet(int capacity, Task... t) {
-        LongHashSet e = new LongHashSet(capacity);
+    static MetalLongSet toSet(int capacity, Task... t) {
+        MetalLongSet e = new MetalLongSet(capacity);
         for (Task tt : t) {
             for (long ss : tt.stamp())
                 e.add(ss);
         }
         return e;
+    }
+
+    static boolean validStamp(long[] stamp) {
+        if (stamp.length > 1) {
+            for (int i = 1, stampLength = stamp.length; i < stampLength; i++) {
+                long x = stamp[i];
+                if (stamp[i-1] >= x)
+                    return false; //out of order or duplicate
+            }
+        }
+        return true;
     }
 
 
@@ -375,11 +386,17 @@ public interface Stamp {
 
 
 
-    static boolean overlapsAny(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
-        for (long x : b) {
+    static boolean overlapsAny(/*@NotNull*/ MetalLongSet aa,  /*@NotNull*/ long[] b) {
+        for (long x : b)
             if (aa.contains(x))
                 return true;
-        }
+        return false;
+    }
+
+    static boolean overlapsAny(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
+        for (long x : b)
+            if (aa.contains(x))
+                return true;
         return false;
     }
 
@@ -557,8 +574,8 @@ public interface Stamp {
         return pair(e, Util.unitize(overlap));
     }
 
-    static long[] sample(int max, LongSet evidence, Random rng) {
-        long[] e = evidence.toArray();
+    static long[] sample(int max, long[] e, Random rng) {
+
         if (e.length > max) {
             ArrayUtils.shuffle(e, rng);
             e = ArrayUtils.subarray(e, 0, max);

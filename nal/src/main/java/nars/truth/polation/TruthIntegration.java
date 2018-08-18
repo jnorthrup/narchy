@@ -1,10 +1,12 @@
 package nars.truth.polation;
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import jcog.math.Longerval;
 import nars.Task;
 import nars.task.signal.TruthletTask;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -52,29 +54,34 @@ public class TruthIntegration {
 
             long[] points;
             if (qStart<tStart || qEnd>tEnd) {
-                LongHashSet pp = new LongHashSet(4);
+
+                @Nullable Longerval qt = Longerval.intersection(qStart, qEnd, tStart, tEnd);
+                LongArrayList pp = new LongArrayList(qt ==null ? 3 : 5);
+
                 pp.add(qStart);
-                pp.add(qEnd);
+
                 if (qStart+1!=qEnd)
                     pp.add((qStart+qEnd)/2L); //mid
 
-                @Nullable Longerval qt = Longerval.intersect(qStart, qEnd, tStart, tEnd);
                 if (qt != null) {
-
                     //inner points
                     long qta = qt.a;
-                    if (qta > qStart && qta < qEnd) { //quick test to avoid set add
+                    if (qta > qStart && qta < qEnd) //quick test to avoid set add
                         pp.add(qta);
-                    }
-                    long qtb = qt.b;
-                    if (qta != qtb) {
-                        if (qtb > qStart && qtb < qEnd) { //quick test to avoid set add
-                            pp.add(qtb);
-                        }
-                    }
 
+                    long qtb = qt.b;
+                    if (qta != qtb && qtb > qStart && qtb < qEnd)  //quick test to avoid set add
+                        pp.add(qtb);
                 }
-                points = pp.toSortedArray();
+
+
+                pp.add(qEnd);
+
+                points = pp.toLongArray();
+
+                if (qt!=null)
+                    Arrays.sort(points); //sort if the internal points were tracked. otherwise the sort order is correct
+
             } else {
                 if (t instanceof TruthletTask) {
                     //quick points array determination

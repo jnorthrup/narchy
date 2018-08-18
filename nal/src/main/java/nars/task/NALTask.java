@@ -9,6 +9,7 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
@@ -46,6 +47,10 @@ public class NALTask extends UnitPri implements Task {
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new TaskException(term, "null truth");
 
+        if (Param.DEBUG) {
+            if (!Stamp.validStamp(stamp))
+                throw new TaskException(term, "invalid stamp");
+        }
 
         if ((start == ETERNAL && end != ETERNAL) ||
                 (start != ETERNAL && start > end) ||

@@ -38,7 +38,7 @@ public class TaskLinkTest {
         Iterator<Comparable<?>> ff = f.valuesIterator();
         Comparable<?> aa = ff.next();
         Comparable<?> bb = ff.next();
-        assertTrue((f.getPct(bb) / f.getPct(aa)) > 4);  //some significant difference
+        assertTrue((f.getPct(bb) / f.getPct(aa)) > 1.5f);  //some significant difference
 
 
     }

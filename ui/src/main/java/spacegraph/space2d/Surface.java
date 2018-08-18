@@ -257,10 +257,14 @@ abstract public class Surface implements SurfaceBase {
     /** keeps this rectangle within the given bounds */
     public void fence(RectFloat2D bounds) {
         //if (bounds.contains(this.bounds)) {
-            float x = left();
-            float y = top();
-            pos(Util.clamp(x, bounds.left(), bounds.right() - w()),
-                    Util.clamp(y, bounds.top(), bounds.bottom() - h()));
+        if (this.bounds == bounds)
+            return;
+        float x = left();
+        float y = top();
+        float L = bounds.left();
+        float T = bounds.top();
+        pos(Util.clamp(x, L, Math.max(L, bounds.right() - w())),
+                    Util.clamp(y, T, Math.max(T, bounds.bottom() - h())));
         //}
     }
 }

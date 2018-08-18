@@ -13,6 +13,7 @@ import nars.task.Revision;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
+import nars.term.util.builder.HeapTermBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.set.MutableSet;
@@ -442,7 +443,8 @@ public class Conj extends ByteAnonMap {
         }
 
 
-        return Op.compound(CONJ, dt, left, right);
+        //return Op.compound(CONJ, dt, left, right);
+        return HeapTermBuilder.the.theCompound(CONJ, dt, left, right);
     }
 
     /**
@@ -1279,7 +1281,8 @@ public class Conj extends ByteAnonMap {
                     //recurse: still flattening to do
                     return CONJ.the(cdt, t);
                 } else {
-                    return Op.compound(CONJ, cdt, Terms.sorted(t));
+                    //return Op.compound(CONJ, cdt, Terms.sorted(t));
+                    return HeapTermBuilder.the.compound(CONJ, cdt, Terms.sorted(t));
                 }
 
             }
