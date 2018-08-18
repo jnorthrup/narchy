@@ -663,10 +663,12 @@ public class Occurrify extends TimeGraph {
         Relative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                //return solveOccDT(d, x, d.occ.reset(x, false, false));
 
-                if (x.op()!=CONJ || x.subs()!=2)
-                    return null; //degenerated to non-conjunction
+
+                if (x.op()!=CONJ || x.subs()!=2) {
+                    //degenerated to non-conjunction. use the full solver
+                    return solveOccDT(d, x, d.occ.reset(x, false, false));
+                }
 
                 long t = d.taskStart, b = d.beliefStart;
 
