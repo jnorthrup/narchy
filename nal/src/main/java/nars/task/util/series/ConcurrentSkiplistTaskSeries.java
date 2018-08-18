@@ -9,7 +9,7 @@ import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynTruth;
+import nars.truth.dynamic.DynStampTruth;
 import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
@@ -206,7 +206,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
 
 
     @Override
-    public DynTruth truth(long start, long end, long dur, @Nullable Predicate<Task> filter, NAR n) {
+    public DynStampTruth truth(long start, long end, long dur, @Nullable Predicate<Task> filter, NAR n) {
 
         int size = size();
         if (size == 0)
@@ -214,7 +214,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
 
         int MAX_TASKS_TRUTHPOLATED = Answer.TASK_LIMIT;
 
-        DynTruth d = new DynTruth(Math.min(size, MAX_TASKS_TRUTHPOLATED));
+        DynStampTruth d = new DynStampTruth(Math.min(size, MAX_TASKS_TRUTHPOLATED));
 
         forEach(start, end, MAX_TASKS_TRUTHPOLATED, d.adding(filter));
 
@@ -224,7 +224,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
     @Override
     public int forEach(long start, long end, int limit, Consumer<T> target) {
         TopN<Task> inner = new TopN<>(new Task[Math.min(size(), limit)],
-                t -> TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
+                (t,min) -> TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
         );
 
         forEach(start, end, false, inner::add);

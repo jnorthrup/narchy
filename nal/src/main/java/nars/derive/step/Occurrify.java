@@ -14,6 +14,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
+import nars.term.util.Conj;
 import nars.term.util.Image;
 import nars.time.Event;
 import nars.time.Tense;
@@ -618,6 +619,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
+
                 return solveDT(d, x, d.occ.reset(x,false,false));
             }
 
@@ -661,7 +663,56 @@ public class Occurrify extends TimeGraph {
         Relative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveOccDT(d, x, d.occ.reset(x, false, false));
+                //return solveOccDT(d, x, d.occ.reset(x, false, false));
+
+                if (x.op()!=CONJ || x.subs()!=2)
+                    return null; //degenerated to non-conjunction
+
+                long t = d.taskStart, b = d.beliefStart;
+
+                if (t == ETERNAL && b == ETERNAL) {
+                    return pair(x.dt(DTERNAL), new long[] { ETERNAL, ETERNAL });
+                }
+                if (t == ETERNAL) {
+                    return pair(x.dt(0), new long[] { d.beliefStart, d.belief.end() });
+                }
+                if (b == ETERNAL) {
+                    return pair(x.dt(0), new long[] { d.taskStart, d.task.end() });
+                }
+
+
+                Term i = x.sub(0), j = x.sub(1);
+                Term first;
+
+                //infer which component is earlier
+                Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
+                if (taskTerm.equals(i) || taskTerm.equals(beliefTerm))
+                    first = i;
+                else if (taskTerm.equals(j))
+                    first = j;
+                else if (taskTerm.equalsNeg(i) && !beliefTerm.equals(i.unneg()))
+                    first = i;
+                else if (taskTerm.equalsNeg(j) && !beliefTerm.equals(j.unneg()))
+                    first = j;
+                else if (taskTerm.equalsRoot(i))
+                    first = i;
+                else if (taskTerm.equalsRoot(j))
+                    first = j;
+                else
+                    return null; //TODO more cases
+
+                Term second = (first == i) ? j : i;
+
+                long firstStart = ((first == i) ? d.task : d.belief).start();
+                long secondStart = (first == i  ? d.belief : d.task).start();
+                Term y = Conj.conjMerge(first, 0, second, secondStart - firstStart);
+
+                long range = Math.max(Math.min(d.task.range(), d.belief.range())-1, 0);
+
+                long earlyStart = Math.min(firstStart, secondStart);
+
+                return pair(y, new long[] { earlyStart , earlyStart  + range });
+
             }
 
             @Override

@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynTruth;
+import nars.truth.dynamic.DynStampTruth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -19,7 +19,7 @@ public interface TaskSeries<T extends Task> {
     /** the provided truth value should already be dithered */
     T add(Truth nextValue, long start, long end, int dur, Term term, byte punc, NAR nar);
 
-    @Nullable DynTruth truth(long start, long end, long dur, Predicate<Task> filter, NAR nar);
+    @Nullable DynStampTruth truth(long start, long end, long dur, Predicate<Task> filter, NAR nar);
 
     int size();
 

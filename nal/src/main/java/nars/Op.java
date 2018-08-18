@@ -583,12 +583,50 @@ public enum Op {
     /**
      * TODO option for instantiating CompoundLight base's in the bottom part of this
      */
-    public static Term dt(Compound base, int nextDT) {
+    public static Term dt(Compound x, int nextDT) {
 
+        int baseDT = x.dt();
+        if (nextDT == baseDT)
+            return x; //no change
 
-        return base.op().the(nextDT, base.arrayShared());
+        Op op = x.op();
 
+        Term[] xx = x.arrayShared();
 
+        if (op == CONJ)  {
+            if (!Conj.concurrent(nextDT)) {
+
+                boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
+
+                if (Conj.concurrent(baseDT)) {
+                    if (!repeating)
+                        throw new TermException(CONJ, baseDT, xx, "ambiguous DT change from concurrent to non-concurrent and non-repeating");
+
+                }
+
+                if (repeating) {
+                    nextDT = Math.abs(nextDT);
+                    if (nextDT == baseDT) {
+                        //can this be detected earlier, if it happens
+                        return x;
+                    }
+                }
+
+                if (!Conj.concurrent(baseDT)) {
+                    //fast transform non-concurrent -> non-concurrent
+                    return Op.compound(CONJ, nextDT, xx);
+                }
+            } else {
+
+                if (Conj.concurrent(baseDT)) {
+                    //fast transform concurrent -> concurrent, subs wont change
+                    return Op.compound(CONJ, nextDT, xx);
+                }
+
+            }
+        }
+
+        return op.the(nextDT, xx);
     }
 
 

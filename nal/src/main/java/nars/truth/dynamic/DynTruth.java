@@ -3,7 +3,6 @@ package nars.truth.dynamic;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
 import nars.NAR;
@@ -19,7 +18,6 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.TimeAware;
@@ -27,10 +25,8 @@ import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.Random;
+import java.util.function.*;
 
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.c2wSafe;
@@ -39,17 +35,9 @@ import static nars.truth.TruthFunctions.w2cSafe;
 /**
  * Created by me on 12/4/16.
  */
-public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
+public class DynTruth extends FasterList<Task> implements TaskRegion {
 
 
-    //private static final ThreadLocal<MetalLongSet> evis = ThreadLocal.withInitial(()->new MetalLongSet(4));
-
-//            new WeakPool<>(()-> new MetalLongSet(4), MetalLongSet::clear,
-//                Runtime.getRuntime().availableProcessors() * 16);
-
-    final static Supplier<MetalLongSet> evis = () -> new MetalLongSet(4);
-
-    protected MetalLongSet evi = null;
 
     public DynTruth(int initialCap) {
         super(initialCap);
@@ -64,28 +52,25 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return new TaskRegion[newCapacity];
     }
 
-    public float pri() {
+    public float pri(long start, long end) {
 
         int s = size;
         assert (s > 0);
 
-        if (s > 1 /* and all differ, because if they are equal then the average will be regardless of their relative rank */) {
-            if (anySatisfy(t -> t.start() == ETERNAL))
-                return meanValue(DynTruth::pri);
+        if (start == ETERNAL)
+            return meanValue(DynTruth::pri);
 
-            double total = 0, totalEvi = 0;
-
-            for (TaskRegion d : this) {
-                float p = DynTruth.pri(d);
-                double e = ((Truthed) d).conf() /*evi()*/ * d.range();
-                total += p * e;
-                totalEvi += e;
+        double total = 0;
+        double range = (end-start)+1;
+        for (TaskRegion d : this) {
+            float p = DynTruth.pri(d);
+            if (d.task().isEternal()) {
+                total += p;
+            } else {
+                total += p * d.range() / range;
             }
-            return (float) (total / totalEvi);
-
-        } else {
-            return pri(get(0));
         }
+        return (float) total;
     }
 
     @Override
@@ -110,129 +95,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 Util.map(0, size(), x -> get(x).cause(), short[][]::new));
     }
 
-    /** eval without any specific time or truth dithering */
-    public final Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
-        return eval(superterm, truthModel, taskOrJustTruth,  beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
-    }
-    /** eval without any specific time or truth dithering */
-    public final Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
-        return eval(superterm, t, taskOrJustTruth,  beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
-    }
-    /**
-     * TODO make Task truth dithering optional
-     */
-    @Deprecated  private Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
 
-        Truth t = truthModel.apply(this, nar);
-        if (t == null)
-            return null;
-        return eval(()->superterm, t, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
-    }
-
-    public Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
-
-
-        float evi = t.evi();
-//        if (evi < Math.min(eviMin, c2wSafe(confRes)))
-//            return null;
-
-
-        float freq = t.freq();
-
-        float f;
-
-
-        if (taskOrJustTruth) {
-
-            Term content = superterm.get();
-            if (content == null) {
-                //throw new NullPointerException("template is null; missing information how to build");
-                return null;
-            }
-
-            Op op = content.op();
-            if (op == NEG) {
-                content = content.unneg();
-                op = content.op();
-                f = 1.0f - freq;
-            } else {
-                f = freq;
-            }
-
-            long start, end;
-            if (size() > 1) {
-                if (op == CONJ) {
-                    long min = TIMELESS;
-                    long minRange = 0;
-                    boolean eternals = false;
-                    for (int i = 0, thisSize = size(); i < thisSize; i++) {
-                        LongInterval ii = get(i);
-                        long iis = ii.start();
-                        if (iis != ETERNAL) {
-                            min = Math.min(min, iis);
-                            minRange = Math.min(minRange, ii.end() - iis);
-                        } else {
-                            eternals = true;
-                        }
-                    }
-
-                    if (eternals && min == TIMELESS) {
-                        start = end = ETERNAL;
-                    } else {
-                        assert (min != TIMELESS);
-
-
-                        start = min;
-                        end = (min + minRange);
-                    }
-
-
-                } else {
-                    long[] u = Param.DynamicTruthTimeMerge(this.array());
-                    start = u[0];
-                    end = u[1];
-                }
-            } else {
-
-                LongInterval only = get(0);
-                start = only.start();
-                end = only.end();
-            }
-
-
-
-            @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
-                    content,
-                    beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG_EXTRA);
-            if (r == null)
-                return null;
-
-            PreciseTruth tr = Truth.theDithered(r.getTwo() ? (1 - f) : f, freqRes, evi, confRes, w2cSafe(eviMin));
-            if (tr == null)
-                return null; //TODO see if this can be detected earlier, by comparing evi before term construction
-
-
-            NALTask dyn = new DynamicTruthTask(
-                    r.getOne(), beliefOrGoal,
-                    tr,
-                    nar, Tense.dither(start, nar), Tense.dither(end, nar),
-                    Stamp.sample(Param.STAMP_CAPACITY, this.evi, nar.random()));
-
-
-            dyn.cause = cause();
-
-            dyn.pri(pri());
-
-            if (Param.DEBUG_EXTRA)
-                dyn.log("Dynamic");
-
-            return dyn;
-
-        } else {
-            return Truth.theDithered(freq, freqRes, evi, confRes, w2cSafe(eviMin));
-        }
-
-    }
 
     @Override
     public @Nullable Task task() {
@@ -240,55 +103,12 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     @Override
-    public void clear() {
-        super.clear();
-        if (evi!=null)
-            evi.clear();
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends TaskRegion> source) {
+    public boolean addAll(Collection<? extends Task> source) {
         source.forEach(this::add);
         return true;
     }
 
-    @Override
-    public boolean add(TaskRegion newItem) {
-
-        super.add(newItem);
-
-        if (evi == null) {
-            evi = evis.get();
-        }
-
-        long[] stamp = ((Stamp) newItem).stamp();
-        evi.addAll(stamp);
-
-        return true;
-    }
-
-    boolean doesntOverlap(Task task) {
-        MetalLongSet e = this.evi;
-        if (e != null) {
-
-            long[] s = task.stamp();
-            for (long x : s) {
-                if (e.contains(x))
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    public final Truth truth(Term term, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
-        return (Truth) eval(term, o, false, beliefOrGoal, n);
-    }
-
-    public final Task task(Term term, Truth t, boolean beliefOrGoal, NAR n) {
-        return task(term, t, beliefOrGoal, false, n);
-
-    }
-    public final Task task(Term term, Truth t, boolean beliefOrGoal, boolean ditherTruth, NAR n) {
+    public final Task task(Term term, Truth t,Function<Random,long[]> stamp,  boolean beliefOrGoal, boolean ditherTruth, NAR n) {
         //private Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
         assert(t!=null);
         float fRes, cRes, eMin;
@@ -301,10 +121,100 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             cRes = Float.MIN_NORMAL;
             eMin = Float.MIN_NORMAL;
         }
-        return (Task) eval(()->term, t, true, beliefOrGoal,
-                fRes,cRes,eMin, n);
+        return task(()->term, t, stamp, beliefOrGoal, fRes,cRes,eMin, n);
 
     }
+    public Task task(Supplier<Term> term, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+        return task(term, t.freq(), t.evi(), stamp, beliefOrGoal, freqRes, confRes, eviMin, nar);
+    }
+
+    public Task task(Supplier<Term> term, float freq, float evi, Function<Random,long[]> stamp, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+        float f;
+        Term content = term.get();
+        if (content == null) {
+            //throw new NullPointerException("template is null; missing information how to build");
+            return null;
+        }
+
+        Op op = content.op();
+        if (op == NEG) {
+            content = content.unneg();
+            op = content.op();
+            f = 1.0f - freq;
+        } else {
+            f = freq;
+        }
+
+        long start, end;
+        if (size() > 1) {
+            if (op == CONJ) {
+                long min = TIMELESS;
+                long minRange = 0;
+                boolean eternals = false;
+                for (int i = 0, thisSize = size(); i < thisSize; i++) {
+                    LongInterval ii = get(i);
+                    long iis = ii.start();
+                    if (iis != ETERNAL) {
+                        min = Math.min(min, iis);
+                        minRange = Math.min(minRange, ii.end() - iis);
+                    } else {
+                        eternals = true;
+                    }
+                }
+
+                if (eternals && min == TIMELESS) {
+                    start = end = ETERNAL;
+                } else {
+                    assert (min != TIMELESS);
+
+
+                    start = min;
+                    end = (min + minRange);
+                }
+
+
+            } else {
+                long[] u = Param.DynamicTruthTimeMerge(this.array());
+                start = u[0];
+                end = u[1];
+            }
+        } else {
+
+            LongInterval only = get(0);
+            start = only.start();
+            end = only.end();
+        }
+
+
+        @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
+                content,
+                beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG_EXTRA);
+        if (r == null)
+            return null;
+
+        PreciseTruth tr = Truth.theDithered(r.getTwo() ? (1 - f) : f, freqRes, evi, confRes, w2cSafe(eviMin));
+        if (tr == null)
+            return null; //TODO see if this can be detected earlier, by comparing evi before term construction
+
+
+        NALTask dyn = new DynamicTruthTask(
+                r.getOne(), beliefOrGoal,
+                tr,
+                nar, Tense.dither(start, nar), Tense.dither(end, nar),
+                stamp.apply(nar.random()));
+
+
+        dyn.cause = cause();
+
+        dyn.pri(pri(start, end));
+
+        if (Param.DEBUG_EXTRA)
+            dyn.log("Dynamic");
+
+        return dyn;
+    }
+
+
 
     public <T extends Task> Consumer<T> adding(@Nullable Predicate<Task> filter) {
         return filter==null ? this::add : (T x) -> {

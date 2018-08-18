@@ -20,11 +20,12 @@ import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
+import org.eclipse.collections.api.set.MutableSet;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
@@ -324,7 +325,7 @@ public class PatternIndex extends MapConceptIndex {
                 Subterms y = Y.subterms();
 
 
-                SortedSet<Term> xFixed = new TreeSet();
+                MutableSet<Term> xFixed = new UnifiedSet(0);
 
 
                 Ellipsis ellipsis = this.ellipsis;
@@ -432,7 +433,7 @@ public class PatternIndex extends MapConceptIndex {
 
 
                     case 1:
-                        Term x0 = xFixed.first();
+                        Term x0 = xFixed.getOnly();
                         if (yFree.size() == 1) {
                             return this.ellipsis.unify(EllipsisMatch.empty, u) && x0.unify(yFree.first(), u);
                         } else {

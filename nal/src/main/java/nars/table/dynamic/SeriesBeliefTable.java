@@ -10,16 +10,14 @@ import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.task.TaskProxy;
 import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
-import nars.task.util.TaskRegion;
 import nars.task.util.series.TaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.dynamic.DynTruth;
+import nars.truth.dynamic.DynStampTruth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -27,8 +25,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static nars.time.Tense.ETERNAL;
 
 /**
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
@@ -60,28 +56,30 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     protected Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
         int dur = nar.dur();
-        DynTruth d = series.truth(start, end, dur, filter, nar);
+        DynStampTruth d = series.truth(start, end, dur, filter, nar);
         if (d == null || d.isEmpty())
             return null;
 
-        if (taskOrJustTruth) {
-            if (d.size() == 1) {
-                TaskRegion d0 = d.get(0);
-                if (d0 instanceof TaskProxy) {
-                    d0 = ((TaskProxy) d0).clone();
-                }
-                return (Truthed) d0; //only task
-            } else {
-                //adjust the start, end time to match the tasks found
-                long s = d.start();
-                if (s != ETERNAL) {
-                    start = s;
-                    end = d.end();
-                } else {
-                    start = end = ETERNAL;
-                }
-            }
-        }
+
+
+//        if (taskOrJustTruth) {
+//            if (d.size() == 1) {
+//                TaskRegion d0 = d.get(0);
+//                if (d0 instanceof TaskProxy) {
+//                    d0 = ((TaskProxy) d0).clone();
+//                }
+//                return (Truthed) d0; //only task
+//            } else {
+//                //adjust the start, end time to match the tasks found
+//                long s = d.start();
+//                if (s != ETERNAL) {
+//                    start = s;
+//                    end = d.end();
+//                } else {
+//                    start = end = ETERNAL;
+//                }
+//            }
+//        }
 
         Truth pp = Param.truth(start, end, dur).add((Collection) d).filter().truth();
         if (pp == null)

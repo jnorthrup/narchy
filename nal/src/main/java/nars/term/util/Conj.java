@@ -457,7 +457,10 @@ public class Conj extends ByteAnonMap {
         if (bOffset == 0) {
             if (a.subterms().equals(b.subterms())) {
                 //special case: equal subs
-                return a.dt(Revision.chooseDT(a, b, aProp, nar));
+                Term ab = a;
+                if (a.op() == CONJ && Conj.concurrent(a.dt()))
+                    ab = b; //ab if conj must be non-concurrent as a seed for correctly ordering a result
+                return ab.dt(Revision.chooseDT(a, b, aProp, nar));
             }
         }
 

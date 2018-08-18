@@ -486,7 +486,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default Term dt(int nextDT) {
-        return nextDT != dt() ? Op.dt(this, nextDT) : this;
+        return Op.dt(this, nextDT);
     }
 
 

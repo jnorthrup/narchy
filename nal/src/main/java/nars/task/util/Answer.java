@@ -266,16 +266,29 @@ public class Answer implements Consumer<Task> {
         if (d.size() <= 1)
             return root;
 
-        TruthPolation tp = truthpolation(d).filtered(root);
+        TruthPolation tp = truthpolation(d);
+        @Nullable MetalLongSet stampSet = tp.filterCyclic(root, true);
         if (tp.size()==1)
             return root;
+
+
 
         @Nullable Truth tt = tp.truth(nar);
         if (tt==null)
             return root;
 
+
         boolean beliefOrGoal = root.isBelief();
-        Task dyn = d.task(tp.term, tt, beliefOrGoal, ditherTruth, nar);
+
+        Task dyn = d.task(tp.term, tt, (rng)->{
+            assert(stampSet!=null);
+            if (stampSet.size() > Param.STAMP_CAPACITY) {
+                return Stamp.sample(Param.STAMP_CAPACITY, stampSet, rng);
+            } else {
+                return stampSet.toSortedArray();
+            }
+        }, beliefOrGoal, ditherTruth, nar);
+
         if (dyn == null)
             return root;
         if (root.isDeleted())

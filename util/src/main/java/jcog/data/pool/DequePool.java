@@ -81,6 +81,6 @@ public abstract class DequePool<X> implements Pool<X> {
     }
 
     public int size() {
-        return size();
+        return data.size();
     }
 }

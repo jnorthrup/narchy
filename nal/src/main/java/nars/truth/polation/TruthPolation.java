@@ -123,11 +123,15 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * should be called after all entries are added
      */
     @Nullable public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
-        filter();
 
         int s = size();
-        if (s == 0)
+        if (s == 0) {
             return null;
+        } else if (s == 1) {
+            return provideStamp ? Stamp.toSet(get(0).task) : null;
+        }
+
+        filter();
 
         sortThisByFloat(tc -> -tc.evi);
 
@@ -143,11 +147,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 if (a == selected) remove(1); else remove(0);
                 return (provideStamp ? Stamp.toSet(selected) : null);
             } else {
-                if (provideStamp) {
-                    return Stamp.toSet(as.length + bs.length, a, b);
-                } else {
-                    return null;
-                }
+                return provideStamp ? Stamp.toSet(as.length + bs.length, a, b) : null;
             }
         } else {
 

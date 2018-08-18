@@ -6,6 +6,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.term.util.Conj;
+import nars.term.util.TermException;
 import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.NotNull;
@@ -1344,8 +1345,8 @@ public class ConjTest {
 
         Compound x = $("(&&,(#1-->I),(#1-->{i141}),(#2-->{i141}))");
         assertNotNull(x);
-        assertEquals(Null, x.dt(-1));
-        assertEquals(Null, x.dt(+1));
+        assertThrows(TermException.class, ()->x.dt(-1));
+        assertThrows(TermException.class, ()->x.dt(+1));
         assertNotEquals(Null, x.dt(0));
         assertNotEquals(Null, x.dt(DTERNAL));
         assertNotEquals(Null, x.dt(XTERNAL));

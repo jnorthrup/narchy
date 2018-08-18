@@ -6,11 +6,13 @@ import nars.Op;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.set.MutableSet;
 
 import java.util.SortedSet;
 
@@ -32,6 +34,12 @@ public class Choose2 extends Termutator.AbstractTermutator {
     private final ShuffledSubterms yy;
 
     private final static Atom CHOOSE_2 = $.the(Choose2.class);
+
+    public Choose2(Ellipsis xEllipsis, Unify f, MutableSet<Term> x, SortedSet<Term> yFree) {
+        this(xEllipsis, f,
+                Terms.sorted(x),
+                $.vFast(yFree.toArray(Op.EmptyTermArray)));
+    }
 
     public Choose2(Ellipsis xEllipsis, Unify f, SortedSet<Term> x, SortedSet<Term> yFree) {
         this(xEllipsis, f,

@@ -129,7 +129,7 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
     protected final Term getCompound(Compound y) {
         putOrGet = false;
         Term x = transformCompound(y);
-        validate(y, x, false);
+//        validate(y, x, false);
         return x;
     }
 
@@ -138,7 +138,7 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
 
         Term y = transformCompound(x);
 
-        validate(x, y, true);
+//        validate(x, y, true);
         return y;
     }
 }

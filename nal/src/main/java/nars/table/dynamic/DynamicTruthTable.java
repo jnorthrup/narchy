@@ -5,7 +5,7 @@ import nars.Task;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynTruth;
+import nars.truth.dynamic.DynStampTruth;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +33,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         NAR nar = a.nar;
 
         //TODO allow use of time's specified intersect/contain mode
-        DynTruth yy = model.eval(template, beliefOrGoal, a.time.start, a.time.end, a.filter, false , nar);
+        DynStampTruth yy = model.eval(template, beliefOrGoal, a.time.start, a.time.end, a.filter, false , nar);
         if (yy == null)
             return null;
 
@@ -42,14 +42,14 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             return null;
 
         Term tmplate = template;
-        return (Task)yy.eval(() -> model.reconstruct(tmplate, yy), t, true, beliefOrGoal, nar);
+        return (Task) yy.eval(() -> model.reconstruct(tmplate, yy), t, true, beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
     }
 
 
     @Override
     protected Truth truthDynamic(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
-        DynTruth d = model.eval(template, beliefOrGoal, start, end, filter, true, nar);
+        DynStampTruth d = model.eval(template, beliefOrGoal, start, end, filter, true, nar);
 
         return d != null ? d.truth(template, model, beliefOrGoal, nar) : null;
 

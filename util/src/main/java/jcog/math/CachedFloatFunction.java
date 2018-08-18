@@ -1,11 +1,12 @@
 package jcog.math;
 
+import jcog.sort.FloatRank;
 import org.eclipse.collections.api.block.HashingStrategy;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectFloatHashMapWithHashingStrategy;
 import org.jetbrains.annotations.Nullable;
 
-public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrategy<X> implements FloatFunction<X> {
+public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrategy<X> implements FloatFunction<X>, FloatRank<X> {
 
 
     private static final HashingStrategy IDENTITY_STRATEGY = new HashingStrategy() {
@@ -39,6 +40,11 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
         return this;
     }
 
+    @Override
+    public final float rank(X x, float minIgnored) {
+        //TODO ??
+        return getIfAbsentPutWithKey(x, f);
+    }
 
     @Override
     public final float floatValueOf(X x) {

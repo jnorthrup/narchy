@@ -34,11 +34,11 @@ import static nars.time.Tense.*;
  */
 abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Truth> {
 
-    public final DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, Predicate<Task> superFilter, boolean forceProjection, NAR n) {
+    public final DynStampTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, Predicate<Task> superFilter, boolean forceProjection, NAR n) {
 
         assert (superterm.op() != NEG);
 
-        DynTruth d = new DynTruth(4);
+        DynStampTruth d = new DynStampTruth(4);
 
 
         Predicate<Task> filter = Answer.filter(superFilter, d::doesntOverlap);
@@ -59,7 +59,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 return false;
 
             /* project to a specific time, and apply negation if necessary */
-            bt = Task.project(!forceProjection, bt, subStart, subEnd, n, negated);
+            bt = Task.project(forceProjection, bt, subStart, subEnd, n, negated);
             if (bt == null)
                 return false;
 
@@ -73,7 +73,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     /**
      * used to reconstruct a dynamic term from some or all components
      */
-    abstract public Term reconstruct(Term superterm, List<TaskRegion> c);
+    abstract public Term reconstruct(Term superterm, List<Task> c);
 
     @FunctionalInterface
     interface ObjectLongLongPredicate<T> {
@@ -98,7 +98,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             }
 
             @Override
-            public Term reconstruct(Term superterm, List<TaskRegion> components) {
+            public Term reconstruct(Term superterm, List<Task> components) {
                 if (!superterm.hasAny(Op.Temporal))
                     return superterm; //shortcut
 
@@ -197,10 +197,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             @Override
             public Truth apply(DynTruth d, NAR n) {
                 assert (d.size() == 2);
-                Truth a = ((Task) d.get(0)).truth();
+                Truth a = d.get(0).truth();
                 if (a == null)
                     return null;
-                Truth b = ((Task) d.get(1)).truth();
+                Truth b = d.get(1).truth();
                 if (b == null)
                     return null;
 
@@ -232,7 +232,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             }
 
             @Override
-            public Term reconstruct(Term superterm, List<TaskRegion> c) {
+            public Term reconstruct(Term superterm, List<Task> c) {
                 return stmtReconstruct(superterm, c, subjOrPred, false);
             }
         }
@@ -240,7 +240,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public static final Difference DiffRoot = new Difference() {
 
             @Override
-            public Term reconstruct(Term superterm, List<TaskRegion> components) {
+            public Term reconstruct(Term superterm, List<Task> components) {
                 return Op.DIFFe.the(
                         components.get(0).task().term(),
                         components.get(1).task().term());
@@ -259,13 +259,13 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
 
         @Override
-        public Term reconstruct(Term superterm, List<TaskRegion> c) {
+        public Term reconstruct(Term superterm, List<Task> c) {
             return superterm; //exact
         }
 
         @Override
         public Truth apply(DynTruth taskRegions, NAR nar) {
-            return ((Task) taskRegions.get(0)).truth();
+            return taskRegions.get(0).truth();
         }
     };
 
@@ -274,7 +274,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public static final DynamicTruthModel ConjIntersection = new Intersection() {
 
             @Override
-            public Term reconstruct(Term superterm, List<TaskRegion> components) {
+            public Term reconstruct(Term superterm, List<Task> components) {
 
                 Conj c = new Conj(components.size());
 
@@ -404,11 +404,11 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     }
 
     @Nullable
-    private static Term[] stmtReconstruct(boolean subjOrPred, List<TaskRegion> components) {
+    private static Term[] stmtReconstruct(boolean subjOrPred, List<Task> components) {
 
         //extract passive term and verify they all match (could differ temporally, for example)
         Term[] common = new Term[1];
-        if (!((FasterList<TaskRegion>) components).allSatisfy(tr -> {
+        if (!((FasterList<Task>) components).allSatisfy(tr -> {
             Term tt = subSubjPredWithNegRewrap(subjOrPred, tr);
             Term p = common[0];
             if (p == null) {
@@ -444,7 +444,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     }
 
     @Nullable
-    private static Term stmtReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred, boolean union) {
+    private static Term stmtReconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union) {
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
         Op op = superterm.op();
         if (union) {
@@ -462,7 +462,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 //        if (!Param.DEBUG) {
 //            //elide reconstruction when superterm will not differ by temporal terms
 //            //TODO improve
-//            if (superSect.subs() == components.size() && ((FasterList<TaskRegion>) components).allSatisfy(t -> t != null && !((Task) t).term().sub(subjOrPred ? 0 : 1).isTemporal())) {
+//            if (superSect.subs() == components.size() && ((FasterList<Task>) components).allSatisfy(t -> t != null && !((Task) t).term().sub(subjOrPred ? 0 : 1).isTemporal())) {
 //                if (!superSect.isTemporal())
 //                    return superterm;
 //            }
