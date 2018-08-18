@@ -1311,8 +1311,8 @@ public enum Util {
         float weightSum = 0;
         for (int i = 0; i < count; i++) {
             float w = values.valueOf(i);
-            assert (w == w);
-            if (w > 0)
+            //assert (w == w);
+            if (w == w && w > 0)
                 weightSum += w;
         }
         return weightSum;

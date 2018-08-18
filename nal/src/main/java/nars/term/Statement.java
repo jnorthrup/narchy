@@ -4,6 +4,7 @@ import nars.Op;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.term.util.TermBuilder;
+import nars.term.util.builder.HeapTermBuilder;
 
 import java.util.function.Predicate;
 
@@ -101,7 +102,7 @@ public class Statement {
                     ConjEliminator pe = new ConjEliminator(se,
                             po,
                             predicate, subjNeg);
-                    Term newPred = pe.term();
+                    Term newPred = pe.result;
 
                     boolean predChange = !predicate.equals(newPred);
                     if (predChange) {
@@ -183,7 +184,8 @@ public class Statement {
 //            }
         }
 
-        return builder.compound(op, dt, subject, predicate);
+        //return builder.compound(op, dt, subject, predicate);
+        return HeapTermBuilder.the.theCompound(op, dt, subject, predicate);
     }
 
     private static class ConjEliminator extends Conj {

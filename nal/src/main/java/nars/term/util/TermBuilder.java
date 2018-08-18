@@ -109,7 +109,7 @@ public abstract class TermBuilder {
     }
 
 
-    protected final Term theCompound(Op o, int dt, Term... u) {
+    public final Term theCompound(Op o, int dt, Term... u) {
         return theCompound(o, dt, u, null);
     }
 

@@ -41,15 +41,19 @@ public class Answer implements Consumer<Task> {
     public final NAR nar;
     public TimeRangeFilter time;
     public Term template = null;
-    protected CachedFloatFunction<Task> cache;
-    TopN<Task> tasks;
-    int limit;
+
+    protected final CachedFloatFunction<Task> cache;
+    final TopN<Task> tasks;
+
+
+
     final FloatRank<Task> rank;
 
     public Answer(int limit, FloatRank<Task> rank, NAR nar) {
         this.nar = nar;
         this.rank = rank;
-        limit(limit);
+        this.cache = cache(rank);
+        this.tasks = new TopN<>(new Task[limit], cache);
     }
 
 
@@ -97,6 +101,7 @@ public class Answer implements Consumer<Task> {
 
     public static FloatFunction<TaskRegion> mergeability(Task x) {
         MetalLongSet xStamp = Stamp.toSet(x);
+        xStamp.trim();
 
         long xStart = x.start();
         long xEnd = x.end();
@@ -150,7 +155,7 @@ public class Answer implements Consumer<Task> {
                         :
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
-                            if (pri == pri && pri > m)
+                            if (pri==pri && pri > m)
                                 return pri * (1 / ((float) (t.minTimeTo(start, end) / ((double) dur))));
                             return Float.NaN;
                         };
@@ -287,21 +292,20 @@ public class Answer implements Consumer<Task> {
     }
 
     public Answer match(TaskTable t) {
-        if (cache == null) {
-            this.cache = new CachedFloatFunction<>(64, rank);
-            this.tasks = new TopN<>(new Task[limit], cache);
-        } else {
-            clear();
-        }
         t.match(this);
         return this;
     }
 
+    final static ThreadLocal<CachedFloatFunction<Task>> caches = ThreadLocal.withInitial(()->
+            new CachedFloatFunction<>(4)
+            );
 
-
-    public Answer limit(int limit) {
-        this.limit = limit;
-        return this;
+    static protected CachedFloatFunction<Task> cache(FloatRank<Task> rank) {
+        //return new CachedFloatFunction<>(4, 256, rank);
+        CachedFloatFunction<Task> x = caches.get().value(rank);
+        assert(x.isEmpty());
+        //System.out.println(Thread.currentThread() + " got " + System.identityHashCode(x));
+        return x;
     }
 
     public Answer time(TimeRangeFilter time) {

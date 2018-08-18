@@ -39,6 +39,8 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
 
+    private static final ThreadLocal<MetalLongSet> evis = ThreadLocal.withInitial(()->new MetalLongSet(64));
+
     private MetalLongSet evi = null;
 
     public DynTruth(int initialCap) {
@@ -247,8 +249,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         super.add(newItem);
 
-        if (evi == null)
-            evi = new MetalLongSet(Param.STAMP_CAPACITY);
+        if (evi == null) {
+            //evi = new MetalLongSet(Param.STAMP_CAPACITY / 2 - 1);
+            evi = evis.get();
+            evi.clear();
+        }
 
         long[] stamp = ((Stamp) newItem).stamp();
         evi.addAll(stamp);

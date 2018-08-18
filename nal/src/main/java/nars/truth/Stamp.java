@@ -146,17 +146,18 @@ public interface Stamp {
         return new MetalLongSet(task.stamp());
     }
 
-    static MetalLongSet toSet(int capacity, Task... t) {
-        MetalLongSet e = new MetalLongSet(capacity);
+    static MetalLongSet toSet(int expectedCap, Task... t) {
+        MetalLongSet e = new MetalLongSet(expectedCap);
         for (Task tt : t) {
-            for (long ss : tt.stamp())
-                e.add(ss);
+            e.addAll(tt.stamp());
         }
         return e;
     }
 
     static boolean validStamp(long[] stamp) {
         if (stamp.length > 1) {
+            if (stamp.length > Param.STAMP_CAPACITY)
+                throw new WTF();
             for (int i = 1, stampLength = stamp.length; i < stampLength; i++) {
                 long x = stamp[i];
                 if (stamp[i-1] >= x)

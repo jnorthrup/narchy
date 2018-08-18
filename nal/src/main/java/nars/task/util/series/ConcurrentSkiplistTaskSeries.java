@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
@@ -202,7 +203,6 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
     }
 
 
-    final static int MAX_TASKS_TRUTHPOLATED = Param.STAMP_CAPACITY - 1;
 
     @Override
     public DynTruth truth(long start, long end, long dur, NAR timeAware) {
@@ -211,13 +211,13 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
         if (size == 0)
             return null;
 
-        DynTruth d = new DynTruth(Math.min(size, MAX_TASKS_TRUTHPOLATED));
+        int MAX_TASKS_TRUTHPOLATED = Answer.TASK_LIMIT;
 
+        DynTruth d = new DynTruth(Math.min(size, MAX_TASKS_TRUTHPOLATED));
 
         forEach(start, end, MAX_TASKS_TRUTHPOLATED, d::add);
 
-
-        return d;
+        return d.isEmpty() ? null : d;
     }
 
     @Override
