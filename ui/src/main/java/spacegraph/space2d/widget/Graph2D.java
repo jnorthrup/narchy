@@ -51,9 +51,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         @Override
-        public void take(EdgeVis<X> i) {
+        public void put(EdgeVis<X> i) {
             i.clear();
-            super.take(i);
+            super.put(i);
         }
     };
 
@@ -205,7 +205,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Override
     protected void removing(X key, NodeVis<X> dv) {
         dv.hide();
-        nodePool.take(dv);
+        nodePool.put(dv);
     }
 
     private void updateEdges() {
@@ -213,7 +213,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         cellMap.forEachValue((NodeVis<X> nv) -> {
             ConcurrentFastIteratingHashMap<X, EdgeVis<X>> edgesNext = nv.edgeOut.write();
             if (!edgesNext.isEmpty()) {
-                edgesNext.forEachValue(edgePool::take);
+                edgesNext.forEachValue(edgePool::put);
                 edgesNext.clear();
             }
         });

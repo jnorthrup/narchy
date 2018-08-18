@@ -39,9 +39,15 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
 
-    private static final ThreadLocal<MetalLongSet> evis = ThreadLocal.withInitial(()->new MetalLongSet(64));
 
-    private MetalLongSet evi = null;
+    //private static final ThreadLocal<MetalLongSet> evis = ThreadLocal.withInitial(()->new MetalLongSet(4));
+
+//            new WeakPool<>(()-> new MetalLongSet(4), MetalLongSet::clear,
+//                Runtime.getRuntime().availableProcessors() * 16);
+
+    final static Supplier<MetalLongSet> evis = () -> new MetalLongSet(4);
+
+    protected MetalLongSet evi = null;
 
     public DynTruth(int initialCap) {
         super(initialCap);
@@ -208,7 +214,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                     r.getOne(), beliefOrGoal,
                     tr,
                     nar, Tense.dither(start, nar), Tense.dither(end, nar),
-                    this.evi.toSortedArray());
+                    Stamp.sample(Param.STAMP_CAPACITY, this.evi, nar.random()));
 
 
             dyn.cause = cause();

@@ -11,7 +11,8 @@ import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class DynamicDiffTest {
+class DynamicDiffTest extends AbstractDynamicTaskTest {
+
     @Test
     void testRawDifference() throws Narsese.NarseseException {
         NAR n = NARS.shell();
@@ -20,8 +21,8 @@ class DynamicDiffTest {
         n.run(1);
         Term xMinY = $("(x ~ y)");
         Term yMinX = $("(y ~ x)");
-        assertEquals(DynamicTruthTable.class, n.conceptualize(xMinY).beliefs().getClass());
-        assertEquals(DynamicTruthTable.class, n.conceptualize(yMinX).beliefs().getClass());
+        assertDynamicTable(xMinY);
+        assertDynamicTable(yMinX);
         assertEquals(
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );

@@ -1,27 +1,11 @@
 package jcog.data.set;
 
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class MetalLongSet extends LongOpenHashSet  {
 
@@ -49,6 +33,29 @@ public class MetalLongSet extends LongOpenHashSet  {
     public void addAll(long[] x) {
         for (long xx : x)
             add(xx);
+    }
+
+
+    /** note: this will have trouble with 0 since it is the 'null key' used by the superclass.  stamp 0 shouldnt be expected anyway */
+    public long[] sortedSample(int stampCapacity, Random rng) {
+        //sample(stampCapacity, evi.toLongArray(), rng);
+        if (size() <= stampCapacity) {
+            return toSortedArray();
+        }
+
+        long[] x = key;
+        long[] y = new long[stampCapacity];
+        int n = x.length;
+        int ix = rng.nextInt(n); //random start position
+        int iy = 0;
+        for (int i = ix; ; i++) {
+            long xi = x[i];
+            if (xi !=0) y[iy++] = xi;
+            if (iy >= stampCapacity) break;
+            if (i >= n-1) i = 0;
+        }
+        Arrays.sort(y);
+        return y;
     }
 
 

@@ -10,7 +10,7 @@ import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DynamicImageTest extends AbstractDynamicBeliefTest {
+class DynamicImageTest extends AbstractDynamicTaskTest {
     @Test
     void testImageIdentity() throws Narsese.NarseseException {
         String x = "((x,y)-->z)";

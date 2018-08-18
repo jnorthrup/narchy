@@ -8,7 +8,7 @@ import nars.term.Term;
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AbstractDynamicBeliefTest {
+public class AbstractDynamicTaskTest {
     protected final NAR n = NARS.shell();
 
     protected boolean isDynamicTable(String t) {

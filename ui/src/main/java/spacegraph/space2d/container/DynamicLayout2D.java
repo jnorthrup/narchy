@@ -14,9 +14,9 @@ public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements
         }
 
         @Override
-        public void take(M i) {
+        public void put(M i) {
             i.clear();
-            super.take(i);
+            super.put(i);
         }
     };
 

@@ -129,7 +129,7 @@ public class CellMap<K, V> {
 
     public void removed(CacheCell<K, V> entry) {
         entry.clear();
-        cellPool.take(entry);
+        cellPool.put(entry);
     }
 
     protected void invalidated() {

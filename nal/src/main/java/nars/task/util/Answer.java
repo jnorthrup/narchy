@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -42,16 +43,11 @@ public class Answer implements Consumer<Task> {
     public TimeRangeFilter time;
     public Term template = null;
 
-    protected final CachedFloatFunction<Task> cache;
-    final TopN<Task> tasks;
-
-
-
-    final FloatRank<Task> rank;
+    private final CachedFloatFunction<Task> cache;
+    private final TopN<Task> tasks;
 
     public Answer(int limit, FloatRank<Task> rank, NAR nar) {
         this.nar = nar;
-        this.rank = rank;
         this.cache = cache(rank);
         this.tasks = new TopN<>(new Task[limit], cache);
     }
@@ -183,6 +179,9 @@ public class Answer implements Consumer<Task> {
      * matches, and projects to the specified time-range if necessary
      * note: if forceProject, the result may be null if projection doesnt succeed.
      *   only useful for precise value summarization for a specific time.
+     *
+     *
+     * clears the cache and tasks before returning
      */
     public Task task(boolean topOrSample, boolean tryMerge, boolean forceProject) {
 
@@ -190,7 +189,8 @@ public class Answer implements Consumer<Task> {
         Task t;
         switch (s) {
             case 0:
-                return null;
+                t = null;
+                break;
             case 1:
                 t = tasks.get(0);
                 break;
@@ -220,10 +220,12 @@ public class Answer implements Consumer<Task> {
             if (ss != ETERNAL) { //dont eternalize here
                 long ee = time.end;
                 if (t.isEternal() || !t.containedBy(ss, ee)) {
-                    return Task.project(t, ss, ee, nar);
+                    t = Task.project(t, ss, ee, nar);
                 }
             }
         }
+
+        clear();
 
         return t;
     }
@@ -271,10 +273,15 @@ public class Answer implements Consumer<Task> {
     }
 
 
+    /** clears the cache and tasks before returning */
     @Nullable public Truth truth() {
         TruthPolation p = truthpolation();
         @Nullable TruthPolation t = p!=null ? p.filtered() : null;
-        return t != null ? t.truth(nar) : null;
+        Truth result = t != null ? t.truth(nar) : null;
+
+        clear();
+
+        return result;
     }
 
     @Nullable public TruthPolation truthpolation() {
@@ -296,9 +303,10 @@ public class Answer implements Consumer<Task> {
         return this;
     }
 
-    final static ThreadLocal<CachedFloatFunction<Task>> caches = ThreadLocal.withInitial(()->
-            new CachedFloatFunction<>(4)
-            );
+    final static Supplier<CachedFloatFunction<Task>> caches = ()->new CachedFloatFunction<>(8);
+//            ThreadLocal.withInitial(()->
+//            new CachedFloatFunction<>(4)
+//            );
 
     static protected CachedFloatFunction<Task> cache(FloatRank<Task> rank) {
         //return new CachedFloatFunction<>(4, 256, rank);

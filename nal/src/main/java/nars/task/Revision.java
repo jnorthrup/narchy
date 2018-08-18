@@ -302,7 +302,7 @@ public class Revision {
                     return new NALTask(c, punc,
                             tr,
                             nar.time(), start, end,
-                            Stamp.sample(Param.STAMP_CAPACITY, stamp.toSortedArray() /* TODO account for relative evidence contributions */, nar.random())
+                            Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
                     );
                 }
         );

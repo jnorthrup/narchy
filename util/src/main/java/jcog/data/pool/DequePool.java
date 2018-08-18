@@ -14,6 +14,7 @@ public abstract class DequePool<X> implements Pool<X> {
     private int capacity;
 
 
+
     public DequePool(int initialCapacity, int preallocate) {
         data = new ArrayDeque(initialCapacity);
         
@@ -22,12 +23,12 @@ public abstract class DequePool<X> implements Pool<X> {
         
 
         for (int i = 0; i < preallocate; i++)
-            take(create());
+            put(create());
 
     }
 
     public DequePool(int initialCapacity) {
-        this(initialCapacity, initialCapacity);
+        this(initialCapacity, 0);
     }
 
     public void setCapacity(int c) {
@@ -35,7 +36,7 @@ public abstract class DequePool<X> implements Pool<X> {
     }
 
     @Override
-    public void take(X i) {
+    public void put(X i) {
         assert (i != null);
         data.offer(i);
     }
@@ -64,15 +65,22 @@ public abstract class DequePool<X> implements Pool<X> {
         data.clear();
     }
 
+    public void put(Collection<X> c) {
+        c.forEach(this::put);
+    }
     public void take(Collection<X> c) {
-        c.forEach(this::take);
+        put(c);
         c.clear();
     }
 
     public void take(Iterator<X> c) {
         while (c.hasNext()) {
-            take(c.next());
+            put(c.next());
             c.remove();
         }
+    }
+
+    public int size() {
+        return size();
     }
 }

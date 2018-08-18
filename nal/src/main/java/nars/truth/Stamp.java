@@ -77,27 +77,25 @@ public interface Stamp {
 
         int baseLength = Math.min(aLen + bLen, maxLen);
 
-        
+
         int aMin = 0, bMin = 0;
         if (aLen + bLen > maxLen) {
             if (!newToOld)
                 throw new UnsupportedOperationException("reverse weighted not yet unimplemented");
 
-            
 
-            
             if (aToB <= 0.5f) {
                 int usedA = Math.max(1, (int) Math.floor(aToB * (aLen + bLen)));
                 if (usedA < aLen) {
                     if (bLen + usedA < maxLen)
-                        usedA += maxLen - usedA - bLen; 
+                        usedA += maxLen - usedA - bLen;
                     aMin = Math.max(0, aLen - usedA);
                 }
             } else /* aToB > 0.5f */ {
                 int usedB = Math.max(1, (int) Math.floor((1f - aToB) * (aLen + bLen)));
                 if (usedB < bLen) {
                     if (aLen + usedB < maxLen)
-                        usedB += maxLen - usedB - aLen;  
+                        usedB += maxLen - usedB - aLen;
                     bMin = Math.max(0, bLen - usedB);
                 }
             }
@@ -106,12 +104,10 @@ public interface Stamp {
 
         long[] c = new long[baseLength];
         if (newToOld) {
-            
+
             int ib = bLen - 1, ia = aLen - 1;
             for (int i = baseLength - 1; i >= 0; ) {
                 boolean ha = (ia >= aMin), hb = (ib >= bMin);
-
-
 
 
                 long next;
@@ -128,7 +124,7 @@ public interface Stamp {
                 c[i--] = next;
             }
         } else {
-            
+
             int ib = 0, ia = 0;
             for (int i = 0; i < baseLength; ) {
 
@@ -160,12 +156,14 @@ public interface Stamp {
                 throw new WTF();
             for (int i = 1, stampLength = stamp.length; i < stampLength; i++) {
                 long x = stamp[i];
-                if (stamp[i-1] >= x)
+                if (stamp[i - 1] >= x)
                     return false; //out of order or duplicate
             }
         }
         return true;
     }
+
+
 
 
     boolean isCyclic();
@@ -180,19 +178,6 @@ public interface Stamp {
             throw new RuntimeException("invalid occurrence time");*/
 
 
-
-        
-
-
-
-
-
-
-
-
-
-
-
         if (oc != ETERNAL) {
             int estTimeLength = 8; /* # digits */
             sb.ensureCapacity(estTimeLength);
@@ -202,13 +187,6 @@ public interface Stamp {
             if (end != oc) {
                 sb.append((char) 0x22c8 /* bowtie, horizontal hourglass */).append(end);
             }
-
-
-            
-
-
-
-
 
 
         }
@@ -234,7 +212,7 @@ public interface Stamp {
             appendTime(buffer);
         } else {*/
         buffer.append(creation());
-        
+
         buffer.append(Op.STAMP_STARTER).append(' ');
 
         for (int i = 0; i < len; i++) {
@@ -246,12 +224,10 @@ public interface Stamp {
         }
 
         if (isCyclic())
-            buffer.append('©'); 
+            buffer.append('©');
 
-        buffer.append(Op.STAMP_CLOSER); 
+        buffer.append(Op.STAMP_CLOSER);
 
-        
-        
 
         return buffer;
 
@@ -267,7 +243,7 @@ public interface Stamp {
     static long[] toSetArray(/*@NotNull*/ long[] x, final int outputLen) {
         int l = x.length;
 
-        
+
         return (l < 2) ? x : _toSetArray(outputLen, Arrays.copyOf(x, l));
     }
 
@@ -275,12 +251,12 @@ public interface Stamp {
     /*@NotNull*/
     static long[] _toSetArray(int outputLen, /*@NotNull*/ long[] sorted) {
 
-        
+
         Arrays.sort(sorted);
 
-        
+
         long lastValue = -1;
-        int uniques = 0; 
+        int uniques = 0;
 
         for (long v : sorted) {
             if (lastValue != v)
@@ -289,11 +265,11 @@ public interface Stamp {
         }
 
         if ((uniques == outputLen) && (sorted.length == outputLen)) {
-            
+
             return sorted;
         }
 
-        
+
         int outSize = Math.min(uniques, outputLen);
         long[] dedupAndTrimmed = new long[outSize];
         int uniques2 = 0;
@@ -325,7 +301,6 @@ public interface Stamp {
         if (Param.DEBUG) {
 
 
-
         }
         if (a.length == 0 || b.length == 0) {
             return false;
@@ -337,9 +312,9 @@ public interface Stamp {
 
             for (long y : b) {
                 if (x == y) {
-                    return true; 
+                    return true;
                 } else if (y > x) {
-                    break; 
+                    break;
                 }
             }
         }
@@ -360,7 +335,7 @@ public interface Stamp {
      * assumes the arrays are sorted and contain no duplicates
      */
     static float overlapFraction(long[] a, long[] b) {
-        
+
         int al = a.length;
         int bl = b.length;
 
@@ -369,7 +344,7 @@ public interface Stamp {
         }
 
         if (al > bl) {
-            
+
             long[] ab = a;
             a = b;
             b = ab;
@@ -382,9 +357,8 @@ public interface Stamp {
         int denom = Math.min(al, bl);
         assert (denom != 0);
 
-        return Util.unitize(((float) common) / denom); 
+        return Util.unitize(((float) common) / denom);
     }
-
 
 
     static boolean overlapsAny(/*@NotNull*/ MetalLongSet aa,  /*@NotNull*/ long[] b) {
@@ -409,6 +383,7 @@ public interface Stamp {
         }
         return common;
     }
+
     static int overlapsAdding(/*@NotNull*/ LongHashSet aa,  /*@NotNull*/ long[] b) {
         int common = 0;
         for (long x : b) {
@@ -442,33 +417,6 @@ public interface Stamp {
     /*@NotNull*/
     long[] stamp();
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * returns pair: (stamp, % overlapping)
@@ -480,9 +428,9 @@ public interface Stamp {
         if (S == 1) {
             return pair(s.get(0).stamp(), 0f);
         } else if (S > maxLen) {
-            
-            
-            S = maxLen; 
+
+
+            S = maxLen;
         }
 
         LongHashSet l = new LongHashSet(maxLen);
@@ -492,7 +440,7 @@ public interface Stamp {
 
         int totalEvidence = 0;
 
-        byte[] ptr = new byte[S]; 
+        byte[] ptr = new byte[S];
         for (int i = 0, sSize = S; i < sSize; i++) {
             Stamp si = s.get(i);
             long[] x = si.stamp();
@@ -535,7 +483,7 @@ public interface Stamp {
         }
 
         if (halted) {
-            
+
             for (int i = 0, ptrLength = ptr.length; i < ptrLength; i++) {
                 int rr = ptr[i];
                 if (rr >= 0) {
@@ -552,27 +500,16 @@ public interface Stamp {
         assert (size <= maxLen);
 
 
-
-
-
-
-
-
-
-
-
-
         long[] e = l.toSortedArray();
 
         float overlap = ((float) repeats) / totalEvidence;
 
 
-
-
-
-
-
         return pair(e, Util.unitize(overlap));
+    }
+
+    static long[] sample(int stampCapacity, MetalLongSet evi, Random rng) {
+        return evi.sortedSample(stampCapacity, rng);
     }
 
     static long[] sample(int max, long[] e, Random rng) {
@@ -587,45 +524,6 @@ public interface Stamp {
 
         return e;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

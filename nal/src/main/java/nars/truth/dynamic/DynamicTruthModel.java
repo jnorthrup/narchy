@@ -56,7 +56,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
 
             /* x.intersects(subStart, subEnd) && */
-            Task bt = table.match(subStart, subEnd, concept, d::doesntOverlap, n);
+            Task bt = table.match(subStart, subEnd, concept, d.evi != null ? d::doesntOverlap : null, n);
             if (bt == null)
                 return false;
 

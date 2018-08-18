@@ -16,7 +16,7 @@ import static nars.Op.BELIEF;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DynamicImplTest extends AbstractDynamicBeliefTest {
+class DynamicImplTest extends AbstractDynamicTaskTest {
 
     @Test void eligibleDynamicImpl() {
         //((--,(([add(#1,2)]<->[#1])&|equal(#1,0)))=|>([add(#1,2)]<->[#1]))
