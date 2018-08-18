@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
 import nars.truth.polation.TruthIntegration;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -205,7 +206,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
 
 
     @Override
-    public DynTruth truth(long start, long end, long dur, NAR timeAware) {
+    public DynTruth truth(long start, long end, long dur, @Nullable Predicate<Task> filter, NAR n) {
 
         int size = size();
         if (size == 0)
@@ -215,7 +216,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
 
         DynTruth d = new DynTruth(Math.min(size, MAX_TASKS_TRUTHPOLATED));
 
-        forEach(start, end, MAX_TASKS_TRUTHPOLATED, d::add);
+        forEach(start, end, MAX_TASKS_TRUTHPOLATED, d.adding(filter));
 
         return d.isEmpty() ? null : d;
     }

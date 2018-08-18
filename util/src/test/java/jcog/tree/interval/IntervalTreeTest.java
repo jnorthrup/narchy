@@ -16,7 +16,7 @@ class IntervalTreeTest {
     @Test
     void testIntersectionAdjacent() {
         
-        Longerval x = Longerval.intersect(1, 2, 2, 3);
+        Longerval x = Longerval.intersection(1, 2, 2, 3);
         assertNotNull(x);
         assertEquals(1,x.range());
     }

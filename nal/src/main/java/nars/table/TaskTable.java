@@ -77,6 +77,7 @@ public interface TaskTable {
         return match(when, when, template, nar);
     }
     @Nullable default Task match(long start, long end, Term template, NAR nar) { return match(start, end, template, null, nar); }
+
     @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
         return !isEmpty() ? Answer.relevance(!(this instanceof QuestionTable), Answer.TASK_LIMIT, start, end, template, filter, nar)
                 .match(this).task(false, true, false) : null;

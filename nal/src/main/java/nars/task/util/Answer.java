@@ -45,11 +45,24 @@ public class Answer implements Consumer<Task> {
 
     private final CachedFloatFunction<Task> cache;
     private final TopN<Task> tasks;
+    public final Predicate<Task> filter;
 
-    public Answer(int limit, FloatRank<Task> rank, NAR nar) {
+    public Answer(int limit, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
-        this.cache = cache(rank);
+        this.cache = cache(rank.filter(filter));
+        this.filter = filter;
         this.tasks = new TopN<>(new Task[limit], cache);
+    }
+
+    /** compose filter from one or two filters */
+    public static Predicate<Task> filter(@Nullable Predicate<Task> a, @Nullable Predicate<Task> b) {
+        if (a == null) return b;
+        if (b == null) return a;
+        return (x) -> a.test(x) && b.test(x);
+    }
+
+    public FloatRank<Task> rank() {
+        return tasks.rank;
     }
 
 
@@ -71,6 +84,18 @@ public class Answer implements Consumer<Task> {
         else
             end = _end;
 
+        FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template, nar);
+
+        return answer(r, filter, start, end, template, limit, nar);
+    }
+
+    public static Answer answer(FloatRank<Task> r, @Nullable Predicate<Task> filter, long start, long end, @Nullable Term template, int limit, NAR nar) {
+        return new Answer(limit, r, filter, nar)
+                .time(new TimeRangeFilter(start, end, true))
+                .template(template);
+    }
+
+    public static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, NAR nar) {
         int dur = nar.dur();
 
         FloatRank<Task> strength =
@@ -83,10 +108,7 @@ public class Answer implements Consumer<Task> {
         } else {
             r = complexTaskStrength(strength, template);
         }
-
-        return new Answer(limit, r.filter(filter), nar)
-                .time(new TimeRangeFilter(start, end, true))
-                .template(template);
+        return r;
     }
 
     public Answer template(Term template) {

@@ -28,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
@@ -256,25 +258,22 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         super.add(newItem);
 
         if (evi == null) {
-            //evi = new MetalLongSet(Param.STAMP_CAPACITY / 2 - 1);
             evi = evis.get();
-            evi.clear();
         }
 
         long[] stamp = ((Stamp) newItem).stamp();
         evi.addAll(stamp);
 
-
-
         return true;
     }
 
     boolean doesntOverlap(Task task) {
-        if (evi != null) {
+        MetalLongSet e = this.evi;
+        if (e != null) {
 
             long[] s = task.stamp();
             for (long x : s) {
-                if (evi.contains(x))
+                if (e.contains(x))
                     return false;
             }
         }
@@ -305,6 +304,13 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return (Task) eval(()->term, t, true, beliefOrGoal,
                 fRes,cRes,eMin, n);
 
+    }
+
+    public <T extends Task> Consumer<T> adding(@Nullable Predicate<Task> filter) {
+        return filter==null ? this::add : (T x) -> {
+            if (filter.test(x))
+                add(x);
+        };
     }
 
 

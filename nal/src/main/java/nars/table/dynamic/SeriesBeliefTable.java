@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
@@ -42,9 +43,14 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         this.series = s;
     }
 
+//    @Override
+//    public void match(Answer t) {
+//        series.forEach(t.time.start, t.time.end, false, t);
+//    }
+
     @Override
-    public void match(Answer t) {
-        series.forEach(t.time.start, t.time.end, false, t);
+    protected Task taskDynamic(Answer a) {
+        return (Task) (eval(true, a.time.start, a.time.end, a.filter, a.nar));
     }
 
     @Override
@@ -52,9 +58,9 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         return series.size();
     }
 
-    protected Truthed eval(boolean taskOrJustTruth, long start, long end, NAR nar) {
+    protected Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
         int dur = nar.dur();
-        DynTruth d = series.truth(start, end, dur, nar);
+        DynTruth d = series.truth(start, end, dur, filter, nar);
         if (d == null || d.isEmpty())
             return null;
 
@@ -107,14 +113,11 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         series.forEach(action);
     }
 
-    @Override
-    public Task taskDynamic(long start, long end, Term template, NAR nar) {
-        return (Task) (eval(true, start, end, nar));
-    }
+
 
     @Override
-    protected @Nullable Truth truthDynamic(long start, long end, Term templateIgnored, NAR nar) {
-        return (Truth) (eval(false, start, end, nar));
+    protected Truth truthDynamic(long start, long end, Term templateIgnored, Predicate filter, NAR nar) {
+        return (Truth) (eval(false, start, end, filter, nar));
     }
 
 

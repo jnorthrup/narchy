@@ -2,21 +2,23 @@ package nars.table.dynamic;
 
 import nars.NAR;
 import nars.Task;
+import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Predicate;
+
 
 /**
  * computes dynamic truth according to implicit truth functions
  * determined by recursive evaluation of the compound's sub-component's truths
  */
-public class DynamicTruthTable extends DynamicTaskTable {
+public final class DynamicTruthTable extends DynamicTaskTable {
 
     private final DynamicTruthModel model;
-
 
     public DynamicTruthTable(Term c, DynamicTruthModel model, boolean beliefOrGoal) {
         super(c, beliefOrGoal);
@@ -25,35 +27,32 @@ public class DynamicTruthTable extends DynamicTaskTable {
 
 
     @Override
-    @Nullable public Task taskDynamic(long start, long end, Term template, NAR nar) {
-        if (template == null)
-            template = term;
+    @Nullable public Task taskDynamic(Answer a) {
+        Term template = a.template;
 
-        DynTruth yy = model.eval(template, beliefOrGoal, start, end, true /* dont force projection */, nar);
+        NAR nar = a.nar;
 
-        if (yy!=null) {
-            Truth t = model.apply(yy, nar);
-            if (t != null) {
-                Term tmplate = template;
-                return (Task)yy.eval(() -> model.reconstruct(tmplate, yy), t, true, beliefOrGoal, nar);
-            }
-        }
-        return null;
+        //TODO allow use of time's specified intersect/contain mode
+        DynTruth yy = model.eval(template, beliefOrGoal, a.time.start, a.time.end, a.filter, false , nar);
+        if (yy == null)
+            return null;
+
+        Truth t = model.apply(yy, nar);
+        if (t == null)
+            return null;
+
+        Term tmplate = template;
+        return (Task)yy.eval(() -> model.reconstruct(tmplate, yy), t, true, beliefOrGoal, nar);
     }
 
 
     @Override
-    protected @Nullable Truth truthDynamic(long start, long end, Term template, NAR nar) {
+    protected Truth truthDynamic(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
-        if (template == null)
-            template = term;
+        DynTruth d = model.eval(template, beliefOrGoal, start, end, filter, true, nar);
 
-        DynTruth d = model.eval(template, beliefOrGoal, start, end,
-                false /* force projection to the specific time */, nar);
-        if (d != null)
-            return d.truth(template, model, beliefOrGoal, nar);
-        else
-            return null;
+        return d != null ? d.truth(template, model, beliefOrGoal, nar) : null;
+
     }
 
 

@@ -10,6 +10,7 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTaskTable;
 import nars.task.signal.SignalTask;
+import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
@@ -18,6 +19,7 @@ import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * dynamically computed time-dependent function
@@ -105,9 +107,16 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
         }
 
         @Override
-        protected Task taskDynamic(long start, long end, Term template /* ignored */, NAR nar) {
+        protected Task taskDynamic(Answer a) {
+            Term template = a.template;
+            if (template == null)
+                a.template = template = term;
+
+            long start = a.time.start;
+            long end = a.time.end;
+            NAR nar = a.nar;
             long mid = Tense.dither((start+end)/2L, nar);
-            Truth t = truthDynamic(mid, mid, template, nar);
+            Truth t = truthDynamic(mid, mid, template, a.filter, nar);
             if (t == null)
                 return null;
             else {
@@ -121,7 +130,7 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
         }
 
         @Override
-        protected @Nullable Truth truthDynamic(long start, long end, Term template /* ignored */, NAR nar) {
+        protected Truth truthDynamic(long start, long end, Term template /* ignored */, Predicate<Task> filter, NAR nar) {
             long t = (start + end) / 2L; //time-point
             float f = value.valueOf(t);
             return f == f ? truth(Util.round(f, res.get()), nar) : null;

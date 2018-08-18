@@ -19,7 +19,7 @@ public interface TaskSeries<T extends Task> {
     /** the provided truth value should already be dithered */
     T add(Truth nextValue, long start, long end, int dur, Term term, byte punc, NAR nar);
 
-    @Nullable DynTruth truth(long start, long end, long dur, NAR nar);
+    @Nullable DynTruth truth(long start, long end, long dur, Predicate<Task> filter, NAR nar);
 
     int size();
 

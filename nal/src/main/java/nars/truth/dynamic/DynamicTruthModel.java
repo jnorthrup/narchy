@@ -11,6 +11,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
+import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Conj;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -31,37 +33,33 @@ import static nars.time.Tense.*;
  * Created by me on 12/4/16.
  */
 abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Truth> {
-    @Nullable
-    public final DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean timeFlexible, NAR n) {
+
+    public final DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, Predicate<Task> superFilter, boolean forceProjection, NAR n) {
 
         assert (superterm.op() != NEG);
 
         DynTruth d = new DynTruth(4);
 
-        return components(superterm, start, end, (Term concept, long subStart, long subEnd) -> {
-            boolean negated = concept.op() == Op.NEG;
+
+        Predicate<Task> filter = Answer.filter(superFilter, d::doesntOverlap);
+
+        return components(superterm, start, end, (Term subTerm, long subStart, long subEnd) -> {
+            boolean negated = subTerm.op() == Op.NEG;
             if (negated)
-                concept = concept.unneg();
+                subTerm = subTerm.unneg();
 
-            Concept subConcept =
-                    n.conceptualizeDynamic(concept);
-
-
-            if (!(subConcept instanceof TaskConcept)) {
+            Concept subConcept = n.conceptualizeDynamic(subTerm);
+            if (!(subConcept instanceof TaskConcept))
                 return false;
-            }
-
 
             BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
-
-
-            /* x.intersects(subStart, subEnd) && */
-            Task bt = table.match(subStart, subEnd, concept, d.evi != null ? d::doesntOverlap : null, n);
+            Task bt = forceProjection ? table.answer(subStart, subEnd, subTerm, filter, n) :
+                                table.match(subStart, subEnd, subTerm, filter, n);
             if (bt == null)
                 return false;
 
-            /** project to a specific time, and apply negation if necessary */
-            bt = Task.project(timeFlexible, bt, subStart, subEnd, n, negated);
+            /* project to a specific time, and apply negation if necessary */
+            bt = Task.project(!forceProjection, bt, subStart, subEnd, n, negated);
             if (bt == null)
                 return false;
 
@@ -306,8 +304,12 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                             if (end == start)
                                 //return false; //repeat term sampled at same point, give up
                                 return each.accept(a, start, start); //just one component should work
-                            else
-                                return each.accept(a, start, start) && each.accept(b, end, end); //use the difference in time to create two distinct point samples
+                            else {
+                                if (start == ETERNAL) //watch out for end==XTERNAL
+                                    return each.accept(a, ETERNAL, ETERNAL) && each.accept(b, ETERNAL, ETERNAL);
+                                else
+                                    return each.accept(a, start, start) && each.accept(b, end, end); //use the difference in time to create two distinct point samples
+                            }
                         }
 
                         if (a.equalsNeg(b))
