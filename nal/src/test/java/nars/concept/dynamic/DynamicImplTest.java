@@ -276,6 +276,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
             NAR n = NARS.shell();
             n.believe("(a ==> x)");
             n.believe("(b ==> x)");
+            assertDynamicTable($$(s));
             @Nullable Task t = n.match($$(s), BELIEF, ETERNAL);
             assertEquals("((a&&b)==>x)", t.term().toString());
             assertEquals(ETERNAL, t.start());

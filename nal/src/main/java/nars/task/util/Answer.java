@@ -1,7 +1,7 @@
 package nars.task.util;
 
 import jcog.data.set.MetalLongSet;
-import jcog.math.CachedFloatFunction;
+import jcog.math.CachedFloatRank;
 import jcog.sort.FloatRank;
 import jcog.sort.TopN;
 import nars.NAR;
@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /** heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -43,7 +42,7 @@ public class Answer implements Consumer<Task> {
     public TimeRangeFilter time;
     public Term template = null;
 
-    private final CachedFloatFunction<Task> cache;
+    private final CachedFloatRank<Task> cache;
     private final TopN<Task> tasks;
     public final Predicate<Task> filter;
 
@@ -76,13 +75,7 @@ public class Answer implements Consumer<Task> {
     }
 
     /** for belief or goals (not questions / quests */
-    @Deprecated public static Answer relevance(boolean beliefOrQuestion, int limit, long start, long _end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
-
-        long end;
-        if (start == ETERNAL && _end == ETERNAL)
-            end = TIMELESS; //to cover the whole range of values when ETERNAL,ETERNAL is provided
-        else
-            end = _end;
+    @Deprecated public static Answer relevance(boolean beliefOrQuestion, int limit, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template, nar);
 
@@ -338,14 +331,14 @@ public class Answer implements Consumer<Task> {
         return this;
     }
 
-    final static Supplier<CachedFloatFunction<Task>> caches = ()->new CachedFloatFunction<>(8);
+    final static Supplier<CachedFloatRank<Task>> caches = ()->new CachedFloatRank<>(8);
 //            ThreadLocal.withInitial(()->
 //            new CachedFloatFunction<>(4)
 //            );
 
-    static protected CachedFloatFunction<Task> cache(FloatRank<Task> rank) {
+    static protected CachedFloatRank<Task> cache(FloatRank<Task> rank) {
         //return new CachedFloatFunction<>(4, 256, rank);
-        CachedFloatFunction<Task> x = caches.get().value(rank);
+        CachedFloatRank<Task> x = caches.get().value(rank);
         assert(x.isEmpty());
         //System.out.println(Thread.currentThread() + " got " + System.identityHashCode(x));
         return x;

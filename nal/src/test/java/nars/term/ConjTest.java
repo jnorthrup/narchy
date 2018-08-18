@@ -43,7 +43,7 @@ public class ConjTest {
 
     @Test
     void testParallelizeImplAFTERSequence() {
-        assertEq("((a&|b)=|>x)", "((a &| b) ==> x)");
+        assertEq("((a&|b)==>x)", "((a &| b) ==> x)");
         assertEq("((a &&+1 b)=|>x)", "((a &&+1 b) ==> x)");
         assertEq("((a&|b) ==>+- x)", "((a &| b) ==>+- x)"); //xternal: unaffected
         //assertEq("(x =|> (a &| b))","(x ==> (a &| b))");

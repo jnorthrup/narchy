@@ -67,7 +67,7 @@ public class DynStampTruth extends DynTruth {
         } else if (size > 0) {
             //delay creation of evi set one more item
             assert(size == 1);
-            return Stamp.overlapsAny(get(0).stamp(), stamp);
+            return !Stamp.overlapsAny(get(0).stamp(), stamp);
         }
 
         return true;

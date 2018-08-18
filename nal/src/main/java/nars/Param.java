@@ -209,7 +209,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, 0, TTL_MIN * 16);
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 64);
     public final IntRange matchTTL = new IntRange(8, 1, 16);
 

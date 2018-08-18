@@ -1,6 +1,7 @@
 package nars.task.util;
 
 import jcog.math.Longerval;
+import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 
 public class TimeRangeFilter extends TimeRange implements LongLongPredicate {
@@ -12,7 +13,7 @@ public class TimeRangeFilter extends TimeRange implements LongLongPredicate {
 
         this.intersectOrContain = intersectOrContain;
 
-        if (!intersectOrContain && min == max)
+        if (!intersectOrContain && (min == max))
             throw new RuntimeException("nothing contained in zero length time interval");
 
     }

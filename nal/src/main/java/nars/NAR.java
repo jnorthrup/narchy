@@ -1329,7 +1329,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (!(concept instanceof TaskConcept))
             return null;
 
-        Task answer = ((BeliefTable) concept.table(punc)).match(start, end,
+        Task answer = concept.table(punc).match(start, end,
                 t.term(), null, this);
 //        if (answer != null && !answer.isDeleted()) {
 //            input(answer);

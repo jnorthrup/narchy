@@ -38,7 +38,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         assert (superterm.op() != NEG);
 
-        DynStampTruth d = new DynStampTruth(4);
+        DynStampTruth d = new DynStampTruth(2);
 
 
         Predicate<Task> filter = Answer.filter(superFilter, d::doesntOverlap);
