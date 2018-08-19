@@ -17,13 +17,13 @@ public class FunctorBacktrackingTest {
 
         NAR n = NARS.shell();
         n.input(
-//                "mother(trude, sally).",
-//                "father(tom, sally).",
-//                "father(tom, erica).",
-//                "father(mike, tom).",
-//
-//                "(father($X, $Y) ==> parent($X, $Y)).",
-//                "(mother($X, $Y) ==> parent($X, $Y)).",
+                "mother(trude, sally).",
+                "father(tom, sally).",
+                "father(tom, erica).",
+                "father(mike, tom).",
+
+                "(father($X, $Y) ==> parent($X, $Y)).",
+                "(mother($X, $Y) ==> parent($X, $Y)).",
                 "((parent(#Z, $X) && parent(#Z, $Y)) ==> sibling($X, $Y))."
 
                 //TODO
@@ -35,7 +35,7 @@ public class FunctorBacktrackingTest {
 
         assertEquals(
                 "TODO",
-                Evaluation.solveAll("father($Father, $Child)",  n).toString()
+                Evaluation.solveAll("father(?Father, ?Child)",  n).toString()
         );
 
         assertEquals(

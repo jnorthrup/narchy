@@ -31,10 +31,9 @@ public final class MapSubst implements Subst {
         }
     }
 
-
-    @Override
-    public void clear() {
+    public MapSubst clear() {
         xy.clear();
+        return this;
     }
 
     @Override

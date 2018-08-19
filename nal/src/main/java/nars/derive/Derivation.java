@@ -544,7 +544,7 @@ try {
      * include any .clear() for data structures in case of emergency we can continue to assume they will be clear on next run()
      */
     @Override
-    public void clear() {
+    public Derivation clear() {
         anon.clear();
         taskUniques = 0;
         premiseBuffer.clear();
@@ -552,6 +552,7 @@ try {
         termutes.clear();
         time = ETERNAL;
         super.clear();
+        return this;
     }
 
 

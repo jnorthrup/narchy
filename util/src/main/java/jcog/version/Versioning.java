@@ -78,8 +78,9 @@ public class Versioning<X> {
     }
 
 
-    public void clear() {
+    public Versioning clear() {
         revert(0);
+        return this;
     }
 
     public final boolean add(/*@NotNull*/ Versioned<X> newItem) {

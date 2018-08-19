@@ -56,13 +56,13 @@ public interface Compound extends Term, IPair, Subterms {
         if (a == b) return true;
 
         return (b instanceof Compound) &&
-                (a.hashCode()==b.hashCode())
+                (a.hashCode() == b.hashCode())
                 &&
-                (a.op() == ((Compound)b).op())
+                (a.op() == ((Compound) b).op())
                 &&
-                (a.dt() == ((Compound)b).dt())
+                (a.dt() == ((Compound) b).dt())
                 &&
-                (a.subterms().equals(((Compound)b).subterms()))
+                (a.subterms().equals(((Compound) b).subterms()))
                 ;
     }
 
@@ -98,7 +98,9 @@ public interface Compound extends Term, IPair, Subterms {
         return !impossibleSubTerm(t) && inSubtermsOf.test(this) && subterms().containsRecursively(t, root, inSubtermsOf);
     }
 
-    /** deprecated; TODO move to SeparateSubtermsCompound interface and allow Compounds which do not have to generate this.  this sums up many of xjrn's suggestions  */
+    /**
+     * deprecated; TODO move to SeparateSubtermsCompound interface and allow Compounds which do not have to generate this.  this sums up many of xjrn's suggestions
+     */
     @Override
     Subterms subterms();
 
@@ -129,9 +131,9 @@ public interface Compound extends Term, IPair, Subterms {
     static int opX(short volume, byte op, byte subs) {
         return ((volume & 0b11111111111) << (16 + 5))
                 |
-               (op << 16)
+                (op << 16)
                 |
-               subs;
+                subs;
     }
 
     @Override
@@ -141,28 +143,10 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     default Term anon() {
         return new Anon(/* TODO size estimate */).put(this);
     }
-
 
 
     @Override
@@ -172,16 +156,18 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
         return (!aSuperCompoundMust.test(this) ||
                 (whileTrue.test(this, superterm) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this)));
     }
 
-    default void recurseTerms(BiConsumer<Term,Compound> each) {
+    default void recurseTerms(BiConsumer<Term, Compound> each) {
 //        each.accept(this, null);
-        recurseTerms(x -> true, (sub, sup)->{ each.accept(sub, sup); return true; } , null);
+        recurseTerms(x -> true, (sub, sup) -> {
+            each.accept(sub, sup);
+            return true;
+        }, null);
     }
-
 
 
     @Override
@@ -195,15 +181,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
-
-
-
-
-
-
-
-
     default void appendTo(ByteArrayDataOutput out) {
 
         Op o = op();
@@ -213,14 +190,6 @@ public interface Compound extends Term, IPair, Subterms {
             out.writeInt(dt());
 
     }
-
-
-    
-
-
-
-
-
 
 
     /**
@@ -238,7 +207,6 @@ public interface Compound extends Term, IPair, Subterms {
                 ||
                 (u.symmetric && y.unifyReverse(this, u));
     }
-
 
 
     default boolean unifySubterms(Term y, Unify u) {
@@ -314,7 +282,7 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
         if (isCommutative()) {
-            return xx.unifyCommute(yy,  u);
+            return xx.unifyCommute(yy, u);
         } else {
             return xx.unifyLinear(yy, u);
         }
@@ -336,7 +304,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Nullable
     @Override
     default Object _car() {
-        
+
         return sub(0);
     }
 
@@ -358,7 +326,7 @@ public interface Compound extends Term, IPair, Subterms {
                 return new Pair(sub(1), new Pair(sub(2), sub(3)));
         }
 
-        
+
         Pair p = null;
         for (int i = len - 2; i >= 0; i--) {
             p = new Pair(sub(i), p == null ? sub(i + 1) : p);
@@ -394,10 +362,6 @@ public interface Compound extends Term, IPair, Subterms {
     default void addTo(/*@NotNull*/ Collection<Term> set) {
         subterms().addTo(set);
     }
-
-
-
-
 
 
     @Override
@@ -451,11 +415,11 @@ public interface Compound extends Term, IPair, Subterms {
      */
     default int[] subTimes(Term x) {
         if (equals(x))
-            return new int[] { 0 };
+            return new int[]{0};
 
 
         int dt = dt();
-        if (dt == XTERNAL || dt == DTERNAL)
+        if (dt == DTERNAL || dt == XTERNAL)
             return null;
 
         Op op = op();
@@ -466,7 +430,7 @@ public interface Compound extends Term, IPair, Subterms {
             return null;
 
         RoaringBitmap found = new RoaringBitmap();
-        if ((subTimesWhile(x, (when)->{
+        if ((subTimesWhile(x, (when) -> {
             found.add(when);
             return true;
         })) == 0)
@@ -482,80 +446,9 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /* iterates contained events within a conjunction*/
-    @Override default boolean eventsWhile(LongObjectPredicate<Term> events, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
+    @Override
+    default boolean eventsWhile(LongObjectPredicate<Term> events, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
 
         Op o = op();
 
@@ -589,13 +482,13 @@ public interface Compound extends Term, IPair, Subterms {
                 int s = tt.subs();
                 long t = offset;
 
-                boolean changeDT = t != ETERNAL && t != TIMELESS && dt!=0 /* motionless in time */;
+                boolean changeDT = t != ETERNAL && t != TIMELESS && dt != 0 /* motionless in time */;
 
                 level++;
 
                 boolean fwd;
                 if (changeDT) {
-                    fwd=dt >= 0;
+                    fwd = dt >= 0;
                     if (!fwd)
                         dt = -dt;
                 } else {
@@ -603,7 +496,7 @@ public interface Compound extends Term, IPair, Subterms {
                 }
 
                 for (int i = 0; i < s; i++) {
-                    Term st = tt.sub(fwd ? i : (s-1)-i);
+                    Term st = tt.sub(fwd ? i : (s - 1) - i);
                     if (!st.eventsWhile(events, t,
                             decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
                             level))
@@ -621,18 +514,6 @@ public interface Compound extends Term, IPair, Subterms {
 
         return events.accept(offset, this);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -714,7 +595,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
     @Override
     default boolean equalsRoot(Term x) {
         if (this.equals(x))
@@ -722,7 +602,7 @@ public interface Compound extends Term, IPair, Subterms {
         if (!x.hasAny(Op.Temporal))
             return false;
 
-        
+
         if (
                 op() == x.op()
                         &&
@@ -735,60 +615,6 @@ public interface Compound extends Term, IPair, Subterms {
 
         return false;
     }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
@@ -1069,54 +895,6 @@ public interface Compound extends Term, IPair, Subterms {
 
         return result;
     } */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**

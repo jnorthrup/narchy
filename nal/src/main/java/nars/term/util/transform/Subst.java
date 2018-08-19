@@ -49,7 +49,6 @@ public interface Subst extends TermTransform {
     @Nullable Term xy(Term t);
 
 
-    void clear();
 
 
 }

@@ -188,6 +188,11 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
+    @Override
+    public Unify clear() {
+        super.clear();
+        return this;
+    }
 
     @Override
     public String toString() {

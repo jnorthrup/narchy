@@ -29,7 +29,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.WTF.WTF;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -124,17 +125,22 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     /**
      * TODO use the same heuristics as task strength
      */
-    private static FloatFunction<TaskRegion> regionWeakness(long when, long perceptDur) {
+    private static FloatFunction<TaskRegion> regionWeakness(long now, long perceptDur, float futureFactor) {
 
         return (TaskRegion r) -> {
 
             long timeDist =
-                    r.maxTimeTo(when);
+                    r.maxTimeTo(now)/perceptDur;
                     //r.midTimeTo(when);
                     //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
+
             float conf = ((float) r.coord(false, 2));
-            return -Param.evi(/*c2wSafe(*/conf,  timeDist, perceptDur);
+            float v = //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
+                timeDist / conf;
+            if (r.endsAfter(now))
+                v /= futureFactor;
+            return v;
 
 //            long regionTimeDist = r.midTimeTo(when);
 //
@@ -162,13 +168,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        };
 //    }
 
-    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur, long tableDur) {
-        return taskStrengthWithFutureBoost(now, presentAndFutureBoost, when - perceptDur/2, when + perceptDur/2, perceptDur, tableDur );
+    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
+        return taskStrengthWithFutureBoost(now, presentAndFutureBoost, when - perceptDur/2, when + perceptDur/2, perceptDur);
     }
 
-    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long start, long end, int perceptDur, long tableDur) {
-        return (Task x) -> (x.endsAfter(now - perceptDur) ? presentAndFutureBoost : 1f) *
-                TruthIntegration.eviInteg(x, start, end, tableDur);
+    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long start, long end, int perceptDur) {
+        long futureStarts = now;
+                // - perceptDur;
+        return (Task x) -> (x.endsAfter(futureStarts) ? presentAndFutureBoost : 1f) *
+                TruthIntegration.eviInteg(x, start, end, perceptDur);
     }
 
 
@@ -396,22 +404,21 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task input, Remember remember, NAR nar) {
 
         FloatFunction<Task> taskStrength = null;
-        long now = TIMELESS;
         int perceptDur = 0;
         int e = 0, cap;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                now = nar.time();
+                long now = nar.time();
                 perceptDur = nar.dur();
-                taskStrength = taskStrengthWithFutureBoost(now,
+                taskStrength = taskStrengthWithFutureBoost(now - perceptDur,
                         input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
                         now,
-                        perceptDur, perceptDur
+                        perceptDur
                 );
             }
             if (!compress(treeRW, e == 0 ? input : null /** only limit by inputRegion on first iter */,
                     taskStrength, cap,
-                    now,
+                    nar.time(),
                     perceptDur, remember, nar))
                 return false;
             e++;
@@ -431,7 +438,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
 
         FloatFunction<TaskRegion> leafRegionWeakness =
-                regionWeakness(now, perceptDur);
+                regionWeakness(now - perceptDur, perceptDur, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
 
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
@@ -439,10 +446,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Top<Leaf<TaskRegion>> weakLeaf = new Top<>(leafWeakness);
 
         FloatFunction<TaskRegion> weakestTask = t ->
-                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t),
-                        //t.midTimeTo(now)
-                         t.maxTimeTo(now)
-                        , perceptDur));
+                -taskStrength.floatValueOf((Task)t);
+//                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t),
+//                        //t.midTimeTo(now)
+//                         t.maxTimeTo(now)
+//                        , perceptDur));
 
         Top<TaskRegion> weakest = new Top<>(weakestTask);
 
