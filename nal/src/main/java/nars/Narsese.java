@@ -196,7 +196,7 @@ public class Narsese {
             yy.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
             yy.log(NARSESE_TASK_TAG);
             return yy;
-        });
+        }, false);
 
         if (y == null) {
             throw new TaskException(content, "input: " + Arrays.toString(x));

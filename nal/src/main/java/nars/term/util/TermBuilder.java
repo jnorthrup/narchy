@@ -356,7 +356,7 @@ public abstract class TermBuilder {
                     return Null;
                 }
 
-                return Conj.conjMerge(u[0], u[1], dt);
+                return Conj.the(u[0], u[1], dt);
             }
         }
 

@@ -255,56 +255,56 @@ public class AnonTest {
             Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(1));
 
         {
-            Subterms yAnon = x.replaceSubs($.varDep(1), Anom.the(3));
+            Subterms yAnon = x.replaceSub($.varDep(1), Anom.the(3));
             assertEquals("(_3,(--,_2),_1)", yAnon.toString());
             assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
 
-            Subterms yNotFound = x.replaceSubs($.varDep(4), Anom.the(3));
+            Subterms yNotFound = x.replaceSub($.varDep(4), Anom.the(3));
             assertSame(x, yNotFound);
         }
 
         {
-            Subterms yAnon = x.replaceSubs(Anom.the(2).neg(), Anom.the(3));
+            Subterms yAnon = x.replaceSub(Anom.the(2).neg(), Anom.the(3));
             assertEquals("(#1,_3,_1)", yAnon.toString());
             assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
 
-            Subterms yNotFound = x.replaceSubs(Anom.the(1).neg(), Anom.the(3));
+            Subterms yNotFound = x.replaceSub(Anom.the(1).neg(), Anom.the(3));
             assertSame(x, yNotFound);
         }
 
 
         {
-            Subterms yAnon = x.replaceSubs(Anom.the(2), Anom.the(3));
+            Subterms yAnon = x.replaceSub(Anom.the(2), Anom.the(3));
             assertEquals("(#1,(--,_3),_1)", yAnon.toString());
             assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
         }
         {
-            Subterms yAnon = x.replaceSubs(Anom.the(2), Anom.the(3).neg());
+            Subterms yAnon = x.replaceSub(Anom.the(2), Anom.the(3).neg());
             assertEquals("(#1,_3,_1)", yAnon.toString());
             assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
         }
 
         {
-            Subterms yNonAnon = x.replaceSubs($.varDep(1), PROD.the($.the("X")));
+            Subterms yNonAnon = x.replaceSub($.varDep(1), PROD.the($.the("X")));
             assertEquals("((X),(--,_2),_1)", yNonAnon.toString());
             assertNotEquals(x.getClass(), yNonAnon.getClass());
 
-            Subterms yNotFound = x.replaceSubs(PROD.the($.the("X")), PROD.the($.the("Y")));
+            Subterms yNotFound = x.replaceSub(PROD.the($.the("X")), PROD.the($.the("Y")));
             assertSame(yNotFound, x);
 
         }
 
         {
             Subterms xx = Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2));
-            assertEquals("(#1,(--,_3),_3)", xx.replaceSubs(Anom.the(2), Anom.the(3)).toString());
-            assertEquals("(#1,_3,_2)", xx.replaceSubs(Anom.the(2).neg(), Anom.the(3)).toString());
+            assertEquals("(#1,(--,_3),_3)", xx.replaceSub(Anom.the(2), Anom.the(3)).toString());
+            assertEquals("(#1,_3,_2)", xx.replaceSub(Anom.the(2).neg(), Anom.the(3)).toString());
         }
 
 
         {
             Subterms xx = Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2));
-            assertEquals("(#1,(--,()),())", xx.replaceSubs(Anom.the(2), Op.EmptyProduct).toString());
-            assertEquals("(#1,(),_2)", xx.replaceSubs(Anom.the(2).neg(), Op.EmptyProduct).toString());
+            assertEquals("(#1,(--,()),())", xx.replaceSub(Anom.the(2), Op.EmptyProduct).toString());
+            assertEquals("(#1,(),_2)", xx.replaceSub(Anom.the(2).neg(), Op.EmptyProduct).toString());
         }
 
     }

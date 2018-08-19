@@ -182,7 +182,7 @@ class BeliefTableTest {
     void testTemporalUnion() throws Narsese.NarseseException {
 
 
-        Param.DEBUG = true;
+
         NAR n = NARS.tmp();
 
         n.time.dur(2);

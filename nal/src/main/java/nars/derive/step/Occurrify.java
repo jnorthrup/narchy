@@ -670,48 +670,54 @@ public class Occurrify extends TimeGraph {
                     return solveOccDT(d, x, d.occ.reset(x, false, false));
                 }
 
-                long t = d.taskStart, b = d.beliefStart;
+                long tTime = d.taskStart;
+                long bTime = d.beliefStart;
 
-                if (t == ETERNAL && b == ETERNAL) {
+                if (tTime == ETERNAL && bTime == ETERNAL) {
                     return pair(x.dt(DTERNAL), new long[] { ETERNAL, ETERNAL });
                 }
-                if (t == ETERNAL) {
-                    return pair(x.dt(0), new long[] { d.beliefStart, d.belief.end() });
+                if (tTime == ETERNAL) {
+                    return pair(x.dt(0), new long[] {bTime, d.belief.end() });
                 }
-                if (b == ETERNAL) {
-                    return pair(x.dt(0), new long[] { d.taskStart, d.task.end() });
+                if (bTime == ETERNAL) {
+                    return pair(x.dt(0), new long[] { tTime, d.task.end() });
                 }
 
 
                 Term i = x.sub(0), j = x.sub(1);
-                Term first;
+                Term tt;
 
                 //infer which component is earlier
                 Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
                 if (taskTerm.equals(i) || taskTerm.equals(beliefTerm))
-                    first = i;
+                    tt = i;
                 else if (taskTerm.equals(j))
-                    first = j;
+                    tt = j;
                 else if (taskTerm.equalsNeg(i) && !beliefTerm.equals(i.unneg()))
-                    first = i;
+                    tt = i;
                 else if (taskTerm.equalsNeg(j) && !beliefTerm.equals(j.unneg()))
-                    first = j;
+                    tt = j;
                 else if (taskTerm.equalsRoot(i))
-                    first = i;
+                    tt = i;
                 else if (taskTerm.equalsRoot(j))
-                    first = j;
+                    tt = j;
                 else
                     return null; //TODO more cases
 
-                Term second = (first == i) ? j : i;
+                Term bb = (tt == i) ? j : i;
 
-                long firstStart = ((first == i) ? d.task : d.belief).start();
-                long secondStart = (first == i  ? d.belief : d.task).start();
-                Term y = Conj.conjMerge(first, 0, second, secondStart - firstStart);
+//                long firstStart = ((first == i) ? d.task : d.belief).start();
+//                long secondStart = (first == i  ? d.belief : d.task).start();
+                Term y;
+                long earlyStart = Math.min(tTime, bTime);
+                if (tTime == earlyStart)
+                    y = Conj.the(tt, 0, bb, bTime - tTime);
+                else
+                    y = Conj.the(bb, 0, tt, tTime - bTime);
 
                 long range = Math.max(Math.min(d.task.range(), d.belief.range())-1, 0);
 
-                long earlyStart = Math.min(firstStart, secondStart);
+
 
                 return pair(y, new long[] { earlyStart , earlyStart  + range });
 

@@ -547,9 +547,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
-        Term c = Conj.conjMerge(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt) );
+        Term c = Conj.the(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt) );
         if (c.op() != CONJ && ((ddt == 0) && (dt!=0))) { //undo parallel-ization if the collapse caused an invalid term
-            c = Conj.conjMerge(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt) );
+            c = Conj.the(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt) );
         }
         if (c.op().conceptualizable) {
             return solveOccurrence(c, a.start(), durMerge(a, b), each);
@@ -675,7 +675,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 Term xEarly = x.sub(early);
                 Term xLate = x.sub(1 - early);
 
-                return Conj.conjMerge(
+                return Conj.the(
                         xEarly, 0,
                         xLate, dt);
             }

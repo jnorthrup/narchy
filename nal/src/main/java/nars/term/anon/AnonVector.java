@@ -77,7 +77,7 @@ public class AnonVector extends TermVector implements FullyInternable {
 //    }
 
     @Override
-    public Subterms replaceSubs(Term from, Term to) {
+    public Subterms replaceSub(Term from, Term to) {
 
         short fid = AnonID.id(from);
         if (fid == 0)

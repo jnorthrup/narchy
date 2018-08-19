@@ -12,7 +12,6 @@ import nars.subterm.Subterms;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.transform.DirectTermTransform;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,15 +21,15 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static nars.$.$$;
 import static nars.Op.*;
 
 public class Evaluation {
 
 
-    private final Term term;
-    private final Term x;
+
+
     private final Predicate<Term> each;
-    private final Function<Term, Functor> resolver;
 
     private FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
 
@@ -48,27 +47,27 @@ public class Evaluation {
     @Nullable
     public static Evaluation eval(Term x, Function<Term, Functor> resolver, Predicate<Term> each) {
         if (canEval(x)) {
-            Evaluables y = new Evaluables(resolver).discover(x);
+            Evaluables y = new Evaluables(resolver, x);
             if (!y.isEmpty())
-                return new Evaluation(x, y, each);
+                return new Evaluation(y, each);
         }
 
         each.test(x); //didnt need evaluating, just input
         return null;
     }
 
-    private Evaluation(Term x, Evaluables ops, Predicate<Term> each) {
-        this.term = x;
-        this.x = x;
+    private Evaluation(Evaluables ops, Predicate<Term> each) {
+
         this.each = each;
-        this.resolver = ops.resolver;
 
-        ops.sortDecreasingVolume();
 
-        eval(x,ops);
+
+        //iterating at the top level is effectively DFS; a BFS solution is also possible
+        for (Term x : ops.goals)
+            eval(x,ops);
     }
 
-    private boolean termute(Term y, Predicate<Term> each) {
+    private boolean termute(Term y, Function<Term, Functor> resolver, Predicate<Term> each) {
 
         int before = v.now();
 
@@ -226,7 +225,6 @@ public class Evaluation {
                     if (!y.op().conceptualizable || ops.isEmpty())
                         break main;
                     else {
-                        ops.sortDecreasingVolume(); //TODO only sort if rewrites affected anything
                         break; //changed so start again
                     }
 
@@ -244,7 +242,7 @@ public class Evaluation {
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         int ts = termutators();
         if (ts > 0) {
-            return termute(y, each);
+            return termute(y, ops.resolver, each);
         } else {
             if (y!=Null) {
                 if (!each.test(y))
@@ -289,6 +287,10 @@ public class Evaluation {
         return y[0];
     }
 
+
+    public static Set<Term> solveAll(String s, NAR n) {
+        return solveAll($$(s), n);
+    }
 
     /**
      * gathers results from one truth set, ex: +1 (true)
@@ -390,20 +392,29 @@ public class Evaluation {
      */
     private static final class Evaluables extends ArrayHashSet<Term> implements DirectTermTransform {
 
-        private final Function<Term, Functor> resolver;
-        public final MutableSet<Variable> vars = new UnifiedSet(0);
+        public final Function<Term, Functor> resolver;
+        private final Term[] goals;
+//        public final MutableSet<Variable> vars = new UnifiedSet(0);
 
-        Evaluables(Function<Term, Functor> resolver) {
+        Evaluables(Function<Term, Functor> resolver, Term... goals) {
             this.resolver = resolver;
+
+            assert(goals.length > 0);
+            this.goals = goals;
+
+            for (Term g : goals)
+                discover(g);
         }
 
-        public Evaluables discover(Term x) {
+        protected Evaluables discover(Term x) {
             x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
                 if (!contains(xx)) {
                     if (Functor.isFunc(xx)) {
                         Term yy = this.transform(xx);
                         if (yy.sub(1) instanceof Functor) {
-                            add(yy);
+                            if (add(yy)) {
+                                ///changed = true;
+                            }
                         }
                     }
                 }
@@ -417,11 +428,11 @@ public class Evaluation {
         protected void addUnique(Term x) {
             super.addUnique(x);
 
-            x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
-                if (s instanceof Variable)
-                    vars.add((Variable) s);
-                return true;
-            }), null);
+//            x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
+//                if (s instanceof Variable)
+//                    vars.add((Variable) s);
+//                return true;
+//            }), null);
         }
 
         @Override
@@ -439,7 +450,14 @@ public class Evaluation {
             return x;
         }
 
-        public Evaluables sortDecreasingVolume() {
+        @Override
+        public ListIterator<Term> listIterator() {
+            //sortDecreasingVolume();
+            return super.listIterator();
+        }
+
+        private Evaluables sortDecreasingVolume() {
+            //TODO only invoke this if the items changed
             if (size() > 1)
                 ((FasterList<Term>) list).sortThisByInt(Termlike::volume);
             return this;

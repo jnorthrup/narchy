@@ -1,7 +1,9 @@
 package nars.term.util.transform;
 
+import jcog.WTF;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -17,9 +19,17 @@ public final class MapSubst implements Subst {
         this.xy = xy;
     }
 
+    public static TermTransform the(Term from, Term to) {
 
+        if (from.equals(to))
+            throw new WTF("pointless substitution");
 
-
+        if (from instanceof Atomic) {
+            return new SubstAtomic((Atomic)from, to);
+        } else {
+            return new SubstCompound((Compound)from, to);
+        }
+    }
 
 
     @Override
@@ -62,33 +72,22 @@ public final class MapSubst implements Subst {
     }
 
 
-    /**
-     * 1-pair substitution
-     */
-    public static class MapSubst1 implements Subst {
+    final static class SubstCompound implements TermTransform {
 
-        private final Term from;
+        private final Compound from;
         private final Term to;
-
-        private MapSubst1(Map.Entry<? extends Term,Term> e) {
-            this(e.getKey(), e.getValue());
-        }
 
         /**
          * creates a substitution of one variable; more efficient than supplying a Map
          */
-        public MapSubst1(/*@NotNull*/ Term from, /*@NotNull*/ Term to) {
-            
-            if (from.equals(to))
-                throw new RuntimeException("pointless substitution");
-
+        SubstCompound(Compound from, Term to) {
             this.from = from;
             this.to = to;
         }
 
         @Override
-        public boolean isEmpty() {
-            return false;
+        public @Nullable Term transformAtomic(Atomic unchanged) {
+            return unchanged;
         }
 
         @Override
@@ -97,22 +96,36 @@ public final class MapSubst implements Subst {
                 return to;
             if (x.impossibleSubTerm(from))
                 return x;
-            return Subst.super.transformCompound(x);
+            return TermTransform.super.transformCompound(x);
         }
 
-        @Override
-        public @Nullable Term xy(Term t) {
-            return t.equals(from) ? to : null;
-        }
-
-        @Override
-        public void clear() {
-            throw new UnsupportedOperationException();
-        }
-
-    
-    
-    
-    
     }
+
+    final static class SubstAtomic implements TermTransform {
+
+        private final Atomic from;
+        private final Term to;
+
+        /**
+         * creates a substitution of one variable; more efficient than supplying a Map
+         */
+        SubstAtomic(Atomic from, Term to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        public @Nullable Term transformAtomic(Atomic x) {
+            return x.equals(from) ? to : x;
+        }
+
+        @Override
+        public @Nullable Term transformCompound(Compound x) {
+            if (x.impossibleSubTerm(from))
+                return x;
+            return TermTransform.super.transformCompound(x);
+        }
+
+    }
+
 }

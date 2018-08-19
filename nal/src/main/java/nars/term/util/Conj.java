@@ -332,13 +332,13 @@ public class Conj extends ByteAnonMap {
         }
     }
 
-    public static Term conjMerge(Term a, Term b, int dt) {
+    public static Term the(Term a, Term b, int dt) {
         return (dt >= 0) ?
-                conjMerge(a, 0, b, +dt + a.dtRange()) :
-                conjMerge(b, 0, a, -dt + b.dtRange());
+                the(a, 0, b, +dt + a.dtRange()) :
+                the(b, 0, a, -dt + b.dtRange());
     }
 
-    static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
+    static public Term the(Term a, long aStart, Term b, long bStart) {
 
         Conj c = new Conj();
 //        if (aStart == bStart) {

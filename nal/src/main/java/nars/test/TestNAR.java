@@ -61,7 +61,7 @@ public class TestNAR {
     private float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
     private Topic<Tasked>[] outputEvents;
     private boolean finished;
-    //private boolean exitOnAllSuccess = true;
+    private boolean exitOnAllSuccess = true;
     private boolean exitOnFirstMustNot = true;
     private boolean reportStats = false;
 
@@ -103,9 +103,9 @@ public class TestNAR {
         else
             trace = null;
 
-        //if (exitOnAllSuccess) {
+        if (exitOnAllSuccess) {
             new EarlyExit(1);
-        //}
+        }
 
         long startTime = nar.time();
 
@@ -370,7 +370,7 @@ public class TestNAR {
         if (mustOrMustNot) {
             succeedsIfAll.add(tc);
         } else {
-            //exitOnAllSuccess = false;
+            exitOnAllSuccess = false;
             failsIfAny.add(tc);
         }
 

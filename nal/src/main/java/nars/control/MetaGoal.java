@@ -23,6 +23,8 @@ import static jcog.Texts.n4;
  * <p>
  * satisfying other goals is necessary to compensate for the
  * perceptual cost.
+ * <p>
+ * there is also the "meta-goal" system which allows me to specify the high-level motivation of the system in terms of a few variables.  i can direct it to focus on action rather than belief, or throttle perception, or instead concentrate on answering questions.  more of these meta goals can be added but the total number needs to be kept small because each one is tracked for every cause in the system which could be hundreds or thousands.  so i settled on 5 basic ones so far you can see these in the EXE menu.  each can be controlled by a positive or negative factor, 0 being neutral and having no effect.  negative being inhibitory.  it uses these metagoals to to estimate the 'value' of each 'cause' the system is able to choose to apply throughout its operating cycles.  when it knows the relative value of a certain cause it can allocate an appropriate amount of cpu time for it in the scheduler.   these are indicated in the animated tree chart enabled by the 'CAN' button
  */
 @Paper
 public enum MetaGoal {
@@ -46,15 +48,7 @@ public enum MetaGoal {
     /**
      * pos: actuated a goal concept
      */
-    Action
-
-
-
-
-
-
-
-    ;
+    Action;
 
     /**
      * learn that the given effects have a given value
@@ -63,13 +57,13 @@ public enum MetaGoal {
     public void learn(short[] cause, float strength, FasterList<Cause> causes) {
 
         if (Math.abs(strength) < Float.MIN_NORMAL)
-            return; 
+            return;
 
         int n = cause.length;
         if (n == 0)
             return;
 
-        float s = strength/n;
+        float s = strength / n;
 
         int ordinal = ordinal();
         Cause[] cc = causes.array();
@@ -86,9 +80,6 @@ public enum MetaGoal {
     }
 
 
-
-
-
     public static final Logger logger = LoggerFactory.getLogger(MetaGoal.class);
 
     /**
@@ -102,7 +93,7 @@ public enum MetaGoal {
         float value = 0;
         Object[] vv = values.array();
         for (short c : effect)
-            value += ((Cause)vv[c]).value();
+            value += ((Cause) vv[c]).value();
 
 
         return value / effects;

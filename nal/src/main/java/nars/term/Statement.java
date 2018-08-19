@@ -54,7 +54,7 @@ public class Statement {
                     if (dt==DTERNAL || dt == XTERNAL) {
                         newSubj = CONJ.the(subject, dt, inner);
                     } else {
-                        newSubj = Conj.conjMerge(subject, 0, inner, subject.dtRange() + dt);
+                        newSubj = Conj.the(subject, 0, inner, subject.dtRange() + dt);
                     }
                     return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1), builder); //recurse
                 }

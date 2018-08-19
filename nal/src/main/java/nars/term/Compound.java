@@ -420,29 +420,23 @@ public interface Compound extends Term, IPair, Subterms {
         if (this.equals(from))
             return to;
 
-
         Subterms oldSubs = subterms();
-        Subterms newSubs = oldSubs.replaceSubs(from, to);
-        if (newSubs == null || newSubs == Null)
+        Subterms newSubs = oldSubs.replaceSub(from, to);
+
+        if (newSubs == oldSubs)
+            return this;
+
+        if (newSubs == null)
             return Null;
-        if (newSubs!=oldSubs) {
-            int dt = dt();
-            Op o = op();
-            if (newSubs instanceof TermList) {
-                return o.the(dt, ((TermList) newSubs).arrayKeep());
-            } else {
-//                    if (o.commutative) {
-//                        //force reconstruct as may have changed
-//                        //TODO see if this is necessary esp. in direct transform mode
-                return o.the(dt, newSubs);
-//                    } else {
-//                        /* Subterms as-is */
-//                        return Op.terms.theCompound(o, dt, newSubs);
-//                    }
-            }
+
+        int dt = dt();
+        Op o = op();
+        if (newSubs instanceof TermList) {
+            return o.the(dt, ((TermList) newSubs).arrayKeep());
+        } else {
+            return o.the(dt, newSubs);
         }
 
-        return this;
     }
 
     default int subTimeOnly(Term x) {

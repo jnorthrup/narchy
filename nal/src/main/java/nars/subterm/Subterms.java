@@ -792,9 +792,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         forEach(t -> t.appendTo(out));
     }
 
-    default Subterms replaceSubs(Term from, Term to) {
-        if (!impossibleSubTerm(from)) {
-            return transformSubs(new MapSubst.MapSubst1(from, to));
+    default Subterms replaceSub(Term from, Term to) {
+        if (containsRecursively(from)) {
+        //if (!impossibleSubTerm(from)) {
+            return transformSubs(MapSubst.the(from, to));
         } else {
             return this;
         }
