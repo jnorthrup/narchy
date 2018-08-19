@@ -45,7 +45,10 @@ public class Evaluation {
 
     @Nullable
     public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
-        return eval(x, nar::functor, nar.facts(0.75f, true), each);
+        return eval(x, nar::functor,
+                //nar.facts(0.75f, true),
+                (z)->Stream.of(),
+                each);
     }
 
     /**
