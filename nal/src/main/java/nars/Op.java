@@ -1,12 +1,14 @@
 package nars;
 
 
+import jcog.TODO;
 import jcog.data.list.FasterList;
-import nars.op.SetFunc;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
+import nars.subterm.util.TermList;
 import nars.term.Compound;
+import nars.term.Intersection;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.Anom;
@@ -36,7 +38,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static java.util.Arrays.copyOfRange;
 import static nars.term.Terms.sorted;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -98,7 +99,7 @@ public enum Op {
     SECTe("&", true, 3, Args.GTETwo) {
         @Override
         public Term the(int dt, Term[] u) {
-            return intersect(/*Int.intersect*/(u),
+            return Intersection.intersect(/*Int.intersect*/(u),
                     SECTe,
                     SETe,
                     SETi);
@@ -111,7 +112,7 @@ public enum Op {
     SECTi("|", true, 3, Args.GTETwo) {
         @Override
         public Term the(int dt, Term[] u) {
-            return intersect(/*Int.intersect*/(u),
+            return Intersection.intersect(/*Int.intersect*/(u),
                     SECTi,
                     SETi,
                     SETe);
@@ -824,118 +825,6 @@ public enum Op {
             return s;
     }
 
-    private static Term intersect(Term[] t, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
-
-        int trues = 0;
-        for (Term x : t) {
-            if (x == True) {
-
-                trues++;
-            } else if (x == Null || x == False) {
-                return Null;
-            }
-        }
-        if (trues > 0) {
-            if (trues == t.length) {
-                return True;
-            } else if (t.length - trues == 1) {
-
-                for (Term x : t) {
-                    if (x != True)
-                        return x;
-                }
-            } else {
-
-                Term[] t2 = new Term[t.length - trues];
-                int yy = 0;
-                for (Term x : t) {
-                    if (x != True)
-                        t2[yy++] = x;
-                }
-                t = t2;
-            }
-        }
-
-        switch (t.length) {
-
-            case 0:
-                throw new RuntimeException();
-
-            case 1:
-
-                Term single = t[0];
-                if (single instanceof EllipsisMatch) {
-                    return intersect(single.arrayShared(), intersection, setUnion, setIntersection);
-                }
-                return single instanceof Ellipsislike ?
-                        compound(intersection, DTERNAL, single) :
-                        single;
-
-            case 2:
-                return intersect2(t[0], t[1], intersection, setUnion, setIntersection);
-            default:
-
-                Term a = intersect2(t[0], t[1], intersection, setUnion, setIntersection);
-
-                Term b = intersect(copyOfRange(t, 2, t.length), intersection, setUnion, setIntersection);
-
-                return intersect2(a, b,
-                        intersection, setUnion, setIntersection
-                );
-        }
-
-    }
-
-    /*@NotNull*/
-    @Deprecated
-    private static Term intersect2(Term term1, Term term2, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
-
-        if (term1.equals(term2))
-            return term1;
-
-        Op o1 = term1.op();
-        Op o2 = term2.op();
-
-        if ((o1 == setUnion) && (o2 == setUnion)) {
-
-            return SetFunc.union(setUnion, term1.subterms(), term2.subterms());
-        }
-
-
-        if ((o1 == setIntersection) && (o2 == setIntersection)) {
-
-            return SetFunc.intersect(setIntersection, term1.subterms(), term2.subterms());
-        }
-
-        if (o2 == intersection && o1 != intersection) {
-
-            Term x = term1;
-            term1 = term2;
-            term2 = x;
-            o2 = o1;
-            o1 = intersection;
-        }
-
-
-        TreeSet<Term> args = new TreeSet<>();
-        if (o1 == intersection) {
-            ((Iterable<Term>) term1).forEach(args::add);
-            if (o2 == intersection)
-                ((Iterable<Term>) term2).forEach(args::add);
-            else
-                args.add(term2);
-        } else {
-            args.add(term1);
-            args.add(term2);
-        }
-
-        int aaa = args.size();
-        if (aaa == 1)
-            return args.first();
-        else {
-            return compound(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
-        }
-    }
 
     public static boolean goalable(Term c) {
         return !c.hasAny(Op.NonGoalable);

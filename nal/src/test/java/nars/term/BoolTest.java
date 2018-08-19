@@ -55,9 +55,9 @@ public class BoolTest {
     @Test void testEqualOperatorTautologies() {
         //TODO finish
         NAR n = NARS.shell();
-        assertEquals("[equal(true,true)]", Evaluation.solveAll($$("equal(true,true)"), n).toString());
-        assertEquals("[equal(false,false)]", Evaluation.solveAll($$("equal(false,false)"), n).toString());
-        assertEquals("[null]", Evaluation.solveAll($$("equal(null,null)"), n).toString());
+        assertEquals("[equal(true,true)]", Evaluation.answerAll($$("equal(true,true)"), n).toString());
+        assertEquals("[equal(false,false)]", Evaluation.answerAll($$("equal(false,false)"), n).toString());
+        assertEquals("[null]", Evaluation.answerAll($$("equal(null,null)"), n).toString());
     }
 
     @Test
@@ -75,6 +75,13 @@ public class BoolTest {
         assertEq("(false-->x)", INH.the(False, x));
         assertEq("(x<->true)", SIM.the(True, x));
         assertEq("(x<->false)", SIM.the(False, x));
+
+        assertEq(True, INH.the(True, True));
+        assertEq(True, SIM.the(True, True));
+        assertEq(False, INH.the(True, False));
+        assertEq(False, INH.the(False, True));
+        assertEq(False, SIM.the(True, False));
+        assertEq(True, SIM.the(True, True));
 
         assertEquals(0, True.compareTo(True));
         assertEquals(0, False.compareTo(False));

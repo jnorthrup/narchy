@@ -380,6 +380,7 @@ public interface Compound extends Term, IPair, Subterms {
         return this.dt() != DTERNAL && op() == CONJ ? subterms().sum(Term::eventCount) : 1;
     }
 
+    /** replaces the 'from' term with 'to', recursively */
     default Term replace(Term from, Term to) {
         if (this.equals(from))
             return to;

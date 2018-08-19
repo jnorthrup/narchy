@@ -2,6 +2,7 @@ package nars.op;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatRange;
 import nars.NAR;
@@ -18,12 +19,15 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 import static jcog.Util.map;
 import static nars.Op.BELIEF;
 import static nars.truth.TruthFunctions.c2w;
 
 /**
  * numeric prediction support
+ * TODO implement this as an addable Scalar Belief table which recycles past prediction tasks as they change
  * TODO configuration parameters for projections
  *      --number
  *      --time width (duty cycle %)
@@ -44,6 +48,7 @@ public class BeliefPredict {
     private final int sampleDur;
     private final Termed[] predicted;
     int projections = 0;
+    private List<Task> predictions = new FasterList();
 
     /** if the past and present set of monitored concepts are equal, then iterative projections
      * into the future are possible to compute each cycle.
@@ -80,6 +85,12 @@ public class BeliefPredict {
     protected void predict() {
 
         synchronized (this) {
+            predictions.forEach(x -> {
+                x.delete();
+                //TODO also directly remove from table?
+            });
+            predictions.clear();
+
             long now = nar.time();
 
             double[] p = null;
@@ -129,7 +140,9 @@ public class BeliefPredict {
             long start = Tense.dither(when , nar);
             long end = Tense.dither(when+sampleDur, nar);
             //System.out.println("-> " + start + " " + end);
-            Task p = new PredictionTask(predicted[i].term(), i, t, start, end, eShared).pri(nar);
+            Task p = new PredictionTask(predicted[i].term(), t, start, end, eShared).pri(nar);
+
+            predictions.add(p);
 
             predict.input(
                     p
@@ -153,7 +166,7 @@ public class BeliefPredict {
     }
 
     private static class PredictionTask extends SignalTask {
-        public PredictionTask(Term term, int i, PreciseTruth t, long start, long end, long eShared) {
+        public PredictionTask(Term term, PreciseTruth t, long start, long end, long eShared) {
             super(term, Op.BELIEF, t, start, end, eShared);
         }
     }

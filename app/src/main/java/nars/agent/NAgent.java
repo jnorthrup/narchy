@@ -14,8 +14,8 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.action.ActionConcept;
-import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.Sensor;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
@@ -27,7 +27,6 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.truth.Stamp;
 import nars.util.TimeAware;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +45,8 @@ import java.util.function.Supplier;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.w2c;
 
 /**
  * an integration of sensor concepts and motor functions
@@ -442,13 +443,22 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected void act(long prev, long now, long next) {
-        ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
-        ArrayUtils.shuffle(aaa, random());
+        ActionConcept[] aaa = actions.copy;
+//        ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
+//        ArrayUtils.shuffle(aaa, random());
+
+        float curiConf =
+                        //nar.confMin.floatValue() * 4;
+                        //nar.confMin.floatValue();
+                        w2c(c2w(nar.confDefault(GOAL))/2);
+                        //nar.confDefault(GOAL);
+
         for (ActionConcept a : aaa) {
 
             //HACK temporary
-            if (a instanceof GoalActionConcept)
-                ((GoalActionConcept) a).curiosity(curiosity.get());
+            if (a instanceof AbstractGoalActionConcept) {
+                ((AbstractGoalActionConcept) a).curiosity(curiosity.get(), curiConf);
+            }
 
             a.update(prev, now, next, nar);
         }

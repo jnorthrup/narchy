@@ -408,6 +408,7 @@ public class EllipsisTest {
         new EllipsisTest.CommutiveEllipsisTest2("%1..*", p("(Z,", ")")).test(0, 2, 0);
     }
 
+
     private static void testCombinations(Compound _X, Compound Y, int expect) {
         Compound X = (Compound) new PatternIndex().rule(_X);
 

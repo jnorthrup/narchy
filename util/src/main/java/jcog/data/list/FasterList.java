@@ -416,15 +416,29 @@ public class FasterList<X> extends FastList<X> {
         return size;
     }
 
-    public void ensureExtraCapacity(int num) {
-        X[] ii = this.items;
-        int s = 0, l = ii.length;
-        if (l == 0 || (l < ((s = this.size)+num))) {
+    public void ensureExtraCapacityExact(int num) {
+        int l = this.items.length;
+        int oldCapacity = l;
+        int minCapacity = l + num;
+        if (minCapacity > oldCapacity) {
             this.items = (X[]) (
                     (l == 0) ?
                             newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
                             :
-                            this.copyItemsWithNewCapacity(sizePlusFiftyPercent(s+num))
+                            this.copyItemsWithNewCapacity(minCapacity)
+            );
+        }
+    }
+
+    public void ensureExtraCapacity(int num) {
+        X[] ii = this.items;
+        int s = 0, l = ii.length;
+        if (l == 0 || (l < ((s = this.size) + num))) {
+            this.items = (X[]) (
+                    (l == 0) ?
+                            newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
+                            :
+                            this.copyItemsWithNewCapacity(sizePlusFiftyPercent(s + num))
             );
         }
     }
@@ -462,7 +476,7 @@ public class FasterList<X> extends FastList<X> {
 
     public int forEach(int offset, IntObjectPredicate each) {
         int n = offset;
-        for (Object j: items) {
+        for (Object j : items) {
             if (j == null)
                 break;
             each.accept(n++, j);
@@ -471,7 +485,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList addingAll(X... x) {
-        for (X y: x)
+        for (X y : x)
             add(y);
         return this;
     }
@@ -585,7 +599,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public void clearReallocate(int maxSizeToReuse, int sizeIfNew) {
-        assert(sizeIfNew < maxSizeToReuse);
+        assert (sizeIfNew < maxSizeToReuse);
 
         int s = this.size;
         if (s == 0)
@@ -663,23 +677,22 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public List<Iterable<X>> chunkView(int chunkSize) {
-            if (chunkSize <= 0)
-            {
-                throw new IllegalArgumentException("Size for groups must be positive but was: " + chunkSize);
-            }
-
-
-                MutableList<Iterable<X>> result = new FasterList((int) (Math.ceil((float)size()) / chunkSize));
-                int i = 0;
-
-                int size = this.size();
-                while (i < size) {
-                    result.add(subList(i, Math.min(i + chunkSize, this.size)));
-                    i += chunkSize;
-                }
-                return result;
-
+        if (chunkSize <= 0) {
+            throw new IllegalArgumentException("Size for groups must be positive but was: " + chunkSize);
         }
+
+
+        MutableList<Iterable<X>> result = new FasterList((int) (Math.ceil((float) size()) / chunkSize));
+        int i = 0;
+
+        int size = this.size();
+        while (i < size) {
+            result.add(subList(i, Math.min(i + chunkSize, this.size)));
+            i += chunkSize;
+        }
+        return result;
+
+    }
 
     public void swap(int a, int b) {
         X x = get(a);
@@ -688,11 +701,12 @@ public class FasterList<X> extends FastList<X> {
         set(b, x);
     }
 
-    /** use with caution */
+    /**
+     * use with caution
+     */
     public void setSize(int s) {
         this.size = s;
     }
-
 
 
     /**
@@ -735,7 +749,7 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    public <P> boolean anySatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter)    {
+    public <P> boolean anySatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
         int s = size;
         X[] items = this.items;
         for (int i = 0; i < s; i++) {
@@ -744,7 +758,8 @@ public class FasterList<X> extends FastList<X> {
         }
         return false;
     }
-    public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter)    {
+
+    public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
         int s = size;
         X[] items = this.items;
         for (int i = 0; i < s; i++) {

@@ -35,16 +35,16 @@ public class FunctorBacktrackingTest {
 
         assertEquals(
                 "TODO",
-                Evaluation.solveAll("father(?Father, ?Child)",  n).toString()
+                Evaluation.answerAll("father(?Father, ?Child)",  n).toString()
         );
 
         assertEquals(
                 "[sibling(sally,erica)]",
-                Evaluation.solveAll("sibling(sally,erica)",  n).toString()
+                Evaluation.answerAll("sibling(sally,erica)",  n).toString()
         );
         assertEquals(
                 "", //UNKNOWN, not true or false
-                Evaluation.solveAll("sibling(tom,erica)",  n).toString()
+                Evaluation.answerAll("sibling(tom,erica)",  n).toString()
         );
 
 

@@ -22,6 +22,7 @@ import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,21 +80,21 @@ public class FZero extends NAgentX {
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
-        initToggleLeftRight();
+//        initToggleLeftRight();
 //        initToggleFwdStop();
 
         GoalActionConcept F = initUnipolarLinear(5f);
 
         //initTankContinuous();
-//        BiPolarAction A =
-//                //initBipolarRotateRelative(true, 1f);
-//                //initBipolarRotateAbsolute(true);
-//                //initBipolarRotateDirect(false, 0.9f);
-//                initBipolarRotateDirect(false, 0.5f);
-//
-//        window(new Gridding(
-//                //new CameraSensorView(c, this).withControls(),
-//                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
+        BiPolarAction A =
+                //initBipolarRotateRelative(true, 1f);
+                //initBipolarRotateAbsolute(true);
+                //initBipolarRotateDirect(false, 0.9f);
+                initBipolarRotateDirect(true, 0.5f);
+
+        window(new Gridding(
+                //new CameraSensorView(c, this).withControls(),
+                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
 
 

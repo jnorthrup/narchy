@@ -74,9 +74,32 @@ public class BiPolarAction extends AbstractSensor {
     public void update(long prev, long now, long next, NAR nar) {
         pos.update(prev, now, next, nar);
         neg.update(prev, now, next, nar);
-        Truth p = pos.actionTruth();
-        Truth n = neg.actionTruth();
+
+        Random rng = nar.random();
+
+
+
+        Truth p, n;
+        boolean pCuri, nCuri;
+        if (rng.nextFloat() < pos.curiosityRate) {
+            p = $.t(rng.nextFloat(), pos.curiConf);
+            pCuri = true;
+        } else {
+            p = pos.actionTruth();
+            pCuri = false;
+        }
+        if (rng.nextFloat() < neg.curiosityRate) {
+            n = $.t(rng.nextFloat(), neg.curiConf);
+            nCuri = true;
+        } else {
+            n = neg.actionTruth();
+            nCuri = false;
+        }
+
+
+
         float x = model.update(p, n, prev, now);
+
         if (x==x)
             x = Util.clamp(x, -1f, +1f);
 
@@ -84,7 +107,7 @@ public class BiPolarAction extends AbstractSensor {
 
         //TODO configurable feedback model
 
-        PreciseTruth Nb, Ng, Pb, Pg;
+        PreciseTruth Nb, Pb;
 
         if (y == y) {
 
@@ -121,15 +144,17 @@ public class BiPolarAction extends AbstractSensor {
             Pb = yp == yp ? $.t(yp, feedbackConf) : null;
             Nb = yn == yn ? $.t(yn, feedbackConf) : null;
 
-            Pg = null;
-            Ng = null;
-
         } else {
-            Pb = Nb = Pg = Ng = null;
+            Pb = Nb = null;
         }
 
 
-        feedback.input(pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar));
+        feedback.input(
+                pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar),
+
+                (pCuri ? pos.curiosity(p, prev, now, nar) : null),
+                (nCuri ? neg.curiosity(n, prev, now, nar) : null)
+        );
     }
 
     @Override
@@ -144,15 +169,14 @@ public class BiPolarAction extends AbstractSensor {
         final float[] lastX = new float[] { 0};
 
         final FloatSupplier curiosity; //HACK
-        private final NAR nar;
 
-        boolean freqOrExp;
 
         /** how much coherence can shrink the amplitude of the resulting bipolar signal. 0 means not at all, +1 means fully attenuable */
         private float coherenceRange = 0.5f;
         private final boolean fair;
 
-        boolean latch = true;
+        boolean freqOrExp;
+        boolean latch = false;
 
         /** adjustable q+ lowpass filters */
         final FloatAveraged fp = new FloatAveraged(0.99f, true);
@@ -164,13 +188,14 @@ public class BiPolarAction extends AbstractSensor {
             this.fair = fair;
             curiosity = ((NAct) s).curiosity();
             freqOrExp = true;
-            this.nar = s.nar();
+
         }
 
         @Override
         public float update(Truth pos, Truth neg, long prev, long now) {
-            float pq = q(pos);
-            float nq = q(neg);
+
+
+            float pq = q(pos), nq = q(neg);
 
             //fill in missing NaN values
             float pg, ng;
@@ -227,13 +252,6 @@ public class BiPolarAction extends AbstractSensor {
         /** "Q" desire/value function. produces the scalar summary of the goal truth desire that will be
          * used in the difference comparison. return NaN or value in range -1..+1 */
         public float q(Truth t) {
-            Random rng = nar.random();
-            float cur = curiosity.asFloat();
-
-            if (cur > 0 && rng.nextFloat() <= cur/2 /* shared between both */) {
-                return (rng.nextFloat() - 0.5f) * 2;
-            }
-
             return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
         }
 

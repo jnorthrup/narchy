@@ -47,7 +47,14 @@ public class Evaluation {
     public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
         return eval(x, nar::functor,
                 //nar.facts(0.75f, true),
-                (z)->Stream.of(),
+                null,
+                each);
+    }
+
+    @Nullable
+    public static Evaluation answer(Term x, NAR nar, Predicate<Term> each) {
+        return eval(x, nar::functor,
+                nar.facts(0.75f, true),
                 each);
     }
 
@@ -59,7 +66,7 @@ public class Evaluation {
      * @param each
      * @return
      */
-    @Nullable public static Evaluation eval(Term x, Function<Atom, Functor> resolver, Function<Term,Stream<Term>> facts, Predicate<Term> each) {
+    @Nullable public static Evaluation eval(Term x, Function<Atom, Functor> resolver, @Nullable Function<Term,Stream<Term>> facts, Predicate<Term> each) {
         if (canEval(x)) {
             Evaluables y = new Evaluables(resolver, facts, x);
             if (!y.isEmpty())
@@ -303,16 +310,16 @@ public class Evaluation {
     }
 
 
-    public static Set<Term> solveAll(String s, NAR n) {
-        return solveAll($$(s), n);
+    public static Set<Term> answerAll(String s, NAR n) {
+        return answerAll($$(s), n);
     }
 
     /**
      * gathers results from one truth set, ex: +1 (true)
      */
-    public static Set<Term> solveAll(Term x, NAR n) {
+    public static Set<Term> answerAll(Term x, NAR n) {
         final Set[] yy = {null};
-        Evaluation.eval(x, n, (y) -> {
+        Evaluation.answer(x, n, (y) -> {
             if (yy[0] == null) {
                 yy[0] = new UnifiedSet<>(1);
             }
@@ -416,7 +423,7 @@ public class Evaluation {
 
 //        public final MutableSet<Variable> vars = new UnifiedSet(0);
 
-        Evaluables(Function<Atom, Functor> resolver, Function<Term, Stream<Term>> facts, Term... queries) {
+        Evaluables(Function<Atom, Functor> resolver, @Nullable Function<Term, Stream<Term>> facts, Term... queries) {
             this.resolver = resolver;
             this.facts = facts;
 
@@ -427,8 +434,10 @@ public class Evaluation {
             for (Term g : queries) {
                 discover(g);
 
-                if (g.hasAny(Op.VAR_QUERY)) {
-                    facts.apply(g).forEach(cache::add);
+                if (facts!=null) {
+                    if (g.hasAny(Op.VAR_QUERY)) {
+                        facts.apply(g).forEach(cache::add);
+                    }
                 }
             }
         }

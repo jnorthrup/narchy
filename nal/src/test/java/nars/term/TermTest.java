@@ -154,8 +154,8 @@ public class TermTest {
         return y;
     }
 
-    public static void assertEq(String y, Term x) {
-        assertEquals(y, x.toString(), () -> y + " reduces to " + x);
+    public static void assertEq(String exp, Term x) {
+        assertEquals(exp, x.toString(), () -> exp + " reduces to " + x);
     }
 
     @Test
@@ -769,4 +769,21 @@ public class TermTest {
         assertEquals($.$(a), $.$(b));
 
     }
+
+    @Test void testSectConceptualization() {
+
+        assertEq("((a==>b)&x)", "((a==>b) & x)");
+        assertEq("((a ==>+1 b)&x)", "((a==>+1 b) & x)");
+        assertEq("((a ==>+- b)&x)", $$("((a==>+1 b) & x)").concept());
+
+
+        assertEq(Null, "((a==>+1 b) & (a ==>+2 b))");
+        assertEq(Null, "(&, (a==>b),(a ==>+2 b),(c==>d))");
+        assertEq("(((a ==>+2 b)-->d)&(a ==>+1 b))", "((a==>+1 b) & ((a ==>+2 b)-->d))");
+        assertEq(Null, "(((a ==> b)-->d) & ((a ==>+2 b)-->d))");
+        assertEq(Null, "(&, (a==>b),(a ==>+2 b),((c==>d)-->e))");
+
+
+    }
+
 }

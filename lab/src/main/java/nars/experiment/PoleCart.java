@@ -162,7 +162,6 @@ public class PoleCart extends NAgentX {
             this.action = a;
             return x;
         });
-        window(NARui.beliefCharts(nar, F.pos, F.neg), 700, 700);
 
 //        actionUnipolar($.p($.the("L"),id), (a) -> {
 //            if (!manualOverride)
@@ -181,13 +180,14 @@ public class PoleCart extends NAgentX {
                 java.util.List.of(
                         x, xVel,
                         angVel, angX, angY),
-                16,
-                2 * nar.dur(),
                 8,
+                4 * nar.dur(),
+                4,
                 new LivePredictor.LSTMPredictor(0.1f, 1),
                 //new LivePredictor.MLPPredictor(0.1f),
                 nar
         );
+        window(NARui.beliefCharts(nar, F.pos, F.neg, x, xVel), 700, 700);
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,

@@ -1,5 +1,6 @@
 package nars.subterm.util;
 
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -41,19 +42,16 @@ public class TermList extends FasterList<Term> implements Subterms {
 
 
 
-    /** creates an immutable instance of this */
-    public Subterms theSubterms() {
-        return Op.terms.subterms(this);
-    }
 
 
-    @Override
+
+     @Override
     public TermList toList() {
         return new TermList(this);
     }
 
     @Override
-    public Term sub(int i) {
+    public final Term sub(int i) {
         return get(i);
     }
 
@@ -62,6 +60,11 @@ public class TermList extends FasterList<Term> implements Subterms {
         return toArray(Op.EmptyTermArray);
     }
 
+
+    @Override
+    public Term[] arrayShared() {
+        throw new TODO("did you mean to use .arrayKeep");
+    }
 
     @Override
     public int subs() {

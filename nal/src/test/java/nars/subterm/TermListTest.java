@@ -59,7 +59,6 @@ class TermListTest {
         assertEquals(immutable.volume(), mutable.volume());
         assertEquals(immutable.complexity(), mutable.complexity());
         assertEquals(immutable.structure(), mutable.structure());
-        assertEquals(immutable, mutable.theSubterms());
 
         Subterms[] ab = {mutable, immutable};
         for (Subterms a : ab) {

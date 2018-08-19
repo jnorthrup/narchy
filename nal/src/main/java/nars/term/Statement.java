@@ -3,7 +3,6 @@ package nars.term;
 import nars.Op;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
-import nars.term.util.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;
 
 import java.util.function.Predicate;
@@ -14,7 +13,7 @@ import static nars.time.Tense.*;
 /** statements include: inheritance -->, similarity <->, and implication ==> */
 public class Statement {
 
-    public static Term statement(Op op, int dt, Term subject, Term predicate, TermBuilder builder) {
+    public static Term statement(Op op, int dt, Term subject, Term predicate) {
         if (subject == Null || predicate == Null)
             return Null;
 
@@ -22,8 +21,14 @@ public class Statement {
         if (dtConcurrent) {
             if (subject.equals(predicate))
                 return True;
-            if ((op == INH || op == SIM) && subject.equalsRoot(predicate))
-                return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
+            if (op == INH || op == SIM) {
+
+                if ((subject == False && predicate == True) || (predicate == False && subject == True))
+                    return False;
+
+                if (subject.equalsRoot(predicate))
+                    return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
+            }
         }
 
 
@@ -48,7 +53,7 @@ public class Statement {
                         return subject.neg();
                     return Null;
                 case NEG:
-                    return statement(IMPL, dt, subject, predicate.unneg(), builder).neg();//recurse
+                    return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {
                     Term newSubj, inner = predicate.sub(0);
                     if (dt==DTERNAL || dt == XTERNAL) {
@@ -56,7 +61,7 @@ public class Statement {
                     } else {
                         newSubj = Conj.the(subject, 0, inner, subject.dtRange() + dt);
                     }
-                    return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1), builder); //recurse
+                    return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
                 }
             }
 
@@ -139,7 +144,7 @@ public class Statement {
 
 
                     if (subjChange[0] || predChange) {
-                        return statement(IMPL, dt, subject, predicate, builder); //recurse
+                        return statement(IMPL, dt, subject, predicate); //recurse
                     }
                 }
 

@@ -23,6 +23,7 @@ import static nars.Op.GOAL;
 public class AbstractGoalActionConcept extends ActionConcept {
 
 
+
     /** current calculated goalTask */
     protected volatile @Nullable TruthPolation action;
     protected volatile @Nullable Truth actionTruth;
@@ -37,6 +38,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     protected AbstractGoalActionConcept(Term term, SensorBeliefTables sensorBeliefTables, BeliefTables newTable, NAR n) {
         super(term, sensorBeliefTables, newTable, n);
+
+
     }
 
     @Override
@@ -46,15 +49,18 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Override
-    public void update(long prev, long now, long next, NAR nar) {
+    public void update(long prev, long now, long next, NAR n) {
+
+
 
         //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
         Predicate<Task> withoutCuriosity = t -> !(t instanceof SeriesBeliefTable.SeriesTask);  /* filter curiosity tasks? */
 
 
+
         TruthPolation aWithCuri = Answer.
-                relevance(true, prev, now /*next*/, term, null, nar).match(goals()).truthpolation();
+                relevance(true, prev, now /*next*/, term, null, n).match(goals()).truthpolation();
         Truth actionNonAuthentic;
         if (aWithCuri!=null) {
             aWithCuri = aWithCuri.filtered();
@@ -63,7 +69,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             actionNonAuthentic = null;
 
         TruthPolation aWithoutCuri = Answer.
-                relevance(true, prev, now /*next*/, term, withoutCuriosity, nar).match(goals()).truthpolation();
+                relevance(true, prev, now /*next*/, term, withoutCuriosity, n).match(goals()).truthpolation();
         if (aWithoutCuri!=null) {
             aWithoutCuri = aWithoutCuri.filtered();
             actionTruth = actionTruthAuthentic = aWithoutCuri.truth();
@@ -103,6 +109,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     public Truth actionTruth() {
         return actionTruth;
+    }
+
+    protected float curiConf;
+    protected volatile float curiosityRate = 0;
+    public void curiosity(float curiRate, float curiConf) {
+        this.curiosityRate = curiRate;
+        this.curiConf = curiConf;
     }
 
 }

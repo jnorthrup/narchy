@@ -854,11 +854,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
                 EllipsisMatch xe = (EllipsisMatch) yi;
                 int xes = xe.subs();
-                if (xes > 0) {
+
                     if (y == null)
                         y = new DisposableTermList(s - 1 + xes /*estimate */, i);
                     else
-                        y.ensureExtraCapacity(xes);
+                        y.ensureExtraCapacityExact(xes-1);
 
                     for (int j = 0; j < xes; j++) {
                         @Nullable Term k = f.transform(xe.sub(j));
@@ -869,7 +869,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                             y.addWithoutResizeCheck(k);
                         }
                     }
-                }
+
 
             } else {
 
