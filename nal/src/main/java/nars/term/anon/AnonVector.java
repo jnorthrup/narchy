@@ -262,17 +262,9 @@ public class AnonVector extends TermVector implements FullyInternable {
         return false;
     }
 
-    @Override
-    public boolean isTemporal() {
-        return false;
-    }
-
     private boolean anyNeg() {
         return (structure & NEG.bit) != 0;
-
-
     }
-
 
     @Override
     public Iterator<Term> iterator() {

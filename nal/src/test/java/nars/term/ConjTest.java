@@ -1017,10 +1017,7 @@ public class ConjTest {
         assertEquals(ea.subterms(), xb.subterms());
     }
 
-    @Test
-    void testHasTemporal() throws Narsese.NarseseException {
-        assertTrue($.$("(?x &&+1 y)").isTemporal());
-    }
+
 
     @Test
     void testParseOperationInFunctionalForm2() throws Narsese.NarseseException {

@@ -44,7 +44,6 @@ public interface TermTransform {
      * transform pathway for atomics
      */
     default @Nullable Term transformAtomic(Atomic atomic) {
-        //assert (!(atomic instanceof Compound));
         return atomic;
     }
 

@@ -46,11 +46,6 @@ public interface Atomic extends Term {
     }
 
     @Override
-    default boolean isTemporal() {
-        return false;
-    }
-
-    @Override
     default boolean hasXternal() {
         return false;
     }

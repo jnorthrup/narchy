@@ -77,10 +77,6 @@ public abstract class AtomicConst implements Atomic {
         }
     }
 
-    @Override
-    public int complexity() {
-        return 1;
-    }
 
     @Override
     public float voluplexity() {

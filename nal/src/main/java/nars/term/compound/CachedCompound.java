@@ -71,10 +71,6 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
             return false;
         }
 
-        @Override
-        public final boolean isTemporal() {
-            return false;
-        }
 
         @Override
         public final int eventCount() {

@@ -125,11 +125,6 @@ public abstract class UnitCompound implements Compound {
 
 
     @Override
-    public boolean isTemporal() {
-        return sub().isTemporal();
-    }
-
-    @Override
     public Subterms subterms() {
         return new UniSubterm(sub());
     }

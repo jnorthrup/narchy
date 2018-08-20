@@ -109,7 +109,7 @@ public class PacComponent extends JComponent {
 
         }
 
-        g2d.setStroke(new BasicStroke(1));
+        g2d.setStroke(new BasicStroke(0));
 
         for (Ghost ghost : game.ghosts) {
 
@@ -129,11 +129,11 @@ public class PacComponent extends JComponent {
             else
                 g2d.setColor(ghost.color);
             g2d.fill(ghostShape);
-            if (ghost.scared)
-                g2d.setColor(Color.orange.brighter());
-            else
-                g2d.setColor(Color.orange.brighter());
-            g2d.draw(ghostShape);
+//            if (ghost.scared)
+//                g2d.setColor(Color.orange.brighter());
+//            else
+//                g2d.setColor(Color.orange.brighter());
+//            g2d.draw(ghostShape);
 
 
         }

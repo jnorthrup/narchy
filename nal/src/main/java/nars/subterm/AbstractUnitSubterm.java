@@ -41,9 +41,6 @@ abstract class AbstractUnitSubterm implements Subterms {
         return p.test(sub());
     }
 
-    @Override public boolean isTemporal() {
-        return hasAny(Op.Temporal) && sub().isTemporal();
-    }
 
     @Override
     public boolean equals(Object obj) {

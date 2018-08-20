@@ -82,16 +82,6 @@ public interface Compound extends Term, IPair, Subterms {
 
     Op op();
 
-    /**
-     * whether any subterms (recursively) have
-     * non-DTernal temporal relation
-     */
-    @Override
-    default boolean isTemporal() {
-        return (dt() != DTERNAL && op().temporal)
-                ||
-                Term.super.isTemporal();
-    }
 
     @Override
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {

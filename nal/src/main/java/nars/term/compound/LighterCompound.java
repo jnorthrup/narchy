@@ -58,16 +58,6 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
     }
 
     @Override
-    public int volume() {
-        return super.volume();
-    }
-
-    @Override
-    public int complexity() {
-        return super.complexity();
-    }
-
-    @Override
     public Term[] arrayShared() {
         return arrayKeep();
     }
@@ -94,10 +84,6 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
         throw new TODO(); //must use a separate view instance for correctness, ex: distinguish between structure of the compound and the structure of the subterms
     }
 
-    @Override
-    public boolean isTemporal() {
-        return super.isTemporal();
-    }
 
     @Override
     public int hashCodeSubterms() {

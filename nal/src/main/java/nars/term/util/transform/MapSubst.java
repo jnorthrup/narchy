@@ -84,10 +84,6 @@ public final class MapSubst implements Subst {
             this.to = to;
         }
 
-        @Override
-        public @Nullable Term transformAtomic(Atomic unchanged) {
-            return unchanged;
-        }
 
         @Override
         public @Nullable Term transformCompound(Compound x) {

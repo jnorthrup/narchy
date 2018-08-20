@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static nars.time.Tense.DTERNAL;
-
 public interface SeparateSubtermsCompound extends Compound {
 
     /*@NotNull*/
@@ -129,12 +127,6 @@ public interface SeparateSubtermsCompound extends Compound {
         return subterms().intifyShallow(reduce, v);
     }
 
-    @Override
-    default boolean isTemporal() {
-        return (dt() != DTERNAL && op().temporal)
-                ||
-                (subterms().isTemporal());
-    }
 
     @Override
     default boolean OR(/*@NotNull*/ Predicate<Term> p) {

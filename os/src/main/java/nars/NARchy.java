@@ -53,7 +53,7 @@ public class NARchy extends NARS {
                 t -> !t.isInput()
                 , 16, 64);
 
-        new MatrixDeriver(Derivers.nal(nar, 1, 8, "curiosity.nal", "motivation.nal"));
+        new MatrixDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 
         new ArithmeticIntroduction(32, nar);
 

@@ -28,13 +28,7 @@ public class ArrayTermVector extends TermVector {
 
     }
 
-    @Override
-    protected void equivalentTo(TermVector that) {
-//        if (that instanceof ArrayTermVector) {
-//            ((ArrayTermVector) that).terms = terms;
-//        }
-        super.equivalentTo(that);
-    }
+
 
     @Override
     public String toString() {

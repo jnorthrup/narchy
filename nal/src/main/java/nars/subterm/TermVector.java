@@ -57,10 +57,6 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
         normalized = true;
     }
 
-    @Override
-    public boolean isTemporal() {
-        return hasAny(Op.Temporal) && super.isTemporal();
-    }
 
     @Override
     public boolean isNormalized() {

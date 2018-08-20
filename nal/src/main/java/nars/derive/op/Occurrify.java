@@ -130,6 +130,15 @@ public class Occurrify extends TimeGraph {
         return null;
     }
 
+    /** whether a term is 'temporal' and its derivations need analyzed by the temporal solver:
+     *          if there is any temporal terms with non-DTERNAL dt()
+     */
+    public static boolean temporal(Term x) {
+        return !x.recurseTerms(z -> z instanceof Compound && z.hasAny(Op.Temporal),
+                z-> z.dt() == DTERNAL,
+                null);
+    }
+
     @Override
     public int dt(int dt) {
         return Tense.dither(dt, d.ditherTime);

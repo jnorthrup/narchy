@@ -256,10 +256,6 @@ abstract public class MultiExec extends UniExec {
 
         final AtomicReference<Runnable> narCycle = new AtomicReference(null);
 
-        @Override
-        protected void onCycle(NAR nar) {
-            super.onCycle(nar);
-        }
 
         protected final boolean tryCycle() {
             Runnable r = narCycle.getAndSet(null);

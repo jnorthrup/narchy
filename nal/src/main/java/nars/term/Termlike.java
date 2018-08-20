@@ -107,14 +107,6 @@ public interface Termlike {
     }
 
     /**
-     * whether this term is or contains, as subterms, any temporal terms
-     * TODO when to use this vs. hasAny(Op.Temporal)
-     */
-    @Deprecated default boolean isTemporal() {
-        return OR(Term::isTemporal);
-    }
-
-    /**
      * structure hash bitvector
      */
     default int structure() {

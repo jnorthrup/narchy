@@ -158,7 +158,6 @@ public class Derivation extends PreDerivation {
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
 
-    private transient boolean eternal;
     public transient boolean temporal;
     public transient TruthFunc truthFunction;
     public transient int ditherTime;
@@ -420,8 +419,8 @@ public class Derivation extends PreDerivation {
         }
 
 
-        this.eternal = (taskStart == ETERNAL) && (_belief == null || _belief.isEternal());
-        this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
+        boolean eternal = (taskStart == ETERNAL) && (_belief == null || beliefStart==ETERNAL);
+        this.temporal = !eternal || (Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm));
 
         this.parentCause = _belief != null ?
                 Cause.merge(Param.causeCapacity.intValue(), _task, _belief) :

@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static jcog.data.graph.search.Search.pathStart;
@@ -401,11 +400,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Subterms xx = x.subterms();
 
-
         int subs = xx.subs();
         if (subs == 2) {
-            Term a = xx.sub(0);
-            Term b = xx.sub(1);
+            Term a = xx.sub(0), b = xx.sub(1);
 
             boolean aEqB = a.equals(b);
             //TODO case if aEqNegB
@@ -418,15 +415,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 });
                 int aes = ae.size();
                 if (aes > 0) {
+                    Event[] aa = ae.toArray(new Event[aes]);
+                    if (aa.length > 1) ArrayUtils.shuffle(aa, random());
+
                     if (aEqB && aes > 1) {
 
-
-                        Event[] ab = ae.toArray(new Event[aes]);
-                        ArrayUtils.shuffle(ab, random());
-
-                        for (int i = 0; i < ab.length; i++) {
-                            for (int j = i + 1; j < ab.length; j++) {
-                                if (!solvePairDT(x, ab[i], ab[j], each))
+                        for (int i = 0; i < aa.length; i++) {
+                            for (int j = i + 1; j < aa.length; j++) {
+                                if (!solvePairDT(x, aa[i], aa[j], each))
                                     return false;
                             }
                         }
@@ -441,22 +437,17 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         int bes = be.size();
                         if (bes > 0) {
 
+                            Event[] bb = be.toArray(new Event[bes]);
+                            if (bb.length > 1) ArrayUtils.shuffle(bb, random());
 
-                            //Set<Twin<Event>> uniqueTry = new UnifiedSet<>(4);
-                            if (!ae.allSatisfy(ax -> {
-                                if (!be.allSatisfyWith((bxx, axx) -> {
-                                    /*if (uniqueTry.add(twin(axx, bxx)))*/
-                                    if (!solvePairDT(x, axx, bxx, each))
+                            for (Event ax : aa) {
+                                for (Event bx : bb) {
+                                    if (!solvePairDT(x, ax, bx, each))
                                         return false;
+                                }
+                            }
 
-                                    return true; //keep on trying
-
-                                }, ax))
-                                    return false;
-                                return true;
-                            }))
-                                return false;
-
+                            return true; //continue
                         }
                     }
                 }
@@ -464,31 +455,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
             FasterList<Event> rels = new FasterList<>(4);
-
-
-            Consumer<Event> collect = rels::add;
-
-            byTerm.get(a).forEach(collect);
-
-
-            if (aEqB) {
-
-            } else {
-
-                byTerm.get(b).forEach(collect);
-
-
-            }
-
+            byTerm.get(a).forEach(rels::add);
+            if (!aEqB)
+                byTerm.get(b).forEach(rels::add);
 
             int relCount = rels.size();
             if (relCount > 0) {
-
-
                 if (relCount > 1)
                     rels.shuffleThis(random());
 
-                return bfsPush(rels, new CrossTimeSolver() {
+                if (!bfsPush(rels, new CrossTimeSolver() {
                     @Override
                     protected boolean next(BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
@@ -506,7 +482,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                         durMerge(pathStart(path).id(), pathEnd(path).id()) : 0
                                 , each);
                     }
-                });
+                }))
+                    return false;
 
             }
 
@@ -735,43 +712,39 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     boolean solveAll(Term x, Predicate<Event> each) {
 
-        if (!x.isTemporal())
+        if (!x.hasAny(Op.Temporal))
             return solveOccurrence(x, each);
 
-        if (x.subterms().hasXternal()) {
+        Subterms xx = x.subterms();
+        if (xx.hasXternal()) {
 
             Map<Term, Term> subSolved = new UnifiedMap(2);
 
-
-            x.subterms().recurseTerms(Term::isTemporal, y -> {
-                if (y.dt() == XTERNAL) {
+            xx.recurseTerms(Term::hasXternal, y -> {
+                if (y.dt() == XTERNAL && !subSolved.containsKey(y)) {
                     solveDT(y, (z) -> {
+                        //TODO there could be multiple solutions for dt
+                        assert(z.id.dt()!=XTERNAL);
                         subSolved.put(y, z.id);
-
                         return false;
                     });
                 }
                 return true;
             }, null);
 
-
             if (!subSolved.isEmpty()) {
-
                 Term y = x.replace(subSolved);
                 if (y != null && !(y instanceof Bool)) {
                     x = y;
                 }
             }
 
-        } else {
-            //learn it as a unique result
-            //know(x);
         }
 
         /* occurrence, with or without any xternal remaining */
-        return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y, each))) &&
-                solveOccurrence(x, each);
-
+        return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y, each)))
+                &&
+               solveOccurrence(x, each);
     }
 
 
@@ -792,13 +765,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         List<Event> created = new FasterList(roots.size());
 
         for (Event r : roots) {
-            Node<Event, nars.time.TimeSpan> n;
-            if ((n = node(r)) == null) {
+            if (node(r) == null) {
                 addNode(r);
                 created.add(r);
             }
-
-
         }
 
         Queue<Pair<List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>>, Node<Event, nars.time.TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);

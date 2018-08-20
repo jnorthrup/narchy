@@ -10,7 +10,6 @@ import nars.Param;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.Term;
-import nars.term.Termed;
 
 import java.util.function.IntConsumer;
 
@@ -119,10 +118,6 @@ public class Int implements Intlike, The {
         return Integer.toString(id);
     }
 
-    @Override
-    public int complexity() {
-        return 1;
-    }
 
     @Override
     public void forEachInt(IntConsumer c) {
@@ -130,27 +125,27 @@ public class Int implements Intlike, The {
     }
 
 
-    public static class RotatedInt implements Termed {
-
-        private final int min, max;
-        private Int i;
-
-        public RotatedInt(int min /* inclusive */, int max /* exclusive */) {
-            this.min = min;
-            this.max = max;
-            this.i = Int.the((min + max) / 2);
-        }
-
-        @Override
-        public Term term() {
-            Term cur = i;
-            int next = this.i.id + 1;
-            if (next >= max)
-                next = min;
-            this.i = Int.the(next);
-            return cur;
-        }
-    }
+//    public static class RotatedInt implements Termed {
+//
+//        private final int min, max;
+//        private Int i;
+//
+//        public RotatedInt(int min /* inclusive */, int max /* exclusive */) {
+//            this.min = min;
+//            this.max = max;
+//            this.i = Int.the((min + max) / 2);
+//        }
+//
+//        @Override
+//        public Term term() {
+//            Term cur = i;
+//            int next = this.i.id + 1;
+//            if (next >= max)
+//                next = min;
+//            this.i = Int.the(next);
+//            return cur;
+//        }
+//    }
 
 }
 
