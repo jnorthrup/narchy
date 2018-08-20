@@ -25,39 +25,43 @@ import static nars.Op.ATOM;
  */
 class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform {
 
-    public final Function<Atom, Functor> resolver;
+    public final Function<Atom, Functor> funcResolver;
 
     /** TODO expand this to fully featured tabling/memoization facility */
     protected final Set<Term> cache = new HashSet();
 
 //        public final MutableSet<Variable> vars = new UnifiedSet(0);
 
-    protected Evaluator(Function<Atom, Functor> resolver) {
-        this.resolver = resolver;
+    protected Evaluator(Function<Atom, Functor> funcResolver) {
+        this.funcResolver = funcResolver;
     }
 
     public Evaluator clone() {
-        return new Evaluator(resolver);
+        return new Evaluator(funcResolver);
     }
 
 
-    protected Evaluator query(Term x) {
+    protected final Evaluator query(Term x, Evaluation e) {
         if (cache.add(x)) {
-            x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
-                if (!contains(xx)) {
-                    if (Functor.isFunc(xx)) {
-                        Term yy = this.transform(xx);
-                        if (yy.sub(1) instanceof Functor) {
-                            if (add(yy)) {
-                                ///changed = true;
-                            }
+            discover(x, e);
+        }
+        return this;
+    }
+
+    protected void discover(Term x, Evaluation e) {
+        x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
+            if (!contains(xx)) {
+                if (Functor.isFunc(xx)) {
+                    Term yy = this.transform(xx);
+                    if (yy.sub(1) instanceof Functor) {
+                        if (add(yy)) {
+                            ///changed = true;
                         }
                     }
                 }
-                return true;
-            }, null);
-        }
-        return this;
+            }
+            return true;
+        }, null);
     }
 
 
@@ -79,7 +83,7 @@ class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform {
         }
 
         if (x.op() == ATOM) {
-            Functor f = resolver.apply((Atom) x);
+            Functor f = funcResolver.apply((Atom) x);
             if (f != null) {
                 return f;
             }
@@ -105,7 +109,7 @@ class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform {
 
         //iterating at the top level is effectively DFS; a BFS solution is also possible
         for (Term x : queries) {
-            query(x);
+            query(x, e);
             e.eval(this, x);
         }
         return e;

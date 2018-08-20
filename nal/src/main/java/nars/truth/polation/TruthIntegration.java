@@ -83,7 +83,7 @@ public class TruthIntegration {
         long[] qt = Longerval.intersectionArray(qStart, qEnd, tStart, tEnd);
         if (mid || (qt != null)) {
 
-            LongArrayList pp = new TempLongArrayList((mid ? 1 : 0) + (qt == null ? 2 : 4));
+            TempLongArrayList pp = new TempLongArrayList((mid ? 1 : 0) + (qt == null ? 2 : 4));
 
             pp.add(qStart);
 
@@ -119,8 +119,9 @@ public class TruthIntegration {
     }
 
     private static final class TempLongArrayList extends LongArrayList {
+
         public TempLongArrayList(int cap) {
-            super(cap);
+            items = new long[cap];
         }
 
         @Override
@@ -132,6 +133,7 @@ public class TruthIntegration {
             long[] x = items;
             if (x.length == size)
                 return x;
+
             return Arrays.copyOf(x, size);
         }
 

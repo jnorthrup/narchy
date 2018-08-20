@@ -4,9 +4,11 @@ import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
+import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
+import nars.op.mental.Inperience;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
@@ -15,13 +17,13 @@ import nars.term.atom.Bool;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.*;
 
@@ -116,7 +118,7 @@ public class Evaluation {
                 if (z!=y) {
                     if (canEval(z)) { // && !(ez = e.clone().query(z)).isEmpty()) {
                         Evaluator ee = e.clone();
-                        ee.query(z);
+                        ee.query(z, this);
                         if (!ee.isEmpty() && !eval(ee, z)) //recurse
                             return false; //CUT
                     } else {
@@ -258,7 +260,7 @@ public class Evaluation {
             return termute(y, each);
         } else {
             if (y!=Null) {
-                if (!each.test(y))
+                if (each.test(y))
                     return false;
             }
         }
@@ -330,7 +332,7 @@ public class Evaluation {
         });
 
         Set z = yy[0];
-        return z == null ? java.util.Set.of(x) : yy[0];
+        return z == null ? java.util.Set.of($.func(Inperience.wonder, x)) : yy[0];
     }
 
 

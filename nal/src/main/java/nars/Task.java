@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -901,28 +900,23 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      */
     default float eviIntegTrapezoidal(long dur, long... times) {
 
-
         int n = times.length; assert(n > 1);
-        long last = times[n - 1];
-        long first = times[0];
-
-        assert (first < last
-                && first != ETERNAL && first != XTERNAL
-                /*&& last != ETERNAL */ && last != XTERNAL);
-
-
 
         float e = 0;
-        e += evi(first, dur) / 2;
-        e += evi(last, dur) / 2;
-        for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
-            long ti = times[i];
-            long dt = ti - times[i-1];
+        float eviPrev = evi(times[0], dur);
+        for (int i = 1; i < n; i++) {
+            long b = times[i];
+            long a = times[i - 1];
+            long dt = b - a;
             if (dt == 0)
                 continue; //duplicate time point, skip
             assert(dt > 0);
             //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
-            e += evi(ti, dur) * dt;
+            float eviNext = evi(b, dur);
+
+            e += (eviNext+eviPrev)/2 * dt;
+
+            eviPrev = eviNext;
         }
 
         return e; /* area */

@@ -34,7 +34,7 @@ public class FunctorBacktrackingTest {
 
 
         assertEquals(
-                "TODO",
+                "[father(mike,tom), father(tom,sally), father(tom,erica)]",
                 Evaluation.answerAll("father(?Father, ?Child)",  n).toString()
         );
 

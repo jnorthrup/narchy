@@ -42,7 +42,7 @@ abstract public class Inperience extends LeakBack {
     private static final Atomic want = Atomic.the("want");
 
 
-    private static final Atomic wonder = Atomic.the("wonder");
+    public static final Atomic wonder = Atomic.the("wonder");
     private static final Atomic evaluate = Atomic.the("plan");
     private static final Atomic reflect = Atomic.the("reflect");
     private static final ImmutableSet<Atomic> operators = Sets.immutable.of(
