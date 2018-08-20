@@ -11,6 +11,7 @@ import nars.concept.NodeConcept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptBuilder;
+import nars.eval.Evaluation;
 import nars.link.TermLinker;
 import nars.op.Equal;
 import nars.subterm.Subterms;

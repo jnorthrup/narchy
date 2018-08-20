@@ -2,7 +2,7 @@ package nars.op;
 
 import nars.NAR;
 import nars.NARS;
-import nars.term.Evaluation;
+import nars.eval.Evaluation;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

@@ -6,6 +6,7 @@ import jcog.math.Longerval;
 import jcog.pri.Priority;
 import nars.control.Perceive;
 import nars.control.proto.Remember;
+import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.SpecialNegatedTermTask;

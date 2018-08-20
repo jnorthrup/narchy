@@ -28,6 +28,7 @@ import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.control.proto.Remember;
+import nars.eval.Facts;
 import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.index.concept.ConceptIndex;
@@ -37,7 +38,10 @@ import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
-import nars.term.*;
+import nars.term.Conceptor;
+import nars.term.Functor;
+import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
@@ -1487,7 +1491,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /** creates a view for resolving unifiable terms with 'x'
      * above provided absolute expectation.  negative terms can be returned negative */
     public Function<Term, Stream<Term>> facts(float expMin, boolean beliefsOrGoals) {
-        return new Evaluation.Facts(this, expMin, beliefsOrGoals);
+        return new Facts(this, expMin, beliefsOrGoals);
     }
 
     private class TaskChannel extends CauseChannel<ITask> {

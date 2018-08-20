@@ -61,6 +61,8 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             tailCursor = new AtomicInteger()
     ;
 
+    private static final boolean drainNullifies = true;
+
 
     public int clear(Consumer<X> each) {
         return clear(each, -1);
@@ -157,7 +159,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             if (head.getOpaque() > queueStart) {
                 // does the sequence still have the expected
                 // value
-                if (tailCursor.weakCompareAndSetVolatile(tailSeq, tailSeq + 1)) {
+                if (tailCursor.compareAndSet(tailSeq, tailSeq + 1)) {
 
                     // tailSeq is valid and got access without contention
                     set(i(tailSeq, cap), x);
@@ -201,11 +203,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         int cap = capacity();
 
         for (; ; ) {
-            final int head = this.head.getOpaque();
+            final int head = this.head.getAcquire();
             // is there data for us to poll
             if (tail.getOpaque() > head) {
                 // check if we can update the sequence
-                if (headCursor.weakCompareAndSetVolatile(head, head + 1)) {
+                if (headCursor.compareAndSet(head, head + 1)) {
 
                     final X pollObj = getAndSet(i(head, cap), null);
 
@@ -269,19 +271,35 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
         int cap = capacity();
         for (; ; ) {
-            final int pollPos = head.getOpaque(); // prepare to qualify?
+            final int pollPos = head.get(); // prepare to qualify?
             // is there data for us to poll
             // note we must take a difference in values here to guard against
             // integer overflow
-            final int nToRead = Math.min((tail.getOpaque() - pollPos), maxElements);
+            final int nToRead = Math.min((tail.get() - pollPos), maxElements);
             if (nToRead > 0) {
 
-                for (int i = 0; i < nToRead; i++) {
-                    x[i] = getOpaque(i(pollPos + i, cap));
+                int n0 = i(pollPos, cap);
+                {
+                    int n = n0;
+                    for (int i = 0; i < nToRead; i++) {
+                        x[i] = getOpaque(n++);
+                        if (n == cap) n = 0;
+                    }
                 }
 
                 // if we still control the sequence, update and return
-                if(headCursor.weakCompareAndSetRelease(pollPos,  pollPos+nToRead)) {
+                if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
+
+                    //optional: clear the buffer what was extracted
+                    if (drainNullifies) {
+
+                            int n = n0;
+                            for (int i = 0; i < nToRead; i++) {
+                                lazySet(n++, null); if (n == cap) n = 0;
+                            }
+
+                    }
+
                     head.addAndGet(nToRead);
                     return nToRead;
                 }
@@ -357,6 +375,8 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         int s = size();
         if (s > 0) {
             int cap = capacity();
+
+            //TODO use fast iteration method
             for (int i = 0; i < s; i++) {
                 final int slot = (i(head.getOpaque() + i, cap));
                 X b = getOpaque(slot);

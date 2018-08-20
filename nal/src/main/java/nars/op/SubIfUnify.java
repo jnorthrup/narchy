@@ -5,7 +5,7 @@ import nars.Op;
 import nars.Param;
 import nars.derive.Derivation;
 import nars.subterm.Subterms;
-import nars.term.Evaluation;
+import nars.eval.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;

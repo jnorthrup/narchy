@@ -26,8 +26,8 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.The;
+import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.anon.Anom;
@@ -35,7 +35,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
-import nars.term.util.transform.VariableTransform;
 import nars.term.var.NormalizedVariable;
 import nars.time.Tense;
 import nars.unify.Unify;
@@ -505,7 +504,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    default Term eval(NAR nar) {
+    @Deprecated default Term eval(NAR nar) {
         Term y = Evaluation.solveFirst(this, nar);
         if (y == null)
             return this;

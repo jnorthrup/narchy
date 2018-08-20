@@ -3,7 +3,7 @@ package nars.op;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.term.Evaluation;
+import nars.eval.Evaluation;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

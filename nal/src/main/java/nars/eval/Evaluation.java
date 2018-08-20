@@ -1,24 +1,17 @@
-package nars.term;
+package nars.eval;
 
-import com.google.common.collect.Streams;
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
-import nars.Task;
-import nars.concept.Concept;
 import nars.subterm.Subterms;
-import nars.table.BeliefTables;
+import nars.term.Functor;
+import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.transform.DirectTermTransform;
-import nars.unify.Unify;
-import nars.unify.UnifySubst;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,12 +21,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.*;
 
 public class Evaluation {
 
     private final Predicate<Term> each;
+    private final Evaluator e;
 
     private FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
 
@@ -67,28 +62,22 @@ public class Evaluation {
      * @return
      */
     @Nullable public static Evaluation eval(Term x, Function<Atom, Functor> resolver, @Nullable Function<Term,Stream<Term>> facts, Predicate<Term> each) {
+
         if (canEval(x)) {
-            Evaluables y = new Evaluables(resolver, facts, x);
-            if (!y.isEmpty())
-                return new Evaluation(y, each);
+            Evaluator y = facts==null ? new Evaluator(resolver) : new FactualEvaluator(resolver, facts);
+            return y.eval(each, x);
         }
 
         each.test(x); //didnt need evaluating, just input
         return null;
     }
 
-    private Evaluation(Evaluables ops, Predicate<Term> each) {
-
+    protected Evaluation(Evaluator e, Predicate<Term> each) {
         this.each = each;
-
-
-
-        //iterating at the top level is effectively DFS; a BFS solution is also possible
-        for (Term x : ops.queries)
-            eval(x,ops);
+        this.e = e;
     }
 
-    private boolean termute(Term y, Evaluables e, Predicate<Term> each) {
+    private boolean termute(Term y, Predicate<Term> each) {
 
 
         int before = v.now();
@@ -125,9 +114,11 @@ public class Evaluation {
 
                 Term z = y.replace(subst);
                 if (z!=y) {
-                    Evaluables ez;
-                    if (canEval(z) && !(ez = new Evaluables(e).discover(z)).isEmpty()) {
-                        eval(z, ez); //recurse
+                    if (canEval(z)) { // && !(ez = e.clone().query(z)).isEmpty()) {
+                        Evaluator ee = e.clone();
+                        ee.query(z);
+                        if (!ee.isEmpty() && !eval(ee, z)) //recurse
+                            return false; //CUT
                     } else {
                         if (!each.test(z))
                             return false; //CUT
@@ -140,14 +131,14 @@ public class Evaluation {
     }
 
 
-    private boolean eval(Term x, Evaluables ops) {
+    protected boolean eval(Evaluator e, Term x) {
         //iterate until stable
         Term y = x, prev;
         int vStart, tried, mutStart;
         main:
         do {
             prev = y;
-            ListIterator<Term> ii = ops.listIterator();
+            ListIterator<Term> ii = e.listIterator();
             vStart = now();
             mutStart = termutators();
             tried = 0;
@@ -170,7 +161,7 @@ public class Evaluation {
 
                     if (!(af instanceof Functor)) {
                         //try resolving
-                        Term aa = ops.transform(a);
+                        Term aa = e.transform(a);
                         if (aa == a) {
                             //no change. no such functor
                             removeEntry = true;
@@ -224,7 +215,7 @@ public class Evaluation {
 
                     //pendingRewrites.add(new Term[]{a, z});
                     Term finalA = a;
-                    ops.list.replaceAll(o -> {
+                    e.list.replaceAll(o -> {
                         Term p, q;
                         if (z != null) {
                             p = o.replace(finalA, z);
@@ -244,7 +235,7 @@ public class Evaluation {
                     });
 
 
-                    if (!y.op().conceptualizable || ops.isEmpty())
+                    if (!y.op().conceptualizable || e.isEmpty())
                         break main;
                     else {
                         break; //changed so start again
@@ -264,7 +255,7 @@ public class Evaluation {
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         int ts = termutators();
         if (ts > 0) {
-            return termute(y, ops, each);
+            return termute(y, each);
         } else {
             if (y!=Null) {
                 if (!each.test(y))
@@ -408,155 +399,4 @@ public class Evaluation {
     }
 
 
-    /**
-     * discovers functors within the provided term, or the term itself.
-     * transformation results should not be interned, that is why DirectTermTransform used here
-     */
-    private static final class Evaluables extends ArrayHashSet<Term> implements DirectTermTransform {
-
-        public final Function<Atom, Functor> resolver;
-        private final Term[] queries;
-        private final Function<Term, Stream<Term>> facts;
-
-        /** TODO expand this to fully featured tabling/memoization facility */
-        private final Set<Term> cache = new HashSet();
-
-//        public final MutableSet<Variable> vars = new UnifiedSet(0);
-
-        Evaluables(Function<Atom, Functor> resolver, @Nullable Function<Term, Stream<Term>> facts, Term... queries) {
-            this.resolver = resolver;
-            this.facts = facts;
-
-            assert(queries.length > 0);
-            this.queries = queries;
-
-
-            for (Term g : queries) {
-                discover(g);
-
-                if (facts!=null) {
-                    if (g.hasAny(Op.VAR_QUERY)) {
-                        facts.apply(g).forEach(cache::add);
-                    }
-                }
-            }
-        }
-
-        /** sub-evaluable inherit */
-        protected Evaluables(Evaluables e) {
-            this(e.resolver, e.facts);
-        }
-
-        protected Evaluables discover(Term x) {
-            if (cache.add(x)) {
-                x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
-                    if (!contains(xx)) {
-                        if (Functor.isFunc(xx)) {
-                            Term yy = this.transform(xx);
-                            if (yy.sub(1) instanceof Functor) {
-                                if (add(yy)) {
-                                    ///changed = true;
-                                }
-                            }
-                        }
-                    }
-                    return true;
-                }, null);
-            }
-            return this;
-        }
-
-
-        @Override
-        protected void addUnique(Term x) {
-            super.addUnique(x);
-
-//            x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
-//                if (s instanceof Variable)
-//                    vars.add((Variable) s);
-//                return true;
-//            }), null);
-        }
-
-        @Override
-        public @Nullable Term transformAtomic(Atomic x) {
-            if (x instanceof Functor) {
-                return x;
-            }
-
-            if (x.op() == ATOM) {
-                Functor f = resolver.apply((Atom) x);
-                if (f != null) {
-                    return f;
-                }
-            }
-            return x;
-        }
-
-        @Override
-        public ListIterator<Term> listIterator() {
-            //sortDecreasingVolume();
-            return super.listIterator();
-        }
-
-        private Evaluables sortDecreasingVolume() {
-            //TODO only invoke this if the items changed
-            if (size() > 1)
-                ((FasterList<Term>) list).sortThisByInt(Termlike::volume);
-            return this;
-        }
-    }
-
-    public static class Facts implements Function<Term, Stream<Term>> {
-        private final NAR nar;
-        private final float expMin;
-        private final boolean beliefsOrGoals;
-
-        public Facts(NAR nar, float expMin, boolean beliefsOrGoals) {
-            this.nar = nar;
-            this.expMin = expMin;
-            this.beliefsOrGoals = beliefsOrGoals;
-        }
-
-        @Override
-        public Stream<Term> apply(Term x) {
-            //TODO filter or handle temporal terms appropriately
-            /* stages
-                1. resolve the term itself
-                2. check its termlinks, and local neighborhood graph termlinks
-                3. exhaustive concept index scan
-            */
-            Unify u = new UnifySubst(null, nar.random(), (m)-> { return false; /* HACK just one is enough */});
-
-            return
-                    Streams.concat(
-                            Stream.of(nar.concept(x)).filter(Objects::nonNull), //Stage 1
-                            //TODO Stage 2
-                            nar.concepts() //Stage 3
-                    )
-                    .filter(y -> {
-                        //TODO prefilter
-                        //TODO match implication predicate, store the association in a transition graph
-                        return x.unify(y.term(), u.clear());
-                    })
-                    .filter(this::isTrue).map(Concept::term);
-        }
-
-        private boolean isTrue(@Nullable Concept concept) {
-            BeliefTables table = beliefsOrGoals ? concept.beliefs() : concept.goals();
-            if (table.isEmpty())
-                return false;
-
-            return table.streamTasks().anyMatch(t -> exp(((Task) t).expectation() ));
-        }
-
-        /** whether to accept the given expectation */
-        protected boolean exp(float exp) {
-            //TODO handle negative expectation
-            return (exp >= this.expMin);
-        }
-
-
-
-    }
 }

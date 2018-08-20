@@ -1,6 +1,7 @@
 package nars.term;
 
 import nars.*;
+import nars.eval.Evaluation;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.jetbrains.annotations.Nullable;
