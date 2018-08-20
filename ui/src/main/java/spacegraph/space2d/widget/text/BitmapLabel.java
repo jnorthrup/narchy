@@ -3,23 +3,26 @@ package spacegraph.space2d.widget.text;
 
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
-import spacegraph.SpaceGraph;
+import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
-import spacegraph.space2d.widget.windo.Widget;
-
-import java.io.IOException;
 
 import static java.lang.Math.round;
 
 public class BitmapLabel extends BitmapTextGrid {
 
+    static final float charAspect = 1.6f;
+    static final int minPixelsToBeVisible = 7;
 
-    private String text;
-    private TextColor fgColor = TextColor.ANSI.WHITE, bgColor= TextColor.ANSI.BLACK;
+    private volatile String text = "";
+    private volatile TextColor fgColor = TextColor.ANSI.WHITE, bgColor= TextColor.ANSI.BLACK;
+    private volatile RectFloat2D textBounds;
 
     public BitmapLabel(String text) {
         super();
 
+        textBounds = bounds;
         cursorCol = cursorRow = -1; //hidden
 
         setFillTextBackground(false);
@@ -32,15 +35,41 @@ public class BitmapLabel extends BitmapTextGrid {
         //setUpdateNecessary();
 
     }
+    @Override
+    protected boolean prePaint(SurfaceRender r) {
+        float p = r.visP(bounds).minDimension();
+        if (p < minPixelsToBeVisible) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected RectFloat2D textBounds() {
+        return textBounds;
+    }
+    protected void layoutText() {
+        if (cols > 0 && rows > 0) {
+
+            textBounds = AspectAlign.the(bounds, (rows * charAspect) / cols);
+
+        } else
+            textBounds = bounds; //nothing
+    }
 
     @Override
     public void doLayout(int dtMS) {
         //HACK override the auto-sizing
+        layoutText();
     }
 
     public BitmapLabel text(String newText) {
-        this.text = newText;
-        resize(text.length(), 1);
+        if (!this.text.equals(newText)) {
+            this.text = newText;
+            resize(text.length(), 1);
+            layoutText();
+        }
+
         //setUpdateNecessary();
 
         return this;
@@ -75,16 +104,16 @@ public class BitmapLabel extends BitmapTextGrid {
     }
 
 
-    public static void main(String[] args) {
-        BitmapLabel b = new BitmapLabel("x");
-        SpaceGraph.window(new Widget(b), 500, 500);
-    }
+
 
     @Override
     protected boolean updateBackBuffer() {
-        for (int i = 0; i < cols; i++)
-            for (int j = 0; j < rows; j++)
+        int c = this.cols;
+        int r = this.rows;
+        for (int i = 0; i < c; i++) {
+            for (int j = 0; j < r; j++)
                 redraw(charAt(i,j),i,j);
+        }
         return true;
     }
 
@@ -94,17 +123,17 @@ public class BitmapLabel extends BitmapTextGrid {
     }
 
     @Override
-    public Appendable append(CharSequence charSequence) throws IOException {
+    public Appendable append(CharSequence charSequence) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Appendable append(CharSequence charSequence, int i, int i1) throws IOException {
+    public Appendable append(CharSequence charSequence, int i, int i1) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Appendable append(char c) throws IOException {
+    public Appendable append(char c) {
         throw new UnsupportedOperationException();
     }
 }

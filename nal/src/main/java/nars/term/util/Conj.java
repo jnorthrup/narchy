@@ -750,7 +750,11 @@ public class Conj extends ByteAnonMap {
                 existingShortened = Conj.conjDrop(existingUnneg, incoming, true, false).neg();
             }
             int dt = eternal ? DTERNAL : 0;
-            return CONJ.the(existingShortened, dt, incoming);
+            try {
+                return CONJ.the(existingShortened, dt, incoming);
+            } catch (StackOverflowError e) {
+                throw new WTF("stack overflow:" + existingShortened + " " + dt + " " + incoming);
+            }
         }
 
         return null; //no interaction

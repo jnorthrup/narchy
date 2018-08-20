@@ -141,7 +141,7 @@ public class SpaceLog {
 
                             @Override
                             protected void paintBelow(GL2 gl) {
-                                Draw.colorHash(gl, eHash);
+                                Draw.colorHashRange(gl, eHash, 0.3f, 0.6f, 0.8f);
                                 Draw.rect(bounds, gl);
                             }
                         }, 0.8f))) {

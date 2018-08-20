@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.video.Tex;
 
 import java.awt.*;
@@ -24,13 +25,13 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private Font font;
     private Graphics2D backbufferGraphics;
     private Color cursorColor = new Color(255, 200, 0, 127);
-    private boolean antialias = true;
+    private boolean antialias = false;
     private boolean quality = true;
     protected int cursorCol;
     protected int cursorRow;
     private int fontWidth;
     int fontHeight;
-    private float charAspect;
+    //private float charAspect;
     int scale = 16;
     private float alpha = 1f;
     private boolean fillTextBackground = true;
@@ -109,7 +110,11 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
                 }
             }
         }
-        tex.paint(gl, bounds, alpha);
+        tex.paint(gl, textBounds(), alpha);
+    }
+
+    protected RectFloat2D textBounds() {
+        return bounds;
     }
 
 
@@ -124,7 +129,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         Rectangle2D b = font.getStringBounds("W", ctx);
         this.fontWidth = (int) Math.ceil((float)b.getWidth());
         this.fontHeight = (int) Math.ceil((float)b.getHeight());
-        this.charAspect = ((float)fontHeight) / fontWidth;
+        //this.charAspect = ((float)fontHeight) / fontWidth;
         //layout();
     }
 

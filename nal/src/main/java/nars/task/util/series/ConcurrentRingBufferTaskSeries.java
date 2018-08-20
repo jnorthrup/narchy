@@ -100,20 +100,18 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
         assert(minT!=ETERNAL);
 
         /*if (exactRange)*/ {
-            long s = start(), e;
+            long s = start(), e = end();
             if (s == TIMELESS || maxT < s) {
-                return x.test(first()); //OOB
+                T f = first();
+                return f!=null ? x.test(f) : true; //OOB
             }
 
             if (maxT!=minT) {
-                e = end();
-                if (e == TIMELESS || minT > e)
-                    return x.test(last()); //OOB
-            } else {
-                e = s;
+                if (e == TIMELESS || minT > e) {
+                    T l = last();
+                    return l!=null ? x.test(l) : true; //OOB
+                }
             }
-
-
 
             boolean point = maxT == minT;
             int b = indexOf(Math.min(e, maxT));
@@ -124,7 +122,8 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
 
                     if (a == b) {
                         T aa = q.peek(a);
-                        return aa!=null ? x.test(aa) : null;
+                        if (aa!=null)
+                            return x.test(aa);
                     } else {
                         return q.whileEach(x, a, b+1);
                     }

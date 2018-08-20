@@ -36,7 +36,8 @@ public class CameraSensorTest {
         short[] cause = new short[] { c.in.id };
         n.onTask(t -> {
            if (t.term().equals(aPixel)) {
-               assertArrayEquals(cause, t.cause());
+               if (t.cause().length <= 1) //ignore revisions
+                 assertArrayEquals(cause, t.cause());
                causesDetected[0]++;
            }
         });
@@ -82,13 +83,14 @@ public class CameraSensorTest {
     static final float tolerance = 0.47f;
 
     static void assertEquals(Bitmap2DSensor c, float[][] f, long when, NAR n) {
+
         for (int i = 0; i < c.width; i++) {
             for (int j = 0; j < c.height; j++) {
                 TaskConcept p = c.get(i, j);
                 Truth t = n.beliefTruth(p, when);
                 if (t == null || Math.abs(f[i][j] - t.freq()) > tolerance) {
-                    System.err.println("pixel " + p + " incorrect @ t=" + n.time());
-                    n.beliefTruth(p, n.time());
+                    System.err.println("pixel " + p + " incorrect @ t=" + n.time() + " for " + when);
+                    n.beliefTruth(p, when);
                     p.beliefs().print(System.out);
                 }
                 assertNotNull(t, ()->p.term + " is null");

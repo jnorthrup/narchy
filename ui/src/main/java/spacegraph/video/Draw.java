@@ -814,6 +814,10 @@ public enum Draw {
     public static void colorHash(GL2 gl, int hash, float alpha) {
         colorHash(gl, hash, 0.7f, 0.7f, alpha);
     }
+    public static void colorHashRange(GL2 gl, int hash, float hueStart, float hueEnd, float alpha) {
+        float h = Util.lerp( ((float)Math.abs(hash))/Integer.MAX_VALUE, hueStart, hueEnd);
+        Draw.hsb(gl, h, 0.7f, 0.7f, alpha);
+    }
 
     private static void colorHash(GL2 gl, Object o, float alpha) {
         colorHash(gl, o.hashCode(), alpha);

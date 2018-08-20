@@ -56,7 +56,13 @@ public class SeriesBeliefTable extends DynamicTaskTable {
     }
 
     protected Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
-        int dur = nar.dur();
+
+        Task exact = series.firstContaining(start, end);
+        if (exact != null && (filter==null || filter.test(exact)))
+            return exact;
+
+
+
         DynStampTruth d = series.truth(start, end, filter);
         if (d == null || d.isEmpty())
             return null;
@@ -81,6 +87,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 //            }
 //        }
 
+        int dur = nar.dur();
         Truth pp = Param.truth(start, end, dur).add((Collection) d).filter().truth();
         if (pp == null)
             return null;

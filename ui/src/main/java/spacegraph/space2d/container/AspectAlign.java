@@ -1,5 +1,6 @@
 package spacegraph.space2d.container;
 
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Surface;
 
 import static spacegraph.space2d.container.AspectAlign.Align.Center;
@@ -68,21 +69,26 @@ public class AspectAlign extends UnitContainer {
 
     @Override
     protected void doLayout(int dtMS) {
+        the.pos(the(bounds, scaleX, scaleY, aspect, align));
+    }
 
-        
+    public static RectFloat2D the(RectFloat2D bounds, float aspect) {
+        return the(bounds, aspect, Align.Center);
+    }
 
+    public static RectFloat2D the(RectFloat2D bounds, float aspect, Align align) {
+        return the(bounds, 1, 1, aspect, align);
+    }
 
-
-        
-        final float w = w();
-        final float h = h();
+    public static RectFloat2D the(RectFloat2D bounds, float scaleX, float scaleY, float aspect, Align align) {
+        final float w = bounds.w;
+        final float h = bounds.h;
 
         
         float tw = w * scaleX;
         float th = h * scaleY;
         final float otw = tw, oth = th;
 
-        float aspect = this.aspect;
         if (aspect == aspect /* not NaN */) {
 
             if (otw * tw / aspect >= oth * th * aspect) {
@@ -93,39 +99,6 @@ public class AspectAlign extends UnitContainer {
                 tw = oth / aspect;
             }
 
-//            if (th > tw/aspect) {
-//
-//
-//
-//                    th = tw * aspect;
-//
-//
-//
-//
-//
-//            }
-//            if (tw * aspect < th) {
-//
-//
-//                    tw = th / aspect;
-//
-//
-//
-//
-//
-//            } else if (tw/aspect > th) {
-//
-//                tw = th * aspect;
-//            }
-//
-//
-//
-//
-//
-//
-//
-//
-//
             if (tw > otw) {
 
                 th = otw/(tw/th);
@@ -136,15 +109,7 @@ public class AspectAlign extends UnitContainer {
                 tw = oth/(th/tw);
                 th = oth;
             }
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
         }
 
@@ -190,12 +155,11 @@ public class AspectAlign extends UnitContainer {
 
         }
 
-        doLayout(tx, ty, tw, th);
+
+        return RectFloat2D.X0Y0WH(tx, ty, tw, th);
     }
 
-    private void doLayout(float tx, float ty, float tw, float th) {
-        the.pos(tx, ty, tx+tw, ty+th);
-    }
+
 
     @Override
     public AspectAlign align(Align align) {
