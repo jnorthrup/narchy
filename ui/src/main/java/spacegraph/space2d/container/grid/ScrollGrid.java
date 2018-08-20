@@ -1,6 +1,7 @@
 package spacegraph.space2d.container.grid;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.map.CellMap;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -146,7 +147,7 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Math.min(model.cellsX() * 1.25f, MAX_DISPLAYED_CELLS_X);
+                                return Util.clamp(model.cellsX() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS_Y);
                             }
                         }
                 ),
@@ -166,7 +167,7 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Math.min(model.cellsY() * 1.25f, MAX_DISPLAYED_CELLS_Y);
+                                return Util.clamp(model.cellsY() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS_Y);
                             }
                         }
                 ).type(KnobVert),

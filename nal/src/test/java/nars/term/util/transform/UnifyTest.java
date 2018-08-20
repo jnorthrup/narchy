@@ -1,26 +1,37 @@
 package nars.term.util.transform;
 
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.random.XorShift128PlusRandom;
 import nars.*;
 import nars.derive.premise.PatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.anon.Anon;
 import nars.term.util.TermHashMap;
 import nars.test.TestNAR;
 import nars.unify.Unify;
+import nars.unify.UnifySubst;
 import nars.util.RuleTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class UnifyTest {
 
     private static final int INITIAL_TTL = 512;
+
+    @Test void testCommonStructureAllVariables() {
+        Unify u = new UnifySubst(null, new XoRoShiRo128PlusRandom(), (x) -> { return true; });
+        assertTrue(
+            Terms.commonStructureTest( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
+        );
+    }
 
     @Test
     void testFindSubst1() throws Narsese.NarseseException {
@@ -70,7 +81,7 @@ public class UnifyTest {
             assertNotNull(t2);
 
 
-            Set<Term> t1u = ((Compound) t1).recurseTermsToSet(type);
+            Set<Term> t1u = ((Compound) t1).recurseSubtermsToSet(type);
 
 
             int n1 = t1u.size();

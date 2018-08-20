@@ -271,8 +271,9 @@ public enum Terms {
 
     public static boolean hasAllExcept(int requirer, int required, int maskedBits) {
         int xStruct = requirer & ~(maskedBits);
-        return xStruct == 0 ||
-               Op.hasAll(required & ~(maskedBits), xStruct);
+        int yStruct = required & ~(maskedBits);
+        return xStruct == 0 || yStruct == 0 ||
+               Op.hasAll(yStruct, xStruct);
     }
 
     public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {

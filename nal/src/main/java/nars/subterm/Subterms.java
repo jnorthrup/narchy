@@ -95,25 +95,25 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return false;
 
         Set<Term> scratch = new UnifiedSet<>(4);
-        aa.recurseTermsToSet(commonStructure, scratch, true);
-        return bb.recurseTermsToSet(commonStructure, scratch, false);
+        aa.recurseSubtermsToSet(commonStructure, scratch, true);
+        return bb.recurseSubtermsToSet(commonStructure, scratch, false);
     }
 
-    /*@NotNull*/
-    static boolean commonSubterms(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, boolean excludeVariables) {
-
-        int commonStructure = a.structure() & b.structure();
-        if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.Variable);
-
-        if (commonStructure == 0)
-            return false;
-
-        Set<Term> scratch = new UnifiedSet(a.subs());
-        a.termsToSet(commonStructure, scratch, true);
-        return b.termsToSet(commonStructure, scratch, false);
-
-    }
+//    /*@NotNull*/
+//    static boolean commonSubterms(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, boolean excludeVariables) {
+//
+//        int commonStructure = a.structure() & b.structure();
+//        if (excludeVariables)
+//            commonStructure = commonStructure & ~(Op.Variable);
+//
+//        if (commonStructure == 0)
+//            return false;
+//
+//        Set<Term> scratch = new UnifiedSet(a.subs());
+//        Subterms.subtermsToSet(a, commonStructure, scratch, true);
+//        return Subterms.subtermsToSet(b, commonStructure, scratch, false);
+//
+//    }
 
     static String toString(/*@NotNull*/ Iterable<? extends Term> subterms) {
         return '(' + Joiner.on(',').join(subterms) + ')';
@@ -293,7 +293,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * TODO generalize to a provided lambda predicate selector
      */
     /*@NotNull*/
-    default Set<Term> recurseTermsToSet(Op onlyType) {
+    default Set<Term> recurseSubtermsToSet(Op onlyType) {
         if (onlyType != null && !hasAny(onlyType))
             return Sets.mutable.empty();
 
@@ -311,28 +311,28 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    /**
-     * returns whether the set operation caused a change or not
-     */
-    /*@NotNull*/
-    default boolean termsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean addOrRemoved) {
-        boolean r = false;
+//    /**
+//     * returns whether the set operation caused a change or not
+//     */
+//    /*@NotNull*/
+//    private static boolean subtermsToSet(Subterms ss, int inStructure, /*@NotNull*/ Collection<Term> t, boolean addOrRemoved) {
+//        boolean r = false;
+//
+//        int l = ss.subs();
+//        for (int i = 0; i < l; i++) {
+//            /*@NotNull*/
+//            Term s = ss.sub(i);
+//            if (inStructure == -1 || ((s.structure() & inStructure) > 0)) {
+//                r |= (addOrRemoved) ? t.add(s) : t.remove(s);
+//                if (!addOrRemoved && r)
+//                    return true;
+//            }
+//        }
+//        return r;
+//    }
 
-        int l = subs();
-        for (int i = 0; i < l; i++) {
-            /*@NotNull*/
-            Term s = sub(i);
-            if (inStructure == -1 || ((s.structure() & inStructure) > 0)) {
-                r |= (addOrRemoved) ? t.add(s) : t.remove(s);
-                if (!addOrRemoved && r)
-                    return true;
-            }
-        }
-        return r;
-    }
-
     /*@NotNull*/
-    default boolean recurseTermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved) {
+    default boolean recurseSubtermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean untilAddedORwhileNotRemoved) {
         final boolean[] r = {false};
         Predicate<Term> selector = s -> {
 
@@ -746,14 +746,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
+    /** must be overriden by any Compound subclasses */
     default void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
         forEach(x -> x.recurseTerms(v));
     }
 
-
+    /** must be overriden by any Compound subclasses */
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
         return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
+
+    /** must be overriden by any Compound subclasses */
     default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, Compound parent) {
         return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }

@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Created by me on 1/12/17.
+ * TODO use TableSaw
  */
 public class MultiStatistics<X> implements Consumer<X> {
 

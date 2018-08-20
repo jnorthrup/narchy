@@ -4,7 +4,6 @@ import nars.Op;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -71,7 +70,7 @@ public interface Termlike {
         return x;
     }
 
-    void recurseTerms(/*@NotNull*/ Consumer<Term> v);
+
 
 
     default boolean hasXternal() {

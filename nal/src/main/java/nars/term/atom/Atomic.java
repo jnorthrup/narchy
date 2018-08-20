@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.Texts;
 import nars.$;
 import nars.Op;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.util.transform.Retemporalize;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import static java.lang.Integer.MIN_VALUE;
@@ -208,9 +209,10 @@ public interface Atomic extends Term {
     }
 
 
+
     @Override
-    default void recurseTerms(Consumer<Term> v) {
-        v.accept(this);
+    default void recurseTerms(BiConsumer<Term, Compound> each) {
+        each.accept(this, null);
     }
 
     @Override

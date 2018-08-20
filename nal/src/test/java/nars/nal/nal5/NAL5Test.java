@@ -22,8 +22,8 @@ public class NAL5Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(15);
-        n.confMin.set(0.1f);
+        n.termVolumeMax.set(16);
+        n.confMin.set(0.2f);
         return n;
     }
 
@@ -180,7 +180,7 @@ public class NAL5Test extends NALTest {
 
                 .believe("(x && y)")
                 .believe("x", 0.80f, 0.9f)
-                .mustBelieve(cycles * 10, "y",
+                .mustBelieve(cycles, "y",
                         0.80f, 0.58f);
 
     }
@@ -494,8 +494,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<(&&,<R --> [f]>,<R --> [w]>) ==> <R --> [l]>>", 0.9f, 0.9f);
         tester.believe("<(&&,<R --> [f]>,<R --> b>) ==> <R --> [l]>>");
-        tester.mustBelieve(cycles * 4, "<<R --> b> ==> <R --> [w]>>", 1f, 0.42f /*0.36f*/);
-        tester.mustBelieve(cycles * 4, "<<R --> [w]> ==> <R --> b>>", 0.90f, 0.45f);
+        tester.mustBelieve(cycles, "<<R --> b> ==> <R --> [w]>>", 1f, 0.42f /*0.36f*/);
+        tester.mustBelieve(cycles, "<<R --> [w]> ==> <R --> b>>", 0.90f, 0.45f);
     }
 
     @Test
@@ -518,8 +518,8 @@ public class NAL5Test extends NALTest {
         test
                 .believe("((a && b) ==> d)", 0.9f, 0.9f)
                 .believe("((a && c) ==> d)", 1f, 0.9f)
-                .mustBelieve(cycles * 2, "(c ==> b)", 1f, 0.42f)
-                .mustBelieve(cycles * 2, "(b ==> c)", 0.90f, 0.45f);
+                .mustBelieve(cycles, "(c ==> b)", 1f, 0.42f)
+                .mustBelieve(cycles, "(b ==> c)", 0.90f, 0.45f);
     }
 
     @Test
@@ -610,8 +610,8 @@ public class NAL5Test extends NALTest {
         test.nar.termVolumeMax.set(16);
         tester.believe("((&&,x1,x2,a) ==> c)");
         tester.believe("((&&,y1,y2,a) ==> c)");
-        tester.mustBelieve(cycles * 3, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
-        tester.mustBelieve(cycles * 3, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
     }
 
     @Test
@@ -641,8 +641,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((x&&a) ==> c)");
         tester.believe("(--(x&&b) ==> c)");
-        tester.mustBelieve(cycles * 3, "(a ==> --b)", 1.00f, 0.45f);
-        tester.mustBelieve(cycles * 3, "(--b ==> a)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "(a ==> --b)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "(--b ==> a)", 1.00f, 0.45f);
     }
 
     /* will be moved to NAL multistep test file!!

@@ -14,7 +14,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL4Test extends NALTest {
 
 
-    private static final int CYCLES = 250;
+    private static final int CYCLES = 50;
 
     @Override protected NAR nar() {
         NAR n =  NARS.tmp(4);

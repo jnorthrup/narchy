@@ -42,6 +42,8 @@ abstract public class RelationConstraint extends MatchConstraint {
 
         //only test one of the directions
         // because the opposite y->x will also be created so we only need one predicate filter for both
+        if (x.compareTo(y) < 0)
+            return null;
 
         byte[] xInTask = Terms.constantPath(taskPattern, x);
         byte[] xInBelief = Terms.constantPath(beliefPattern, x);

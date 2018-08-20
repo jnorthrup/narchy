@@ -420,7 +420,9 @@ public class Derivation extends PreDerivation {
 
 
         boolean eternal = (taskStart == ETERNAL) && (_belief == null || beliefStart==ETERNAL);
-        this.temporal = !eternal || (Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm));
+        this.temporal = !eternal || (Occurrify.temporal(taskTerm)
+                //|| (_belief != null && Occurrify.temporal(beliefTerm)));
+                || Occurrify.temporal(beliefTerm));
 
         this.parentCause = _belief != null ?
                 Cause.merge(Param.causeCapacity.intValue(), _task, _belief) :

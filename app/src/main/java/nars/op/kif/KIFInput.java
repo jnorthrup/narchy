@@ -576,12 +576,12 @@ public class KIFInput {
 
         MutableSet<Term> aVars = new VarOnlySet();
         if (a instanceof Compound)
-            ((Compound) a).recurseTermsToSet(Op.Variable, aVars, true);
+            ((Compound) a).recurseSubtermsToSet(Op.Variable, aVars, true);
         else if (a.op().var)
             aVars.add(a);
         MutableSet<Term> bVars = new VarOnlySet();
         if (b instanceof Compound)
-            ((Compound) b).recurseTermsToSet(Op.Variable, bVars, true);
+            ((Compound) b).recurseSubtermsToSet(Op.Variable, bVars, true);
         else if (b.op().var)
             bVars.add(b);
 

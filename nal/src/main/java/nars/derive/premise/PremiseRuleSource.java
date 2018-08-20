@@ -19,7 +19,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.util.Image;
 import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
@@ -845,8 +844,22 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                 if (xo != yo)
                     return false;
-                if ((x.subterms().structure() & y.subterms().structure()) == 0)
+
+                int varExcluded = Op.Variable; //maybe just VAR_PATTERN
+
+                Subterms xx = x.subterms();
+                int xs = xx.structure() & ~varExcluded;
+                Subterms yy = y.subterms();
+                int ys = yy.structure() & ~varExcluded;
+                if (xs!=0 && ys!=0 && ((xs & ys) == 0))
                     return false; //no common structure
+
+                if (!x.hasVars() && !y.hasVars()) {
+                    if (xx.subs()!=yy.subs())
+                        return false;
+                    if (xx.volume()!=yy.volume())
+                        return false;
+                }
 
                 //TODO other exclusion cases
             }
@@ -931,27 +944,27 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 //        }
 //    }
 
-    static final class Imaged extends AbstractPred<Derivation> {
-        private final byte[] pp;
-        private final boolean isOrIsnt;
-
-        Imaged(Term x, boolean hasOrHasnt, byte[] pp) {
-            super($.func("imaged", x));
-            this.pp = pp;
-            this.isOrIsnt = hasOrHasnt;
-        }
-
-        @Override
-        public float cost() {
-            return 0.1f;
-        }
-
-        @Override
-        public boolean test(Derivation o) {
-            Term prod = o.taskTerm.subPath(pp);
-            return prod.op() == PROD && (isOrIsnt==Image.imaged(prod));
-        }
-    }
+//    static final class Imaged extends AbstractPred<Derivation> {
+//        private final byte[] pp;
+//        private final boolean isOrIsnt;
+//
+//        Imaged(Term x, boolean hasOrHasnt, byte[] pp) {
+//            super($.func("imaged", x));
+//            this.pp = pp;
+//            this.isOrIsnt = hasOrHasnt;
+//        }
+//
+//        @Override
+//        public float cost() {
+//            return 0.1f;
+//        }
+//
+//        @Override
+//        public boolean test(Derivation o) {
+//            Term prod = o.taskTerm.subPath(pp);
+//            return prod.op() == PROD && (isOrIsnt==Image.imaged(prod));
+//        }
+//    }
 
 
 

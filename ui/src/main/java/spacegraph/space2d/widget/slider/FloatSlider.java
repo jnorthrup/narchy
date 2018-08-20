@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import spacegraph.space2d.SurfaceBase;
@@ -153,7 +154,7 @@ public class FloatSlider extends Widget {
         protected float p(float v) {
             float min = min();
             float max = max();
-            return (Util.clamp(v, min, max) - min) / (max - min);
+            return Util.equals(min, max, ScalarValue.EPSILON) ? 0.5f : (Util.clamp(v, min, max) - min) / (max - min);
         }
 
         @Override

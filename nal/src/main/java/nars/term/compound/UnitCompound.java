@@ -16,7 +16,6 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
@@ -95,11 +94,6 @@ public abstract class UnitCompound implements Compound {
         return p.test(this) || p.test(sub());
     }
 
-    @Override
-    public void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
-        v.accept(this);
-        sub().recurseTerms(v);
-    }
 
     @Override
     public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
@@ -140,10 +134,6 @@ public abstract class UnitCompound implements Compound {
         return !sub.hasAll(target.structure()) || impossibleSubTermVolume(target.volume());
     }
 
-    @Override
-    public boolean hasXternal() {
-        return sub().hasXternal();
-    }
 
     @Override
     public final int dt() {

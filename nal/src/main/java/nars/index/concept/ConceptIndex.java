@@ -3,6 +3,7 @@ package nars.index.concept;
 import jcog.WTF;
 import jcog.pri.Priority;
 import nars.NAR;
+import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
@@ -97,8 +98,12 @@ public abstract class ConceptIndex implements Iterable<Termed> {
             throw new WTF();
 
         Term xx = x.concept();
-        if (x!=xx && (xx == null || !xx.op().conceptualizable))
-            throw new WTF(_x + " not conceptualizable");
+        if (x!=xx && (xx == null || !xx.op().conceptualizable)) {
+            if (Param.DEBUG)
+                throw new WTF(_x + " not conceptualizable");
+            else
+                return null;
+        }
 
         Term xxx = xx.the();
         if (xxx == null)

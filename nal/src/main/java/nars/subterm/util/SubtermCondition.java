@@ -1,6 +1,5 @@
 package nars.subterm.util;
 
-import nars.subterm.Subterms;
 import nars.term.Term;
 
 import java.util.function.BiPredicate;
@@ -43,22 +42,28 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             if (container.op() != CONJ)
                 return false;
 
-            if (!testNegAlso) {
-                return test(container, x);
-            } else {
-                Subterms subContainer = container.subterms();
-                if (subContainer.contains(x) || subContainer.containsNeg(x))
+            if (testNegAlso)
+                if (test(container, x.neg()))
                     return true;
 
-                
-                return subContainer.hasAny(CONJ) && !container.eventsWhile((when, what) ->
-                            !(x.equals(what) || x.equalsNeg(what)),
-                    0, true, true, true, 0);
-            }
+            return test(container, x);
+
+//            if (!testNegAlso) {
+//                return test(container, x);
+//            } else {
+//                Subterms subContainer = container.subterms();
+//                if (subContainer.contains(x) || subContainer.containsNeg(x))
+//                    return true;
+//
+//
+//                return subContainer.hasAny(CONJ) && !container.eventsWhile((when, what) ->
+//                            !(x.equals(what) || x.equalsNeg(what)),
+//                    0, true, true, true, 0);
+//            }
         }
 
         @Override
-        public boolean test(Term container, Term x) {
+        public final boolean test(Term container, Term x) {
 
             
             if (container.contains(x))

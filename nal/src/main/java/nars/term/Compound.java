@@ -126,11 +126,7 @@ public interface Compound extends Term, IPair, Subterms {
                 subs;
     }
 
-    @Override
-    default void recurseTerms(Consumer<Term> v) {
-        v.accept(this);
-        subterms().recurseTerms(v);
-    }
+
 
 
     @Override
@@ -151,12 +147,16 @@ public interface Compound extends Term, IPair, Subterms {
                 (whileTrue.test(this, superterm) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this)));
     }
 
+    @Override
     default void recurseTerms(BiConsumer<Term, Compound> each) {
-//        each.accept(this, null);
-        recurseTerms(x -> true, (sub, sup) -> {
-            each.accept(sub, sup);
-            return true;
-        }, null);
+        //recurseTerms(a -> true, (sub,sup)-> { each.accept(sub,sup); return true; }, null);
+        Term.super.recurseTerms(each);
+    }
+
+    @Override
+    default void recurseTerms(Consumer<Term> each) {
+        //recurseTerms(a -> true, (sub)-> { each.accept(sub); return true; }, null);
+        Term.super.recurseTerms(each);
     }
 
 

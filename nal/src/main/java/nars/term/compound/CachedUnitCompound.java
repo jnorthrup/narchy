@@ -74,12 +74,6 @@ public class CachedUnitCompound extends UnitCompound implements The {
         return otherTermVolume > volume-1;
     }
 
-
-    @Override
-    public boolean hasXternal() {
-        return hasAny(Op.Temporal) && sub.hasXternal();
-    }
-
     @Override
     public int varPattern() {
         return hasAny(Op.VAR_PATTERN) ? sub().varPattern() : 0;

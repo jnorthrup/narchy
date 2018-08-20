@@ -154,28 +154,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return whileTrue.test(this);
     }
 
+
     /** whileTrue = BiPredicate<SubTerm,SuperTerm> */
     default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
         return whileTrue.test(this, superterm);
     }
-
-//    /** convenience method  do not override */
-//    default boolean recurseTerms(Predicate<Term> descendFilter, Consumer<Term> each) {
-//        return recurseTerms(descendFilter, (x) -> {
-//            each.accept(x);
-//            return true;
-//        }, null);
-//    }
-
-//    /** convenience, do not override */
-//    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term,Compound> whileTrue) {
-//        return recurseTerms(descendFilter, whileTrue, null);
-//    }
-
-//    /** convenience, do not override */
-//    default boolean recurseTerms(BiPredicate<Term,Compound> whileTrue) {
-//        return recurseTerms(x -> true, whileTrue, null);
-//    }
 
     /** convenience, do not override */
     default void recurseTerms(BiConsumer<Term,Compound> each) {
@@ -185,6 +168,10 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         }, null);
     }
 
+    /** do not override */
+    default void recurseTerms(Consumer<Term> each) {
+        recurseTerms(a -> true, (sub)-> { each.accept(sub); return true; }, null);
+    }
 
     default boolean hasXternal() {
         return (dt() == XTERNAL) || Termed.super.hasXternal();
