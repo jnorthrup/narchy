@@ -3,7 +3,7 @@ package nars.term.compound;
 import jcog.TODO;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermList;
+import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 

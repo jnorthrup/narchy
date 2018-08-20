@@ -8,7 +8,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.op.FileFunc;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermList;
+import nars.subterm.TermList;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
 import nars.term.Term;

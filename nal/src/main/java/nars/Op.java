@@ -1,14 +1,11 @@
 package nars;
 
 
-import jcog.TODO;
-import jcog.data.list.FasterList;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermList;
 import nars.term.Compound;
-import nars.term.Intersection;
+import nars.term.SetSectDiff;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.Anom;
@@ -25,11 +22,8 @@ import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
 import nars.time.Tense;
 import nars.unify.Unify;
-import nars.unify.match.EllipsisMatch;
-import nars.unify.match.Ellipsislike;
 import org.apache.lucene.util.MathUtil;
 import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
@@ -99,7 +93,7 @@ public enum Op {
     SECTe("&", true, 3, Args.GTETwo) {
         @Override
         public Term the(int dt, Term[] u) {
-            return Intersection.intersect(/*Int.intersect*/(u),
+            return SetSectDiff.intersect(/*Int.intersect*/(u),
                     SECTe,
                     SETe,
                     SETi);
@@ -112,7 +106,7 @@ public enum Op {
     SECTi("|", true, 3, Args.GTETwo) {
         @Override
         public Term the(int dt, Term[] u) {
-            return Intersection.intersect(/*Int.intersect*/(u),
+            return SetSectDiff.intersect(/*Int.intersect*/(u),
                     SECTi,
                     SETi,
                     SETe);
@@ -125,7 +119,7 @@ public enum Op {
     DIFFe("~", false, 3, Args.Two) {
         @Override
         public Term the(int dt, Term[] u) {
-            return differ(this, u);
+            return SetSectDiff.differ(this, u);
         }
     },
 
@@ -135,7 +129,7 @@ public enum Op {
     DIFFi("-", false, 3, Args.Two) {
         @Override
         public Term the(int dt, Term[] u) {
-            return differ(this, u);
+            return SetSectDiff.differ(this, u);
         }
     },
 
@@ -649,141 +643,6 @@ public enum Op {
             if (x == Null)
                 return true;
         return false;
-    }
-
-    private static Term differ(/*@NotNull*/ Op op, Term... t) {
-
-
-        switch (t.length) {
-            case 1:
-                Term single = t[0];
-                if (single instanceof EllipsisMatch) {
-                    return differ(op, single.arrayShared());
-                }
-                return single instanceof Ellipsislike ?
-                        compound(op, DTERNAL, single) :
-                        Null;
-            case 2:
-                Term et0 = t[0], et1 = t[1];
-
-                if (et0 == Null || et1 == Null)
-                    return Null;
-
-
-                if (et0.equals(et1))
-                    return False;
-
-                //((--,X)~(--,Y)) reduces to (Y~X)
-                if (et0.op() == NEG && et1.op() == NEG) {
-                    //un-neg and swap order
-                    Term x = et0.unneg();
-                    et0 = et1.unneg();
-                    et1 = x;
-                }
-
-                Op o0 = et0.op();
-                if (et1.equalsNeg(et0)) {
-                    return o0 == NEG || et0 == False ? False : True;
-                }
-
-
-                /** non-bool vs. bool - invalid */
-                if (isTrueOrFalse(et0) || isTrueOrFalse(et1)) {
-                    return Null;
-                }
-
-                /* deny temporal terms which can collapse degeneratively on conceptualization
-                *  TODO - for SET/SECT also? */
-                if (et0.hasAny(Op.Temporal) && !et0.equals(et0.root()))
-                    return Null;
-                if (et1.hasAny(Op.Temporal) && !et1.equals(et1.root()))
-                    return Null;
-
-
-                Op o1 = et1.op();
-
-                if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
-                        || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
-                    return Null;
-
-
-                Op set = op == DIFFe ? SETe : SETi;
-                if ((o0 == set && o1 == set)) {
-                    return differenceSet(set, et0, et1);
-                } else {
-                    return differenceSect(op, et0, et1);
-                }
-
-
-        }
-
-        throw new TermException(op, t, "diff requires 2 terms");
-
-    }
-
-    private static Term differenceSect(Op diffOp, Term a, Term b) {
-
-
-        Op ao = a.op();
-        if (((diffOp == DIFFi && ao == SECTe) || (diffOp == DIFFe && ao == SECTi)) && (b.op() == ao)) {
-            Subterms aa = a.subterms();
-            Subterms bb = b.subterms();
-            MutableSet<Term> common = Subterms.intersect(aa, bb);
-            if (common != null) {
-                int cs = common.size();
-                if (aa.subs() == cs || bb.subs() == cs)
-                    return Null;
-                return ao.the(common.with(
-                        diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
-                ));
-            }
-        }
-
-
-        if (((diffOp == DIFFi && ao == SECTi) || (diffOp == DIFFe && ao == SECTe)) && (b.op() == ao)) {
-            Subterms aa = a.subterms();
-            Subterms bb = b.subterms();
-            MutableSet<Term> common = Subterms.intersect(aa, bb);
-            if (common != null) {
-                int cs = common.size();
-                if (aa.subs() == cs || bb.subs() == cs)
-                    return Null;
-                return ao.the(common.collect(Term::neg).with(
-                        diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
-                ));
-            }
-        }
-
-        return compound(diffOp, DTERNAL, a, b);
-    }
-
-    /*@NotNull*/
-    public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
-
-
-        if (a.equals(b))
-            return Null;
-
-
-        int size = a.subs();
-        Collection<Term> xx = o.commutative ? new TreeSet() : new FasterList(size);
-
-        for (int i = 0; i < size; i++) {
-            Term x = a.sub(i);
-            if (!b.contains(x)) {
-                xx.add(x);
-            }
-        }
-
-        int retained = xx.size();
-        if (retained == size) {
-            return a;
-        } else if (retained == 0) {
-            return Null;
-        } else {
-            return o.the(DTERNAL, xx);
-        }
-
     }
 
 

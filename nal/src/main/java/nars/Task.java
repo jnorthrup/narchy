@@ -436,11 +436,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             return t;
 
         if (!t.isEternal()) {
-            @Nullable Longerval intersection = Longerval.intersection(start, end, t.start(), t.end());
+            @Nullable long[] intersection = Longerval.intersectionArray(start, end, t.start(), t.end());
             if (intersection != null) {
 
-                start = intersection.a;
-                end = intersection.b;
+                start = intersection[0];
+                end = intersection[1];
             }
 
             start = Tense.dither(start, n);

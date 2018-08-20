@@ -94,10 +94,10 @@
 
     //If after S M happens, and after M then P happens, so S then P happens
     (S ==> M), (M ==> P)   |- (S ==> P), (Belief:Deduction)
-     (M ==> P), (S ==> M)  |- (S ==> P), (Belief:Deduction)
+     (M ==> P), (S ==> M)  |- (S ==> P), (Belief:DeductionReverse)
       //if after S --M happens, and after --M then P happens, so S then P happens
       (S ==> M), (--M ==> P)  |- (S ==> P), (Belief:DeductionN)
-       (--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPN)
+       (--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionReversePN)
 
         (S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
             //(S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
@@ -128,6 +128,7 @@
 
     (P ==> M), (M ==> S) |- (S ==> P), (Belief:Exemplification)
         (P ==> M), (--M ==> S) |- (S ==> P), (Belief:ExemplificationN)
+    (M ==> S), (P ==> M)  |- (S ==> P), (Belief:Exemplification)
 
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
@@ -194,6 +195,7 @@
     (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
 
 
+    //Conditional Abduction via Multi-conditional Syllogism
     (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
         //(--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
 

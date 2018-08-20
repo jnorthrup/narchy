@@ -1,4 +1,4 @@
-package nars.derive.step;
+package nars.derive.op;
 
 import com.google.common.collect.Sets;
 import jcog.random.XoRoShiRo128PlusRandom;

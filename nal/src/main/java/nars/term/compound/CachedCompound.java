@@ -45,13 +45,15 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         }
 
         @Override
-        public boolean equalsRoot(Term x) {
-            return x instanceof SimpleCachedCompound ? equals(x) : (!x.hasAny(Op.Temporal) ? false : equals(x.root()));
+        public final boolean equalsRoot(Term x) {
+            //return x instanceof SimpleCachedCompound ? equals(x) : (!x.hasAny(Op.Temporal) ? false : equals(x.root()));
+            return equals(x);
         }
 
         @Override
-        public boolean equalsNegRoot(Term x) {
-            return x instanceof SimpleCachedCompound ? equalsNeg(x) : equalsNeg(x.root());
+        public final boolean equalsNegRoot(Term x) {
+            //return x instanceof SimpleCachedCompound ? equalsNeg(x) : equalsNeg(x.root());
+            return equalsNeg(x);
         }
 
         @Override
@@ -60,38 +62,38 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         }
 
         @Override
-        public Term concept() {
+        public final Term concept() {
             return this;
         }
 
         @Override
-        public boolean hasXternal() {
+        public final boolean hasXternal() {
             return false;
         }
 
         @Override
-        public boolean isTemporal() {
+        public final boolean isTemporal() {
             return false;
         }
 
         @Override
-        public int eventCount() {
+        public final int eventCount() {
             return 1;
         }
 
         @Override
-        public int dtRange() {
+        public final int dtRange() {
             return 0;
         }
 
         @Override
-        public int subTimeOnly(Term x) {
+        public final int subTimeOnly(Term x) {
             return equals(x) ? 0 : DTERNAL;
         }
 
 
         @Override
-        public int dt() {
+        public final int dt() {
             return DTERNAL;
         }
 
@@ -108,8 +110,8 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         public SimpleCachedCompoundWithBytes(Op op, Subterms subterms, @Nullable byte[] knownKey) {
             super(op, subterms);
 
-            if (knownKey==null) {
-                DynBytes d = new DynBytes(IO.termBytesEstimate(subterms)+1);
+            if (knownKey == null) {
+                DynBytes d = new DynBytes(IO.termBytesEstimate(subterms) + 1);
                 super.appendTo((ByteArrayDataOutput) d);
                 key = d.array();
             } else {
@@ -117,7 +119,8 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
             }
         }
 
-        @Override public boolean equals(Object that) {
+        @Override
+        public boolean equals(Object that) {
             if (this == that) return true;
             if (that instanceof SimpleCachedCompoundWithBytes) {
                 SimpleCachedCompoundWithBytes tha = ((SimpleCachedCompoundWithBytes) that);
@@ -134,9 +137,11 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     }
 
 
-    /** caches a reference to the root for use in terms that are inequal to their root */
-    public static class TemporalCachedCompound extends CachedCompound  {
-//        private transient Term rooted = null;
+    /**
+     * caches a reference to the root for use in terms that are inequal to their root
+     */
+    public static class TemporalCachedCompound extends CachedCompound {
+        //        private transient Term rooted = null;
 //        private transient Term concepted = null;
         protected final int dt;
 
@@ -168,17 +173,9 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     }
 
 
-
-
-
-
-
-
-
-
     private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
 
-        assert(op!=NEG): "can not construct " + CachedCompound.class + " for NEG: dt=" + dt + ", subs=" + subterms;
+        assert (op != NEG) : "can not construct " + CachedCompound.class + " for NEG: dt=" + dt + ", subs=" + subterms;
 
         int h = (this.subterms = subterms).hashWith(this.op = op.id);
         this.hash = (dt == DTERNAL) ? h : Util.hashCombine(h, dt);
@@ -187,13 +184,18 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         this._structure = subterms.structure() | op.bit;
 
         int _volume = subterms.volume();
-        assert(_volume < Short.MAX_VALUE-1);
-        this._volume = (short)_volume;
+        assert (_volume < Short.MAX_VALUE - 1);
+        this._volume = (short) _volume;
     }
 
 
-    /** since Neg compounds are disallowed for this impl */
-    @Override public final Term unneg() {
+    abstract public int dt();
+
+    /**
+     * since Neg compounds are disallowed for this impl
+     */
+    @Override
+    public final Term unneg() {
         return this;
     }
 
@@ -213,21 +215,22 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     }
 
     @Override
-    public int varPattern() {
+    public final int varPattern() {
         return hasVarPattern() ? subterms().varPattern() : 0;
     }
+
     @Override
-    public int varQuery() {
+    public final int varQuery() {
         return hasVarQuery() ? subterms().varQuery() : 0;
     }
 
     @Override
-    public int varDep() {
+    public final int varDep() {
         return hasVarDep() ? subterms().varDep() : 0;
     }
 
     @Override
-    public int varIndep() {
+    public final int varIndep() {
         return hasVarIndep() ? subterms().varIndep() : 0;
     }
 
@@ -237,17 +240,15 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     }
 
 
-    abstract public int dt();
-
     @Override
     public final Op op() {
-        
+
         return Op.ops[op];
     }
 
 
     @Override
-    public String toString() {
+    public final String toString() {
         return Compound.toString(this);
     }
 
@@ -256,13 +257,6 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
     public boolean equals(@Nullable Object that) {
         return Compound.equals(this, that);
     }
-
-
-
-
-
-
-
 
 
 }

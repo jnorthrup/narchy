@@ -5,7 +5,7 @@ import nars.derive.Derivation;
 import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
-import nars.unify.op.UnifyTerm;
+import nars.derive.op.UnifyTerm;
 import org.fusesource.jansi.Ansi;
 
 public class DebugDerivationPredicate extends InstrumentedDerivationPredicate {

@@ -8,7 +8,7 @@ import jcog.random.SplitMix64Random;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
-import nars.derive.step.Occurrify;
+import nars.derive.op.Occurrify;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
@@ -187,7 +187,9 @@ public class Derivation extends PreDerivation {
      */
     public Derivation() {
         super(
-                VAR_PATTERN, new SplitMix64Random(1), Param.UnificationStackMax, new TermHashMap()
+                VAR_PATTERN
+                //null
+                , new SplitMix64Random(1), Param.UnificationStackMax, new TermHashMap()
         );
 
         this.anon = new Anon(ANON_INITIAL_CAPACITY);
@@ -492,6 +494,7 @@ try {
         if (now != this.time) {
             this.time = now;
             this.dur = deri.dur();
+            this.dtTolerance = Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
             this.ditherTime = nar.dtDither();
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();

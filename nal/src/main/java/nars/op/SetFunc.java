@@ -6,10 +6,7 @@ import nars.NAR;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
-import nars.term.Evaluation;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +47,7 @@ public class SetFunc {
 
         @Override
         public Term apply(Term a, Term b) {
-            return Op.differenceSet(a.op(), a, b);
+            return SetSectDiff.differenceSet(a.op(), a, b);
         }
     };
 

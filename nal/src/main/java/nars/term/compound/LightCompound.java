@@ -17,6 +17,7 @@ public class LightCompound implements SeparateSubtermsCompound, AbstractLightCom
     public LightCompound(Op o, Term... s) {
         this(o, $.vFast(s));
     }
+
     protected LightCompound(byte o, Term... s) {
         this(o, $.vFast(s));
     }
@@ -25,7 +26,7 @@ public class LightCompound implements SeparateSubtermsCompound, AbstractLightCom
         this(o.id, s);
     }
 
-    private LightCompound(byte o, Subterms s) {
+    protected LightCompound(byte o, Subterms s) {
         this.op = o;
         this.subs = s;
         this.hash = s.hashWith(o);

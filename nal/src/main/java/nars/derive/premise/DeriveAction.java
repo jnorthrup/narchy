@@ -3,10 +3,10 @@ package nars.derive.premise;
 import jcog.pri.ScalarValue;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.step.Taskify;
-import nars.derive.step.Truthify;
+import nars.derive.op.Taskify;
+import nars.derive.op.Truthify;
 import nars.term.control.AND;
-import nars.unify.op.UnifyTerm;
+import nars.derive.op.UnifyTerm;
 
 final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<Derivation>*/ {
 

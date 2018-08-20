@@ -1,4 +1,4 @@
-package nars.unify.op;
+package nars.derive.op;
 
 import nars.$;
 import nars.Param;

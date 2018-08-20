@@ -113,6 +113,8 @@ public class UnifyTest {
                 }
             };
 
+            sub.symmetric = true;
+
             sub.setTTL(INITIAL_TTL);
             sub.unify(t1, t2);
 
@@ -449,8 +451,8 @@ public class UnifyTest {
     @Test
     void pattern_trySubs_set3_1_b_commutative_inside_statement() {
         test(Op.VAR_PATTERN,
-                "<{a,b,c} --> d>",
-                "<{%1,b,%2} --> %3>",
+                "({a,b,c} --> d)",
+                "({%1,b,%2} --> %3)",
                 true);
     }
 
@@ -805,6 +807,7 @@ public class UnifyTest {
             }
         };
 
+        f.symmetric = true;
         f.unify(b, a);
 
         assertEquals(matched.get(), matches);

@@ -26,8 +26,8 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(18);
-        n.confMin.set(0.3f);
+        n.termVolumeMax.set(20);
+        n.confMin.set(0.2f);
         return n;
     }
 
@@ -459,7 +459,9 @@ public class NAL6Test extends NALTest {
         test
                 .believe("((x && y) ==> z)")
                 .believe("((x && --y) ==> z)")
-                .mustBelieve(cycles, "(x ==> z)", 1.00f, 0.45f);
+                .mustBelieve(cycles, "(x ==> z)", 1.00f,
+                        0.66f);
+                        //0.45f);
 
     }
 
@@ -471,8 +473,8 @@ public class NAL6Test extends NALTest {
         tester.believe("(key:$x ==> open($x,lock1))");
         tester.believe("lock:lock1");
 
-        tester.mustBelieve(cycles*2, "((key:$1 && lock:$2) ==> open($1,$2))",
-                1.00f, 0.81f);
+        tester.mustBelieve(cycles*1, "((key:$1 && lock:$2) ==> open($1,$2))",
+                1.00f, 0.45f /*0.81f*/);
 
 
     }
@@ -574,7 +576,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(a==>b)", 0.55f, 0.90f)
                 .believe("a", 0.55f, 0.90f)
-                .mustBelieve(cycles, "b", 0.51f, 0.81f);
+                .mustBelieve(cycles, "b", 0.55f, 0.25f);
     }
     @Test
     void deductionBeliefWeakNegativeButNotPositive() {

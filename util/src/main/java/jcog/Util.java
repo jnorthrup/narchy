@@ -1484,6 +1484,35 @@ public enum Util {
             Thread.yield();
         }
     }
+    /*
+        static final long PARK_TIMEOUT = 50L;
+    static final int MAX_PROG_YIELD = 2000;
+            if(n > 500) {
+            if(n<1000) {
+                // "randomly" yield 1:8
+                if((n & 0x7) == 0) {
+                    LockSupport.parkNanos(PARK_TIMEOUT);
+                } else {
+                    onSpinWait();
+                }
+            } else if(n<MAX_PROG_YIELD) {
+                // "randomly" yield 1:4
+                if((n & 0x3) == 0) {
+                    Thread.yield();
+                } else {
+                    onSpinWait();
+                }
+            } else {
+                Thread.yield();
+                return n;
+            }
+        } else {
+            onSpinWait();
+        }
+        return n+1;
+
+     */
+
     /**
      * adaptive spinlock behavior
      * see: https:

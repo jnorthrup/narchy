@@ -10,7 +10,6 @@ import nars.$;
 import nars.Op;
 import nars.The;
 import nars.subterm.util.DisposableTermList;
-import nars.subterm.util.TermList;
 import nars.term.*;
 import nars.term.Variable;
 import nars.term.util.transform.MapSubst;
@@ -537,6 +536,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 if (deferredPairs == null)
                     deferredPairs = new Term[(s - i) * 2];
 
+                //backwards order
                 deferredPairs[dynPairs++] = yi;
                 deferredPairs[dynPairs++] = xi;
             }

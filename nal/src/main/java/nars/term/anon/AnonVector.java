@@ -4,7 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
-import nars.subterm.util.TermList;
+import nars.subterm.TermList;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
 

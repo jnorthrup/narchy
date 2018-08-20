@@ -5,7 +5,7 @@ import nars.$;
 import nars.Narsese;
 import nars.Op;
 import nars.subterm.*;
-import nars.subterm.util.TermList;
+import nars.subterm.TermList;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;

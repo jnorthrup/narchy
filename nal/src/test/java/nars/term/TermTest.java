@@ -786,4 +786,9 @@ public class TermTest {
 
     }
 
+    @Test void testDiffConceptualization() {
+        assertEq(Null, "((a==>+1 b)~(a ==>+2 b))");
+        assertEq("((a ==>+1 b)~(c ==>+2 d))", "((a ==>+1 b)~(c ==>+2 d))");
+
+    }
 }

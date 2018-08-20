@@ -1,4 +1,4 @@
-package nars.derive.step;
+package nars.derive.op;
 
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
@@ -26,7 +26,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 import java.util.Set;
@@ -756,13 +755,13 @@ public class Occurrify extends TimeGraph {
                     return new long[]{d.beliefStart, d.belief.end()};
                 } else {
 
-                    Longerval i = Longerval.intersection(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                    long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
                     if (i == null) {
                         //if (Param.DEBUG)
                         //assert(false == intersectFilter.test(d));
                         throw WTF("shouldnt happen");
                     }
-                    return new long[]{i.a, i.b};
+                    return i;
                 }
             }
 

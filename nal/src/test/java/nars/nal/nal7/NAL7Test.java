@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private int cycles = 400;
+    private int cycles = 800;
 
     @BeforeEach
     void setTolerance() {
@@ -1036,20 +1036,28 @@ public class NAL7Test extends NALTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", " :|:"})
+    @ValueSource(strings = {"", " |"})
     void multiConditionSyllogismPost(String implSuffix) {
 
 
-        long implTime = implSuffix.equals("") ? ETERNAL : 0;
+        long implTime = implSuffix.isEmpty() ? ETERNAL : 0;
         test
-                .input("hold(key). :|:")
+                .input("hold(key). |")
                 .input("(goto(door) =|> (hold(key) &| open(door)))." + implSuffix)
+//                .mustBelieve(cycles, "(goto(door) =|> open(door))",
+//                        1f, 1.00f, 0.81f, 0.4f,  //structural
+//                        implTime)
                 .mustBelieve(cycles, "(goto(door) =|> open(door))",
-                        1f, 1.00f, 0.73f, 0.82f,
+                        1f, 1.00f, 0.4f, 0.4f,
+                        0)
+                .mustBelieve(cycles, "(goto(door) =|> hold(key))",
+                        1f, 1.00f, 0.81f, 0.4f,   //structural
                         implTime)
                 .mustBelieve(cycles, "(goto(door) =|> hold(key))",
-                        1f, 1.00f, 0.73f, 0.82f,
-                        implTime);
+                        1f, 1.00f, 0.4f, 0.4f,
+                        0);
+
+
     }
 
     @Test

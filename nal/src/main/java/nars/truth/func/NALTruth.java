@@ -36,7 +36,12 @@ public enum NALTruth implements TruthFunc {
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
             return TruthFunctions.deduction(T, B.freq(), B.conf(), minConf);
             //return TruthFunctions2.deduction(T, B.freq(), B.conf(), minConf);
-
+        }
+    },
+    DeductionReverse() {
+        @Override
+        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+            return Deduction.apply(B,T, m, minConf);
         }
     },
 

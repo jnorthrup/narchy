@@ -58,9 +58,11 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public boolean symmetric = false;
 
+    public int dtTolerance = 0;
+
     public final Op type;
 
-    private final int typeBits;
+    public final int typeBits;
 
 
     /**
@@ -250,14 +252,6 @@ public abstract class Unify extends Versioning implements Subst {
         }
     }
 
-    public int typeBits() {
-        if (type == null) {
-            return Op.varBits;
-        } else {
-            return type.bit;
-        }
-    }
-
     public boolean constrain(MatchConstraint m) {
         return constrain(m.x, m);
     }
@@ -265,6 +259,12 @@ public abstract class Unify extends Versioning implements Subst {
     private boolean constrain(Variable target, MatchConstraint... mm) {
         ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target)).constrain(mm);
         return true;
+    }
+
+    /** xdt and ydt must both not equal either XTERNAL or DTERNAL */
+    public boolean unifyDT(int xdt, int ydt) {
+        //assert(xdt!=DTERNAL && xdt!=XTERNAL && ydt!=DTERNAL && ydt!=XTERNAL);
+        return Math.abs(xdt - ydt) < dtTolerance;
     }
 
     private class ConstrainedVersionMap extends VersionMap<Variable, Term> {

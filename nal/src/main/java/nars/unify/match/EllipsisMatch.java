@@ -11,57 +11,52 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
-import static nars.Op.PROD;
+import static nars.Op.VAR_PATTERN;
 
 /**
  * Holds results of an ellipsis match and
  */
 public final class EllipsisMatch extends LightCompound {
 
-    /** what it's disguised as */
-    public static final Op EllipsisOp = PROD;
+    /** what it's disguised as. must be VAR_PATTERN */
+    public static final Op EllipsisOp = VAR_PATTERN;
 
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
 
 
     private EllipsisMatch(Term[] t) {
-        super(EllipsisOp.id, t);
+        super(EllipsisOp.id, t /*new DisposableTermList(t)*/);
         assert(t.length > 1 || (t.length == 0 && empty == null /* HACK */));
     }
 
     private EllipsisMatch(Collection<Term> term) {
         this(term.toArray(Op.EmptyTermArray));
-        assert(term.size() > 1);
     }
 
-    public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
-        int n = xy.length;
-        Term[] z = new Term[n + expectedEllipsisAdds - expectedEllipsisRemoves];
-        int k = 0;
-        for (Term x : xy) {
-            if (x instanceof EllipsisMatch) {
-                Term[] xx = x.arrayShared();
-                for (Term xxx : xx)
-                    z[k++] = xxx;
-            } else {
-                z[k++] = x;
-            }
-        }
-        assert (k == z.length);
-        return z;
-    }
+//    @Override
+//    public Term[] arrayShared() {
+//        Subterms s = subterms();
+//        return s instanceof TermList ? ((TermList)s).arrayKeep() : s.arrayShared();
+//    }
 
-    public static Term matched(Term... matched) {
-        switch (matched.length) {
-            case 0:
-                return empty;
-            case 1:
-                return matched[0];
-            default:
-                return new EllipsisMatch(matched);
-        }
+//    public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
+//        int n = xy.length;
+//        Term[] z = new Term[n + expectedEllipsisAdds - expectedEllipsisRemoves];
+//        int k = 0;
+//        for (Term x : xy) {
+//            if (x instanceof EllipsisMatch) {
+//                Term[] xx = x.arrayShared();
+//                for (Term xxx : xx)
+//                    z[k++] = xxx;
+//            } else {
+//                z[k++] = x;
+//            }
+//        }
+//        assert (k == z.length);
+//        return z;
+//    }
 
-    }
+
 
     @Override
     public Term the() {
@@ -74,7 +69,17 @@ public final class EllipsisMatch extends LightCompound {
     }
 
 
+    public static Term matched(Term... matched) {
+        switch (matched.length) {
+            case 0:
+                return empty;
+            case 1:
+                return matched[0];
+            default:
+                return new EllipsisMatch(matched);
+        }
 
+    }
 
     public static Term matched(SortedSet<Term> term) {
         int num = term.size();

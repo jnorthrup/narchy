@@ -10,7 +10,6 @@ import nars.concept.Operator;
 import nars.control.proto.Reaction;
 import nars.op.stm.ConjClustering;
 import nars.task.ITask;
-import nars.task.UnevaluatedTask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.time.Tense;
@@ -46,19 +45,21 @@ public enum Perceive { ;
         if (!input.term().equals(y)) {
             byte punc = input.punc();
             if (y.op()==BOOL) {
-                if (punc == QUESTION || punc == QUEST) {
-                    //conver to an answering belief/goal now that the absolute truth has been determined
+//                if (punc == QUESTION || punc == QUEST) {
+//                    //conver to an answering belief/goal now that the absolute truth has been determined
+//
+//
+//                    byte answerPunc;
+//                    if (punc == QUESTION) answerPunc = BELIEF;
+//                    else answerPunc = GOAL;
+//
+//                    t = Task.clone(input, input.term().negIf(y == False), (c, tr)->
+//                        new UnevaluatedTask(c, answerPunc, tr, n.time(), input.start(), input.end(), input.stamp())
+//                    );
+//
+//                } else
+                {
 
-
-                    byte answerPunc;
-                    if (punc == QUESTION) answerPunc = BELIEF;
-                    else answerPunc = GOAL;
-
-                    t = Task.clone(input, input.term().negIf(y == False), (c, tr)->
-                        new UnevaluatedTask(c, answerPunc, tr, n.time(), input.start(), input.end(), input.stamp())
-                    );
-
-                } else {
                     return false;
                 }
             } else {

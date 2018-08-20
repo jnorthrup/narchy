@@ -2,6 +2,7 @@ package nars.control.proto;
 
 import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -9,6 +10,8 @@ import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * conceptualize and attempt to insert/merge a task to belief table.
@@ -16,23 +19,30 @@ import org.jetbrains.annotations.Nullable;
  * in some proportion of the input task's priority.
  */
 public class Remember extends AbstractTask {
-
-    @Nullable public static Remember the(Task input, NAR n) {
-        if (!input.isCommand()) {
-            TaskConcept concept = (TaskConcept) n.conceptualize(input);
-            return concept != null ? new Remember(input, concept) : null;
-        } else {
-            return null;
-        }
-    }
-
-
     public Task input;
 
     final FasterList<ITask> next = new FasterList(2);
     final FasterList<Task> remembered = new FasterList(2);
     public final FasterList<Task> forgotten = new FasterList(2);
     public final Concept concept;
+
+
+    static final Logger logger = LoggerFactory.getLogger(Remember.class);
+
+    @Nullable public static Remember the(Task input, NAR n) {
+        if (!input.isCommand()) {
+            try {
+                TaskConcept concept = (TaskConcept) n.conceptualize(input);
+                return concept != null ? new Remember(input, concept) : null;
+            } catch (Throwable t) {
+                if (Param.DEBUG)
+                    logger.warn("not conceptualizable: {}", input);
+            }
+        }
+
+        return null;
+    }
+
 
 
 

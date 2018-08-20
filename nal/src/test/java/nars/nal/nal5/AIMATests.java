@@ -85,14 +85,15 @@ class AIMATests {
         final NAR n = NARS.tmp(6);
 
         n.freqResolution.set(0.2f);
-        n.confMin.set(0.1f);
+        n.confResolution.set(0.1f);
+        n.confMin.set(0.2f);
 
         //n.activateConceptRate.set(0.5f);
 //        n.beliefPriDefault.set(0.3f);
         n.beliefPriDefault.set(0.25f);
         n.questionPriDefault.set(0.99f);
 
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(27);
        // n.log();
 
 

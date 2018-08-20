@@ -2,7 +2,6 @@ package nars.subterm;
 
 import nars.$;
 import nars.Op;
-import nars.subterm.util.TermList;
 import nars.term.TermTest;
 import nars.term.compound.LightCompound;
 import org.junit.jupiter.params.ParameterizedTest;

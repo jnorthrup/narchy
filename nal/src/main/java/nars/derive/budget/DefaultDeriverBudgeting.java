@@ -18,7 +18,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     /**
      * global multiplier
      */
-    public final FloatRange scale = new FloatRange(0.9f, 0f, 2f);
+    public final FloatRange scale = new FloatRange(0.5f, 0f, 2f);
 
     /**
      * how important is it to retain conf (evidence).

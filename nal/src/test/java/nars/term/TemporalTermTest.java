@@ -437,14 +437,7 @@ public class TemporalTermTest {
 
 
 
-    @Test
-    void testDiffOfTemporalConj() {
-        Term x = $$("((x&|y)~(y &&+1 x))");
-        assertEquals(Null, x);
-        Term xNeg = $$("(--(x&|y)~(y &&+1 x))");
-        assertEquals(Null, xNeg);
 
-    }
     @Test
     void testValidTaskTerm() {
         String s = "believe(x,(believe(x,(--,(cam(9,$1) ==>-78990 (ang,$1))))&|(cam(9,$1) ==>+570 (ang,$1))))";

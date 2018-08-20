@@ -7,6 +7,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.op.SetFunc;
 import nars.term.Compound;
+import nars.term.SetSectDiff;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Assertions;
@@ -34,7 +35,7 @@ public class SubtermsTest {
     void testDifferReusesInstance() throws Narsese.NarseseException {
         Compound x = $.$("{x}");
         Compound y = $.$("{y}");
-        assertSame(Op.differenceSet(x.op(), x, y), x);
+        assertSame(SetSectDiff.differenceSet(x.op(), x, y), x);
     }
     @Test
     void testIntersectReusesInstance() throws Narsese.NarseseException {
@@ -49,7 +50,7 @@ public class SubtermsTest {
         Compound y = $.$("{e,d}");
 
         System.out.println(SetFunc.intersect(x.op(), x, y));
-        System.out.println(Op.differenceSet(x.op(), x, y));
+        System.out.println(SetSectDiff.differenceSet(x.op(), x, y));
         System.out.println(SetFunc.union(x.op(), x, y));
 
     }

@@ -27,7 +27,7 @@ import nars.IO;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermList;
+import nars.subterm.TermList;
 import nars.term.anon.Anon;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
@@ -219,58 +219,37 @@ public interface Compound extends Term, IPair, Subterms {
             int xdt = x.dt();
             if (xdt != XTERNAL && xdt != DTERNAL) {
                 int ydt = y.dt();
-                if (xdt == ydt) return true;
-                if (ydt != XTERNAL && ydt != DTERNAL) {
+                if (ydt != XTERNAL && ydt != DTERNAL && !u.unifyDT(xdt,ydt)) {
                     return false;//TODO strict equality: u.dur
                 }
             }
         }
 
-        if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
-            if (!x.hasAny(Op.Temporal))
-                return false; //temporal terms need to be compared for matching 'dt'
-        }
+
 
 
         Subterms xx = subterms();
         Subterms yy = y.subterms();
-        if (xx == yy)
+        if (xx.equals(yy))
             return true;
+
 
         if (!Terms.commonStructureTest(xx, yy, u))
             return false;
 
+
+        //test only after equality
+        if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
+            //constant case, some things can be assumed
+            if (!x.hasAny(Op.Temporal))
+                return false; //temporal terms need to be compared for matching 'dt'
+            if (xx.volume()!=yy.volume())
+                return false;
+        }
+
         int xs, ys;
         if ((xs = xx.subs()) != (ys = yy.subs()))
             return false;
-
-
-//        if (op().temporal) {
-//
-//            int xdt = this.dt();
-//            int ydt = ty.dt();
-//            if (xdt!=ydt) {
-//                boolean xOrY;
-//                if (xdt == XTERNAL && ydt != XTERNAL) {
-//                    xOrY = false;
-//                } else if (xdt != XTERNAL && ydt == XTERNAL) {
-//                    xOrY = true;
-//                } else {
-//                    if (xdt == DTERNAL && ydt != DTERNAL) {
-//                        xOrY = false;
-//                    } else if (xdt != DTERNAL && ydt == DTERNAL) {
-//                        xOrY = true;
-//                    } else {
-//                        return false; //TODO allow dt tolerance?
-//                    }
-//                }
-//            }
-
-//            if (xsubs.equals(ysubs))
-//                return true;
-
-//        }
-
 
         if (xs == 1) {
             try {
@@ -350,11 +329,18 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default boolean isCommutative() {
         Op op = op();
-        if (op == CONJ) {
-            int dt = dt();
-            return dtSpecial(dt);
-        } else
-            return op.commutative && subs() > 1;
+        if (op.commutative) {
+            if (op == CONJ) {
+                int dt = dt();
+                return dtSpecial(dt);
+            }
+
+            if (subs() > 1) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
 
@@ -380,7 +366,9 @@ public interface Compound extends Term, IPair, Subterms {
         return this.dt() != DTERNAL && op() == CONJ ? subterms().sum(Term::eventCount) : 1;
     }
 
-    /** replaces the 'from' term with 'to', recursively */
+    /**
+     * replaces the 'from' term with 'to', recursively
+     */
     default Term replace(Term from, Term to) {
         if (this.equals(from))
             return to;

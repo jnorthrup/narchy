@@ -62,14 +62,6 @@ public class SubOfConstraint extends RelationConstraint {
             }
         }
 
-        if (posAndNeg) {
-            if (container.impossibleSubTerm(contentP) && container.impossibleSubTerm(contentP.neg()))
-                return true;
-        } else {
-            if (container.impossibleSubTerm(contentP))
-                return true;
-        }
-
         return !containment.test(container, contentP, posAndNeg);
     }
 }

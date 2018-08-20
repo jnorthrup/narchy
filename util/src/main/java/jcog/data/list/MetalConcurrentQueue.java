@@ -25,12 +25,13 @@ package jcog.data.list;
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import jcog.Util;
 
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
-
-import static java.lang.Thread.onSpinWait;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * modified from Conversant Disruptor's PushPullConcurrentQueue
@@ -43,9 +44,9 @@ import static java.lang.Thread.onSpinWait;
  * <p>
  * Created by jcairns on 5/28/14.
  */
-public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
+public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
 
-  
+
     public int clear(Consumer<X> each) {
         return clear(each, -1);
     }
@@ -60,17 +61,45 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
         }
         return count;
     }
-    public void forEach(Consumer<X> each) {
+
+    public void forEach(Consumer<? super X> each) {
         int s = size();
         X next;
         int i = 0;
         while (s-- > 0) {
             next = peek(i++);
-            if (next!=null)
+            if (next != null)
                 each.accept(next);
         }
     }
 
+    public boolean whileEach(Predicate<? super X> each, int start, int end) {
+
+        if (end == start) return true;
+
+        //TODO detect if this.head moved while iteratnig
+
+        int s = size();
+        if (end > start) {
+            start = Math.max(0, start);
+            end = Math.min(end, s);
+            for (int i = start; i < end; i++) {
+                X x = peek(i);
+                if (x != null)
+                    if (!each.test(x)) return false;
+            }
+        } else {
+            start = Math.min(start, s - 1);
+            end = Math.max(0, end);
+            for (int i = start; i >= end; i--) {
+                X x = peek(i);
+                if (x != null)
+                    if (!each.test(x)) return false;
+            }
+        }
+
+        return true;
+    }
 
 
     /*
@@ -89,7 +118,7 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     // modulo size, since size is a power of two
     // compute the bucket position with x&(size-1)
     // aka x&mask
-    final int     mask;
+    final int mask;
 
     // the sequence number of the end of the queue
     final AtomicInteger tail = new AtomicInteger();
@@ -98,26 +127,26 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
 
     // use the value in the L1 cache rather than reading from memory when possible
     int p1, p2, p3, p4, p5, p6, p7;
-//    @sun.misc.Contended
+    //    @sun.misc.Contended
     int tailCache = 0;
     int a1, a2, a3, a4, a5, a6, a7, a8;
 
     // a ring buffer representing the queue
-    final X[] buffer;
+    final AtomicReferenceArray<X> buffer;
 
     int r1, r2, r3, r4, r5, r6, r7;
-//    @sun.misc.Contended
+    //    @sun.misc.Contended
     int headCache = 0;
     int c1, c2, c3, c4, c5, c6, c7, c8;
 
     // the sequence number of the start of the queue
-    final AtomicInteger head =  new AtomicInteger();
+    final AtomicInteger head = new AtomicInteger();
 
     final AtomicInteger headCursor = new AtomicInteger(0);
 
     /**
      * Construct a blocking queue of the given fixed capacity.
-     *
+     * <p>
      * Note: actual capacity will be the next power of two
      * larger than capacity.
      *
@@ -126,10 +155,10 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
 
     public MetalConcurrentQueue(final int capacity) {
         int c = 1;
-        while(c < capacity) c <<=1;
+        while (c < capacity) c <<= 1;
         cap = c;
         mask = cap - 1;
-        buffer = (X[])new Object[cap];
+        buffer = new AtomicReferenceArray<>(cap);
     }
 
     public boolean push(X x, int retries) {
@@ -137,7 +166,7 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     }
 
     public boolean push(X x, Runnable wait, int retries) {
-        boolean pushed = false;
+        boolean pushed;
         while (!(pushed = offer(x)) && retries-- > 0) {
             wait.run();
         }
@@ -148,28 +177,28 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     public boolean offer(X x) {
         int spin = 0;
 
-        for(;;) {
+        for (; ; ) {
             final int tailSeq = tail.getAcquire();
             // never offer onto the slot that is currently being polled off
             final int queueStart = tailSeq - cap;
 
             // will this sequence exceed the capacity
-            if((headCache > queueStart) || ((headCache = head.getOpaque()) > queueStart)) {
+            if ((headCache > queueStart) || ((headCache = head.getOpaque()) > queueStart)) {
                 // does the sequence still have the expected
                 // value
-                if(tailCursor.weakCompareAndSetVolatile(tailSeq, tailSeq + 1)) {
+                if (tailCursor.weakCompareAndSetVolatile(tailSeq, tailSeq + 1)) {
 
-                    try {
-                        // tailSeq is valid
-                        // and we got access without contention
 
-                        // convert sequence number to slot id
-                        buffer[(tailSeq&mask)] = x;
+                    // tailSeq is valid
+                    // and we got access without contention
 
-                        return true;
-                    } finally {
-                        tail.setRelease(tailSeq+1);
-                    }
+                    // convert sequence number to slot id
+                    buffer.set((tailSeq & mask), x);
+
+                    tail.setRelease(tailSeq + 1);
+
+                    return true;
+
                 } // else - sequence misfire, somebody got our spot, try again
             } else {
                 // exceeded capacity
@@ -181,60 +210,31 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     }
 
 
-
-    static final long PARK_TIMEOUT = 50L;
-    static final int MAX_PROG_YIELD = 2000;
     /*
      * progressively transition from spin to yield over time
      */
     static int progressiveYield(final int n) {
-        if(n > 500) {
-            if(n<1000) {
-                // "randomly" yield 1:8
-                if((n & 0x7) == 0) {
-                    LockSupport.parkNanos(PARK_TIMEOUT);
-                } else {
-                    onSpinWait();
-                }
-            } else if(n<MAX_PROG_YIELD) {
-                // "randomly" yield 1:4
-                if((n & 0x3) == 0) {
-                    Thread.yield();
-                } else {
-                    onSpinWait();
-                }
-            } else {
-                Thread.yield();
-                return n;
-            }
-        } else {
-            onSpinWait();
-        }
-        return n+1;
+        Util.pauseNextIterative(n);
+        return n;
     }
 
     @Override
     public X poll() {
         int spin = 0;
 
-        for(;;) {
+        for (; ; ) {
             final int head = this.head.getOpaque();
             // is there data for us to poll
-            if((tailCache > head) || (tailCache = tail.getOpaque()) > head) {
+            if ((tailCache > head) || (tailCache = tail.getOpaque()) > head) {
                 // check if we can update the sequence
-                if(headCursor.weakCompareAndSetVolatile(head, head+1)) {
-                    try {
-                        // copy the data out of slot
-                        final int pollSlot = (head&mask);
-                        final X pollObj  = buffer[pollSlot];
+                if (headCursor.weakCompareAndSetVolatile(head, head + 1)) {
 
-                        // got it, safe to read and free
-                        buffer[pollSlot] = null;
+                    final X pollObj = buffer.getAndSet((head & mask), null);
 
-                        return pollObj;
-                    } finally {
-                        this.head.setRelease(head+1);
-                    }
+                    this.head.setRelease(head + 1);
+
+                    return pollObj;
+
                 } // else - somebody else is reading this spot already: retry
             } else {
                 return null;
@@ -248,12 +248,28 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
 
     @Override
     public final X peek() {
-        return buffer[head.getOpaque()&mask];
+        return peek(0);
     }
 
     public final X peek(int delta) {
-        return buffer[(head.getOpaque()+delta)&mask];
+        return buffer.getOpaque((head.getOpaque() + delta) & mask);
     }
+
+    /** oldest element */
+    public final X first() {
+        return peek();
+    }
+
+    /** newest element */
+    public final X last() {
+        int i = size() - 1;
+        return i >= 0 ? peek(i) : null;
+    }
+
+    private int t() {
+        return (tail.getOpaque() - 1) & mask;
+    }
+
 
     @Override
     public int remove(final X[] x) {
@@ -278,16 +294,17 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
 
         maxElements = Math.min(x.length, maxElements);
 
-        for(;;) {
+        for (; ; ) {
             final int pollPos = head.getOpaque(); // prepare to qualify?
             // is there data for us to poll
             // note we must take a difference in values here to guard against
             // integer overflow
             final int nToRead = Math.min((tail.getOpaque() - pollPos), maxElements);
-            if(nToRead > 0 ) {
+            if (nToRead > 0) {
 
-                for(int i=0; i<nToRead;i++) {
-                    x[i] = buffer[((pollPos+i)&mask)];
+                int j;
+                for (int i = 0; i < nToRead; i++) {
+                    x[i] = buffer.getOpaque(((pollPos + i) & mask));
                 }
 
                 // if we still control the sequence, update and return
@@ -307,7 +324,7 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     /**
      * This implemention is known to be broken if preemption were to occur after
      * reading the tail pointer.
-     *
+     * <p>
      * Code should not depend on size for a correct result.
      *
      * @return int - possibly the size, or possibly any value less than capacity()
@@ -334,21 +351,22 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     @Override
     public void clear() {
         int spin = 0;
-        for(;;) {
+        for (; ; ) {
             final int head = this.head.getOpaque();
-            if(headCursor.weakCompareAndSetAcquire(head, head+1)) {
-                for(;;) {
+            if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
+                for (; ; ) {
                     final int tail = this.tail.getOpaque();
                     if (tailCursor.weakCompareAndSetVolatile(tail, tail + 1)) {
 
                         // we just blocked all changes to the queue
 
                         // remove leaked refs
-                        Arrays.fill(buffer, 0, buffer.length, null);
+                        for (int i = 0; i < cap; i++)
+                            buffer.set(i, null);
 
                         // advance head to same location as current end
                         this.tail.incrementAndGet();
-                        this.head.addAndGet(tail-head+1);
+                        this.head.addAndGet(tail - head + 1);
                         headCursor.setRelease(tail + 1);
 
                         return;
@@ -363,25 +381,33 @@ public class MetalConcurrentQueue<X>  implements ConcurrentQueue<X> {
     @Override
     public final boolean contains(Object o) {
         int s = size();
-        for(int i = 0; i< s; i++) {
+        for (int i = 0; i < s; i++) {
             final int slot = ((head.getOpaque() + i) & mask);
-            X b = buffer[slot];
-            if(b != null && b.equals(o)) return true;
+            X b = buffer.getOpaque(slot);
+            if (b != null && b.equals(o)) return true;
         }
         return false;
     }
 
-    int sumToAvoidOptimization() {
-        return p1+p2+p3+p4+p5+p6+p7+a1+a2+a3+a4+a5+a6+a7+a8+r1+r2+r3+r4+r5+r6+r7+c1+c2+c3+c4+c5+c6+c7+c8+headCache+tailCache;
-    }
+//    int sumToAvoidOptimization() {
+//        return p1+p2+p3+p4+p5+p6+p7+a1+a2+a3+a4+a5+a6+a7+a8+r1+r2+r3+r4+r5+r6+r7+c1+c2+c3+c4+c5+c6+c7+c8+headCache+tailCache;
+//    }
 
 
     public int available() {
-        return Math.max(0,capacity()-size());
+        return Math.max(0, capacity() - size());
     }
+
     public float availablePct() {
-        return Util.clamp(1f-((float)size())/capacity(), 0, 1f);
+        return Util.clamp(1f - ((float) size()) / capacity(), 0, 1f);
     }
 
 
+    public final X get(int i) {
+        return peek(i);
+    }
+
+    public Stream<X> stream() {
+        return IntStream.range(0, size()).mapToObj(this::get).filter(Objects::nonNull);
+    }
 }

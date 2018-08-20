@@ -9,35 +9,25 @@ import java.util.function.Predicate;
 /**
  * containment test of x to y's subterms and y to x's subterms
  */
-public final class NoCommonSubtermConstraint extends RelationConstraint {
+public final class NotRecursiveSubtermOf extends RelationConstraint {
 
-    public final boolean recurse;
-
-    /**
-     * @param recurse true: recursive
-     *                false: only cross-compares the first layer of subterms.
-     */
-    public NoCommonSubtermConstraint(Term target, Term x, boolean recurse) {
-        super(target, x, recurse ? "neqRCom" : "neqCom");
-        this.recurse = recurse;
+    public NotRecursiveSubtermOf(Term target, Term x) {
+        super(target, x, "neqRCom");
     }
-
 
     @Override
     public float cost() {
-        return recurse ? 1.5f : 1f;
+        return 1.5f;
     }
 
     @Override
     public boolean invalid(Term x, Term y) {
-
-        return isSubtermOfTheOther(x, y, recurse, true);
+        return isSubtermOfTheOther(x, y, true, true);
     }
-
 
     final static Predicate<Term> limit =
             Op.recursiveCommonalityDelimeterWeak;
-            //Op.recursiveCommonalityDelimeterStrong;
+    //Op.recursiveCommonalityDelimeterStrong;
 
 
     static boolean isSubtermOfTheOther(Term a, Term b, boolean recurse, boolean excludeVariables) {
@@ -45,23 +35,14 @@ public final class NoCommonSubtermConstraint extends RelationConstraint {
         if ((excludeVariables) && (a instanceof Variable || b instanceof Variable))
             return false;
 
-        int av = a.volume();
-        int bv = b.volume();
+        int av = a.volume(), bv = b.volume();
         if (av == bv) {
-
-
-
-
-
-
-
-
-            return false; 
+            return false;
         } else {
-            
+
 
             if (av < bv) {
-                
+
                 Term c = a;
                 a = b;
                 b = c;
@@ -72,8 +53,6 @@ public final class NoCommonSubtermConstraint extends RelationConstraint {
                     a.contains(b);
         }
     }
-    
-    
 
 
 }

@@ -1,5 +1,6 @@
 package nars.subterm.util;
 
+import nars.subterm.TermList;
 import nars.term.Term;
 
 /** for temporary, single-use only */
@@ -8,6 +9,11 @@ public class DisposableTermList extends TermList {
     public DisposableTermList(int initialCap) {
         super(initialCap);
     }
+
+    public DisposableTermList(Term[] t) {
+        super(t);
+    }
+
     public DisposableTermList(int initialCap, int startingSize) {
         super(initialCap);
         this.size = startingSize;

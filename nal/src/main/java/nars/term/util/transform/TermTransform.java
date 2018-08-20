@@ -3,7 +3,7 @@ package nars.term.util.transform;
 import jcog.Texts;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermList;
+import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;

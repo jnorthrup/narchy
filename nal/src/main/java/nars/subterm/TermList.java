@@ -1,9 +1,7 @@
-package nars.subterm.util;
+package nars.subterm;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Term;
 
 import java.util.Collection;
@@ -61,10 +59,10 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
 
-    @Override
-    public Term[] arrayShared() {
-        throw new TODO("did you mean to use .arrayKeep");
-    }
+//    @Override
+//    public Term[] arrayShared() {
+//        throw new TODO("did you mean to use .arrayKeep");
+//    }
 
     @Override
     public int subs() {

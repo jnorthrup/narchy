@@ -10,10 +10,9 @@ import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
-import nars.task.util.series.TaskSeries;
+import nars.task.util.series.AbstractTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -26,15 +25,17 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static jcog.math.LongInterval.TIMELESS;
+
 /**
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
  * if a stored task is available or not.
  */
 public class SeriesBeliefTable extends DynamicTaskTable {
 
-    public final TaskSeries<SeriesTask> series;
+    public final AbstractTaskSeries<SeriesTask> series;
 
-    public SeriesBeliefTable(Term c, boolean beliefOrGoal, TaskSeries<SeriesTask> s) {
+    public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<SeriesTask> s) {
         super(c, beliefOrGoal);
         this.series = s;
     }
@@ -56,10 +57,9 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     protected Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
         int dur = nar.dur();
-        DynStampTruth d = series.truth(start, end, dur, filter, nar);
+        DynStampTruth d = series.truth(start, end, filter);
         if (d == null || d.isEmpty())
             return null;
-
 
 
 //        if (taskOrJustTruth) {
@@ -112,7 +112,6 @@ public class SeriesBeliefTable extends DynamicTaskTable {
     }
 
 
-
     @Override
     protected Truth truthDynamic(long start, long end, Term templateIgnored, Predicate filter, NAR nar) {
         return (Truth) (eval(false, start, end, filter, nar));
@@ -132,14 +131,16 @@ public class SeriesBeliefTable extends DynamicTaskTable {
             if (y == null) {
                 r.reject();
                 return;
-            } else if (y!=x) {
+            } else if (y != x) {
                 r.input = y;
             }
         }
 
     }
 
-    /** time margin to shrink the series end length allowing tasks to survive in the "present" before being cleaned */
+    /**
+     * time margin to shrink the series end length allowing tasks to survive in the "present" before being cleaned
+     */
     protected int cleanMargin(NAR n) {
         return n.dur();
     }
@@ -148,25 +149,25 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         if (!Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS)
             return;
 
-        if (!series.isEmpty()) {
-                long sStart = series.start(), sEnd = series.end() - cleanMargin(nar);
+        long sStart = series.start(), e;
+        if (sStart != TIMELESS && (e = series.end()) != TIMELESS) {
+            long sEnd = e - cleanMargin(nar);
 
-                List<Task> deleteAfter = new FasterList(4);
-                for (TaskTable b : tables) {
-                    if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
-                        b.forEachTask(sStart, sEnd, t -> {
-                            if (t.isDeleted() || absorbNonSignal(t, sStart, sEnd)) {
-                                deleteAfter.add(t);
-                            } else {
-                                //System.out.println(t + " saved");
-                            }
-                        });
-                    }
-                    if (!deleteAfter.isEmpty()) {
-                        deleteAfter.forEach(b::removeTask);
-                        deleteAfter.clear();
-                    }
+            List<Task> deleteAfter = new FasterList(4);
+            for (TaskTable b : tables) {
+                if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
+                    b.forEachTask(sStart, sEnd, t -> {
+                        if (t.isDeleted() || absorbNonSignal(t, sStart, sEnd)) {
+                            deleteAfter.add(t);
+                        } else {
+                            //System.out.println(t + " saved");
+                        }
+                    });
                 }
+                if (!deleteAfter.isEmpty()) {
+                    deleteAfter.forEach(b::removeTask);
+                }
+            }
 
         }
     }
@@ -175,10 +176,10 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         if (t.isEternal())
             return t; //no change
 
-        long seriesEnd = series.end();
-        if (t.end() > seriesEnd) {
-            return new SpecialOccurrenceTask(t, seriesEnd, t.end() );
-        }
+        long seriesEnd = series.end()-dur;
+//        if (t.start() < seriesEnd && t.end() > seriesEnd) {
+//            return new SpecialOccurrenceTask(t, seriesEnd, t.end());
+//        }
 
         //similar for before the beginning
 
@@ -193,13 +194,14 @@ public class SeriesBeliefTable extends DynamicTaskTable {
      */
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
-        /*if (!t.isInput())*/ {
+        /*if (!t.isInput())*/
+        {
             long tEnd = t.end();
 
-                long tStart = t.start();
-                if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
-                    return !series.isEmpty(tStart, t.end());
-                }
+            long tStart = t.start();
+            if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+                return !series.isEmpty(tStart, tEnd);
+            }
             //}
         }
 
@@ -208,7 +210,9 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     public static final class SeriesTask extends SignalTask {
 
-        /** current endpoint */
+        /**
+         * current endpoint
+         */
         long e;
 
         public SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
@@ -235,7 +239,8 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         /**
          * passive insertion subtask only
          */
-        @Deprecated public SeriesRemember input(TaskConcept concept) {
+        @Deprecated
+        public SeriesRemember input(TaskConcept concept) {
             //return new TaskLinkTaskAndEmit(this, priElseZero(), concept);
             return new SeriesRemember(this, concept);
         }

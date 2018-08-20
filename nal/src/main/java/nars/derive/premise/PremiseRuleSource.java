@@ -6,10 +6,10 @@ import nars.Narsese;
 import nars.Op;
 import nars.concept.Operator;
 import nars.derive.Derivation;
-import nars.derive.step.IntroVars;
-import nars.derive.step.Occurrify;
-import nars.derive.step.Termify;
-import nars.derive.step.Truthify;
+import nars.derive.op.IntroVars;
+import nars.derive.op.Occurrify;
+import nars.derive.op.Termify;
+import nars.derive.op.Truthify;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.BiSubterm;
@@ -149,6 +149,9 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                 case "neq":
                     neq(constraints, X, Y);
                     break;
+                case "neqRoot":
+                    neqRoot(constraints, X, Y);
+                    break;
 
 //                case "neqTaskBelief":
 //                    pre.add(neqTaskBelief);
@@ -160,16 +163,16 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 //                    break;
 
                 case "neqAndCom":
-                    neq(constraints, X, Y);
+                    neqRoot(constraints, X, Y);
                     constraints.add(new CommonSubtermConstraint(X, Y));
                     constraints.add(new CommonSubtermConstraint(Y, X));
                     break;
 
 
                 case "neqRCom":
-                    neq(constraints, X, Y);
-                    constraints.add(new NoCommonSubtermConstraint(X, Y, true));
-                    constraints.add(new NoCommonSubtermConstraint(Y, X, true));
+                    neqRoot(constraints, X, Y);
+                    constraints.add(new NotRecursiveSubtermOf(X, Y));
+                    constraints.add(new NotRecursiveSubtermOf(Y, X));
                     break;
 
 //                case "opSECTe":
@@ -788,6 +791,10 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
     private static void neq(Set<MatchConstraint> constraints, Term x, Term y) {
         constraints.add(new NotEqualConstraint(x, y));
         constraints.add(new NotEqualConstraint(y, x));
+    }
+    private static void neqRoot(Set<MatchConstraint> constraints, Term x, Term y) {
+        constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
+        constraints.add(new NotEqualConstraint.NotEqualRootConstraint(y, x));
     }
 
     public static Term pp(byte[] b) {

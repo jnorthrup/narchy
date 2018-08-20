@@ -51,8 +51,8 @@ public abstract class Param {
     public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 5;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
-    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
-    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
+    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 1024;
+//    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
     /** auto decompose conjunction beliefs and goals on input */
     public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = false;
@@ -79,6 +79,10 @@ public abstract class Param {
     public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
 
     public static final int EVALUATION_TTL = 64;
+
+    /** within how many durations a difference in dt is acceptable for term unification */
+    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 0.5f;
+
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
 
 //    /**

@@ -1,10 +1,10 @@
-package nars.derive.step;
+package nars.derive.op;
 
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.step.Occurrify.BeliefProjection;
+import nars.derive.op.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;

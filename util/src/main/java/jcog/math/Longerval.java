@@ -115,9 +115,13 @@ public class Longerval implements LongInterval {
 		else return a > b ? null : new Longerval(a, b);
 	}
 
-	public static Longerval intersection(long myA, long myB, long otherA, long otherB) {
+	@Nullable public static Longerval intersection(long myA, long myB, long otherA, long otherB) {
 		long a = max(myA, otherA), b = min(myB, otherB);
 		return a > b ? null : new Longerval(a, b);
+	}
+	@Nullable public static long[] intersectionArray(long myA, long myB, long otherA, long otherB) {
+		long a = max(myA, otherA), b = min(myB, otherB);
+		return a > b ? null : new long[] { a, b };
 	}
 
 	/** Return the longerval with elements from this not in other;

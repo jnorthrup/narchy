@@ -219,11 +219,15 @@ public class BiPolarAction extends AbstractSensor {
 
             if (fair) {
                 float eMin = Math.min(pe, ne);
-                float coherence = (eMax > MIN_NORMAL) ? eMin / eMax : 0;
+
+                //coherence: either they are equally confident, or they specify the same net x value
+                float coherence = Util.unitize(
+                        Util.or( (eMax > MIN_NORMAL) ? eMin / eMax : 0,
+                        Math.abs(pe - ne)));
 
 //                assert(coherence <= 1f): "strange coherence=" + coherence;
 
-                x = Util.lerp(coherence, 0, coherenceRange) * x;
+                x = coherence * x;
 
 
             }

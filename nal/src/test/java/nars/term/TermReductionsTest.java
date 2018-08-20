@@ -176,9 +176,6 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals(p, SECTi.the(p, p));
     }
 
-    @Test void testInvalidDiff_Concept_involving_ConjSeq() {
-        assertEq(Null, "(((y &&+1 x) &&+1 y)~(x~(y &&+- x)))");
-    }
     @Test
     void testDiffIntEqual() {
 
@@ -198,7 +195,7 @@ public class TermReductionsTest extends NarseseTest {
 
         assertArrayEquals(
                 new Term[]{r, s},
-                Op.differenceSet(Op.SETe, SETe.the(r, p, q, s), SETe.the(p, q)).arrayClone()
+                SetSectDiff.differenceSet(Op.SETe, SETe.the(r, p, q, s), SETe.the(p, q)).arrayClone()
         );
     }
 
@@ -208,7 +205,7 @@ public class TermReductionsTest extends NarseseTest {
 
         assertEquals(
                 Null,
-                Op.differenceSet(Op.SETe, SETe.the(p, q), SETe.the(p, q))
+                SetSectDiff.differenceSet(Op.SETe, SETe.the(p, q), SETe.the(p, q))
         );
     }
 
@@ -219,11 +216,11 @@ public class TermReductionsTest extends NarseseTest {
 
         assertEquals(
                 $("{Mars,Venus}"),
-                Op.differenceSet(Op.SETe, $("{Mars,Pluto,Venus}"), $.<Compound>$("{Pluto,Saturn}"))
+                SetSectDiff.differenceSet(Op.SETe, $("{Mars,Pluto,Venus}"), $.<Compound>$("{Pluto,Saturn}"))
         );
         assertEquals(
                 $("{Saturn}"),
-                Op.differenceSet(Op.SETe, $("{Pluto,Saturn}"), $.<Compound>$("{Mars,Pluto,Venus}"))
+                SetSectDiff.differenceSet(Op.SETe, $("{Pluto,Saturn}"), $.<Compound>$("{Mars,Pluto,Venus}"))
         );
 
 

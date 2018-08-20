@@ -406,6 +406,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task input, Remember remember, NAR nar) {
 
         FloatFunction<Task> taskStrength = null;
+        FloatFunction<TaskRegion> leafRegionWeakness = null;
         int perceptDur = 0;
         int e = 0, cap;
         while (treeRW.size() > (cap = capacity)) {
@@ -417,11 +418,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                         now,
                         perceptDur
                 );
+                leafRegionWeakness = regionWeakness(now - perceptDur, perceptDur, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW, e == 0 ? input : null /** only limit by inputRegion on first iter */,
-                    taskStrength, cap,
-                    nar.time(),
-                    perceptDur, remember, nar))
+                    taskStrength, leafRegionWeakness,
+                    remember, nar))
                 return false;
             e++;
             assert (e < cap);
@@ -434,13 +435,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, int cap, long now, int perceptDur, Remember remember, NAR nar) {
+    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember remember, NAR nar) {
 
 
         float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
 
-        FloatFunction<TaskRegion> leafRegionWeakness =
-                regionWeakness(now - perceptDur, perceptDur, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
 
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
@@ -463,7 +462,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             return true;
 
 
-        assert (tree.size() >= cap);
+        //assert (tree.size() >= cap);
 
 
         return mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, remember, nar);

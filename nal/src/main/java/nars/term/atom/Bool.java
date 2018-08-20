@@ -32,6 +32,10 @@ abstract public class Bool extends AtomicConst implements The {
         return equals(x);
     }
 
+    @Override
+    public final boolean equals(Object u) {
+        return u == this;
+    }
 
     @Override
     public /*@NotNull*/ Op op() {
@@ -46,10 +50,6 @@ abstract public class Bool extends AtomicConst implements The {
     @Override
     abstract public Term unneg();
 
-    @Override
-    public final boolean equals(Object u) {
-        return u == this;
-    }
 
     @Override
     abstract public boolean equalsNeg(Term t);

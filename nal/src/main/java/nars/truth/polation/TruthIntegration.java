@@ -6,7 +6,6 @@ import nars.Task;
 import nars.task.signal.TruthletTask;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -76,9 +75,9 @@ public class TruthIntegration {
 
         boolean mid = qStart + 1 != qEnd;
 
-        @Nullable Longerval qt = Longerval.intersection(qStart, qEnd, tStart, tEnd);
+        long[] qt = Longerval.intersectionArray(qStart, qEnd, tStart, tEnd);
 
-        LongArrayList pp = new TemporayLongArrayList(mid, qt);
+        LongArrayList pp = new TempLongArrayList((mid ? 1 : 0) + (qt == null ? 2 : 4));
 
         pp.add(qStart);
 
@@ -87,11 +86,11 @@ public class TruthIntegration {
 
         if (qt != null) {
             //inner points
-            long qta = qt.a;
+            long qta = qt[0];
             if (qta > qStart && qta < qEnd) //quick test to avoid set add
                 pp.add(qta);
 
-            long qtb = qt.b;
+            long qtb = qt[1];
             if (qta != qtb && qtb > qStart && qtb < qEnd)  //quick test to avoid set add
                 pp.add(qtb);
         }
@@ -106,9 +105,9 @@ public class TruthIntegration {
 
     }
 
-    private static final class TemporayLongArrayList extends LongArrayList {
-        public TemporayLongArrayList(boolean mid, @Nullable Longerval qt) {
-            super((mid ? 1 : 0) + (qt == null ? 2 : 4));
+    private static final class TempLongArrayList extends LongArrayList {
+        public TempLongArrayList(int cap) {
+            super(cap);
         }
 
         @Override
