@@ -84,8 +84,8 @@ public class Gradius extends NAgentX {
         }
 
 
-        initToggle();
-        //initBipolar();
+        //initToggle();
+        initBipolar();
 
         reward("alive", ()->{
             if (g.playerDead > 1)

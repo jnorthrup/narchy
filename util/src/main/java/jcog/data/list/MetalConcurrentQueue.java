@@ -35,16 +35,31 @@ import java.util.stream.Stream;
 
 /**
  * modified from Conversant Disruptor's PushPullConcurrentQueue
- * Tuned version of Martin Thompson's push pull queue
- * <p>
- * Transfers from a single thread writer to a single thread reader are orders of nanoseconds (3-5)
- * <p>
- * This code is optimized and tested using a 64bit HotSpot JVM on an Intel x86-64 environment.  Other
- * environments should be carefully tested before using in production.
- * <p>
- * Created by jcairns on 5/28/14.
+ *
+ * WARNING: do not use the .get(int) method.  instead use peek(int) which determines the
+ * correct buffer position.  this is a consequence of extending AtomicReferenceArray for
+ * efficiency purposes.  SORRY in advance for any confusion this might cause
+ *
+ * Originally:
+     * Tuned version of Martin Thompson's push pull queue
+     * <p>
+     * Transfers from a single thread writer to a single thread reader are orders of nanoseconds (3-5)
+     * <p>
+     * This code is optimized and tested using a 64bit HotSpot JVM on an Intel x86-64 environment.  Other
+     * environments should be carefully tested before using in production.
+     * <p>
+     * Created by jcairns on 5/28/14.
  */
-public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
+public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements ConcurrentQueue<X> {
+
+
+    // the sequence number of the start of the queue
+    final AtomicInteger
+            head = new AtomicInteger(),
+            headCursor = new AtomicInteger(),
+            tail = new AtomicInteger(),
+            tailCursor = new AtomicInteger()
+    ;
 
 
     public int clear(Consumer<X> each) {
@@ -102,48 +117,6 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     }
 
 
-    /*
-     * Note to future developers/maintainers - This code is highly tuned
-     * and possibly non-intuitive.    Rigorous performance and functional
-     * testing should accompany any proposed change
-     *
-     */
-
-    // maximum allowed capacity
-    // this must always be a power of 2
-    //
-    protected final int cap;
-
-    // we need to compute a position in the ring buffer
-    // modulo size, since size is a power of two
-    // compute the bucket position with x&(size-1)
-    // aka x&mask
-    final int mask;
-
-    // the sequence number of the end of the queue
-    final AtomicInteger tail = new AtomicInteger();
-
-    final AtomicInteger tailCursor = new AtomicInteger(0);
-
-    // use the value in the L1 cache rather than reading from memory when possible
-    int p1, p2, p3, p4, p5, p6, p7;
-    //    @sun.misc.Contended
-    int tailCache = 0;
-    int a1, a2, a3, a4, a5, a6, a7, a8;
-
-    // a ring buffer representing the queue
-    final AtomicReferenceArray<X> buffer;
-
-    int r1, r2, r3, r4, r5, r6, r7;
-    //    @sun.misc.Contended
-    int headCache = 0;
-    int c1, c2, c3, c4, c5, c6, c7, c8;
-
-    // the sequence number of the start of the queue
-    final AtomicInteger head = new AtomicInteger();
-
-    final AtomicInteger headCursor = new AtomicInteger(0);
-
     /**
      * Construct a blocking queue of the given fixed capacity.
      * <p>
@@ -153,12 +126,9 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
      * @param capacity maximum capacity of this queue
      */
 
+
     public MetalConcurrentQueue(final int capacity) {
-        int c = 1;
-        while (c < capacity) c <<= 1;
-        cap = c;
-        mask = cap - 1;
-        buffer = new AtomicReferenceArray<>(cap);
+        super(capacity);
     }
 
     public boolean push(X x, int retries) {
@@ -177,23 +147,20 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     public boolean offer(X x) {
         int spin = 0;
 
+        int cap = capacity();
         for (; ; ) {
             final int tailSeq = tail.getAcquire();
             // never offer onto the slot that is currently being polled off
             final int queueStart = tailSeq - cap;
 
             // will this sequence exceed the capacity
-            if ((headCache > queueStart) || ((headCache = head.getOpaque()) > queueStart)) {
+            if (head.getOpaque() > queueStart) {
                 // does the sequence still have the expected
                 // value
                 if (tailCursor.weakCompareAndSetVolatile(tailSeq, tailSeq + 1)) {
 
-
-                    // tailSeq is valid
-                    // and we got access without contention
-
-                    // convert sequence number to slot id
-                    buffer.set((tailSeq & mask), x);
+                    // tailSeq is valid and got access without contention
+                    set(i(tailSeq, cap), x);
 
                     tail.setRelease(tailSeq + 1);
 
@@ -209,6 +176,15 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
         }
     }
 
+    private int i(int x) {
+        return i(x, capacity());
+    }
+
+    private int i(int x, int cap) {
+         //return x & mask;
+        return x % cap;
+    }
+
 
     /*
      * progressively transition from spin to yield over time
@@ -222,14 +198,16 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     public X poll() {
         int spin = 0;
 
+        int cap = capacity();
+
         for (; ; ) {
             final int head = this.head.getOpaque();
             // is there data for us to poll
-            if ((tailCache > head) || (tailCache = tail.getOpaque()) > head) {
+            if (tail.getOpaque() > head) {
                 // check if we can update the sequence
                 if (headCursor.weakCompareAndSetVolatile(head, head + 1)) {
 
-                    final X pollObj = buffer.getAndSet((head & mask), null);
+                    final X pollObj = getAndSet(i(head, cap), null);
 
                     this.head.setRelease(head + 1);
 
@@ -252,7 +230,7 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     }
 
     public final X peek(int delta) {
-        return buffer.getOpaque((head.getOpaque() + delta) & mask);
+        return getOpaque(i(head.getOpaque() + delta) );
     }
 
     /** oldest element */
@@ -265,11 +243,6 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
         int i = size() - 1;
         return i >= 0 ? peek(i) : null;
     }
-
-    private int t() {
-        return (tail.getOpaque() - 1) & mask;
-    }
-
 
     @Override
     public int remove(final X[] x) {
@@ -294,6 +267,7 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
 
         maxElements = Math.min(x.length, maxElements);
 
+        int cap = capacity();
         for (; ; ) {
             final int pollPos = head.getOpaque(); // prepare to qualify?
             // is there data for us to poll
@@ -302,9 +276,8 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
             final int nToRead = Math.min((tail.getOpaque() - pollPos), maxElements);
             if (nToRead > 0) {
 
-                int j;
                 for (int i = 0; i < nToRead; i++) {
-                    x[i] = buffer.getOpaque(((pollPos + i) & mask));
+                    x[i] = getOpaque(i(pollPos + i, cap));
                 }
 
                 // if we still control the sequence, update and return
@@ -339,8 +312,8 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     }
 
     @Override
-    public int capacity() {
-        return cap;
+    public final int capacity() {
+        return length();
     }
 
     @Override
@@ -351,6 +324,7 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     @Override
     public void clear() {
         int spin = 0;
+        int cap = capacity();
         for (; ; ) {
             final int head = this.head.getOpaque();
             if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
@@ -362,7 +336,7 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
 
                         // remove leaked refs
                         for (int i = 0; i < cap; i++)
-                            buffer.set(i, null);
+                            set(i, null);
 
                         // advance head to same location as current end
                         this.tail.incrementAndGet();
@@ -381,10 +355,13 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     @Override
     public final boolean contains(Object o) {
         int s = size();
-        for (int i = 0; i < s; i++) {
-            final int slot = ((head.getOpaque() + i) & mask);
-            X b = buffer.getOpaque(slot);
-            if (b != null && b.equals(o)) return true;
+        if (s > 0) {
+            int cap = capacity();
+            for (int i = 0; i < s; i++) {
+                final int slot = (i(head.getOpaque() + i, cap));
+                X b = getOpaque(slot);
+                if (b != null && b.equals(o)) return true;
+            }
         }
         return false;
     }
@@ -403,11 +380,7 @@ public class MetalConcurrentQueue<X> implements ConcurrentQueue<X> {
     }
 
 
-    public final X get(int i) {
-        return peek(i);
-    }
-
     public Stream<X> stream() {
-        return IntStream.range(0, size()).mapToObj(this::get).filter(Objects::nonNull);
+        return IntStream.range(0, size()).mapToObj(this::peek).filter(Objects::nonNull);
     }
 }

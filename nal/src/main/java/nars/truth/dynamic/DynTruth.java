@@ -19,14 +19,16 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import nars.truth.Truthed;
 import nars.util.TimeAware;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Random;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.c2wSafe;

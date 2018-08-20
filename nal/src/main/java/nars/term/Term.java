@@ -123,16 +123,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return opX(o, (short) subOp);
     }
 
-    static Term forceNormalizeForBelief(Term x) {
-        x = x.normalize();
-
-        if (x.hasAny(Op.VAR_INDEP) && !Task.validTaskCompound(x, true)) {
-            x = VariableTransform.indepToDepVar.transform(x);
-        }
-
-        return x;
-    }
-
     /** true if there is at least some type of structure in common */
     static boolean commonStructure(Termlike x, Termlike y) {
         int xStruct = x.structure();

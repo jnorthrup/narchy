@@ -7,8 +7,8 @@ import jcog.pri.ScalarValue;
 import jcog.random.SplitMix64Random;
 import nars.*;
 import nars.control.Cause;
-import nars.derive.premise.PreDerivation;
 import nars.derive.op.Occurrify;
+import nars.derive.premise.PreDerivation;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
@@ -30,6 +30,8 @@ import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,6 +50,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public class Derivation extends PreDerivation {
 
+    protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
 
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
@@ -332,7 +335,6 @@ public class Derivation extends PreDerivation {
             this._belief = null;
         }
 
-try {
         if (this._belief != null) {
 
             beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
@@ -344,9 +346,7 @@ try {
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
         }
-} catch (RuntimeException w) {
-    return fatal(nextBelief, w);
-}
+
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
         assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";

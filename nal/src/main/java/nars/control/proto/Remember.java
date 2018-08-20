@@ -43,10 +43,8 @@ public class Remember extends AbstractTask {
         return null;
     }
 
-
-
-
     public Remember(Task task, Concept c) {
+        assert(task.op().taskable);
         this.input = task;
         this.concept = c;
     }

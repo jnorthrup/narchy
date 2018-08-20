@@ -42,7 +42,7 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 */
 public abstract class Unify extends Versioning implements Subst {
 
-    protected final static Logger logger = LoggerFactory.getLogger(Unify.class);
+
 
 
     /**

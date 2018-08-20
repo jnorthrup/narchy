@@ -40,7 +40,7 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
         int closest = -1;
         while (low <= high) {
             int mid = (low + high) >>> 1;
-            T midVal = q.get(mid);
+            T midVal = q.peek(mid);
             if (midVal == null)
                 return closest;
             else
@@ -123,7 +123,7 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
                 if (a!=-1) {
 
                     if (a == b) {
-                        T aa = q.get(a);
+                        T aa = q.peek(a);
                         return aa!=null ? x.test(aa) : null;
                     } else {
                         return q.whileEach(x, a, b+1);

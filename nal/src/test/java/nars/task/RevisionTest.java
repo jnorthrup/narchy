@@ -893,8 +893,34 @@ public class RevisionTest {
         }
     }
 
+    @Test public void testMergeTruthDilution() {
+        //presence or increase of empty space in the union of between merged tasks reduces truth proportionally
 
 
+        Task a1 = n.believe(x, 1, 1f);
+        Task a2 = n.believe(x, 1, 1f);
+        Task b = n.believe(x, 2, 1f);
+        Task c = n.believe(x, 4, 1f);
+        Task d = n.believe(x, 8, 1f);
+        Task aa = Revision.merge(n, a1, a2);
+        Task ab = Revision.merge(n, a1 ,b);
+        Task ac = Revision.merge(n, a1 ,c);
+        Task ad = Revision.merge(n, a1 ,d);
+        System.out.println(a1.evi());
+        p(aa);
+        p(ab);
+        p(ac);
+        p(ad);
+        assertTrue(aa.conf() > a1.conf());
+        assertTrue(ab.conf() < a1.conf());
+        assertTrue(ac.conf() < ab.conf());
+        assertTrue(ad.conf() < ac.conf());
+    }
+
+    private static void p(Task aa) {
+        System.out.println(aa.toString(true));
+        System.out.println("\tevi=" + aa.evi());
+    }
 
 
 }

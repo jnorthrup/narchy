@@ -22,6 +22,10 @@ public class TruthIntegration {
         return eviInteg(t, start, end, dur) / range;
     }
 
+    public static float eviInteg(Task t) {
+        return eviInteg(t, 0);
+    }
+
     public static float eviInteg(Task t, long dur) {
         return eviInteg(t, t.start(), t.end(), dur);
     }
@@ -75,30 +79,39 @@ public class TruthIntegration {
 
         boolean mid = qStart + 1 != qEnd;
 
+
         long[] qt = Longerval.intersectionArray(qStart, qEnd, tStart, tEnd);
+        if (mid || (qt != null)) {
 
-        LongArrayList pp = new TempLongArrayList((mid ? 1 : 0) + (qt == null ? 2 : 4));
+            LongArrayList pp = new TempLongArrayList((mid ? 1 : 0) + (qt == null ? 2 : 4));
 
-        pp.add(qStart);
+            pp.add(qStart);
 
-        if (mid)
-            pp.add((qStart+qEnd)/2L); //mid
+            if (mid)
+                pp.add((qStart + qEnd) / 2L); //mid
 
-        if (qt != null) {
-            //inner points
-            long qta = qt[0];
-            if (qta > qStart && qta < qEnd) //quick test to avoid set add
-                pp.add(qta);
+            if (qt != null) {
+                //inner points
+                long qta = qt[0];
+                if (qta > qStart && qta < qEnd) //quick test to avoid set add
+                    pp.add(qta);
+                else
+                    pp.add((qta+((qStart + qEnd) / 2L))/2L);
 
-            long qtb = qt[1];
-            if (qta != qtb && qtb > qStart && qtb < qEnd)  //quick test to avoid set add
-                pp.add(qtb);
+                long qtb = qt[1];
+                if (qta != qtb && qtb > qStart && qtb < qEnd)  //quick test to avoid set add
+                    pp.add(qtb);
+                else
+                    pp.add((qtb + ((qStart + qEnd) / 2L))/2L);
+            }
+
+
+            pp.add(qEnd);
+
+            points = pp.toSortedArray();
+        } else {
+            points = new long[] { qStart, qEnd };
         }
-
-
-        pp.add(qEnd);
-
-        points = pp.toSortedArray();
 
         //return x.eviIntegRectMid(dur, points);
         return t.eviIntegTrapezoidal(dur, points);

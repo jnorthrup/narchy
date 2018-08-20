@@ -133,7 +133,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
         filter();
 
-        sortThisByFloat(tc -> -tc.evi);
+        sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
 
         if (selected == null)
             selected = get(0).task; //strongest

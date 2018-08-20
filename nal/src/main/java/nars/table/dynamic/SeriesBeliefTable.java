@@ -247,9 +247,9 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     }
 
-    public static class SeriesRemember extends Remember {
+    public static final class SeriesRemember extends Remember {
 
-        public SeriesRemember(SeriesTask task, TaskConcept concept) {
+        private SeriesRemember(SeriesTask task, TaskConcept concept) {
             super(task, concept);
             remember(task);
         }

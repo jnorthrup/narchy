@@ -15,6 +15,7 @@ import nars.task.util.TaskRegion;
 import nars.term.*;
 import nars.term.Variable;
 import nars.term.atom.Bool;
+import nars.term.util.transform.VariableTransform;
 import nars.term.var.VarIndep;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -176,7 +177,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         Op o = t.op();
 
-        if (o == NEG || !o.taskable)
+        if (!o.taskable)
             return fail(t, "not taskable", safe);
 
         if (t.hasAny(Op.VAR_PATTERN))
@@ -196,19 +197,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if ((punc == Op.GOAL || punc == Op.QUEST) && !goalable(t))
             return fail(t, "Goal/Quest task term may not be Implication", safe);
 
-        return o.atomic || validTaskCompound(t, safe);
+        return t instanceof Compound ? validTaskCompound((Compound)t, safe) : true;
     }
 
     /**
      * call this directly instead of taskContentValid if the level, volume, and normalization have already been tested.
      * these can all be tested prenormalization, because normalization will not affect the result
      */
-    static boolean validTaskCompound(Term x, boolean safe) {
+    static boolean validTaskCompound(Compound x, boolean safe) {
         Op xo = x.op();
         return xo.atomic ? xo.conceptualizable : validIndep(x, safe);
     }
 
-    static boolean validIndep(Term x, boolean safe) {
+    private static boolean validIndep(Term x, boolean safe) {
         /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
         switch (x.varIndep()) {
             case 0:
@@ -479,6 +480,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                         )
         );
     }
+
+    static Term forceNormalizeForBelief(Term x) {
+        x = x.normalize();
+
+        if (x instanceof Compound && x.hasAny(Op.VAR_INDEP) && !validTaskCompound((Compound)x, true)) {
+            x = VariableTransform.indepToDepVar.transform(x);
+        }
+
+        return x;
+    }
+
 
 
 
@@ -883,6 +895,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     /**
      * https:
      * long[] points needs to be sorted, unique, and not contain any ETERNALs
+     *
+     * TODO still needs improvement
      */
     default float eviIntegTrapezoidal(long dur, long... times) {
 
@@ -895,8 +909,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 && first != ETERNAL && first != XTERNAL
                 /*&& last != ETERNAL */ && last != XTERNAL);
 
-        float X = 1+(last - first);
-        float dx = X / (n-1);
 
 
         float e = 0;
@@ -904,13 +916,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         e += evi(last, dur) / 2;
         for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
             long ti = times[i];
-            if (ti == times[i-1])
+            long dt = ti - times[i-1];
+            if (dt == 0)
                 continue; //duplicate time point, skip
+            assert(dt > 0);
             //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
-            e += evi(ti, dur);
+            e += evi(ti, dur) * dt;
         }
 
-        return dx * e; /* area */
+        return e; /* area */
     }
 
     byte punc();

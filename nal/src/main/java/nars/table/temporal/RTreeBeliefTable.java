@@ -556,9 +556,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         int best = Util.maxIndex(value);
 
-        if (value[best] == Float.NEGATIVE_INFINITY) {
+        if (value[best] == Float.NEGATIVE_INFINITY)
             return false;
-        }
 
         switch (best) {
 
@@ -577,10 +576,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             case MergeInputClosest: {
                 if (treeRW.remove(C)) {
-                    r.forget(C);
                     if (treeRW.add(IC)) {
-                        r.remember(IC);
+                        TemporalBeliefTable.fundMerge(IC, r, I, C);
                     } //else: already contained the merger
+
                     return true;
                 }
                 throw WTF();
@@ -590,10 +589,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
                 if (treeRW.remove(A) && treeRW.remove(B)) {
-                    r.forget(A);
-                    r.forget(B);
                     if (treeRW.add(AB)) {
-                        r.remember(AB);
+                        TemporalBeliefTable.fundMerge(AB, r, A, B);
                     } else {
                         //this may happen if the merge was acdtually a duplicate of what was in the table.
                         //this is fine. just forget the merge

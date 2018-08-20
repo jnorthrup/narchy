@@ -5,8 +5,8 @@ import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.op.Taskify;
 import nars.derive.op.Truthify;
-import nars.term.control.AND;
 import nars.derive.op.UnifyTerm;
+import nars.term.control.AND;
 
 final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<Derivation>*/ {
 

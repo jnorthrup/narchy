@@ -80,7 +80,7 @@ public class Taskify extends AbstractPred<Derivation> {
             return Derivation.fatal(r);
         }
 
-        Term x = Term.forceNormalizeForBelief(x1);
+        Term x = Task.forceNormalizeForBelief(x1);
         if (!x.op().conceptualizable)
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
 

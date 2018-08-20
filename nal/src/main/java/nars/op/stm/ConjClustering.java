@@ -259,7 +259,7 @@ public class ConjClustering extends Causable {
 
 
 
-                            ObjectBooleanPair<Term> cp = Task.tryContent( Term.forceNormalizeForBelief(cj), punc, true);
+                            ObjectBooleanPair<Term> cp = Task.tryContent( Task.forceNormalizeForBelief(cj), punc, true);
                             if (cp != null) {
 
 

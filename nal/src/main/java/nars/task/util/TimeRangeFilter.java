@@ -1,7 +1,6 @@
 package nars.task.util;
 
 import jcog.math.Longerval;
-import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 
 public class TimeRangeFilter extends TimeRange implements LongLongPredicate {

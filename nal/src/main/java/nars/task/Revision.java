@@ -2,13 +2,10 @@ package nars.task;
 
 import jcog.Util;
 import jcog.data.set.MetalLongSet;
-import jcog.pri.Priority;
-import jcog.sort.Top;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.control.Cause;
 import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
@@ -20,7 +17,6 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -242,83 +237,55 @@ public class Revision {
 
 
     /**
-     * forces projection
+     * warning: output task will have zero priority and input tasks will not be affected
+     * this is so a merge construction can be attempted without actually being budgeted
+     *
+     * also cause merge is deferred in the same way
      */
     @Nullable
     public static Task merge(NAR nar, TaskRegion... tt) {
         assert tt.length > 1;
         long[] u = Tense.dither(Tense.union(tt), nar);
-        return merge(nar, nar.dur(), u[0], u[1], true, tt);
+        return merge(nar,  u[0], u[1], tt);
     }
 
 
     @Nullable
-    public static Task merge(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
+    private static Task merge(NAR nar, long start, long end, TaskRegion... tasks) {
 
-//        tasks = ArrayUtils.removeNulls(tasks, Task[]::new);
-
-
-        /*Truth.EVI_MIN*/
+        assert(tasks.length > 1);
 
         float range = start != ETERNAL ? end - start + 1 : 1;
         float eviMinInteg = Param.TRUTH_MIN_EVI;
-        Task defaultTask;
-        if (!forceProjection) {
-            defaultTask = (Task) tasks[0];
-//            eviMinInteg = range * TruthIntegration.eviAvg(defaultTask, tasks[0].start(), tasks[0].end(), dur);
-        } else {
-            defaultTask = null;
-        }
 
-        TruthPolation T = Param.truth(start, end, dur).add(tasks);
-
-        if (T.size() == 1) {
-            if (!forceProjection) {
-                return T.getTask(0);
-            } else {
-                return null; //fail
-            }
-        }
+        TruthPolation T = Param.truth(start, end, 0).add(tasks);
 
         MetalLongSet stamp = T.filterCyclic();
 
+        if (T.size() == 1)
+            return null; //fail
+
         Truth truth = T.truth(nar);
         if (truth == null)
-            return defaultTask;
+            return null;
 
         float truthEvi = truth.evi();
 
         if (truthEvi * range < eviMinInteg)
-            return defaultTask;
+            return null;
 
         Truth cTruth = Truth.theDithered(truth.freq(), truthEvi, nar);
         if (cTruth == null)
-            return defaultTask;
-
-        byte punc = T.punc();
-        Task t = Task.tryTask(T.term, punc, cTruth, (c, tr) -> {
-
-
-                    return new NALTask(c, punc,
-                            tr,
-                            nar.time(), start, end,
-                            Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
-                    );
-                }
-        );
-
-        if (t == null)
             return null;
 
-        tasks = T.tasks();
-
-        t.pri(Priority.fund(Util.max((TaskRegion p) -> p.task().priElseZero(), tasks),
-                true,
-                Tasked::task, tasks));
-
-        ((NALTask) t).cause(Cause.merge(Param.causeCapacity.intValue(), tasks));
-
-        return t;
+        byte punc = T.punc();
+        return Task.tryTask(T.term, punc, cTruth, (c, tr) ->
+            new UnevaluatedTask(c, punc,
+                tr,
+                nar.time(), start, end,
+                Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+            )
+        );
     }
 
 
@@ -412,40 +379,40 @@ public class Revision {
         return d / depth;
     }
 
-    public static Task mergeOrChoose(@Nullable Task x, @Nullable Task y, long start, long end, Predicate<Task> filter, NAR nar) {
-        if (x == null && y == null)
-            return null;
-
-        if (filter != null) {
-            if (x != null && !filter.test(x))
-                x = null;
-            if (y != null && !filter.test(y))
-                y = null;
-        }
-
-        if (y == null)
-            return x;
-
-        if (x == null)
-            return y;
-
-        if (x.equals(y))
-            return x;
-
-
-        Top<Task> top = new Top<>(t -> TruthIntegration.eviInteg(t, 1));
-
-        if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
-
-            Task xy = merge(nar, nar.dur(), start, end, true, x, y);
-            if (xy != null && (filter == null || filter.test(xy)))
-                top.accept(xy);
-        }
-        top.accept(x);
-        top.accept(y);
-
-        return top.the;
-    }
+//    public static Task mergeOrChoose(@Nullable Task x, @Nullable Task y, long start, long end, Predicate<Task> filter, NAR nar) {
+//        if (x == null && y == null)
+//            return null;
+//
+//        if (filter != null) {
+//            if (x != null && !filter.test(x))
+//                x = null;
+//            if (y != null && !filter.test(y))
+//                y = null;
+//        }
+//
+//        if (y == null)
+//            return x;
+//
+//        if (x == null)
+//            return y;
+//
+//        if (x.equals(y))
+//            return x;
+//
+//
+//        Top<Task> top = new Top<>(t -> TruthIntegration.eviInteg(t, 1));
+//
+//        if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
+//
+//            Task xy = merge(nar, nar.dur(), start, end, true, x, y);
+//            if (xy != null && (filter == null || filter.test(xy)))
+//                top.accept(xy);
+//        }
+//        top.accept(x);
+//        top.accept(y);
+//
+//        return top.the;
+//    }
 }
 
 

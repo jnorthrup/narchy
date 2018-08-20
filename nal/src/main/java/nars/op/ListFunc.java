@@ -5,7 +5,10 @@ import jcog.version.VersionMap;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.*;
+import nars.term.Evaluation;
+import nars.term.Functor;
+import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Int;
 import nars.term.util.Conj;
 

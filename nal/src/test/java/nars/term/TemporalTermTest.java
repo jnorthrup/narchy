@@ -15,7 +15,6 @@ import java.util.TreeSet;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.Op.Null;
 import static nars.term.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -442,7 +441,7 @@ public class TemporalTermTest {
     void testValidTaskTerm() {
         String s = "believe(x,(believe(x,(--,(cam(9,$1) ==>-78990 (ang,$1))))&|(cam(9,$1) ==>+570 (ang,$1))))";
         Term ss = $$(s);
-        assertTrue(Task.validTaskCompound(ss, true));
+        assertTrue(Task.validTaskCompound((Compound)ss, true));
         assertTrue(Task.taskConceptTerm(ss));
     }
 

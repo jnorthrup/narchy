@@ -19,8 +19,7 @@ public class TaskProxy extends Pri implements Task {
     private volatile boolean cyclic = false;
 
     public TaskProxy(Task task) {
-        if (task==null)
-            throw new NullPointerException();
+
         this.task = task;
 
         float p = task.pri();

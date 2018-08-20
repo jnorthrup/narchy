@@ -559,13 +559,14 @@ public enum Op {
 
         boolean isBool = str.equals("B");
         boolean isInt = str.equals("+");
+        boolean isNeg = str.equals("--");
 
         conceptualizable = !var &&
                 !isBool &&
                 (Param.INT_CONCEPTUALIZABLE || !isInt)
         ;
 
-        taskable = conceptualizable && !isInt /* int */;
+        taskable = conceptualizable && !isInt && !isNeg /* int */;
 
         beliefable = taskable;
         goalable = taskable && !isImpl;

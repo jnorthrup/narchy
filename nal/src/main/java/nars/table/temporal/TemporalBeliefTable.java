@@ -1,11 +1,17 @@
 package nars.table.temporal;
 
 import jcog.Skill;
+import nars.Param;
 import nars.Task;
+import nars.control.Cause;
+import nars.control.proto.Remember;
 import nars.table.BeliefTable;
+import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 
 import java.util.function.Predicate;
+
+import static nars.truth.polation.TruthIntegration.eviInteg;
 
 
 /**
@@ -36,6 +42,26 @@ public interface TemporalBeliefTable extends BeliefTable {
         });
     }
 
+    static void fundMerge(Task xy, Remember r, Task x, Task y) {
+
+
+        ((NALTask)xy).cause(Cause.merge(Param.causeCapacity.intValue(), x, y));
+
+        //factor in the evidence loss (and originality?) loss to reduce priority
+        float exy = eviInteg(xy);
+        float pFactor = exy / (eviInteg(x) + eviInteg(y));
+        assert(pFactor <= 1f);
+        //float oxy = xy.originality();
+        //float px = Util.unitize(exy/ eviInteg(x) ); // * (oxy * x.originality()));
+        //float py = Util.unitize(exy/ eviInteg(y) ); // * (oxy * y.originality()));
+        xy.take(x, pFactor, false, false);
+        r.forget(x);
+        xy.take(y, pFactor, false, false);
+        r.forget(y);
+
+
+        r.remember(xy);
+    }
 
 
 }
