@@ -9,16 +9,20 @@ import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
+import static java.lang.Float.NaN;
 import static jcog.Texts.n4;
 
 public class Plot2D extends Widget {
     private final List<Series> series;
     private String title;
     private On on;
+    private volatile boolean requireUpdate = false;
 
     public void setTitle(String title) {
         this.title = title;
@@ -27,21 +31,12 @@ public class Plot2D extends Widget {
     public Plot2D on(Function<Runnable, On> trigger) {
         synchronized (series) {
             if (on != null)
-                on.off(); 
+                on.off();
             this.on = trigger.apply(this::update);
         }
         return this;
     }
 
-
-
-
-
-
-
-    
-
-    
 
     public static class Series extends FloatArrayList {
 
@@ -124,27 +119,29 @@ public class Plot2D extends Widget {
     private final int maxHistory;
 
 
-    private PlotVis plotVis;
-    
+    private PlotVis vis;
+
 
     public Plot2D(int history, PlotVis vis) {
-        
+
 
         this.series = new FasterList();
         this.maxHistory = history;
 
-        this.plotVis = vis;
+        this.vis = vis;
 
     }
 
     public Plot2D add(Series s) {
         series.add(s);
+        requireUpdate = true;
         return this;
     }
 
     public Plot2D add(String name, float[] data) {
         return add(new Series(name, data).autorange());
     }
+
     public Plot2D add(String name, float[] data, float min, float max) {
         return add(new Series(name, data).range(min, max));
     }
@@ -158,8 +155,8 @@ public class Plot2D extends Widget {
 
                 limit();
                 if (v != v) {
-                    
-                    super.add(Float.NaN);
+
+                    super.add(NaN);
                 } else {
                     if (v < min) v = min;
                     if (v > max) v = max;
@@ -193,36 +190,27 @@ public class Plot2D extends Widget {
 
     private void paintUnit(GL2 gl) {
 
+        if (requireUpdate) {
+            update();
+            requireUpdate = false;
+        }
+
         List<Series> series = this.series;
 
-        
+
         if (series.isEmpty()) {
             return;
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-        
         gl.glColor4fv(backgroundColor, 0);
         Draw.rect(gl, 0, 0, 1, 1);
 
-        plotVis.draw(series, gl, minValue, maxValue);
+        vis.draw(series, gl, minValue, maxValue);
 
         if (title != null) {
 
 
-
-            
             gl.glColor3f(1f, 1f, 1f);
             gl.glLineWidth(1f);
             Draw.hersheyText(gl, title, 0.1f, 0.5f, 0.5f, 0);
@@ -242,12 +230,25 @@ public class Plot2D extends Widget {
         }
 
         void draw(List<Series> series, GL2 g, float minValue, float maxValue);
+
+        default void stop() {
+
+        }
+    }
+
+    @Override
+    public boolean stop() {
+        if (super.stop()) {
+            vis.stop();
+            return true;
+        }
+        return false;
     }
 
     public static final PlotVis BarWave = (List<Series> series, GL2 g, float minValue, float maxValue) -> {
         if (minValue != maxValue) {
 
-            float w = 1.0f; 
+            float w = 1.0f;
             float h = 1.0f;
 
 
@@ -284,8 +285,11 @@ public class Plot2D extends Widget {
     };
 
 
-
     private float[] backgroundColor = {0, 0, 0, 0.75f};
+
+// TODO
+//    float _minValue = NaN, _maxValue = NaN;
+//    String minValueStr = "", maxValueStr = "";
 
     public static final PlotVis Line = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
         if (minValue == maxValue) {
@@ -294,7 +298,7 @@ public class Plot2D extends Widget {
             maxValue = center + (center / 2);
         }
 
-        gl.glColor4f(1f, 1f, 1f, 1f); 
+        gl.glColor4f(1f, 1f, 1f, 1f);
 
         gl.glLineWidth(2);
 
@@ -320,7 +324,7 @@ public class Plot2D extends Widget {
 
 
             float range = maxValue - minValue;
-            float yy = Float.NaN;
+            float yy = NaN;
             if (range > Float.MIN_NORMAL) {
 
                 gl.glLineWidth(3);
@@ -348,7 +352,7 @@ public class Plot2D extends Widget {
                 gl.glEnd();
             }
 
-            if (yy!=yy)
+            if (yy != yy)
                 yy = 0.5f;
 
             gl.glLineWidth(2);
@@ -359,13 +363,11 @@ public class Plot2D extends Widget {
 
     private static float ypos(float minValue, float range, float v) {
         float ny = (v - minValue) / range;
-        
-        
+
+
         return ny;
     }
 
-
-    
 
     public void update() {
         synchronized (series) {
@@ -378,57 +380,123 @@ public class Plot2D extends Widget {
                 minValue = Math.min(minValue, s.minValue);
                 maxValue = Math.max(maxValue, s.maxValue);
             });
+
+            vis.update();
         }
     }
 
 
+    public static class BitmapWave implements PlotVis, BitmapMatrixView.BitmapPainter {
+        BitmapMatrixView bmp = null;
+        private final int w;
+        private final int h;
+
+
+        transient private List<Series> series;
+        transient private float minValue, maxValue;
+        private Graphics gfx;
+
+        volatile boolean update = false;
+
+        public BitmapWave(int w, int h) {
+            this.w = w;
+            this.h = h;
+        }
+
+        @Override
+        public void stop() {
+            if (gfx!=null)  {
+                gfx.dispose();
+                gfx = null;
+            }
+            if (bmp!=null) {
+                bmp.stop();
+                bmp = null;
+            }
+        }
+
+        @Override
+        public void draw(List<Series> series, GL2 g, float minValue, float maxValue) {
+            if (bmp == null) {
+                bmp = new BitmapMatrixView(w, h, this) {
+                    @Override
+                    public boolean alpha() {
+                        return true;
+                    }
+                };
+            }
+            this.series = series;
+            this.minValue = minValue;
+            this.maxValue = maxValue;
+
+            if (update) {
+                update = !bmp.update(); //keep updating till updated
+            }
+
+            bmp.paintMatrix(g);
+        }
+
+        @Override
+        public void update() {
+            update = true;
+        }
 
 
 
+        @Override
+        public void update(BufferedImage buf, int[] pix) {
 
 
+            if (gfx==null) {
+                gfx = buf.getGraphics();
+            }
+
+            gfx.clearRect(0, 0, w, h);
+
+            int ns = series.size();
+            if (ns == 0)
+                return;
+
+            int w = this.w;
+            int h = this.h;
+            float minValue = this.minValue;
+            float maxValue = this.maxValue;
 
 
+            float yRange = ((maxValue) - (minValue));
+            float absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
 
 
+            float alpha= 1f / ns;
+            for (Series s : series) {
+                int n = s.size();
+                for (int x = 0; x < w; x++) {
+                    int sStart = (int) Math.floor(sampleX(x,w,n));
+                    int sEnd = (int) Math.ceil(sampleX(x+1,w,n));
+                    //TODO interpolate mid-sample
+                    float amp = 0;
+                    for (int i = sStart; i < sEnd; i++) {
+                        amp += s.get(i);
+                    }
+                    amp /= (sEnd-sStart); //average
 
+                    float ampNormalized = (amp - minValue) / yRange;
 
+                    float intensity = Math.abs(amp)/absRange;
+                    //gfx.setColor(Color.getHSBColor(intensity, 0.7f, 0.7f));
+                    float[] sc = s.color;
+                    float iBase = intensity/2 + 0.5f;
+                    gfx.setColor(new Color(sc[0] * iBase, sc[1] * iBase, sc[2] * iBase, alpha));
 
+                    int ah = Math.round(ampNormalized * h);
+                    gfx.drawLine(x, h/2 - ah/2, x, h/2 + ah/2);
+                }
+            }
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        private float sampleX(int x, int w, int n) {
+            return ( ((float)x) / w * n );
+        }
+    }
 }
 

@@ -50,7 +50,7 @@ public interface TemporalBeliefTable extends BeliefTable {
         //factor in the evidence loss (and originality?) loss to reduce priority
         float exy = eviInteg(xy);
         float pFactor = exy / (eviInteg(x) + eviInteg(y));
-        assert(pFactor <= 1f);
+        //assert(pFactor <= 1f);
         //float oxy = xy.originality();
         //float px = Util.unitize(exy/ eviInteg(x) ); // * (oxy * x.originality()));
         //float py = Util.unitize(exy/ eviInteg(y) ); // * (oxy * y.originality()));

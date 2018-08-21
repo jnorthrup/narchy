@@ -3,14 +3,12 @@ package nars.gui;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
-import nars.Narsese;
 import nars.agent.NAgent;
 import nars.gui.graph.run.ConceptGraph2D;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueModel;
@@ -20,7 +18,6 @@ import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -137,7 +134,7 @@ public class NARui {
     }
 
     public static void conceptWindow(Termed t, NAR n) {
-        window(new ConceptSurface(t, n), 500, 500, true);
+        window(new ConceptSurface(t, n), 500, 500);
     }
 
     public static ObjectSurface<NAgent> agent(NAgent a) {
@@ -345,29 +342,29 @@ public class NARui {
 
     }
 
-    static class NarseseJShellModel extends OmniBox.JShellModel {
-        private final NAR nar;
-
-        public NarseseJShellModel(NAR n) {
-            this.nar = n;
-        }
-
-        @Override
-        public void onTextChange(String text, int cursorPos, MutableContainer target) {
-            super.onTextChange(text, cursorPos, target);
-        }
-
-        @Override
-        public void onTextChangeControlEnter(String text, MutableContainer target) {
-            text = text.trim();
-            if (text.isEmpty())
-                return;
-            try {
-                nar.input(text);
-            } catch (Narsese.NarseseException e) {
-                super.onTextChangeControlEnter(text, target);
-            }
-        }
-
-    }
+//    static class NarseseJShellModel extends OmniBox.JShellModel {
+//        private final NAR nar;
+//
+//        public NarseseJShellModel(NAR n) {
+//            this.nar = n;
+//        }
+//
+//        @Override
+//        public void onTextChange(String text, int cursorPos, MutableContainer target) {
+//            super.onTextChange(text, cursorPos, target);
+//        }
+//
+//        @Override
+//        public void onTextChangeControlEnter(String text, MutableContainer target) {
+//            text = text.trim();
+//            if (text.isEmpty())
+//                return;
+//            try {
+//                nar.input(text);
+//            } catch (Narsese.NarseseException e) {
+//                super.onTextChangeControlEnter(text, target);
+//            }
+//        }
+//
+//    }
 }

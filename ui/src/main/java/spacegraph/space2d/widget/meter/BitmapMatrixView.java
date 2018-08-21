@@ -29,7 +29,7 @@ public class BitmapMatrixView extends Surface {
 
     public final int w;
     private final int h;
-    private volatile ViewFunction2D view;
+    private volatile BitmapPainter view;
     private final Tex bmp;
     protected Tuple2f touchPos;
     protected Point2i touchPixel;
@@ -46,9 +46,13 @@ public class BitmapMatrixView extends Surface {
     }
 
     public BitmapMatrixView(int w, int h, ViewFunction2D view) {
+        this(w, h, (BitmapPainter)view);
+    }
+
+    public BitmapMatrixView(int w, int h, BitmapPainter view) {
         this.w = w;
         this.h = h;
-        this.view = view != null ? view : ((ViewFunction2D) this);
+        this.view = view != null ? view : ((BitmapPainter) this);
         this.bmp = new Tex();
     }
 
@@ -149,6 +153,10 @@ public class BitmapMatrixView extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        paintMatrix(gl);
+    }
+
+    protected void paintMatrix(GL2 gl) {
         bmp.paint(gl, bounds);
         if (touchPixel != null) {
             float w = w() / this.w;
@@ -185,27 +193,17 @@ public class BitmapMatrixView extends Surface {
     /**
      * must call this to re-generate texture so it will display
      */
-    public void update() {
+    public final boolean update() {
         if (buf == null) {
-            if (w == 0 || h == 0) return;
+            if (w == 0 || h == 0) return false;
 
-            buf = new BufferedImage(w, h, alpha() ? TYPE_INT_ARGB : TYPE_INT_RGB);
+            this.buf = new BufferedImage(w, h, alpha() ? TYPE_INT_ARGB : TYPE_INT_RGB);
             this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
         }
 
-        int[] pix = this.pix;
-        final int h = this.h;
-        final int w = this.w;
-        int i = 0;
+        view.update(buf, pix);
 
-        ViewFunction2D view = this.view;
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                pix[i++] = view.update(x, y);
-            }
-        }
-
-        bmp.update(buf);
+        return bmp.update(buf);
     }
 
     public boolean alpha() {
@@ -221,13 +219,36 @@ public class BitmapMatrixView extends Surface {
     }
 
     @FunctionalInterface
-    public interface ViewFunction2D {
+    public interface BitmapPainter {
+        /** provides access to the bitmap in either BufferedImage or the raw int[] raster */
+        void update(BufferedImage buf, int[] pix);
+    }
+
+    @FunctionalInterface
+    public interface ViewFunction2D extends BitmapPainter {
         /**
          * updates the GL state for each visited matrix cell (ex: gl.glColor...)
          * before a rectangle is drawn at the returned z-offset
          */
         int update(int x, int y);
+
+        default void update(BufferedImage buf, int[] pix) {
+            final int w = buf.getWidth(), h = buf.getHeight();
+            int i = 0;
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    pix[i++] = update(x, y);
+                }
+            }
+        }
     }
 
-
+    @Override
+    public boolean stop() {
+        if (super.stop()) {
+            bmp.stop();
+            return true;
+        }
+        return false;
+    }
 }

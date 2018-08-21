@@ -109,7 +109,7 @@ public class ProtoWidget extends Widget {
         super();
 
         Map<String,Supplier<Surface>> categories = new HashMap<>();
-        categories.put("...", OmniBox::new);
+        //categories.put("...", OmniBox::new);
         library.byTag.asMap().forEach((t,v)->{
             Surface[] fields = v.stream()
                     .map(x -> becoming(x.getOne(), x.getTwo()))

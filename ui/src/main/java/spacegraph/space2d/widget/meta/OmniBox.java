@@ -1,26 +1,14 @@
 package spacegraph.space2d.widget.meta;
 
 import com.googlecode.lanterna.TerminalPosition;
-import jcog.Texts;
-import jcog.exe.Exe;
-import jdk.jshell.JShell;
-import jdk.jshell.SourceCodeAnalysis;
-import jdk.jshell.execution.LocalExecutionControlProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.Widget;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * super repl
@@ -35,10 +23,10 @@ public class OmniBox extends Widget {
 
     private final Model model;
 
-    @Deprecated
-    public OmniBox() {
-        this(new JShellModel());
-    }
+//    @Deprecated
+//    public OmniBox() {
+//        this(new JShellModel());
+//    }
 
 
     public OmniBox(Model m) {
@@ -123,72 +111,72 @@ public class OmniBox extends Widget {
         }
     }
 
-    public static class JShellModel extends Model {
-
-        static final Logger logger = LoggerFactory.getLogger(JShellModel.class);
-
-        private final JShell js;
-        private final SourceCodeAnalysis jsAnalyze;
-
-        private transient volatile String currentText = "";
-        private transient volatile int currentPos = 0;
-
-        public JShellModel() {
-            JShell.Builder builder = JShell.builder();
-            Map<String, String> params = new HashMap<>();
-            builder.executionEngine(new LocalExecutionControlProvider(), params);
-
-            js = builder.build();
-
-            jsAnalyze = js.sourceCodeAnalysis();
-
-            
-            
-        }
-
-        @Override
-        public void onTextChange(String text, int cursorPos, MutableContainer target) {
-
-            currentText = text;
-            currentPos = cursorPos;
-
-            if (text.isEmpty())
-                return; 
-
-            Exe.invokeLater(() -> {
-                if (cursorPos!=currentPos || !text.equals(currentText))
-                    return; 
-
-                List<SourceCodeAnalysis.Suggestion> sugg = jsAnalyze.completionSuggestions(text,
-                        cursorPos /* TODO take actual cursor pos */,
-                        new int[1]);
-
-                if (cursorPos!=currentPos || !text.equals(currentText))
-                    return; 
-
-                target.clear();
-                sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(PushButton::new).forEach(target::add);
-            });
-        }
-
-        @Override
-        public void onTextChangeControlEnter(String _text, MutableContainer target) {
-            String text = _text.trim();
-            if (text.isEmpty())
-                return;
-
-            target.clear();
-
-            
-            
-            
-            String cmd = OmniBox.class.getName() +
-                    ".popup(" + Texts.quote(text) + "," + text + ");";
-
-            js.eval(cmd).forEach(e -> logger.info("{}:\n\t{}", text, e));
-        }
-
-    }
+//    public static class JShellModel extends Model {
+//
+//        static final Logger logger = LoggerFactory.getLogger(JShellModel.class);
+//
+//        private final JShell js;
+//        private final SourceCodeAnalysis jsAnalyze;
+//
+//        private transient volatile String currentText = "";
+//        private transient volatile int currentPos = 0;
+//
+//        public JShellModel() {
+//            JShell.Builder builder = JShell.builder();
+//            Map<String, String> params = new HashMap<>();
+//            builder.executionEngine(new LocalExecutionControlProvider(), params);
+//
+//            js = builder.build();
+//
+//            jsAnalyze = js.sourceCodeAnalysis();
+//
+//
+//
+//        }
+//
+//        @Override
+//        public void onTextChange(String text, int cursorPos, MutableContainer target) {
+//
+//            currentText = text;
+//            currentPos = cursorPos;
+//
+//            if (text.isEmpty())
+//                return;
+//
+//            Exe.invokeLater(() -> {
+//                if (cursorPos!=currentPos || !text.equals(currentText))
+//                    return;
+//
+//                List<SourceCodeAnalysis.Suggestion> sugg = jsAnalyze.completionSuggestions(text,
+//                        cursorPos /* TODO take actual cursor pos */,
+//                        new int[1]);
+//
+//                if (cursorPos!=currentPos || !text.equals(currentText))
+//                    return;
+//
+//                target.clear();
+//                sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(PushButton::new).forEach(target::add);
+//            });
+//        }
+//
+//        @Override
+//        public void onTextChangeControlEnter(String _text, MutableContainer target) {
+//            String text = _text.trim();
+//            if (text.isEmpty())
+//                return;
+//
+//            target.clear();
+//
+//
+//
+//
+//            String cmd = OmniBox.class.getName() +
+//                    ".popup(" + Texts.quote(text) + "," + text + ");";
+//
+//            js.eval(cmd).forEach(e -> logger.info("{}:\n\t{}", text, e));
+//        }
+//
+//    }
 
 
     public static void popup(String src, Object x) {
@@ -199,7 +187,7 @@ public class OmniBox extends Widget {
             surface = new ObjectSurface<>(x);
         }
 
-        SpaceGraph.window(new LabeledPane(src, surface), 800, 800, true);
+        SpaceGraph.window(new LabeledPane(src, surface), 800, 800);
     }
 
 

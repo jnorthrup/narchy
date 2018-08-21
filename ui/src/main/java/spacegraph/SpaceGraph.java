@@ -29,7 +29,7 @@ public enum SpaceGraph { ;
     }
 
     public static JoglSpace window(Object o, int w, int h) {
-        return window(o, w, h, false);
+        return window(o, w, h, true);
     }
 
     /** generic window creation entry point */

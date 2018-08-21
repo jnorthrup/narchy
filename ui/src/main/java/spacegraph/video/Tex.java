@@ -43,6 +43,7 @@ public class Tex {
     boolean inverted = false;
 
     private Object src;
+    protected GL2 gl;
 
     public final void paint(GL2 gl, RectFloat2D bounds) {
         paint(gl, bounds, 1f);
@@ -66,6 +67,7 @@ public class Tex {
     public Tex commit(GL2 gl) {
 
         if (profile == null) {
+            this.gl = gl;
             profile = gl.getGLProfile();
         }
 
@@ -185,5 +187,20 @@ public class Tex {
 
             }
         }
+
+        @Override
+        public boolean stop() {
+            tex.stop();
+            return super.stop();
+        }
     }
+
+    public void stop() {
+        if (gl!=null && texture!=null) {
+            texture.destroy(gl);
+            texture = null;
+            gl = null;
+        }
+    }
+
 }

@@ -4,7 +4,6 @@ import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.AnimatorBase;
-import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
 import jcog.event.On;
@@ -274,7 +273,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         show("", w, h, async);
     }
 
-    private void show(String title, int w, int h, int x, int y, boolean async) {
+    private void show(String title, int w, int h, int x, int y, @Deprecated boolean async) {
 
         //Exe.invokeLater(() -> {
 
@@ -306,10 +305,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //});
 
         if (!async) {
-            Thread.yield();
-            while (gl == null) {
-                Util.sleepMS(syncConstructionDelay);
-            }
+            throw new UnsupportedOperationException();
+//            Thread.yield();
+//            while (gl == null) {
+//                Util.sleepMS(syncConstructionDelay);
+//            }
         }
 
 

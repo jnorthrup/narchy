@@ -837,18 +837,17 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                 else
                     return true;
             } else {
-                if (nonConstant(x, d) && nonConstant(y,d))
-                    return false;
-
                 Op xo = x.op();
                 if (xo.var)
                     return true; //allow
                 Op yo = y.op();
                 if (yo.var)
-                    return true; //alow
-
+                    return true; //allow
                 if (xo != yo)
                     return false;
+
+
+
 
                 int varExcluded = d.typeBits;
 
@@ -859,6 +858,29 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                 if (xs!=0 && ys!=0 && ((xs & ys) == 0))
                     return false; //no common non-constant structure
 
+                if (mustUnify(xx) || mustUnify(yy)) {
+                    if (!xo.commutative) {
+                        int xxs = xx.subs();
+                        if (xxs !=yy.subs())
+                            return false;
+                        for (int i = 0; i < xxs; i++) {
+                            Term x0 = xx.sub(i), y0 = yy.sub(i);
+                            if (!x0.equals(y0) && !mustUnify(x0) && !mustUnify(y0))
+                                return false; //mismatch in constant subterm
+                        }
+                    }
+                    return true;
+                }
+
+//                if (nonConstant(x, d) || nonConstant(y, d))
+//                    return true;
+//                if (x.hasAny(Temporal) || y.hasAny(Temporal)) {
+//                    //IMPL
+//                    if (xo.statement) //IMPL or
+//                        return !impossibleUnification(x.sub(0), y.sub(0)) && !impossibleUnification(x.sub(1), y.sub(1));
+//
+//                    return true;
+//                }
 
 //                if (!x.hasVars() && !y.hasVars()) {
 //                    if (!(!x.hasAny(Op.Temporal) && !y.hasAny(Op.Temporal))) {
@@ -874,15 +896,30 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 //                }
 
                 //TODO other exclusion cases
+
+//                if (!x.hasAny(Op.Variable) && !y.hasAny(Op.Variable))
+//                    return false;
+
             }
 
 
-            return true;
+            return false;
         }
 
-        protected static boolean nonConstant(Term x, Derivation d) {
-            return x.hasAny(Op.Temporal | d.typeBits); //TODO refine
+        private static boolean mustUnify(Termlike x) {
+            return x.hasAny(Op.Temporal | Op.Set |Op.Sect | Op.Variable);
         }
+
+        private static boolean impossibleUnification(Termlike x, Termlike y) {
+            return !x.equals(y) &&
+                    !(x.hasAny(Op.Temporal | Op.Variable)) &&
+                    !(y.hasAny(Op.Temporal | Op.Variable))
+                    ; //TODO refine
+        }
+
+//        protected static boolean nonConstant(Term x, Derivation d) {
+//            return x.hasAny(Op.Temporal | d.typeBits); //TODO refine
+//        }
 
         @Override
         public float cost() {

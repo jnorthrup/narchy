@@ -53,7 +53,7 @@ public class TrackXY extends NAgentX {
 
     public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.04f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.02f, 0, 2f);
 
     public final FloatRange visionContrast = new FloatRange(0.9f, 0, 1f);
 

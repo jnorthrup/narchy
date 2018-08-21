@@ -54,8 +54,7 @@ public class NARAudio extends WaveIn {
         }
 
         private void showWave() {
-            Plot2D p = new Plot2D(totalSamples, Plot2D.Line).add("Amp", wave);
-            p.update();
+            Plot2D p = new Plot2D(totalSamples, new Plot2D.BitmapWave(1024,128)).add("Amp", wave);
             set(p);
         }
 
