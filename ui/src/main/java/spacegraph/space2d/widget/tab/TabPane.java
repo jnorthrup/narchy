@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.tab;
 
-import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
@@ -74,10 +73,10 @@ public class TabPane extends Splitting {
             toggle(creator, onOrOff, created, true);
         };
 
-        Runnable  toggleOutside = () -> {
-            Exe.invokeLater(()->{
+        Runnable toggleOutside = () -> {
+            //Exe.invokeLater(()->{
                 toggle(creator, true, created, false);
-            });
+            //});
         };
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);

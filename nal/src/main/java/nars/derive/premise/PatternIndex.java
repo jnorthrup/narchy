@@ -184,7 +184,7 @@ public class PatternIndex extends MapConceptIndex {
             return null; //super.the();
         }
 
-        abstract protected static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
+        public abstract static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 
             final Ellipsis ellipsis;
             private final int subtermStructure;

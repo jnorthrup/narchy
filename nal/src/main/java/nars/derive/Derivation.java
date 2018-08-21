@@ -194,7 +194,7 @@ public class Derivation extends PreDerivation {
         super(
                 VAR_PATTERN
                 //null
-                , new SplitMix64Random(1), Param.UnificationStackMax, new TermHashMap()
+                , new SplitMix64Random(1), Param.UnificationStackMax, new TermHashMap<>()
         );
 
         this.anon = new Anon(ANON_INITIAL_CAPACITY);

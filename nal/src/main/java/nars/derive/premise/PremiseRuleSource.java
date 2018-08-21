@@ -834,7 +834,12 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             if (xEqY) {
                 if (isStrict)
                     return false;
+                else
+                    return true;
             } else {
+                if (nonConstant(x, d) && nonConstant(y,d))
+                    return false;
+
                 Op xo = x.op();
                 if (xo.var)
                     return true; //allow
@@ -845,27 +850,38 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                 if (xo != yo)
                     return false;
 
-                int varExcluded = Op.Variable; //maybe just VAR_PATTERN
+                int varExcluded = d.typeBits;
 
                 Subterms xx = x.subterms();
                 int xs = xx.structure() & ~varExcluded;
                 Subterms yy = y.subterms();
                 int ys = yy.structure() & ~varExcluded;
                 if (xs!=0 && ys!=0 && ((xs & ys) == 0))
-                    return false; //no common structure
+                    return false; //no common non-constant structure
 
-                if (!x.hasVars() && !y.hasVars()) {
-                    if (xx.subs()!=yy.subs())
-                        return false;
-                    if (xx.volume()!=yy.volume())
-                        return false;
-                }
+
+//                if (!x.hasVars() && !y.hasVars()) {
+//                    if (!(!x.hasAny(Op.Temporal) && !y.hasAny(Op.Temporal))) {
+//                        return x.equals(y);
+//                    } else {
+////                        if (!x.hasVars() && !y.hasVars() && !x.hasAny(Op.Temporal) && !y.hasAny(Op.Temporal)) {
+////                            if (xx.subs() != yy.subs())
+////                                return false;
+////                            if (xx.volume() != yy.volume())
+////                                return false;
+////                        }
+//                    }
+//                }
 
                 //TODO other exclusion cases
             }
 
 
             return true;
+        }
+
+        protected static boolean nonConstant(Term x, Derivation d) {
+            return x.hasAny(Op.Temporal | d.typeBits); //TODO refine
         }
 
         @Override

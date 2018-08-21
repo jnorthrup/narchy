@@ -260,7 +260,7 @@ public class Evaluation {
             return termute(y, each);
         } else {
             if (y!=Null) {
-                if (each.test(y))
+                if (!each.test(y))
                     return false;
             }
         }

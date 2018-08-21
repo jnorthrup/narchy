@@ -18,4 +18,5 @@ public interface WaveSource {
         return 1;
     }
 
+    int samplesPerSecond();
 }

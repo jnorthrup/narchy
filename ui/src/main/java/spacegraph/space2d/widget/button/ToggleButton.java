@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.button;
 
+import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -43,8 +44,11 @@ public class ToggleButton extends AbstractButton {
 
     public ToggleButton set(boolean on) {
         if (this.on.compareAndSet(!on, on)) {
-            if (action != null)
-                action.value(this, on);
+            if (action != null) {
+                Exe.invoke(()->{
+                    action.value(this, on);
+                });
+            }
         }
         return this;
     }

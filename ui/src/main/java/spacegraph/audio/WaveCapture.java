@@ -13,6 +13,9 @@ import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
 
 /**
+ * TODO enable/disable switch
+ * TODO correct ringbuffer w/ notify of buffer change interval https://github.com/waynetam/CircularBuffer
+ *
  * Created by me on 10/28/15.
  */
 public class WaveCapture extends Loop {
@@ -29,14 +32,6 @@ public class WaveCapture extends Loop {
      * called when next sample (buffer) frame is ready
      */
     public final Topic<WaveCapture> frame = new ListTopic<>();
-
-
-//    @Deprecated
-//    private final int freqSamplesPerFrame = 16;
-//    @Deprecated
-//    private final int historyFrames = 16;
-
-
 
 
     public Surface view() {
@@ -62,7 +57,7 @@ public class WaveCapture extends Loop {
                         break;
                     case 2:
                         for (int i = 0; i < bufferSamples; )
-                            add((samples[i++] + samples[i++]) / 2f);
+                            add((samples[i++] + samples[i++]) / 2f); //HACK
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -217,10 +212,10 @@ public class WaveCapture extends Loop {
         return v;
     }
 
-    interface Envelope {
-        float apply(int band, int frequency);
-    }
-
+//    interface Envelope {
+//        float apply(int band, int frequency);
+//    }
+//
 
     public WaveCapture(WaveSource source) {
 

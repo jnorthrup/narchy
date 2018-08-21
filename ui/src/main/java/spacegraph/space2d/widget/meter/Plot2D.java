@@ -91,19 +91,20 @@ public class Plot2D extends Widget {
 
         }
 
-        void autorange() {
+        Series autorange() {
             minValue = Float.POSITIVE_INFINITY;
             maxValue = Float.NEGATIVE_INFINITY;
             forEach(v -> {
                 if (v < minValue) minValue = v;
                 if (v > maxValue) maxValue = v;
-                
             });
+            return this;
         }
 
-        public void range(float min, float max) {
+        public Series range(float min, float max) {
             minValue = min;
             maxValue = max;
+            return this;
         }
 
         void limit() {
@@ -139,6 +140,13 @@ public class Plot2D extends Widget {
     public Plot2D add(Series s) {
         series.add(s);
         return this;
+    }
+
+    public Plot2D add(String name, float[] data) {
+        return add(new Series(name, data).autorange());
+    }
+    public Plot2D add(String name, float[] data, float min, float max) {
+        return add(new Series(name, data).range(min, max));
     }
 
     public Plot2D add(String name, DoubleSupplier valueFunc, float min, float max) {

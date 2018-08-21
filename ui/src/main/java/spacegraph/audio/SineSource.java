@@ -8,7 +8,7 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class SineSource implements WaveSource {
 
-    private final float SAMPLE_RATE = 44100;
+    private final int SAMPLE_RATE = 44100;
 
     private final double freq;
     private int samples;
@@ -42,5 +42,10 @@ public class SineSource implements WaveSource {
         }
         this.t = t;
         return 0;
+    }
+
+    @Override
+    public int samplesPerSecond() {
+        return SAMPLE_RATE;
     }
 }

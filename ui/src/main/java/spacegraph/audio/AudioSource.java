@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AudioSource implements WaveSource {
     private final FloatRange frameRate;
+    private final int sampleRate;
     private TargetDataLine line;
     private final DataLine.Info dataLineInfo;
     public final AudioFormat audioFormat;
@@ -34,15 +35,20 @@ public class AudioSource implements WaveSource {
     public AudioSource(float frameRate) {
         this.frameRate = new FloatRange(frameRate, 1f, 40f);
 
-        
-        
-        
-        audioFormat = new AudioFormat(22050, 16, 1, true, false);
+
+        sampleRate = 22050;
+        audioFormat = new AudioFormat(sampleRate, 16, 1, true, false);
         bytesPerSample = 2;
 
         dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 //        System.out.println(dataLineInfo);
 
+
+    }
+
+    @Override
+    public int samplesPerSecond() {
+        return sampleRate;
     }
 
     public void printDevices() {

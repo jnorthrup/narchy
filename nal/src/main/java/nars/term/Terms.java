@@ -307,8 +307,8 @@ public enum Terms {
 
     private static boolean canExtractFixedPath(Term container) {
         return !container.isCommutative()
-                && !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive)
-                && !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear);
+                && !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis);
+
     }
 }
 
