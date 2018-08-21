@@ -65,6 +65,8 @@ public class SlidingDFT {
 
     public void next(float[] inBuf, int inOff, int len, int chan, float[] fftBuf) {
 
+        if (len == 0 || inBuf.length == 0)
+            return;
 
         final double[] fftBufDC = fftBufD[chan];
         final float[] timeBufC = timeBuf[chan];

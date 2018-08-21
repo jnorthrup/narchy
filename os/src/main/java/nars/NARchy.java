@@ -81,7 +81,7 @@ public class NARchy extends NARS {
             }
 
             new NARVideo(nar);
-            new NARAudio(nar);
+            new NARAudio(nar, 4f);
 
 
 

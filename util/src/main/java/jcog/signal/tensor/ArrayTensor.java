@@ -2,6 +2,7 @@ package jcog.signal.tensor;
 
 import jcog.Texts;
 import jcog.signal.Tensor;
+import jcog.signal.buffer.CircularFloatBuffer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +26,11 @@ public class ArrayTensor implements
     public final float[] data;
     public final int[] shape;
     transient private final int[] stride;
+
+    public ArrayTensor(CircularFloatBuffer b, int start, int end) {
+        this(new float[end-start]);
+        b.readFully(data, start, end-start);
+    }
 
     public ArrayTensor(float... oneD) {
         this.shape = new int[]{oneD.length};

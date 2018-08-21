@@ -16,18 +16,36 @@ public class WaveIn extends NARService {
 
     final WaveCapture capture;
 
+    float TARGET_GAIN = 0.5f;
 
     /**
      * TODO make adjustable (FloatRange)
      */
     private final float fps = 20f;
 
-    final MiniPID autogain = new MiniPID(1, 0.1, 0.4);
+    final MiniPID autogain = new MiniPID(0.5, 0.5, 0.5);
 
     WaveIn(NAR nar, Term id, WaveCapture capture) {
         super(id);
         this.capture = capture;
         nar.off(this);
+
+        if (autogain != null) {
+            capture.wave.on((w) -> {
+
+                float max = 0;
+                for (float s : w.data) {
+                    max = Math.max(max, Math.abs(s));
+                }
+
+
+                float a = (float) autogain.out(max, TARGET_GAIN /* target */);
+
+
+                ((AudioSource) capture.source).gain.set(a);
+            });
+        }
+
     }
 
 
@@ -41,20 +59,6 @@ public class WaveIn extends NARService {
     }
 
     private void update() {
-
-        WaveCapture c = capture;
-        if (autogain != null && c != null) {
-
-            float max = 0;
-            for (float s : c.samples) {
-                max = Math.max(max, Math.abs(s));
-            }
-
-            float a = (float) autogain.out(max, 0.9f /* target */);
-
-
-            ((AudioSource) c.source).gain.set(a);
-        }
 
     }
 

@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.On;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -58,6 +59,7 @@ public class Plot2D extends Widget {
         }
 
 
+
         @SuppressWarnings("ConstructorNotProtectedInAbstractClass")
         public Series(String name, int capacity) {
             super(capacity);
@@ -86,7 +88,7 @@ public class Plot2D extends Widget {
 
         }
 
-        Series autorange() {
+        public Series autorange() {
             minValue = Float.POSITIVE_INFINITY;
             maxValue = Float.NEGATIVE_INFINITY;
             forEach(v -> {
@@ -119,7 +121,7 @@ public class Plot2D extends Widget {
     private final int maxHistory;
 
 
-    private PlotVis vis;
+    private final PlotVis vis;
 
 
     public Plot2D(int history, PlotVis vis) {
@@ -285,7 +287,7 @@ public class Plot2D extends Widget {
     };
 
 
-    private float[] backgroundColor = {0, 0, 0, 0.75f};
+    private final float[] backgroundColor = {0, 0, 0, 0.75f};
 
 // TODO
 //    float _minValue = NaN, _maxValue = NaN;
@@ -465,27 +467,33 @@ public class Plot2D extends Widget {
 
             float yRange = ((maxValue) - (minValue));
             float absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
+            if (absRange < Float.MIN_NORMAL) absRange = 1;
+
 
 
             float alpha= 1f / ns;
             for (Series s : series) {
                 int n = s.size();
                 for (int x = 0; x < w; x++) {
-                    int sStart = (int) Math.floor(sampleX(x,w,n));
-                    int sEnd = (int) Math.ceil(sampleX(x+1,w,n));
-                    //TODO interpolate mid-sample
+                    float sStart = Math.max(0, (sampleX(x,w,n)));
+                    int iStart = Util.clamp((int)Math.floor(sStart+1), 0, n-1);
+                    float sEnd = Math.min(n, (sampleX(x+1,w,n)));
+                    int iEnd = Util.clamp((int)Math.ceil(sEnd-1), 0, n-1);
                     float amp = 0;
-                    for (int i = sStart; i < sEnd; i++) {
+
+                    amp += (iStart - sStart) * s.get(iStart);
+                    for (int i = iStart+1; i < iEnd-1; i++)
                         amp += s.get(i);
-                    }
-                    amp /= (sEnd-sStart); //average
+                    amp += (sEnd - iEnd) * s.get(iEnd);
+
+                    amp /= (sEnd-sStart);
 
                     float ampNormalized = (amp - minValue) / yRange;
 
                     float intensity = Math.abs(amp)/absRange;
                     //gfx.setColor(Color.getHSBColor(intensity, 0.7f, 0.7f));
                     float[] sc = s.color;
-                    float iBase = intensity/2 + 0.5f;
+                    float iBase = Util.unitize(intensity/2 + 0.5f);
                     gfx.setColor(new Color(sc[0] * iBase, sc[1] * iBase, sc[2] * iBase, alpha));
 
                     int ah = Math.round(ampNormalized * h);

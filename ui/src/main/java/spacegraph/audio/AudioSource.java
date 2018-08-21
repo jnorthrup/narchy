@@ -2,11 +2,11 @@ package spacegraph.audio;
 
 import com.google.common.base.Joiner;
 import jcog.math.FloatRange;
+import jcog.signal.buffer.CircularFloatBuffer;
 
 import javax.sound.sampled.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -23,9 +23,10 @@ public class AudioSource implements WaveSource {
     public final FloatRange gain = new FloatRange(1f, 0, 32f);
 
 
-    volatile private short[] samples;
-    private int sampleNum;
-    volatile public byte[] audioBytes;
+
+    private byte[] preByteBuffer;
+    private short[] preShortBuffer;
+    private float[] preFloatBuffer;
     volatile public int audioBytesRead;
 
 
@@ -84,28 +85,24 @@ public class AudioSource implements WaveSource {
 
             float period = 1.0f / frameRate.floatValue();
 
-            int audioBufferSize = (int) (sampleRate * numChannels * period);
+            int audioBufferSamples = (int) Math.ceil(sampleRate * numChannels * period);
 
-            int audioBufferSizeAllocated = audioBufferSize; //Util.largestPowerOf2NoGreaterThan(audioBufferSize);
-            audioBytes = new byte[audioBufferSizeAllocated * bytesPerSample];
-            samples = new short[audioBufferSizeAllocated];
 
-            line.open(audioFormat, audioBufferSize);
+            preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
+            preShortBuffer = new short[audioBufferSamples];
+            preFloatBuffer = new float[audioBufferSamples];
+
+
+            line.open(audioFormat, audioBufferSamples);
             line.start();
 
-            return audioBufferSize;
+            return audioBufferSamples;
         } catch (LineUnavailableException e) {
             e.printStackTrace();
             return 0;
 
         }
 
-
-    }
-
-
-    public int bufferSamples() {
-        return samples.length;
     }
 
     @Override
@@ -116,65 +113,49 @@ public class AudioSource implements WaveSource {
     private final AtomicBoolean busy = new AtomicBoolean();
 
     @Override
-    public int next(float[] buffer) {
+    public int next(CircularFloatBuffer buffer) {
 
-        short[] samples = this.samples;
-        if (this.samples == null) return 0;
 
         if (!busy.compareAndSet(false, true))
             return 0;
 
-        int bufferSamples = buffer.length;
+        try {
+
+            int capacity = preByteBuffer.length;
+
+            int availableBytes = Math.min(capacity, line.available());
+            audioBytesRead = line.read(preByteBuffer, 0, availableBytes);
+            int nSamplesRead = audioBytesRead / 2;
+
+            ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
 
 
+            int start = 0;
+            int end = nSamplesRead;
+            int j = 0;
+            short min = Short.MAX_VALUE, max = Short.MIN_VALUE;
+            float gain = this.gain.floatValue() / shortRange;
+            for (int i = start; i < end; i++) {
+                short s = preShortBuffer[i];
+                if (s < min) min = s;
+                if (s > max) max = s;
 
-        
-        int avail = Math.min(bufferSamples, line.available());
+                preFloatBuffer[j++] = s * gain;
+            }
+            buffer.flush(j);
+            buffer.write(preFloatBuffer, j);
+            //Arrays.fill(buffer, end, buffer.length, 0);
 
+            line.flush();
+            return nSamplesRead;
 
-        int bytesToTake = Math.min(bufferSamples * bytesPerSample, avail);
-        audioBytesRead = line.read(audioBytes, avail-bytesToTake /* take the end of the buffer */,
-                
-                bytesToTake
-        );
-
-        
-        
-        
-        
-
-
-        
-        
-        ByteBuffer.wrap(audioBytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(samples);
-
-        int nSamplesRead = audioBytesRead / 2;
-        int start = Math.max(0, nSamplesRead - bufferSamples);
-        int end = nSamplesRead;
-        int j = 0;
-        short min = Short.MAX_VALUE, max = Short.MIN_VALUE;
-        float gain = this.gain.floatValue() / shortRange;
-        for (int i = start; i < end; i++) {
-            short s = samples[i];
-            if (s < min) min = s;
-            if (s > max) max = s;
-            buffer[j++] = s * gain;
+        } finally {
+            busy.set(false);
         }
-        sampleNum += j;
-        Arrays.fill(buffer, end, buffer.length, 0);
 
-
-
-        line.flush();
-        busy.set(false);
-
-        return nSamplesRead;
 
     }
 
-    private static final float shortRange = ((float)Short.MAX_VALUE);
+    private static final float shortRange = Short.MAX_VALUE;
 
-    public long sampleNum() {
-        return sampleNum;
-    }
 }
