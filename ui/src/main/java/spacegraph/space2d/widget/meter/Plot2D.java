@@ -5,6 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.On;
+import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.widget.windo.Widget;
@@ -39,68 +40,91 @@ public class Plot2D extends Widget {
     }
 
 
-    public static class Series extends FloatArrayList {
+    interface Series {
 
-        String name;
+        String name();
 
-        /**
-         * history size
-         */
+        void update();
+
+        float maxValue();
+
+        float minValue();
+
+        float[] color();
+
+        int size();
+
+        float get(int i);
+
+        //void forEach(IntFloatConsumer value);
+    }
+
+    public static class ArraySeries extends FloatArrayList implements Series {
+
+        private String name;
+
         private final int capacity;
 
-        transient float maxValue;
-        transient float minValue;
+        private transient float maxValue;
+        private transient float minValue;
 
-        float[] color = {1, 1, 1, 0.75f};
+        private float[] color = {1, 1, 1, 0.75f};
 
         @Override
         public float[] toArray() {
             return items;
         }
 
-
-
         @SuppressWarnings("ConstructorNotProtectedInAbstractClass")
-        public Series(String name, int capacity) {
+        public ArraySeries(String name, int capacity) {
             super(capacity);
             setName(name);
             this.capacity = capacity;
         }
 
-        public Series(String name, float[] data) {
+        public ArraySeries(String name, float[] data) {
             super(data);
             setName(name);
             capacity = data.length;
         }
 
-        void setName(String name) {
+        private void setName(String name) {
             this.name = name;
-            Draw.colorHash(name, color);
+            Draw.colorHash(name, color());
         }
 
+        @Override
+        public float get(int index) {
+            float[] ii = this.items;
+            if (ii.length > index)
+                return ii[index];
+            else
+                return Float.NaN; //HACK
+        }
 
         @Override
         public String toString() {
-            return name + '[' + size() + '/' + capacity + ']';
+            return name();
         }
 
+        @Override
         public void update() {
 
         }
 
         public Series autorange() {
-            minValue = Float.POSITIVE_INFINITY;
-            maxValue = Float.NEGATIVE_INFINITY;
+            this.minValue = Float.POSITIVE_INFINITY;
+            this.maxValue = Float.NEGATIVE_INFINITY;
             forEach(v -> {
-                if (v < minValue) minValue = v;
-                if (v > maxValue) maxValue = v;
+                if (v < minValue()) this.minValue = v;
+                if (v > maxValue()) this.maxValue = v;
             });
             return this;
         }
 
         public Series range(float min, float max) {
-            minValue = min;
-            maxValue = max;
+            this.minValue = min;
+            this.maxValue = max;
             return this;
         }
 
@@ -113,6 +137,28 @@ public class Plot2D extends Widget {
         float[] array() {
             return items;
         }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+
+        @Override
+        public float maxValue() {
+            return maxValue;
+        }
+
+        @Override
+        public float minValue() {
+            return minValue;
+        }
+
+        @Override
+        public float[] color() {
+            return color;
+        }
+
 
     }
 
@@ -141,16 +187,16 @@ public class Plot2D extends Widget {
     }
 
     public Plot2D add(String name, float[] data) {
-        return add(new Series(name, data).autorange());
+        return add(new ArraySeries(name, data).autorange());
     }
 
     public Plot2D add(String name, float[] data, float min, float max) {
-        return add(new Series(name, data).range(min, max));
+        return add(new ArraySeries(name, data).range(min, max));
     }
 
     public Plot2D add(String name, DoubleSupplier valueFunc, float min, float max) {
-        Series s;
-        add(s = new Series(name, maxHistory) {
+        ArraySeries s;
+        add(s = new ArraySeries(name, maxHistory) {
             @Override
             public void update() {
                 double v = valueFunc.getAsDouble();
@@ -173,7 +219,7 @@ public class Plot2D extends Widget {
     }
 
     public Plot2D add(String name, DoubleSupplier valueFunc) {
-        add(new Series(name, maxHistory) {
+        add(new ArraySeries(name, maxHistory) {
             @Override
             public void update() {
                 limit();
@@ -247,44 +293,44 @@ public class Plot2D extends Widget {
         return false;
     }
 
-    public static final PlotVis BarWave = (List<Series> series, GL2 g, float minValue, float maxValue) -> {
-        if (minValue != maxValue) {
-
-            float w = 1.0f;
-            float h = 1.0f;
-
-
-            for (Series s : series) {
-                int histSize = s.size();
-
-                float dx = (w / histSize);
-
-                float x = 0;
-                float prevX = 0;
-
-                float[] ss = s.toArray();
-                int len = Math.min(s.size(), ss.length);
-                float range = maxValue - minValue;
-                for (int i = 0; i < len; i++) {
-                    float v = ss[i];
-
-                    float py = (v - minValue) / range;
-                    if (py < 0) py = 0;
-                    if (py > 1.0) py = 1.0f;
-
-                    float y = py * h;
-
-                    g.glColor4fv(s.color, 0);
-
-                    Draw.rect(g, prevX, h / 2.0f - y / 2f, dx, y);
-
-                    prevX = x;
-                    x += dx;
-                }
-
-            }
-        }
-    };
+//    public static final PlotVis BarWave = (List<Series> series, GL2 g, float minValue, float maxValue) -> {
+//        if (minValue != maxValue) {
+//
+//            float w = 1.0f;
+//            float h = 1.0f;
+//
+//
+//            for (Series s : series) {
+//                int histSize = s.size();
+//
+//                float dx = (w / histSize);
+//
+//                float x = 0;
+//                float prevX = 0;
+//
+//                float[] ss = s.toArray();
+//                int len = Math.min(s.size(), ss.length);
+//                float range = maxValue - minValue;
+//                for (int i = 0; i < len; i++) {
+//                    float v = ss[i];
+//
+//                    float py = (v - minValue) / range;
+//                    if (py < 0) py = 0;
+//                    if (py > 1.0) py = 1.0f;
+//
+//                    float y = py * h;
+//
+//                    g.glColor4fv(s.color(), 0);
+//
+//                    Draw.rect(g, prevX, h / 2.0f - y / 2f, dx, y);
+//
+//                    prevX = x;
+//                    x += dx;
+//                }
+//
+//            }
+//        }
+//    };
 
 
     private final float[] backgroundColor = {0, 0, 0, 0.75f};
@@ -315,12 +361,11 @@ public class Plot2D extends Widget {
 
         for (Series s : series) {
 
-            float mid = ypos(minValue, maxValue, (s.minValue + s.maxValue) / 2f);
+            float mid = ypos(minValue, maxValue, (s.minValue() + s.maxValue()) / 2f);
 
 
             int ss = s.size();
 
-            float[] ssh = s.array();
 
             int histSize = ss;
 
@@ -330,7 +375,7 @@ public class Plot2D extends Widget {
             if (range > Float.MIN_NORMAL) {
 
                 gl.glLineWidth(3);
-                gl.glColor3fv(s.color, 0);
+                gl.glColor3fv(s.color(), 0);
                 gl.glBegin(
                         GL.GL_LINE_STRIP
 
@@ -340,9 +385,10 @@ public class Plot2D extends Widget {
                 float dx = (W / histSize);
 
 
-                for (int i = 0; i < ss; i++) {
+                int ns = s.size();
+                for (int i = 0; i < ns; i++) {
 
-                    float v = ssh[i];
+                    float v = s.get(i);
                     float ny = (v == v) ? ypos(minValue, range, v) : mid /*HACK for NaN*/;
 
 
@@ -358,7 +404,7 @@ public class Plot2D extends Widget {
                 yy = 0.5f;
 
             gl.glLineWidth(2);
-            Draw.hersheyText(gl, s.name, 0.04f, W, yy, 0, Draw.TextAlignment.Right);
+            Draw.hersheyText(gl, s.name(), 0.04f, W, yy, 0, Draw.TextAlignment.Right);
 
         }
     };
@@ -379,8 +425,8 @@ public class Plot2D extends Widget {
             minValue = Float.POSITIVE_INFINITY;
             maxValue = Float.NEGATIVE_INFINITY;
             series.forEach((Series s) -> {
-                minValue = Math.min(minValue, s.minValue);
-                maxValue = Math.max(maxValue, s.maxValue);
+                minValue = Math.min(minValue, s.minValue());
+                maxValue = Math.max(maxValue, s.maxValue());
             });
 
             vis.update();
@@ -400,18 +446,39 @@ public class Plot2D extends Widget {
 
         volatile boolean update = false;
 
+        /**
+         * visualization bounds
+         */
+        float first = 0f, last = 1f;
+
         public BitmapWave(int w, int h) {
             this.w = w;
             this.h = h;
         }
 
+        public float first() {
+            return first;
+        }
+
+        public float last() {
+            return last;
+        }
+
+        public int firstSample() {
+            return (int) Math.floor(first * (series.get(0).size() - 1) /* TODO */);
+        }
+
+        public int lastSample() {
+            return (int) Math.ceil(last * (series.get(0).size() - 1) /* TODO */);
+        }
+
         @Override
         public void stop() {
-            if (gfx!=null)  {
+            if (gfx != null) {
                 gfx.dispose();
                 gfx = null;
             }
-            if (bmp!=null) {
+            if (bmp != null) {
                 bmp.stop();
                 bmp = null;
             }
@@ -444,12 +511,11 @@ public class Plot2D extends Widget {
         }
 
 
-
         @Override
-        public void update(BufferedImage buf, int[] pix) {
+        public synchronized void update(BufferedImage buf, int[] pix) {
 
 
-            if (gfx==null) {
+            if (gfx == null) {
                 gfx = buf.getGraphics();
             }
 
@@ -470,41 +536,92 @@ public class Plot2D extends Widget {
             if (absRange < Float.MIN_NORMAL) absRange = 1;
 
 
-
-            float alpha= 1f / ns;
+            float alpha = 1f / ns;
+            int first = firstSample(), last = lastSample();
+            assert(series.size() == 1): "only size=1 support for now";
+            int sn = series.get(0).size();
             for (Series s : series) {
-                int n = s.size();
+
                 for (int x = 0; x < w; x++) {
-                    float sStart = Math.max(0, (sampleX(x,w,n)));
-                    int iStart = Util.clamp((int)Math.floor(sStart+1), 0, n-1);
-                    float sEnd = Math.min(n, (sampleX(x+1,w,n)));
-                    int iEnd = Util.clamp((int)Math.ceil(sEnd-1), 0, n-1);
+
+                    float sStart = first + (last - first) * (x/((float)w));
+                    float sEnd = first + (last - first) * ((x+1)/((float)w));
+
+                    int iStart = Util.clamp((int) Math.ceil(sStart + 1), 0, sn - 1);
+                    int iEnd = Util.clamp((int) Math.floor(sEnd - 1), 0, sn - 1);
                     float amp = 0;
 
                     amp += (iStart - sStart) * s.get(iStart);
-                    for (int i = iStart+1; i < iEnd-1; i++)
+                    for (int i = iStart + 1; i < iEnd - 1; i++)
                         amp += s.get(i);
                     amp += (sEnd - iEnd) * s.get(iEnd);
 
-                    amp /= (sEnd-sStart);
+                    amp /= (sEnd - sStart);
 
                     float ampNormalized = (amp - minValue) / yRange;
 
-                    float intensity = Math.abs(amp)/absRange;
+                    float intensity = Math.abs(amp) / absRange;
                     //gfx.setColor(Color.getHSBColor(intensity, 0.7f, 0.7f));
-                    float[] sc = s.color;
-                    float iBase = Util.unitize(intensity/2 + 0.5f);
+                    float[] sc = s.color();
+                    float iBase = Util.unitize(intensity / 2 + 0.5f);
                     gfx.setColor(new Color(sc[0] * iBase, sc[1] * iBase, sc[2] * iBase, alpha));
 
                     int ah = Math.round(ampNormalized * h);
-                    gfx.drawLine(x, h/2 - ah/2, x, h/2 + ah/2);
+                    gfx.drawLine(x, h / 2 - ah / 2, x, h / 2 + ah / 2);
                 }
             }
         }
 
-        private float sampleX(int x, int w, int n) {
-            return ( ((float)x) / w * n );
+        private float sampleX(int x, int w, int first, int last) {
+            return ((float) x) / w * (last - first) + first;
         }
+
+        public synchronized void pan(float pct) {
+            float width = last - first;
+            if (width < 1) {
+                float mid = ((first + last)/2);
+                float nextMid = mid + (pct * width);
+
+                float first = nextMid - width/2;
+                float last = nextMid + width/2;
+                if (first < 0) {
+                    first = 0;
+                    last = first + width;
+                } else if (last > 1) {
+                    last = 1;
+                    first = last -width;
+                }
+
+                this.first = first;
+                this.last = last;
+            }
+
+            update();
+        }
+
+        public synchronized void scale(float pct) {
+
+            float first = this.first, last = this.last;
+            float view = last - first;
+            float mid = (last + first) / 2;
+            float viewNext = Util.clamp(view * pct, ScalarValue.EPSILON, 1);
+
+            first = mid - viewNext / 2;
+            last = mid + viewNext / 2;
+            if (last > 1) {
+                last = 1;
+                first = last - viewNext;
+            }
+            if (first < 0) {
+                first = 0;
+                last = first + viewNext;
+            }
+
+            this.first = first;
+            this.last = last;
+            update();
+        }
+
     }
 }
 

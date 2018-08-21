@@ -18,7 +18,6 @@ import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -173,7 +172,7 @@ public class Answer implements Consumer<Task> {
 
     }
 
-    @NotNull
+
     public static FloatFunction<Task> eternalTaskStrength() {
         return x -> w2cSafe(x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
     }
@@ -270,8 +269,11 @@ public class Answer implements Consumer<Task> {
         if (tt==null)
             return root;
 
-
-        boolean beliefOrGoal = root.isBelief();
+        if (ditherTruth) {
+            tt = tt.dithered(nar);
+            if (tt == null)
+                return root;
+        }
 
         Task dyn = d.task(tp.term, tt, (rng)->{
             assert(stampSet!=null);
@@ -280,7 +282,7 @@ public class Answer implements Consumer<Task> {
             } else {
                 return stampSet.toSortedArray();
             }
-        }, beliefOrGoal, ditherTruth, nar);
+        }, root.isBelief(), nar);
 
         if (dyn == null)
             return root;

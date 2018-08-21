@@ -93,7 +93,7 @@ public class Taskify extends AbstractPred<Derivation> {
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 
             //dither truth
-            tru = tru.dither(d.nar);
+            tru = tru.dithered(d.nar);
             if (tru == null)
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 
@@ -110,7 +110,7 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
-        DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
+        DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) -> {
 
             long start = occ[0], end = occ[1];
 

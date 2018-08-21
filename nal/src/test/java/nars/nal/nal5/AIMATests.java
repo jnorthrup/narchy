@@ -64,7 +64,7 @@ class AIMATests {
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(16);
+        n.termVolumeMax.set(18);
         n.freqResolution.set((float) truthRes);
 //        n.confMin.set(0.02f);
 
@@ -84,16 +84,16 @@ class AIMATests {
     void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.2f);
-        n.confResolution.set(0.1f);
-        n.confMin.set(0.2f);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.05f);
+        n.confMin.set(0.1f);
 
         //n.activateConceptRate.set(0.5f);
 //        n.beliefPriDefault.set(0.3f);
-        n.beliefPriDefault.set(0.25f);
-        n.questionPriDefault.set(0.99f);
+//        n.beliefPriDefault.set(0.25f);
+//        n.questionPriDefault.set(0.99f);
 
-        n.termVolumeMax.set(27);
+        n.termVolumeMax.set(24);
        // n.log();
 
 

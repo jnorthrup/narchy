@@ -153,7 +153,8 @@ class ImplicationNetworkTest {
         Truth bBelief = bb.truth(ETERNAL, n);
 
 
-        assertEquals("%1.0;.81%" ,bBelief.toString());
+        assertEquals("%1.0;.81%" ,
+                bBelief.toString());
 
     }
     @Test

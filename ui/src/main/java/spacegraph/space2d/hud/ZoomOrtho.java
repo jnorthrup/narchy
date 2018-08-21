@@ -3,12 +3,16 @@ package spacegraph.space2d.hud;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
+import jcog.event.On;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglWindow;
+
+import java.util.function.Consumer;
 
 /**
  * Ortho with mouse zoom controls
@@ -77,8 +81,6 @@ public class ZoomOrtho extends Ortho {
 
     };
     private final Surface content;
-    private float zoomRate =
-            0.5f;
 
     public ZoomOrtho(Surface content) {
         super();
@@ -102,6 +104,10 @@ public class ZoomOrtho extends Ortho {
     }
 
 
+    @Override
+    public On onUpdate(Consumer<JoglWindow> c) {
+        return super.onUpdate(c);
+    }
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -111,6 +117,8 @@ public class ZoomOrtho extends Ortho {
 
     @Override
     protected Surface finger() {
+
+
 
         Surface touchPrev = finger.touching();
         Surface touchNext = super.finger();
@@ -148,14 +156,6 @@ public class ZoomOrtho extends Ortho {
             return;
 
         super.mouseWheelMoved(e);
-
-        if (e.isConsumed())
-            return;
-
-
-        float dWheel = e.getRotation()[1];
-
-        cam.set(cam.x, cam.y, cam.z * (1f + (dWheel * zoomRate)));
 
 
     }

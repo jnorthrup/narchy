@@ -67,6 +67,28 @@ public class Evaluation {
 
         if (canEval(x)) {
             Evaluator y = facts==null ? new Evaluator(resolver) : new FactualEvaluator(resolver, facts);
+            if (y instanceof FactualEvaluator) {
+                //filter true results
+                FactualEvaluator f = (FactualEvaluator) y;
+//                Predicate<Term> ee = each;
+//                each = (e) -> {
+//                    switch (f.truth(e, null)) {
+//                        case +1:
+//                            //true
+//                            break;
+//                        case -1:
+//                            e = e.neg();
+//                            break;
+//                        case 0:
+//                            e = $.func(Inperience.wonder, e);
+//                            break;
+//                        default:
+//                            throw new UnsupportedOperationException();
+//                    }
+//
+//                    return ee.test(e);
+//                };
+            }
             return y.eval(each, x);
         }
 

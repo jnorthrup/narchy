@@ -60,8 +60,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     public abstract Truth truth(NAR nar);
 
     public boolean add(Task t) {
-        return /* t.intersects(start, end) &&*/  //<- hard filter
-                super.add(new TaskComponent(t));
+        if (t!=null) {
+            return /* t.intersects(start, end) &&*/  //<- hard filter
+                    super.add(new TaskComponent(t));
+        }
+        return false;
     }
 
     /**
@@ -128,7 +131,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         if (s == 0) {
             return null;
         } else if (s == 1) {
-            return provideStamp ? Stamp.toSet(get(0).task) : null;
+            return only(provideStamp);
         }
 
         filter();
@@ -138,7 +141,10 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         if (selected == null)
             selected = get(0).task; //strongest
 
-        if (s == 2) {
+        s = size(); //update again
+        if (s == 1)
+            return only(provideStamp);
+        else if (s == 2) {
             Task a = get(0).task;
             Task b = get(1).task;
             long[] as = a.stamp();
@@ -179,6 +185,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             return provideStamp ? e : null;
         }
+    }
+
+    @Nullable
+    private MetalLongSet only(boolean provideStamp) {
+        return provideStamp ? Stamp.toSet(get(0).task) : null;
     }
 
 

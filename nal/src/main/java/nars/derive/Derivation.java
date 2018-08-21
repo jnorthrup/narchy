@@ -326,10 +326,12 @@ public class Derivation extends PreDerivation {
             this.beliefTruthProjectedToTask = nextBelief.truth(taskStart, taskEnd, dur);
 
             if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(beliefStart == ETERNAL && !beliefTruthProjectedToTask.equals(beliefTruthRaw))) {
-                this.beliefTruthProjectedToTask = Truth.stronger(
-                        beliefTruthProjectedToTask,
-                        beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, null /* dont dither */)
-                );
+                if (Param.eternalizeInDerivation.test(nextBelief.op())) {
+                    this.beliefTruthProjectedToTask = Truth.stronger(
+                            beliefTruthProjectedToTask,
+                            beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, null /* dont dither */)
+                    );
+                }
             }
 
             this._belief = beliefTruthRaw != null || beliefTruthProjectedToTask != null ? nextBelief : null;

@@ -84,8 +84,8 @@ public class NARio extends NAgentX {
         int nx = 4;
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
-        }, 24, this);
-        camAE.alpha(0.05f);
+        }, 12, this);
+        camAE.alpha(0.15f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
         try {

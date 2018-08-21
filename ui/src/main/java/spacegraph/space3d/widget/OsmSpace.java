@@ -107,7 +107,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         return new OsmVolume();
     }
 
-    public class OsmSurface extends Widget implements Finger.RotationAbsorbed {
+    public class OsmSurface extends Widget  {
 
         final FloatRange scale = new FloatRange(1f, 0.001f, 1000f);
         final v2 translate= new v2();

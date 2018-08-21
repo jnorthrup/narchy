@@ -8,6 +8,7 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Op;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -189,9 +190,9 @@ public class Premise {
         if (belief == null)
             belief = tryMatch(beliefTerm, beliefTable, d);
 
-//        if (unifiedBelief && belief!=null) {
-//            linkVariable(unifiedBelief, d.nar, beliefConcept);
-//        }
+        if (unifiedBelief && belief!=null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
+            linkVariable(unifiedBelief, d.nar, beliefConcept);
+        }
 
         return belief;
     }

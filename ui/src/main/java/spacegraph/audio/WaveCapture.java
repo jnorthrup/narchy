@@ -39,9 +39,9 @@ public class WaveCapture extends Loop {
 
     public Surface view() {
 
-        final Plot2D.Series rawWave, wavelet1d;
+        final Plot2D.ArraySeries rawWave, wavelet1d;
 
-        rawWave = new Plot2D.Series("Audio", 1) {
+        rawWave = new Plot2D.ArraySeries("Audio", 1) {
 
             {
 
@@ -90,7 +90,7 @@ public class WaveCapture extends Loop {
         SlidingDFTTensor freqDomain =
                 //new HaarWaveletTensor(wave, bufferSamples);
                 new SlidingDFTTensor(wave, fftSize);
-        wavelet1d = new Plot2D.Series("Wavelet", fftSize) {
+        wavelet1d = new Plot2D.ArraySeries("Wavelet", fftSize) {
             final AtomicBoolean busy = new AtomicBoolean();
             {
                 size = fftSize+2;

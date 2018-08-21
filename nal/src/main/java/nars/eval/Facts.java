@@ -2,6 +2,7 @@ package nars.eval;
 
 import com.google.common.collect.Streams;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.table.BeliefTables;
@@ -13,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static nars.Op.IMPL;
 
 /** adapter for reifying NARS beliefs (above a certain confidence threshold) as
  * term-level facts for use during evaluation */
@@ -35,6 +38,7 @@ public class Facts implements Function<Term, Stream<Term>> {
             2. check its termlinks, and local neighborhood graph termlinks
             3. exhaustive concept index scan
         */
+        Op xo = x.op();
         Unify u = new UnifySubst(null, nar.random(), (m)-> { return false; /* HACK just one is enough */});
 
         return
@@ -44,14 +48,21 @@ public class Facts implements Function<Term, Stream<Term>> {
                         nar.concepts() //Stage 3
                 )
                 .filter(y -> {
+                    Op yo = y.op();
+                    if (yo ==IMPL) {
+                        Term head = y.sub(1);
+                        return (head.op()==xo) && head.unify(x, u.clear());
+                    }
+
                     //TODO prefilter
                     //TODO match implication predicate, store the association in a transition graph
-                    return x.unify(y.term(), u.clear());
+                    return (xo == yo) && y.term().unify(x, u.clear());
+
                 })
-                .filter(this::isTrue).map(Concept::term);
+                .filter(this::trueEnough).map(Concept::term);
     }
 
-    private boolean isTrue(@Nullable Concept concept) {
+    private boolean trueEnough(@Nullable Concept concept) {
         BeliefTables table = beliefsOrGoals ? concept.beliefs() : concept.goals();
         if (table.isEmpty())
             return false;

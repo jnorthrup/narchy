@@ -41,8 +41,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         if (t == null)
             return null;
 
-        Term tmplate = template;
-        return (Task) yy.eval(() -> model.reconstruct(tmplate, yy), t, true, beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
+        return yy.task(model.reconstruct(template, yy), t, (r)->yy.stamp(r),  beliefOrGoal, nar);
     }
 
 

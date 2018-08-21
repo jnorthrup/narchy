@@ -31,7 +31,7 @@ abstract public class FingerDragging extends Fingering {
     }
 
     @Override
-    public boolean update(Finger finger) {
+    public final boolean update(Finger finger) {
         return pressing(finger) && drag(finger);
     }
 

@@ -58,7 +58,7 @@ public class Gradius extends NAgentX {
                                 .window(
                                         (float) i / dx, (float) j / dy,
                                         (float) (i + 1) / dx, (float) (j + 1) / dy))
-                        .resolution(0.1f);
+                        .resolution(0.04f);
             }
 
 

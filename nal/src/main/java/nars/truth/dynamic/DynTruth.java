@@ -17,7 +17,6 @@ import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.time.Tense;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.TimeAware;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -31,8 +30,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Created by me on 12/4/16.
@@ -110,28 +107,16 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         return true;
     }
 
-    public final Task task(Term term, Truth t,Function<Random,long[]> stamp,  boolean beliefOrGoal, boolean ditherTruth, NAR n) {
+    public final Task task(Term term, Truth t, Function<Random, long[]> stamp, boolean beliefOrGoal, NAR n) {
         //private Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
         assert(t!=null);
-        float fRes, cRes, eMin;
-        if (ditherTruth) {
-            fRes = n.freqResolution.floatValue();
-            cRes = n.confResolution.floatValue();
-            eMin = c2wSafe(n.confMin.floatValue());
-        } else {
-            fRes = Param.TRUTH_EPSILON;
-            cRes = Float.MIN_NORMAL;
-            eMin = Float.MIN_NORMAL;
-        }
-        return task(()->term, t, stamp, beliefOrGoal, fRes,cRes,eMin, n);
+        return task(()->term, t, stamp, beliefOrGoal, n);
 
     }
-    public Task task(Supplier<Term> term, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
-        return task(term, t.freq(), t.evi(), stamp, beliefOrGoal, freqRes, confRes, eviMin, nar);
-    }
 
-    public Task task(Supplier<Term> term, float freq, float evi, Function<Random,long[]> stamp, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
-        float f;
+
+    public Task task(Supplier<Term> term, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, NAR nar) {
+
         Term content = term.get();
         if (content == null) {
             //throw new NullPointerException("template is null; missing information how to build");
@@ -142,9 +127,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         if (op == NEG) {
             content = content.unneg();
             op = content.op();
-            f = 1.0f - freq;
-        } else {
-            f = freq;
+            t = t.neg();
         }
 
         long start, end;
@@ -194,17 +177,11 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         if (r == null)
             return null;
 
-        PreciseTruth tr = Truth.theDithered(r.getTwo() ? (1 - f) : f, freqRes, evi, confRes, w2cSafe(eviMin));
-        if (tr == null)
-            return null; //TODO see if this can be detected earlier, by comparing evi before term construction
-
-
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
-                tr,
+                r.getTwo() ? t.neg() : t,
                 nar, Tense.dither(start, nar), Tense.dither(end, nar),
                 stamp.apply(nar.random()));
-
 
         dyn.cause = cause();
 

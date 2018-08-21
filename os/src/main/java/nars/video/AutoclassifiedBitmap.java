@@ -173,15 +173,18 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
         float minConf = nar.confMin.floatValue();
         float baseConf = nar.confDefault(Op.BELIEF);
-        
-        
+
+
+        float alpha = this.alpha.floatValue();
+        float noise = this.noise.floatValue();
 
         int regionPixels = sw * sh;
         float sumErr = 0;
 
         int states = ae.y.length;
-        float outputThresh = 1f - (1f / (states - 1));
-        
+        float outputThresh = //TODO make adjustable
+                //1f - (1f / (states - 1));
+                1f - (1f / (states/2f) );
 
 
         for (int i = 0; i < nw; ) {
@@ -200,7 +203,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
                         int c = sj + oj;
 
-                        in[p++] = c < ph ? pixIn.value(d, c) : 0;
+                        in[p++] = c < ph ? pixIn.value(d, c) : 0.5f;
 
                     }
                 }
@@ -212,7 +215,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = ae.put(in, alpha.floatValue(), noise.floatValue(), 0, true, false, true);
+                    float regionError = ae.put(in, alpha, noise, 0, true, false, true);
                     sumErr += regionError;
 
                     

@@ -31,7 +31,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import static jcog.WTF.WTF;
+import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 
@@ -156,14 +156,16 @@ public interface Truth extends Truthed {
 
     @Nullable
     static PreciseTruth theDithered(float f, float e, NAR nar) {
-        return theDithered(f, nar.freqResolution.floatValue(), e, nar.confResolution.floatValue(), nar.confMin.floatValue());
+        float eviMin = c2wSafe(nar.confMin.floatValue());
+        if (e < eviMin)
+            return null;
+
+        return PreciseTruth.theDithered(
+                f, nar.freqResolution.floatValue(),
+                e,
+                nar.confResolution.floatValue());
     }
 
-    @Nullable
-    static PreciseTruth theDithered(float f, float fRes, float evi, float cRes, float confMin) {
-        float c = w2cDithered(evi, cRes);
-        return c >= confMin ? PreciseTruth.byConf(freq(f, fRes), c) : null;
-    }
 
     static float w2cDithered(float evi, float confRes) {
         return confSafe(w2cSafe(evi), confRes);
@@ -229,15 +231,8 @@ public interface Truth extends Truthed {
     }
 
     @Nullable
-    default PreciseTruth dither(NAR nar) {
+    default PreciseTruth dithered(NAR nar) {
         return theDithered(freq(), evi(), nar);
-    }
-
-    @Deprecated
-    @Nullable
-    default PreciseTruth dither(float freqRes, float confRes, float confMin, float eviGain) {
-        float c = w2cDithered(evi() * eviGain, confRes);
-        return c < confMin ? null : PreciseTruth.byConf(freq(freq(), freqRes), c);
     }
 
     @Nullable
@@ -260,16 +255,6 @@ public interface Truth extends Truthed {
             return PreciseTruth.byEvi(f, e);
         }
     }
-
-    default void ensureDithered(NAR n) {
-        Truth d = dither(n);
-        if (!equals(d))
-            throw WTF("not dithered");
-    }
-
-//    default Truth eternalized() {
-//        return eternalized(1f);
-//    }
 
 
 }

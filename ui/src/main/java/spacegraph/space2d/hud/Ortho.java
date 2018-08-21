@@ -52,10 +52,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
     Surface surface;
     public JoglSpace window;
-    private volatile float camZmin = 5, camZmax = 640000;
+    private final float camZmin = 5;
+    private volatile float camZmax = 640000;
     private volatile float camXmin = -1, camXmax = +1;
     private volatile float camYmin = -1, camYmax = +1;
-    private float zoomMargin = 0.25f;
+    private final float zoomMargin = 0.25f;
 
 
     Ortho() {
@@ -75,6 +76,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         this.fingerUpdate = () -> {
             if (focused())
                 finger();
+
+
         };
     }
 
@@ -186,7 +189,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             s.addKeyListener(this);
 
-            animate((Animated) cam);
+            animate(cam);
             animate(fingerUpdate);
 
             windowResized(null);
@@ -528,9 +531,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void mouseWheelMoved(MouseEvent e) {
-        if (finger.rotationAdd(e.getRotation())) {
-            e.setConsumed(true);
-        }
+        finger.rotationAdd(e.getRotation());
     }
 
     public void addOverlay(Surface s) {
@@ -585,6 +586,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
 
         protected void update() {
+            if (!Ortho.this.focused())
+                return;
+
             //System.out.println(z);
             float W = bounds.w;
             float H = bounds.h;
@@ -595,6 +599,17 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             camYmin = 0 + visH;
             camXmax = bounds.w - visW;
             camYmax = bounds.h - visH;
+
+            //absorb remaining rotationY
+            float zoomRate = 0.5f;
+
+            if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
+                float dy = finger.rotationY(false);
+                if (dy != 0) {
+                    cam.set(cam.x, cam.y, cam.z * (1f + (dy * zoomRate)));
+                }
+            }
+
         }
 
 

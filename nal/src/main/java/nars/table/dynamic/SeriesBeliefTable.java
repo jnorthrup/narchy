@@ -66,7 +66,8 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         DynStampTruth d = series.truth(start, end, filter);
         if (d == null || d.isEmpty())
             return null;
-
+        if (d.size() == 1)
+            return d.get(0);
 
 //        if (taskOrJustTruth) {
 //            if (d.size() == 1) {
@@ -89,13 +90,13 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
         int dur = nar.dur();
         Truth pp = Param.truth(start, end, dur).add((Collection) d).filter().truth();
-        if (pp == null)
-            return null;
+        if (pp == null) return null;
 
 //        float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
 //        float confRes = taskOrJustTruth ? nar.confResolution.floatValue() : 0;
 //        float eviMin = taskOrJustTruth ? w2cSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
-        return d.eval(term, (dd, n) -> pp, taskOrJustTruth, beliefOrGoal, nar);
+        Truth finalPp = pp;
+        return d.eval(term, (dd, n) -> finalPp, taskOrJustTruth, beliefOrGoal, nar);
     }
 
     @Override

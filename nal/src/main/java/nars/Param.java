@@ -15,6 +15,8 @@ import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
+import java.util.function.Predicate;
+
 import static nars.Op.*;
 
 /**
@@ -67,6 +69,13 @@ public abstract class Param {
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
+
+    /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
+    public static final Predicate<Op> eternalizeInDerivation = (o) -> {
+        //return true;
+        return o == IMPL;
+    };
+
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
@@ -82,6 +91,8 @@ public abstract class Param {
 
     /** within how many durations a difference in dt is acceptable for term unification */
     public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 0.5f;
+
+    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
 

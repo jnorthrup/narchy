@@ -11,6 +11,8 @@ import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.video.CameraSensorView;
+import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -27,7 +29,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     static boolean easy = false;
-    private boolean canFall = false;
+    private boolean canFall = true;
 
     public final FloatRange timePerFall = new FloatRange(3f, 1f, 32f);
     public final Bitmap2DSensor<Bitmap2D> pixels;
@@ -129,10 +131,38 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 b -> state.act(TetrisState.LEFT, b),
                 b -> state.act(TetrisState.RIGHT, b));
 
-        actionPushButton(ROT, () -> state.act(CW));
-        if (canFall)
-            actionPushButton(FALL, () -> state.act(TetrisState.FALL));
+        int debounceDurs = 4;
 
+        actionPushButton(ROT, debounce(() -> state.act(CW), debounceDurs));
+
+        if (canFall)
+            actionPushButton(FALL, debounce(() -> state.act(TetrisState.FALL), debounceDurs*2));
+
+    }
+
+    public BooleanToBooleanFunction debounce(Runnable f, float durations) {
+        return debounce((x)-> { if (x) f.run();  }, durations);
+    }
+
+    public BooleanToBooleanFunction debounce(BooleanProcedure f, float durations) {
+        return debounce((x)-> { f.value(x); return x; }, durations);
+    }
+    public BooleanToBooleanFunction debounce(BooleanToBooleanFunction f, float durations) {
+        NAR n = nar();
+        final long[] last = {Math.round(n.time() - durations * n.dur())};
+
+        return (x)->{
+            if (x) {
+                long now = n.time();
+                if (now - last[0] >= durations * n.dur()) {
+                    if (f.valueOf(true)) {
+                        last[0] = now;
+                        return true;
+                    }
+                }
+            }
+            return f.valueOf(false);
+        };
     }
 
     void actionsTriState() {

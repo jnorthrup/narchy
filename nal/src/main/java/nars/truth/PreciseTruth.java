@@ -1,5 +1,7 @@
 package nars.truth;
 
+import nars.Param;
+
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -19,24 +21,31 @@ public class PreciseTruth extends DiscreteTruth {
 
     final float f, e;
 
-//    public static class TruthException extends RuntimeException {
-//        public TruthException(String msg) {
-//            super(msg);
-//        }
-//    }
 
     public static PreciseTruth byConf(float freq, float conf) {
-        return new PreciseTruth(freq, conf, c2wSafe(conf));
+        return byFreqConfEvi(freq, conf, c2wSafe(conf));
     }
 
     public static PreciseTruth byEvi(float freq, float evi) {
-        return new PreciseTruth(freq, w2cSafe(evi), evi);
+        return byFreqConfEvi(freq, w2cSafe(evi), evi);
+    }
+
+    /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
+    protected static PreciseTruth byFreqConfEvi(float freq, float conf, float evi) {
+        return new PreciseTruth(freq, conf, evi);
     }
 
     private PreciseTruth(float freq, float conf, float evi) {
         super(freq, conf);
         this.e = evi;
         this.f = freq;
+    }
+
+    static PreciseTruth theDithered(float f, float fRes, float evi, float cRes) {
+        return PreciseTruth.byFreqConfEvi(
+                Truth.freq(f, Math.max(Param.TRUTH_EPSILON, fRes)),
+                Truth.w2cDithered(evi, Math.max(Param.TRUTH_EPSILON, cRes)),
+                evi);
     }
 
     @Override

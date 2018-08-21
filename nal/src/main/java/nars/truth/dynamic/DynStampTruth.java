@@ -11,9 +11,6 @@ import nars.truth.Truthed;
 
 import java.util.Random;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
-
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /** dynTruth which can track evidential overlap while being constructed, and provide the summation of evidence after*/
 public class DynStampTruth extends DynTruth {
@@ -86,29 +83,22 @@ public class DynStampTruth extends DynTruth {
     /**
      * TODO make Task truth dithering optional
      */
-    @Deprecated  public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+    @Deprecated  public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
 
         Truth t = truthModel.apply(this, nar);
         if (t == null)
             return null;
-        return eval(()->superterm, t, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
-    }
 
-    public Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
-
-        float evi = t.evi(), freq = t.freq();
-
+        //return eval(()->superterm, t, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
         if (taskOrJustTruth) {
-            return task(superterm, freq, evi, this::stamp, beliefOrGoal, freqRes, confRes, eviMin, nar);
+            return task(superterm, t, this::stamp, beliefOrGoal, nar);
         } else {
-            return Truth.theDithered(freq, freqRes, evi, confRes, w2cSafe(eviMin));
+            return t;
         }
 
     }
-    /** eval without any specific time or truth dithering */
-    public final Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
-        return eval(superterm, truthModel, taskOrJustTruth,  beliefOrGoal, 0, 0, Float.MIN_NORMAL, nar);
-    }
+
+
 
     public long[] stamp(Random rng) {
         if (evi == null) {

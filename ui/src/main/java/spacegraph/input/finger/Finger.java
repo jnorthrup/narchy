@@ -363,24 +363,33 @@ public class Finger {
         rotation[1] = new AtomicFloat();
         rotation[2] = new AtomicFloat();
     }
-    public boolean rotationAdd(float[] rotation) {
-        for (int i = 0; i < rotation.length; i++)
-            this.rotation[i].add(rotation[i]);
-        Surface t = touching();
-
-        return (t instanceof Finger.RotationAbsorbed);
+    public void rotationAdd(float[] next) {
+        for (int i = 0; i < next.length; i++) {
+            float r = next[i];
+            if (r!=0)
+                this.rotation[i].add(r);
+        }
     }
 
     public float rotationX() {
         return rotation[0].floatValue();
     }
+
     public float rotationY() {
-        return rotation[1].floatValue();
+        return rotationY(true);
     }
+
+    public float rotationY(boolean absorb) {
+        AtomicFloat r = rotation[1];
+        return absorb ? r.getAndSet(0) : r.get();
+    }
+
     public float rotationZ() {
         return rotation[2].floatValue();
     }
 
-    public interface RotationAbsorbed {
+
+    /** HACK marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom) */
+    public interface WheelAbsorb {
     }
 }

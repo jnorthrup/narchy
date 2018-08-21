@@ -4,7 +4,10 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.eval.Evaluation;
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,7 +41,7 @@ public class FunctorBacktrackingTest {
         }
     }
 
-    @Test  public void test2() throws Narsese.NarseseException {
+    @Test  public void test2() {
 
         assertEquals(
                 "[father(mike,tom), father(tom,sally), father(tom,erica)]",
@@ -48,14 +51,25 @@ public class FunctorBacktrackingTest {
     @Test  public void test3() throws Narsese.NarseseException {
 
         assertEquals(
-                "[sibling(sally,erica)]",
+                "[wonder(sibling(sally,erica))]",
                 Evaluation.answerAll("sibling(sally,erica)", n).toString()
         );
+        n.believe("mother(trude,erica)");
+
+
+        //becomes true now
+        Set<Term> ee = Evaluation.answerAll("sibling(sally,erica)", n);
+        assertEquals(
+                "[sibling(sally,erica)]",
+                ee.toString()
+        );
+
     }
-    @Test  public void test4() throws Narsese.NarseseException {
+
+    @Test  public void test4() {
 
         assertEquals(
-                "", //UNKNOWN, not true or false
+                "[wonder(sibling(tom,erica))]", //UNKNOWN, not true or false
                 Evaluation.answerAll("sibling(tom,erica)",  n).toString()
         );
 

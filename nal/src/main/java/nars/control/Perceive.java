@@ -3,6 +3,7 @@ package nars.control;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
@@ -94,8 +95,12 @@ public enum Perceive { ;
 
     static boolean perceived(Task t, Collection<ITask> queue, NAR n) {
         Term tt = t.term();
-        if (!tt.op().taskable)
+        Op tto = tt.op();
+        if (!tto.taskable) {
+            if (tto == NEG) throw new WTF("neg could be inverted and it would be ok"); //HACK
+
             return false; //fast filter
+        }
 
 
         byte punc = t.punc();
@@ -113,7 +118,7 @@ public enum Perceive { ;
 
 
 
-        if (tt.op() == CONJ) {
+        if (tto == CONJ) {
             int dt = tt.dt();
             if (!(tt instanceof ConjClustering.STMClusterTask)) { //HACK
                 if ((dt != DTERNAL && dt != XTERNAL) && !t.isEternal()) {
@@ -134,7 +139,7 @@ public enum Perceive { ;
 
         Truth reducedTruth = NALTruth.StructuralDeduction.apply(tTruth, null, n, n.confMin.floatValue());
         if (reducedTruth != null)
-            reducedTruth.dither(n);
+            reducedTruth.dithered(n);
 
         if (reducedTruth != null) {
             long s = t.start();

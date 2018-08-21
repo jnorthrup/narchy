@@ -285,7 +285,7 @@ abstract public class Inperience extends LeakBack {
             return 0;
 
         float polarity = x.isQuestionOrQuest() ? 0.5f : x.polarity();
-        PreciseTruth t = $.t(1, Util.lerp(polarity, nar.confMin.floatValue()*2, nar.confDefault(Op.BELIEF))).dither(nar);
+        PreciseTruth t = $.t(1, Util.lerp(polarity, nar.confMin.floatValue()*2, nar.confDefault(Op.BELIEF))).dithered(nar);
         if (t == null)
             return 0;
 

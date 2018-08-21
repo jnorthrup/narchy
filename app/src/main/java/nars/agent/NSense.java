@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.event.On;
 import jcog.math.*;
 import jcog.util.FloatConsumer;
-import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.BiPolarAction;
@@ -37,8 +36,8 @@ public interface NSense {
     
     static Term switchTerm(Term a, Term b) {
 
-        //return p(a, b);
-        return $.prop(a,b);
+        return p(a, b);
+        //return $.prop(a,b);
     }
 
     NAR nar();
@@ -75,15 +74,15 @@ public interface NSense {
     }
 
     default void senseSwitch(Term term, IntSupplier value, int min, int max) {
-        senseSwitch(term, value, Util.intSequence(min, max));
+        senseSwitch(value, Util.intSequence(min, max), (e) -> switchTerm(term, the(e)));
     }
 
     /**
      * interpret an int as a selector between (enumerated) integer values
      */
-    default void senseSwitch(Term term, IntSupplier value, int[] values) {
+    default void senseSwitch(IntSupplier value, int[] values, IntFunction<Term> termizer) {
         for (int e : values) {
-            Term t = switchTerm(term, the(e));
+            Term t = termizer.apply(e);
             sense(t, () -> value.getAsInt() == e);
         }
     }

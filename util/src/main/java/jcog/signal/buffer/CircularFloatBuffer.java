@@ -100,7 +100,11 @@ public class CircularFloatBuffer extends CircularBuffer{
         }
     }
 
-    public void peekLast(float[] data, int len) {
+    public float[] peekLast(float[] data) {
+        return peekLast(data, data.length);
+    }
+
+    public float[] peekLast(float[] data, int len) {
         _lock.lock();
         try {
             int start = Math.max(0, this._viewPtr - len);
@@ -113,17 +117,16 @@ public class CircularFloatBuffer extends CircularBuffer{
                 System.arraycopy(this.data, 0, data, tmpLen, start);
             } else {
                 System.arraycopy(this.data, start, data, 0, len);
-                start = (tmpIdx) % this.data.length;
+                //start = (tmpIdx) % this.data.length;
             }
+            return data;
         } finally {
             _lock.unlock();
         }
     }
 
-    public int peek(float[] data) {
-        return peek(data, data.length);
-    }
 
+    /** this manipulates some cursor position variables, TODO make that optional and combine with peekLast API to select any part of the buffer */
     public int peek(float[] data, int length) {
         int len = length;
         _lock.lock();
