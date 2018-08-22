@@ -115,12 +115,16 @@
     //TODO reversals for Abduction, Induction, Exemplification
 
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction)
+        (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN)
+    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
+        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
             (M ==> S), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
                 //(M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
                 //(M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
+    (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
 
             (S ==> M), (P ==> M), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
                 //(S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
@@ -195,9 +199,6 @@
     (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
 
 
-    //Conditional Abduction via Multi-conditional Syllogism
-    (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
-        //(--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
 
     (X ==> Y), ((&&,Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:Deduction)
         (X ==> Y), ((&&,Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionPN)
@@ -205,6 +206,10 @@
         (X ==> Y), ((&&,--Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionNN)
 
     ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
+
+    //Conditional Abduction via Multi-conditional Syllogism
+    (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
+        //(--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
 
     ((&&,X,A..+) ==> Z), (X ==> Y)  |- ((&&,Y,A..+) ==> Z), (Belief:Abduction)
         ((&&,X,A..+) ==> Z), (X ==> Y)  |- ((&&,--Y,A..+) ==> Z), (Belief:AbductionPN)

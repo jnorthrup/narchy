@@ -203,7 +203,7 @@ public class WaveCapture extends Loop {
         audioPlot.add(rawWave);
 
         Plot2D audioPlot2 = new Plot2D(bufferSamples,
-                new Plot2D.BitmapWave(1024, 256)
+                new Plot2D.BitmapPlot(1024, 256)
                 //Plot2D.Line
         );
 

@@ -1,5 +1,6 @@
 package nars.audio;
 
+import jcog.event.On;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -29,9 +30,35 @@ public class NARAudio extends WaveIn {
         Surface v = a.capture.view();
         Gridding c = new Gridding(
                 v,
-                new PushButton("Record Clip", () -> {
-                    window(new MetaFrame(new WaveView(a.capture, 1f)), 400, 400);
-                })
+                new Gridding(
+                    new WaveView(a.capture.buffer) {
+                        private final On off;
+
+                        {
+                            this.off = a.capture.frame.on(this::update);
+                        }
+
+                        @Override
+                        public void update() {
+                            long width= vis.last-vis.first;
+                            vis.last = a.capture.buffer._viewPtr; //getPeekPosition();
+                            vis.first = Math.max(0, vis.last - (width));
+                            super.update();
+                        }
+
+                        @Override
+                        public boolean stop() {
+                            if (super.stop()) {
+                                off.off();
+                                return true;
+                            }
+                            return false;
+                        }
+                    },
+                    new PushButton("Record Clip", () -> {
+                        window(new MetaFrame(new WaveView(a.capture, 1f)), 400, 400);
+                    })
+                )
         );
         window(c, 800, 800);
 

@@ -1,7 +1,9 @@
 package nars.subterm.util;
 
 import nars.term.Term;
+import nars.time.Tense;
 
+import java.util.Set;
 import java.util.function.BiPredicate;
 
 import static nars.Op.CONJ;
@@ -86,34 +88,24 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
         @Override
         public boolean test(Term container, Term xx) {
-            if (container.op() != CONJ || container.volume() <= xx.volume())
+            if (container.op() != CONJ || container.volume() <= xx.volume() || !Term.commonStructure(container, xx))
                 return false;
 
-            
-            final boolean[] result = {true};
-            xx.eventsWhile((when, x) -> {
-
-                if (container.impossibleSubTerm(x)) {
-                    result[0] = false;
-                    return false;
-                }
-
-                if (container.contains(x))
-                    return true; 
-
-                
-                if (!(container.subterms().hasAny(CONJ) && !container.eventsWhile((when2, what) ->
-                                !x.equals(what),
-                        0, true, true, true, 0))) {
-                    result[0] = false;
-                    return false;
+            boolean simpleEvent = xx.op() != CONJ;
+            if (simpleEvent) {
+                if (Tense.dtSpecial(container.dt())) { //simple case
+                    return container.contains(xx);
                 } else {
-                    return true; 
+                    return !container.eventsWhile((when, what) -> !what.equals(xx),
+                            0, true, true, true, 0);
                 }
-
-            }, 0, true, true, true, 0);
-
-            return result[0];
+            } else {
+                Set<Term> xxe = xx.eventSet();
+                container.eventsWhile((when, what) ->
+                        !xxe.remove(what) || !xxe.isEmpty(),
+                0, true, true, true, 0);
+                return xxe.isEmpty();
+            }
         }
 
         public float cost() {

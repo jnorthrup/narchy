@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
+import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.audio.WaveCapture;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
@@ -24,10 +25,20 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
 
     private final long startMS;
     private final float[] wave;
-    private final Plot2D.BitmapWave vis;
+    protected final BitmapWave vis;
 
 
-    public WaveView(WaveCapture capture, float seconds) {
+    public WaveView(CircularFloatBuffer wave) {
+        this.startMS = System.currentTimeMillis();
+        //int totalSamples = wave.capacity(); //int) Math.ceil(seconds * capture.source.samplesPerSecond());
+
+        this.wave = null; ///capture.buffer.peekLast(new float[totalSamples]);
+
+
+        vis = new BitmapWave(1024, 128, wave);
+        set(vis);
+    }
+    @Deprecated public WaveView(WaveCapture capture, float seconds) {
         super();
         this.startMS = System.currentTimeMillis();
         int totalSamples = (int) Math.ceil(seconds * capture.source.samplesPerSecond());
@@ -35,9 +46,8 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
         this.wave = capture.buffer.peekLast(new float[totalSamples]);
 
 
-        vis = new Plot2D.BitmapWave(1024, 128);
-        Plot2D p = new Plot2D(totalSamples, vis).add("Amp", wave);
-        set(p);
+        vis = new BitmapWave(1024, 128, new CircularFloatBuffer(wave));
+        set(vis);
     }
 
     final Fingering pan = new FingerMove(PAN_BUTTON) {
@@ -53,7 +63,7 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
     final Fingering select = new FingerDragging(SELECT_BUTTON) {
 
         float sample(float x) {
-            return vis.firstSample() + (vis.lastSample() - vis.firstSample()) * (x / w());
+            return vis.first + (vis.last - vis.first) * (x / w());
         }
 
         @Override
@@ -114,8 +124,8 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
     }
 
     float x(float sample) {
-        int f = vis.firstSample();
-        return (sample - f)/(vis.lastSample() - f) * w();
+        long f = vis.first;
+        return (sample - f)/(vis.last - f) * w();
     }
 
     @Override
@@ -128,5 +138,9 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
 
                 //TODO trim, etc
         );
+    }
+
+    public void update() {
+        vis.update();
     }
 }

@@ -62,13 +62,10 @@ public class Recog2D extends NAgentX {
 
 
     int image;
-    final int maxImages = 2;
+    final int maxImages = 4;
 
     int imagePeriod = 24;
 
-    static {
-
-    }
 
     public Recog2D(NAR n) {
         super("x", n);

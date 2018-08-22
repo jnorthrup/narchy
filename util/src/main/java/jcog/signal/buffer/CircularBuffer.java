@@ -45,7 +45,7 @@ public abstract class CircularBuffer {
 
     protected int _bufStart = 0;
     protected int _bufEnd = 0;
-    protected int _viewPtr = 0;
+    public int _viewPtr = 0; //TODO long?
     protected final AtomicInteger _currOffset = new AtomicInteger();
     protected final AtomicInteger _bufferSize = new AtomicInteger();
     protected ConcurrentLinkedQueue<BufMark> _marks = new ConcurrentLinkedQueue<>();
@@ -121,7 +121,7 @@ public abstract class CircularBuffer {
         }
     }
 
-    public int getCapacity() {
+    public int capacity() {
         _lock.lock();
         try {
             return getCapacityInternal();

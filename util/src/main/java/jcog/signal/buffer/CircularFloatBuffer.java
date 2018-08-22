@@ -39,10 +39,15 @@ public class CircularFloatBuffer extends CircularBuffer{
     public CircularFloatBuffer(int capacity) {
         super(capacity);
     }
+    public CircularFloatBuffer(float[] data) {
+        super(data.length);
+        this.data = data;
+    }
 
     @Override
     protected void setCapacityInternal(int capacity) {
-        data = new float[capacity];
+        if (data==null || data.length!=capacity)
+            data = new float[capacity];
     }
 
     @Override
@@ -102,6 +107,10 @@ public class CircularFloatBuffer extends CircularBuffer{
 
     public float[] peekLast(float[] data) {
         return peekLast(data, data.length);
+    }
+
+    public float peek(long sample) {
+        return data[Math.toIntExact(sample % data.length)];
     }
 
     public float[] peekLast(float[] data, int len) {
@@ -239,4 +248,6 @@ public class CircularFloatBuffer extends CircularBuffer{
                 _threadPool.submit(_notifyListener);
         }
     }
+
+
 }

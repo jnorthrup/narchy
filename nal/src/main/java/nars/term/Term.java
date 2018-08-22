@@ -40,8 +40,10 @@ import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
@@ -724,6 +726,17 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         } else {
             return false;
         }
+    }
+
+    default MutableSet<Term> eventSet() {
+        assert(op()==CONJ);
+        MutableSet<Term> s = new UnifiedSet<>();
+        eventsWhile((when, what)->{
+            if (what!=Term.this)
+                s.add(what);
+            return true;
+        }, 0, true, true, true, 0);
+        return s;
     }
 
 }
