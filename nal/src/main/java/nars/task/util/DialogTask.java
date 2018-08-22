@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import com.google.common.collect.Lists;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.On;
 import jcog.event.Ons;
@@ -10,10 +9,11 @@ import nars.derive.Deriver;
 import nars.derive.deriver.SimpleDeriver;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class DialogTask {
 
-    final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<Task>(new Task[0]);
+    final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(new Task[0]);
     private final Deriver deriver;
     private final Ons ons;
     private final On monitor;
@@ -31,16 +31,16 @@ public class DialogTask {
 
         ons= new Ons(
 
-            deriver = SimpleDeriver.forConcepts(n, Lists.transform(tasks.asList(), t->{
+            deriver = SimpleDeriver.forConcepts(n, tasks.asList().stream().map(t -> {
 
                 nar.input(t);
 
-                if (t!=null)
+                if (t != null)
                     return nar.concept(t.term(), true);
                 else
                     return null;
 
-            })),
+            }).collect(Collectors.toList())),
 
             monitor = n.onTask(this::onTask)
         );

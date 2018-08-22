@@ -95,7 +95,7 @@ import static nars.time.Tense.ETERNAL;
 
     public TaskBuilder(Term term, byte punctuation /* TODO byte */, @Nullable Truth truth, float p, float q) throws TaskException {
         super(0);
-        pri(p);;
+        pri(p);
 
         this.punc = punctuation;
 
@@ -547,7 +547,7 @@ import static nars.time.Tense.ETERNAL;
 
 
     public final TaskBuilder pri(@NotNull Prioritized bb) {
-        this.pri(bb);
+        super.pri(bb);
         return this;
     }
 

@@ -211,7 +211,7 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public String toString() {
-            return toBudgetString() + " " + term() + ((char) punc()) + ":" + when();
+            return toBudgetString() + ' ' + term() + ((char) punc()) + ':' + when();
         }
 
         public Term term() {

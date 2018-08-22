@@ -33,6 +33,6 @@ public class Traffic extends AtomicFloat {
 
     @Override
     public String toString() {
-        return Texts.n4(last) + "/" + Texts.n4(total);
+        return Texts.n4(last) + '/' + Texts.n4(total);
     }
 }

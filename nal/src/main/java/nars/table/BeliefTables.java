@@ -110,9 +110,7 @@ public class BeliefTables implements BeliefTable {
 
     @Override
     public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        tables.forEach(t -> {
-            t.forEachTask(minT, maxT, x);
-        });
+        tables.forEach(t -> t.forEachTask(minT, maxT, x));
     }
 
 

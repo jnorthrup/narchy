@@ -56,7 +56,7 @@ public class TaskLinkTask extends AbstractTask {
 
     @Override
     public String toString() {
-        return "TaskLink(" + task + ",$" + pri + ")";
+        return "TaskLink(" + task + ",$" + pri + ')';
     }
 
 }

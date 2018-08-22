@@ -455,9 +455,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
             FasterList<Event> rels = new FasterList<>(4);
-            byTerm.get(a).forEach(rels::add);
+            rels.addAll(byTerm.get(a));
             if (!aEqB)
-                byTerm.get(b).forEach(rels::add);
+                rels.addAll(byTerm.get(b));
 
             int relCount = rels.size();
             if (relCount > 0) {
@@ -534,7 +534,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return true; //keep trying
     }
 
-    private long durMerge(Event a, Event b) {
+    private static long durMerge(Event a, Event b) {
         if (a instanceof Absolute && b instanceof Absolute)
             return Math.min(a.dur(), b.dur());
         else if (a instanceof Absolute && !(b instanceof Absolute)) {

@@ -283,13 +283,15 @@ abstract public class MultiExec extends UniExec {
         @Override
         public void start(NAR n) {
 
+            int procs = Runtime.getRuntime().availableProcessors();
+
             synchronized (this) {
 
                 super.start(n);
 
                 workers = exe.execute(Worker::new, threads, affinity);
 
-                if (totalConcurrency > Runtime.getRuntime().availableProcessors()/2) {
+                if (totalConcurrency > procs /2) {
                     /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
                     Exe.setExecutor(this);
                 }

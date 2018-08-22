@@ -147,15 +147,15 @@ public abstract class TermBuilder {
     }
 
 
-    public final Compound theCompound(Op op, Subterms subterms) {
+    public static Compound theCompound(Op op, Subterms subterms) {
         return theCompound(op, DTERNAL, subterms);
     }
 
-    public final Compound theCompound(Op op, int dt, Subterms subterms) {
+    public static Compound theCompound(Op op, int dt, Subterms subterms) {
         return theCompound(op, dt, subterms, null);
     }
 
-    public Compound theCompound(Op op, int dt, Subterms subterms, @Nullable byte[] key) {
+    public static Compound theCompound(Op op, int dt, Subterms subterms, @Nullable byte[] key) {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
@@ -294,12 +294,9 @@ public abstract class TermBuilder {
 
                     default: {
                         MutableSet<Term> uux = new UnifiedSet(ul);
-                        for (int i = 0; i < ul; i++) {
-                            Term uu = u[i];
+                        for (Term uu : u) {
                             if (uu.op() == CONJ && uu.dt() == XTERNAL) {
-                                uu.subterms().forEach(uut -> {
-                                    uux.add(uut);
-                                });
+                                uu.subterms().forEach(uux::add);
                             } else {
                                 uux.add(uu);
                             }

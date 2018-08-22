@@ -245,7 +245,7 @@ public interface Compound extends Term, IPair, Subterms {
             try {
                 return xx.sub(0).unify(yy.sub(0), u);
             } catch (StackOverflowError e) {
-                System.err.println("stack overflow in unify: " + xx.sub(0) + " (in " + xx + ")\tvs\t" + yy.sub(0) + " (in " + yy + ")");
+                System.err.println("stack overflow in unify: " + xx.sub(0) + " (in " + xx + ")\tvs\t" + yy.sub(0) + " (in " + yy + ')');
                 throw e;
             }
         }

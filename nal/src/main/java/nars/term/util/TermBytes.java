@@ -55,6 +55,7 @@ public class TermBytes extends HashCachedBytes {
                 writeInt(task.truth().hashCode());
             }
 
+
             writeEvidence(this, task.stamp());
 
             if (COMPRESS)

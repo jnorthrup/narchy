@@ -41,6 +41,7 @@ import java.util.List;
  * dumb patch necessary to get it to work with ASM6
  */
 public final class RuleMethodInterpreter extends BasicInterpreter {
+    public static final BasicValue[] EmptyBasicValues = new BasicValue[0];
     final String errorMessage;
     private final RuleMethod method;
     private final List<Edge> additionalEdges = new ArrayList<>();
@@ -118,7 +119,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
                                     final List<? extends BasicValue> values)
             throws AnalyzerException {
         return createNode(insn, super.naryOperation(insn, null),
-                (BasicValue[]) values.toArray(new BasicValue[0]));
+                (BasicValue[]) values.toArray(EmptyBasicValues));
     }
 
     @Override

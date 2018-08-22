@@ -75,7 +75,7 @@ public interface Truth extends Truthed {
         return (freqHash << 16) | confHash;
     }
 
-    public static class TruthException extends RuntimeException {
+    class TruthException extends RuntimeException {
         public TruthException(String reason, float value) {
             super(new StringBuilder(64).append(reason).append(": ").append(value).toString());
         }

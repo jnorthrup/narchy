@@ -41,7 +41,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         if (t == null)
             return null;
 
-        return yy.task(model.reconstruct(template, yy), t, (r)->yy.stamp(r),  beliefOrGoal, nar);
+        return yy.task(model.reconstruct(template, yy), t, yy::stamp,  beliefOrGoal, nar);
     }
 
 

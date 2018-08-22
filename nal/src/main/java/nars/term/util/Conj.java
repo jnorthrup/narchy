@@ -520,7 +520,7 @@ public class Conj extends ByteAnonMap {
                 //sequence or xternal embedded in eternity; add as self contained event
             } else {
                 //potentially decomposable conjunction
-                return added(x.eventsWhile((when, ww) -> addEvent(when, ww), at,
+                return added(x.eventsWhile(this::addEvent, at,
                         at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
                         true,
                         false, 0));
@@ -753,7 +753,7 @@ public class Conj extends ByteAnonMap {
             try {
                 return CONJ.the(existingShortened, dt, incoming);
             } catch (StackOverflowError e) {
-                throw new WTF("stack overflow:" + existingShortened + " " + dt + " " + incoming);
+                throw new WTF("stack overflow:" + existingShortened + ' ' + dt + ' ' + incoming);
             }
         }
 
@@ -822,7 +822,7 @@ public class Conj extends ByteAnonMap {
                 if (cs.containsNeg(incoming))
                     return False; //contradiction
                 else if (cs.contains(incoming))
-                    return True;; //present, ignore
+                    return True;//present, ignore
 
                 return CONJ.the(cdt, cs.toSet().with(incoming));
             } else {

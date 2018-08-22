@@ -596,7 +596,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
     private static final Map<Term, MatchConstraint> constra =
             new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
 
-    private static final MatchConstraint intern(MatchConstraint x) {
+    private static MatchConstraint intern(MatchConstraint x) {
         MatchConstraint y = constra.putIfAbsent(x.term(), x);
         return y != null ? y : x;
     }

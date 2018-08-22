@@ -408,7 +408,6 @@ public class IO {
                     if (ol.temporal)
                         i += 4;
                     level--;
-                    continue;// pop;
                 } else {
                     ll[1] = (byte) (subtermsRemain - 1);
                     break;

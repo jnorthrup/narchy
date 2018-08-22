@@ -71,7 +71,7 @@ public class ActivatedLinks extends AbstractTask {
 
         @Override
         public String toString() {
-            return "termlink(" + concept + "," + target + "," + pri() + ")";
+            return "termlink(" + concept + ',' + target + ',' + pri() + ')';
         }
 
         public PLink<Term> link() {
@@ -122,7 +122,7 @@ public class ActivatedLinks extends AbstractTask {
     final static ThreadLocal<SortedList<TermLinkage>> drainageBuffers = ThreadLocal.withInitial(()->new SortedList<>(16));
 
     /** provide a list to be used as a pre-insertion drainage buffer */
-    protected SortedList<TermLinkage> drainageBuffer(int n) {
+    protected static SortedList<TermLinkage> drainageBuffer(int n) {
         SortedList<TermLinkage> b = drainageBuffers.get();
         b.ensureCapacity(n);
         return b;

@@ -23,7 +23,7 @@ public class MRUMapQuestionTable extends MRUCache<Task, Task> implements Questio
     @Override
     public void setCapacity(int newCapacity) {
         synchronized (this) {
-            setCapacity(newCapacity);
+            super.setCapacity(newCapacity);
 
 
         }

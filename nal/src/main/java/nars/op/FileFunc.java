@@ -166,7 +166,7 @@ public class FileFunc {
                         }
                     }
                 } catch (FileSystemException e) {
-                    logger.error("{} {} {}", file, e);
+                    logger.error("{} {}", file, e);
                 }
             }
         }

@@ -197,7 +197,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if ((punc == Op.GOAL || punc == Op.QUEST) && !goalable(t))
             return fail(t, "Goal/Quest task term may not be Implication", safe);
 
-        return t instanceof Compound ? validTaskCompound((Compound)t, safe) : true;
+        return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);
     }
 
     /**

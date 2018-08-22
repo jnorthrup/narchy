@@ -104,7 +104,7 @@ public interface Concept extends Termed, MetaMap {
             case QUEST:
                 return quests();
             default:
-                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + "'");
+                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + '\'');
         }
     }
 
@@ -118,7 +118,7 @@ public interface Concept extends Termed, MetaMap {
             case QUEST:
                 return goals();
             default:
-                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + "'");
+                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + '\'');
         }
     }
 

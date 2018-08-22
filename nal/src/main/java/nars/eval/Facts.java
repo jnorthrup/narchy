@@ -1,9 +1,7 @@
 package nars.eval;
 
-import com.google.common.collect.Streams;
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.concept.Concept;
 import nars.table.BeliefTables;
 import nars.term.Term;
@@ -42,7 +40,7 @@ public class Facts implements Function<Term, Stream<Term>> {
         Unify u = new UnifySubst(null, nar.random(), (m)-> { return false; /* HACK just one is enough */});
 
         return
-                Streams.concat(
+                Stream.concat(
                         Stream.of(nar.concept(x)).filter(Objects::nonNull), //Stage 1
                         //TODO Stage 2
                         nar.concepts() //Stage 3
@@ -67,7 +65,7 @@ public class Facts implements Function<Term, Stream<Term>> {
         if (table.isEmpty())
             return false;
 
-        return table.streamTasks().anyMatch(t -> exp(((Task) t).expectation() ));
+        return table.streamTasks().anyMatch(t -> exp(t.expectation() ));
     }
 
     /** whether to accept the given expectation */

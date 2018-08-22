@@ -144,7 +144,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         remove(src);
         PLink<Termed> inserted = table.put(new PLinkHashCached<>(target, 1f));
         if (inserted == null && target instanceof PermanentConcept) {
-            throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + " " + target);
+            throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + ' ' + target);
         }
     }
 

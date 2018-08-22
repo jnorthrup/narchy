@@ -213,7 +213,7 @@ public enum MetaGoal {
             synchronized (this) {
                 keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(x ->
                         out.println(
-                                n4(x.getTwo()) + "\t" + MetaGoal.values()[x.getOne().getTwo()] + "\t" + x.getOne().getOne()
+                                n4(x.getTwo()) + '\t' + MetaGoal.values()[x.getOne().getTwo()] + '\t' + x.getOne().getOne()
                         )
                 );
             }

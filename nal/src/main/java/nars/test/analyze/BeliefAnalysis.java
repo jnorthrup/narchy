@@ -4,7 +4,6 @@ import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
-import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.link.TaskLink;
@@ -113,7 +112,7 @@ public class BeliefAnalysis implements Termed {
 
 	/** sum of priorities of the belief table */
 	public float priSum() {
-		return (float) beliefs().streamTasks().mapToDouble(x->((Task) x).priElseZero()).sum();
+		return (float) beliefs().streamTasks().mapToDouble(x-> x.priElseZero()).sum();
 	}
 
 	@NotNull

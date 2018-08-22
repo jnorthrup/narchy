@@ -138,7 +138,6 @@ public class SeriesBeliefTable extends DynamicTaskTable {
             Task y = absorbNonSignal(x, cleanMargin(n));
             if (y == null) {
                 r.reject();
-                return;
             } else if (y != x) {
                 r.input = y;
             }

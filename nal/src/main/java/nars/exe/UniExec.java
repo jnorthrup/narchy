@@ -180,9 +180,7 @@ public class UniExec extends AbstractExec {
 
                     /** flat */
                     float flatDemand = n > 1 ?  (1f/n) : 0.5f;
-                    forEach((InstrumentedWork s) -> {
-                        s.pri(flatDemand, UPDATE_RATE);
-                    });
+                    forEach((InstrumentedWork s) -> s.pri(flatDemand, UPDATE_RATE));
 
 
                     return this;

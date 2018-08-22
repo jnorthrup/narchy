@@ -16,8 +16,6 @@ import nars.unify.constraint.MatchConstraint;
 import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashSet;
 import java.util.Map;

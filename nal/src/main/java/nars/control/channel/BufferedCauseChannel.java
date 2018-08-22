@@ -45,7 +45,8 @@ public class BufferedCauseChannel<X extends Priority> implements Consumer<X> {
         ;
     }
 
-    public void input(X... xx) {
+    @SafeVarargs
+    public final void input(X... xx) {
         for (X x :xx)
             input(x);
     }

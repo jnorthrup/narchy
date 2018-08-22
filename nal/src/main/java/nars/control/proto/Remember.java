@@ -51,7 +51,7 @@ public class Remember extends AbstractTask {
 
     @Override
     public String toString() {
-        return "Remember(" + input + ")";
+        return "Remember(" + input + ')';
     }
 
     @Override
@@ -59,16 +59,14 @@ public class Remember extends AbstractTask {
 
 //        validate(n);
 
-        try {
 
             input(n);
 
-        } finally {
 
             commit();
 
             return AbstractTask.of(next);
-        }
+
 
     }
 

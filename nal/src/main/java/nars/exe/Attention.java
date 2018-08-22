@@ -94,7 +94,7 @@ public class Attention extends DurService implements Sampler<Concept> {
 
                         :
 
-                        new ArrayBag<Term,Activate>(
+                        new ArrayBag<>(
                                 concepts,
                                 Param.conceptMerge,
                                 new HashMap<>(concepts * 2, 0.99f)

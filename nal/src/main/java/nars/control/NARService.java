@@ -24,7 +24,7 @@ public class NARService extends Service<NAR> implements Termed {
     }
 
     protected NARService(NAR nar) {
-        this((Term)null, nar);
+        this(null, nar);
     }
 
     protected NARService(Term id, NAR nar) {

@@ -15,6 +15,7 @@ import nars.term.Termed;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -66,8 +67,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
             add(term, tc, 0, term,  layers);
 
-            for (Term a : additional)
-                tc.add(a);
+            Collections.addAll(tc, additional);
 
             int tcs = tc.size();
             if (tcs > 0)

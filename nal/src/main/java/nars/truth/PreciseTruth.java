@@ -17,7 +17,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
  * where premature rounding could snowball into significant error.
  *
  */
-public class PreciseTruth extends DiscreteTruth {
+public final class PreciseTruth extends DiscreteTruth {
 
     final float f, e;
 

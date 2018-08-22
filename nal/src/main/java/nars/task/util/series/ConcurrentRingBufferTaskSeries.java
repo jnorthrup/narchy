@@ -103,13 +103,13 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
             long s = start(), e = end();
             if (s == TIMELESS || maxT < s) {
                 T f = first();
-                return f!=null ? x.test(f) : true; //OOB
+                return f == null || x.test(f); //OOB
             }
 
             if (maxT!=minT) {
                 if (e == TIMELESS || minT > e) {
                     T l = last();
-                    return l!=null ? x.test(l) : true; //OOB
+                    return l == null || x.test(l); //OOB
                 }
             }
 

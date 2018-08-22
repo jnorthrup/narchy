@@ -27,7 +27,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
     final NavigableMap<Long, T> at;
 
     public ConcurrentSkiplistTaskSeries(int cap) {
-        this(new ConcurrentSkipListMap<Long,T>(), cap);
+        this(new ConcurrentSkipListMap<>(), cap);
     }
 
     public ConcurrentSkiplistTaskSeries(NavigableMap<Long, T> at, int cap) {

@@ -83,9 +83,7 @@ public interface DerivedTasks {
         };
 
         private final TaskBagDrainer derivedTasksDrainer = new TaskBagDrainer(tasks, true,
-                (size, capacity) -> {
-                    return Math.min(size, Math.round(capacity * Param.DerivedTaskBagDrainRateLimit));
-                }
+                (size, capacity) -> Math.min(size, Math.round(capacity * Param.DerivedTaskBagDrainRateLimit))
         );
 
         public DerivedTasksBag(int capacity) {

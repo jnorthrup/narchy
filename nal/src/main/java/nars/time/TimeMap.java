@@ -4,7 +4,6 @@ import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.Split;
 import jcog.tree.rtree.rect.RectDouble2D;
 import jcog.tree.rtree.split.AxialSplitLeaf;
-import nars.NAR;
 import nars.Task;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,10 +19,10 @@ public class TimeMap extends RTree<Task> implements Consumer<Task> {
                 2, 8, AxialSplit);
     }
 
-    public TimeMap(@NotNull NAR n) {
-        this();
-        n.tasks(true, true, false, false).forEach(this);
-    }
+//    public TimeMap(@NotNull NAR n) {
+//        this();
+//        n.tasks(true, true, false, false).forEach(this);
+//    }
 
     @Override
     public void accept(@NotNull Task task) {

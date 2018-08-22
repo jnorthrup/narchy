@@ -36,7 +36,7 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
 
         mm.forEach(m -> {
             try {
-                String testName = m.getDeclaringClass().getName() + " " + m.getName();
+                String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
                 MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
                 synchronized(TestNARSuite.this) {
                     add(t);
@@ -91,7 +91,7 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
 
     /** summary */
     public void print() {
-        forEach(x -> System.out.println(x.name + " " + x.score));
+        forEach(x -> System.out.println(x.name + ' ' + x.score));
     }
 
     public double score(/* scoring mode */) {

@@ -1,6 +1,5 @@
 package nars.subterm;
 
-import nars.Op;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.subterm.util.TermMetadata;
@@ -88,7 +87,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return hash;
     }
 

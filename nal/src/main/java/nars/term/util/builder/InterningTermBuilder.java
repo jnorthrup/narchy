@@ -216,7 +216,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private static String summary(HijackTermCache[] termCache, HijackTermCache transforms) {
         return Arrays.toString(Util.map(0, termCache.length, x -> termCache[x]!=null ?
-                (Op.ops[x] + ": " + termCache[x].summary() + "\n")
+                (Op.ops[x] + ": " + termCache[x].summary() + '\n')
                 : "", String[]::new)) + "\ntransforms=" + transforms.summary();
     }
 

@@ -57,7 +57,7 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
 
                 //form new task either because the value changed, or because the latch duration was exceeded
                 long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
-                assert(midGap >= lastEnd): lastEnd + " " + midGap + " "+ nextStart;
+                assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
                 last.setEnd(midGap);
                 nextStart = midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
                 nextEnd = Math.max(nextStart, nextEnd);
