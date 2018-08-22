@@ -17,7 +17,7 @@ import java.util.SortedSet;
 public class Choose1 extends Termutator.AbstractTermutator {
 
     private final Term x;
-    private final Term xEllipsis;
+    private final Ellipsis xEllipsis;
     private final Term[] yy;
 
     private final static Atom CHOOSE_1 = $.the(Choose1.class);
@@ -49,6 +49,12 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public void mutate(Unify u, Termutator[] chain, int current) {
 
+//        Ellipsis xEllipsis = this.xEllipsis;
+//        Term xMatched = u.xy(xEllipsis);
+//        if (xMatched !=null && !xMatched.hasAny(u.typeBits))
+//            return; //doesnt match, dont need to permute
+
+
         Term[] yy = this.yy;
 
         int l = yy.length-1;
@@ -56,14 +62,13 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
         int start = u.now();
 
-
-        Term xEllipsis = this.xEllipsis;
         for (Term x = this.x; l >=0; l--) {
 
             int iy = (shuffle + l) % this.yy.length;
             Term y = this.yy[iy];
             if (x.unify(y, u)) {
-                if (xEllipsis.unify(EllipsisMatch.matchedExcept(yy, (byte) iy), u)) {
+                Term m = EllipsisMatch.matchedExcept(xEllipsis.minArity, yy, (byte) iy);
+                if (m!=null && xEllipsis.unify(m, u)) {
                     if (!u.tryMutate(chain, current))
                         break;
                 }

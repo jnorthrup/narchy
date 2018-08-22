@@ -14,7 +14,7 @@ import static nars.Op.VAR_PATTERN;
 public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsislike {
 
     final byte num;
-    private final int minArity;
+    public final int minArity;
 
 
     Ellipsis(NormalizedVariable target, int minArity) {

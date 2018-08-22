@@ -110,10 +110,14 @@ public final class EllipsisMatch extends LightCompound {
         return matched(t);
     }
 
-    public static Term matchedExcept(Term[] matched, byte... except) {
+    @Nullable public static Term matchedExcept(int minArity,Term[] matched, byte... except) {
         int ll = matched.length;
         int ee = except.length;
-        Term[] t = new Term[ll - ee];
+        int ml = ll - ee;
+        Term[] t = new Term[ml];
+        if (ml < minArity)
+            return null;
+
         int j = 0;
         main:
         for (int i = 0; i < ll; i++) {

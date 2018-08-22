@@ -74,14 +74,16 @@ abstract public class TermMatch {
     public final static class Has extends TermMatch {
         final int struct;
         private final boolean anyOrAll;
+        private final int volMin;
 
         public Has(Op op, boolean anyOrAll) {
-            this(op.bit, anyOrAll);
+            this(op.bit, anyOrAll, 0);
         }
 
-        public Has(int struct, boolean anyOrAll) {
+        public Has(int struct, boolean anyOrAll, int volMin) {
             this.struct = struct;
             this.anyOrAll = anyOrAll;
+            this.volMin = volMin;
         }
 
         @Override
@@ -102,7 +104,11 @@ abstract public class TermMatch {
 
         @Override
         public boolean test(Term term) {
-            return term.has(struct, anyOrAll);
+            if (term.has(struct, anyOrAll)) {
+                if (volMin == 0 || term.volume() >= volMin)
+                    return true;
+            }
+            return false;
         }
 
         @Override

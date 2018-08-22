@@ -42,6 +42,7 @@ import java.util.stream.Stream;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
+import static nars.derive.Derivation.Task;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.unify.op.TaskPunctuation.Belief;
 import static nars.unify.op.TaskPunctuation.Goal;
@@ -451,29 +452,17 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
         {
             //add subIfUnify prefilter
-            if (Functor.func(finalConcPattern).equals(SubIfUnify.SubIfUnify)) {
-                Subterms args = Operator.args(finalConcPattern);
-                Term x = args.sub(1);
-                Term y = args.sub(2);
-                boolean isStrict = args.contains(Subst.STRICT);
+            Term concFunc = Functor.func(finalConcPattern);
+            if (concFunc.equals(SubIfUnify.SubIfUnify)) {
 
-                //some structure exists that can be used to prefilter
-                byte[] xpInT = Terms.constantPath(taskPattern, x);
-                byte[] xpInB = Terms.constantPath(beliefPattern, x); //try the belief
-                if (xpInT != null || xpInB != null) {
-                    byte[] ypInT = Terms.constantPath(taskPattern, y);
-                    byte[] ypInB = Terms.constantPath(beliefPattern, y); //try the belief
-                    if (ypInT != null || ypInB != null) {
-                        //the unifying terms are deterministicaly extractable from the task or belief
-                        pre.add(new UnifyPreFilter(xpInT, xpInB, ypInT, ypInB, isStrict));
-                    }
-                }
-
-
-                //TODO match constraints
+                Subterms a = Operator.args(finalConcPattern);
+                UnifyPreFilter.tryAdd(a.sub(1), a.sub(2),
+                        taskPattern, beliefPattern,
+                        a.contains(Subst.STRICT), pre);
 
             }
         }
+
         if (!taskIsPatVar) {
             pre.add(new TermMatchPred(new TermMatch.Is(to), true, true, TaskTerm));
 
@@ -481,26 +470,20 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             if (Integer.bitCount(ts) > 1) {
                 //if there are additional bits that the structure can filter, include the hasAll predicate
                 pre.add(new TermMatchPred(new TermMatch.Has(
-                        ts, false /* all */),
+                        ts, false /* all */, taskPattern.complexity()),
                         true, true, TaskTerm));
             }
-            //pre.addAll(TaskBeliefHas.get(true, taskPattern1.structure(), true));
         }
+
         if (!belIsPatVar) {
-//            if (to == bo) {
-//                //pre.add(AbstractPatternOp.TaskBeliefOpEqual); //<- probably not helpful and just misaligns the trie
-//            } else {
             pre.add(new TermMatchPred(new TermMatch.Is(bo),  true, true, BeliefTerm));
             int bs = beliefPattern.structure() & (~Op.VAR_PATTERN.bit);
             if (Integer.bitCount(bs) > 1) {
                 //if there are additional bits that the structure can filter, include the hasAll predicate
                 pre.add(new TermMatchPred(new TermMatch.Has(
-                        bs, false /* all */),
+                        bs, false /* all */, beliefPattern.complexity()),
                         true, true, BeliefTerm));
             }
-
-            //pre.addAll(TaskBeliefHas.get(false, beliefPattern1.structure(), true));
-//            }
         }
 
 
@@ -800,6 +783,23 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
         return b == null ? Op.EmptyProduct : $.p(b);
     }
 
+    static class MatchFilter extends AbstractPred<Derivation> {
+
+        private static final Atom MATCH_FILTER = (Atom) Atomic.the(MatchFilter.class.getSimpleName());
+        private final Term pattern;
+        private final boolean isTaskOrBelief;
+
+        protected MatchFilter(Term pattern, boolean isTaskOrBelief) {
+            super($.func(MATCH_FILTER, pattern, isTaskOrBelief ? Task: Belief));
+            this.isTaskOrBelief = isTaskOrBelief;
+            this.pattern = pattern;
+        }
+
+        @Override public boolean test(Derivation derivation) {
+            return false;
+        }
+    }
+
     static class UnifyPreFilter extends AbstractPred<Derivation> {
 
         private final byte[] xpInT, xpInB, ypInT, ypInB;
@@ -814,6 +814,20 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             this.ypInT = ypInT;
             this.ypInB = ypInB;
             this.isStrict = isStrict;
+        }
+
+        public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, boolean strict, MutableSet<PREDICATE> pre) {
+            //some structure exists that can be used to prefilter
+            byte[] xpInT = Terms.constantPath(taskPattern, x);
+            byte[] xpInB = Terms.constantPath(beliefPattern, x); //try the belief
+            if (xpInT != null || xpInB != null) {
+                byte[] ypInT = Terms.constantPath(taskPattern, y);
+                byte[] ypInB = Terms.constantPath(beliefPattern, y); //try the belief
+                if (ypInT != null || ypInB != null) {
+                    //the unifying terms are deterministicaly extractable from the task or belief
+                    pre.add(new UnifyPreFilter(xpInT, xpInB, ypInT, ypInB, strict));
+                }
+            }
         }
 
         @Override
@@ -852,13 +866,15 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                 int varExcluded = d.typeBits;
 
                 Subterms xx = x.subterms();
-                int xs = xx.structure() & ~varExcluded;
                 Subterms yy = y.subterms();
-                int ys = yy.structure() & ~varExcluded;
-                if (xs!=0 && ys!=0 && ((xs & ys) == 0))
-                    return false; //no common non-constant structure
+
+                if (!Subterms.possiblyUnifiable(xx, yy, varExcluded))
+                    return false;
 
                 if (mustUnify(xx) || mustUnify(yy)) {
+
+
+
                     if (!xo.commutative) {
                         int xxs = xx.subs();
                         if (xxs !=yy.subs())
@@ -868,6 +884,8 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                             if (!x0.equals(y0) && !mustUnify(x0) && !mustUnify(y0))
                                 return false; //mismatch in constant subterm
                         }
+                    } else {
+
                     }
                     return true;
                 }
@@ -910,12 +928,12 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             return x.hasAny(Op.Temporal | Op.Set |Op.Sect | Op.Variable);
         }
 
-        private static boolean impossibleUnification(Termlike x, Termlike y) {
-            return !x.equals(y) &&
-                    !(x.hasAny(Op.Temporal | Op.Variable)) &&
-                    !(y.hasAny(Op.Temporal | Op.Variable))
-                    ; //TODO refine
-        }
+//        private static boolean impossibleUnification(Termlike x, Termlike y) {
+//            return !x.equals(y) &&
+//                    !(x.hasAny(Op.Temporal | Op.Variable)) &&
+//                    !(y.hasAny(Op.Temporal | Op.Variable))
+//                    ; //TODO refine
+//        }
 
 //        protected static boolean nonConstant(Term x, Derivation d) {
 //            return x.hasAny(Op.Temporal | d.typeBits); //TODO refine

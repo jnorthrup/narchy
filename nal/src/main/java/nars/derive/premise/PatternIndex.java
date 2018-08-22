@@ -203,8 +203,13 @@ public class PatternIndex extends MapConceptIndex {
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
 
-                if (!Terms.commonStructureTest(subtermStructure, y.subterms(), u))
+                if (op()!=y.op()) // && !(op()==CONJ && subs()==1))
                     return false;
+
+                if (!Subterms.possiblyUnifiable(subterms(), y.subterms(), u))
+                    return false;
+//                if (!Terms.commonStructureTest(subtermStructure, y.subterms(), u))
+//                    return false;
 
                 return matchEllipsis(y, u);
             }

@@ -82,7 +82,7 @@ public abstract class Param {
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
     /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
     public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;

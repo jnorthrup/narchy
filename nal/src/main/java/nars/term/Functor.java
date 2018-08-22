@@ -49,7 +49,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return isFunc(x) ?  x.sub(1) : Op.Null;
     }
     public static boolean isFunc(Term x) {
-        return (x.hasAll(Op.FuncBits) && x.op()==INH && x.sub(0).op()==PROD );
+        return (x.hasAll(Op.FuncBits) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).op()==ATOM );
     }
 
     public static Term[] funcArgsArray(Term x) {
