@@ -7,6 +7,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -57,6 +58,9 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     private static final float GROWTH_RATE = 1.5f;
 
     public volatile X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+
+    private static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
+            AtomicIntegerFieldUpdater.newUpdater(SortedArray.class, "size");
 
     protected volatile int size;
 
@@ -288,7 +292,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
             if (totalOffset > 0) {
                 System.arraycopy(list, index + 1, list, index, totalOffset);
             }
-            list[--this.size] = null;
+            list[SIZE.decrementAndGet(this)] = null;
             return previous;
 
 //            X[] items = this.items;
@@ -302,7 +306,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 //                    ITEM.setRelease(items, i, null);
 //                }
 //                //System.arraycopy(items, index + 1, items, index, totalOffset);
-//                //ITEM.setRelease(items, --this.size, null);
+//                //ITEM.setRelease(items, SIZE.decrementAndGet(this), null);
 //            }
 //            return previous;
         }
@@ -317,7 +321,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
             if (totalOffset > 0) {
                 System.arraycopy(list, index + 1, list, index, totalOffset);
             }
-            list[--this.size] = null;
+            list[SIZE.decrementAndGet(this)] = null;
         }
     }
 
@@ -400,7 +404,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
                 return -1;
             }
         }
-        l[this.size++] = e;
+        l[SIZE.getAndIncrement(this)] = e;
         return s;
     }
 
@@ -432,7 +436,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         if (list.length == oldSize) {
             if (grows()) {
 
-                this.size++;
+                SIZE.getAndIncrement(this);
                 X[] newItems = newArray(grow(oldSize));
                 if (index > 0) {
                     System.arraycopy(list, 0, newItems, 0, index);
@@ -444,7 +448,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
             }
 
         } else {
-            this.size++;
+            SIZE.getAndIncrement(this);
             System.arraycopy(list, index, list, index + 1, oldSize - index);
         }
         list[index] = element;
@@ -472,7 +476,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     public X removeLast() {
 
-        return this.items[--size];
+        return this.items[SIZE.decrementAndGet(this)];
 
 
     }
@@ -701,7 +705,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     private void shiftTailOverGap(Object[] es, int lo, int hi) {
         int ne = this.size;
         System.arraycopy(es, hi, es, lo, ne - hi);
-        int ns = (this.size -= hi - lo);
+        int ns = SIZE.addAndGet(this, -(hi - lo));
         Arrays.fill(es, ns, ne, null);
     }
 

@@ -100,6 +100,7 @@ public interface Priority extends Prioritized, ScalarValue {
     /**
      * X[] may contain nulls
      */
+    @SafeVarargs
     static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, Priority> getPri, X... src) {
 
         assert (src.length > 0);

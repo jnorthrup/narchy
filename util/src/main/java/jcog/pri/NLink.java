@@ -43,7 +43,7 @@ public class NLink<X> extends Pri implements PriReference<X> {
 
     @Override
     public String toString() {
-        return n4(pri()) + " " + id;
+        return n4(pri()) + ' ' + id;
     }
 
 

@@ -23,10 +23,10 @@ import java.util.stream.Stream;
  */
 public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X>> {
 
-    final Bag<X, PriReference<X>> bag;
+    private final Bag<X, PriReference<X>> bag;
     private final Iterable<X> src;
     private final NumberX scale;
-    final AtomicBoolean busy = new AtomicBoolean();
+    private final AtomicBoolean busy = new AtomicBoolean();
     private float forgetRate = 1f;
 
     public Bagregate(Stream<X> src, int capacity, float scale) {
@@ -77,7 +77,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     /**
      * can be overridden to filter entry
      */
-    protected boolean include(X x) {
+    private boolean include(X x) {
         return true;
     }
 

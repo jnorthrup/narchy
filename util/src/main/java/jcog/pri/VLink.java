@@ -38,7 +38,7 @@ public final class VLink<X> extends PLink<X> {
 
     @Override
     public String toString() {
-        return toBudgetString() + " " + id + "<" + Arrays.toString(coord) + '@' + centroid+ ">";
+        return toBudgetString() + ' ' + id + '<' + Arrays.toString(coord) + '@' + centroid+ '>';
     }
 
 

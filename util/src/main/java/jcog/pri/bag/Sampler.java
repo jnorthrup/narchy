@@ -98,7 +98,7 @@ public interface Sampler<V> {
     }
 
 
-    static class RoundRobinSampler<X> extends FasterList<X> implements Sampler<X> {
+    class RoundRobinSampler<X> extends FasterList<X> implements Sampler<X> {
 
         @Override
         public void sample(Random rng, Function<? super X, SampleReaction> each) {

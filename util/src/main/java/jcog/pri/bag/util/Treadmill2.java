@@ -5,13 +5,14 @@ package jcog.pri.bag.util;
  * TODO parameterize the bit which it checks adjustable so these can be chained arbitrarily */
 public class Treadmill2 implements SpinMutex {
 
-    final SpinMutex a, b;
+    private final SpinMutex a;
+    private final SpinMutex b;
     private final int cHalf;
 
     public Treadmill2() {
         this(Runtime.getRuntime().availableProcessors());
     }
-    public Treadmill2(int concurrency) {
+    private Treadmill2(int concurrency) {
         cHalf = Math.max(1, concurrency/2);
         a = new Treadmill( cHalf );
         b = new Treadmill( cHalf );

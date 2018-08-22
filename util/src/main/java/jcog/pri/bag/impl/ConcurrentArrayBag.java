@@ -26,10 +26,7 @@ import java.util.function.Consumer;
         setCapacity(cap);
 
         BlockingQueue q = Util.blockingQueue(cap * 2);
-        this.toPut = new QueueLock<X>(q, super::putAsync, (batchSize) -> {
-
-
-
+        this.toPut = new QueueLock<>(q, super::putAsync, (batchSize) -> {
 
 
         });

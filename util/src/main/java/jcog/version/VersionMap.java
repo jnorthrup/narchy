@@ -15,16 +15,16 @@ import java.util.function.Function;
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
-    protected final Versioning context;
+    private final Versioning context;
     public final Map<X, Versioned<Y>> map;
-    public final int elementStackSizeDefault; 
+    private final int elementStackSizeDefault;
 
 
     public VersionMap(Versioning context) {
         this(context, 0);
     }
 
-    public VersionMap(Versioning context, int mapCap) {
+    private VersionMap(Versioning context, int mapCap) {
         this(context, mapCap, 1);
     }
 
@@ -33,7 +33,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      * @param mapCap  initial capacity of map (but can grow
      * @param eleCap  initial capacity of map elements (but can grow
      */
-    public VersionMap(Versioning context, int mapCap, int eleCap) {
+    private VersionMap(Versioning context, int mapCap, int eleCap) {
         this(context,
                 
                 

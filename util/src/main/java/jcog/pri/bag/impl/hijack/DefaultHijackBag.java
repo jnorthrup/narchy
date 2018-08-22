@@ -7,7 +7,7 @@ import jcog.pri.op.PriMerge;
 
 public class DefaultHijackBag<K> extends PriorityHijackBag<K, PriReference<K>> {
 
-    protected final PriMerge merge;
+    private final PriMerge merge;
 
     public DefaultHijackBag(PriMerge merge, int capacity, int reprobes) {
         super(capacity, reprobes);

@@ -5,6 +5,7 @@ import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.SortedListTable;
+import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
@@ -62,7 +63,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * essentially the same as b.priIfFiniteElseNeg1 except it also includes a null test. otherwise they are interchangeable
      */
     static float pCmp(@Nullable Object b) {
-        return b == null ? -2f : ((Priority)b).priElseNeg1();
+        return b == null ? -2f : ((Prioritized) b).priElseNeg1();
     }
 
 
@@ -213,9 +214,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         final int c = capacity;
         if (s > c) {
-            SortedArray<Y> items1 = this.items;
             while (s > 0 && s - c + (toAdd ? 1 : 0) > 0) {
-                Y w1 = items1.removeLast();
+                Y w1 = this.items.removeLast();
                 mass -= w1.priElseZero();
                 trash.add(w1);
                 s--;
@@ -282,7 +282,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     /**
      * size > 0
      */
-    protected int sampleStart(@Nullable Random rng, int size) {
+    protected static int sampleStart(@Nullable Random rng, int size) {
         assert (size > 0);
         if (size == 1 || rng == null)
             return 0;
@@ -303,7 +303,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         }
     }
 
-    protected int sampleNext(@Nullable Random rng, int size, int i) {
+    protected static int sampleNext(@Nullable Random rng, int size, int i) {
         if (rng == null) {
             if (++i >= size)
                 i = 0;

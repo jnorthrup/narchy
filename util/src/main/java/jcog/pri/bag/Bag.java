@@ -251,16 +251,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
         forEach(p::println);
     }
 
-    /**
-     * scalar pri reducer arg 0 = accumulated value, arg 1 = priority WARNING may be NaN if an item is deleted
-     */
-    default float priIfy(float initial, FloatFloatToFloatFunction reduce) {
-        float[] x = new float[]{initial};
-        forEach(v -> {
-            x[0] = reduce.apply(x[0], pri(v));
-        });
-        return x[0];
-    }
+
 
     /**
      * priIfy only non-deleted items

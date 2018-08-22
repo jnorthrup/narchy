@@ -10,15 +10,15 @@ import org.jetbrains.annotations.Nullable;
 public class Versioned<X> extends FasterList<X> {
 
 
-    protected final Versioning context;
+    private final Versioning context;
 
 
-    public Versioned(Versioning sharedContext, int initialCap) {
+    public Versioned(Versioning<X> sharedContext, int initialCap) {
         super(initialCap);
         this.context = sharedContext;
     }
 
-    public Versioned(Versioning sharedContext, X[] emptyArray) {
+    public Versioned(Versioning<X> sharedContext, X[] emptyArray) {
         super(0, emptyArray);
         this.context = sharedContext;
     }
@@ -77,7 +77,7 @@ public class Versioned<X> extends FasterList<X> {
     }
 
 
-    public void pop() {
+    public final void pop() {
 
 
         items[--size] = null;

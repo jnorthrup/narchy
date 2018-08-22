@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLongArray;
  *  on a linear probed atomic array of fixed size */
 public class Treadmill extends AtomicLongArray implements SpinMutex {
 
-    final AtomicInteger mod = new AtomicInteger(0);
+    private final AtomicInteger mod = new AtomicInteger(0);
 
 
 

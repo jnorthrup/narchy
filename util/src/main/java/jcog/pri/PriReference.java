@@ -38,19 +38,14 @@ public interface PriReference<X> extends Priority, Supplier<X>, FloatSupplier {
     /**
      * double[histogramID][bin]
      */
-    @NotNull
     static <X, Y> double[][] histogram(@NotNull Iterable<PriReference<Y>> pp, @NotNull BiConsumer<PriReference<Y>, double[][]> each, @NotNull double[][] d) {
 
-        pp.forEach(y -> {
-            each.accept(y, d);
-            
-            
-        });
+        pp.forEach(y -> each.accept(y, d));
 
         for (double[] e : d) {
             double total = 0;
-            for (int i = 0, eLength = e.length; i < eLength; i++) {
-                total += e[i];
+            for (double anE : e) {
+                total += anE;
             }
             if (total > 0) {
                 for (int i = 0, eLength = e.length; i < eLength; i++) {

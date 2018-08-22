@@ -15,7 +15,7 @@ public interface PriProxy<X, Y> extends Priority, Supplier<Y> {
     X x();
 
     /** equaity/hash on X, supplies Y */
-    public final class StrongProxy<X, Y> extends PLink<Y> implements PriProxy<X, Y> {
+    final class StrongProxy<X, Y> extends PLink<Y> implements PriProxy<X, Y> {
 
         public final X x;
         private final int hash;
@@ -46,7 +46,7 @@ public interface PriProxy<X, Y> extends Priority, Supplier<Y> {
     /** TODO needs tested for correct behavior on reclamation.  equailty/hash on X, supplies Y
      *  TODO needs ScalarValue.AtomicScalarValue support.  this doesnt have it by extending SoftReference already cant extend Pri like the Strong impl
      * */
-    public final class SoftProxy<X, Y> extends SoftReference<Y> implements PriProxy<X, Y> {
+    final class SoftProxy<X, Y> extends SoftReference<Y> implements PriProxy<X, Y> {
 
         public final X x;
         private final int hash;

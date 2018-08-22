@@ -18,7 +18,7 @@ public class PLink<X> extends NLink<X> {
 
     @Override
     public String toString() {
-        return "$" + super.toString();
+        return '$' + super.toString();
     }
 
 
