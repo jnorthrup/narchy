@@ -5,7 +5,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.term.Term;
 import nars.test.TestNAR;
-import nars.unify.constraint.NotRecursiveSubtermOf;
+import nars.unify.constraint.NotEqualConstraint;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -20,7 +20,7 @@ class MatchConstraintTest {
 
     @Test
     void testNeqComRecursiveConstraint() throws Narsese.NarseseException {
-        NotRecursiveSubtermOf c = new NotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
+        NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf c = new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
         assertFalse(
                 c.invalid($.$("X"), (Term)$.$("Y"))
         );

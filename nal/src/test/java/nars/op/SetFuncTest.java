@@ -19,10 +19,10 @@ class SetFuncTest {
 
         assertEquals(
                 Set.of($$("(a,b,c)")),
-                Evaluation.query($$("sort((c,b,a),quote)"), n));
+                Evaluation.eval($$("sort((c,b,a),quote)"), n));
         assertEquals(
                 Set.of($$("(1,2)")),
-                Evaluation.query($$("sort({1,2},quote)"), n));
+                Evaluation.eval($$("sort({1,2},quote)"), n));
     }
 
     @Test
@@ -30,11 +30,11 @@ class SetFuncTest {
         
         assertEquals(
                 Set.of($$("(a,b,(c,d))")),
-                Evaluation.query($$("sort(((c,d),b,a),complexity)"), n));
+                Evaluation.eval($$("sort(((c,d),b,a),complexity)"), n));
 
         assertEquals(
                 Set.of($$("sort(((c,d),b,a),complexity,(a,b,(c,d)))")),
-                Evaluation.query($$("sort(((c,d),b,a),complexity,#x)"), n));
+                Evaluation.eval($$("sort(((c,d),b,a),complexity,#x)"), n));
     }
 
 
@@ -42,10 +42,10 @@ class SetFuncTest {
     void testSortSubst1() {
         assertEquals(
                 Set.of($$("sort((2,1),quote,(1,2))")),
-                Evaluation.query($$("sort((2,1),quote,#a)"), n));
+                Evaluation.eval($$("sort((2,1),quote,#a)"), n));
         assertEquals(
                 Set.of($$("(sort((2,1),quote,(1,2))==>(1,2))")),
-                Evaluation.query($$("(sort((2,1),quote,#a) ==> #a)"), n));
+                Evaluation.eval($$("(sort((2,1),quote,#a) ==> #a)"), n));
     }
 
 
@@ -53,13 +53,13 @@ class SetFuncTest {
     void testSortSubst2() {
         assertEquals(
                 Set.of($$("(&&,sort((1,2),quote,(1,2)),append(1,(),1),append(2,(),2))")),
-                Evaluation.query($$("(&&, append(1,(),#a),append(2,(),#b),sort((#a,#b),quote,#sorted))"), n));
+                Evaluation.eval($$("(&&, append(1,(),#a),append(2,(),#b),sort((#a,#b),quote,#sorted))"), n));
     }
     @Test
     void testSortSubst3() {
         assertEquals(
                 Set.of($$("(sort((3,2),quote,(2,3))&&add(1,2,3))")),
-                Evaluation.query(
+                Evaluation.eval(
                     $$("(&&,add(1,#x,#a),sort((#a,2),quote,(2,3)))"), n));
     }
 

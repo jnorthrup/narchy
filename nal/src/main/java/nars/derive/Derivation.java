@@ -201,7 +201,7 @@ public class Derivation extends PreDerivation {
     }
 
     @Override
-    public final boolean eval() {
+    public final boolean evalInline() {
         return true;
     }
 

@@ -4,10 +4,7 @@ import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
+import nars.*;
 import nars.op.mental.Inperience;
 import nars.subterm.Subterms;
 import nars.term.Functor;
@@ -22,7 +19,6 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static nars.$.$$;
 import static nars.Op.*;
@@ -38,57 +34,56 @@ public class Evaluation {
 
     private VersionMap<Term, Term> subst;
 
-    ///ArrayHashSet<Term> seen = new ArrayHashSet<>(1); //deduplicator,TODO use different deduplication strategies including lossy ones (Bagutator)
-
     @Nullable
     public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
-        return eval(x, nar::functor,
-                //nar.facts(0.75f, true),
-                null,
-                each);
+        return eval(x, nar::functor, each);
     }
 
-    @Nullable
-    public static Evaluation answer(Term x, NAR nar, Predicate<Term> each) {
-        return eval(x, nar::functor,
-                nar.facts(0.75f, true),
-                each);
-    }
+//    @Nullable
+//    public static Evaluation answer(Term x, NAR nar, Predicate<Term> each) {
+//        Evaluator y = new FactualEvaluator(nar::functor, nar.facts(0.75f, true));
+//        return y.eval(each, x);
+//         : new FactualEvaluator(resolver, facts)
+//        if (y instanceof FactualEvaluator) {
+//            //filter true results
+//            FactualEvaluator f = (FactualEvaluator) y;
+////                Predicate<Term> ee = each;
+////                each = (e) -> {
+////                    switch (f.truth(e, null)) {
+////                        case +1:
+////                            //true
+////                            break;
+////                        case -1:
+////                            e = e.neg();
+////                            break;
+////                        case 0:
+////                            e = $.func(Inperience.wonder, e);
+////                            break;
+////                        default:
+////                            throw new UnsupportedOperationException();
+////                    }
+////
+////                    return ee.test(e);
+////                };
+//        }
+//,
+//        return eval(x, nar::functor,
+//
+//                each);
+//    }
 
     /**
      *
      * @param x
      * @param resolver
-     * @param facts
+     *
      * @param each
      * @return
      */
-    @Nullable public static Evaluation eval(Term x, Function<Atom, Functor> resolver, @Nullable Function<Term,Stream<Term>> facts, Predicate<Term> each) {
+    @Nullable public static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
         if (canEval(x)) {
-            Evaluator y = facts==null ? new Evaluator(resolver) : new FactualEvaluator(resolver, facts);
-            if (y instanceof FactualEvaluator) {
-                //filter true results
-                FactualEvaluator f = (FactualEvaluator) y;
-//                Predicate<Term> ee = each;
-//                each = (e) -> {
-//                    switch (f.truth(e, null)) {
-//                        case +1:
-//                            //true
-//                            break;
-//                        case -1:
-//                            e = e.neg();
-//                            break;
-//                        case 0:
-//                            e = $.func(Inperience.wonder, e);
-//                            break;
-//                        default:
-//                            throw new UnsupportedOperationException();
-//                    }
-//
-//                    return ee.test(e);
-//                };
-            }
+            Evaluator y = new Evaluator(resolver);
             return y.eval(each, x);
         }
 
@@ -324,17 +319,25 @@ public class Evaluation {
         return y[0];
     }
 
+    public static FactualEvaluator query(String s, NAR n) throws Narsese.NarseseException {
+        return query($.$(s), n);
+    }
+    public static FactualEvaluator query(Term x, NAR n) {
+        FactualEvaluator f = new FactualEvaluator(n::functor, n.facts(0.75f, true));
+        f.eval((y)->true, x);
+        return f;
+    }
 
-    public static Set<Term> query(String s, NAR n) {
-        return query($$(s), n);
+    public static Set<Term> eval(String s, NAR n) {
+        return eval($$(s), n);
     }
 
     /**
      * gathers results from one truth set, ex: +1 (true)
      */
-    public static Set<Term> query(Term x, NAR n) {
+    public static Set<Term> eval(Term x, NAR n) {
         final Set[] yy = {null};
-        Evaluation.answer(x, n, (y) -> {
+        Evaluation.eval(x, n, (y) -> {
             if (yy[0] == null) {
                 yy[0] = new UnifiedSet<>(1);
             }

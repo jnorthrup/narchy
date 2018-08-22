@@ -44,7 +44,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
             case 1: return p[0];
             default:
                 FasterList<PREDICATE<X>> pp = new FasterList<>(p);
-                pp.removeIf(x -> !x.remainInAND(p));
+                pp.removeIf(x -> !x.remainAndWith(p));
                 return AND.the(pp);
         }
     }
@@ -74,8 +74,9 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
     /** optimization subsumption: determines whether this predicate
      * should remain when appearing in an AND condition of the
      * specified predicates.  one of the 'p' in the array will be this instance
+     * be careful to avoid testing against self
      */
-    default boolean remainInAND(PREDICATE[] p) {
+    default boolean remainAndWith(PREDICATE[] p) {
         return true;
     }
 

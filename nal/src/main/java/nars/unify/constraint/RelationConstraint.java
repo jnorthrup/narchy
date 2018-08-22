@@ -68,6 +68,11 @@ abstract public class RelationConstraint extends MatchConstraint {
 
     abstract public boolean invalid(Term xx, Term yy);
 
+    /** override to implement subsumption elimination */
+    public boolean remainInAndWith(RelationConstraint c) {
+        return true;
+    }
+
     static final class NegRelationConstraint extends RelationConstraint {
 
         private final RelationConstraint r;

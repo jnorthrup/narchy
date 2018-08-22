@@ -46,15 +46,16 @@ public class Facts implements Function<Term, Stream<Term>> {
                         nar.concepts() //Stage 3
                 )
                 .filter(y -> {
-                    Op yo = y.op();
+                    Term yt = y.term();
+                    Op yo = yt.op();
                     if (yo ==IMPL) {
-                        Term head = y.sub(1);
+                        Term head = yt.sub(1);
                         return (head.op()==xo) && head.unify(x, u.clear());
                     }
 
                     //TODO prefilter
                     //TODO match implication predicate, store the association in a transition graph
-                    return (xo == yo) && y.term().unify(x, u.clear());
+                    return (xo == yo) && x.unify(yt, u.clear());
 
                 })
                 .filter(this::trueEnough).map(Concept::term);

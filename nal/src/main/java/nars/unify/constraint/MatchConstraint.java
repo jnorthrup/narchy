@@ -146,6 +146,16 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
 
         @Override
+        public boolean remainAndWith(PREDICATE[] p) {
+            for (PREDICATE pp : p) {
+                if (pp!=this && pp instanceof ConstraintAsPredicate)
+                    if (!constraint.remainInAndWith(((ConstraintAsPredicate)pp).constraint))
+                        return false;
+            }
+            return true;
+        }
+
+        @Override
         public boolean test(Derivation preDerivation) {
             Term t = preDerivation.taskTerm;
             Term b = preDerivation.beliefTerm;

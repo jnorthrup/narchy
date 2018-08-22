@@ -6,10 +6,6 @@ import nars.term.Term;
 public class SubOfConstraint extends RelationConstraint {
     private final boolean forward;
 
-    /**
-     * if the terms can be equal to be valid
-     */
-    private final boolean canEqual;
     private final SubtermCondition containment;
 
 
@@ -18,49 +14,34 @@ public class SubOfConstraint extends RelationConstraint {
      */
     private final int polarityCompare;
 
-    final static float EQUALITY_TEST_COST = 0.25f;
-
-    public SubOfConstraint(Term x, Term y, boolean reverse, boolean canEqual, SubtermCondition contains) {
-        this(x, y, reverse, canEqual, contains, +1);
+    public SubOfConstraint(Term x, Term y, boolean reverse, SubtermCondition contains) {
+        this(x, y, reverse, contains, +1);
     }
 
-    public SubOfConstraint(Term x, Term y, /* HACK change to forward semantics */ boolean reverse, boolean canEqual, SubtermCondition contains, int polarityCompare) {
+    public SubOfConstraint(Term x, Term y, /* HACK change to forward semantics */ boolean reverse, SubtermCondition contains, int polarityCompare) {
         super(x, y,
                 contains.name() +
                         (!reverse ? "->" : "<-") +
-                        (canEqual ? "|=" : "") +
                         (polarityCompare != 0 ? (polarityCompare == -1 ? "(-)" : "(+)") : "(+|-)"));
 
 
         this.forward = !reverse;
         this.containment = contains;
-        this.canEqual = canEqual;
         this.polarityCompare = polarityCompare;
     }
 
 
     @Override
     public float cost() {
-        return containment.cost() + (canEqual ? EQUALITY_TEST_COST : 0);
+        return containment.cost();
     }
 
     public final boolean invalid(Term xx, Term yy) {
-
         /** x polarized */
         Term contentP = (forward ? yy : xx).negIf(polarityCompare < 0);
         Term container = forward ? xx : yy;
 
-
         boolean posAndNeg = polarityCompare==0;
-        if (canEqual) {
-            if (posAndNeg) {
-                if (container.unneg().equals(contentP.unneg()))
-                    return false;
-            } else {
-                if (container.equals(contentP))
-                    return false;
-            }
-        }
 
         return !containment.test(container, contentP, posAndNeg);
     }

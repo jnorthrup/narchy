@@ -116,7 +116,7 @@ class FunctorTest {
     @Test
     void testAnon1() {
         NAR d = NARS.shell();
-        Set<Term> result = Evaluation.query($$("anon((a,b),#x)"), d);
+        Set<Term> result = Evaluation.eval($$("anon((a,b),#x)"), d);
         assertEquals("[anon((a,b),(_1,_2))]", result.toString());
     }
 

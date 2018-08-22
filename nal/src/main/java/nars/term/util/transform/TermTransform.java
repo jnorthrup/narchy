@@ -117,7 +117,7 @@ public interface TermTransform {
         //Subterms xx = x.subterms();
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
-            if (op == INH && eval() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
+            if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
                 Term pred = a[1], args = a[0];
                 Term v = ((Functor.InlineFunctor) pred).applyInline(args);
                 if (v != null)
@@ -125,7 +125,7 @@ public interface TermTransform {
             }
             y = the(op, dt, a); //transformed subterms
         } else if (op != x.op()) {
-            if (op == INH && eval() && xx.sub(1) instanceof Functor.InlineFunctor && xx.sub(0).op()==PROD) {
+            if (op == INH && evalInline() && xx.sub(1) instanceof Functor.InlineFunctor && xx.sub(0).op()==PROD) {
                 Term pred = xx.sub(1), args = xx.sub(0);
                 Term v = ((Functor.InlineFunctor) pred).applyInline(args);
                 if (v != null)
@@ -158,7 +158,7 @@ public interface TermTransform {
     }
 
     /** enable for inline functor evaluation */
-    default boolean eval() {
+    default boolean evalInline() {
         return false;
     }
 

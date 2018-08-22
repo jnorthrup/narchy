@@ -162,17 +162,17 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 //                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(Y, X));
 //                    break;
 
-                case "neqAndCom":
-                    neqRoot(constraints, X, Y);
-                    constraints.add(new CommonSubtermConstraint(X, Y));
-                    constraints.add(new CommonSubtermConstraint(Y, X));
-                    break;
+//                case "neqAndCom":
+//                    neqRoot(constraints, X, Y);
+//                    constraints.add(new CommonSubtermConstraint(X, Y));
+//                    constraints.add(new CommonSubtermConstraint(Y, X));
+//                    break;
 
 
                 case "neqRCom":
                     neqRoot(constraints, X, Y);
-                    constraints.add(new NotRecursiveSubtermOf(X, Y));
-                    constraints.add(new NotRecursiveSubtermOf(Y, X));
+                    constraints.add(new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf(X, Y));
+                    constraints.add(new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf(Y, X));
                     break;
 
 //                case "opSECTe":
@@ -188,8 +188,8 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                     if (!negated)
                         neq(constraints, X, Y);
 
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm).negIf(negated));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm).negIf(negated));
+                    constraints.add(new SubOfConstraint(X, Y, false, Subterm).negIf(negated));
+                    constraints.add(new SubOfConstraint(Y, X, true, Subterm).negIf(negated));
 
                     if (negated)
                         negationApplied = true;
@@ -205,14 +205,14 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                 case "subPosOrNeg":
                     neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, 0));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, 0));
+                    constraints.add(new SubOfConstraint(X, Y, false, Subterm, 0));
+                    constraints.add(new SubOfConstraint(Y, X, true, Subterm, 0));
                     break;
 
                 case "in":
                     neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Recursive));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Recursive));
+                    constraints.add(new SubOfConstraint(X, Y, false, Recursive));
+                    constraints.add(new SubOfConstraint(Y, X, true, Recursive));
                     break;
 
 //                case "inNeg":
@@ -228,8 +228,8 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Event));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Event));
+                    constraints.add(new SubOfConstraint(X, Y, false, Event));
+                    constraints.add(new SubOfConstraint(Y, X, true, Event));
                     break;
 
                 case "eventOfNeg":
@@ -238,8 +238,8 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Event, -1));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Event, -1));
+                    constraints.add(new SubOfConstraint(X, Y, false, Event, -1));
+                    constraints.add(new SubOfConstraint(Y, X, true, Event, -1));
                     break;
 
                 case "eventOfPosOrNeg":
@@ -248,8 +248,8 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
+                    constraints.add(new SubOfConstraint(X, Y, false, Event, 0));
+                    constraints.add(new SubOfConstraint(Y, X, true, Event, 0));
                     break;
 
                 case "eventsOf":
@@ -258,18 +258,16 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Events, 1));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Events, 1));
+                    constraints.add(new SubOfConstraint(X, Y, false, Events, 1));
+                    constraints.add(new SubOfConstraint(Y, X, true, Events, 1));
                     break;
 
                 case "eventCommon":
 
 
+                    neq(constraints, X,Y);
                     match(X, new TermMatch.Is(CONJ));
-
-
                     match(Y, new TermMatch.Is(CONJ));
-
                     constraints.add(new CommonSubEventConstraint(X, Y));
                     constraints.add(new CommonSubEventConstraint(Y, X));
                     break;
