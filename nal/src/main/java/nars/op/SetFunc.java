@@ -142,8 +142,7 @@ public class SetFunc {
             }
 
             private Term eval(Term t, Atomic atom) {
-                Term tt = $.func(atom, t);
-                return tt.eval(nar);
+                return $.func(atom, t).eval(nar);
             }
 
             @Override

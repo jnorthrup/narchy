@@ -45,20 +45,20 @@ public class FunctorBacktrackingTest {
 
         assertEquals(
                 "[father(mike,tom), father(tom,sally), father(tom,erica)]",
-                Evaluation.answerAll("father(?Father, ?Child)", n).toString()
+                Evaluation.query("father(?Father, ?Child)", n).toString()
         );
     }
     @Test  public void test3() throws Narsese.NarseseException {
 
         assertEquals(
                 "[wonder(sibling(sally,erica))]",
-                Evaluation.answerAll("sibling(sally,erica)", n).toString()
+                Evaluation.query("sibling(sally,erica)", n).toString()
         );
         n.believe("mother(trude,erica)");
 
 
         //becomes true now
-        Set<Term> ee = Evaluation.answerAll("sibling(sally,erica)", n);
+        Set<Term> ee = Evaluation.query("sibling(sally,erica)", n);
         assertEquals(
                 "[sibling(sally,erica)]",
                 ee.toString()
@@ -70,7 +70,7 @@ public class FunctorBacktrackingTest {
 
         assertEquals(
                 "[wonder(sibling(tom,erica))]", //UNKNOWN, not true or false
-                Evaluation.answerAll("sibling(tom,erica)",  n).toString()
+                Evaluation.query("sibling(tom,erica)",  n).toString()
         );
 
 

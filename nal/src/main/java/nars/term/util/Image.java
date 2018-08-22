@@ -82,13 +82,13 @@ public enum Image { ;
             if (isInt && !isExt) {
                 
                 
-                Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.toArraySubRange(1, ss.subs()), Op.ImgInt, p)));
+                Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);
             } else if (isExt && !isInt) {
                 
                 
-                Term u = INH.the(PROD.the(Util.replaceDirect(pp.toArraySubRange(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
+                Term u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);
             }

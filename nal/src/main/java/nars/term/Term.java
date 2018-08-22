@@ -493,9 +493,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
     @Deprecated default Term eval(NAR nar) {
         Term y = Evaluation.solveFirst(this, nar);
-        if (y == null)
-            return this;
-        return y;
+        return y == null ? this : y;
     }
 
 

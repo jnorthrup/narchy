@@ -56,9 +56,9 @@ public class BoolTest {
     @Test void testEqualOperatorTautologies() {
         //TODO finish
         NAR n = NARS.shell();
-        assertEquals("[equal(true,true)]", Evaluation.answerAll($$("equal(true,true)"), n).toString());
-        assertEquals("[equal(false,false)]", Evaluation.answerAll($$("equal(false,false)"), n).toString());
-        assertEquals("[null]", Evaluation.answerAll($$("equal(null,null)"), n).toString());
+        assertEquals("[equal(true,true)]", Evaluation.query($$("equal(true,true)"), n).toString());
+        assertEquals("[equal(false,false)]", Evaluation.query($$("equal(false,false)"), n).toString());
+        assertEquals("[null]", Evaluation.query($$("equal(null,null)"), n).toString());
     }
 
     @Test

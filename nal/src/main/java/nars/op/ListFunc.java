@@ -191,7 +191,7 @@ public enum ListFunc {
                 Subterms xx = x.subterms();
                 int m = xx.subs();
                 if (nn < m) {
-                    return PROD.the(xx.toArraySubRange(nn, m));
+                    return PROD.the(xx.subRangeArray(nn, m));
                 } else {
                     return Null;
                 }

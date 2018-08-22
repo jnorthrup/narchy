@@ -84,8 +84,8 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        return !impossibleSubTerm(t) && inSubtermsOf.test(this) && subterms().containsRecursively(t, root, inSubtermsOf);
+    default boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        return !impossibleSubTerm(x) && inSubtermsOf.test(this) && subterms().containsRecursively(x, root, inSubtermsOf);
     }
 
     /**
@@ -224,22 +224,11 @@ public interface Compound extends Term, IPair, Subterms {
             return true;
 
 
-        if (!Terms.commonStructureTest(xx, yy, u))
-            return false;
-
-
-        //test only after equality
-        if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
-            //constant case, some things can be assumed
-            if (!x.hasAny(Op.Temporal))
-                return false; //temporal terms need to be compared for matching 'dt'
-            if (xx.volume()!=yy.volume())
-                return false;
-        }
-
         int xs, ys;
         if ((xs = xx.subs()) != (ys = yy.subs()))
             return false;
+
+
 
         if (xs == 1) {
             try {
@@ -248,12 +237,30 @@ public interface Compound extends Term, IPair, Subterms {
                 System.err.println("stack overflow in unify: " + xx.sub(0) + " (in " + xx + ")\tvs\t" + yy.sub(0) + " (in " + yy + ')');
                 throw e;
             }
-        }
-
-        if (isCommutative()) {
-            return xx.unifyCommute(yy, u);
         } else {
-            return xx.unifyLinear(yy, u);
+
+            if (!Terms.commonStructureTest(xx, yy, u))
+                return false;
+
+
+            //test only after equality
+            if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
+                //constant case, some things can be assumed
+                if (!x.hasAny(Op.Temporal))
+                    return false; //temporal terms need to be compared for matching 'dt'
+                if (xx.volume()!=yy.volume())
+                    return false;
+            }
+
+            if (!Subterms.possiblyUnifiable(xx, yy, u))
+                return false;
+
+
+            if (isCommutative()) {
+                return xx.unifyCommute(yy, u);
+            } else {
+                return xx.unifyLinear(yy, u);
+            }
         }
     }
 
@@ -364,7 +371,7 @@ public interface Compound extends Term, IPair, Subterms {
             return to;
 
         Subterms oldSubs = subterms();
-        Subterms newSubs = oldSubs.replaceSub(from, to);
+        Subterms newSubs = oldSubs.replaceSub(from, to, op());
 
         if (newSubs == oldSubs)
             return this;

@@ -77,7 +77,7 @@ public class AnonVector extends TermVector implements FullyInternable {
 //    }
 
     @Override
-    public Subterms replaceSub(Term from, Term to) {
+    public Subterms replaceSub(Term from, Term to, Op superOp) {
 
         short fid = AnonID.id(from);
         if (fid == 0)
@@ -243,19 +243,19 @@ public class AnonVector extends TermVector implements FullyInternable {
     }
 
     @Override
-    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        if (t.op() == NEG) {
+    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        if (x.op() == NEG) {
             if (anyNeg()) {
-                Term tt = t.unneg();
+                Term tt = x.unneg();
                 if (tt instanceof AnonID) {
                     return indexOf((AnonID) tt, true) != -1;
                 }
             }
         } else {
-            if (t instanceof AnonID) {
-                return (indexOf((AnonID) t) != -1)
+            if (x instanceof AnonID) {
+                return (indexOf((AnonID) x) != -1)
                         ||
-                        (anyNeg() && indexOf((AnonID) t, true) != -1 && inSubtermsOf.test(t.neg()));
+                        (anyNeg() && indexOf((AnonID) x, true) != -1 && inSubtermsOf.test(x.neg()));
             }
 
         }

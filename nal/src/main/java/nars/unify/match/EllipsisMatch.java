@@ -135,7 +135,7 @@ public final class EllipsisMatch extends LightCompound {
             case 1:
                 return y.sub(from);
             default:
-                return matched(y.toArraySubRange(from, to));
+                return matched(y.subRangeArray(from, to));
         }
     }
 

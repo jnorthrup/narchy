@@ -24,7 +24,6 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 import java.util.Set;
@@ -43,7 +42,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     static int hash(List<Term> term) {
-        int n = term.size();
         int h = 1;
         for (Term aTerm: term) h = Util.hashCombine(h, aTerm);
         return h;
@@ -223,9 +221,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return u;
     }
 
-    default /*@NotNull*/ SortedSet<Term> toSetSortedExcept(Predicate<Term> t) {
-        return toSetSorted(x -> !t.test(x));
-    }
+
 
     default /*@NotNull*/ TermList toList() {
         TermList u = new TermList(subs());
@@ -359,13 +355,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     @Override
-    default boolean containsRecursively(/*@NotNull*/ Term y, boolean root, Predicate<Term> subTermOf) {
+    default boolean containsRecursively(/*@NotNull*/ Term x, boolean root, Predicate<Term> subTermOf) {
 
-        if (!impossibleSubTerm(y)) {
+        if (!impossibleSubTerm(x)) {
             int s = subs();
             for (int i = 0; i < s; i++) {
-                Term x = sub(i);
-                if (x == y || (root ? x.equalsRoot(y) : x.equals(y)) || x.containsRecursively(y, root, subTermOf))
+                Term ii = sub(i);
+                if (ii == x || (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf))
                     return true;
             }
         }
@@ -498,17 +494,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    default boolean unifyLinearSimple(Subterms Y, /*@NotNull*/ Unify u) {
-
-
-        int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).unify(Y.sub(i), u))
-                return false;
-        }
-        return true;
-
-    }
+//    default boolean unifyLinearSimple(Subterms Y, /*@NotNull*/ Unify u) {
+//
+//
+//        int s = subs();
+//        for (int i = 0; i < s; i++) {
+//            if (!sub(i).unify(Y.sub(i), u))
+//                return false;
+//        }
+//        return true;
+//
+//    }
 
     /**
      * const/variable phase version
@@ -559,148 +555,109 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default boolean unifyCommute(Subterms y, Unify u) {
 
+        final TermList xx = toList(), yy = y.toList();
 
-        final TermList xx = toList();
-        final TermList yy = y.toList();
-
-        ///ImmutableSet<Term> xy = Sets.immutable.ofAll(yy).intersect(Sets.immutable.ofAll(xx));
-        //if (!xy.isEmpty()) {
-
-        xx.removeIf(z -> {
-
-            int yNextIndexOf = yy.indexOf(z);
-            if (yNextIndexOf != -1) {
-                yy.remove(yNextIndexOf);
+        switch (possiblyUnifiableWhileEliminatingEqual(xx, yy, u)) {
+            case -1:
+                return false;
+            case +1:
                 return true;
-            }
-            return false;
-        });
-        assert (xx.size() == yy.size());
-
-
-        switch (xx.size()) {
-            case 0:
-                return true;
-            case 1:
-                return xx.get(0).unify(yy.get(0), u);
             default: {
-                if (!u.constant(xx) || (u.symmetric && !u.constant(yy))) {
-                    if (Terms.commonStructureTest(xx, yy, u)) {
-                        u.termutes.add(new CommutivePermutations(xx, yy));
-                        return true;
+                switch (xx.size()) {
+                    case 1:
+                        return xx.get(0).unify(yy.get(0), u);
+                    default: {
+                        if (!u.constant(xx) || (u.symmetric && !u.constant(yy))) {
+                            if (Terms.commonStructureTest(xx, yy, u)) {
+
+
+                                u.termutes.add(new CommutivePermutations(xx, yy));
+                                return true;
+                            }
+                        }
+                        return false;
                     }
                 }
-                return false;
             }
         }
-//
-//        if (!yCommutative) {
-//
-//            assert (s == 2);
-//            Term y0 = y.sub(0);
-//            boolean y0inX = xx.contains(y0);
-//            Term y1 = y.sub(1);
-//            boolean y1inX = xx.contains(y1);
-//
-//            boolean y0c = u.constant(y0);
-//            boolean y1c = u.constant(y1);
-//
-//            if (y0inX && y1inX && (y0c && y1c)) {
-//                return true;
-//            }
-//
-//            if ((!y0inX && !y1inX) || (!y0c && !y1c)) {
-//
-//                if (u.constant(this) && (y0c && y1c))
-//                    return false;
-//
-//
-//                u.termutes.add(new CommutivePermutations(this, y));
-//                return true;
-//            } else {
-//                if (y0c && y0inX) {
-//                    if (xx.remove(y0))
-//                        if (xx.isEmpty())
-//                            throw new TODO();
-//                    //re: java.util.NoSuchElementException
-//                    //if xx.isempty then return y0.equals(y1) //removed both so must match unified both
-//                    return xx.first().unify(y1, u);
-//                }
-//                if (y1c && y1inX) {
-//                    if (xx.remove(y1))
-//                        if (xx.isEmpty())
-//                            throw new TODO();
-//                    return xx.first().unify(y0, u);
-//                }
-//
-//                if (u.constant(sub(0)) && u.constant(sub(1)))
-//                    return false;
-//                else {
-//
-//                    u.termutes.add(new CommutivePermutations(this, y));
-//                    return true;
-//                }
-//            }
-//
-//        } else {
-//
-//
-//            MutableSet<Term> xy = Sets.intersect(xx, (Set) yy);
-//            if (!xy.isEmpty()) {
-//
-//
-//                xy.removeIf(z -> !u.constant(z));
-//                if (!xy.isEmpty()) {
-//
-//                    xx.removeAll(xy);
-//                    yy.removeAll(xy);
-//                    s = xx.size();
-//                    if (s != yy.size()) {
-//                        throw new RuntimeException("set size should have remained equal");
-//                    }
-//                }
-//            }
-//
-//
-//            if (s == 1) {
-//
-//
-//                return xx.first().unify(yy.first(), u);
-//
-//            } else if (originalS == s) {
-//
-//                u.termutes.add(new CommutivePermutations(this, y));
-//                return true;
-//            } else {
-//
-//                u.termutes.add(new CommutivePermutations(
-//                        $.vFast(Terms.sorted(xx)),
-//                        $.vFast(Terms.sorted(yy))
-//                ));
-//                return true;
-//
-//            }
-//        }
-//
 
     }
 
+    /** xs and ys must have variable bits masked before calling, and xs!=0 and ys!=0 */
+    private static boolean possiblyUnifiable(int xs, int ys) {
+        return ((xs & ys)!=0);
+        //return ((((xs & ys)!=0) && Integer.bitCount(xs)==Integer.bitCount(ys)));
+    }
 
-    default Term[] termsExcept(RoaringBitmap toRemove) {
-        int numRemoved = toRemove.getCardinality();
-        int size = subs();
-        int newSize = size - numRemoved;
-        Term[] t = new Term[newSize];
-        int j = 0;
-        for (int i = 0; i < size; i++) {
-            if (!toRemove.contains(i))
-                t[j++] = sub(i);
+    static boolean possiblyUnifiable(Subterms xx, Subterms yy, Unify u) {
+        int xs = xx.structureSurface() & (~u.typeBits);
+        if (xs == 0)
+            return true; //all var
+        int ys = yy.structureSurface() & (~u.typeBits);
+        if (ys == 0)
+            return true; //all var
+        return possiblyUnifiable(xs, ys);
+    }
+
+    /** structure of the first layer (surface) only */
+    default int structureSurface() {
+        return intifyShallow((s, x) -> s | x.op().bit, 0);
+    }
+
+    /** first layer operator scan
+     * @return 0: must unify, -1: impossible, +1: unified already
+     * */
+    private static int possiblyUnifiableWhileEliminatingEqual(TermList xx, TermList yy, Unify u) {
+        int xs = 0, ys = 0;
+
+        int xn = xx.size();
+        for (int i = 0; i < xn; ) {
+            Term xi = xx.get(i);
+            if (yy.removeFirst(xi)) {
+                xx.removeFast(i);
+                xn--;
+            } else {
+                xs |= xi.op().bit;
+                ys |= yy.get(i).op().bit;
+                i++;
+            }
         }
-        return (t.length == 0) ? Op.EmptyTermArray : t;
+
+        assert (xx.size() == yy.size());
+
+        int xxs = xx.size();
+        if (xxs == 0)
+            return +1; //all eliminated
+
+        xs &= ~u.typeBits;
+        if (xs == 0)
+            return 0; //all var
+        ys &= ~u.typeBits;
+        if (ys == 0)
+            return 0;//all var
+        if (!possiblyUnifiable(xs, ys))
+            return -1; //first layer has no non-variable commonality, no way to unify
+
+        return 0;
     }
+
+
+//    default Term[] termsExcept(RoaringBitmap toRemove) {
+//        int numRemoved = toRemove.getCardinality();
+//        int size = subs();
+//        int newSize = size - numRemoved;
+//        Term[] t = new Term[newSize];
+//        int j = 0;
+//        for (int i = 0; i < size; i++) {
+//            if (!toRemove.contains(i))
+//                t[j++] = sub(i);
+//        }
+//        return (t.length == 0) ? Op.EmptyTermArray : t;
+//    }
 
     default Term[] termsExcept(MetalBitSet toRemove) {
         int numRemoved = toRemove.cardinality();
+        assert(numRemoved > 0);
         int size = subs();
         int newSize = size - numRemoved;
         Term[] t = new Term[newSize];
@@ -713,12 +670,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Term[] termsExcept(Collection<Term> except) {
+        assert(!except.isEmpty());
         FasterList<Term> fxs = new FasterList<>(subs());
         forEach(t -> {
             if (!except.contains(t))
                 fxs.add(t);
         });
-        return fxs.toArrayRecycled(Term[]::new);
+        if (fxs.isEmpty())
+            return arrayShared();
+        else
+            return fxs.toArrayRecycled(Term[]::new);
     }
 
 
@@ -727,7 +688,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * WARNING: provides a shared (non-cloned) copy if the entire range is selected
      */
     /*@NotNull*/
-    default Term[] toArraySubRange(int from, int to) {
+    default Term[] subRangeArray(int from, int to) {
         if (from == 0 && to == subs()) {
             return arrayShared();
 
@@ -747,11 +708,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /** must be overriden by any Compound subclasses */
-    default void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
-        forEach(x -> x.recurseTerms(v));
-    }
-
-    /** must be overriden by any Compound subclasses */
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
         return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
@@ -765,9 +721,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return subs() > 1 ? new ReverseSubterms(this) : this;
     }
 
-    default Subterms sorted() {
-        return isSorted() ? this : Op.terms.subterms(Terms.sorted(arrayShared()));
-    }
+//    default Subterms sorted() {
+//        return isSorted() ? this : Op.terms.subterms(Terms.sorted(arrayShared()));
+//    }
 
     /**
      * removes first occurrence only
@@ -795,20 +751,20 @@ public interface Subterms extends Termlike, Iterable<Term> {
         forEach(t -> t.appendTo(out));
     }
 
-    default Subterms replaceSub(Term from, Term to) {
+    default Subterms replaceSub(Term from, Term to, Op superOp) {
         if (containsRecursively(from)) {
-        //if (!impossibleSubTerm(from)) {
-            return transformSubs(MapSubst.the(from, to));
+            //if (!impossibleSubTerm(from)) {
+            return transformSubs(MapSubst.the(from, to), superOp);
         } else {
             return this;
         }
     }
 
-
     /** dont override */
-    @Nullable default /* final */ Subterms transformSubs(TermTransform f) {
-        return transformSubs(f, ATOM);
+    default Subterms replaceSub(Term from, Term to) {
+        return replaceSub(from, to, ATOM);
     }
+
 
     /**
      * returns 'x' unchanged if no changes were applied,

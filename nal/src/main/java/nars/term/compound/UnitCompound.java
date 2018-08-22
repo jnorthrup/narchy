@@ -96,10 +96,10 @@ public abstract class UnitCompound implements Compound {
 
 
     @Override
-    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        if (!impossibleSubTerm(t) && inSubtermsOf.test(this)) {
+    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        if (!impossibleSubTerm(x) && inSubtermsOf.test(this)) {
             Term sub = sub();
-            return (root ? sub.equalsRoot(t) : sub.equals(t)) || sub.containsRecursively(t, root, inSubtermsOf);
+            return (root ? sub.equalsRoot(x) : sub.equals(x)) || sub.containsRecursively(x, root, inSubtermsOf);
         }
         return false;
     }

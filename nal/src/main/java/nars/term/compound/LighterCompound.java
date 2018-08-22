@@ -28,9 +28,9 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
         this.op = op.id;
     }
     @Override
-    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        return !impossibleSubTerm(t) && inSubtermsOf.test(this)
-                && super.containsRecursively(t, root, inSubtermsOf);
+    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        return !impossibleSubTerm(x) && inSubtermsOf.test(this)
+                && super.containsRecursively(x, root, inSubtermsOf);
     }
     @Override
     public boolean isNormalized() {

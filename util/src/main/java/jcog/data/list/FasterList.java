@@ -708,6 +708,18 @@ public class FasterList<X> extends FastList<X> {
         this.size = s;
     }
 
+    public boolean removeFirst(X x) {
+        int s = this.size;
+        X[] ii = items;
+        for (int i = 0; i < s; i++) {
+            if (ii[i].equals(x)) {
+                removeFast(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * modified from MutableIterator

@@ -239,16 +239,6 @@ public abstract class Unify extends Versioning implements Subst {
         return !x.hasAny(typeBits);
     }
 
-    /**
-     * counts the number of variables are unifiable in the given term
-     */
-    public int vars(Subterms x) {
-        if (type == null) {
-            return x.vars();
-        } else {
-            return x.subs(type);
-        }
-    }
 
     public boolean constrain(MatchConstraint m) {
         return constrain(m.x, m);

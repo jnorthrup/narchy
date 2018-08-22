@@ -112,8 +112,8 @@ public final class LightDTCompound implements SeparateSubtermsCompound {
     }
 
     @Override
-    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        return ref.containsRecursively(t, root, inSubtermsOf);
+    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        return ref.containsRecursively(x, root, inSubtermsOf);
     }
 
     @Override

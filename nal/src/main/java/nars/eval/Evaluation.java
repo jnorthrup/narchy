@@ -325,14 +325,14 @@ public class Evaluation {
     }
 
 
-    public static Set<Term> answerAll(String s, NAR n) {
-        return answerAll($$(s), n);
+    public static Set<Term> query(String s, NAR n) {
+        return query($$(s), n);
     }
 
     /**
      * gathers results from one truth set, ex: +1 (true)
      */
-    public static Set<Term> answerAll(Term x, NAR n) {
+    public static Set<Term> query(Term x, NAR n) {
         final Set[] yy = {null};
         Evaluation.answer(x, n, (y) -> {
             if (yy[0] == null) {
