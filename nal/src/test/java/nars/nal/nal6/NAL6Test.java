@@ -590,7 +590,6 @@ public class NAL6Test extends NALTest {
     void abductionBeliefWeakPositiveButNotNegative() {
 
         test
-                .log()
                 .believe("(a==>b)", 0.55f, 0.90f)
                 .believe("b", 0.55f, 0.90f)
                 .mustBelieve(cycles, "a", 0.55f, 0.31f);

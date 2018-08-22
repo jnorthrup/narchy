@@ -73,9 +73,15 @@ public final class ClauseStore {
      * @return true if compatible or false otherwise.
      */
     protected boolean existCompatibleClause() {
-        List<Term> saveUnifications = deunify(vars, new FasterList<>(vars.size()));
+        int n = vars.size();
+
+        List<Term> saveUnifications = n > 0 ? deunify(vars, new FasterList<>(n)) : null;
+
         boolean found = checkCompatibility(goal);
-        reunify(vars, saveUnifications);
+
+        if (n > 0)
+            reunify(vars, saveUnifications, n);
+
         return found;
     }
 
@@ -104,14 +110,10 @@ public final class ClauseStore {
      * @param varsToReunify
      * @param saveUnifications
      */
-    private static void reunify(List<Var> varsToReunify, List<Term> saveUnifications) {
-        int size = varsToReunify.size();
+    private static void reunify(List<Var> varsToReunify, List<Term> saveUnifications, int size) {
+
         ListIterator<Var> it1 = varsToReunify.listIterator(size);
         ListIterator<Term> it2 = saveUnifications.listIterator(size);
-        
-        
-        
-        
         while (it1.hasPrevious()) {
             it1.previous().setLink(it2.previous());
         }
@@ -127,13 +129,12 @@ public final class ClauseStore {
      */
     private boolean checkCompatibility(Term goal) {
         OneWayList<ClauseInfo> clauses = this.clauses;
-        if (clauses == null) return false;
         ClauseInfo clause;
-        do {
+        while (clauses!=null) {
             clause = clauses.head;
             if (goal.unifiable(clause.head)) return true;
             this.clauses = clauses = this.clauses.tail;
-        } while (clauses != null);
+        }
         return false;
     }
 

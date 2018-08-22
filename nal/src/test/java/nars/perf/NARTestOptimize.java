@@ -66,7 +66,7 @@ class NARTestOptimize {
                 return t;
             },
                 (TestNARSuite t) -> (float) t.score()
-            );
+            , 16);
 
             o
 //            .sense("numConcepts",
@@ -105,7 +105,7 @@ class NARTestOptimize {
 
             Opti<DeductiveMeshTest> o = l.optimize(d -> {
                 d.test.test();
-            }, d -> d.test.score);
+            }, d -> d.test.score, 16);
             o.run();
             o.print();
             o.tree(4, 6).print();

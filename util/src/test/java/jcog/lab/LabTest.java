@@ -18,7 +18,7 @@ public class LabTest {
 
         Lab<Model> a = new Lab<>(Model::new).varAuto();
 
-        Opti<Model> r = a.optimize(Model::score).run();
+        Opti<Model> r = a.optimize(Model::score, 16).run();
 
         ImmutableList best = r.best();
 

@@ -60,7 +60,7 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
                 high = mid - 1;
         }
 
-        return -1; //not found
+        return closest;
     }
 
     /** binary search */

@@ -8,6 +8,7 @@ import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meter.WaveView;
 
 import static spacegraph.SpaceGraph.window;
@@ -29,7 +30,7 @@ public class NARAudio extends WaveIn {
         Gridding c = new Gridding(
                 v,
                 new PushButton("Record Clip", () -> {
-                    window(new WaveView(a.capture, 1f), 400, 400);
+                    window(new MetaFrame(new WaveView(a.capture, 1f)), 400, 400);
                 })
         );
         window(c, 800, 800);

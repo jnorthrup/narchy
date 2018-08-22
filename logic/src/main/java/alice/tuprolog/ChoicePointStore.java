@@ -1,9 +1,5 @@
 package alice.tuprolog;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class ChoicePointStore {
     
     
@@ -63,12 +59,11 @@ public class ChoicePointStore {
      */
     protected boolean existChoicePoint() {
         ChoicePointContext pointer = this.pointer;
-        if (pointer == null) return false;
-        do {
+        while (pointer!=null) {
             if (pointer.compatibleGoals.existCompatibleClause())
                 return true;
             this.pointer = pointer = pointer.prevChoicePointContext;
-        } while (pointer != null);
+        }
         return false;
     }
 
@@ -98,14 +93,14 @@ public class ChoicePointStore {
      * Methods for spyListeners
      */
     
-    public List<ChoicePointContext> getChoicePoints() {
-        ArrayList<ChoicePointContext> l = new ArrayList<>();
-        ChoicePointContext t = pointer;
-        while (t != null) {
-            l.add(t);
-            t = t.prevChoicePointContext;
-        }
-        return l;
-    }
+//    public List<ChoicePointContext> getChoicePoints() {
+//        ArrayList<ChoicePointContext> l = new ArrayList<>();
+//        ChoicePointContext t = pointer;
+//        while (t != null) {
+//            l.add(t);
+//            t = t.prevChoicePointContext;
+//        }
+//        return l;
+//    }
     
 }

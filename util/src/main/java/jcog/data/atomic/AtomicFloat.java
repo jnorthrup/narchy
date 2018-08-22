@@ -61,9 +61,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
         F.zero(this, with);
     }
 
-    public final void zeroIfNonZero(FloatConsumer with) {
-        F.zeroIfNonZero(this, with);
-    }
+
     protected final float getAndZero(FloatConsumer with) {
         return F.getAndZero(this, with);
     }
@@ -89,9 +87,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
         F.add(this,x);
     }
 
-    protected void addUpdate(float v, Runnable r) {
-        F.addUpdate(this, v, r);
-    }
+
 
     public float multiply(float _y) {
         return F.updateAndGet(this, (x,y)->x*y, _y);

@@ -34,8 +34,13 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
                 tt = presentDuration(1); break;
             case 1:
                 tt = taskTime(task); break;
-            case 2:
-                tt = pastFutureRadius(task, true, false); break;
+            case 2: {
+                boolean past =
+                        //(task.mid() < nar.time());
+                        nar.random().nextBoolean();
+                tt = pastFutureRadius(task, past, !past);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException();
         }
@@ -62,7 +67,13 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
         } else {
 
             long now = nar.time();
-            long range = Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now));
+
+            long range = Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now)) * 2;
+
+            float factor = nar.random().nextFloat();
+            factor *= factor * factor; //^3
+            range = Math.round(factor * range);
+
             if (past && future) {
                 return new long[]{now - range, now + range}; //future span
             } else if (future) {

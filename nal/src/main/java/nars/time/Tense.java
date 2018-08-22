@@ -118,8 +118,14 @@ public enum Tense {
 
     /** modifies the input array */
     public static long[] dither(long[] t, NAR nar) {
+        long s = t[0];
+        if (s == ETERNAL) {
+            assert(t[1] == ETERNAL);
+            return t;
+        }
+
         int d = nar.dtDither();
-        t[0] = dither(t[0], d);
+        t[0] = dither(s, d);
         t[1] = dither(t[1], d);
         return t;
     }

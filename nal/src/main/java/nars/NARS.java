@@ -126,7 +126,7 @@ public class NARS {
                 n.termlinkBalance.set(0.5f);
                 n.termVolumeMax.set(26);
 
-                //nar.activateConceptRate.set(0.5f);
+                //n.activateConceptRate.set(0.5f);
 
                 //nar.forgetRate.set(0.5f);
 

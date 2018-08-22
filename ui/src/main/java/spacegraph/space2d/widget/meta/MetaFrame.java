@@ -12,20 +12,16 @@ import spacegraph.space2d.widget.text.VectorLabel;
 public class MetaFrame extends Bordering {
 
 
-
-
     public MetaFrame(Surface surface) {
         super(surface);
-
 
 
 //        Runnable zoomer = () -> surface.root().zoom(surface);
 
 
         Surface n =
-                
+
                 new VectorLabel(name(surface));
-                
 
 
         borderWest = borderEast = 0;
@@ -39,9 +35,6 @@ public class MetaFrame extends Bordering {
 
         PushButton hideButton = PushButton.awesome("times");
         set(NE, new Scale(hideButton, 0.8f));
-
-        
-        
 
 
         Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
@@ -57,31 +50,8 @@ public class MetaFrame extends Bordering {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void close() {
-        
+
     }
 
 

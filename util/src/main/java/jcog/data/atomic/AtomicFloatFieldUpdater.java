@@ -5,6 +5,7 @@ import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.function.IntUnaryOperator;
 
 import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
@@ -34,24 +35,15 @@ public final class AtomicFloatFieldUpdater<X>  {
         updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
     }
 
-    public float updateAndGet(X x, FloatToFloatFunction f) {
-        return intBitsToFloat(updater.updateAndGet(x,
-                v -> floatToIntBits(f.valueOf(intBitsToFloat(v)))
-        ));
+    private float update(X x, IntUnaryOperator y) {
+        return intBitsToFloat(updater.updateAndGet(x, y));
     }
-    public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
-        return intBitsToFloat(updater.updateAndGet(x,
-                v -> floatToIntBits(f.apply(intBitsToFloat(v), y))
-        ));
+    public float updateAndGet(X x, FloatToFloatFunction f) {
+        return update(x, v -> floatToIntBits(f.valueOf(intBitsToFloat(v))));
     }
 
-    void addUpdate(X x, float add, Runnable r) {
-        if (Math.abs(add) > Float.MIN_NORMAL) {
-            updater.updateAndGet(x, v -> {
-                r.run();
-                return floatToIntBits(intBitsToFloat(v) + add);
-            });
-        }
+    public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
+        return update(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
 
     public float getAndSet(X x, float value) {
@@ -81,17 +73,6 @@ public final class AtomicFloatFieldUpdater<X>  {
         });
     }
 
-    /** if the current value is actually zero, the consumer is not called and nothing needs updated.
-     * should be faster than zero(v,with) when a zero value is expected
-     */
-    void zeroIfNonZero(X v, FloatConsumer with) {
-        this.updater.getAndUpdate(v, x->{
-            if (x != AtomicFloatFieldUpdater.ZERO) {
-                with.accept(intBitsToFloat(x));
-            }
-            return AtomicFloatFieldUpdater.ZERO;
-        });
-    }
 
     float getAndZero(X v, FloatConsumer with) {
         return intBitsToFloat(this.updater.getAndUpdate(v, (x)->{ with.accept(intBitsToFloat(x)); return AtomicFloatFieldUpdater.ZERO; } ));
@@ -101,5 +82,14 @@ public final class AtomicFloatFieldUpdater<X>  {
         return updater.compareAndSet(x, floatToIntBits(expected), floatToIntBits(newvalue));
     }
 
+    /** unary */
+    public float updateAndGet(X x, FloatToFloatFunction update, FloatToFloatFunction post) {
+        return updateAndGet(x, (v)-> post.valueOf(update.valueOf(v)));
+    }
+
+    /** unary + arg */
+    public float updateAndGet(X x, float arg, FloatFloatToFloatFunction update, FloatToFloatFunction post) {
+        return updateAndGet(x, (xx,yy)-> post.valueOf(update.apply(xx,yy)), arg);
+    }
 
 }

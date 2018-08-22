@@ -245,10 +245,16 @@ public class Revision {
     @Nullable
     public static Task merge(NAR nar, TaskRegion... tt) {
         assert tt.length > 1;
-        long[] u = Tense.dither(Tense.union(tt), nar);
+        long[] u = Tense.union(tt);
         return merge(nar,  u[0], u[1], tt);
     }
 
+    /** 2-ary merge with quick overlap filter */
+    @Nullable public static Task merge(NAR nar, TaskRegion x, TaskRegion y) {
+        if (Stamp.overlapsAny((Task)x, (Task)y))
+            return null;
+        return merge(nar, new TaskRegion[] { x, y });
+    }
 
     @Nullable
     private static Task merge(NAR nar, long start, long end, TaskRegion... tasks) {
@@ -270,22 +276,22 @@ public class Revision {
             return null;
 
         float truthEvi = truth.evi();
-
         if (truthEvi * range < eviMinInteg)
             return null;
 
-        Truth cTruth = Truth.theDithered(truth.freq(), truthEvi, nar);
+        Truth cTruth = truth.dithered(nar);
         if (cTruth == null)
             return null;
 
         byte punc = T.punc();
-        return Task.tryTask(T.term, punc, cTruth, (c, tr) ->
-            new UnevaluatedTask(c, punc,
-                tr,
-                nar.time(), start, end,
-                Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
-            )
-        );
+        return Task.tryTask(T.term, punc, cTruth, (c, tr) -> {
+            int dith = nar.dtDither();
+            return new UnevaluatedTask(c, punc,
+                    tr,
+                    nar.time(), Tense.dither(start, dith), Tense.dither(end, dith),
+                    Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+            );
+        });
     }
 
 

@@ -289,7 +289,6 @@ public interface Stamp {
         return dedupAndTrimmed;
     }
 
-    @Deprecated
     static boolean overlapsAny(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
         return ((a == b) || overlapsAny(a.stamp(), b.stamp()));
     }

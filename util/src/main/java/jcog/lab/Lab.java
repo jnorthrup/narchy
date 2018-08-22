@@ -157,24 +157,24 @@ public class Lab<X> {
      * @param procedure
      * @param goal
      */
-    public Optimization<X, X> optimize(Consumer<X> procedure, Goal<X> goal) {
+    public Optimization<X, X> optimize(Consumer<X> procedure, Goal<X> goal, int maxIters) {
         return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),
-                newDefaultOptimizer(), (s -> {
+                newDefaultOptimizer(maxIters), (s -> {
                     X ss = s.get();
                     procedure.accept(ss);
                     return ss;
                 }), goal, new FasterList<>(sensors.values()));
     }
 
-    public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
+    public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors, int maxIters) {
         return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),
-                newDefaultOptimizer(), procedure, goal, sensors
+                newDefaultOptimizer(maxIters), procedure, goal, sensors
         );
     }
 
-    public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {
+    public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors, int maxIters) {
         return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),
-                newDefaultOptimizer(), procedure, goal, new FasterList(sensors.sensors.values())
+                newDefaultOptimizer(maxIters), procedure, goal, new FasterList(sensors.sensors.values())
         );
     }
 
@@ -183,9 +183,9 @@ public class Lab<X> {
      * simple usage method
      * provies procedure and goal; no additional experiment sensors
      */
-    public Opti<X> optimize(Consumer<X> procedure, FloatFunction<X> goal) {
+    public Opti<X> optimize(Consumer<X> procedure, FloatFunction<X> goal, int maxIters) {
         return new Opti<>(optimize(procedure,
-                new Goal<>(goal)));
+                new Goal<>(goal), maxIters));
     }
 
 
@@ -193,29 +193,26 @@ public class Lab<X> {
      * simple usage method
      * provies procedure and goal; no additional experiment sensors
      */
-    public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, FloatFunction<E> goal) {
-        return optimize(procedure, new Goal<>(goal), List.of());
+    public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, FloatFunction<E> goal, int maxIters) {
+        return optimize(procedure, new Goal<>(goal), List.of(), maxIters);
     }
-    public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, ToDoubleFunction<E> goal) {
-        return optimize(procedure, new Goal<>(goal), List.of());
+    public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, ToDoubleFunction<E> goal, int maxIters) {
+        return optimize(procedure, new Goal<>(goal), List.of(), maxIters);
     }
 
     /**
      * simple usage method
      * provies procedure and goal; no additional experiment sensors
      */
-    public Opti<X> optimize(Goal<X> goal) {
-        return new Opti<>(optimize(e -> {  }, goal));
+    public Opti<X> optimize(Goal<X> goal, int maxIters) {
+        return new Opti<>(optimize(e -> {  }, goal, maxIters));
     }
 
-    public Opti<X> optimize(FloatFunction<X> goal) {
-        return optimize(new Goal<>(goal));
+    public Opti<X> optimize(FloatFunction<X> goal, int maxIters) {
+        return optimize(new Goal<>(goal), maxIters);
     }
 
-    private Optimization.OptimizationStrategy newDefaultOptimizer()
-    {
-        return newDefaultOptimizer(128);
-    }
+
 
     private Optimization.OptimizationStrategy newDefaultOptimizer(int maxIter) {
         return

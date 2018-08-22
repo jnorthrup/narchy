@@ -7,8 +7,6 @@ import nars.Param;
 import nars.Task;
 import nars.task.NALTask;
 import nars.task.util.TaskBagDrainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,7 +49,7 @@ public interface DerivedTasks {
       */
     class DerivedTasksBag implements DerivedTasks {
 
-        final static Logger logger = LoggerFactory.getLogger(DerivedTasksBag.class);
+        //final static Logger logger = LoggerFactory.getLogger(DerivedTasksBag.class);
 
         /**
          * temporary buffer for derivations before input so they can be merged in case of duplicates

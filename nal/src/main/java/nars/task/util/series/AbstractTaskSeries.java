@@ -61,9 +61,12 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
                 last.setEnd(midGap);
                 nextStart = midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
                 nextEnd = Math.max(nextStart, nextEnd);
+                stretchPrev = false;
 
             } else {
-                nextStart = Math.min(nextStart, lastEnd+1);
+
+                stretchPrev = false;
+                nextStart = Math.max(nextStart, lastEnd+1);
                 nextEnd = Math.max(nextEnd, nextStart);
 
                 //form new task at the specified interval, regardless of the previous task since it was excessively long ago
@@ -78,16 +81,18 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
             nextT = newTask(term, punc, nextStart, nextEnd, next, nar);
             if (nextT == null)
                 return null;
+
+            synchronized (this) {
+
+                compress();
+
+                push(nextT);
+
+            }
         }
 
-        synchronized (this) {
+        return nextT;
 
-            compress();
-
-            push(nextT);
-
-            return nextT;
-        }
     }
 
 

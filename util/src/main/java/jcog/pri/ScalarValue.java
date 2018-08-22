@@ -211,13 +211,14 @@ public interface ScalarValue {
 
         /** update */
         @Override public final float pri(FloatToFloatFunction update) {
-            return FLOAT.updateAndGet(this, (x)-> _v(update.valueOf(x)) );
+            return FLOAT.updateAndGet(this, update, this::v);
         }
 
         /** update */
         @Override public final float pri(FloatFloatToFloatFunction update, float x) {
-            return FLOAT.updateAndGet(this, (xx,yy)-> _v(update.apply(xx,yy)), x);
+            return FLOAT.updateAndGet(this, x, update, this::_v);
         }
+
 
     }
 }

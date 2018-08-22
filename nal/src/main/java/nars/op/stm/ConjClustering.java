@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
@@ -247,7 +247,7 @@ public class ConjClustering extends Causable {
             Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
 
 
-            float e = c2w(conf);
+            float e = c2wSafe(conf);
             if (e > 0) {
                 final Truth t = Truth.theDithered(freq, e, nar);
                 if (t != null) {

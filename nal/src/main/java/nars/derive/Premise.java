@@ -16,6 +16,7 @@ import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
@@ -209,11 +210,14 @@ public class Premise {
     private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
         long[] focus = timeFocus(d, beliefTerm);
 
+        NAR nar = d.nar;
+        Tense.dither(focus, nar);
+
         Predicate<Task> beliefFilter = beliefFilter();
 
         //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
         //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-        return Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, d.nar)
+        return Answer.relevance(true, Answer.TASK_LIMIT, focus[0], focus[1], beliefTerm, beliefFilter, nar)
                 .match(bb)
                 .task(false, true, false);
     }

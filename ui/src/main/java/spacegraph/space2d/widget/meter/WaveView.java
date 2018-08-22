@@ -9,6 +9,7 @@ import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
@@ -102,8 +103,9 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
         if (sStart==sStart) {
             float sEnd = selectEnd;
             if (sEnd==sEnd) {
+                float ss = x(selectStart);
                 gl.glColor4f(1f, 0.8f, 0, 0.5f);
-                Draw.rect(gl, x(selectStart), 0, x(selectEnd)-x(selectStart), h());
+                Draw.rect(gl, x() + ss, y(), x(selectEnd)- ss, h());
                 //System.out.println("select: " + sStart + ".." + sEnd);
             }
         }
@@ -119,7 +121,12 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
     @Override
     public Surface menu() {
         return new Gridding(
+            PushButton.awesome("play"),
+            PushButton.awesome("microphone"),
+            PushButton.awesome("save"), //remember
+            PushButton.awesome("question-circle") //recognize
 
+                //TODO trim, etc
         );
     }
 }
