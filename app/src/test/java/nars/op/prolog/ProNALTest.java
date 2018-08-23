@@ -8,6 +8,7 @@ import nars.Narsese;
 import nars.concept.Operator;
 import nars.term.Functor;
 import nars.term.Term;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.TreeSet;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled
 public class ProNALTest {
 
 

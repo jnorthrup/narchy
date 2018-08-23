@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.pri.Pri;
+import jcog.pri.UnitPri;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
   * equality than the origin task. hashcode here is calculated lazily.
  * the only mutable components are the hashcode and the cyclic status which is optionally inherited from the source.
  * */
-public class TaskProxy extends Pri implements Task {
+public class TaskProxy extends UnitPri implements Task {
 
     public final Task task;
 

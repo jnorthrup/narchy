@@ -49,7 +49,7 @@ public class NALTask extends UnitPri implements Task {
 
         if (Param.DEBUG) {
             if (!Stamp.validStamp(stamp))
-                throw new TaskException(term, "invalid stamp");
+                throw new TaskException(term, "invalid stamp: " + Arrays.toString(stamp));
         }
 
         if ((start == ETERNAL && end != ETERNAL) ||

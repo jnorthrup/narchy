@@ -45,8 +45,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
     }
 
-    public static Term func(Term x) {
-        return isFunc(x) ?  x.sub(1) : Op.Null;
+    public static Atomic func(Term x) {
+        return isFunc(x) ? (Atomic) x.sub(1) : Op.Null;
     }
     public static boolean isFunc(Term x) {
         return (x.hasAll(Op.FuncBits) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).op()==ATOM );
@@ -55,31 +55,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     public static Term[] funcArgsArray(Term x) {
         return Operator.args(x).arrayShared();
     }
-
-
-
-    /**
-     * decode a term which may be a functor, return null if it isnt
-     */
-    @Nullable
-    public static <X> Pair<X, Term> ifFunc(Term maybeOperation, Function<Term, X> invokes) {
-        if (maybeOperation.hasAll(Op.FuncBits)) {
-            if (maybeOperation.op() == INH) {
-                Term s0 = maybeOperation.sub(0);
-                if (s0.op() == PROD) {
-                    Term s1 = maybeOperation.sub(1);
-                    if (s1 instanceof Atomic /*&& s1.op() == ATOM*/) {
-                        X i = invokes.apply(s1);
-                        if (i != null)
-                            return Tuples.pair(i, s0);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-
 
     @Override
     public final byte[] bytes() {

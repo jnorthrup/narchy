@@ -1,6 +1,7 @@
 package nars.op.stm;
 
 import jcog.data.list.FasterList;
+import jcog.data.set.MetalLongSet;
 import jcog.pri.NLink;
 import jcog.pri.Priority;
 import jcog.pri.VLink;
@@ -20,7 +21,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -135,7 +135,7 @@ public class ConjClustering extends Causable {
 
         tasksGenerated = 0;
 
-        bag.commitGroups(nar, nar.forgetRate.floatValue(), this::conjoinCentroid);
+        bag.commitGroups(nar, nar.forgetRate.floatValue(), conjoiner::conjoinCentroid);
 
         if (tasksGenerated > 0) {
             in.commit();
@@ -143,127 +143,123 @@ public class ConjClustering extends Causable {
         return iterations;
     }
 
+    final CentroidConjoiner conjoiner = new CentroidConjoiner();
 
-    private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
+    class CentroidConjoiner {
 
-        Iterator<VLink<Task>> gg =
-                group.filter(x -> x != null && !x.isDeleted()).iterator();
+        final Map<LongObjectPair<Term>, Task> vv = new HashMap<>(16);
+        final FasterList<Task> actualTasks = new FasterList(8);
+        final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 8);
 
-        Map<LongObjectPair<Term>, Task> vv = new HashMap<>(16);
-        FasterList<Task> actualTasks = new FasterList(8);
+        private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
+            Iterator<VLink<Task>> gg =
+                    group.filter(x -> x != null && !x.isDeleted()).iterator();
 
-        int centroidGen = 0;
+            int centroidGen = 0;
 
+            main:
+            while (gg.hasNext() && centroidGen < taskLimitPerCentroid) {
 
-        LongHashSet actualStamp = new LongHashSet();
-
-        main:
-        while (gg.hasNext() && centroidGen < taskLimitPerCentroid) {
-
-            vv.clear();
-            actualTasks.clear();
-            actualStamp.clear();
-
-
-            long end = Long.MIN_VALUE;
-            long start = Long.MAX_VALUE;
-
-            float freq = 1f;
-            float conf = 1f;
-            float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
-            float confMax = Float.NEGATIVE_INFINITY;//, confMin = Float.POSITIVE_INFINITY;
-            int vol = 0;
-            int volMax = 0;
-
-            do {
-                if (!gg.hasNext())
-                    break;
-
-                Task t =
-                        gg.next().id;
-
-                Term xt = t.term();
-
-                long zs = Tense.dither(t.start(), ditherTime);
+                vv.clear();
+                actualTasks.clear();
+                actualStamp.clear();
 
 
-                Truth tx = t.truth();
-                Term xtn = xt.neg();
-                if (tx.isNegative()) {
-                    xt = xtn;
-                }
+                long end = Long.MIN_VALUE;
+                long start = Long.MAX_VALUE;
 
-                int xtv = xt.volume();
-                volMax = Math.max(volMax, xt.volume());
-                if (vol + xtv + 1 >= this.volMax || conf * tx.conf() < confMin) {
-                    continue;
-                }
+                float freq = 1f, conf = 1f;
+                float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
+                float confMax = Float.NEGATIVE_INFINITY;//, confMin = Float.POSITIVE_INFINITY;
+                int vol = 0;
+                int volMax = 0;
 
-                boolean include = false;
-                LongObjectPair<Term> ps = pair(zs, xt);
-                Term xtNeg = xt.neg();
-
-
-                if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
-                    if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
-                        vol += xtv;
-                        include = true;
-                    }
-                }
-
-
-                if (include) {
-
-                    actualTasks.add(t);
-
-                    actualStamp.addAll(t.stamp());
-
-                    if (start > zs) start = zs;
-                    if (end < zs) end = zs;
-
-                    float tc = tx.conf();
-                    if (tc > confMax) confMax = tc;
-
-                    conf *= tc;
-
-                    float tf = tx.freq();
-                    freq *= tx.isNegative() ? (1f - tf) : tf;
-
-                    float p = t.priElseZero();
-                    if (p < priMin) priMin = p;
-                    if (p > priMax) priMax = p;
-
-                    if (actualTasks.size() >= Param.STAMP_CAPACITY)
+                do {
+                    if (!gg.hasNext())
                         break;
-                }
-            } while (vol < this.volMax - 1 && conf > confMin);
 
-            int vs = actualTasks.size();
-            if (vs < 2)
-                continue;
+                    Task t =
+                            gg.next().id;
 
+                    Term xt = t.term();
 
-            Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
+                    long zs = Tense.dither(t.start(), ditherTime);
 
 
-            float e = c2wSafe(conf);
-            if (e > 0) {
-                final Truth t = Truth.theDithered(freq, e, nar);
-                if (t != null) {
+                    Truth tx = t.truth();
+                    Term xtn = xt.neg();
+                    if (tx.isNegative()) {
+                        xt = xtn;
+                    }
 
-                    Term cj = Conj.conj(vv.keySet());
-                    if (cj != null) {
+                    int xtv = xt.volume();
+                    volMax = Math.max(volMax, xt.volume());
+                    if (vol + xtv + 1 >= ConjClustering.this.volMax || conf * tx.conf() < confMin) {
+                        continue;
+                    }
+
+                    boolean include = false;
+                    LongObjectPair<Term> ps = pair(zs, xt);
+                    Term xtNeg = xt.neg();
 
 
+                    if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
+                        if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
+                            vol += xtv;
+                            include = true;
+                        }
+                    }
 
 
+                    if (include) {
 
-                            ObjectBooleanPair<Term> cp = Task.tryContent( Task.forceNormalizeForBelief(cj), punc, true);
+                        actualTasks.add(t);
+
+                        actualStamp.addAll(t.stamp());
+
+                        if (start > zs) start = zs;
+                        if (end < zs) end = zs;
+
+                        float tc = tx.conf();
+                        if (tc > confMax) confMax = tc;
+
+                        conf *= tc;
+
+                        float tf = tx.freq();
+                        freq *= tx.isNegative() ? (1f - tf) : tf;
+
+                        float p = t.priElseZero();
+                        if (p < priMin) priMin = p;
+                        if (p > priMax) priMax = p;
+
+                        if (actualTasks.size() >= Param.STAMP_CAPACITY)
+                            break;
+                    }
+                } while (vol < ConjClustering.this.volMax - 1 && conf > confMin);
+
+                int vs = actualTasks.size();
+                if (vs < 2)
+                    continue;
+
+
+                Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
+
+
+                float e = c2wSafe(conf);
+                if (e > 0) {
+                    final Truth t = Truth.theDithered(freq, e, nar);
+                    if (t != null) {
+
+                        Term cj = Conj.conj(vv.keySet());
+                        if (cj != null) {
+
+
+                            ObjectBooleanPair<Term> cp = Task.tryContent(Task.forceNormalizeForBelief(cj), punc, true);
                             if (cp != null) {
 
 
-                                NALTask m = new STMClusterTask(cp, t, start, start, actualStamp.toArray(), punc, now);
+                                NALTask m = new STMClusterTask(cp, t, start, start, Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
 
 
                                 m.cause = Cause.merge(Param.causeCapacity.intValue(), uu);
@@ -290,12 +286,13 @@ public class ConjClustering extends Causable {
                         }
 
 
+                    }
                 }
+
+
             }
 
-
         }
-
     }
 
     @Override

@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.data.pool.DequePool;
 import jcog.data.set.MetalLongSet;
 import jcog.math.CachedFloatRank;
 import jcog.sort.FloatRank;
@@ -14,7 +15,6 @@ import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
-import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -22,19 +22,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 
-/** heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
+/**
+ * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
 public class Answer implements Consumer<Task> {
 
     public final static int TASK_LIMIT =
             //Param.STAMP_CAPACITY-1;
-            Param.STAMP_CAPACITY/2;
+            Param.STAMP_CAPACITY / 2;
 
 
     public final NAR nar;
@@ -47,12 +47,14 @@ public class Answer implements Consumer<Task> {
 
     public Answer(int limit, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
-        this.cache = cache(rank.filter(filter));
+        this.cache = start(rank.filter(filter));
         this.filter = filter;
         this.tasks = new TopN<>(new Task[limit], cache);
     }
 
-    /** compose filter from one or two filters */
+    /**
+     * compose filter from one or two filters
+     */
     public static Predicate<Task> filter(@Nullable Predicate<Task> a, @Nullable Predicate<Task> b) {
         if (a == null) return b;
         if (b == null) return a;
@@ -69,19 +71,19 @@ public class Answer implements Consumer<Task> {
         tasks.clear();
     }
 
-    @Deprecated public static Answer relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    @Deprecated
+    public static Answer relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
         return relevance(beliefOrQuestion, beliefOrQuestion ? TASK_LIMIT : 1, start, end, template, filter, nar);
     }
 
-    /** for belief or goals (not questions / quests */
-    @Deprecated public static Answer relevance(boolean beliefOrQuestion, int limit, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    /**
+     * for belief or goals (not questions / quests
+     */
+    @Deprecated
+    public static Answer relevance(boolean beliefOrQuestion, int limit, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template, nar);
 
-        return answer(r, filter, start, end, template, limit, nar);
-    }
-
-    public static Answer answer(FloatRank<Task> r, @Nullable Predicate<Task> filter, long start, long end, @Nullable Term template, int limit, NAR nar) {
         return new Answer(limit, r, filter, nar)
                 .time(new TimeRangeFilter(start, end, true))
                 .template(template);
@@ -92,7 +94,7 @@ public class Answer implements Consumer<Task> {
 
         FloatRank<Task> strength =
                 beliefOrQuestion ?
-                    FloatRank.the(beliefStrength(start, end, dur)) : questionStrength(start, end, dur);
+                        FloatRank.the(beliefStrength(start, end, dur)) : questionStrength(start, end, dur);
 
         FloatRank<Task> r;
         if (template == null || !template.hasAny(Temporal)) {
@@ -131,9 +133,9 @@ public class Answer implements Consumer<Task> {
 
             return (t) -> {
                 float v1 = f.floatValueOf(t);
-                if (v1!=v1) return Float.NaN;
+                if (v1 != v1) return Float.NaN;
 
-                return 1f / (1f + Revision.dtDiff(xt, ((Task)t).term()));
+                return 1f / (1f + Revision.dtDiff(xt, ((Task) t).term()));
             };
         } else {
             return f;
@@ -141,12 +143,12 @@ public class Answer implements Consumer<Task> {
     }
 
     public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, @Nullable Term template) {
-        return (x,min) -> {
+        return (x, min) -> {
             float base = (1 + strength.rank(x, min));
-            if (base < min || base!=base)
+            if (base < min || base != base)
                 return Float.NaN;
 
-            return base * (1 + 1/ Revision.dtDiff(template, x.term()));
+            return base * (1 + 1 / Revision.dtDiff(template, x.term()));
         };
     }
 
@@ -157,6 +159,7 @@ public class Answer implements Consumer<Task> {
             return temporalTaskStrength(start, end, dur);
         }
     }
+
     public static FloatRank<Task> questionStrength(long start, long end, int dur) {
 
         return
@@ -165,7 +168,7 @@ public class Answer implements Consumer<Task> {
                         :
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
-                            if (pri==pri && pri > m)
+                            if (pri == pri && pri > m)
                                 return pri * (1 / ((float) (t.minTimeTo(start, end) / ((double) dur))));
                             return Float.NaN;
                         };
@@ -192,62 +195,82 @@ public class Answer implements Consumer<Task> {
     /**
      * matches, and projects to the specified time-range if necessary
      * note: if forceProject, the result may be null if projection doesnt succeed.
-     *   only useful for precise value summarization for a specific time.
-     *
-     *
+     * only useful for precise value summarization for a specific time.
+     * <p>
+     * <p>
      * clears the cache and tasks before returning
      */
     public Task task(boolean topOrSample, boolean tryMerge, boolean forceProject) {
-
-        int s = tasks.size();
-        Task t;
-        switch (s) {
-            case 0:
-                t = null;
-                break;
-            case 1:
-                t = tasks.get(0);
-                break;
-            default: {
-                @Nullable Task root = taskFirst(topOrSample);
-                switch (root.punc()) {
-                    case BELIEF:
-                    case GOAL:
-                        if (tryMerge)
-                            t = taskMerge(root);
-                        else
+        try {
+            int s = tasks.size();
+            Task t;
+            switch (s) {
+                case 0:
+                    t = null;
+                    break;
+                case 1:
+                    t = tasks.get(0);
+                    break;
+                default: {
+                    @Nullable Task root = taskFirst(topOrSample);
+                    switch (root.punc()) {
+                        case BELIEF:
+                        case GOAL:
+                            if (tryMerge)
+                                t = taskMerge(root);
+                            else
+                                t = root;
+                            break;
+                        case QUESTION:
+                        case QUEST:
                             t = root;
-                        break;
-                    case QUESTION:
-                    case QUEST:
-                        t = root;
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-                break;
-            }
-        }
-
-        if (forceProject && t!=null) {
-            long ss = time.start;
-            if (ss != ETERNAL) { //dont eternalize here
-                long ee = time.end;
-                if (t.isEternal() || !t.containedBy(ss, ee)) {
-                    t = Task.project(t, ss, ee, nar);
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
+                    break;
                 }
             }
+
+            if (forceProject && t != null) {
+                long ss = time.start;
+                if (ss != ETERNAL) { //dont eternalize here
+                    long ee = time.end;
+                    if (t.isEternal() || !t.containedBy(ss, ee)) {
+                        t = Task.project(t, ss, ee, nar);
+                    }
+                }
+            }
+
+            clear();
+
+            return t;
+        } finally {
+            end();
         }
+    }
 
-        clear();
+    /**
+     * clears the cache and tasks before returning
+     */
+    @Nullable
+    public Truth truth() {
+        try {
+            TruthPolation p = truthpolation();
+            @Nullable TruthPolation t = p != null ? p.filtered() : null;
+            Truth result = t != null ? t.truth(nar) : null;
 
-        return t;
+
+            return result;
+        } finally {
+            end();
+        }
     }
 
     private Task taskFirst(boolean topOrSample) {
         if (topOrSample) {
             return tasks.get(0);
-        } else{
+        } else {
             return tasks.get(nar.random());
         }
     }
@@ -260,13 +283,12 @@ public class Answer implements Consumer<Task> {
 
         TruthPolation tp = truthpolation(d);
         @Nullable MetalLongSet stampSet = tp.filterCyclic(root, true);
-        if (tp.size()==1)
+        if (tp.size() == 1)
             return root;
 
 
-
         @Nullable Truth tt = tp.truth(nar);
-        if (tt==null)
+        if (tt == null)
             return root;
 
         if (ditherTruth) {
@@ -275,8 +297,8 @@ public class Answer implements Consumer<Task> {
                 return root;
         }
 
-        Task dyn = d.task(tp.term, tt, (rng)->{
-            assert(stampSet!=null);
+        Task dyn = d.task(tp.term, tt, (rng) -> {
+            assert (stampSet != null);
             if (stampSet.size() > Param.STAMP_CAPACITY) {
                 return Stamp.sample(Param.STAMP_CAPACITY, stampSet, rng);
             } else {
@@ -292,8 +314,12 @@ public class Answer implements Consumer<Task> {
         return Truth.stronger(root, dyn);
     }
 
-    /** TODO merge DynTruth and TruthPolation */
-    @Nullable @Deprecated protected DynTruth dynTruth() {
+    /**
+     * TODO merge DynTruth and TruthPolation
+     */
+    @Nullable
+    @Deprecated
+    protected DynTruth dynTruth() {
         int s = tasks.size();
         if (s == 0)
             return null;
@@ -303,24 +329,17 @@ public class Answer implements Consumer<Task> {
     }
 
 
-    /** clears the cache and tasks before returning */
-    @Nullable public Truth truth() {
-        TruthPolation p = truthpolation();
-        @Nullable TruthPolation t = p!=null ? p.filtered() : null;
-        Truth result = t != null ? t.truth(nar) : null;
 
-        clear();
-
-        return result;
-    }
-
-    @Nullable public TruthPolation truthpolation() {
+    @Nullable
+    public TruthPolation truthpolation() {
         DynTruth d = dynTruth();
         if (d == null) return null;
         return truthpolation(d);
     }
 
-    /** this does not filter cyclic; do that manually */
+    /**
+     * this does not filter cyclic; do that manually
+     */
     private TruthPolation truthpolation(DynTruth d) {
         TruthPolation tp = Param.truth(time.start, time.end, nar.dur());
         tp.ensureCapacity(d.size());
@@ -333,17 +352,31 @@ public class Answer implements Consumer<Task> {
         return this;
     }
 
-    final static Supplier<CachedFloatRank<Task>> caches = ()->new CachedFloatRank<>(8);
-//            ThreadLocal.withInitial(()->
-//            new CachedFloatFunction<>(4)
-//            );
+    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
+            //HEAP
+            //() -> new CachedFloatRank<>(64);
 
-    static protected CachedFloatRank<Task> cache(FloatRank<Task> rank) {
+
+            ThreadLocal.withInitial(()->
+                    new DequePool<CachedFloatRank<Task>>(8) {
+                        @Override
+                        public CachedFloatRank<Task> create() {
+                            return new CachedFloatRank<>(64);
+                        }
+                    }
+            );
+
+    static protected CachedFloatRank<Task> start(FloatRank<Task> rank) {
         //return new CachedFloatFunction<>(4, 256, rank);
-        CachedFloatRank<Task> x = caches.get().value(rank);
-        assert(x.isEmpty());
+        CachedFloatRank<Task> x = pool.get().get().value(rank);
+        assert (x.isEmpty());
         //System.out.println(Thread.currentThread() + " got " + System.identityHashCode(x));
         return x;
+    }
+
+    private void end() {
+        clear();
+        pool.get().put(cache);
     }
 
     public Answer time(TimeRangeFilter time) {
@@ -362,16 +395,18 @@ public class Answer implements Consumer<Task> {
         //}
     }
 
-    public boolean isEmpty() { return tasks.isEmpty(); }
-
-    @Nullable public Truth truth(long s, long e, int dur) {
-        return isEmpty() ? null : truth(new FocusingLinearTruthPolation(s, e, dur));
+    public boolean isEmpty() {
+        return tasks.isEmpty();
     }
 
-    @Nullable public Truth truth(TruthPolation p) {
-        p.ensureCapacity(tasks.size());
-        p.add(tasks);
-        p.filterCyclic(false);
-        return p.truth();
-    }
+//
+//    @Nullable
+//    private Truth truth(TruthPolation p) {
+//        p.ensureCapacity(tasks.size());
+//        p.add(tasks);
+//        p.filterCyclic(false);
+//        return p.truth();
+//    }
+
+
 }

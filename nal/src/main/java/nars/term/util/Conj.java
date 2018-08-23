@@ -749,7 +749,12 @@ public class Conj extends ByteAnonMap {
                 //carefully remove the contradicting first event
                 existingShortened = Conj.conjDrop(existingUnneg, incoming, true, false).neg();
             }
+
             int dt = eternal ? DTERNAL : 0;
+
+            if (existingShortened.equals(existingUnneg))
+                return Op.compound(CONJ, dt, existingUnneg, incoming);
+
             try {
                 return CONJ.the(existingShortened, dt, incoming);
             } catch (StackOverflowError e) {

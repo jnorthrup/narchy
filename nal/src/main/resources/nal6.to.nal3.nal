@@ -14,17 +14,17 @@
 
 
 //specific difference of two conjunctions
- (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task(".")    |- (X~Y), (Punctuation:Question, Time:TaskRange)
-    (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task("!")    |- (X~Y), (Punctuation:Quest, Time:TaskRange)
- (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task(".")    |- (Y~X), (Punctuation:Question, Time:TaskRange)
-    (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task("!")    |- (Y~X), (Punctuation:Quest, Time:TaskRange)
+ (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task("."), --has(Y,"~"),--has(X,"~")     |- (X~Y), (Punctuation:Question, Time:TaskRange)
+    (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task("!"), --has(Y,"~"),--has(X,"~")  |- (X~Y), (Punctuation:Quest, Time:TaskRange)
+ (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task("."), --has(Y,"~"),--has(X,"~")     |- (Y~X), (Punctuation:Question, Time:TaskRange)
+    (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task("!"), --has(Y,"~"),--has(X,"~")  |- (Y~X), (Punctuation:Quest, Time:TaskRange)
 
 //comparators
-(A ==> X), (B ==> X), neqRCom(A,B), task(".") |- ((A ~ B) ==> X), (Punctuation:Question)
-(A ==> X), (B ==> X), neqRCom(A,B), task(".") |- ((B ~ A) ==> X), (Punctuation:Question)
-(X ==> A), (X ==> B), neqRCom(A,B), task(".") |- (X ==> (A ~ B)), (Punctuation:Question)
-(X ==> A), (X ==> B), neqRCom(A,B), task(".") |- (X ==> (B ~ A)), (Punctuation:Question)
+(A ==> X), (B ==> X), neqRCom(A,B), task("."), --has(A,"~"),--has(B,"~") |- ((A ~ B) ==> X), (Punctuation:Question)
+(A ==> X), (B ==> X), neqRCom(A,B), task("."), --has(A,"~"),--has(B,"~") |- ((B ~ A) ==> X), (Punctuation:Question)
+(X ==> A), (X ==> B), neqRCom(A,B), task("."), --has(A,"~"),--has(B,"~") |- (X ==> (A ~ B)), (Punctuation:Question)
+(X ==> A), (X ==> B), neqRCom(A,B), task("."), --has(A,"~"),--has(B,"~") |- (X ==> (B ~ A)), (Punctuation:Question)
 
 //identity?
-  ((X-->A) ~ (X-->B)),   X, neqRCom(A,B)  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction)
-  ((A-->X) ~ (B-->X)),   X, neqRCom(A,B)  |- ((A~B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction)
+//  ((X-->A) ~ (X-->B)),   X, neqRCom(A,B), --has(A,"~"),--has(B,"~")  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction)
+//  ((A-->X) ~ (B-->X)),   X, neqRCom(A,B), --has(A,"~"),--has(B,"~")  |- ((A~B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction)

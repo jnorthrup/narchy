@@ -57,8 +57,8 @@ public abstract class Param {
 //    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
     /** auto decompose conjunction beliefs and goals on input */
-    public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = false;
-    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = false;
+    public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = true;
+    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = true;
 
     /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
      *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
@@ -68,7 +68,7 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
+    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
     /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
     public static final Predicate<Op> eternalizeInDerivation = (o) -> {

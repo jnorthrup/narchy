@@ -7,7 +7,7 @@ package jcog.pri;
  *
  * range is not bounded; for 0..1.0 limit use UnitPri
  */
-public class Pri extends ScalarValue.AtomicScalarValue implements Priority {
+abstract public class Pri extends ScalarValue.AtomicScalarValue implements Priority {
 
 
     public Pri(Prioritized b) {
@@ -35,8 +35,7 @@ public class Pri extends ScalarValue.AtomicScalarValue implements Priority {
         return getBudgetString();
     }
 
-    /** override to implement a value post-filter */
-    public float v(float x) {
-        return x;
-    }
+//    public float v(float x) {
+//        return x;
+//    }
 }

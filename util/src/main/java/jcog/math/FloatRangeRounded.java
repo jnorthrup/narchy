@@ -4,7 +4,7 @@ import jcog.Util;
 
 public class FloatRangeRounded extends FloatRange {
 
-    float epsilon = Float.MIN_NORMAL;
+    float epsilon;
 
     public FloatRangeRounded(float value, float min, float max, float epsilon) {
         super(value, min, max);

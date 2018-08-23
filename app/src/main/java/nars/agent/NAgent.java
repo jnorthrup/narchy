@@ -381,7 +381,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
                 a.sense(prev, now, next);
 
-                a.act(prev, now, next);
+                long adjustedPrev = Math.max(prev, now - (next-now)); //prevent stretching and evaluating too far in the past
+                a.act(adjustedPrev, now, next);
             }
 
         },
@@ -422,14 +423,15 @@ public class NAgent extends NARService implements NSense, NAct {
 
         try {
             long now = nar.time();
-            long last = this.last;
-            if (last == ETERNAL)
-                last = now;
-            else if (now <= last)
+            long prev = this.last;
+            if (prev == ETERNAL)
+                prev = now;
+            else if (now <= prev)
                 return;
 
             long next = Math.max(now, frameTrigger.next(now));
-            cycle.next(this, iteration.getAndIncrement(), last, now, next);
+
+            cycle.next(this, iteration.getAndIncrement(), prev, now, next);
 
             this.last = now;
 

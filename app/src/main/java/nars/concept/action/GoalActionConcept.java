@@ -3,6 +3,7 @@ package nars.concept.action;
 import nars.$;
 import nars.NAR;
 import nars.control.channel.CauseChannel;
+import nars.control.proto.Remember;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.task.ITask;
 import nars.term.Term;
@@ -38,8 +39,17 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
 
-
-
+    @Override
+    public void add(Remember r, NAR n) {
+//        Param.DEBUG = true;
+//        if (r.input!=null && r.input.isGoal()) {
+//            if (r.input.range() > n.dur() * 256) {
+//                System.err.println("caught long goal task: " + r.input);
+//                System.err.println(r.input.proof());
+//            }
+//        }
+        super.add(r, n);
+    }
 
     @Override
     public void update(long prev, long now, long next, NAR n) {

@@ -144,7 +144,7 @@ public interface ScalarValue {
         }
     }
 
-    class AtomicScalarValue implements ScalarValue {
+    abstract class AtomicScalarValue implements ScalarValue {
         protected static final AtomicFloatFieldUpdater<AtomicScalarValue> FLOAT =
                 new AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater.newUpdater(AtomicScalarValue.class, "pri"));
 
@@ -177,9 +177,7 @@ public interface ScalarValue {
         }
 
         /** post-filter */
-        public float v(float x) {
-            return x;
-        }
+        abstract public float v(float x);
 
         /** allows NaN */
         private float _v(float x) {

@@ -2,12 +2,12 @@ package jcog.memoize.byt;
 
 import jcog.Texts;
 import jcog.data.byt.DynBytes;
-import jcog.pri.Pri;
 import jcog.pri.PriProxy;
+import jcog.pri.UnitPri;
 
 import java.util.Arrays;
 
-public class ByteKey extends Pri {
+public class ByteKey extends UnitPri {
 
     /*@Stable*/
     public final byte[] key;

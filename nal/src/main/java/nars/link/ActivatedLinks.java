@@ -3,7 +3,7 @@ package nars.link;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.pri.PLink;
-import jcog.pri.Pri;
+import jcog.pri.UnitPri;
 import jcog.sort.SortedList;
 import nars.NAR;
 import nars.concept.Concept;
@@ -36,7 +36,7 @@ public class ActivatedLinks extends AbstractTask {
         return termlink.isEmpty();
     }
 
-    static final class TermLinkage extends Pri implements Comparable<TermLinkage> {
+    static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
 
         public final static Comparator<TermLinkage> comparator = Comparator
             .comparing((TermLinkage x)->x.concept.term())

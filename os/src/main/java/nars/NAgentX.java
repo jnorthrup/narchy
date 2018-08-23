@@ -16,6 +16,7 @@ import nars.concept.sensor.Signal;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
+import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.gui.EmotionPlot;
@@ -152,7 +153,7 @@ abstract public class NAgentX extends NAgent {
             NAgent a = init.apply(n);
             //a.durs(2f); //nyquist?
 
-            a.curiosity.set(0.25f);
+            a.curiosity.set(0.1f);
 
 
             n.on(a);
@@ -163,9 +164,10 @@ abstract public class NAgentX extends NAgent {
                         Derivers.nal(n, 6, 8, "motivation.nal")) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
-//                        return conclusion == GOAL ? 1 : 0.1f;
+//                        return conclusion == GOAL ? 1 : 0.5f;
 //                    }
                 };
+                motivation.timing = new ActionTiming(n);
 
 
                 //Gridding aa = new Gridding(

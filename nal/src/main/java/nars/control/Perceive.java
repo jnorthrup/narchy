@@ -16,7 +16,6 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -119,10 +118,10 @@ public enum Perceive { ;
 
 
         if (tto == CONJ) {
-            int dt = tt.dt();
-            if (!(tt instanceof ConjClustering.STMClusterTask)) { //HACK
-                if ((dt != DTERNAL && dt != XTERNAL) && !t.isEternal()) {
-                    if (((punc == BELIEF && Param.AUTO_DECOMPOSE_CONJ_BELIEF) || (punc == GOAL && Param.AUTO_DECOMPOSE_CONJ_GOAL))) {
+            if (((punc == BELIEF && Param.AUTO_DECOMPOSE_CONJ_BELIEF) || (punc == GOAL && Param.AUTO_DECOMPOSE_CONJ_GOAL))) {
+                if (!(tt instanceof ConjClustering.STMClusterTask)) { //HACK
+                    int dt = tt.dt();
+                    if ((dt != DTERNAL && dt != XTERNAL) && !t.isEternal()) {
                         conjDecompose(t, queue, n);
                     }
                 }
@@ -172,26 +171,27 @@ public enum Perceive { ;
     }
 
     private static boolean execute(Task t, Collection<ITask> queue, NAR n, boolean cmd) {
-        Pair<Operator, Term> o = Functor.ifFunc(t.term(), (i) -> {
-            Concept operation = n.concept(i);
-            return operation instanceof Operator ? (Operator) operation : null;
-        });
-        if (o != null) {
-            Operator operator = o.getOne();
-            try {
-                Task yy = operator.model.apply(t, n);
-                if (yy != null && !t.equals(yy)) {
-                    queue.add(yy);
-                }
-            } catch (Throwable xtt) {
-                logger.warn("{} operator {} exception {}", t, operator, xtt);
-                //queue.add(Operator.error(this, xtt, n.time()));
-                return false;
-            }
-            if (cmd) {
-                queue.add(new Reaction(t));
-            }
+        Term maybeOperator = Functor.func(t.term());
 
+        if (maybeOperator!=Null) {
+            Concept oo = n.concept(maybeOperator);
+            if (oo instanceof Operator) {
+                Operator o = (Operator)oo;
+                try {
+                    Task yy = o.model.apply(t, n);
+                    if (yy != null && !t.equals(yy)) {
+                        queue.add(yy);
+                    }
+                } catch (Throwable xtt) {
+                    logger.warn("{} operator {} exception {}", t, o, xtt);
+                    //queue.add(Operator.error(this, xtt, n.time()));
+                    return false;
+                }
+                if (cmd) {
+                    queue.add(new Reaction(t));
+                }
+
+            }
         }
         return true;
     }

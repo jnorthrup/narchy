@@ -1,5 +1,6 @@
 package nars.truth.dynamic;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
@@ -134,8 +135,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
                 }
 
-                if (Param.DEBUG)
-                    throw new UnsupportedOperationException();
+                if (Param.DEBUG_EXTRA)
+                    throw new TODO();
 
                 return false;
             }

@@ -15,6 +15,11 @@ public class NLink<X> extends Pri implements PriReference<X> {
         this.id = x;
     }
 
+    /** allow any value */
+    @Override public float v(float x) {
+        return x;
+    }
+
     @Override
     public boolean equals(Object that) {
         return (this == that) || id.equals(
@@ -24,11 +29,6 @@ public class NLink<X> extends Pri implements PriReference<X> {
         );
     }
 
-    @Override
-    public boolean isDeleted() {
-        float p = pri();
-        return p != p;
-    }
 
     @Override
     public int hashCode() {

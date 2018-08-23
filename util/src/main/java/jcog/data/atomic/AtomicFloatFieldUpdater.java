@@ -3,16 +3,17 @@ package jcog.data.atomic;
 import jcog.util.FloatConsumer;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import org.eclipse.collections.api.block.function.primitive.FloatToIntFunction;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.IntUnaryOperator;
 
-import static java.lang.Float.floatToIntBits;
-import static java.lang.Float.intBitsToFloat;
+import static java.lang.Float.*;
 
 /** @see AtomicFloat */
 public final class AtomicFloatFieldUpdater<X>  {
 
+    private final static int NAN = floatToIntBits(Float.NaN);
     private final static int ZERO = floatToIntBits(0f);
     public final AtomicIntegerFieldUpdater<X> updater;
 
@@ -24,12 +25,17 @@ public final class AtomicFloatFieldUpdater<X>  {
         this.updater = u;
     }
 
+    public void setNaN(X x) {
+        updater.set(x, NAN);
+    }
+
     public void set(X x, float value) {
         updater.set(x, floatToIntBits(value));
     }
-    public void lazySet(X x, float value) {
-        updater.lazySet(x, floatToIntBits(value));
-    }
+
+//    public void lazySet(X x, float value) {
+//        updater.lazySet(x, floatToIntBits(value));
+//    }
 
     public void add(X x, float add) {
         updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
@@ -38,6 +44,11 @@ public final class AtomicFloatFieldUpdater<X>  {
     private float update(X x, IntUnaryOperator y) {
         return intBitsToFloat(updater.updateAndGet(x, y));
     }
+
+    public float updateIntAndGet(X x, FloatToIntFunction f) {
+        return update(x, v -> f.valueOf(intBitsToFloat(v)));
+    }
+
     public float updateAndGet(X x, FloatToFloatFunction f) {
         return update(x, v -> floatToIntBits(f.valueOf(intBitsToFloat(v))));
     }
@@ -86,6 +97,9 @@ public final class AtomicFloatFieldUpdater<X>  {
     public float updateAndGet(X x, FloatToFloatFunction update, FloatToFloatFunction post) {
         return updateAndGet(x, (v)-> post.valueOf(update.valueOf(v)));
     }
+//    public float updateIntAndGet(X x, FloatToFloatFunction update, FloatToIntFunction post) {
+//        return updateIntAndGet(x, (v)-> post.valueOf(update.valueOf(v)));
+//    }
 
     /** unary + arg */
     public float updateAndGet(X x, float arg, FloatFloatToFloatFunction update, FloatToFloatFunction post) {

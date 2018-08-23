@@ -49,7 +49,7 @@ abstract public class Deriver extends Causable {
      *    input: premise Task, premise belief term
      *    output: long[2] time interval
      **/
-    public final BiFunction<Task,Term,long[]> timing;
+    public BiFunction<Task,Term,long[]> timing;
 
 
     protected final DerivedTasks derived =
@@ -165,10 +165,10 @@ abstract public class Deriver extends Causable {
     }
 
 
-//    @Override
-//    public boolean singleton() {
-//        return false;
-//    }
+    @Override
+    public boolean singleton() {
+        return false;
+    }
 
     @Override
     public float value() {

@@ -125,6 +125,14 @@ public class TruthIntegration {
         }
 
         @Override
+        public boolean add(long newItem) {
+            int size = this.size;
+            if (size > 0 && items[size-1] == newItem)
+                return true; //equal to the last value
+            return super.add(newItem);
+        }
+
+        @Override
         public long[] toArray() {
             int size = this.size;
             if (size == 0)
@@ -137,12 +145,33 @@ public class TruthIntegration {
             return Arrays.copyOf(x, size);
         }
 
-        @Override
-        public long[] toSortedArray() {
+        /** the input is likely already sorted so do a few extra comparisons to avoid a sort() */
+        @Override public long[] toSortedArray() {
             long[] array = this.toArray();
-            if (array.length > 1) {
-                Arrays.sort(array);
+            switch (array.length) {
+                case 0:
+                case 1:
+                    return array;
+                case 2:
+                    if (array[0] > array[1]) {
+                        long x = array[0];
+                        array[0] = array[1];
+                        array[1] = x;
+                    }
+                    return array;
+                case 3:
+                    if (array[0] <= array[1] && array[1] <= array[2])
+                        return array;
+                    break;
+                case 4:
+                    if (array[0] <= array[1] && array[1] <= array[2] && array[2] <= array[3])
+                        return array;
+                    break;
+                default:
+                    break;
             }
+            //Arrays.sort(array);
+            ArrayUtils.sort(array, (l)->-l);
             return array;
         }
     }

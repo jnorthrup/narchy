@@ -215,7 +215,7 @@ public class SetSectDiff {
 
                 /* deny temporal terms which can collapse degeneratively on conceptualization
                 *  TODO - for SET/SECT also? */
-                if (!uniqueRoots(et0, et1))
+                if (!uniqueRoots(et0.unneg(), et1.unneg()))
                     return Null;
 
                 Op o1 = et1.op();
