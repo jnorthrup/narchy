@@ -7,7 +7,9 @@ LABEL org.label-schema.vcs-ref=$VCS_REF \
 
 RUN cd / ; git clone --depth 1 https://seh@bitbucket.org/seh/narchy.git narchy
 
-RUN cd /narchy ;  git gc ; ./gradlew :util:build :nal:build -x test
+RUN cd /narchy 
+RUN git gc
+RUN /sbin/sh ./gradlew :util:build :nal:build -x test
 
 # WORKDIR /narchy
 
