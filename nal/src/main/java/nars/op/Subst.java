@@ -18,9 +18,6 @@ import static nars.Op.Null;
  */
 public class Subst extends Functor implements Functor.InlineFunctor, The {
 
-    
-    public final static Term STRICT = Atomic.the("strict");
-
 
     public static final Subst replace = new Subst("replace");
 
@@ -45,7 +42,7 @@ public class Subst extends Functor implements Functor.InlineFunctor, The {
     public @Nullable
     static Term apply(Subterms xx, Term input, Term x, Term y) {
         Term result = !x.equals(y) ? input.replace(x, y) : input;
-        if (xx.subEquals(3, STRICT) && input.equals(result))
+        if (xx.subEquals(3, SubIfUnify.STRICT) && input.equals(result))
             return Null;
 
         return result;

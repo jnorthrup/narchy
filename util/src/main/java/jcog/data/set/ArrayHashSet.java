@@ -171,11 +171,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
             case 0:
                 set = newSet();
                 set.add(element);
-                addUnique(element);
+                addedUnique(element);
                 return true;
             default:
                 if (set.add(element)) {
-                    addUnique(element);
+                    addedUnique(element);
                     return true;
                 }
                 return false;
@@ -183,12 +183,12 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     }
 
-    protected void addUnique(X element) {
+    private void addedUnique(X element) {
         list.add(element);
     }
 
     public Set<X> newSet() {
-        return new UnifiedSet(1);
+        return new UnifiedSet<>(2);
     }
 
     @Override
@@ -286,8 +286,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
         @Override
         public void add(X element) {
+            if (set == null)
+                throw new TODO();
+
             if (set.add(element)) {
-                arrayListIterator.add(element);
+                addedUnique(element);
             }
         }
 

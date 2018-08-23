@@ -73,16 +73,16 @@ public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform
     }
 
 
-    @Override
-    protected void addUnique(Term x) {
-        super.addUnique(x);
-
-//            x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
-//                if (s instanceof Variable)
-//                    vars.add((Variable) s);
-//                return true;
-//            }), null);
-    }
+//    @Override
+//    protected void addUnique(Term x) {
+//        super.addUnique(x);
+//
+////            x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
+////                if (s instanceof Variable)
+////                    vars.add((Variable) s);
+////                return true;
+////            }), null);
+//    }
 
     @Override
     public @Nullable Term transformAtomic(Atomic x) {

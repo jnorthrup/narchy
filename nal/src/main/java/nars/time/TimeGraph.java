@@ -521,6 +521,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 Event z = a;
                 a = b;
                 b = z;
+                ddt = -ddt;
             }
         }
 

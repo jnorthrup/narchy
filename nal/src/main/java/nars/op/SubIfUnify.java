@@ -71,8 +71,9 @@ import static nars.Op.VAR_DEP;
 public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
 
-    final static Term INDEP_VAR = $.quote("$");
-    final static Term DEP_VAR = $.quote("#");
+    public final static Term STRICT = Atomic.the("strict");
+    public final static Term INDEP_VAR = $.quote("$");
+    public final static Term DEP_VAR = $.quote("#");
     public static final Atom SubIfUnify = (Atom) Atomic.the("subIfUnifiesAny");
 
     private final Derivation parent;
@@ -93,15 +94,12 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         int pp = a.subs();
         for (int p = 3; p < pp; p++) {
             Term ai = a.sub(p);
-            if (ai.equals(Subst.STRICT))
+            if (ai.equals(STRICT))
                 strict = true;
             else if (ai.equals(INDEP_VAR)) {
-
-
+                //HACK is this ignored?
             } else if (ai.equals(DEP_VAR)) {
                 op = VAR_DEP;
-
-
             } else
                 throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
