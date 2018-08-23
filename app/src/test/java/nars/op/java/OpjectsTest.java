@@ -34,11 +34,8 @@ public class OpjectsTest {
         final NAR n = NARS.tmp();
 
         int dur = 1;
-        int focus = 4;
 
         n.time.dur(dur);
-
-
 
         List<Term> evokes = new FasterList();
         final Opjects objs = new Opjects(n) {
@@ -50,6 +47,7 @@ public class OpjectsTest {
                 return super.evoked(method, instance, params);
             }
         };
+
         n.run();
 
         final SimpleClass x = objs.the("x", new SimpleClass());

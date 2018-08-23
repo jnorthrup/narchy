@@ -19,6 +19,7 @@ import nars.term.util.Image;
 import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
+import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.set.MutableSet;
@@ -532,10 +533,14 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
 
-                Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x, true,  true));
+                boolean isIdentity = d.truthFunction == NALTruth.Identity;
+
+                Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x, true,  !isIdentity));
                 if (p != null) {
                     byte punc = d.concPunc;
-                    if (punc == GOAL || punc == QUEST) {
+
+                    //prevent altering identity transforms
+                    if ((punc == GOAL) && !isIdentity) {
                         if (!immediatize(p.getTwo(), d))
                             return null;
                     }

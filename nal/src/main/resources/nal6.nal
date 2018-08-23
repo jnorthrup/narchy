@@ -115,9 +115,9 @@
     //TODO reversals for Abduction, Induction, Exemplification
 
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction)
-        (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN)
+        //(M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN)
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
-        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
+        //(M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
             (M ==> S), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
                 //(M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)

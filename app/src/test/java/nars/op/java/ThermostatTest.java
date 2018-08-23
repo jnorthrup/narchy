@@ -35,12 +35,12 @@ public class ThermostatTest {
         n.dtDither.set(1);
 
 
-        n.termVolumeMax.set(22);
-        n.freqResolution.set(0.05f);
-        n.confResolution.set(0.02f);
+        n.termVolumeMax.set(18);
+        n.freqResolution.set(0.2f);
+        n.confResolution.set(0.05f);
         //n.activateConceptRate.set(0.1f);
 
-        n.goalPriDefault.set(0.9f);
+        n.goalPriDefault.set(0.5f);
         //n.emotion.want(MetaGoal.Believe, -0.1f);
 
         float exeThresh = 0.51f;

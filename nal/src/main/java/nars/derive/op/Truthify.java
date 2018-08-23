@@ -92,6 +92,7 @@ public class Truthify extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
+        d.truthFunction = null;
         d.concTruth = null; //reset
 
         byte punc = punc(d.taskPunc);
