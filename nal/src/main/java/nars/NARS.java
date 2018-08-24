@@ -133,8 +133,8 @@ public class NARS {
                 float basePri = 0.5f; /* warning: changing this for now will affect many tests that have hardcoded priority values.  TODO fix that */
                 n.beliefPriDefault.set(basePri * 0.5f);
                 n.goalPriDefault.set(basePri * 0.5f);
-                n.questionPriDefault.set(basePri * 0.2f);
-                n.questPriDefault.set(basePri * 0.2f);
+                n.questionPriDefault.set(basePri * 0.1f);
+                n.questPriDefault.set(basePri * 0.1f);
 
 //                n.emotion.want(MetaGoal.Perceive, -0.01f);
 //                n.emotion.want(MetaGoal.Believe, 0.1f);
@@ -156,7 +156,7 @@ public class NARS {
                 
                 new MapConceptIndex(
 
-                        new MRUCache<>(32*1024) {
+                        new MRUCache<>(8*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();
@@ -176,7 +176,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(64));
+        attention(()->new Attention(128));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(

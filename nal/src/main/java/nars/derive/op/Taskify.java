@@ -110,26 +110,24 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
+        long start = occ[0], end = occ[1];
+        assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
+
+
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) -> {
-
-            long start = occ[0], end = occ[1];
-
-            assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
-
-
-
             //dither time
+            long _start, _end;
             if (start != ETERNAL) {
                 int dither = d.ditherTime;
-                start = Tense.dither(start, dither);
-                end = Tense.dither(end, dither);
+                _start = Tense.dither(start, dither);
+                _end = Tense.dither(end, dither);
+            } else {
+                _start = _end = ETERNAL;
             }
 
-
-
             return Param.DEBUG ?
-                    new DebugDerivedTask(C, punc, tr, start, end, d) :
-                    new DerivedTask(C, punc, tr, start, end, d);
+                    new DebugDerivedTask(C, punc, tr, _start, _end, d) :
+                    new DerivedTask(C, punc, tr, _start, _end, d);
         });
 
         if (t == null) {

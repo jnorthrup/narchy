@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import jcog.math.Longerval;
 import nars.$;
 import nars.NAR;
 import nars.derive.Derivation;
@@ -106,7 +107,30 @@ public final class Termify extends AbstractPred<Derivation> {
                     (occ[1] >= occ[0])))
                 throw new RuntimeException("bad occurrence result");
 
-            
+
+            if (d.concTruth!=null) {
+                long start = occ[0], end = occ[1];
+                if (start != ETERNAL) {
+                    if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
+
+                        long taskEvidenceRange = ((d.taskStart==ETERNAL || d.task.isQuestionOrQuest()) ? 0 : d.task.range());
+                        long beliefEviRange = ((!d.concSingle && d.belief != null && d.beliefStart!=ETERNAL) ? d.belief.range() : 0);
+                        long commonRange = d.belief != null ? Longerval.intersectLength(d.taskStart, d.task.end(), d.beliefStart, d.belief.end()) : 0;
+
+                        long inputRange = taskEvidenceRange + beliefEviRange - (commonRange/2);
+                        assert(inputRange > 0);
+
+                        long outputRange = (1 + (end - start));
+                        long expanded = outputRange - inputRange;
+                        if (expanded > nar.dtDither()) {
+                            //dilute the conclusion truth in proportion to the extra space
+                            double expansionFactor = ((double) expanded) / (expanded + inputRange);
+                            assert (expansionFactor < 1);
+                            d.concTruthEviMul((float) expansionFactor, false);
+                        }
+                    }
+                }
+            }
             
             if (!Taskify.valid(c2, d.concPunc)) {
                 Term c1e = c1;

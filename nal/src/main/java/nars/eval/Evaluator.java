@@ -18,7 +18,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.ATOM;
-import static nars.Op.CONJ;
 
 /**
  * discovers functors within the provided term, or the term itself.
@@ -47,10 +46,10 @@ public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform
 
             discover(x, e);
 
-            if (x.op()==CONJ) {
-                //x.events..
-                x.subterms().forEach(xx -> query(xx, e));
-            }
+//            if (x.op()==CONJ) {
+//                //x.events..
+//                x.subterms().forEach(xx -> query(xx, e));
+//            }
 
         }
         return this;
@@ -117,7 +116,7 @@ public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform
 
         //iterating at the top level is effectively DFS; a BFS solution is also possible
         for (Term x : queries) {
-            query(x, e);
+
             e.eval(this, x);
         }
         return e;

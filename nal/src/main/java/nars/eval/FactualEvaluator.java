@@ -1,5 +1,6 @@
 package nars.eval;
 
+import jcog.TODO;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.term.Functor;
 import nars.term.Term;
@@ -15,8 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static nars.Op.*;
 import static nars.eval.FactualEvaluator.ProofTruth.Choose;
+import static nars.eval.FactualEvaluator.ProofTruth.Unknown;
 
 public class FactualEvaluator extends Evaluator {
 
@@ -37,14 +40,14 @@ public class FactualEvaluator extends Evaluator {
             return ProofTruth.Confusion;
 
         Node f = nodes.get(x);
-        ProofTruth t = f == null ? ProofTruth.Unknown : f.truth();
-        if (t == ProofTruth.Unknown) {
-            query(x, null);
-
-            //try again HACK
-            Node f2 = nodes.get(x);
-            return f2 == null ? ProofTruth.Unknown : f2.truth();
-        }
+        ProofTruth t = f == null ? Unknown : f.truth();
+//        if (t == ProofTruth.Unknown) {
+//            query(x, null);
+//
+//            //try again HACK
+//            Node f2 = nodes.get(x);
+//            return f2 == null ? ProofTruth.Unknown : f2.truth();
+//        }
         return t;
     }
 
@@ -52,7 +55,7 @@ public class FactualEvaluator extends Evaluator {
     abstract class Node {
         protected MutableSet<Term> conds = null;
 
-        abstract public ProofTruth truth();
+        @Deprecated abstract public ProofTruth truth();
 
         public void print() {
             if (conds != null) {
@@ -73,24 +76,24 @@ public class FactualEvaluator extends Evaluator {
     }
 
     class ChooseNode extends Node {
-        boolean changed = false;
-        @Override
-        public boolean add(Term t) {
-            if (super.add(t)) {
-                changed = true;
-                return true;
-            }
-            return false;
-        }
+
 
         @Override
         public ProofTruth truth() {
-            if (changed) {
-                for (Term t : conds)
-                    FactualEvaluator.this.truth(t); //recurse
-                changed = false;
+            switch (conds.size()) {
+                case 0:
+                    return ProofTruth.True;
+                case 1:
+                    return FactualEvaluator.this.truth(conds.getOnly());
+                default:
+                    return Choose;
             }
-            return Choose;
+//            if (changed) {
+//                for (Term t : conds)
+//                    FactualEvaluator.this.truth(t); //recurse
+//                changed = false;
+//            }
+//            return Choose;
         }
     }
 
@@ -108,7 +111,7 @@ public class FactualEvaluator extends Evaluator {
 
         @Override
         public String toString() {
-            return (truth==null ? ProofTruth.Unknown : truth) + "\t" +
+            return (truth==null ? Unknown : truth) + "\t" +
                                 (conds ==null ? "" : conds.toString());
         }
 
@@ -122,7 +125,7 @@ public class FactualEvaluator extends Evaluator {
 
         private ProofTruth _truth() {
             if (conds == null)
-                return ProofTruth.Unknown;
+                return Unknown;
 
             MutableSet<Term> cond = conds;
             if (cond.size()==1) {
@@ -146,7 +149,7 @@ public class FactualEvaluator extends Evaluator {
                     return ProofTruth.False;
             }
 
-            return ProofTruth.Unknown;
+            return Unknown;
         }
 
 
@@ -216,7 +219,7 @@ public class FactualEvaluator extends Evaluator {
 
         super.discover(x, e);
 
-        truth(x);
+//        truth(x);
 
     }
 
@@ -240,7 +243,43 @@ public class FactualEvaluator extends Evaluator {
 
         query(x, e);
 
-        return nodes.get(x).truth();
+        Node node = nodes.get(x);
+        if (node instanceof ChooseNode) {
+            ChooseNode c = (ChooseNode)node;
+            switch (c.conds.size()) {
+                case 0:
+                    return ProofTruth.True;
+                case 1:
+                    return truth(c.conds.getOnly(), e);
+                default: {
+                    e.isAny(
+                        c.conds.stream().map(z -> Evaluation.assign(x,z )).collect(toList())
+                    );
+                    return Choose;
+                }
+            }
+        } else if (node instanceof FactNode) {
+            FactNode c = (FactNode)node;
+            switch (c.conds.size()) {
+                case 0:
+                    return ProofTruth.True;
+                case 1:
+                    return truth(c.conds.getOnly(), e);
+                default: {
+                    throw new TODO();
+//                    if (c.conds.anySatisf
+//                            c.conds.stream().map(z -> Evaluation.assign(x,z )).collect(toList())
+//                    );
+//                    return Choose;
+                }
+            }
+        } else if (node!=null)
+            return node.truth();
+        else {
+            e.eval(this, x);
+            //return truth(, e);
+            return Unknown;
+        }
 
 
 //        UnifySubst u = new UnifySubst(null, new XoRoShiRo128PlusRandom(1) /* HACK */, (t)->{ return false; /* first is ok */ } );

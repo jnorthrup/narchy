@@ -548,20 +548,32 @@ public class Occurrify extends TimeGraph {
                 return p;
             }
 
+            @Override
+            public PREDICATE<Derivation> filter() {
+                return intersectFilter;
+            }
 
             @Override
             long[] occurrence(Derivation d) {
                 Task T = d._task;
-                Task B = d._belief;
                 long ts = d.taskStart;
+                Task B = d._belief;
                 long bs = d.beliefStart;
                 if (ts != ETERNAL && bs != ETERNAL) {
-                    if (d.concSingle || d.concPunc == GOAL)
-                        return new long[]{ ts, T.end()};
 
-                    //union
-                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
-                    return new long[]{i.a, i.b};
+                    if (d.concSingle)
+                        return new long[]{ ts, T.end()};
+//                    if (d.concSingle || d.concPunc == GOAL)
+//                        return new long[]{ ts, T.end()};
+//
+
+                    long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                    return i;
+
+
+//                    //TODO unionArray
+//                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+//                    return new long[]{i.a, i.b};
                 } else if (ts == ETERNAL && B!=null && bs!=ETERNAL) {
                     return new long[]{ bs, B.end()};
                 } else if (ts != ETERNAL && (B == null || bs == ETERNAL)) {

@@ -152,6 +152,9 @@ public class Evaluation {
 
     protected boolean eval(Evaluator e, Term x) {
         //iterate until stable
+
+        e.query(x, this);
+
         Term y = x, prev;
         int vStart, tried, mutStart;
         main:
@@ -270,6 +273,12 @@ public class Evaluation {
         } while ((y != prev) || (tried > 0));
 
         assert (y != null);
+
+
+//        if (e instanceof FactualEvaluator) {
+//            FactualEvaluator.ProofTruth te = ((FactualEvaluator) e).truth(y, this);
+//            //System.out.println(te);
+//        }
 
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         int ts = termutators();
