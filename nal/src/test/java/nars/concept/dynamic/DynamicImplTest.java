@@ -33,7 +33,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
     @Test void eligibleDynamicImpl2() {
         assertFalse(isDynamicTable("(((x,#1) && y) ==> (a,#1))")); //depvar shared between subj and impl
         String s = "(((x,#1) && (y,#1)) ==> (a,#1))";
-        assertDynamicTable(s); //all share it
+        assertDynamicTable(s); //all share the variable so it could be
     }
 
 

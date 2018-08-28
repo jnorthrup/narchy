@@ -31,7 +31,7 @@ public class NARAudio extends WaveIn {
         Gridding c = new Gridding(
                 v,
                 new Gridding(
-                    new WaveView(a.capture.buffer) {
+                    new WaveView(a.capture.buffer, 1024, 256) {
                         private final On off;
 
                         {
@@ -56,7 +56,7 @@ public class NARAudio extends WaveIn {
                         }
                     },
                     new PushButton("Record Clip", () -> {
-                        window(new MetaFrame(new WaveView(a.capture, 1f)), 400, 400);
+                        window(new MetaFrame(new WaveView(a.capture, 1f, 1024, 256)), 400, 400);
                     })
                 )
         );

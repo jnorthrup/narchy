@@ -399,6 +399,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 case CONJ:
                     return new Struct(",", st);
                 case NEG:
+                    //TODO detect disj
                     return new Struct(/*"\\="*/"not", st);
                 case PROD:
                     return new Struct(st); 

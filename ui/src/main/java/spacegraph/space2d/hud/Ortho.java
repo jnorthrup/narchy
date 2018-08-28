@@ -465,8 +465,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         if (buttonsDown != null) {
             finger.update(buttonsDown);
-        } else if (moved) {
-            finger.update();
         }
 
         return e != null;

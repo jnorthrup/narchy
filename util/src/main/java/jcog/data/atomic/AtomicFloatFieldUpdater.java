@@ -8,7 +8,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatToIntFunction;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.IntUnaryOperator;
 
-import static java.lang.Float.*;
+import static java.lang.Float.floatToIntBits;
+import static java.lang.Float.intBitsToFloat;
 
 /** @see AtomicFloat */
 public final class AtomicFloatFieldUpdater<X>  {

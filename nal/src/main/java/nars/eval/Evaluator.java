@@ -1,19 +1,14 @@
 package nars.eval;
 
-import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.Op;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.transform.DirectTermTransform;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.ListIterator;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -23,12 +18,10 @@ import static nars.Op.ATOM;
  * discovers functors within the provided term, or the term itself.
  * transformation results should not be interned, that is why DirectTermTransform used here
  */
-public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform {
+public class Evaluator implements DirectTermTransform {
 
     public final Function<Atom, Functor> funcResolver;
 
-    /** TODO expand this to fully featured tabling/memoization facility */
-    protected final Set<Term> cache = new HashSet();
 
 //        public final MutableSet<Variable> vars = new UnifiedSet(0);
 
@@ -41,27 +34,16 @@ public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform
     }
 
 
-    protected final Evaluator query(Term x, Evaluation e) {
-        if (cache.add(x)) {
-
-            discover(x, e);
-
-//            if (x.op()==CONJ) {
-//                //x.events..
-//                x.subterms().forEach(xx -> query(xx, e));
-//            }
-
-        }
-        return this;
-    }
-
-    protected void discover(Term x, Evaluation e) {
+    @Nullable protected ArrayHashSet<Term> discover(Term x, Evaluation e) {
+        if (!x.hasAny(Op.FuncBits))
+            return null;
+        ArrayHashSet<Term> funcAble = new ArrayHashSet();
         x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
-            if (!contains(xx)) {
+            if (!funcAble.contains(xx)) {
                 if (Functor.isFunc(xx)) {
                     Term yy = this.transform(xx);
                     if (yy.sub(1) instanceof Functor) {
-                        if (add(yy)) {
+                        if (funcAble.add(yy)) {
                             ///changed = true;
                         }
                     }
@@ -69,6 +51,9 @@ public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform
             }
             return true;
         }, null);
+        if(funcAble.isEmpty())
+            return null;
+        return funcAble;
     }
 
 
@@ -98,18 +83,13 @@ public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform
         return x;
     }
 
-    @Override
-    public ListIterator<Term> listIterator() {
-        //sortDecreasingVolume();
-        return super.listIterator();
-    }
 
-    private Evaluator sortDecreasingVolume() {
-        //TODO only invoke this if the items changed
-        if (size() > 1)
-            ((FasterList<Term>) list).sortThisByInt(Termlike::volume);
-        return this;
-    }
+//    private Evaluator sortDecreasingVolume() {
+//        //TODO only invoke this if the items changed
+//        if (size() > 1)
+//            ((FasterList<Term>) list).sortThisByInt(Termlike::volume);
+//        return this;
+//    }
 
     @Nullable public Evaluation eval(Predicate<Term> each, Term... queries) {
         Evaluation e = new Evaluation(this, each);
@@ -123,6 +103,7 @@ public class Evaluator extends ArrayHashSet<Term> implements DirectTermTransform
     }
 
     public void print() {
-        System.out.println("cache=" + cache);
+
+
     }
 }

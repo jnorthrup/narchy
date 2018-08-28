@@ -29,7 +29,7 @@ class TermLinkTest {
         
         testTemplates("open(John,door)",
                 
-                "[(John,door), John, door, open]"
+                "[(John,door), open]"
         );
     }
 
@@ -64,7 +64,7 @@ class TermLinkTest {
     }
     @Test void testImplConjTemplates2() {
         testTemplates("(( &&+- ,a($1,#2),b(#2)) ==>+- c($1))",
-                ""
+                "TODO"
         );
     }
 
@@ -72,13 +72,13 @@ class TermLinkTest {
     void testFunction() {
         testTemplates("f(x)",
                 
-                "[(x), f, x]"
+                "[(x), f]"
         );
     }
     @Test
     void testIntersection() {
         testTemplates("((0|1)-->2)",
-                "[(0|1), 0, 1, 2]"
+                "[(0|1), 2]"
         );
     }
 
@@ -86,7 +86,7 @@ class TermLinkTest {
     void testTemplatesWithInt2() {
         testTemplates("num((0))",
                 
-                "[((0)), (0), num]"
+                "[((0)), num]"
         );
     }
 
@@ -172,8 +172,8 @@ class TermLinkTest {
     @Test
     void testTemplateConj2() {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
-                "[(($1-->key) ==>+- open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
-                //"[(($1-->key) ==>+- open($1,#2)), (#2-->lock)]");
+                //"[(($1-->key) ==>+- open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
+                "[(($1-->key) ==>+- open($1,#2)), (#2-->lock)]");
 
     }
 
@@ -209,7 +209,7 @@ class TermLinkTest {
     @Test
     void testInheritSet() {
         testTemplates("(x-->[y])",
-                "[[y], x, y]");
+                "[[y], x]");
     }
     @Test
     void testImplicateInhSet() {

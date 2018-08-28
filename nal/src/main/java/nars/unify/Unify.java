@@ -6,7 +6,6 @@ import jcog.version.Versioned;
 import jcog.version.Versioning;
 import nars.Op;
 import nars.Param;
-import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;

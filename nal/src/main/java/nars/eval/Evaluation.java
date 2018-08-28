@@ -2,6 +2,7 @@ package nars.eval;
 
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
 import nars.*;
@@ -116,7 +117,9 @@ public class Evaluation {
                 v.revert(before);
             }
         } else {
-            CartesianIterator<Predicate<VersionMap<Term,Term>>> ci = new CartesianIterator<>(Predicate[]::new, termutator.toArray(Iterable[]::new));
+            CartesianIterator<Predicate<VersionMap<Term,Term>>> ci =
+                    new CartesianIterator<Predicate<VersionMap<Term,Term>>>(
+                            Predicate[]::new, termutator.toArray(Iterable[]::new));
             termutator.clear();
             nextProduct: while (ci.hasNext()) {
 
@@ -135,8 +138,7 @@ public class Evaluation {
                 if (z!=y) {
                     if (canEval(z)) { // && !(ez = e.clone().query(z)).isEmpty()) {
                         Evaluator ee = e.clone();
-                        ee.query(z, this);
-                        if (!ee.isEmpty() && !eval(ee, z)) //recurse
+                        if (!eval(ee, z)) //recurse
                             return false; //CUT
                     } else {
                         if (!each.test(z))
@@ -153,124 +155,127 @@ public class Evaluation {
     protected boolean eval(Evaluator e, Term x) {
         //iterate until stable
 
-        e.query(x, this);
+        Term y = x;
 
-        Term y = x, prev;
-        int vStart, tried, mutStart;
-        main:
-        do {
-            prev = y;
-            ListIterator<Term> ii = e.listIterator();
-            vStart = now();
-            mutStart = termutators();
-            tried = 0;
-            while (ii.hasNext()) {
+        ArrayHashSet<Term> operations = e.discover(x, this);
+        if (operations != null) {
 
-                Term a = ii.next();
+            Term prev;
+            int vStart, tried, mutStart;
+            main:
+            do {
+                prev = y;
+                ListIterator<Term> ii = operations.listIterator();
+                vStart = now();
+                mutStart = termutators();
+                tried = 0;
+                while (ii.hasNext()) {
 
-                boolean removeEntry, eval;
+                    Term a = ii.next();
 
-                if (Functor.isFunc(a)) {
+                    boolean removeEntry, eval;
 
-                    //still a functor, but different. update it
+                    if (Functor.isFunc(a)) {
 
-                    //run the functor resolver for any new functor terms which may have appeared
-                    Term af = Functor.func(a);
+                        //still a functor, but different. update it
 
-                    removeEntry = false;
+                        //run the functor resolver for any new functor terms which may have appeared
+                        Term af = Functor.func(a);
 
-                    eval = true;
+                        removeEntry = false;
 
-                    if (!(af instanceof Functor)) {
-                        //try resolving
-                        Term aa = e.transform(a);
-                        if (aa == a) {
-                            //no change. no such functor
-                            removeEntry = true;
-                            eval = false;
-                        } else {
-                            a = aa;
+                        eval = true;
+
+                        if (!(af instanceof Functor)) {
+                            //try resolving
+                            Term aa = e.transform(a);
+                            if (aa == a) {
+                                //no change. no such functor
+                                removeEntry = true;
+                                eval = false;
+                            } else {
+                                a = aa;
+                            }
                         }
-                    }
 
-                } else {
-                    eval = false;
-                    removeEntry = true;
-                }
-
-                Term z;
-                boolean substAdded, mutAdded;
-                if (!removeEntry && eval) {
-                    Functor func = (Functor) a.sub(1);
-                    Subterms args = a.sub(0).subterms();
-
-                    z = func.apply(this, args);
-                    if (z == Null) {
-                        return each.test(Null);
-                    }
-                    substAdded = now() != vStart;
-                    mutAdded = mutStart != termutators();
-                    if ((z == null && (substAdded||mutAdded)) || (z == True)) {
+                    } else {
+                        eval = false;
                         removeEntry = true;
                     }
 
-                } else {
-                    substAdded = mutAdded = false;
-                    z = a;
-                }
+                    Term z;
+                    boolean substAdded, mutAdded;
+                    if (!removeEntry && eval) {
+                        Functor func = (Functor) a.sub(1);
+                        Subterms args = a.sub(0).subterms();
 
-                if (removeEntry) {
-                    ii.remove();
-                }
+                        z = func.apply(this, args);
+                        if (z == Null) {
+                            return each.test(Null);
+                        }
+                        substAdded = now() != vStart;
+                        mutAdded = mutStart != termutators();
+                        if ((z == null && (substAdded || mutAdded)) || (z == True)) {
+                            removeEntry = true;
+                        }
 
-
-                if ((z != null && z != a) || substAdded) {
-                    tried++;
-
-
-                    if (z != null) {
-                        y = y.replace(a, z);
+                    } else {
+                        substAdded = mutAdded = false;
+                        z = a;
                     }
-                    if (substAdded) {
-                        y = y.replace(subst);
+
+                    if (removeEntry) {
+                        ii.remove();
                     }
 
-                    //pendingRewrites.add(new Term[]{a, z});
-                    Term finalA = a;
-                    e.list.replaceAll(o -> {
-                        Term p, q;
+
+                    if ((z != null && z != a) || substAdded) {
+                        tried++;
+
+
                         if (z != null) {
-                            p = o.replace(finalA, z);
-                            if (o != p && !Functor.isFunc(p))
-                                return Null;
-                        } else
-                            p = o;
-
+                            y = y.replace(a, z);
+                        }
                         if (substAdded) {
-                            q = p.replace(subst);
-                            if (p != q && !Functor.isFunc(q))
-                                return Null;
-                        } else
-                            q = p;
+                            y = y.replace(subst);
+                        }
 
-                        return q;
-                    });
+                        //pendingRewrites.add(new Term[]{a, z});
+                        Term finalA = a;
+                        operations.list.replaceAll(o -> {
+                            Term p, q;
+                            if (z != null) {
+                                p = o.replace(finalA, z);
+                                if (o != p && !Functor.isFunc(p))
+                                    return Null;
+                            } else
+                                p = o;
+
+                            if (substAdded) {
+                                q = p.replace(subst);
+                                if (p != q && !Functor.isFunc(q))
+                                    return Null;
+                            } else
+                                q = p;
+
+                            return q;
+                        });
 
 
-                    if (!y.op().conceptualizable || e.isEmpty())
-                        break main;
-                    else {
-                        break; //changed so start again
+                        if (!y.op().conceptualizable || operations.isEmpty())
+                            break main;
+                        else {
+                            break; //changed so start again
+                        }
+
                     }
+
 
                 }
 
 
-
-            }
-
-
-        } while ((y != prev) || (tried > 0));
+            } while ((y != prev) || (tried > 0));
+        }
 
         assert (y != null);
 

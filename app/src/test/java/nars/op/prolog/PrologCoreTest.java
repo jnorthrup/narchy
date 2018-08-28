@@ -6,6 +6,7 @@ import alice.tuprolog.Theory;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PrologCoreTest {
 
+    @Disabled
     @Test public void testPrologShell() throws MalformedGoalException {
         NAR n = NARS.tmp();
         PrologCore p = new PrologCore(n);
@@ -38,10 +40,10 @@ public class PrologCoreTest {
         n.input("(--, c:d).");
         n.run(1);
 
-        assertTrue(p.isTrue("'-->'(b,a)."));
-        assertFalse(p.isTrue("'-->'(a,b)."));
-        assertTrue(p.isTrue("'--'('-->'(d,c))."));
-        assertFalse(p.isTrue("'-->'(d,c)."));
+        assertTrue(p.isTrue("'-->'('_b','_a')."));
+        assertFalse(p.isTrue("'-->'('_a','_b')."));
+        assertTrue(p.isTrue("'--'('-->'('_d','_c'))."));
+        assertFalse(p.isTrue("'-->'('_d','_c')."));
 
     }
 
@@ -92,8 +94,8 @@ public class PrologCoreTest {
         n.input("(&&,a,b,c).");
         n.run(1);
 
-        assertTrue(p.isTrue("'&&'(a,b,c)."));
-        assertTrue(p.isTrue("a,b,c."));
+        //assertTrue(p.isTrue("','('_a','_b','_c')."));
+        assertTrue(p.isTrue("'_a','_b','_c'."));
         
     }
 
@@ -104,15 +106,15 @@ public class PrologCoreTest {
 
         PrologCore p = new PrologCore(n);
         n.believe("x:a");
-        assertTrue(p.isTrue("'-->'(a,x)."));
-        assertFalse(p.isTrue("'-->'(a,y)."));
+        assertTrue(p.isTrue("'-->'('_a','_x')."));
+        assertFalse(p.isTrue("'-->'('_a','_y')."));
         n.believe("y:b");
         n.believe("z:c", false);
         n.run(1);
 
-        assertTrue(p.isTrue("'-->'(a,x), '-->'(b,y)."));
-        assertTrue(p.isTrue("'-->'(a,x), '-->'(b,y), '--'('-->'(c,z))."));
-        assertFalse(p.isTrue("'-->'(a,x), '-->'(b,y), '-->'(c,z)."));
+        assertTrue(p.isTrue("'-->'('_a','_x'), '-->'('_b','_y')."));
+        assertTrue(p.isTrue("'-->'('_a','_x'), '-->'('_b','_y'), '--'('-->'('_c','_z'))."));
+        assertFalse(p.isTrue("'-->'('_a','_x'), '-->'('_b','_y'), '-->'('_c','_z')."));
         
 
     }

@@ -150,8 +150,9 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
 
     public synchronized void pan(float pct) {
         long width = last - first;
-        if (width < buffer.capacity()) {
-            long mid = ((first + last)/2);
+        int N = buffer.capacity();
+        if (width < N) {
+            long mid = ((first + last)/2L);
             long nextMid = Math.round(mid + (pct * width));
 
             long first = nextMid - width/2;
@@ -159,16 +160,16 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
             if (first < 0) {
                 first = 0;
                 last = first + width;
-            } else if (last > 1) {
-                last = 1;
+            } else if (last > N) {
+                last = N;
                 first = last -width;
             }
 
             this.first = first;
             this.last = last;
+            update();
         }
 
-        update();
     }
 
     public synchronized void scale(float pct) {

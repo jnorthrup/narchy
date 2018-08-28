@@ -79,8 +79,12 @@ public class PushButton extends AbstractButton {
 
     @Override
     protected void onClick(Finger f) {
-        if (onClick!=null)
-            onClick.accept(this);
+        Consumer<PushButton> c = this.onClick;
+        if (c !=null) {
+            synchronized(c) {
+                c.accept(this);
+            }
+        }
     }
 
 }

@@ -19,7 +19,7 @@ dependencies {
         exclude(module:'ejml-core')
     }
     // https://mvnrepository.com/artifact/org.ejml/ejml-core
-    compile group: 'org.ejml', name: 'ejml-core', version: '0.34'
+    compile group: 'org.ejml', name: 'ejml-core', version: '0.35'
 
 
     compile group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.0.1'

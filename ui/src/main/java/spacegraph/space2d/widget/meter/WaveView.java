@@ -22,38 +22,36 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
 
     final static int SELECT_BUTTON = 0;
     final static int PAN_BUTTON = 2;
+    final static float PAN_SPEED = 1/100f;
 
-    private final long startMS;
     private final float[] wave;
     protected final BitmapWave vis;
 
-
-    public WaveView(CircularFloatBuffer wave) {
-        this.startMS = System.currentTimeMillis();
+    public WaveView(CircularFloatBuffer wave, int pixWidth, int pixHeight) {
         //int totalSamples = wave.capacity(); //int) Math.ceil(seconds * capture.source.samplesPerSecond());
 
         this.wave = null; ///capture.buffer.peekLast(new float[totalSamples]);
 
 
-        vis = new BitmapWave(1024, 128, wave);
+        vis = new BitmapWave(pixWidth, pixHeight, wave);
         set(vis);
     }
-    @Deprecated public WaveView(WaveCapture capture, float seconds) {
+    @Deprecated public WaveView(WaveCapture capture, float seconds, int pixWidth, int pixHeight) {
         super();
-        this.startMS = System.currentTimeMillis();
         int totalSamples = (int) Math.ceil(seconds * capture.source.samplesPerSecond());
 
         this.wave = capture.buffer.peekLast(new float[totalSamples]);
 
 
-        vis = new BitmapWave(1024, 128, new CircularFloatBuffer(wave));
+        vis = new BitmapWave(pixWidth, pixHeight, new CircularFloatBuffer(wave));
         set(vis);
     }
+
 
     final Fingering pan = new FingerMove(PAN_BUTTON) {
         @Override
         protected void move(float tx, float ty) {
-            vis.pan(tx/100.0f);
+            vis.pan(tx * PAN_SPEED);
         }
     };
 

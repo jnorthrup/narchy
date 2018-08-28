@@ -1,6 +1,7 @@
 package nars.eval;
 
 import jcog.TODO;
+import jcog.data.set.ArrayHashSet;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.term.Functor;
 import nars.term.Term;
@@ -9,7 +10,7 @@ import nars.term.atom.Bool;
 import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -173,8 +174,8 @@ public class FactualEvaluator extends Evaluator {
         return new FactualEvaluator(funcResolver, factResolver);
     }
 
-    @Override
-    protected void discover(Term x, Evaluation e) {
+    @Override public @Nullable ArrayHashSet<Term> discover(Term x, Evaluation e) {
+
 
         //TODO cache
         /*List<Predicate<VersionMap<Term, Term>>> l = */factResolver.apply(x).
@@ -217,13 +218,14 @@ public class FactualEvaluator extends Evaluator {
 //            if (e!=null && !l.isEmpty())
 //                e.isAny(l);
 
-        super.discover(x, e);
 
-//        truth(x);
 
+        truth(x,e);
+
+        return super.discover(x, e);
     }
 
-    @NotNull
+
     private FactualEvaluator.Node nodeOrAdd(Term x) {
         return nodes.computeIfAbsent(x, z->{
             if (z.hasVars())
@@ -241,11 +243,10 @@ public class FactualEvaluator extends Evaluator {
         if (x instanceof Bool)
             return ProofTruth.Confusion;
 
-        query(x, e);
 
         Node node = nodes.get(x);
         if (node instanceof ChooseNode) {
-            ChooseNode c = (ChooseNode)node;
+            ChooseNode c = (ChooseNode) node;
             switch (c.conds.size()) {
                 case 0:
                     return ProofTruth.True;
@@ -253,13 +254,13 @@ public class FactualEvaluator extends Evaluator {
                     return truth(c.conds.getOnly(), e);
                 default: {
                     e.isAny(
-                        c.conds.stream().map(z -> Evaluation.assign(x,z )).collect(toList())
+                            c.conds.stream().map(z -> Evaluation.assign(x, z)).collect(toList())
                     );
                     return Choose;
                 }
             }
         } else if (node instanceof FactNode) {
-            FactNode c = (FactNode)node;
+            FactNode c = (FactNode) node;
             switch (c.conds.size()) {
                 case 0:
                     return ProofTruth.True;
@@ -273,35 +274,35 @@ public class FactualEvaluator extends Evaluator {
 //                    return Choose;
                 }
             }
-        } else if (node!=null)
+        } else if (node != null)
             return node.truth();
         else {
-            e.eval(this, x);
+            //e.eval(this, x);
             //return truth(, e);
             return Unknown;
         }
-
-
-//        UnifySubst u = new UnifySubst(null, new XoRoShiRo128PlusRandom(1) /* HACK */, (t)->{ return false; /* first is ok */ } );
-//
-//        for (Term k : ifs.keys()) {
-//            if (k.unify(x, u.clear())) {
-//                ifs.get(k).forEach(v->{
-//                    Term vv = u.transform(v);
-//                    if (vv.op().conceptualizable) {
-//                        //facts.add($.func("ifThen", vv, k));
-//                        facts.put(k, vv);
-//                    }
-//                });
-//            }
-//        }
-
-//
-//        if (x.op()==CONJ) {
-//            //evaluate
-//        }
-//        return ProofTruth.Unknown;
     }
+//
+////        UnifySubst u = new UnifySubst(null, new XoRoShiRo128PlusRandom(1) /* HACK */, (t)->{ return false; /* first is ok */ } );
+////
+////        for (Term k : ifs.keys()) {
+////            if (k.unify(x, u.clear())) {
+////                ifs.get(k).forEach(v->{
+////                    Term vv = u.transform(v);
+////                    if (vv.op().conceptualizable) {
+////                        //facts.add($.func("ifThen", vv, k));
+////                        facts.put(k, vv);
+////                    }
+////                });
+////            }
+////        }
+//
+////
+////        if (x.op()==CONJ) {
+////            //evaluate
+////        }
+////        return ProofTruth.Unknown;
+//    }
 
     @Override public void print() {
         super.print();
