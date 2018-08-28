@@ -448,7 +448,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
 
         {
-            //add subIfUnify prefilter
+            //subIfUnify prefilter
             Term concFunc = Functor.func(finalConcPattern);
             if (concFunc.equals(SubIfUnify.SubIfUnify)) {
 
@@ -816,7 +816,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             this.isStrict = isStrict;
         }
 
-        public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, Subterms a, MutableSet<PREDICATE> pre) {
+        static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, Subterms a, MutableSet<PREDICATE> pre) {
             //some structure exists that can be used to prefilter
             byte[] xpInT = Terms.constantPath(taskPattern, x);
             byte[] xpInB = Terms.constantPath(beliefPattern, x); //try the belief
@@ -827,7 +827,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
                     //the unifying terms are deterministicaly extractable from the task or belief:
 
-                    int varBits = (a.contains(SubIfUnify.DEP_VAR)) ? Op.VAR_DEP.bit : (Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
+                    int varBits = (a.contains(SubIfUnify.DEP_VAR)) ? Op.VAR_DEP.bit : (Op.VAR_INDEP.bit | Op.VAR_DEP.bit);
 
                     boolean strict = a.contains(SubIfUnify.STRICT);
 
@@ -848,16 +848,13 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             if (y == null)
                 return false; //ex: seeking a negation but wasnt negated
 
-            x = Image.imageNormalize(x);
-            y = Image.imageNormalize(y);
-
             return possibleUnification(x, y, varBits, 0);
         }
 
         public boolean possibleUnification(Term x, Term y, int varExcluded, int level) {
             boolean xEqY = x.equals(y);
             if (xEqY) {
-                return level > 0 ? true : !isStrict;
+                return level > 0 || !isStrict;
             }
 
             Op xo = x.op();
@@ -870,6 +867,10 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
             if (xo != yo)
                 return false;
+
+
+            x = Image.imageNormalize(x);
+            y = Image.imageNormalize(y);
 
             Subterms xx = x.subterms(), yy = y.subterms();
             int xxs = xx.subs();

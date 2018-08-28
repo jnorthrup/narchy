@@ -590,7 +590,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static boolean possiblyUnifiable(Subterms xx, Subterms yy, Unify u) {
-        return possiblyUnifiable(xx, yy, u.typeBits);
+        return possiblyUnifiable(xx, yy, u.varBits);
     }
 
     static boolean possiblyUnifiable(Subterms xx, Subterms yy, int varBits) {
@@ -633,10 +633,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (xxs == 0)
             return +1; //all eliminated
 
-        xs &= ~u.typeBits;
+        xs &= ~u.varBits;
         if (xs == 0)
             return 0; //all var
-        ys &= ~u.typeBits;
+        ys &= ~u.varBits;
         if (ys == 0)
             return 0;//all var
         if (!possiblyUnifiable(xs, ys))

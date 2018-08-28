@@ -57,9 +57,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     public int dtTolerance = 0;
 
-    public final Op type;
-
-    public final int typeBits;
+    public final int varBits;
 
 
     /**
@@ -75,12 +73,19 @@ public abstract class Unify extends Versioning implements Subst {
         this(type, random, stackMax, new TermHashMap());
     }
 
+    protected Unify(int varBits, Random random, int stackMax) {
+        this(varBits, random, stackMax, new TermHashMap());
+    }
+
     protected Unify(@Nullable Op type, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {
+        this(type == null ? Op.Variable : type.bit, random, stackMax, termMap);
+    }
+
+    protected Unify(@Nullable int varBits, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {
         super(stackMax);
 
         this.random = random;
-        this.type = type;
-        this.typeBits = type == null ? Op.Variable : type.bit;
+        this.varBits = varBits;
 
         this.xy = new ConstrainedVersionMap(this, termMap);
     }
@@ -202,11 +207,8 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * whether the op is assignable
      */
-    public final boolean matchType(Op oy) {
-        Op t = this.type;
-        return t == null ?
-                oy.var :
-                oy == t;
+    public final boolean matchType(Op v) {
+        return ((this.varBits & v.bit) != 0);
     }
 
     @Override
@@ -235,7 +237,7 @@ public abstract class Unify extends Versioning implements Subst {
      * whether is constant with respect to the current matched variable type
      */
     public boolean constant(Termlike x) {
-        return !x.hasAny(typeBits);
+        return !x.hasAny(varBits);
     }
 
 

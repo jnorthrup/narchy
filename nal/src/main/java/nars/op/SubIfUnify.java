@@ -88,7 +88,8 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
 
         boolean strict = false;
-        @Nullable Op op = null;
+        int op = Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+        //@Nullable Op op = null;
 
 
         int pp = a.subs();
@@ -99,7 +100,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             else if (ai.equals(INDEP_VAR)) {
                 //HACK is this ignored?
             } else if (ai.equals(DEP_VAR)) {
-                op = VAR_DEP;
+                op = VAR_DEP.bit;
             } else
                 throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
@@ -124,12 +125,9 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             output = y;
         } else {
 
-            boolean tryUnify =
-                    (op == null && x.hasAny(Op.Variable))
-                            ||
-                            (op != null && x.hasAny(op));
+            boolean tryUnify = x.hasAny(op);
 
-            if (!tryUnify/* && mustSubstitute()*/) {
+            if (!tryUnify) {
                 output = null;
             } else {
                 int ttl = parent.nar.subUnifyTTLMax.intValue();
@@ -153,8 +151,8 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
     private class MySubUnify extends SubUnify {
         private final boolean strict;
 
-        MySubUnify(@Nullable Op op, boolean strict) {
-            super(parent.random, op);
+        MySubUnify(@Nullable int varBits, boolean strict) {
+            super(parent.random, varBits);
             this.strict = strict;
         }
 
@@ -186,8 +184,8 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         private Term result;
 
 
-        public SubUnify(Random rng, @Nullable Op type) {
-            super(type, rng, Param.UnificationStackMax);
+        public SubUnify(Random rng, int varBits) {
+            super(varBits, rng, Param.UnificationStackMax);
             symmetric = false;
         }
 
