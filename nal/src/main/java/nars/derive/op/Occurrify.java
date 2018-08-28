@@ -1,5 +1,7 @@
 package nars.derive.op;
 
+import jcog.data.graph.FromTo;
+import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.Longerval;
@@ -19,19 +21,18 @@ import nars.term.util.Image;
 import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
+import nars.time.TimeSpan;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -146,11 +147,11 @@ public class Occurrify extends TimeGraph {
     }
 
     @Override
-    @Deprecated protected Term dt(Term x, int dt) {
+    @Deprecated protected Term dt(Term x, List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, int dt) {
         int ddt = dt(dt);
-        Term y = super.dt(x, ddt);
+        Term y = super.dt(x, path, ddt);
         if ((y.op()!=x.op()) && ddt != dt) {
-            y = super.dt(x, dt);
+            y = super.dt(x, path, dt);
         }
         return y;
     }

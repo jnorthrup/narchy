@@ -195,6 +195,8 @@ public class FactualEvaluator extends Evaluator {
                                     //facts.add($.func("ifThen", vv, k));
                                     //facts.put(vv, True);
                                     nodeOrAdd(x).add(vv);
+
+                                    e.is(x, vv);
                                 }
 //                                });
                         }
@@ -220,7 +222,7 @@ public class FactualEvaluator extends Evaluator {
 
 
 
-        truth(x,e);
+        //truth(x,e);
 
         return super.discover(x, e);
     }

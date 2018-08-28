@@ -108,10 +108,15 @@ public class Evaluation {
             for (Predicate tt : t) {
                 if (tt.test(subst)) {
                     Term z = y.replace(subst);
+                    if (z!=y) {
+                        Evaluator ee = e.clone();
+                        if (!eval(ee, z)) //recurse
+                            return false; //CUT
+                    }
                     //if (z!=y) {
-                        if (!each.test(z)) { //TODO check for new solvable sub-components
-                            return false;
-                        }
+//                        if (!each.test(z)) { //TODO check for new solvable sub-components
+//                            return false;
+//                        }
                     //}
                 }
                 v.revert(before);
@@ -136,14 +141,14 @@ public class Evaluation {
 
                 Term z = y.replace(subst);
                 if (z!=y) {
-                    if (canEval(z)) { // && !(ez = e.clone().query(z)).isEmpty()) {
+//                    if (canEval(z)) { // && !(ez = e.clone().query(z)).isEmpty()) {
                         Evaluator ee = e.clone();
                         if (!eval(ee, z)) //recurse
                             return false; //CUT
-                    } else {
-                        if (!each.test(z))
-                            return false; //CUT
-                    }
+//                    } else {
+//                        if (!each.test(z))
+//                            return false; //CUT
+//                    }
 
                 }
             }
@@ -284,6 +289,9 @@ public class Evaluation {
 //            FactualEvaluator.ProofTruth te = ((FactualEvaluator) e).truth(y, this);
 //            //System.out.println(te);
 //        }
+
+        if (subst!=null)
+            y = y.replace(subst);
 
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         int ts = termutators();

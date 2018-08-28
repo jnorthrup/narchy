@@ -480,7 +480,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         return TimeGraph.this.solveDT(x, start, ddt,
                                 (start != ETERNAL && start != XTERNAL) ?
                                         durMerge(pathStart(path).id(), pathEnd(path).id()) : 0
-                                , each);
+                                , path, each);
                     }
                 }))
                     return false;
@@ -503,7 +503,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return solveConj2DT(each, a, dt, b);
         } else {
             //for impl and other types cant assume occurrence corresponds with subject
-            return solveDT(x, TIMELESS, dt, durMerge(a, b), each);
+            return solveDT(x, TIMELESS, dt, durMerge(a, b), null, each);
         }
     }
 
@@ -579,7 +579,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * TODO make this for impl only because the ordering of terms is known implicitly from 'x' unlike CONJ
      */
     @Deprecated
-    private boolean solveDT(Term x, long start, long ddt, long dur, Predicate<Event> each) {
+    private boolean solveDT(Term x, long start, long ddt, long dur,
+                            @Nullable List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Predicate<Event> each) {
         assert (ddt != TIMELESS && ddt != XTERNAL && ddt != ETERNAL);
         int dt;
 
@@ -587,7 +588,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
         dt = (int) ddt;
 
-        Term y = dt(x, dt);
+        Term y = dt(x, path, dt);
 
         if (!(y.op().conceptualizable))
             return true;
@@ -621,12 +622,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return dt;
     }
 
+    protected Term dt(Term x, int dt) {
+        return dt(x, null, dt);
+    }
+
     /**
      * preprocess the dt used to construct a new term.
      * ex: dithering
      */
     @Deprecated
-    protected Term dt(Term x, int dt) {
+    protected Term dt(Term x, @Nullable List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, int dt) {
 
         assert (dt != XTERNAL);
 
@@ -636,26 +641,51 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
         Op xo = x.op();
+        Term x0 = x.sub(0);
         if (xo == IMPL) {
-            return x.dt(dt - x.sub(0).dtRange());
+            return x.dt(dt - x0.dtRange());
         } else if (xo == CONJ) {
             if (dt == 0) {
                 return x.dt(dt);
             } else {
-                //TODO use the provided 'path', if non-null, to order the sequence, which may be length>2 subterms
-                if (x.dt() == XTERNAL)
-                    return Null;
 
-                int early = Op.conjEarlyLate(x, true);
-                if (early == 1)
-                    dt = -dt;
+                if (x.dt() == XTERNAL) {
+                    if (path!=null) {
+                        //use the provided 'path', if non-null, to correctly order the sequence, which may be length>2 subterms
+                        Term x1 = x.sub(1);
 
-                Term xEarly = x.sub(early);
-                Term xLate = x.sub(1 - early);
+                        if (x0.equals(x1)) {
+                            //order doesnt matter
+                            return Conj.the(x0, 0, x0, dt);
+                        }
 
-                return Conj.the(
-                        xEarly, 0,
-                        xLate, dt);
+                        Term pStart = pathStart(path).id().id;
+                        //TODO verify pathEnd?
+                        if (pStart.equals(x0)) {
+                            return Conj.the(x0, 0, x1, dt);
+                        } else if (pStart.equals(x1)) {
+                            return Conj.the(x1, 0, x0, dt);
+                        } else {
+                            return Null; //TODO
+                        }
+                    } else {
+                        return Null;
+                    }
+                } else {
+
+                    int early = Op.conjEarlyLate(x, true);
+                    if (early == 1)
+                        dt = -dt;
+
+
+                    Term xEarly = x.sub(early);
+                    Term xLate = x.sub(1 - early);
+
+                    return Conj.the(
+                            xEarly, 0,
+                            xLate, dt);
+                }
+
             }
         } else {
 

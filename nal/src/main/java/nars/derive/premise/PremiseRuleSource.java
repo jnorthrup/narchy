@@ -466,18 +466,18 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             int ts = taskPattern.structure() & (~Op.VAR_PATTERN.bit);
             if (Integer.bitCount(ts) > 1) {
                 //if there are additional bits that the structure can filter, include the hasAll predicate
-                pre.add(new TermMatchPred(new TermMatch.Has(
+                pre.add(new TermMatchPred<>(new TermMatch.Has(
                         ts, false /* all */, taskPattern.complexity()),
                         true, true, TaskTerm));
             }
         }
 
         if (!belIsPatVar) {
-            pre.add(new TermMatchPred(new TermMatch.Is(bo), true, true, BeliefTerm));
+            pre.add(new TermMatchPred<>(new TermMatch.Is(bo), true, true, BeliefTerm));
             int bs = beliefPattern.structure() & (~Op.VAR_PATTERN.bit);
             if (Integer.bitCount(bs) > 1) {
                 //if there are additional bits that the structure can filter, include the hasAll predicate
-                pre.add(new TermMatchPred(new TermMatch.Has(
+                pre.add(new TermMatchPred<>(new TermMatch.Has(
                         bs, false /* all */, beliefPattern.complexity()),
                         true, true, BeliefTerm));
             }
