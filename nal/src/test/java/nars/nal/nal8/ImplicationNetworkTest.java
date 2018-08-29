@@ -1,11 +1,9 @@
 package nars.nal.nal8;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Task;
+import nars.*;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.test.analyze.BeliefContradictionDetector;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
@@ -22,11 +20,16 @@ class ImplicationNetworkTest {
     private static final Term a = $.the("a");
     private static final Term b = $.the("b");
     private static final Term c = $.the("c");
+    NAR n = NARS.tmp();
+    {
+        Param.DEBUG = true;
+        new BeliefContradictionDetector(n);
+    }
 
     @Test
     void testEternal_A_PosBelief_ToBC() {
 
-        NAR n = NARS.tmp();
+
 
 
 
@@ -69,7 +72,7 @@ class ImplicationNetworkTest {
     @Test
     void testEternal_A_PosGoal_ToBC() {
 
-        NAR n = NARS.tmp();
+
 
 
 
@@ -113,9 +116,6 @@ class ImplicationNetworkTest {
     @Test
     void testEternal_A_NegBelief_ToBC() {
 
-        NAR n = NARS.tmp();
-
-        //
 
 
         n.believe(IMPL.the(a, b));
@@ -134,7 +134,7 @@ class ImplicationNetworkTest {
 
     @Test
     void testEternal_A_NegBelief_NegToBC_AB_only() {
-        NAR n = NARS.tmp(6);
+
         n.termVolumeMax.set(16);
 
 
@@ -160,7 +160,7 @@ class ImplicationNetworkTest {
     @Test
     void testEternal_A_NegBelief_NegToBC() {
 
-        NAR n = NARS.tmp(6);
+
         n.termVolumeMax.set(16);
 
 
@@ -191,7 +191,7 @@ class ImplicationNetworkTest {
     @Test
     void testEternal_A_NegBelief_NegToB_NegToC() {
 
-        NAR n = NARS.tmp();
+
 
         n.believe(IMPL.the(a.neg(), b).neg());
         n.believe(IMPL.the(b.neg(), c));

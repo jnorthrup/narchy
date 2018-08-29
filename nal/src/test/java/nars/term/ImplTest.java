@@ -191,6 +191,16 @@ public class ImplTest {
         assertEq("(R==>P)", "(R==>(R==>P))");
     }
 
+    @Test
+    void testDepvarWTF() {
+
+        /*
+            $.03 (((--,#1)&&(--,#1))==>b). %1.0;.45% {2: 1;3} ((%1,%2,(--,is(%1,"==>"))),(((--,%1) ==>+- %2),((AbductionN-->Belief),(TaskRelative-->Time),(VarIntro-->Also))))
+              $.25 a. %0.0;.90% {0: 3}
+              $.25 ((--,a)==>b). %1.0;.90% {0: 1}
+         */
+        assertEq("((--,#1)==>x)", "(((--,#1)&&(--,#1))==>x)");
+    }
 
 
 

@@ -63,7 +63,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
         if ((punc == BELIEF || punc == GOAL) && x0.hasXternal()) {
             //HACK this is for deficiencies in the temporal solver that can be fixed
-            x0 = x0.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            d.concTerm = x0 = x0.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
             if (!Taskify.valid(x0, d.concPunc)) {
                 d.nar.emotion.deriveFailTemporal.increment();
                 return spam(d, Param.TTL_DERIVE_TASK_FAIL);

@@ -189,7 +189,7 @@ public enum TruthFunctions2 {
      */
     public static Truth contraposition(Truth t, float minConf) {
         float f = t.freq();
-        float fPolarization = 2 * Math.abs(f - 0.5f);
+        float fPolarization = t.polarity();
         float c = weak(fPolarization * t.conf());
         return c >= minConf ? t((1 - f), c) : null;
     }

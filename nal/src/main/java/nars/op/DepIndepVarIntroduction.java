@@ -27,8 +27,6 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private final static int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit;
 
-    private final static int DepOrIndepBits = Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_PATTERN.bit;
-
     /**
      * sum by complexity if passes include filter
      */

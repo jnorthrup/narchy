@@ -54,12 +54,13 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
 
     default Term transformTemporal(Compound x, int dtNext) {
-        if (x.dt() == dtNext && !requiresTransform(x.subterms()))
+        int xdt = x.dt();
+        if (xdt == dtNext && !requiresTransform(x.subterms()))
             return x;
         else {
             Op xo = x.op();
             int n = xo.temporal ? dtNext : DTERNAL;
-            if (n == x.dt())
+            if (n == xdt)
                 return NegObliviousTermTransform.super.transformCompound(x); //fast fail if dt doesnt change
             else {
                 return NegObliviousTermTransform.super.transformCompound(x, xo, n);

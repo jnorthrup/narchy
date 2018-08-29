@@ -367,7 +367,7 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("(--(robin --> bird) ==> (robin --> [flying]))", 0.1f, 0.9f);
         tester.mustBelieve(cycles, " (--(robin --> [flying]) ==> (robin --> bird))",
-                0.9f, 0.36f);
+                0.1f, 0.36f);
                 //0f, 0.45f);
     }
 
@@ -385,8 +385,8 @@ public class NAL5Test extends NALTest {
         test
                 .believe("(--B ==> A)", 0.1f, 0.9f)
                 .mustBelieve(cycles, " (--A ==> B)",
-                        0.9f,0.36f);
-                        //0f, 0.45f);
+                        0.1f, 0.36f);
+
     }
 
     @Test
