@@ -176,24 +176,22 @@
      (M ==> P), (M ==> S), neq(P,S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
         (M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
 
-
+        //TODO question variations
+        //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
+        //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P || S),A..+) ==> X), (Belief:UnionSym)
 
         //TODO question variations
-        ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
-        ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P || S),A..+) ==> X), (Belief:UnionSym)
-            //(Belief:Implsition, Also:VarIntro)
+        //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
+        //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
 
-        //TODO question variations
-        (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
-        (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
-            //, (Belief:Implsition, Also:VarIntro)
 
-                //contradiction anonymizer
-                //TODO make inv(A,B) predicate which is true if A == --B
-                //(Y ==> X), (--Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==> X), (Belief:IntersectionSym)
-                    //, (Belief:Implsition)
-                //(--Y ==> X), (Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==> X), (Belief:IntersectionSym)
-                    //, (Belief:Implsition)
+    //Contradiction Neutralize
+    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:IntersectionSym)
+    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:IntersectionSym)
+    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:IntersectionSym)
+      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionSym)
+
+
 
     (X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
     (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)

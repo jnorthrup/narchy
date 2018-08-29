@@ -153,6 +153,11 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                 case "neqRoot":
                     neqRoot(constraints, X, Y);
                     break;
+                case "eqNeg":
+                    neq(constraints, X, Y);
+                    constraints.add(new NotEqualConstraint.EqualNegConstraint(X, Y));
+                    constraints.add(new NotEqualConstraint.EqualNegConstraint(Y, X));
+                    break;
 
 //                case "neqTaskBelief":
 //                    pre.add(neqTaskBelief);

@@ -128,9 +128,10 @@ public enum TruthFunctions2 {
     @Nullable
     public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
-        float c = and(
+        float c = and(belief.freq(),
+                //(
                         and(goal.conf(), belief.conf())
-                            ,belief.freq()
+
                 )
         ;
 

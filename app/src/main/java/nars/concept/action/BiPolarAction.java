@@ -258,7 +258,7 @@ public class BiPolarAction extends AbstractSensor {
         }
 
         /** "Q" desire/value function. produces the scalar summary of the goal truth desire that will be
-         * used in the difference comparison. return NaN or value in range -1..+1 */
+         * used in the difference comparison. return NaN or value  */
         public float q(Truth t) {
 
             //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;

@@ -53,7 +53,29 @@ public final class NotEqualConstraint extends RelationConstraint {
 //            return true;
 //        }
     }
+    public static final class EqualNegConstraint extends RelationConstraint {
 
+        public EqualNegConstraint(Term target, Term other) {
+            super(target, other, "eqNeg");
+        }
+
+        @Override
+        public float cost() {
+            return 0.05f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y) {
+            return !y.equals(x.neg());
+        }
+
+//        @Override
+//        public boolean remainInAndWith(RelationConstraint c) {
+//            if (c instanceof NeqRootAndNotRecursiveSubtermOf)
+//                return false;
+//            return true;
+//        }
+    }
 //    /** compares term equality, unnegated */
 //    public static final class NotEqualUnnegConstraint extends RelationConstraint {
 //
