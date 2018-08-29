@@ -56,15 +56,20 @@ public interface Variable extends Atomic {
         if (equals(_y))
             return true;
 
+        Term x = u.resolve(this);
+
         Term y;
-        if (_y instanceof Variable) {
-            if (equals(y = u.resolve(_y)))
-                return true;
-        } else
+        if (_y instanceof Variable)
+            y = u.resolve(_y);
+        else
             y = _y;
 
-
-        Term x = u.resolve(this);
+        if (x!=this || _y != y) {
+            if (x.equals(y))
+                return true;
+            if (x.containsRecursively(y) || y.containsRecursively(x))
+                return false; //prevent infinite recursion
+        }
 
         if (x != this) {
             return x.unify(y, u);

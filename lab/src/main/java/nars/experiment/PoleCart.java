@@ -40,7 +40,7 @@ public class PoleCart extends NAgentX {
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
 
 
-    static final float fps = 45;
+    static final float fps = 30;
 
     public static void main(String[] arg) {
 

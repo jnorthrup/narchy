@@ -205,15 +205,7 @@ public interface Compound extends Term, IPair, Subterms {
         if ((op = x.op()) != y.op())
             return false;
 
-        if (op.temporal) {
-            int xdt = x.dt();
-            if (xdt != XTERNAL && xdt != DTERNAL) {
-                int ydt = y.dt();
-                if (ydt != XTERNAL && ydt != DTERNAL && !u.unifyDT(xdt,ydt)) {
-                    return false;//TODO strict equality: u.dur
-                }
-            }
-        }
+
 
 
 
@@ -228,20 +220,13 @@ public interface Compound extends Term, IPair, Subterms {
         if ((xs = xx.subs()) != (ys = yy.subs()))
             return false;
 
+        if (!Terms.commonStructureTest(xx, yy, u))
+            return false;
 
 
         if (xs == 1) {
-            try {
-                return xx.sub(0).unify(yy.sub(0), u);
-            } catch (StackOverflowError e) {
-                System.err.println("stack overflow in unify: " + xx.sub(0) + " (in " + xx + ")\tvs\t" + yy.sub(0) + " (in " + yy + ')');
-                throw e;
-            }
+            return xx.sub(0).unify(yy.sub(0), u);
         } else {
-
-            if (!Terms.commonStructureTest(xx, yy, u))
-                return false;
-
 
             //test only after equality
             if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
@@ -252,9 +237,15 @@ public interface Compound extends Term, IPair, Subterms {
                     return false;
             }
 
-            if (!Subterms.possiblyUnifiable(xx, yy, u))
-                return false;
-
+            if (op.temporal) {
+                int xdt = x.dt();
+                if (xdt != XTERNAL && xdt != DTERNAL) {
+                    int ydt = y.dt();
+                    if (ydt!=xdt && ydt != XTERNAL && ydt != DTERNAL && !u.unifyDT(xdt,ydt)) {
+                        return false;
+                    }
+                }
+            }
 
             if (isCommutative()) {
                 return xx.unifyCommute(yy, u);

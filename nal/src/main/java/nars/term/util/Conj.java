@@ -752,7 +752,7 @@ public class Conj extends ByteAnonMap {
 
             int dt = eternal ? DTERNAL : 0;
 
-            if (existingShortened.equals(existingUnneg))
+            if (existingShortened.equals(incoming))
                 return Op.compound(CONJ, dt, existingUnneg, incoming);
 
             try {

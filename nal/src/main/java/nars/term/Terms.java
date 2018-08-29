@@ -277,10 +277,10 @@ public enum Terms {
     }
 
     public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
-        return u.symmetric || hasAllExcept(x, y, u.varBits);
+        return /*u.symmetric || */hasAllExcept(x, y, u.varBits);
     }
     public static boolean commonStructureTest(int structure, Termlike y, Unify u) {
-        return u.symmetric || hasAllExcept(structure, y.structure(), u.varBits);
+        return /*u.symmetric || */hasAllExcept(structure, y.structure(), u.varBits);
     }
 
     /** finds the shortest deterministic subterm path for extracting a subterm in a compound.
