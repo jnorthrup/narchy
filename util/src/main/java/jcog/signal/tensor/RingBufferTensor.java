@@ -23,7 +23,7 @@ public class RingBufferTensor extends ArrayTensor {
 
     @Override
     public float get(int... cell) {
-        throw new UnsupportedOperationException("TODO");
+        return data[((cell[0] + target))%num*segment + cell[1]];
     }
 
     @Override

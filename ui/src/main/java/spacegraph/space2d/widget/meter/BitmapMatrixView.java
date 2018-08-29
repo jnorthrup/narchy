@@ -123,10 +123,10 @@ public class BitmapMatrixView extends Surface {
     }
 
     public static BitmapMatrixView get(RingBufferTensor t,  ViewFunction1D view) {
-        float[] d = t.data;
+        //float[] d = t.data;
         int stride = t.segment;
         return new BitmapMatrixView((int) Math.floor(((float) t.volume()) / stride), stride, (x, y) -> {
-            float v = d[x * stride + y];
+            float v =t.get(x,y); // d[x * stride + y];
             return view.update(v);
         });
     }
