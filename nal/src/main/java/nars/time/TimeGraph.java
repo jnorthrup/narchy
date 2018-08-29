@@ -664,7 +664,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         if (pStart.equals(x0)) {
                             return Conj.the(x0, 0, x1, dt);
                         } else if (pStart.equals(x1)) {
-                            return Conj.the(x1, 0, x0, dt);
+                            return Conj.the(x1, 0, x0, -dt);
                         } else {
                             return Null; //TODO
                         }

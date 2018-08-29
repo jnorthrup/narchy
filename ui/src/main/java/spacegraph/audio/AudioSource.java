@@ -20,7 +20,7 @@ public class AudioSource implements WaveSource {
     public final AudioFormat audioFormat;
 
     private final int bytesPerSample;
-    public final FloatRange gain = new FloatRange(1f, 0, 32f);
+    public final FloatRange gain = new FloatRange(1f, 0, 128f);
 
 
 
@@ -33,13 +33,14 @@ public class AudioSource implements WaveSource {
 
 
 
+    /** frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency */
     public AudioSource(float frameRate) {
         this.frameRate = new FloatRange(frameRate, 1f, 40f);
 
 
         sampleRate = 22050;
-        audioFormat = new AudioFormat(sampleRate, 16, 1, true, false);
         bytesPerSample = 2;
+        audioFormat = new AudioFormat(sampleRate, 8*bytesPerSample, 1, true, false);
 
         dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 //        System.out.println(dataLineInfo);

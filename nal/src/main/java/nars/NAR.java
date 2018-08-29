@@ -1288,7 +1288,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Nullable
     public Task belief(Termed c, long start, long end) {
-        return match(c, BELIEF, start, end);
+        return answer(c, BELIEF, start, end);
     }
 
     public final Task belief(String c, long when) throws NarseseException {
@@ -1308,7 +1308,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Nullable
     public final Task goal(Termed c, long start, long end) {
-        return match(c, GOAL, start, end);
+        return answer(c, GOAL, start, end);
     }
 
     public final Task goal(Termed c, long when) {
@@ -1316,12 +1316,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @Nullable
-    public final Task match(Term c, byte punc, long when) {
-        return match(c, punc, when, when);
+    public final Task answer(Term c, byte punc, long when) {
+        return answer(c, punc, when, when);
     }
 
     @Nullable
-    public Task match(Termed t, byte punc, long start, long end) {
+    public Task answer(Termed t, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
         Concept concept =
                 conceptualizeDynamic(t);
@@ -1330,7 +1330,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (!(concept instanceof TaskConcept))
             return null;
 
-        Task answer = concept.table(punc).match(start, end,
+        Task answer = concept.table(punc).answer(start, end,
                 t.term(), null, this);
 //        if (answer != null && !answer.isDeleted()) {
 //            input(answer);
@@ -1477,7 +1477,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public final Task matchBelief(Term x, long start, long end) {
-        return match(x, BELIEF, start, end);
+        return answer(x, BELIEF, start, end);
     }
 
     public final Task matchGoal(Term x, long when) {
@@ -1485,7 +1485,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public final Task matchGoal(Term x, long start, long end) {
-        return match(x, GOAL, start, end);
+        return answer(x, GOAL, start, end);
     }
 
     /** creates a view for resolving unifiable terms with 'x'

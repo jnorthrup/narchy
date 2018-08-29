@@ -26,11 +26,11 @@ class DynamicSectTest {
         n.run(2);
 
 
-        Task k = n.match($("((x|y)-->a)"), BELIEF, 0);
+        Task k = n.answer($("((x|y)-->a)"), BELIEF, 0);
         assertEquals("((x|y)-->a)", k.term().toString());
         assertEquals(1f, k.truth().freq());
 
-        Task withNeg = n.match($("((x|--y)-->a)"), BELIEF, 0);
+        Task withNeg = n.answer($("((x|--y)-->a)"), BELIEF, 0);
         assertEquals("(((--,y)|x)-->a)", withNeg.term().toString());
         assertEquals(0f, withNeg.truth().freq());
 

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 150;
+    private final static int cycles = 250;
 
     @BeforeEach
     void setTolerance() {
@@ -1090,8 +1090,17 @@ public class NAL7Test extends NALTest {
                 .mustNotOutput(cycles, "(a ==>+2 (x && y))", BELIEF, (t) -> t == 0 || t == ETERNAL)
                 .mustNotOutput(cycles, "(a ==>+3 (x && y))", BELIEF, (t) -> t == 0 || t == ETERNAL);
     }
-
     @Test
+    void preconImplyConjPostB() {
+
+
+        test
+                .input("(a ==>+3 x). :|:")
+                .input("(a ==>+2 y). :|:")
+                .mustBelieve(cycles, "(a ==>+2 (x &&-1 y))", 1.00f, 0.81f, 0);
+    }
+
+        @Test
     void preconImplyConjPost2() {
 
         test

@@ -49,8 +49,8 @@ public class BiPolarAction extends AbstractSensor {
     }
     public BiPolarAction(Term id, Polarization model, FloatToFloatFunction motor, NAR nar) {
         this(posOrNeg ->
-                //$.p(id, posOrNeg ? PLUS : NEG)
-                $.inh(id, posOrNeg ? PLUS : NEG)
+                $.p(id, posOrNeg ? PLUS : NEG)
+                //$.inh(id, posOrNeg ? PLUS : NEG)
                 , model, motor, nar);
     }
 
@@ -260,7 +260,9 @@ public class BiPolarAction extends AbstractSensor {
         /** "Q" desire/value function. produces the scalar summary of the goal truth desire that will be
          * used in the difference comparison. return NaN or value in range -1..+1 */
         public float q(Truth t) {
-            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
+
+            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
+            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
         }
 
     }

@@ -22,7 +22,6 @@ import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,21 +79,21 @@ public class FZero extends NAgentX {
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
-//        initToggleLeftRight();
+        initToggleLeftRight();
 //        initToggleFwdStop();
 
         GoalActionConcept F = initUnipolarLinear(5f);
 
         //initTankContinuous();
-        BiPolarAction A =
-                //initBipolarRotateRelative(true, 1f);
-                //initBipolarRotateAbsolute(true);
-                //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(true, 0.25f);
-
-        window(new Gridding(
-                //new CameraSensorView(c, this).withControls(),
-                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
+//        BiPolarAction A =
+//                //initBipolarRotateRelative(true, 1f);
+//                //initBipolarRotateAbsolute(true);
+//                //initBipolarRotateDirect(false, 0.9f);
+//                initBipolarRotateDirect(true, 0.25f);
+//
+//        window(new Gridding(
+//                //new CameraSensorView(c, this).withControls(),
+//                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
 
 
@@ -108,15 +107,40 @@ public class FZero extends NAgentX {
                 new FloatAveraged(0.5f, true));
         Signal dAngVel = senseNumberDifference($.func("ang", id, $$("dTheta")), playerAngle).resolution(r);
 
+        int angles = 9;
         AbstractSensor ang = senseNumber(angle ->
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                9,
+                angles,
                 DigitizedScalar.FuzzyNeedle
         ).resolution(r);
 
-
+//        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);
+//        nar.onTask(t -> {
+//           if (t.isBelief() && t.toString().contains("ang"))
+//               System.out.println(t);
+//        });
+//        onFrame(()->{
+//            int j = 0;
+//           for (int i = 0; i < angles; i++) {
+//               if (i == j)
+//                   System.out.print(" -- ");
+//               else {
+//                   Term t = $.sim($.func("ang", id, $.the(0)), $.func("ang", id, $.the(i)));
+//                   Truth tr = nar.beliefTruth(t, nar.time());
+//                   if (tr == null) {
+//                       try {
+//                           nar.input(t + "? |");
+//                       } catch (Narsese.NarseseException e) {
+//                           e.printStackTrace();
+//                       }
+//                   }
+//                   System.out.print(" " + tr);
+//               }
+//           }
+//           System.out.println();
+//        });
 
 
         rewardDetailed("race", ()->{

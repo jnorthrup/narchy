@@ -621,7 +621,7 @@ public class RevisionTest {
 
         TaskConcept c = (TaskConcept) n.conceptualize("(x ==> y)");
         c.print();
-        Task t = n.match(c.term(), BELIEF, ETERNAL);
+        Task t = n.answer(c.term(), BELIEF, ETERNAL);
         assertEquals(0.5f, t.freq(), 0.01f);
         assertEquals(0.947f, t.conf(), 0.01f);
     }

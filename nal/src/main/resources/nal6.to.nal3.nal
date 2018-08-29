@@ -12,6 +12,8 @@
   ((X-->A) && (X-->B)),   X, neqRCom(A,B), task(".")  |- (X-->(A&B)), (Punctuation:Question, Time:TaskRange)
 (--(X-->A) && --(X-->B)), X, neqRCom(A,B), task(".")  |- (X-->(A|B)), (Punctuation:Question, Time:TaskRange)
 
+//disjoint hypothesis
+(X && --Y), (--X && Y), neqRCom(X,Y)  |- --(X<->Y), (Belief:Intersection)
 
 //specific difference of two conjunctions
  (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), task("."), --has(Y,"~"),--has(X,"~")     |- (X~Y), (Punctuation:Question, Time:TaskRange)

@@ -14,7 +14,7 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:Desire)
+    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:DesireWeak)
      (B --> C), (A --> B), neqRCom(A,C)      |- (A --> C), (Belief:DeductionReverse)
 
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)
@@ -71,7 +71,7 @@
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
-    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Desire, Time:Intersect)
+    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Time:Intersect)
 
     //(X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
     //(X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)

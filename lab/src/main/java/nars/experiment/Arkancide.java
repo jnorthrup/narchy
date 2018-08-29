@@ -8,7 +8,6 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
-import nars.util.TimeAware;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
 
@@ -44,16 +43,14 @@ public class Arkancide extends NAgentX {
     public static void main(String[] args) {
 
 
-        TimeAware timeAware = runRT((NAR n) -> {
+        runRT((NAR n) -> {
 
             n.dtDither.set(25); //50fps resolution
 
-            Arkancide a = new Arkancide(n, cam, numeric);
 
+            return new Arkancide(n, cam, numeric);
 
-            return a;
-
-        }, 40);
+        }, 20);
 
 
     }
@@ -73,7 +70,9 @@ public class Arkancide extends NAgentX {
         paddleSpeed = 50 * noid.BALL_VELOCITY;
 
 
-        initToggle();
+        //initBipolarDirect();
+        initBipolarRelative();
+        //initToggle();
 
         float resX = 0.01f;
         float resY = 0.01f;
@@ -111,7 +110,7 @@ public class Arkancide extends NAgentX {
 
 
 
-        reward(()->{
+        rewardDetailed(()->{
             noid.BALL_VELOCITY = ballSpeed.floatValue();
             float nextScore = noid.next();
             float reward = Math.max(-1f, Math.min(1f, nextScore - prevScore));

@@ -1,32 +1,32 @@
-    X, X, task("!") |-         (?1 ==>+- X) , (Punctuation:Question)
-    X, X, task("!") |-          (X ==>+- ?1), (Punctuation:Question)
-    X, X, task("!") |-        (--X ==>+- ?1), (Punctuation:Question)
-    X, X, task("!") |-           (?1 &&+- X), (Punctuation:Quest)
-    X, X, task("!") |-         (?1 &&+- --X), (Punctuation:Quest)
+    X, X, task("!") |-         (?1 ==> X) , (Punctuation:Question)
+    X, X, task("!") |-          (X ==> ?1), (Punctuation:Question)
+    X, X, task("!") |-        (--X ==> ?1), (Punctuation:Question)
+    X, X, task("!") |-           (?1 && X), (Punctuation:Quest)
+    X, X, task("!") |-         (?1 && --X), (Punctuation:Quest)
 
-    X, X, task("!") |-           (?1 &&+- X), (Punctuation:Question)
-    X, X, task("!") |-         (?1 &&+- --X), (Punctuation:Question)
+    X, X, task("!") |-           (?1 && X), (Punctuation:Question)
+    X, X, task("!") |-         (?1 && --X), (Punctuation:Question)
 
 //--
 
-    X, Y, task("!") |-          (polarize(Y,belief) ==>+- X), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-                           (X ==>+- Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-                         (--X ==>+- Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-           (X &&+- polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
-    X, Y, task("!") |-         (--X &&+- polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+    X, Y, task("!") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)
+    X, Y, task("!") |-                           (X ==> Y), (Punctuation:Question, Time:Relative)
+    X, Y, task("!") |-                         (--X ==> Y), (Punctuation:Question, Time:Relative)
+    X, Y, task("!") |-           (X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+    X, Y, task("!") |-         (--X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
 
-    X, Y, task("!") |-           (X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-           (--X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+    X, Y, task("!") |-           (X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+    X, Y, task("!") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
 
 //- ---
-    X, Y, task("@") |-          (polarize(Y,belief) ==>+- X), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-                           (X ==>+- Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-                         (--X ==>+- Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-           (X &&+- polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
-    X, Y, task("@") |-         (--X &&+- polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+    X, Y, task("@") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-                           (X ==> Y), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-                         (--X ==> Y), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-           (X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+    X, Y, task("@") |-         (--X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
 
-    X, Y, task("@") |-           (X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-           (--X &&+- polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-           (X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+    X, Y, task("@") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
 
 
     //antigoal in sequence
@@ -41,23 +41,23 @@
 
 
 //goal induction
-//G, A, task("!")  |- (polarize(G,task) &&+- polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
-    //G, A, task("!")  |- (polarize(G,task) &&+- --polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
-//G, A, task("!")  |- (polarize(G,task) &&+- --polarize(A,belief)), (Punctuation:Quest, Time:Relative, Also:VarIntro)
+//G, A, task("!")  |- (polarize(G,task) && polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
+    //G, A, task("!")  |- (polarize(G,task) && --polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)
+//G, A, task("!")  |- (polarize(G,task) && --polarize(A,belief)), (Punctuation:Quest, Time:Relative, Also:VarIntro)
 
 //goal search
-    //(X-->Y), X, task("!") |-          (?1 ==>+- (X-->Y)), (Punctuation:Question)
-    //(X-->Y), X, task("!") |-          ((X-->Y) ==>+- ?1), (Punctuation:Question)
-    //(X-->Y), X, task("!") |-        (--(X-->Y) ==>+- ?1), (Punctuation:Question)
-    //(X-->Y), X, task("!") |-         (?1 &&+- --(X-->Y)), (Punctuation:Question)
+    //(X-->Y), X, task("!") |-          (?1 ==> (X-->Y)), (Punctuation:Question)
+    //(X-->Y), X, task("!") |-          ((X-->Y) ==> ?1), (Punctuation:Question)
+    //(X-->Y), X, task("!") |-        (--(X-->Y) ==> ?1), (Punctuation:Question)
+    //(X-->Y), X, task("!") |-         (?1 && --(X-->Y)), (Punctuation:Question)
 
 
     //X, (Y==>X), task("!"), neq(X,Y)      |-          Y, (Punctuation:Quest)
 
     //X, (Y==>X), task("!"), neq(X,Y)      |-          Y, (Punctuation:Question)
-    //X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 &&+- Y), (Punctuation:Question)
-    //X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 &&+- --Y), (Punctuation:Question)
-    //X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 ==>+- Y), (Punctuation:Question)
+    //X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 && Y), (Punctuation:Question)
+    //X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 && --Y), (Punctuation:Question)
+    //X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 ==> Y), (Punctuation:Question)
 
     //X, (X==>Y), task("!"), neq(X,Y)         |- Y, (Punctuation:Quest)
     //X, (--X==>Y), task("!"), neq(X,Y)       |- Y, (Punctuation:Quest)
@@ -65,18 +65,18 @@
     //X, (--X && Y), task("!"), neqUnneg(X,Y) |- Y, (Punctuation:Quest)
 
 //general impl question induction
-    //(X ==> Y), Z, task("?")       |- ((X &&+-   Z) ==>+- Y), (Punctuation:Question)
-    //(X ==> Y), Z, task("?")       |- ((X &&+- --Z) ==>+- Y), (Punctuation:Question)
+    //(X ==> Y), Z, task("?")       |- ((X &&   Z) ==> Y), (Punctuation:Question)
+    //(X ==> Y), Z, task("?")       |- ((X && --Z) ==> Y), (Punctuation:Question)
 
 //self-fulfilling prophecy: should I?  i believe it is. then i want it to be. (weakly)
     //G, G, task("@") |- G, (Goal:BeliefStructuralReduction, Punctuation:Goal)
 
     //quest to 'how' question
-    //B, X, task("@"), notImpl(B) |- (B ==>+- X), (Punctuation:Question)
-    //B, X, task("@"), notImpl(B) |- (--B ==>+- X), (Punctuation:Question)
-    //B, X, task("@"), notImpl(X) |- (X ==>+- B), (Punctuation:Question)
-    //B, X, task("@"), notImpl(X) |- (--X ==>+- B), (Punctuation:Question)
+    //B, X, task("@"), notImpl(B) |- (B ==> X), (Punctuation:Question)
+    //B, X, task("@"), notImpl(B) |- (--B ==> X), (Punctuation:Question)
+    //B, X, task("@"), notImpl(X) |- (X ==> B), (Punctuation:Question)
+    //B, X, task("@"), notImpl(X) |- (--X ==> B), (Punctuation:Question)
 
 
-    //(X ==> Y), (X ==> Y), task("?") |- (?1 ==>+- Y), (Punctuation:Question)
-    //(X ==> Y), (X ==> Y), task("?") |- (X ==>+- ?1), (Punctuation:Question)
+    //(X ==> Y), (X ==> Y), task("?") |- (?1 ==> Y), (Punctuation:Question)
+    //(X ==> Y), (X ==> Y), task("?") |- (X ==> ?1), (Punctuation:Question)

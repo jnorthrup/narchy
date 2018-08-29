@@ -219,7 +219,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
                 n.believe(x, xf, 0.9f);
                 n.believe(y, yf, 0.9f);
 
-                Task task = n.match(pt_p, BELIEF, 0);
+                Task task = n.answer(pt_p, BELIEF, 0);
                 //System.out.println(task);
 
                 Truth truth = n.truth(pt_p, BELIEF, 0);
@@ -277,7 +277,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
             n.believe("(a ==> x)");
             n.believe("(b ==> x)");
             assertDynamicTable($$(s));
-            @Nullable Task t = n.match($$(s), BELIEF, ETERNAL);
+            @Nullable Task t = n.answer($$(s), BELIEF, ETERNAL);
             assertEquals("((a&&b)==>x)", t.term().toString());
             assertEquals(ETERNAL, t.start());
             assertEquals(2, t.stamp().length);

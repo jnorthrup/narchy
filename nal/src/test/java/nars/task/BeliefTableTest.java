@@ -276,15 +276,15 @@ class BeliefTableTest {
             long when = t == Present ? 0 : ETERNAL;
 
             for (int dt = 3; dt < 7; dt++) {
-                Task fwd = n.match(IMPL.the($.$("a"), +dt, $.$("b")), BELIEF, when);
+                Task fwd = n.answer(IMPL.the($.$("a"), +dt, $.$("b")), BELIEF, when);
                 assertEquals("(a ==>+5 b)", fwd.term().toString());
             }
 
-            Task bwd = n.match($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
+            Task bwd = n.answer($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
             assertEquals("(a ==>-5 b)", bwd.term().toString());
 
 
-            Task x = n.match($.impl($.$("a"), DTERNAL, $.$("b")), BELIEF, when);
+            Task x = n.answer($.impl($.$("a"), DTERNAL, $.$("b")), BELIEF, when);
             System.out.println(x);
 
 
