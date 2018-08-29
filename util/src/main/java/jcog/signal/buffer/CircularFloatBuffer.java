@@ -250,4 +250,12 @@ public class CircularFloatBuffer extends CircularBuffer{
     }
 
 
+    /** from inclusive, to exclusive */
+    public float sum(int from, int to) {
+        float s = 0;
+        //TODO optimize cursor
+        for (int i = from; i < to; i++)
+            s += peek(i);
+        return s;
+    }
 }

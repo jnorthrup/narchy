@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meter;
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
 import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.RingBufferTensor;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.input.finger.Finger;
@@ -121,6 +122,14 @@ public class BitmapMatrixView extends Surface {
         };
     }
 
+    public static BitmapMatrixView get(RingBufferTensor t,  ViewFunction1D view) {
+        float[] d = t.data;
+        int stride = t.segment;
+        return new BitmapMatrixView((int) Math.floor(((float) t.volume()) / stride), stride, (x, y) -> {
+            float v = d[x * stride + y];
+            return view.update(v);
+        });
+    }
     public static BitmapMatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
         float[] d = t.data;
         return new BitmapMatrixView((int) Math.floor(((float) t.volume()) / stride), stride, (x, y) -> {

@@ -5,7 +5,7 @@ import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 public class RingBufferTensor extends ArrayTensor {
     private final Tensor t;
-    private final int segment;
+    public final int segment;
     private final int num;
     int target;
 

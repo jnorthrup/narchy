@@ -117,7 +117,9 @@ public interface Topic<V> {
     default On onWeak(Consumer<V> o) {
         return new On.Weak<>(this, o);
     }
-
+    default On onWeak(Runnable o) {
+        return new On.Weak<>(this, (x) -> o.run());
+    }
 
 
 

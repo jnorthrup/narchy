@@ -105,7 +105,7 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
         if (absRange < Float.MIN_NORMAL) absRange = 1;
 
 
-        float alpha = 0.9f; //1f / ns;
+//        float alpha = 0.9f; //1f / ns;
 
         long first = this.first, last = this.last;
 
@@ -123,8 +123,7 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
             float amp = 0;
 
             amp += (iStart - sStart) * buffer.peek(iStart);
-            for (int i = iStart + 1; i < iEnd - 1; i++)
-                amp += buffer.peek(i);
+            amp += buffer.sum(iStart+1, iEnd);
             amp += (sEnd - iEnd) * buffer.peek(iEnd);
 
             amp /= (sEnd - sStart);
