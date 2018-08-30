@@ -19,7 +19,7 @@ class TensorTest {
         assertEquals(0, t.index(0));
 
 
-        assertEquals("[2]<0.1000\t0.2000>", t.toString());
+        assertEquals("[2]<0.1\t0.2>", t.toString());
     }
 
     @Test
@@ -52,7 +52,7 @@ class TensorTest {
 
 
         assertEquals(0.25f, t.get(1, 0), 0.005f);
-        assertEquals("[2, 2]<0.5000\t0.2500\t0.0000\t0.5000>", t.toString());
+        assertEquals("[2, 2]<0.5\t0.25\t0\t0.5>", t.toString());
     }
 
     @Test

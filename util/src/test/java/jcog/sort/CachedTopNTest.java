@@ -24,13 +24,13 @@ class CachedTopNTest {
     @Test
     void testCachedTopN() {
         CachedTopN<String> c = new CachedTopN<String>(3, s -> s.length());
-        assertAdd(c, "a", "[1.0000 a]");
-        assertAdd(c, "a", "[1.0000 a]"); //duplicate absorbed
-        assertAdd(c, "bbb", "[3.0000 bbb, 1.0000 a]");
-        assertAdd(c, "cc", "[3.0000 bbb, 2.0000 cc, 1.0000 a]");
-        assertAdd(c, "dd", "[3.0000 bbb, 2.0000 cc, 2.0000 dd]");
-        assertAdd(c, "eee", "[3.0000 bbb, 3.0000 eee, 2.0000 dd]");
-        assertAdd(c, "ff", "[3.0000 bbb, 3.0000 eee, 2.0000 dd]");  //disallow replacement of equal to weakest
+        assertAdd(c, "a", "[1 a]");
+        assertAdd(c, "a", "[1 a]"); //duplicate absorbed
+        assertAdd(c, "bbb", "[3 bbb, 1 a]");
+        assertAdd(c, "cc", "[3 bbb, 2 cc, 1 a]");
+        assertAdd(c, "dd", "[3 bbb, 2 cc, 2 dd]");
+        assertAdd(c, "eee", "[3 bbb, 3 eee, 2 dd]");
+        assertAdd(c, "ff", "[3 bbb, 3 eee, 2 dd]");  //disallow replacement of equal to weakest
     }
 
     private static void assertAdd(TopN<String> c, String x, String expect) {

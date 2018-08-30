@@ -9,7 +9,6 @@ import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.bag.impl.hijack.DefaultHijackBag;
-import jcog.random.SplitMix64Random;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
@@ -61,7 +60,7 @@ class BagTest {
 
 
     public static Random rng() {
-        return new SplitMix64Random(1);
+        return new XoRoShiRo128PlusRandom(1);
     }
 
 

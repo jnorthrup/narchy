@@ -84,7 +84,7 @@ class ArrayBagTest {
         assertEquals("y", ii.next().get());
         assertEquals("x", ii.next().get());
 
-        assertEquals("[$0.2000 y, $0.1000 x]", a.listCopy().toString());
+        assertEquals("[$0.2 y, $0.1 x]", a.listCopy().toString());
 
         System.out.println(a.listCopy());
 
