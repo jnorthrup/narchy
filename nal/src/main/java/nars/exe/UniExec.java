@@ -22,8 +22,8 @@ public class UniExec extends AbstractExec {
 
     int WORK_PER_CYCLE = 1;
 
-    final Revaluator revaluator =
-            Revaluator.NullRevaluator.the;
+    final Revaluator revaluator;
+
             //new Focus.AERevaluator(new SplitMix64Random(1));
             //new Focus.DefaultRevaluator();
 
@@ -38,6 +38,13 @@ public class UniExec extends AbstractExec {
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
     private Ons ons = null;
+
+    public UniExec() {
+        this(Revaluator.NullRevaluator.the);
+    }
+    public UniExec(Revaluator revaluator) {
+        this.revaluator = revaluator;
+    }
 
     public final class InstrumentedCausable extends InstrumentedWork {
 

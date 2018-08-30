@@ -30,6 +30,7 @@ abstract public class MultiExec extends UniExec {
     protected volatile long idleTimePerCycle;
 
     public MultiExec(int concurrency) {
+        super(new Revaluator.DefaultRevaluator());
         this.totalConcurrency = concurrency;
     }
 

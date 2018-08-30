@@ -63,7 +63,7 @@ public class FZero extends NAgentX {
 
 
         Scale vision = new Scale(() -> fz.image,
-                24, 16
+                24, 18
                 //8, 8
         );
         onFrame(()->vision.update());
@@ -72,11 +72,11 @@ public class FZero extends NAgentX {
                 //.resolution(0.05f);
                 ;
 
-        int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), vision, nx, nx, (subX, subY) -> {
+        int nx = 3;
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y*/};
         }, 4, this);
-        camAE.alpha(0.15f);
+        camAE.alpha(0.1f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
