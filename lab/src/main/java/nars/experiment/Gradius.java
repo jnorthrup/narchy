@@ -25,7 +25,7 @@ public class Gradius extends NAgentX {
 
     public static void main(String[] args) {
 
-        NAgentX.runRT(Gradius::new, 50f);
+        NAgentX.runRT(Gradius::new, 25f);
 
     }
 
@@ -34,7 +34,8 @@ public class Gradius extends NAgentX {
 
 
         g.updateMS =
-                25; //TODO coordinate with fps
+                50;
+                //25; //TODO coordinate with fps
         //10;
 
 
@@ -48,7 +49,7 @@ public class Gradius extends NAgentX {
                 int jj = j;
                 //Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
-                                $.p($.p(id, $.the(ii), $.the(jj)), $.p(x, y)),
+                                $.p(id, $.p($.the(ii), $.the(jj)), $.the(x), $.the(y)),
                         //$.p(
                         //$.inh(
 //                                        $.p(x, y),
@@ -64,8 +65,8 @@ public class Gradius extends NAgentX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        int gpsDigits = 4;
-        float gpsRes = 0.1f;
+        int gpsDigits = 2;
+        float gpsRes = 0.04f;
         senseNumber(level -> $.prop($.the("Y"), $.the(level)),
                 () -> g.player[OBJ_Y] / height,
                 gpsDigits, DigitizedScalar.FuzzyNeedle
@@ -84,10 +85,10 @@ public class Gradius extends NAgentX {
         }
 
 
-        //initToggle();
-        initBipolar();
+        initToggle();
+        //initBipolar();
 
-        reward("alive", ()->{
+        rewardDetailed("alive", ()->{
             if (g.playerDead > 1)
                 return -1f;
             else if (g.paused)
@@ -96,7 +97,7 @@ public class Gradius extends NAgentX {
                 return +1;
         });
 
-        reward("destroy", ()->{
+        rewardDetailed("destroy", ()->{
 
             if (g.paused)
                 return 0;
@@ -115,10 +116,10 @@ public class Gradius extends NAgentX {
 
 
     void initToggle() {
-        actionPushButtonMutex($.func("left", id), $.inh("right", id),
+        actionPushButtonMutex($.func("left", id), $.func("right", id),
                 b -> g.keys[VK_LEFT] = b,
                 b -> g.keys[VK_RIGHT] = b);
-        actionPushButtonMutex($.func("up", id), $.inh("down", id),
+        actionPushButtonMutex($.func("up", id), $.func("down", id),
                 b -> g.keys[VK_UP] = b,
                 b -> g.keys[VK_DOWN] = b);
     }

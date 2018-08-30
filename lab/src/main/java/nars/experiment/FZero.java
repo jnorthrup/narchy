@@ -90,7 +90,7 @@ public class FZero extends NAgentX {
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.25f);
+                initBipolarRotateDirect(false, 0.3f);
 
         window(new Gridding(
                 //new CameraSensorView(c, this).withControls(),
@@ -312,7 +312,7 @@ public class FZero extends NAgentX {
     public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {
 
         final float[] heading = {0};
-        final MiniPID rotFilter = new MiniPID(0.2f, 0.2, 0.2f);
+        final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.3f);
 
         float curve = //curve exponent
                 //1;
@@ -323,7 +323,8 @@ public class FZero extends NAgentX {
             //heading[0] += Math.pow((dHeading-0.5f) * 2, curve) * rotFactor; //unipolar
             heading[0] += Math.pow((dHeading), curve) * rotFactor; //bipolar
 
-            fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
+            //fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
+            fz.playerAngle = (heading[0]);
 
             return dHeading;
         };
