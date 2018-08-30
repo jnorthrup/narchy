@@ -37,7 +37,7 @@ public class Evaluator implements DirectTermTransform {
     @Nullable protected ArrayHashSet<Term> discover(Term x, Evaluation e) {
         if (!x.hasAny(Op.FuncBits))
             return null;
-        ArrayHashSet<Term> funcAble = new ArrayHashSet();
+        ArrayHashSet<Term> funcAble = new ArrayHashSet(1);
         x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
             if (!funcAble.contains(xx)) {
                 if (Functor.isFunc(xx)) {
@@ -92,7 +92,7 @@ public class Evaluator implements DirectTermTransform {
 //    }
 
     @Nullable public Evaluation eval(Predicate<Term> each, Term... queries) {
-        Evaluation e = new Evaluation(this, each);
+        Evaluation e = new Evaluation(each);
 
         //iterating at the top level is effectively DFS; a BFS solution is also possible
         for (Term x : queries) {

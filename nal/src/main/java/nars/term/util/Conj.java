@@ -913,7 +913,7 @@ public class Conj extends ByteAnonMap {
         return result;
     }
 
-    private Term merge(Term conj, boolean conjPolarity, Term x, boolean eternal) {
+    private static Term merge(Term conj, boolean conjPolarity, Term x, boolean eternal) {
         if (conjPolarity) {
             return conjoinify(conj, x, eternal);
         } else {

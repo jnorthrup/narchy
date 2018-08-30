@@ -28,7 +28,7 @@ public class FactualEvaluator extends Evaluator {
     public final Map<Term, Node> nodes = new ConcurrentHashMap();
 
     enum ProofTruth {
-        True, False, Unknown, Confusion, Choose
+        True, False, Unknown, Conflict, Choose
     }
 
     ProofTruth truth(Term x) {
@@ -38,7 +38,7 @@ public class FactualEvaluator extends Evaluator {
         else if (x == False)
             return ProofTruth.False;
         else if (x == Null)
-            return ProofTruth.Confusion;
+            return ProofTruth.Conflict;
 
         Node f = nodes.get(x);
         ProofTruth t = f == null ? Unknown : f.truth();
@@ -142,7 +142,7 @@ public class FactualEvaluator extends Evaluator {
                     else if (y == ProofTruth.False)
                         falses = true;
                     if (trues && falses)
-                        return ProofTruth.Confusion;
+                        return ProofTruth.Conflict;
                 }
                 if (trues && !falses)
                     return ProofTruth.True;
@@ -204,12 +204,15 @@ public class FactualEvaluator extends Evaluator {
                         //return null;
                     } else {
 
-                        Term yu = y.unneg();
-                        if (!x.unneg().equals(yu)) {
-                            nodeOrAdd(x).add(y);
-                        }
-                        if (!yu.hasVars()) //ground truth
-                            nodeOrAdd(yu).add(y.op() == NEG ? False : True);
+                        nodeOrAdd(x).add(y);
+                        e.is(x,y);
+
+//                        Term yu = y.unneg();
+//                        if (!x.unneg().equals(yu)) {
+//                            nodeOrAdd(x).add(y);
+//                        }
+//                        if (!yu.hasVars()) //ground truth
+//                            nodeOrAdd(yu).add(y.op() == NEG ? False : True);
 
 
                         //return Evaluation.assign(x, y);
@@ -243,7 +246,7 @@ public class FactualEvaluator extends Evaluator {
      */
     public ProofTruth truth(Term x, Evaluation e) {
         if (x instanceof Bool)
-            return ProofTruth.Confusion;
+            return ProofTruth.Conflict;
 
 
         Node node = nodes.get(x);

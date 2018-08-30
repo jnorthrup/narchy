@@ -16,6 +16,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
@@ -27,7 +28,8 @@ import static nars.Op.*;
 public class Evaluation {
 
     private final Predicate<Term> each;
-    private final Evaluator e;
+
+
 
     private FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
 
@@ -81,7 +83,8 @@ public class Evaluation {
      * @param each
      * @return
      */
-    @Nullable public static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
+    @Nullable
+    private static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
         if (canEval(x)) {
             Evaluator y = new Evaluator(resolver);
@@ -92,12 +95,11 @@ public class Evaluation {
         return null;
     }
 
-    protected Evaluation(Evaluator e, Predicate<Term> each) {
+    protected Evaluation(Predicate<Term> each) {
         this.each = each;
-        this.e = e;
     }
 
-    private boolean termute(Term y, Predicate<Term> each) {
+    private boolean termute(Evaluator e, Term y) {
 
 
         int before = v.now();
@@ -109,7 +111,7 @@ public class Evaluation {
                 if (tt.test(subst)) {
                     Term z = y.replace(subst);
                     if (z!=y) {
-                        Evaluator ee = e.clone();
+                        Evaluator ee = e;//.clone();
                         if (!eval(ee, z)) //recurse
                             return false; //CUT
                     }
@@ -142,7 +144,7 @@ public class Evaluation {
                 Term z = y.replace(subst);
                 if (z!=y) {
 //                    if (canEval(z)) { // && !(ez = e.clone().query(z)).isEmpty()) {
-                        Evaluator ee = e.clone();
+                        Evaluator ee = e;//.clone();
                         if (!eval(ee, z)) //recurse
                             return false; //CUT
 //                    } else {
@@ -296,7 +298,7 @@ public class Evaluation {
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         int ts = termutators();
         if (ts > 0) {
-            return termute(y, each);
+            return termute(e,y);
         } else {
             if (y!=Null) {
                 if (!each.test(y))
@@ -341,13 +343,20 @@ public class Evaluation {
         return y[0];
     }
 
-    public static FactualEvaluator query(String s, NAR n) throws Narsese.NarseseException {
+    @Deprecated public static FactualEvaluator query(String s, NAR n) throws Narsese.NarseseException {
         return query($.$(s), n);
     }
-    public static FactualEvaluator query(Term x, NAR n) {
+    @Deprecated private static FactualEvaluator query(Term x, NAR n) {
         FactualEvaluator f = new FactualEvaluator(n::functor, n.facts(0.75f, true));
         f.eval((y)->true, x);
         return f;
+    }
+
+    public static Set<Term> queryAll(Term x, NAR n) {
+        Set<Term> solutions = new ArrayHashSet(1);
+        FactualEvaluator f = new FactualEvaluator(n::functor, n.facts(0.75f, true));
+        f.eval((y)->{ solutions.add(y); return true; }, x);
+        return solutions;
     }
 
     public static Set<Term> eval(String s, NAR n) {

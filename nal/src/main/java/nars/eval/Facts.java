@@ -2,12 +2,11 @@ package nars.eval;
 
 import nars.NAR;
 import nars.Op;
-import nars.concept.Concept;
-import nars.table.BeliefTables;
+import nars.concept.TaskConcept;
+import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.unify.Unify;
 import nars.unify.UnifySubst;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -15,8 +14,10 @@ import java.util.stream.Stream;
 
 import static nars.Op.IMPL;
 
-/** adapter for reifying NARS beliefs (above a certain confidence threshold) as
- * term-level facts for use during evaluation */
+/**
+ * adapter for reifying NARS beliefs (above a certain confidence threshold) as
+ * term-level facts for use during evaluation
+ */
 public class Facts implements Function<Term, Stream<Term>> {
     private final NAR nar;
     private final float expMin;
@@ -37,7 +38,9 @@ public class Facts implements Function<Term, Stream<Term>> {
             3. exhaustive concept index scan
         */
         Op xo = x.op();
-        Unify u = new UnifySubst(null, nar.random(), (m)-> { return false; /* HACK just one is enough */});
+        Unify u = new UnifySubst(null, nar.random(), m -> {
+            return false; /* HACK just one is enough */
+        });
 
         return
                 Stream.concat(
@@ -45,36 +48,52 @@ public class Facts implements Function<Term, Stream<Term>> {
                         //TODO Stage 2
                         nar.concepts() //Stage 3
                 )
-                .filter(y -> {
-                    Term yt = y.term();
-                    Op yo = yt.op();
-                    if (yo ==IMPL) {
-                        Term head = yt.sub(1);
-                        return (head.op()==xo) && head.unify(x, u.clear());
-                    }
+                        .filter(c -> {
+                            if (!(c instanceof TaskConcept))
+                                return false;
 
-                    //TODO prefilter
-                    //TODO match implication predicate, store the association in a transition graph
-                    return (xo == yo) && x.unify(yt, u.clear());
+                            Term yt = c.term();
+                            Op yo = yt.op();
+                            if (beliefsOrGoals && yo == IMPL) {
+                                Term head = yt.sub(1);
+                                return head.op() == xo && head.unify(x, u.clear());
+                            }
 
-                })
-                .filter(this::trueEnough).map(Concept::term);
+                            //TODO prefilter
+                            //TODO match implication predicate, store the association in a transition graph
+                            return xo == yo && x.unify(yt, u.clear());
+
+
+                        })
+                        .map(c -> {
+
+
+                            BeliefTable table = beliefsOrGoals ? c.beliefs() : c.goals();
+                            if (table.isEmpty())
+                                return null;
+
+                            boolean t = polarized(table, true);
+                            boolean f = polarized(table, false);
+                            if (t && !f) {
+                                return c.term();
+                            } else if (!t && f) {
+                                return c.term().neg();
+                            }
+                            return null;
+                        }).filter(Objects::nonNull);
     }
 
-    private boolean trueEnough(@Nullable Concept concept) {
-        BeliefTables table = beliefsOrGoals ? concept.beliefs() : concept.goals();
-        if (table.isEmpty())
-            return false;
-
-        return table.streamTasks().anyMatch(t -> exp(t.expectation() ));
+    private boolean polarized(BeliefTable table, boolean trueOrFalse) {
+        return table.streamTasks().anyMatch(t -> exp(trueOrFalse ? t.expectation() : 1 - t.expectation()));
     }
 
-    /** whether to accept the given expectation */
+    /**
+     * whether to accept the given expectation
+     */
     protected boolean exp(float exp) {
         //TODO handle negative expectation
-        return (exp >= this.expMin);
+        return exp >= this.expMin;
     }
-
 
 
 }
