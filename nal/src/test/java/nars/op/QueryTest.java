@@ -29,7 +29,7 @@ public class QueryTest {
         n.believe("f(y)");
 
         Set<Term> e = Evaluation.queryAll($$("f(?what)"), n);
-        assertEquals("[f(x),f(y)]", e.toString());
+        assertEquals("[f(x), f(y)]", e.toString());
     }
 
     @Test void testFactNeg() throws Narsese.NarseseException {

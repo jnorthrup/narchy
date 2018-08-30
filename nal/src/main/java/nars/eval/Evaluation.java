@@ -1,5 +1,6 @@
 package nars.eval;
 
+import com.google.common.collect.Iterables;
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
@@ -286,14 +287,8 @@ public class Evaluation {
 
         assert (y != null);
 
-
-//        if (e instanceof FactualEvaluator) {
-//            FactualEvaluator.ProofTruth te = ((FactualEvaluator) e).truth(y, this);
-//            //System.out.println(te);
-//        }
-
-        if (subst!=null)
-            y = y.replace(subst);
+//        if (subst!=null)
+//            y = y.replace(subst);
 
         //if termutators, collect all results. otherwise 'cur' is the only result to return
         int ts = termutators();
@@ -433,8 +428,11 @@ public class Evaluation {
     /**
      * 2-ary AND
      */
-    public Predicate<VersionMap<Term, Term>> assign(Term x, Term xx, Term y, Term yy) {
+    public static Predicate<VersionMap<Term, Term>> assign(Term x, Term xx, Term y, Term yy) {
         return m -> m.tryPut(x, xx) && m.tryPut(y, yy);
+    }
+    public static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
+        return (subst) -> subst.tryPut(x, y);
     }
 
 
@@ -442,15 +440,34 @@ public class Evaluation {
      * OR, forked
      * TODO limit when # termutators exceed limit
      */
-    public void isAny(Collection<Predicate<VersionMap<Term, Term>>> r) {
+    public void canBe(Iterable<Predicate<VersionMap<Term, Term>>> x) {
         ensureReady();
-        termutator.add(r);
+        termutator.add(x);
     }
 
-    public static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
-        return (subst) -> subst.tryPut(x, y);
+    public void canBe(Predicate<VersionMap<Term, Term>> x) {
+        ensureReady();
+        termutator.add(List.of(x));
     }
 
+    public void canBe(Term x, Term y) {
+        if (x.equals(y))
+            return;
+        canBe(assign(x, y));
+    }
+    public void canBe(Term x, Iterable<Term> y) {
+        canBe((Iterable<Predicate<VersionMap<Term,Term>>>)Iterables.transform(y, yy -> assign(x, yy)));
+    }
+
+    public void canBe(Term a, Term b, Term x, Term y) {
+        if (x.equals(y)) {
+            canBe(assign(a, b));
+        } else if (a.equals(b)) {
+            canBe(assign(x,y));
+        } else {
+            canBe(assign(a, b, x, y));
+        }
+    }
 
     private static boolean canEval(Term x) {
         return x.hasAll(Op.FuncBits);

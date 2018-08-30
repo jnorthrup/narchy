@@ -1,6 +1,7 @@
 package nars.eval;
 
 import jcog.TODO;
+import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.term.Functor;
@@ -12,6 +13,7 @@ import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -52,11 +54,14 @@ public class FactualEvaluator extends Evaluator {
         return t;
     }
 
-    /** proof node */
+    /**
+     * proof node
+     */
     abstract class Node {
         protected MutableSet<Term> conds = null;
 
-        @Deprecated abstract public ProofTruth truth();
+        @Deprecated
+        abstract public ProofTruth truth();
 
         public void print() {
             if (conds != null) {
@@ -112,13 +117,14 @@ public class FactualEvaluator extends Evaluator {
 
         @Override
         public String toString() {
-            return (truth==null ? Unknown : truth) + "\t" +
-                                (conds ==null ? "" : conds.toString());
+            return (truth == null ? Unknown : truth) + "\t" +
+                    (conds == null ? "" : conds.toString());
         }
 
 
-        @Override public ProofTruth truth() {
-            if (truth!=null)
+        @Override
+        public ProofTruth truth() {
+            if (truth != null)
                 return truth;
 
             return truth = _truth();
@@ -129,7 +135,7 @@ public class FactualEvaluator extends Evaluator {
                 return Unknown;
 
             MutableSet<Term> cond = conds;
-            if (cond.size()==1) {
+            if (cond.size() == 1) {
                 Term ff = cond.getOnly();
                 return FactualEvaluator.this.truth(ff);
 
@@ -154,7 +160,6 @@ public class FactualEvaluator extends Evaluator {
         }
 
 
-
         public ProofTruth getTruth() {
             return truth;
         }
@@ -174,65 +179,69 @@ public class FactualEvaluator extends Evaluator {
         return new FactualEvaluator(funcResolver, factResolver);
     }
 
-    @Override public @Nullable ArrayHashSet<Term> discover(Term x, Evaluation e) {
+    @Override
+    public @Nullable ArrayHashSet<Term> discover(Term x, Evaluation e) {
 
+
+        /** actually should be a set but duplicates should not normally be encountered */
+        List<Term> matches = new FasterList(1);
 
         //TODO cache
-        /*List<Predicate<VersionMap<Term, Term>>> l = */factResolver.apply(x).
+        /*List<Predicate<VersionMap<Term, Term>>> l = */
+        factResolver.apply(x).
                 //map(y -> {
-                forEach(y -> {
-                    //TODO neg, temporal
-                    if (y.op()==IMPL) {
+                        forEach(y -> {
 
-                        UnifySubst u = new UnifySubst(null, new XoRoShiRo128PlusRandom(1) /* HACK */, (t)->{ return false; /* first is ok */ } );
+
+                    //TODO neg, temporal
+                    if (y.op() == IMPL) {
+
+                        UnifySubst u = new UnifySubst(null, new XoRoShiRo128PlusRandom(1) /* HACK */, (t) -> {
+                            return false; /* first is ok */
+                        });
                         u.symmetric = true;
 
                         Term head = y.sub(1); //predicate, headicate
                         if (head.unify(x, u.clear())) {
                             //ifs.get(k).forEach(v->{
-                                Term vv = u.transform(y.sub(0));
-                                if (vv.op().conceptualizable) {
-                                    //facts.add($.func("ifThen", vv, k));
-                                    //facts.put(vv, True);
-                                    nodeOrAdd(x).add(vv);
+                            Term vv = u.transform(y.sub(0));
+                            if (vv.op().conceptualizable) {
+                                //facts.add($.func("ifThen", vv, k));
+                                //facts.put(vv, True);
+                                nodeOrAdd(x).add(vv);
+                                matches.add(vv);
 
-                                    e.is(x, vv);
-                                }
+                            }
 //                                });
                         }
-//                            ifs.put(y.sub(1), y.sub(0));
-                        //return null;
+
                     } else {
 
-                        nodeOrAdd(x).add(y);
-                        e.is(x,y);
+                        Node nx = nodeOrAdd(x);
+                        if (y.equals(x)) {
+                            nx.add(True); //if x==y add True ?
+                        } else if (y.equalsNeg(x)) {
+                            nx.add(False);
+                        } else {
+                            nx.add(y);
+                        }
+                        if (!y.equals(x)) {
+                            matches.add(y);
+                        }
 
-//                        Term yu = y.unneg();
-//                        if (!x.unneg().equals(yu)) {
-//                            nodeOrAdd(x).add(y);
-//                        }
-//                        if (!yu.hasVars()) //ground truth
-//                            nodeOrAdd(yu).add(y.op() == NEG ? False : True);
 
-
-                        //return Evaluation.assign(x, y);
                     }
                 });
-        //.filter(Objects::nonNull).collect(toList());
 
-//            if (e!=null && !l.isEmpty())
-//                e.isAny(l);
-
-
-
-        //truth(x,e);
-
+        if (!matches.isEmpty()) {
+            e.canBe(x, matches);
+        }
         return super.discover(x, e);
     }
 
 
     private FactualEvaluator.Node nodeOrAdd(Term x) {
-        return nodes.computeIfAbsent(x, z->{
+        return nodes.computeIfAbsent(x, z -> {
             if (z.hasVars())
                 return new ChooseNode();
             else
@@ -258,7 +267,7 @@ public class FactualEvaluator extends Evaluator {
                 case 1:
                     return truth(c.conds.getOnly(), e);
                 default: {
-                    e.isAny(
+                    e.canBe(
                             c.conds.stream().map(z -> Evaluation.assign(x, z)).collect(toList())
                     );
                     return Choose;
@@ -309,7 +318,8 @@ public class FactualEvaluator extends Evaluator {
 ////        return ProofTruth.Unknown;
 //    }
 
-    @Override public void print() {
+    @Override
+    public void print() {
         super.print();
         nodes.forEach((f, p) -> {
             System.out.println(f + " = " + p.truth());

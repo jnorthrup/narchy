@@ -88,7 +88,7 @@ public enum ListFunc {
                                 y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
                 ).collect(toList());
 
-                e.isAny( OR );
+                e.canBe( OR );
 
                 return null;
             }
