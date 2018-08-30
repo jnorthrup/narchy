@@ -48,7 +48,7 @@ public abstract class Unify extends Versioning implements Subst {
     public final Set<Termutator> termutes = new LinkedHashSet(4, 0.99f);
 
     public final VersionMap<Variable, Term> xy;
-    public final Random random;
+    public Random random;
 
     /**
      * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)

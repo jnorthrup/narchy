@@ -7,7 +7,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
@@ -42,6 +41,13 @@ public interface ScalarValue {
     default float pri(FloatFloatToFloatFunction update, float x) {
         return pri(update.apply(pri(), x));
     }
+
+    /** implementations can provide a faster non-value-returning strategy */
+    default void priUpdate(FloatFloatToFloatFunction update, float x) {
+        pri(update, x);
+    }
+
+
     default float[] priDelta(FloatFloatToFloatFunction update, float x) {
         float[] beforeAfter = new float[2];
         beforeAfter[1] = pri((xx,yy)-> {
@@ -78,24 +84,29 @@ public interface ScalarValue {
         return pri((x, min) -> Math.min(min, (x!=x) ? 0 : x), _min);
     }
 
-    default float priAdd(float _y) {
-        return pri((x,y)->{
-            if (x != x) {
-                //if deleted..
-                if (y <= 0)
-                    return Float.NaN; //remains deleted by negative addend
 
-                x = 0; //undeleted by positive addend
-            }
-
+    FloatFloatToFloatFunction priAddUpdateFunction = (x, y) -> {
+        if (x != x)
+            //remains deleted by non-positive addend
+            //undeleted by positive addend
+            return y <= 0 ? Float.NaN : y;
+        else
             return x + y;
-        }, _y);
+    };
+
+    /** doesnt return any value so implementations may be slightly faster than priAdd(x) */
+    default void priAdd(float a) {
+        priUpdate(priAddUpdateFunction, a);
     }
 
-    default float priSub(float toSubtract) {
+    default float priAddAndGet(float a) {
+        return pri(priAddUpdateFunction, a);
+    }
+
+    default void priSub(float toSubtract) {
         assert (toSubtract >= 0) : "trying to subtract negative priority: " + toSubtract;
 
-        return priAdd(-toSubtract);
+        priAdd(-toSubtract);
     }
 
     default float priMult(float _y) {
@@ -146,7 +157,7 @@ public interface ScalarValue {
 
     abstract class AtomicScalarValue implements ScalarValue {
         protected static final AtomicFloatFieldUpdater<AtomicScalarValue> FLOAT =
-                new AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater.newUpdater(AtomicScalarValue.class, "pri"));
+                new AtomicFloatFieldUpdater(AtomicScalarValue.class, "pri");
 
         private static final VarHandle INT;
 
@@ -209,7 +220,7 @@ public interface ScalarValue {
 
         /** update */
         @Override public final float pri(FloatToFloatFunction update) {
-            return FLOAT.updateAndGet(this, update, this::v);
+            return FLOAT.updateAndGet(this, update, this::_v);
         }
 
         /** update */
@@ -217,6 +228,9 @@ public interface ScalarValue {
             return FLOAT.updateAndGet(this, x, update, this::_v);
         }
 
-
+        @Override
+        public void priUpdate(FloatFloatToFloatFunction update, float x) {
+            FLOAT.update(this, x, update, this::_v);
+        }
     }
 }

@@ -34,7 +34,7 @@ import java.util.Random;
  * @see Random
  * @see SplitMix64RandomGenerator
  */
-public class SplitMix64Random extends Random {
+public class SplitMix64Random /*extends Random*/ {
     /**
      * 2<sup>64</sup> &middot; &phi;, &phi; = (&#x221A;5 &minus; 1)/2.
      */
@@ -113,12 +113,12 @@ public class SplitMix64Random extends Random {
         return x;
     }
 
-    @Override
+    //@Override
     public long nextLong() {
         return staffordMix13(x += PHI);
     }
 
-    @Override
+    //@Override
     public int nextInt() {
         return staffordMix4Upper32(x += PHI);
     }
@@ -141,7 +141,7 @@ public class SplitMix64Random extends Random {
      * @param n the positive bound on the random number to be returned.
      * @return the next pseudorandom {@code int} value between {@code 0} (inclusive) and {@code n} (exclusive).
      */
-    @Override
+    //@Override
     public int nextInt(int n) {
         if (n <= 0) throw new IllegalArgumentException();
         return (int) ((staffordMix13(x += PHI) >>> 1) % n);
@@ -167,22 +167,22 @@ public class SplitMix64Random extends Random {
         }
     }
 
-    @Override
+    //@Override
     public double nextDouble() {
         return (staffordMix13(x += PHI) & DOUBLE_MASK) * NORM_53;
     }
 
-    @Override
+    //@Override
     public float nextFloat() {
         return (float) ((staffordMix4Upper32(x += PHI) & FLOAT_MASK) * NORM_24);
     }
 
-    @Override
+    //@Override
     public boolean nextBoolean() {
         return staffordMix4Upper32(x += PHI) < 0;
     }
 
-    @Override
+    //@Override
     public void nextBytes(byte[] bytes) {
         int i = bytes.length, n = 0;
         while (i != 0) {
@@ -198,7 +198,7 @@ public class SplitMix64Random extends Random {
      *
      * @param seed a seed for this generator.
      */
-    @Override
+    //@Override
     public void setSeed(long seed) {
         x = murmurHash3(seed);
     }

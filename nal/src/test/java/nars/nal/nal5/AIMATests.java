@@ -119,8 +119,8 @@ class AIMATests {
         });
 
         n.run(1);
-        n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
-        n.concept("Criminal").print();
+        //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
+        //n.concept("Criminal").print();
 
         n.run(7000);
 //        n.synch();

@@ -4,27 +4,22 @@ import jcog.data.NumberX;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
-import static java.lang.Float.floatToIntBits;
-import static java.lang.Float.intBitsToFloat;
-
-/** https:
+/**
+ * https:
  * warning: do not call int get() or set(int), and
  * mostly all other of the superclass methods
  * since this will invoke the superclass's final methods
  * that i cant override and stub out
  * this int value is the coded representation of the float as an integer
- *
+ * <p>
  * instead use floatValue(), intValue()
- *
+ * <p>
  * sorry
  */
 public class AtomicFloat extends NumberX implements FloatSupplier {
 
-    private static final AtomicFloatFieldUpdater<NumberX> F =
-            new AtomicFloatFieldUpdater(
-                    AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "f"));
+    private static final AtomicFloatFieldUpdater<AtomicFloat> F =
+            new AtomicFloatFieldUpdater<>(AtomicFloat.class, "f");
 
     private volatile int f;
 
@@ -42,11 +37,11 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
 
 
     public void set(float newValue) {
-        f = floatToIntBits(newValue);
+        F.set(this, newValue);
     }
 
     public final float floatValue() {
-        return intBitsToFloat(f);
+        return F.get(this);
     }
 
     public final float getAndSet(float newValue) {
@@ -73,10 +68,14 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     }
 
     @Override
-    public double doubleValue() { return floatValue(); }
+    public double doubleValue() {
+        return floatValue();
+    }
 
     @Override
-    public int intValue()       { return Math.round(floatValue());  }
+    public int intValue() {
+        return Math.round(floatValue());
+    }
 
     @Override
     public long longValue() {
@@ -84,13 +83,12 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     }
 
     public void add(float x) {
-        F.add(this,x);
+        F.add(this, x);
     }
 
 
-
     public float multiply(float _y) {
-        return F.updateAndGet(this, (x,y)->x*y, _y);
+        return F.updateAndGet(this, (x, y) -> x * y, _y);
     }
 
     @Override
@@ -102,7 +100,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     /**
      * Sets the value from any Number instance.
      *
-     * @param value  the value to set, not null
+     * @param value the value to set, not null
      * @throws NullPointerException if the object is null
      */
     public final void set(final Number value) {

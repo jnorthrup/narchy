@@ -332,8 +332,8 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     @Override
     public void clear() {
+        Arrays.fill(items, 0, size, null);
         this.size = 0;
-        Arrays.fill(items, null);
     }
 
 

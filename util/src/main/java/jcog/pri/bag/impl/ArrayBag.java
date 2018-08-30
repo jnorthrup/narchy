@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -31,11 +30,9 @@ import java.util.stream.Stream;
  */
 abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X, Y> implements Bag<X, Y> {
     private static final AtomicFloatFieldUpdater<ArrayBag> MASS =
-            new AtomicFloatFieldUpdater(
-                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "mass"));
+            new AtomicFloatFieldUpdater(ArrayBag.class, "mass");
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
-            new AtomicFloatFieldUpdater(
-                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "pressure"));
+            new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
 
     final PriMerge mergeFunction;
 

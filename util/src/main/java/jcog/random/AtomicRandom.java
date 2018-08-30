@@ -1,12 +1,13 @@
 package jcog.random;
 
+import jcog.data.atomic.AwesomeAtomicIntegerFieldUpdater;
+
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /** base class for Random implementations that apply a busy spin wait to ensure updates to state are atomic */
 abstract public class AtomicRandom extends Random {
-    private static final AtomicIntegerFieldUpdater<AtomicRandom> business =
-            AtomicIntegerFieldUpdater.newUpdater(AtomicRandom.class, "busy");
+    private static final AwesomeAtomicIntegerFieldUpdater<AtomicRandom> business =
+            new AwesomeAtomicIntegerFieldUpdater(AtomicRandom.class, "busy");
 
     private volatile int busy = 0;
 

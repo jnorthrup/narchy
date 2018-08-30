@@ -96,18 +96,4 @@ abstract public class Exec implements Executor {
     }
 
 
-
-
-
-    /** TODO refactor into an independent DurService that updates causes with wants */
-    public interface Revaluator {
-        /**
-         * goal and goalSummary instances correspond to the possible MetaGoal's enum
-         */
-        
-
-        void update(NAR nar);
-
-    }
-
 }

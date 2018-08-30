@@ -1,6 +1,7 @@
 package com.insightfullogic.slab;
 
 import com.insightfullogic.slab.implementation.AllocationHandler;
+import jcog.Util;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -17,17 +18,6 @@ public abstract class ConcreteCursor implements Cursor {
 
 	public static boolean boundsChecking = "true".equals(System.getProperty(BOUNDS_CHECKING_PROPERTY));
 
-	protected static final Unsafe unsafe;
-
-	static {
-		try {
-			Field singleoneInstanceField = Unsafe.class.getDeclaredField("theUnsafe");
-			singleoneInstanceField.setAccessible(true);
-			unsafe = (Unsafe) singleoneInstanceField.get(null);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	private final int sizeInBytes;
 	private final AllocationHandler handler;
@@ -45,7 +35,7 @@ public abstract class ConcreteCursor implements Cursor {
 		this.sizeInBytes = sizeInBytes;
 		this.handler = handler;
         this.options = options;
-        allocatedAddress = unsafe.allocateMemory(calculateAllocation(numberOfObjects, sizeInBytes, options));
+        allocatedAddress = Util.unsafe.allocateMemory(calculateAllocation(numberOfObjects, sizeInBytes, options));
         startAddress = calculateAddress(allocatedAddress, options);
 
 		move(0);
@@ -57,7 +47,7 @@ public abstract class ConcreteCursor implements Cursor {
 			return;
 
 		handler.free();
-		unsafe.freeMemory(allocatedAddress);
+		Util.unsafe.freeMemory(allocatedAddress);
 		allocatedAddress = NOTHING;
 		startAddress = NOTHING;
 	}
@@ -84,7 +74,7 @@ public abstract class ConcreteCursor implements Cursor {
 		long newSizeInBytes = calculateAllocation(newNumberOfObjects, sizeInBytes, options);
 		handler.resize(newNumberOfObjects, newSizeInBytes);
 
-		allocatedAddress = unsafe.reallocateMemory(startAddress, newSizeInBytes);
+		allocatedAddress = Util.unsafe.reallocateMemory(startAddress, newSizeInBytes);
 		startAddress = calculateAddress(allocatedAddress, options);
 		move(index);
 	}

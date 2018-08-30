@@ -22,9 +22,10 @@ public class UniExec extends AbstractExec {
 
     int WORK_PER_CYCLE = 1;
 
-    final Focus.DefaultRevaluator revaluator =
+    final Revaluator revaluator =
+            Revaluator.NullRevaluator.the;
             //new Focus.AERevaluator(new SplitMix64Random(1));
-            new Focus.DefaultRevaluator();
+            //new Focus.DefaultRevaluator();
 
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 

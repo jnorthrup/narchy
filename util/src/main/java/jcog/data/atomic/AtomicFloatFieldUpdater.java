@@ -21,9 +21,14 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     /** for whatever reason, the field updater needs constructed from within the target class
      * so it must be passed as a parameter here.
+     * ex: AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "f")
      */
-    public AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater<X> u) {
+    @Deprecated public AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater<X> u) {
         this.updater = u;
+    }
+
+    public AtomicFloatFieldUpdater(Class<X> cl, String f) {
+        this(new AwesomeAtomicIntegerFieldUpdater<>(cl, f));
     }
 
     public void setNaN(X x) {
@@ -42,32 +47,40 @@ public final class AtomicFloatFieldUpdater<X>  {
         updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
     }
 
-    private float update(X x, IntUnaryOperator y) {
+    private float updateGet(X x, IntUnaryOperator y) {
         return intBitsToFloat(updater.updateAndGet(x, y));
     }
 
+    private void update(X x, IntUnaryOperator y) {
+        updater.updateAndGet(x, y);
+    }
+
     public float updateIntAndGet(X x, FloatToIntFunction f) {
-        return update(x, v -> f.valueOf(intBitsToFloat(v)));
+        return updateGet(x, v -> f.valueOf(intBitsToFloat(v)));
     }
 
     public float updateAndGet(X x, FloatToFloatFunction f) {
-        return update(x, v -> floatToIntBits(f.valueOf(intBitsToFloat(v))));
+        return updateGet(x, v -> floatToIntBits(f.valueOf(intBitsToFloat(v))));
     }
 
     public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
-        return update(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
+        return updateGet(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
+    }
+    public void update(X x, FloatFloatToFloatFunction f, float y) {
+        update(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
 
     public float getAndSet(X x, float value) {
         return intBitsToFloat(updater.getAndSet(x, floatToIntBits(value)));
     }
 
+
     public float getAndZero(X x) {
         return intBitsToFloat(updater.getAndSet(x, ZERO));
     }
 
     public void zero(X x) {
-        updater.lazySet(x, ZERO);
+        updater.set(x, ZERO);
     }
 
     public float get(X x) {
@@ -105,6 +118,11 @@ public final class AtomicFloatFieldUpdater<X>  {
     /** unary + arg */
     public float updateAndGet(X x, float arg, FloatFloatToFloatFunction update, FloatToFloatFunction post) {
         return updateAndGet(x, (xx,yy)-> post.valueOf(update.apply(xx,yy)), arg);
+    }
+
+    /** unary + arg */
+    public void update(X x, float arg, FloatFloatToFloatFunction update, FloatToFloatFunction post) {
+        update(x, (xx,yy)-> post.valueOf(update.apply(xx,yy)), arg);
     }
 
 }

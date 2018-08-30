@@ -5,6 +5,7 @@ import jcog.Skill;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
+import jcog.data.atomic.AwesomeAtomicIntegerFieldUpdater;
 import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
@@ -38,12 +39,12 @@ import static jcog.pri.bag.impl.HijackBag.Mode.*;
 @Skill("Concurrent_computing")
 public abstract class HijackBag<K, V> implements Bag<K, V> {
 
-    private static final AtomicIntegerFieldUpdater<HijackBag> SIZE =
-            AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "size");
-    private static final AtomicIntegerFieldUpdater<HijackBag> CAPACITY =
-            AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "capacity");
+    private static final AwesomeAtomicIntegerFieldUpdater<HijackBag> SIZE =
+            new AwesomeAtomicIntegerFieldUpdater(HijackBag.class, "size");
+    private static final AwesomeAtomicIntegerFieldUpdater<HijackBag> CAPACITY =
+            new AwesomeAtomicIntegerFieldUpdater(HijackBag.class, "capacity");
     private static final AtomicFloatFieldUpdater<HijackBag> PRESSURE =
-            new AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "pressure"));
+            new AtomicFloatFieldUpdater(HijackBag.class, "pressure");
 
     private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> MAP =
             AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
@@ -54,7 +55,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     /**
      * internal random NumberX generator, used for deciding hijacks but not sampling.
      */
-    final Random rng;
+    final SplitMix64Random rng;
 
     /**
      * id unique to this bag instance, for use in treadmill

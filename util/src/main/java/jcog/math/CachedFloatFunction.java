@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrategy<X> implements FloatFunction<X> {
 
 
+
     private static final HashingStrategy IDENTITY_STRATEGY = new HashingStrategy() {
         @Override
         public int computeHashCode(Object object) {
@@ -19,6 +20,7 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
             return object1 == object2;
         }
     };
+    private final int sizeMaxBeforeCompact;
 
     protected FloatFunction<X> f;
 
@@ -28,7 +30,11 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
     }
 
     public CachedFloatFunction(int sizeMin, @Nullable FloatFunction<X> f) {
+        this(sizeMin, sizeMin * 8, f);
+    }
+    public CachedFloatFunction(int sizeMin, int sizeMaxBeforeCompact, @Nullable FloatFunction<X> f) {
         super(IDENTITY_STRATEGY, sizeMin);
+        this.sizeMaxBeforeCompact = sizeMaxBeforeCompact;
         value(f);
     }
 
@@ -48,8 +54,14 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
 
     @Override
     public void clear() {
-        if (size() > 0)
+        int s = size();
+        if (s > 0) {
             super.clear();
+
+            if (s > sizeMaxBeforeCompact) {
+                compact();
+            }
+        }
     }
 
 }

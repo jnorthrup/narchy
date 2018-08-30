@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.ScalarValue;
-import jcog.random.SplitMix64Random;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.op.Occurrify;
@@ -194,7 +193,7 @@ public class Derivation extends PreDerivation {
         super(
                 VAR_PATTERN
                 //null
-                , new SplitMix64Random(1), Param.UnificationStackMax, new TermHashMap<>()
+                , null, Param.UnificationStackMax, new TermHashMap<>()
         );
 
         this.anon = new Anon(ANON_INITIAL_CAPACITY);
@@ -504,7 +503,9 @@ public class Derivation extends PreDerivation {
             this.ditherTime = nar.dtDither();
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();
-            this.random.setSeed(nar.random().nextLong());
+
+            this.random = nar.random();
+            //this.random.setSeed(nar.random().nextLong());
 
         }
 

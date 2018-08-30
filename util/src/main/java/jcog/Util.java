@@ -19,7 +19,6 @@ import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
 import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
-import jcog.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
@@ -45,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.slf4j.Logger;
+import sun.misc.Unsafe;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,10 +52,12 @@ import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
@@ -73,6 +75,18 @@ import static java.util.stream.Collectors.toList;
  */
 public enum Util {
     ;
+
+    public static final Unsafe unsafe;
+    static {
+        try {
+            Field singleoneInstanceField = Unsafe.class.getDeclaredField("theUnsafe");
+            singleoneInstanceField.setAccessible(true);
+            unsafe = (Unsafe) singleoneInstanceField.get(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public static final int PRIME3 = 524287;
     public static final int PRIME2 = 92821;
@@ -99,6 +113,8 @@ public enum Util {
                     .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
     public static final double log2 = Math.log(2);
+
+
 
     private static final int BIG_ENOUGH_INT = 16 * 1024;
     private static final double BIG_ENOUGH_FLOOR = BIG_ENOUGH_INT;
@@ -1443,14 +1459,15 @@ public enum Util {
         return sb.toString();
     }
 
-    final static Random insecureRandom = new XoRoShiRo128PlusRandom(System.nanoTime());
+//    final static Random insecureRandom = new XoRoShiRo128PlusRandom(System.nanoTime());
 
     public static String uuid64() {
         //UUID u = UUID.randomUUID();
         //long a = u.getLeastSignificantBits();
         //long b = u.getMostSignificantBits();
         //long c = a ^ b;
-        long c = insecureRandom.nextLong();
+        ThreadLocalRandom rng = ThreadLocalRandom.current();
+        long c = rng.nextLong();
         return BinTxt.toString(c);
     }
 
