@@ -202,7 +202,7 @@ public abstract class TermBuilder {
 
 
                     return only instanceof Ellipsislike ?
-                            compound(CONJ, dt, only)
+                            theCompound(CONJ, dt, only)
                             :
                             only;
                 }
@@ -267,7 +267,8 @@ public abstract class TermBuilder {
 
                     if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
                         //fast construct for simple case, verified above to not contradict itself
-                        return compound(CONJ, dt, sorted(u[0], u[1]));
+                        //return compound(CONJ, dt, sorted(u[0], u[1]));
+                        return theCompound(CONJ, dt, sorted(u[0], u[1]));
                     }
 
                 }
@@ -305,9 +306,9 @@ public abstract class TermBuilder {
 
                         if (uux.size() == 1) {
                             Term only = uux.getOnly();
-                            return compound(CONJ, XTERNAL, only, only); //repeat
+                            return theCompound(CONJ, XTERNAL, only, only); //repeat
                         } else {
-                            return compound(CONJ, XTERNAL, sorted(uux));
+                            return theCompound(CONJ, XTERNAL, sorted(uux));
                         }
                     }
 

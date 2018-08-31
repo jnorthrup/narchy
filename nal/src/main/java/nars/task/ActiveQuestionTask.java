@@ -77,7 +77,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
         if (((punc == QUESTION && tp == BELIEF) || (punc == QUEST && tp == GOAL))) {
             MySubUnify u = new MySubUnify(random, ttl);
-            u.unify(term(), t.term(), true);
+            u.unify(term(), t.term());
             if (u.match) {
                 onAnswer(t);
             }

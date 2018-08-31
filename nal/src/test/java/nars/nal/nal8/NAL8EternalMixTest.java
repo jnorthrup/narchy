@@ -85,8 +85,9 @@ class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    void ded_with_var_temporal() {
+    void ded_with_depvar_temporal() {
 
+        test.nar.termVolumeMax.set(9);
         test
 
                 .input("goto({t003}). :|:")

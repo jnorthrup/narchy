@@ -10,6 +10,7 @@ import nars.agent.FrameTrigger;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.video.CameraSensorView;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -85,7 +86,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         addCamera(
                 pixels = new Bitmap2DSensor<>(
-                        (x, y) -> $.p(id, $.the(x), $.the(y))
+                        (x, y) -> $.func((Atomic)id, $.the(x), $.the(y))
                         , this, n)
 
         );

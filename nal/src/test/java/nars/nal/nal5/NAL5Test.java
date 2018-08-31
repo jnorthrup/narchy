@@ -373,10 +373,12 @@ public class NAL5Test extends NALTest {
 
     @Test
     void contrapositionPos() {
+        test.nar.termVolumeMax.set(9);
         test
             .believe("(--B ==> A)", 0.9f, 0.9f)
             .mustBelieve(cycles, " (--A ==> B)",
-                    0.1f, 0.36f);
+                    0.9f, 0.36f);
+                    //0.1f, 0.36f);
                     //0f, 0.08f);
     }
 
@@ -443,6 +445,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_abduction_viaMultiConditionalSyllogismSimple2() {
+        test.nar.termVolumeMax.set(9);
 
         test
                 .believe("((&&,x1,x2) ==> y)")

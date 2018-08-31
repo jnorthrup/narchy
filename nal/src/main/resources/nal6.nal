@@ -12,6 +12,8 @@
 
     A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Deduction, Goal:Induction, Time:TaskPlusBeliefDT)
      B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
+     //(A ==> C), B, --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Belief:DeductionReverse)
+
     A, (A ==> C), --is(A,"#"),--is(C,"#") |- --C, (Belief:DeductionPN, Goal:InductionPN, Time:TaskPlusBeliefDT)
      B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B,strict), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
         B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
@@ -204,6 +206,7 @@
         (X ==> Y), ((&&,--Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionNN)
 
     ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
+      (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
     //Conditional Abduction via Multi-conditional Syllogism
     (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)

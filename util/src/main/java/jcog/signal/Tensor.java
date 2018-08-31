@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 
+/**
+ * see: https://github.com/vespa-engine/vespa/blob/master/vespajlib/src/main/java/com/yahoo/tensor/Tensor.java
+ */
 public interface Tensor  {
 
     static Tensor vectorFromTo(int start, int end) {

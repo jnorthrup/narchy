@@ -64,7 +64,7 @@ class AIMATests {
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(14);
         n.freqResolution.set((float) truthRes);
 //        n.confMin.set(0.02f);
 

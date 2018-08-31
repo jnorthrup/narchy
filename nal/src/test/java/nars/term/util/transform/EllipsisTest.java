@@ -129,7 +129,7 @@ public class EllipsisTest {
                 };
 
                 f.setTTL(128);
-                f.unify(x, y, true);
+                f.unify(x, y);
 
 
 

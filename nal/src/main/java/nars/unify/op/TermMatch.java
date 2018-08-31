@@ -16,7 +16,7 @@ abstract public class TermMatch {
     /**
      * test what can be inferred from the superterm if the direct locator was not possible
      */
-    public boolean testSuper(Term superTerm) {
+    public boolean testSuper(Term superTerm, boolean trueOrFalse) {
         return true;
     }
 
@@ -63,8 +63,20 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm) {
-            return superTerm.hasAny(struct);
+        public boolean testSuper(Term superTerm, boolean trueOrFalse) {
+            if (trueOrFalse) {
+                return superTerm.subterms().OR(x -> x.isAny(struct));
+            } else {
+                return !superTerm.subterms().OR(x -> x.isAny(struct));
+                //return true; //<- is there a case that will work
+                //return superTerm.subs()!=1 || !superTerm.sub(0).isAny(struct); //only determinable in 1-subterm case?
+            }
+//            if (trueOrFalse) {
+//                return superTerm.subs()!=1 || superTerm.sub(0).isAny(struct); //only determinable in 1-subterm case
+//            } else {
+//                return !superTerm.hasAny(struct);
+//            }
+
         }
     }
 
@@ -112,8 +124,14 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm) {
-            return superTerm.has(struct, anyOrAll);
+        public boolean testSuper(Term superTerm, boolean trueOrFalse) {
+            if (trueOrFalse) {
+                return (volMin == 0 || (superTerm.volume() >= 1+volMin))
+                        &&
+                        superTerm.subterms().has(struct, anyOrAll);
+            } else {
+                return !superTerm.subterms().has(struct, anyOrAll); //TODO
+            }
         }
     }
 
@@ -136,8 +154,8 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm) {
-            return superTerm.volume() >= subsMin + 1; //this is the minimum possible volume, if it was the term and if it was only atoms
+        public boolean testSuper(Term superTerm, boolean trueOrFalse) {
+            return trueOrFalse == (superTerm.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the term and if it was only atoms
         }
 
         @Override
@@ -162,7 +180,7 @@ abstract public class TermMatch {
 
         @Override
         public boolean invalid(Term y, Unify f) {
-            return !(TermMatch.this.test(y) == trueOrFalse);
+            return (TermMatch.this.test(y) != trueOrFalse);
         }
     }
 }

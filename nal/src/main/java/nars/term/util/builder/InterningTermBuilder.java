@@ -29,16 +29,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     final HijackTermCache[] terms;
 
-    private final HijackTermCache statements;
-    private final HijackTermCache conj;
+//    private final HijackTermCache statements;
+//    private final HijackTermCache conj;
     private final HijackTermCache normalize;
     private final HijackTermCache concept;
     private final HijackTermCache root;
 
-
-
     public InterningTermBuilder() {
-        this(32 * 1024);
+        this(64 * 1024);
     }
 
     public InterningTermBuilder(int cacheSizePerOp) {
@@ -50,17 +48,25 @@ public class InterningTermBuilder extends HeapTermBuilder {
             int s = cacheSizePerOp;
             if (o == PROD)
                 s *= 2; //HACK since PROD also serves as subterm cache
+
             //TODO use multiple PROD slices to decrease contention
 
-            terms[i] = newOpCache(this::compoundInterned, s);
+            HijackTermCache c;
+            if (o == CONJ) {
+                 c = newOpCache(this::_conj, cacheSizePerOp);
+            } else if (o.statement) {
+                 c = newOpCache(this::_statement, cacheSizePerOp*3);
+            } else {
+                 c = newOpCache(this::compoundInterned, s);
+            }
+            terms[i] = c;
         }
 
         concept = newOpCache(this::_concept, cacheSizePerOp);
+
         root = newOpCache(this::_root, cacheSizePerOp);
 
         normalize = newOpCache(this::_normalize, cacheSizePerOp);
-        conj = newOpCache(this::_conj, cacheSizePerOp);
-        statements = newOpCache(this::_statement, cacheSizePerOp*3);
 
         Runtime.getRuntime().addShutdownHook(new Thread(()-> System.out.println(InterningTermBuilder.this + "\n" + summary())));
     }
@@ -74,10 +80,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return terms[x.op].apply(x);
     }
 
-    private Term get(Term x, DynBytes tmp) {
+    @Nullable private Term get(Term x, DynBytes tmp) {
         Op xo = x.op();
-        if (internableRoot(xo, x.dt())) {
-            return terms[xo.id].getIfPresent(InternedCompound.get(x, tmp));
+        HijackTermCache c = terms[xo.id];
+        if (/*c!=null && */internableRoot(xo, x.dt())) {
+            return c.getIfPresent(InternedCompound.get(x, tmp));
         }
         return null;
     }
@@ -289,7 +296,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                         break;
                 }
 
-                return statements.apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+                return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
 
                 //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
             }
@@ -321,12 +328,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
                     }
                     break;
             }
-            return conj.apply(InternedCompound.get(CONJ, dt, u));
+            return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
         } else
             return super.conj(dt, u);
     }
 
-    private Term _conj (InternedCompound c) {
+    private Term _conj(InternedCompound c) {
         Term[] s = c.rawSubs.get();
         return super.conj(c.dt, s);
     }
