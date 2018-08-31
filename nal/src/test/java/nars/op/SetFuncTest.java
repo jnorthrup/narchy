@@ -68,6 +68,9 @@ class SetFuncTest {
         assertEquals(
                 Set.of($$("member(a,{a,b})")),
                 Evaluation.eval($$("member(a,{a,b})"), n));
+        assertEquals(
+                Set.of($$("member(a,(a,b))")),
+                Evaluation.eval($$("member(a,(a,b))"), n));
 
     }
     @Test void testMember1_false() {
@@ -77,4 +80,14 @@ class SetFuncTest {
 
     }
 
+    @Test void testMember1_generator() {
+        assertEquals(
+                Set.of($$("member(a,{a,b})"),$$("member(b,{a,b})")),
+                Evaluation.eval($$("member(#x,{a,b})"), n));
+
+        assertEquals(
+                Set.of($$("(a)"),$$("(b)")),
+                Evaluation.eval($$("(member(#x,{a,b}) && (#x))"), n));
+
+    }
 }

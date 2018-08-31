@@ -41,14 +41,12 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     @Override
     public boolean test(X x) {
         Term y = resolve.apply(x);
-        return (exactOrSuper ? match.test(y)  == trueOrFalse : match.testSuper(y, trueOrFalse));
+        return (exactOrSuper ? match.test(y) : match.testSuper(y)) == trueOrFalse;
         //return (!exactOrSuper || match.test(y) == trueOrFalse); //bypass testSuper, for testing testSuper
     }
 
     public static class Subterm<X> extends AbstractPred<X> {
 
-
-        @Nullable
         private final byte[] path;
 
         private final boolean trueOrFalse;
@@ -87,7 +85,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
 
         private boolean test(Term superTerm, byte[] subPath) {
 
-            boolean superOK = !preTestSuper || (match.testSuper(superTerm, trueOrFalse));
+            boolean superOK = !preTestSuper || (match.testSuper(superTerm)==trueOrFalse);
             if (!superOK)
                 return false;
 

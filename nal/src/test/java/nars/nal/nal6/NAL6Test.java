@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 800;
+    private static final int cycles = 600;
 
     @BeforeEach
     void setup() {
@@ -61,9 +61,9 @@ public class NAL6Test extends NALTest {
 
         tester.believe("<<$x --> swan> ==> <$x --> bird>>", 1.00f, 0.80f);
         tester.believe("<<$y --> swan> ==> <$y --> swimmer>>", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "<<$1 --> swan> ==> (&&,<$1 --> bird>,<$1 --> swimmer>)>", 0.80f, 0.72f);
-        tester.mustBelieve(cycles, "<<$1 --> swimmer> ==> <$1 --> bird>>", 1f, 0.37f);
-        tester.mustBelieve(cycles, "<<$1 --> bird> ==> <$1 --> swimmer>>", 0.80f, 0.42f);
+        tester.mustBelieve(cycles, "<<$1 --> swan> ==> (&&,($1 --> bird),($1 --> swimmer))>", 0.80f, 0.72f);
+        tester.mustBelieve(cycles, "<($1 --> swimmer) ==> ($1 --> bird)>", 1f, 0.37f);
+        tester.mustBelieve(cycles, "<($1 --> bird) ==> ($1 --> swimmer)>", 0.80f, 0.42f);
 
 
     }
@@ -91,7 +91,7 @@ public class NAL6Test extends NALTest {
 
         tester.believe("<(&&,<$x --> flyer>,<$x --> [chirping]>) ==> <$x --> bird>>");
         tester.believe("<<$y --> [withWings]> ==> <$y --> flyer>>");
-        tester.mustBelieve(cycles, "<(&&,<$1 --> [chirping]>,($1 --> [withWings])) ==> <$1 --> bird>>", 1.00f, 0.81f);
+        tester.mustBelieve(cycles, "<(&&,<$1 --> [chirping]>,($1 --> [withWings])) ==> ($1 --> bird)>", 1.00f, 0.81f);
 
     }
 
@@ -149,7 +149,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<(&&,<$x --> flyer>,<($x,worms) --> food>) ==> <$x --> bird>>");
         tester.believe("<<$y --> flyer> ==> <$y --> [withWings]>>");
-        tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> <$1 --> bird>>", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
 
     }
 
@@ -202,8 +202,8 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
 
         tester.believe("(&&,<#x --> bird>,<#x --> swimmer>)");
-        tester.believe("<swan --> bird>", 0.90f, 0.9f);
-        tester.mustBelieve(cycles, "<swan --> swimmer>", 0.90f,
+        tester.believe("(swan --> bird)", 0.90f, 0.9f);
+        tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
 
                 0.43f);
     }
@@ -325,7 +325,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
         tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles * 2, "(($1 --> key) ==> open($1, {lock1}))", 1.00f, 0.73f);
+        tester.mustBelieve(cycles , "(($1 --> key) ==> open($1, {lock1}))", 1.00f, 0.73f);
 
     }
 
@@ -336,8 +336,8 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("<<$x --> lock> ==> (<#y --> key> && open(#y,$x))>");
-        tester.believe("<{lock1} --> lock>");
-        tester.mustBelieve(cycles, "(<#1 --> key> && open(#1,{lock1}))", 1.00f, 0.81f);
+        tester.believe("({lock1} --> lock)");
+        tester.mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))", 1.00f, 0.81f);
 
     }
 
@@ -346,9 +346,9 @@ public class NAL6Test extends NALTest {
     void multiple_variable_elimination3() {
 
         TestNAR tester = test;
-        tester.believe("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))");
-        tester.believe("<{lock1} --> lock>");
-        tester.mustBelieve(cycles * 2, "<<$1 --> key> ==> open($1,{lock1})>", 1.00f,
+        tester.believe("(&&,(#x --> lock),(<$y --> key> ==> open($y,#x)))");
+        tester.believe("({lock1} --> lock)");
+        tester.mustBelieve(cycles, "<<$1 --> key> ==> open($1,{lock1})>", 1.00f,
 
                 0.43f);
 
@@ -359,12 +359,10 @@ public class NAL6Test extends NALTest {
     void multiple_variable_elimination4() {
 
         TestNAR tester = test;
-        tester.believe("(&&,open(#y,#x),<#x --> lock>,<#y --> key>)");
+        tester.believe("(&&,open(#y,#x),(#x --> lock),<#y --> key>)");
         tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles, "(<#1 --> key> && open(#1,{lock1}))",
+        tester.mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))",
                 1.00f,
-
-
                 0.43f
         );
     }
@@ -375,12 +373,12 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("<swan --> bird>");
-        tester.believe("<swan --> swimmer>", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "<<$1 --> swimmer> ==> <$1 --> bird>>", 1.00f, 0.39f);
-        tester.mustBelieve(cycles, "<<$1 --> bird> ==> <$1 --> swimmer>>", 0.80f, 0.45f);
+        tester.believe("(swan --> bird)");
+        tester.believe("(swan --> swimmer)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "(($1 --> swimmer) ==> ($1 --> bird))", 1.00f, 0.39f);
+        tester.mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> swimmer))", 0.80f, 0.45f);
 
-        tester.mustBelieve(cycles, "(&&, <#1 --> swimmer>, <#1 --> bird>)", 0.80f, 0.81f);
+        tester.mustBelieve(cycles, "((#1 --> swimmer) && (#1 --> bird))", 0.80f, 0.81f);
 
     }
 
@@ -390,8 +388,8 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("<swan --> <#1 --> birdlike>>");
-        tester.believe("<swan --> swimmer>", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "<<$1 --> <#2 --> birdlike>> ==> <$1 --> swimmer>>", 0.80f, 0.45f);
+        tester.believe("(swan --> swimmer)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "<<$1 --> <#2 --> birdlike>> ==> ($1 --> swimmer)>", 0.80f, 0.45f);
     }
 
 
@@ -407,7 +405,7 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("<gull --> swimmer>");
-        tester.believe("<swan --> swimmer>", 0.80f, 0.9f);
+        tester.believe("(swan --> swimmer)", 0.80f, 0.9f);
         tester.mustBelieve(cycles, "<<gull --> $1> ==> <swan --> $1>>", 0.80f, 0.45f);
         tester.mustBelieve(cycles, "<<swan --> $1> ==> <gull --> $1>>", 1.00f, 0.39f);
 
@@ -420,7 +418,7 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("<gull --> swimmer>", 1f, 0.9f);
-        tester.believe("<swan --> swimmer>", 0f, 0.9f);
+        tester.believe("(swan --> swimmer)", 0f, 0.9f);
         tester.mustBelieve(cycles, "(&&,<gull --> #1>,<swan --> #1>)", 0.0f, 0.81f);
         tester.mustBelieve(cycles, "(&&,<gull --> #1>,(--,<swan --> #1>))", 1.0f, 0.81f);
 
@@ -433,8 +431,8 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("<#1 --> swimmer>");
-        tester.believe("<swan --> swimmer>", 0.80f, 0.9f);
+        tester.believe("(#1 --> swimmer)");
+        tester.believe("(swan --> swimmer)", 0.80f, 0.9f);
 
         tester.mustBelieve(cycles, "<<#1 --> $2> ==> <swan --> $2>>", 0.80f, 0.45f);
         tester.mustBelieve(cycles, "<<swan --> $1> ==> <#2 --> $1>>", 1.00f, 0.39f);
@@ -572,20 +570,20 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "y(a)", 1.00f, 0.81f);
     }
 
-    @Test
-    void deductionBeliefWeakPositiveButNotNegative() {
-        test
-                .believe("(a==>b)", 0.55f, 0.90f)
-                .believe("a", 0.55f, 0.90f)
-                .mustBelieve(cycles, "b", 0.55f, 0.25f);
-    }
-    @Test
-    void deductionBeliefWeakNegativeButNotPositive() {
-        test
-                .believe("(a==>b)", 0.45f, 0.90f)
-                .believe("a", 0.45f, 0.90f)
-                .mustBelieve(cycles, "b", 0.49f, 0.81f);
-    }
+//    @Test
+//    void deductionBeliefWeakPositiveButNotNegative() {
+//        test
+//                .believe("(a==>b)", 0.55f, 0.90f)
+//                .believe("a", 0.55f, 0.90f)
+//                .mustBelieve(cycles, "b", 0.55f, 0.25f);
+//    }
+//    @Test
+//    void deductionBeliefWeakNegativeButNotPositive() {
+//        test
+//                .believe("(a==>b)", 0.45f, 0.90f)
+//                .believe("a", 0.45f, 0.90f)
+//                .mustBelieve(cycles, "b", 0.49f, 0.81f);
+//    }
 
     @Test
     void abductionBeliefWeakPositiveButNotNegative() {

@@ -17,7 +17,7 @@ abstract public class TermMatch {
      * test what can be inferred from the superterm if the direct locator was not possible
      * this is not the direct superterm but the root of the term in which the path may be longer than length 1 so several layers may separate them
      */
-    public boolean testSuper(Term superTerm, boolean trueOrFalse) {
+    public boolean testSuper(Term superSuperTerm) {
         return true;
     }
 
@@ -64,9 +64,9 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm, boolean trueOrFalse) {
+        public boolean testSuper(Term superTerm) {
             //return trueOrFalse == superTerm.hasAny(struct);
-            return trueOrFalse == (((superTerm.hasAny(struct) && superTerm.subterms().OR(x -> x.hasAny(struct)))));
+            return (((superTerm.hasAny(struct) && superTerm.subterms().OR(x -> x.hasAny(struct)))));
         }
     }
 
@@ -114,9 +114,9 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm, boolean trueOrFalse) {
+        public boolean testSuper(Term superTerm) {
 
-            return  (trueOrFalse) ==
+            return
                         (superTerm.has(struct, anyOrAll) &&
                         (volMin == 0 || (superTerm.volume() >= 1+volMin)) &&
                         superTerm.subterms().OR(x -> x.has(struct, anyOrAll)));
@@ -142,8 +142,8 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm, boolean trueOrFalse) {
-            return trueOrFalse == (superTerm.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the term and if it was only atoms
+        public boolean testSuper(Term superTerm) {
+            return (superTerm.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the term and if it was only atoms
         }
 
         @Override

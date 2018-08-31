@@ -3,17 +3,17 @@
 //// second level variable handling rules ////////////////////////////////////////////////////////////////////////////////////
 //second level variable elimination (termlink level2 growth needed in order for these rules to work)
 
-    (B --> K), (&&,(#X --> L),(($Y --> K) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:Deduction)
-        (B --> K), (&&,(#X --> L),((--,($Y --> K)) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:DeductionN)
-    (K --> B), (&&,(L --> #X),((K --> $Y) ==> A)) |- substitute(((L --> #X) &&+- A), $Y, B), (Belief:Deduction)
-        (K --> B), (&&,(L --> #X),((--,(K --> $Y)) ==> A)) |- substitute(((L --> #X) &&+- A), $Y, B), (Belief:DeductionN)
-      //(K --> B), (&&,(#X --> L),((K --> $Y) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:Deduction)
-        //(K --> B), (&&,(#X --> L),((--,(K --> $Y)) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:DeductionN)
+    (B --> K), (&&,(#X --> L),(($Y --> K) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:Deduction)
+        (B --> K), (&&,(#X --> L),((--,($Y --> K)) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:DeductionN)
+    (K --> B), (&&,(L --> #X),((K --> $Y) ==> A)) |- substitute(((L --> #X) && A), $Y, B), (Belief:Deduction)
+        (K --> B), (&&,(L --> #X),((--,(K --> $Y)) ==> A)) |- substitute(((L --> #X) && A), $Y, B), (Belief:DeductionN)
+      //(K --> B), (&&,(#X --> L),((K --> $Y) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:Deduction)
+        //(K --> B), (&&,(#X --> L),((--,(K --> $Y)) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:DeductionN)
 
-    (B --> K), (($X --> L) ==> (&&,(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
-        (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
-    (K --> B), ((L --> $X) ==> (&&,(K --> #Y),A..+)) |- substitute(((L --> $X) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
-        (K --> B), ((L --> $X) ==> (&&,--(K --> #Y),A..+)) |- substitute(((L --> $X) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
+    (B --> K), (($X --> L) ==> (&&,(#Y --> K),A..+)) |- substitute((($X --> L) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
+        (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
+    (K --> B), ((L --> $X) ==> (&&,(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
+        (K --> B), ((L --> $X) ==> (&&,--(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
 
 //    Y, (&&,X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+),X,Y), (Belief:Deduction)
 //        Y, (&&,--X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y), (Belief:DeductionN)
@@ -27,11 +27,11 @@
       //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
         //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
 
-      //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
-          //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
+      //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(P-->X),A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+          //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(P-->X),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
 
-      //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
-        //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
+      //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
+        //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
 
 
 //conditional abduction by dependent variable
@@ -42,8 +42,8 @@
 
 // conditional deduction "An inverse inference has been implemented as a form of deduction" https://code.google.com/p/open-nars/issues/detail?id=40&can=1
 
-//    (U --> L), ((&&,(#X --> L),(#X --> R),A..*) ==> Z), neq(U,R) |- substitute((((&&,A..*) &&+- (U --> R)) ==>+- Z),#X,U), (Belief:Deduction)
-//        (U --> L), ((&&,--(#X --> L),(#X --> R),A..*) ==> Z), neq(U,R) |- substitute((((&&,A..*) &&+- (U --> R)) ==>+- Z),#X,U), (Belief:DeductionN)
+//    (U --> L), ((&&,(#X --> L),(#X --> R),A..*) ==> Z), neq(U,R) |- substitute((((&&,A..*) && (U --> R)) ==> Z),#X,U), (Belief:Deduction)
+//        (U --> L), ((&&,--(#X --> L),(#X --> R),A..*) ==> Z), neq(U,R) |- substitute((((&&,A..*) && (U --> R)) ==> Z),#X,U), (Belief:DeductionN)
 
 
 
