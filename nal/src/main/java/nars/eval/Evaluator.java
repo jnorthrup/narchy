@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.ATOM;
-
 /**
  * discovers functors within the provided term, or the term itself.
  * transformation results should not be interned, that is why DirectTermTransform used here
@@ -74,7 +72,7 @@ public class Evaluator implements DirectTermTransform {
             return x;
         }
 
-        if (x.op() == ATOM) {
+        if (x instanceof Atom) {
             Functor f = funcResolver.apply((Atom) x);
             if (f != null) {
                 return f;
