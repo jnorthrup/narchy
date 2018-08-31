@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.event.On;
 import jcog.math.*;
 import jcog.util.FloatConsumer;
+import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.BiPolarAction;
@@ -12,12 +13,15 @@ import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.List;
 import java.util.function.*;
 
 import static nars.$.*;
+import static nars.agent.NAct.NEG;
+import static nars.agent.NAct.PLUS;
 
 /**
  * agent sensor builder
@@ -215,7 +219,10 @@ public interface NSense {
         return actionBipolarFrequencyDifferential(s, fair, update);
     }
 
-    default BiPolarAction actionBipolarFrequencyDifferential(Term s, boolean fair, FloatToFloatFunction motor) {
+    default BiPolarAction actionBipolarFrequencyDifferential(Term id, boolean fair, FloatToFloatFunction motor) {
+        return actionBipolarFrequencyDifferential(posOrNeg -> $.p(id, posOrNeg ? PLUS : NEG), fair, motor);
+    }
+    default BiPolarAction actionBipolarFrequencyDifferential(BooleanToObjectFunction<Term> s, boolean fair, FloatToFloatFunction motor) {
         BiPolarAction a = addSensor(new BiPolarAction(s,
                 new BiPolarAction.DefaultPolarization(fair, this),
                 motor, nar()));

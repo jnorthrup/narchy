@@ -24,8 +24,6 @@ import java.util.Random;
 import static java.lang.Float.MIN_NORMAL;
 import static nars.Op.BELIEF;
 import static nars.Op.PROD;
-import static nars.agent.NAct.NEG;
-import static nars.agent.NAct.PLUS;
 
 /** sensor that integrates and manages a pair of oppositely polarized AsyncActionConcept to produce a net result.
  * implements Sensor but actually manages Actions internally. */
@@ -44,14 +42,15 @@ public class BiPolarAction extends AbstractSensor {
 
     public final AbstractGoalActionConcept pos, neg;
 
+//    public BiPolarAction(Term id, Polarization model, FloatToFloatFunction motor, NAR nar) {
+//        this(posOrNeg ->
+//                        $.p(id, posOrNeg ? PLUS : NEG)
+//                //$.inh(id, posOrNeg ? PLUS : NEG)
+//                , model, motor, nar);
+//    }
+
     public BiPolarAction(BooleanToObjectFunction<Term> id, Polarization model, FloatToFloatFunction motor, NAR nar) {
         this(id.valueOf(true), id.valueOf(false), model, motor, nar);
-    }
-    public BiPolarAction(Term id, Polarization model, FloatToFloatFunction motor, NAR nar) {
-        this(posOrNeg ->
-                $.p(id, posOrNeg ? PLUS : NEG)
-                //$.inh(id, posOrNeg ? PLUS : NEG)
-                , model, motor, nar);
     }
 
     //TODO BooleanObjectFunction<Term> term namer
@@ -114,8 +113,9 @@ public class BiPolarAction extends AbstractSensor {
             y = Util.clamp(y, -1, +1);
 
             float yp, yn;
-            yp = 0.5f + y / 2f;
-            yn = 1f - yp;
+//            yp = 0.5f + y / 2f;
+//            yn = 1f - yp;
+            if (y >= 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; } //only one side gets feedback
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {
 //                float zeroThresh = ScalarValue.EPSILON;
@@ -261,8 +261,8 @@ public class BiPolarAction extends AbstractSensor {
          * used in the difference comparison. return NaN or value  */
         public float q(Truth t) {
 
-            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
-            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
+            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
+            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
         }
 
     }

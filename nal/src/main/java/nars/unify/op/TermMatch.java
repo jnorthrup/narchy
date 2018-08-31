@@ -15,6 +15,7 @@ abstract public class TermMatch {
 
     /**
      * test what can be inferred from the superterm if the direct locator was not possible
+     * this is not the direct superterm but the root of the term in which the path may be longer than length 1 so several layers may separate them
      */
     public boolean testSuper(Term superTerm, boolean trueOrFalse) {
         return true;
@@ -64,19 +65,8 @@ abstract public class TermMatch {
 
         @Override
         public boolean testSuper(Term superTerm, boolean trueOrFalse) {
-            if (trueOrFalse) {
-                return superTerm.subterms().OR(x -> x.isAny(struct));
-            } else {
-                return !superTerm.subterms().OR(x -> x.isAny(struct));
-                //return true; //<- is there a case that will work
-                //return superTerm.subs()!=1 || !superTerm.sub(0).isAny(struct); //only determinable in 1-subterm case?
-            }
-//            if (trueOrFalse) {
-//                return superTerm.subs()!=1 || superTerm.sub(0).isAny(struct); //only determinable in 1-subterm case
-//            } else {
-//                return !superTerm.hasAny(struct);
-//            }
-
+            //return trueOrFalse == superTerm.hasAny(struct);
+            return trueOrFalse == (((superTerm.hasAny(struct) && superTerm.subterms().OR(x -> x.hasAny(struct)))));
         }
     }
 
@@ -100,7 +90,11 @@ abstract public class TermMatch {
 
         @Override
         public Term param() {
-            return $.func((anyOrAll ? Op.SECTi.strAtom : Op.SECTe.strAtom),Op.strucTerm(struct));
+            if (Integer.bitCount(struct)==1) {
+                return Op.strucTerm(struct);
+            } else {
+                return $.func((anyOrAll ? Op.SECTi.strAtom : Op.SECTe.strAtom), Op.strucTerm(struct));
+            }
         }
 
         @Override
@@ -116,22 +110,16 @@ abstract public class TermMatch {
 
         @Override
         public boolean test(Term term) {
-            if (term.has(struct, anyOrAll)) {
-                if (volMin == 0 || term.volume() >= volMin)
-                    return true;
-            }
-            return false;
+            return term.has(struct, anyOrAll) && (volMin == 0 || term.volume() >= volMin);
         }
 
         @Override
         public boolean testSuper(Term superTerm, boolean trueOrFalse) {
-            if (trueOrFalse) {
-                return (volMin == 0 || (superTerm.volume() >= 1+volMin))
-                        &&
-                        superTerm.subterms().has(struct, anyOrAll);
-            } else {
-                return !superTerm.subterms().has(struct, anyOrAll); //TODO
-            }
+
+            return  (trueOrFalse) ==
+                        (superTerm.has(struct, anyOrAll) &&
+                        (volMin == 0 || (superTerm.volume() >= 1+volMin)) &&
+                        superTerm.subterms().OR(x -> x.has(struct, anyOrAll)));
         }
     }
 

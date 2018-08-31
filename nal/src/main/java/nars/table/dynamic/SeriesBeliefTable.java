@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
+import static nars.Op.CONJ;
 
 /**
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
@@ -96,7 +97,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 //        float confRes = taskOrJustTruth ? nar.confResolution.floatValue() : 0;
 //        float eviMin = taskOrJustTruth ? w2cSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
         Truth finalPp = pp;
-        return d.eval(term, (dd, n) -> finalPp, taskOrJustTruth, beliefOrGoal, nar);
+        return d.eval(SeriesBeliefTable.taskTerm(term), (dd, n) -> finalPp, taskOrJustTruth, beliefOrGoal, nar);
     }
 
     @Override
@@ -215,6 +216,14 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         return false;
     }
 
+    /** correct CONJ concepts for task generation */
+    protected static Term taskTerm(Term x) {
+        if (x.op() == CONJ) {
+            return x.dt(0);
+        }
+        return x;
+    }
+
     public static final class SeriesTask extends SignalTask {
 
         /**
@@ -223,7 +232,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         long e;
 
         public SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
-            super(term, punc, value, start, start, end, stamp);
+            super(SeriesBeliefTable.taskTerm(term), punc, value, start, start, end, stamp);
             if (stamp.length != 1)
                 throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
             this.e = end;

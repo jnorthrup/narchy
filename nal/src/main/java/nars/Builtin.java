@@ -53,6 +53,9 @@ public class Builtin {
 
     public static final Functor[] statik = {
 
+            Equal.the,
+            Member.the,
+
             Subst.replace,
 
 
@@ -214,7 +217,6 @@ public class Builtin {
                 }
             },
 
-            Equal.the,
 
             Functor.f2("ifThen", (condition, conseq) -> {
                 if (!condition.equals(True)) {

@@ -241,6 +241,7 @@
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==> (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
 
+    //TODO disjunction decompose
     (M ==> C), X, eventOf(C,X) |- (M ==> conjWithout(C,X)), (Belief:StructuralReduction)
     (M ==> C), X, eventOfNeg(C,X) |- (M ==> conjWithout(C,--X)), (Belief:StructuralReduction)
         //(M ==> C), X, eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Belief:StructuralReduction)
@@ -424,15 +425,19 @@
 
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
-    (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-    (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+    (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#",strict), (Belief:AnonymousAnalogy)
+      //accelerated version requiring no second-level unification and allows the general case subIfUnifiesAny to be 'strict'
+      C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
+    (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#",strict), (Belief:AnonymousAnalogyPN)
+      //accelerated version requiring no second-level unification and allows the general case subIfUnifiesAny to be 'strict'
+      C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
 
-    Y, (&&,X,A..+)                  |- subIfUnifiesAny((&&,  X,A..+),X,Y,"#"), (Belief:Deduction)
-    Y, (&&,--X,A..+)                |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#"), (Belief:DeductionN)
-        Y, (&&,X,A..+), task("?")       |- subIfUnifiesAny((&&,  X,A..+),X,Y,"#"), (Punctuation:Question)
-        Y, (&&,--X,A..+), task("?")     |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#"), (Punctuation:Question)
-        Y, (&&,X,A..+), task("@")       |- subIfUnifiesAny((&&,  X,A..+),X,Y,"#"), (Punctuation:Quest)
-        Y, (&&,--X,A..+), task("@")     |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#"), (Punctuation:Quest)
+    Y, (&&,X,A..+)                  |- subIfUnifiesAny((&&,  X,A..+),X,Y,"#",strict), (Belief:Deduction)
+    Y, (&&,--X,A..+)                |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#",strict), (Belief:DeductionN)
+        Y, (&&,X,A..+), task("?")       |- subIfUnifiesAny((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Question)
+        Y, (&&,--X,A..+), task("?")     |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Question)
+        Y, (&&,X,A..+), task("@")       |- subIfUnifiesAny((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Quest)
+        Y, (&&,--X,A..+), task("@")     |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Quest)
 
 //Anonymous Deduction and Abduction
     (#1 ==> X), X         |- X, (Belief:StructuralReduction)

@@ -63,4 +63,18 @@ class SetFuncTest {
                     $$("(&&,add(1,#x,#a),sort((#a,2),quote,(2,3)))"), n));
     }
 
+
+    @Test void testMember1_true() {
+        assertEquals(
+                Set.of($$("member(a,{a,b})")),
+                Evaluation.eval($$("member(a,{a,b})"), n));
+
+    }
+    @Test void testMember1_false() {
+        assertEquals(
+                Set.of($$("--member(c,{a,b})")),
+                Evaluation.eval($$("member(c,{a,b})"), n));
+
+    }
+
 }

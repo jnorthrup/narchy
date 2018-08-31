@@ -117,7 +117,7 @@ public abstract class Param {
      * it is enabled for unit tests automatically regardless of the value here.
      */
     public static boolean DEBUG;
-    public static final boolean DEBUG_EXTRA = false;
+    public static boolean DEBUG_EXTRA = false;
 
     public static final PriMerge conceptMerge =
             PriMerge.plus;

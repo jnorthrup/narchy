@@ -15,6 +15,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.term.util.Image;
+import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -318,7 +319,7 @@ abstract public class Inperience extends LeakBack {
 
 
     @Deprecated private static Term reifyQuestion(Term x, byte punc, NAR nar) {
-        //x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+        x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
         if (x instanceof Bool) return Null;
 

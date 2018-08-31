@@ -23,7 +23,8 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     public final Function<X, Term> resolve;
 
     public TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, Function<X, Term> resolve) {
-        super($.func(Atomic.the(match.getClass().getSimpleName()), $.the(resolve.toString()), match.param()).negIf(!trueOrFalse));
+        super($.func(Atomic.the(match.getClass().getSimpleName()), $.the(resolve.toString()), match.param())
+                .negIf(!trueOrFalse));
 
         this.resolve = resolve;
         this.match = match;
@@ -41,6 +42,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     public boolean test(X x) {
         Term y = resolve.apply(x);
         return (exactOrSuper ? match.test(y)  == trueOrFalse : match.testSuper(y, trueOrFalse));
+        //return (!exactOrSuper || match.test(y) == trueOrFalse); //bypass testSuper, for testing testSuper
     }
 
     public static class Subterm<X> extends AbstractPred<X> {
@@ -85,7 +87,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
 
         private boolean test(Term superTerm, byte[] subPath) {
 
-            boolean superOK = !preTestSuper|| (match.testSuper(superTerm, trueOrFalse));
+            boolean superOK = !preTestSuper || (match.testSuper(superTerm, trueOrFalse));
             if (!superOK)
                 return false;
 

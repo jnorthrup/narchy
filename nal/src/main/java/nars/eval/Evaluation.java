@@ -291,13 +291,21 @@ public class Evaluation {
 //            y = y.replace(subst);
 
         //if termutators, collect all results. otherwise 'cur' is the only result to return
-        if (y.op().conceptualizable) {
+        if (!(y instanceof Bool)) {
             int ts = termutators();
             if (ts > 0) {
                 return termute(e, y);
             } else {
+                //Transformed Result
                 if (!each.test(y))
                     return false;
+            }
+        } else {
+            //Terminal Result
+            if (y == False) {
+                return each.test(x.neg());
+            } else if (y == True) {
+                return each.test(x);
             }
         }
         return true;

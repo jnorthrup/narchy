@@ -30,8 +30,10 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
+import static nars.Op.CONJ;
 import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
+import static nars.time.Tense.XTERNAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -62,6 +64,9 @@ public class FZero extends NAgentX {
         this.fz = new FZeroGame();
 
 
+//        Param.DEBUG= true;
+//        Param.DEBUG_EXTRA = true;
+
         Scale vision = new Scale(() -> fz.image,
                 24, 18
                 //8, 8
@@ -90,7 +95,7 @@ public class FZero extends NAgentX {
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.3f);
+                initBipolarRotateDirect(false, 0.25f);
 
         window(new Gridding(
                 //new CameraSensorView(c, this).withControls(),
@@ -312,7 +317,7 @@ public class FZero extends NAgentX {
     public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {
 
         final float[] heading = {0};
-        final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.3f);
+        final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.4f);
 
         float curve = //curve exponent
                 //1;
@@ -320,15 +325,18 @@ public class FZero extends NAgentX {
 
         FloatToFloatFunction d = (dHeading) -> {
 
-            //heading[0] += Math.pow((dHeading-0.5f) * 2, curve) * rotFactor; //unipolar
             heading[0] += Math.pow((dHeading), curve) * rotFactor; //bipolar
 
-            //fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
-            fz.playerAngle = (heading[0]);
+            fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
+            //fz.playerAngle = (heading[0]);
 
             return dHeading;
         };
-        BiPolarAction A = actionBipolarFrequencyDifferential($.func("rotate", id),
+        BiPolarAction A = actionBipolarFrequencyDifferential(
+                //$.func("rotate", id),
+                //pn -> CONJ.the(XTERNAL, $.the("rotate"), $.func("rotate", id).negIf(!pn) ),
+                pn -> CONJ.the(XTERNAL, $.func("rotate", id),
+                        pn ? $.func("left",id) : $.func("right",id)  ),
                 fair, d);
 
         return A;
