@@ -261,8 +261,8 @@ public class BiPolarAction extends AbstractSensor {
          * used in the difference comparison. return NaN or value  */
         public float q(Truth t) {
 
-            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
-            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
+            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
+            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
         }
 
     }

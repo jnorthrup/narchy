@@ -77,7 +77,7 @@ public enum Terms {
         out.print(x);
         out.print(" (");
         out.print(x.op() + "[" + x.getClass().getSimpleName() + "] ");
-        out.print("c" + x.complexity() + ",v" + x.volume() + ",dt=" + x.dt() + ",dtRange=" + x.dtRange() + ' ');
+        out.print("c" + x.complexity() + ",v" + x.volume() + ",dt=" + x.dt() + ",dtRange=" + x.eventRange() + ' ');
         out.print(Integer.toBinaryString(x.structure()) + ')');
         out.println();
 

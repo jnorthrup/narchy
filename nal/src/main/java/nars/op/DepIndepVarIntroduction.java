@@ -30,28 +30,20 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     /**
      * sum by complexity if passes include filter
      */
-    private static final ToIntFunction<Term> depIndepFilter = t -> {
-        if (t.op().var) return 0;
-
-        return t.hasAny(
-                Op.VAR_INDEP.bit
-        ) ? 0 : 1;
-    };
+    private static final ToIntFunction<Term> depIndepFilter = t ->
+        (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
 
     /** if no variables are present in the target term, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
-    private static final Variable UnnormalizedVarIndep = $.varIndep("X");
+    private static final Variable UnnormalizedVarIndep = $.varIndep("_v");
+    private static final Variable UnnormalizedVarDep = $.varDep("_v");
     private static final Variable FirstNormalizedVarIndep = $.varIndep(1);
-    private static final Variable UnnormalizedVarDep = $.varDep("Y");
     private static final Variable FirstNormalizedVarDep = $.varDep(1);
 
     private static boolean validDepVarSuperterm(Op o) {
         return /*o.statement ||*/ o == CONJ;
     }
 
-    private static boolean validIndepVarSuperterm(Op o) {
-        return o.statement;
-
-    }
+    private static boolean validIndepVarSuperterm(Op o) { return o.statement; }
 
     @Override
     public Pair<Term, Map<Term, Term>> apply(Term x, Random r) {

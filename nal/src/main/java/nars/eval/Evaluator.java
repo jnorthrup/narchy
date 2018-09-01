@@ -23,7 +23,7 @@ public class Evaluator implements DirectTermTransform {
 
 //        public final MutableSet<Variable> vars = new UnifiedSet(0);
 
-    protected Evaluator(Function<Atom, Functor> funcResolver) {
+    public Evaluator(Function<Atom, Functor> funcResolver) {
         this.funcResolver = funcResolver;
     }
 

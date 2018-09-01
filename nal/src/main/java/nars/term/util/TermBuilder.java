@@ -187,7 +187,7 @@ public abstract class TermBuilder {
 
     }
 
-    public Term conj(int dt, Term[] u) {
+    public Term conj(final int dt, Term[] u) {
         switch (u.length) {
 
             case 0:
@@ -349,12 +349,14 @@ public abstract class TermBuilder {
 
             default: {
                 if (u.length != 2) {
-                    if (Param.DEBUG_EXTRA)
+                    //if (Param.DEBUG_EXTRA)
                         throw new RuntimeException("temporal conjunction with n!=2 subterms");
-                    return Null;
+                    //return Null;
                 }
 
-                return Conj.the(u[0], u[1], dt);
+                return (dt >= 0) ?
+                        Conj.the(u[0], 0, u[1], +dt + u[0].eventRange()) :
+                        Conj.the(u[1], 0, u[0], -dt + u[1].eventRange());
             }
         }
 

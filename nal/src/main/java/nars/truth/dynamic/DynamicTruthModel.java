@@ -153,7 +153,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                         decRange = XTERNAL;
                         break;
                     default:
-                        decRange = decomposed.dtRange();
+                        decRange = decomposed.eventRange();
                         break;
                 }
                 return decomposed.eventsWhile((offset, y) -> {
@@ -518,7 +518,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             if (cs == DTERNAL || cs == ETERNAL) {
                 outerDT = DTERNAL; //some temporal information destroyed
             } else {
-                long shift = -cs - sect.dtRange();
+                long shift = -cs - sect.eventRange();
                 outerDT = Tense.occToDT(shift);
             }
 

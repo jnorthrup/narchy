@@ -380,8 +380,8 @@ public interface Compound extends Term, IPair, Subterms {
 
     }
 
-    default int subTimeOnly(Term x) {
-        int[] t = subTimes(x);
+    default int subTimeOnly(Term event) {
+        int[] t = subTimes(event);
         if (t == null || t.length != 1) return DTERNAL;
         return t[0];
     }
@@ -390,8 +390,8 @@ public interface Compound extends Term, IPair, Subterms {
      * TODO return XTERNAL not DTERNAL on missing, it is more appropriate
      * expect the output array to be sorted
      */
-    default int[] subTimes(Term x) {
-        if (equals(x))
+    default int[] subTimes(Term event) {
+        if (equals(event))
             return new int[]{0};
 
 
@@ -403,11 +403,11 @@ public interface Compound extends Term, IPair, Subterms {
         if (op != CONJ)
             return null;
 
-        if (impossibleSubTerm(x))
+        if (impossibleSubTerm(event))
             return null;
 
         RoaringBitmap found = new RoaringBitmap();
-        if ((subTimesWhile(x, (when) -> {
+        if ((subTimesWhile(event, (when) -> {
             found.add(when);
             return true;
         })) == 0)
@@ -480,7 +480,7 @@ public interface Compound extends Term, IPair, Subterms {
                         return false;
 
                     if (changeDT)
-                        t += dt + st.dtRange();
+                        t += dt + st.eventRange();
                 }
 
 
@@ -525,7 +525,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    default int dtRange() {
+    default int eventRange() {
         Op o = op();
         switch (o) {
 
@@ -546,14 +546,14 @@ public interface Compound extends Term, IPair, Subterms {
                             break;
                     }
 
-                    return tt.sub(0).dtRange() + (dt) + tt.sub(1).dtRange();
+                    return tt.sub(0).eventRange() + (dt) + tt.sub(1).eventRange();
 
                 } else {
                     int s = 0;
 
 
                     for (int i = 0; i < l; i++) {
-                        s = Math.max(s, tt.sub(i).dtRange());
+                        s = Math.max(s, tt.sub(i).eventRange());
                     }
 
                     return s;

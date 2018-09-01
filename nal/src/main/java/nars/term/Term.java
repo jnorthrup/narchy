@@ -90,7 +90,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
                     kontinue = false;
             }
 
-            if (s.subs() > 0) {
+            if (s instanceof Compound) {//(s.subs() > 0) {
                 if (!pathsTo(s, p, descendIf, subterm, receiver))
                     kontinue = false;
             }
@@ -204,22 +204,25 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         Subterms css = src.subterms();
 
         int n = css.subs();
-        if (n == 0) return src;
 
-        Term[] target = new Term[n];
+        byte which = path.get(depth);
+        assert(which < n);
 
-        for (int i = 0; i < n; i++) {
-            Term x = css.sub(i);
-            if (path.get(depth) != i)
-                target[i] = x;
-            else {
-                target[i] = x.subs() == 0 ? replacement : x.replaceAt(path, depth + 1, replacement);
-            }
-
+        Term x = css.sub(which);
+        Term y = x.replaceAt(path, depth + 1, replacement);
+        if (y == x) {
+            return src; //unchanged
+        } else {
+            Term[] target = css.arrayClone();
+            target[which] = y;
+            return src.op().the(src.dt(), target);
         }
-
-        return src.op().the(src.dt(), target);
     }
+
+    default boolean pathsTo(Predicate<Term> selector, Predicate<Term> descendIf, BiPredicate<ByteList, Term> receiver) {
+        return pathsTo((Function<Term,Term>)(Term x) -> selector.test(x) ? x : null, descendIf, receiver);
+    }
+
 
     default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
         X ss = target.apply(this);
@@ -406,22 +409,24 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     /**
      * total span across time represented by a sequence conjunction compound
      */
-    default int dtRange() {
+    default int eventRange() {
         return 0;
     }
 
     default boolean pathsTo(Term target, BiPredicate<ByteList, Term> receiver) {
         return pathsTo(
-                x -> target.equals(x) ? x : null,
+                target::equals,
                 x -> !x.impossibleSubTerm(target),
                 receiver);
     }
+
     default boolean pathsTo(Term target, Predicate<Term> superTermFilter, BiPredicate<ByteList, Term> receiver) {
         return pathsTo(
-                x -> target.equals(x) ? x : null,
+                target::equals,
                 x -> superTermFilter.test(x) && !x.impossibleSubTerm(target),
                 receiver);
     }
+
     /**
      * operator extended:
      * operator << 8 | sub-operator type rank for determing compareTo ordering
@@ -738,6 +743,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         }, 0, true, true, true, 0);
         return s;
     }
+
+
 
 }
 

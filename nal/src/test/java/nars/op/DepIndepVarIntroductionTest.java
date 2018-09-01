@@ -29,7 +29,7 @@ class DepIndepVarIntroductionTest {
 
     @Test
     void testIntroduceIndepVar2() {
-        assertEquals("[((a-->($X,#1))=|>(b-->($X,#1))), ((a-->$X)=|>(b-->$X))]",
+        assertEquals("[((a-->($_v,#1))=|>(b-->($_v,#1))), ((a-->$_v)=|>(b-->$_v))]",
                 introduce("((a-->(x,#1))=|>(b-->(x,#1)))", 16).toString());
     }
 
@@ -39,7 +39,7 @@ class DepIndepVarIntroductionTest {
         assertEquals("[((a-->#1)&&(b-->#1))]",
                 introduce("(&&,(a-->c),(b-->c))", 16).toString());
 
-        assertEquals("[(((a,#1)-->#Y)&&((b,#1)-->#Y))]",
+        assertEquals("[(((a,#1)-->#_v)&&((b,#1)-->#_v))]",
                 introduce("(&&,((a,#1)-->c),((b,#1)-->c))", 16).toString());
 
         assertEquals("[((#1-->a)&&(#1-->b))]",

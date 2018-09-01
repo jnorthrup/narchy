@@ -7,6 +7,7 @@ import jcog.pri.Priority;
 import nars.control.Perceive;
 import nars.control.proto.Remember;
 import nars.eval.Evaluation;
+import nars.eval.Evaluator;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.SpecialNegatedTermTask;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -239,24 +241,21 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
 
         t.pathsTo(
-                x -> {
+                (Term x) -> {
                     Op xo = x.op();
-                    return (xo.statement && x.varIndep() > 0) || (xo == VAR_INDEP) ? x : null;
+                    return (xo.statement && x.varIndep() > 0) || (xo == VAR_INDEP);
                 },
                 x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
                 (ByteList path, Term indepVarOrStatement) -> {
-                    if (path.isEmpty())
-                        return true;
-
-                    if (indepVarOrStatement.op() == VAR_INDEP) {
-                        indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
-                                () -> new FasterList<>(2))
-                                .add(path.toImmutable());
-                    } else {
-                        statements.add(path.toImmutable());
+                    if (!path.isEmpty()) {
+                        if (indepVarOrStatement.op() == VAR_INDEP) {
+                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
+                                    () -> new FasterList<>(2))
+                                    .add(path.toImmutable());
+                        } else {
+                            statements.add(path.toImmutable());
+                        }
                     }
-
-
                     return true;
                 });
 
@@ -835,22 +834,43 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         Term x = term();
 
-
         MutableSet<ITask> yy = new UnifiedSet<>(1);
+        if (Evaluation.canEval(x)) {
 
 
 
-        final int FORK_LIMIT = 8; //dunno
+            final int[] forked = {0};
+            Predicate<Term> each = (y) -> {
 
-        final int[] forked = {0};
-        Evaluation.eval(x, n, (y)-> {
+                if (y == Null)
+                    return true; //continue TODO maybe limit these
 
-            if (Perceive.tryPerceive(this, y, yy, n)) {
-                forked[0]++;
-            }
+                if (Perceive.tryPerceive(this, y, yy, n)) {
+                    forked[0]++;
+                }
 
-            return forked[0] < FORK_LIMIT;
-        });
+                return forked[0] < Param.TASK_EVAL_FORK_LIMIT;
+            };
+            Evaluation e = new Evaluation(each) {
+                @Override
+                protected Term bool(Term y, Bool b) {
+                    //filter non-true
+                    if (b == True && y.equals(x))
+                        return y;
+                    else
+                        return Null;
+                }
+            };
+            e.eval(new Evaluator(n::functor), x);
+
+
+
+
+
+
+        } else {
+            Perceive.tryPerceive(this, x, yy, n);
+        }
 
         switch (yy.size()) {
             case 0:
@@ -860,6 +880,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             default:
                 return AbstractTask.of(yy);
         }
+
+
+
+
     }
 
     default ITask perceive(Task result, NAR n) {

@@ -260,7 +260,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                     } else if (edt != XTERNAL) {
 
-                        int st = subj.dtRange();
+                        int st = subj.eventRange();
 
 
                         link(se, (edt + st), pe);
@@ -643,7 +643,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Op xo = x.op();
         Term x0 = x.sub(0);
         if (xo == IMPL) {
-            return x.dt(dt - x0.dtRange());
+            return x.dt(dt - x0.eventRange());
         } else if (xo == CONJ) {
             if (dt == 0) {
                 return x.dt(dt);

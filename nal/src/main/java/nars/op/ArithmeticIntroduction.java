@@ -6,8 +6,6 @@ import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.HijackMemoize;
 import nars.*;
-import nars.bag.leak.LeakBack;
-import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -43,17 +41,22 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  *
  */
 @Paper
-public class ArithmeticIntroduction extends LeakBack {
+public class ArithmeticIntroduction extends Introduction {
 
     public static Term apply(Term x, Random random) {
         return apply(x, true, random);
     }
 
     public static Term apply(Term x, boolean eternal, Random random) {
-        return apply(x, null, eternal, Param.COMPOUND_VOLUME_MAX, random);
+        return apply(x, null, eternal, random);
     }
 
-    public static Term apply(Term x, @Nullable Anon anon, boolean eternal, int termVolMax, Random random) {
+    @Override
+    @Nullable protected Term newTerm(Task xx) {
+        return apply(xx.term(), null, xx.isEternal(), nar.random());
+    }
+
+    public static Term apply(Term x, @Nullable Anon anon, boolean eternal, Random random) {
         if (anon == null && !x.hasAny(INT))
             return x;
 
@@ -246,30 +249,6 @@ public class ArithmeticIntroduction extends LeakBack {
         
         float intTerms = numInts / ((float)tt.volume());
         return p * intTerms;
-    }
-    @Override
-    protected float leak(Task xx) {
-        Term x = xx.term();
-        Term y = apply(x, null, xx.isEternal(), nar.termVolumeMax.intValue(), nar.random());
-        if (y!=null && !y.equals(x) && y.op().conceptualizable) {
-            //Task yy = Task.clone(xx, y);
-            Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) ->
-                    new UnevaluatedTask(c, xx, t));
-
-            if (yy!=null) {
-                //discount pri by increase in term complexity
-                float xc = x.complexity();
-                yy.priMult(Math.min(1, (xc /(y.complexity())))  );
-
-                input(yy);
-                return 1;
-            }
-        } else {
-
-
-        }
-
-        return 0;
     }
 
 

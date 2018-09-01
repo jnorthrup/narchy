@@ -507,7 +507,7 @@ public class Occurrify extends TimeGraph {
                 assert (d.taskTerm.op() == CONJ);
 
                 if (!d.task.isEternal()) {
-                    int r = d.taskTerm.dtRange();
+                    int r = d.taskTerm.eventRange();
                     long[] o = new long[]{d.task.start(), r + d.task.end()};
 
 
@@ -739,9 +739,9 @@ public class Occurrify extends TimeGraph {
                 Term y;
                 long earlyStart = Math.min(tTime, bTime);
                 if (tTime == earlyStart)
-                    y = Conj.the(tt, 0, bb, bTime - tTime);
+                    y = Conj.the(tt, 0, bb, Tense.dither(bTime - tTime, d.nar));
                 else
-                    y = Conj.the(bb, 0, tt, tTime - bTime);
+                    y = Conj.the(bb, 0, tt, Tense.dither(tTime - bTime, d.nar));
 
                 long range = Math.max(Math.min(d.task.range(), d.belief.range())-1, 0);
 
@@ -851,9 +851,9 @@ public class Occurrify extends TimeGraph {
 
 
                     if (sign == 1) {
-                        bdt += d.beliefTerm.sub(0).dtRange(); //impl subj dtRange
+                        bdt += d.beliefTerm.sub(0).eventRange(); //impl subj dtRange
                     } else if (sign == -1) {
-                        bdt -= d.beliefTerm.sub(0).dtRange(); //impl subj dtRange
+                        bdt -= d.beliefTerm.sub(0).eventRange(); //impl subj dtRange
                     }
 
                     o[0] += bdt;

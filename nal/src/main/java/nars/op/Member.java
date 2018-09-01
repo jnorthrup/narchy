@@ -52,7 +52,6 @@ public class Member extends Functor implements The, Functor.InlineFunctor {
                 evaluation.canBe(x, yy);
             else
                 evaluation.is(x, y);
-
             return null;
         }
 

@@ -52,7 +52,7 @@ abstract class TemporalStabilityTest {
     private void validate(Task t) {
 
         long ts = t.start();
-        long te = Math.max(ts+t.term().dtRange(), t.end());
+        long te = Math.max(ts+t.term().eventRange(), t.end());
 
         if (t.isInput()) {
             System.out.println("in: " + t);

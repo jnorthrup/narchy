@@ -1268,7 +1268,7 @@ public class NAL7Test extends NALTest {
 
         List m = $.newArrayList();
         Term d = $("--(a &&+3 --c)");
-        assertEquals(0, d.dtRange());
+        assertEquals(0, d.eventRange());
         d.events(m::add);
 
         List l = $.newArrayList();

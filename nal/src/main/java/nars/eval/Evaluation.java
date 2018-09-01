@@ -96,7 +96,7 @@ public class Evaluation {
         return null;
     }
 
-    protected Evaluation(Predicate<Term> each) {
+    public Evaluation(Predicate<Term> each) {
         this.each = each;
     }
 
@@ -160,7 +160,7 @@ public class Evaluation {
     }
 
 
-    protected boolean eval(Evaluator e, Term x) {
+    public boolean eval(Evaluator e, Term x) {
         //iterate until stable
 
         Term y = x;
@@ -223,7 +223,7 @@ public class Evaluation {
                         }
                         substAdded = now() != vStart;
                         mutAdded = mutStart != termutators();
-                        if ((z == null && (substAdded || mutAdded)) || (z == True)) {
+                        if ((z == null && (substAdded || mutAdded)) || (z instanceof Bool)) {
                             removeEntry = true;
                         }
 
@@ -296,19 +296,25 @@ public class Evaluation {
             if (ts > 0) {
                 return termute(e, y);
             } else {
-                //Transformed Result
+                //Transformed Result (possibly same)
                 if (!each.test(y))
                     return false;
             }
         } else {
             //Terminal Result
-            if (y == False) {
-                return each.test(x.neg());
-            } else if (y == True) {
-                return each.test(x);
-            }
+            return each.test(bool(x, (Bool)y));
         }
         return true;
+    }
+
+    protected Term bool(Term x, Bool b) {
+        if (b == True) {
+            return x;
+        } else if ( b == False) {
+            return x.neg();
+        } else {
+            return Null;
+        }
     }
 
     private int termutators() {
@@ -477,7 +483,7 @@ public class Evaluation {
         }
     }
 
-    private static boolean canEval(Term x) {
+    public static boolean canEval(Term x) {
         return x.hasAll(Op.FuncBits);
     }
 

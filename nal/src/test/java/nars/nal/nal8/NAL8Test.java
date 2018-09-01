@@ -102,7 +102,7 @@ public class NAL8Test extends NALTest {
         {
             Term t = $.$("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))");
             assertEquals(2, t.subs());
-            assertEquals(10, t.dtRange());
+            assertEquals(10, t.eventRange());
         }
 
         test
@@ -663,7 +663,7 @@ public class NAL8Test extends NALTest {
         int when = 6;
 
         int goalAt = Math.max(when,
-                when - dt - $.$$(sj).dtRange());
+                when - dt - $.$$(sj).eventRange());
 
         String[] subjPred = sj.split("\\/");
         assertEquals(2, subjPred.length);

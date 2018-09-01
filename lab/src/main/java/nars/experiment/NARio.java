@@ -220,15 +220,34 @@ public class NARio extends NAgentX {
 
         GoalActionConcept j = actionPushButton($$("jump(nario)"),
                 n -> {
-                    boolean wasPressed = mario.scene.key(Mario.KEY_JUMP, n);
+
                     Scene s = mario.scene;
-                    boolean jumping = s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime != 0 : false;
-                    //System.out.println(jumping + " " + (s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0));
-                    if (wasPressed && !jumping) {
-                        mario.scene.key(Mario.KEY_JUMP, false); //release key
-                        return false;
+                    int jumpTime = s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0;
+                    //System.out.println(jumpTime);
+                    boolean jumping = jumpTime > 0;
+                    boolean wasPressed = mario.scene.key(Mario.KEY_JUMP);
+
+                    boolean press;
+                    if (!n) {
+                        press = wasPressed || (!wasPressed && jumping);
+                    } else {
+
+
+
+
+//                        //System.out.println(jumping + " " + (s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0));
+//                        if (wasPressed && !jumping) {
+//                            press = false;
+//                        } else {
+//                            press = (!wasPressed) || jumping;
+//                        }
+                        if (!wasPressed || (wasPressed && jumping))
+                            press = true;
+                        else
+                            press = false;
                     }
-                    return (!wasPressed) || jumping;
+                    mario.scene.key(Mario.KEY_JUMP, press);
+                    return press;
                 });
         window(NARui.beliefCharts(nar, j), 800, 800);
 

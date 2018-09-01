@@ -140,7 +140,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
 
     @Override
     @Nullable
-    public Y apply(X x) {
+    public final Y apply(X x) {
         Y y = getIfPresent(x);
         if (y == null) {
             y = func.apply(x);

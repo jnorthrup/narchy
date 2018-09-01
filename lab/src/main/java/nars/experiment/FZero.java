@@ -327,8 +327,8 @@ public class FZero extends NAgentX {
 
             heading[0] += Math.pow((dHeading), curve) * rotFactor; //bipolar
 
-            fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
-            //fz.playerAngle = (heading[0]);
+            //fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
+            fz.playerAngle = (heading[0]);
 
             return dHeading;
         };

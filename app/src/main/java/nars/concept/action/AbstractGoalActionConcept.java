@@ -58,9 +58,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Predicate<Task> withoutCuriosity = t -> !(t instanceof SeriesBeliefTable.SeriesTask);  /* filter curiosity tasks? */
 
 
+        long rad = (now - prev) / 2;
+        long s = now - rad;
+        long e = now + rad;
 
         TruthPolation aWithCuri = Answer.
-                relevance(true, prev, now /*next*/, term, null, n).match(goals()).truthpolation();
+                relevance(true, s, e, term, null, n).match(goals()).truthpolation();
         Truth actionNonAuthentic;
         if (aWithCuri!=null) {
             aWithCuri = aWithCuri.filtered();
@@ -69,7 +72,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             actionNonAuthentic = null;
 
         TruthPolation aWithoutCuri = Answer.
-                relevance(true, prev, now /*next*/, term, withoutCuriosity, n).match(goals()).truthpolation();
+                relevance(true, s, e, term, withoutCuriosity, n).match(goals()).truthpolation();
         if (aWithoutCuri!=null) {
             aWithoutCuri = aWithoutCuri.filtered();
             actionTruth = actionTruthAuthentic = aWithoutCuri.truth();

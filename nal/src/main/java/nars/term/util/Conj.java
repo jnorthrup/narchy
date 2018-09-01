@@ -92,7 +92,7 @@ public class Conj extends ByteAnonMap {
      */
     public static StringBuilder sequenceString(Term a, Conj x) {
         StringBuilder sb = new StringBuilder(4);
-        int range = a.dtRange();
+        int range = a.eventRange();
         final float stepResolution = 16f;
         float factor = stepResolution / range;
         a.eventsWhile((when, what) -> {
@@ -332,13 +332,10 @@ public class Conj extends ByteAnonMap {
         }
     }
 
-    public static Term the(Term a, Term b, int dt) {
-        return (dt >= 0) ?
-                the(a, 0, b, +dt + a.dtRange()) :
-                the(b, 0, a, -dt + b.dtRange());
-    }
-
     static public Term the(Term a, long aStart, Term b, long bStart) {
+
+//        if (aStart == 0 && a.eventRange() == 0)
+//            return CONJ.the(a, Tense.occToDT(bStart), b); //HACK use an optimized internable construction route
 
         Conj c = new Conj();
 //        if (aStart == bStart) {
@@ -402,7 +399,7 @@ public class Conj extends ByteAnonMap {
         if (right == Null) return Null;
         if (right == False) return False;
 
-        int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.dtRange());
+        int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.eventRange());
 
         return conjSeqFinal(dt, left, right);
     }

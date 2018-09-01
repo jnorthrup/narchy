@@ -160,10 +160,7 @@ public abstract class UnitCompound implements Compound {
         return events.accept(dt, this);
     }
 
-    @Override
-    public int dtRange() {
-        return 0;
-    }
+
 
     @Override public void appendTo(ByteArrayDataOutput out) {
 

@@ -30,6 +30,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.fraction.Fraction;
+import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.primitive.CharToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -363,6 +364,10 @@ public enum $ {
 
     public static Term sete(RoaringBitmap b) {
         return SETe.the(ints(b));
+    }
+
+    public static Term sete(RichIterable<Term> b) {
+        return SETe.the(b.toSortedSet());
     }
 
     public static Term p(RoaringBitmap b) {

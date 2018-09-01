@@ -1213,7 +1213,7 @@ public class ConjTest {
         assertEquals(1, c.subTimeOnly($("at:t1")));
         assertEquals(4, c.subTimeOnly($("(t1-->[opened])")));
         assertEquals(9, c.subTimeOnly($("open(t1)")));
-        assertEquals(9, c.dtRange());
+        assertEquals(9, c.eventRange());
     }
 
     @Test
@@ -1305,7 +1305,7 @@ public class ConjTest {
 
     @Test
     void testDTRange() throws Narsese.NarseseException {
-        assertEquals(1, $("(z &&+1 y)").dtRange());
+        assertEquals(1, $("(z &&+1 y)").eventRange());
     }
 
     @Test
@@ -1313,13 +1313,13 @@ public class ConjTest {
         String x = "(x &&+1 (z &&+1 y))";
         Term t = $(x);
         assertEq("((x &&+1 z) &&+1 y)", t.toString());
-        assertEquals(2, t.dtRange(), () -> t + " incorrect dtRange");
+        assertEquals(2, t.eventRange(), () -> t + " incorrect dtRange");
     }
 
     @Test
     void testDTRange3() throws Narsese.NarseseException {
-        assertEquals(4, $("(x &&+1 (z &&+1 (y &&+2 w)))").dtRange());
-        assertEquals(4, $("((z &&+1 (y &&+2 w)) &&+1 x)").dtRange());
+        assertEquals(4, $("(x &&+1 (z &&+1 (y &&+2 w)))").eventRange());
+        assertEquals(4, $("((z &&+1 (y &&+2 w)) &&+1 x)").eventRange());
     }
 
     @Test
@@ -1542,7 +1542,7 @@ public class ConjTest {
         String ns = "((a &&+1 b) &&+1 (c &&+1 d))";
         Compound normal = $(ns);
 
-        assertEquals(3, normal.dtRange());
+        assertEquals(3, normal.eventRange());
         assertEquals(ns, normal.toString());
 
         for (String unnormalized : new String[]{

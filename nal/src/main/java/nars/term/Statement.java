@@ -59,7 +59,7 @@ public class Statement {
                     if (dt==DTERNAL || dt == XTERNAL) {
                         newSubj = CONJ.the(subject, dt, inner);
                     } else {
-                        newSubj = Conj.the(subject, 0, inner, subject.dtRange() + dt);
+                        newSubj = Conj.the(subject, 0, inner, subject.eventRange() + dt);
                     }
                     return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
                 }
@@ -100,7 +100,7 @@ public class Statement {
                         } else
                             po = 0;
                     } else {
-                        po = subject.dtRange() + dt;
+                        po = subject.eventRange() + dt;
                     }
 
                     //TODO extract this to a ConjConflict class
@@ -135,7 +135,7 @@ public class Statement {
                         if (dt != DTERNAL) {
                             //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
                             //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
-                            int dr = newSubj.dtRange() - subject.dtRange();
+                            int dr = newSubj.eventRange() - subject.eventRange();
                             dt += dr;
                         }
                         subject = newSubj;

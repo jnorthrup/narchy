@@ -139,7 +139,8 @@ abstract public class Inperience extends LeakBack {
         @Override
         protected Term reify(Task t) {
             Term ss = t.term();
-            Term tt = ss.eval(nar);
+            Term tt = ss;
+            //Term tt = ss.eval(nar);
             if (!tt.op().conceptualizable)
                 tt = ss; //use the task as-is, ignore the eval result
 

@@ -78,13 +78,13 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         }
 
         @Override
-        public final int dtRange() {
+        public final int eventRange() {
             return 0;
         }
 
         @Override
-        public final int subTimeOnly(Term x) {
-            return equals(x) ? 0 : DTERNAL;
+        public final int subTimeOnly(Term event) {
+            return equals(event) ? 0 : DTERNAL;
         }
 
 

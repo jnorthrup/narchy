@@ -87,12 +87,16 @@ public abstract class Param {
     /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
     public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
 
+    /** TODO needs tested whether recursive Unification inherits TTL */
     public static final int EVALUATION_TTL = 64;
 
     /** within how many durations a difference in dt is acceptable for term unification */
     public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
 
     public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
+
+    public static final int TASK_EVAL_FORK_LIMIT = 8;
+
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
 
