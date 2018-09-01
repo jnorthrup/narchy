@@ -24,7 +24,7 @@ public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
 
 
     public Huffman buildCodec() {
-        return buildCodec(new Huffman(stream().map((b) -> key(b).key),
+        return buildCodec(new Huffman(stream().map(b -> key(b).key),
                 Huffman.fastestCompDecompTime()));
     }
 

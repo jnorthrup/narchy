@@ -161,8 +161,7 @@ public final class Intern {
 
         @Override
         public int hash(Object o) {
-            Integer i = (Integer) o;
-            return i.intValue();
+            return (Integer) o;
         }
     }
 
@@ -702,7 +701,7 @@ public final class Intern {
             return internedDoubleNaN;
         }
         
-        if (a.doubleValue() == 0) { 
+        if (a == 0) {
             return internedDoubleZero;
         }
         WeakReference</*@Interned*/ Double> lookup = internedDoubles.get(a);

@@ -1,11 +1,15 @@
 package nars.op;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.decide.Roulette;
+import jcog.memoize.Memoizes;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -14,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 import static nars.Op.CONJ;
@@ -46,21 +51,40 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     private static boolean validIndepVarSuperterm(Op o) { return o.statement; }
 
     @Override
-    public Pair<Term, Map<Term, Term>> apply(Term x, Random r) {
+    public Pair<Term, Map<Term, Term>> apply(Term x, Random rng) {
         if (x.hasAny(ConjOrStatementBits)) {
-            return super.apply(x, r);
+            return super.apply(x, rng);
         } else
             return null;
     }
 
     @Override
-    protected Term select(Term input, Random shuffle) {
-        return Terms.nextRepeat(input, depIndepFilter, 2, shuffle);
+    protected Term[] select(Term input) {
+        return select.apply(input);
+    }
+
+    private final static Function<Term,Term[]> select = Memoizes.the.memoize(DepIndepVarIntroduction::_select);
+
+    static protected Term[] _select(Term input) {
+        return Terms.nextRepeat(input, depIndepFilter, 2);
+    }
+
+    @Override protected Term choose(Term[] x, Random rng) {
+        IntToFloatFunction curve =
+                //n -> 1f / (x[n].volume());
+                n -> Util.sqr(1f / (x[n].volume()));
+        return x[Roulette.selectRoulette(x.length, curve, rng)];
     }
 
     @Nullable
     @Override
-    protected Term introduce(Term input, Term selected, byte order) {
+    protected Term introduce(Term input, Term selected) {
+
+
+//        int vars = input.vars();
+//        assert (vars < 127 - 1);
+//        byte order = (byte) (vars + 1);
+
 
         Op inOp = input.op();
         List<ByteList> paths = new FasterList<>(4);

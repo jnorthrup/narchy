@@ -43,7 +43,7 @@ public class ByteKey extends UnitPri {
         return Texts.i(key,16) + " [" + Integer.toUnsignedString(hash,32) + "]";
     }
 
-    static class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKey,Y> {
+    final static class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKey,Y> {
 
         final Y result;
 

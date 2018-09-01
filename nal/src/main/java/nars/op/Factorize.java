@@ -1,6 +1,7 @@
 package nars.op;
 
 import jcog.Paper;
+import jcog.memoize.Memoizes;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.function.Function;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -59,10 +61,15 @@ public class Factorize {
             return x;
         }
 
-        int xdt = x.dt();
-        if (x.op() != CONJ || !Tense.dtSpecial(xdt))
+        if (x.op() != CONJ || !Tense.dtSpecial(x.dt()))
             return x; //unchanged
 
+        return factorize.apply(x);
+    }
+
+    static final Function<Term,Term> factorize = Memoizes.the.memoize(Factorize::_factorize);
+
+    private static Term _factorize(Term x) {
         Subterms xx = x.subterms();
 
         Term[] xxx = distribute(xx);
@@ -77,7 +84,7 @@ public class Factorize {
 //        if (xx.equalTerms(yy))
 //            return x; //unchanged
 
-        return CONJ.the(xdt, y);
+        return CONJ.the(x.dt(), y);
     }
 
     /** returns null if detects no reason to re-process */

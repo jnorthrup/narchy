@@ -1,9 +1,7 @@
 package nars.term;
 
-import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
-import jcog.decide.Roulette;
 import jcog.sort.SortedList;
 import nars.IO;
 import nars.Op;
@@ -13,7 +11,6 @@ import nars.term.atom.Atom;
 import nars.unify.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.LazyIterable;
-import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -164,7 +161,7 @@ public enum Terms {
      * when there is a chocie, it prefers least aggressive introduction. and then random choice if
      * multiple equals are introducible
      */
-    public static Term nextRepeat(Term c, ToIntFunction<Term> countIf, int minCount, Random rng) {
+    @Nullable public static Term[] nextRepeat(Term c, ToIntFunction<Term> countIf, int minCount) {
         ObjectIntHashMap<Term> oi = Terms.subtermScore(c, countIf, minCount);
         if (oi == null)
             return null;
@@ -174,15 +171,12 @@ public enum Terms {
             case 0:
                 return null;
             case 1:
-                return ok.getFirst();
+                return new Term[] { ok.getFirst() };
         }
 
 
         Term[] x = oi.keysView().toArray(Op.EmptyTermArray);
-        IntToFloatFunction curve =
-                //n -> 1f / (x[n].volume());
-                n -> Util.sqr(1f / (x[n].volume()));
-        return x[Roulette.selectRoulette(x.length, curve, rng)];
+        return x;
     }
 
 
