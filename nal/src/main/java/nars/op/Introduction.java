@@ -31,8 +31,12 @@ public abstract class Introduction extends LeakBack  {
 
                 if (yy != null) {
                     //discount pri by increase in term complexity
+
                     float xc = x.complexity();
-                    yy.priMult(Math.min(1, (xc / (y.complexity()))));
+                    int yc = y.complexity();
+                    float priSharePct =
+                            1f - (yc / (xc + yc));
+                    yy.take(xx, priSharePct, false, false);
 
                     input(yy);
                     return 1;

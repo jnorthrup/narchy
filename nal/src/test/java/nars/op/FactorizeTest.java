@@ -17,6 +17,7 @@ public class FactorizeTest {
                 applyAndNormalize($$("(f(a) && f(b))"))
         );
     }
+
     @Test
     void testTriple() {
         assertEquals(
@@ -29,6 +30,14 @@ public class FactorizeTest {
         assertEquals(
                 $$("(&&, g, f(#1), member(#1,{a,b}))"),
                 applyAndNormalize($$("(&&, f(a), f(b), g)"))
+        );
+    }
+
+    @Test
+    void testDoubleCommutive() {
+        assertEquals(
+                $$("(member(#1,{a,y})&&{x,#1})"),
+                applyAndNormalize($$("({a,x} && {x,y})"))
         );
     }
 

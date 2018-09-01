@@ -41,7 +41,46 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  *
  */
 @Paper
-public class ArithmeticIntroduction extends Introduction {
+public class Arithmeticize {
+
+    public static class ArithmeticIntroduction extends Introduction {
+        public ArithmeticIntroduction(int taskCapacity, NAR n) {
+            super(taskCapacity, n);
+        }
+
+        @Override
+        protected boolean preFilter(Task next) {
+            Term x = next.term();
+            return
+                    x.hasAny(Op.INT) &&
+                            x.complexity() >= 3 &&
+                            nar.termVolumeMax.intValue() >= x.volume() + 5 /* for &&equals(x,y)) */;
+        }
+
+        @Override
+        protected float pri(Task t) {
+            float p = super.pri(t);
+            Term tt = t.term();
+            int numInts = tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
+//        if (numInts == 0) {
+//            tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
+//            throw new WTF();
+//        }
+            assert (numInts > 0);
+            if (numInts < 2)
+                return Float.NaN;
+
+
+            float intTerms = numInts / ((float) tt.volume());
+            return p * intTerms;
+        }
+
+        @Override
+        @Nullable
+        protected Term newTerm(Task xx) {
+            return Arithmeticize.apply(xx.term(), null, xx.isEternal(), nar.random());
+        }
+    }
 
     public static Term apply(Term x, Random random) {
         return apply(x, true, random);
@@ -51,10 +90,6 @@ public class ArithmeticIntroduction extends Introduction {
         return apply(x, null, eternal, random);
     }
 
-    @Override
-    @Nullable protected Term newTerm(Task xx) {
-        return apply(xx.term(), null, xx.isEternal(), nar.random());
-    }
 
     public static Term apply(Term x, @Nullable Anon anon, boolean eternal, Random random) {
         if (anon == null && !x.hasAny(INT))
@@ -147,7 +182,7 @@ public class ArithmeticIntroduction extends Introduction {
     }
 
     static final HijackMemoize<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>>
-        modsCache = new HijackMemoize<>(ArithmeticIntroduction::_mods, 512, 3);
+        modsCache = new HijackMemoize<>(Arithmeticize::_mods, 512, 3);
 
     static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mods(int[] ii) {
 
@@ -217,39 +252,10 @@ public class ArithmeticIntroduction extends Introduction {
         return mods.getIfAbsentPut(ia, FasterList::new);
     }
 
-    public static final Logger logger = LoggerFactory.getLogger(ArithmeticIntroduction.class);
+    public static final Logger logger = LoggerFactory.getLogger(Arithmeticize.class);
 
 
-    public ArithmeticIntroduction(int taskCapacity, NAR n) {
-        super(taskCapacity, n);
-    }
 
-    @Override
-    protected boolean preFilter(Task next) {
-        Term x = next.term();
-        return
-            x.hasAny(Op.INT) &&
-            x.complexity() >= 3 &&
-            nar.termVolumeMax.intValue() >= x.volume() + 5 /* for &&equals(x,y)) */;
-    }
-
-    @Override
-    protected float pri(Task t) {
-        float p = super.pri(t);
-        Term tt = t.term();
-        int numInts = tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
-//        if (numInts == 0) {
-//            tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
-//            throw new WTF();
-//        }
-        assert(numInts > 0);
-        if (numInts < 2)
-            return Float.NaN;
-
-        
-        float intTerms = numInts / ((float)tt.volume());
-        return p * intTerms;
-    }
 
 
 }

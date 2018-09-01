@@ -22,8 +22,8 @@ import nars.exe.MultiExec;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
-import nars.op.ArithmeticIntroduction;
-import nars.op.FactorIntroduction;
+import nars.op.Arithmeticize;
+import nars.op.Factorize;
 import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -327,8 +327,8 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 3, 16);
 
-        Introduction arith = new ArithmeticIntroduction(32, n);
-        Introduction factorizer = new FactorIntroduction(32, n);
+        Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
+        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
 
         {
             new Inperience.Believe(n, 32);

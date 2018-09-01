@@ -106,7 +106,7 @@ public class TermList extends FasterList<Term> implements Subterms {
         }
     }
 
-    /** use this only if the TermList is done being modified */
+    /** use this only if a (disposable) TermList is done being modified */
     public Term[] arrayKeep() {
         return toArrayRecycled(Term[]::new);
     }

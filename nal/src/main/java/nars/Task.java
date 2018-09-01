@@ -835,12 +835,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         Term x = term();
 
         MutableSet<ITask> yy = new UnifiedSet<>(1);
+
+        final int[] tried = {0};
+
         if (Evaluation.canEval(x)) {
 
 
 
             final int[] forked = {0};
             Predicate<Term> each = (y) -> {
+
+                tried[0]++;
 
                 if (y == Null)
                     return true; //continue TODO maybe limit these
@@ -849,7 +854,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     forked[0]++;
                 }
 
-                return forked[0] < Param.TASK_EVAL_FORK_LIMIT;
+                return (forked[0] < Param.TASK_EVAL_FORK_LIMIT) && (tried[0] < Param.TASK_EVAL_TRY_LIMIT);
             };
             Evaluation e = new Evaluation(each) {
                 @Override
@@ -862,11 +867,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 }
             };
             e.eval(new Evaluator(n::functor), x);
-
-
-
-
-
 
         } else {
             Perceive.tryPerceive(this, x, yy, n);

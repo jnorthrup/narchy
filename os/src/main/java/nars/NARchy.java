@@ -5,7 +5,7 @@ import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.MultiExec;
 import nars.index.concept.CaffeineIndex;
-import nars.op.ArithmeticIntroduction;
+import nars.op.Arithmeticize;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
@@ -55,7 +55,7 @@ public class NARchy extends NARS {
 
         new MatrixDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 
-        new ArithmeticIntroduction(32, nar);
+        new Arithmeticize.ArithmeticIntroduction(32, nar);
 
         return nar;
     }

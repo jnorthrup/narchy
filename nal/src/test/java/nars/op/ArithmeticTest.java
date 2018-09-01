@@ -66,20 +66,20 @@ class ArithmeticTest {
         assertEquals(
                 //"((#1,add(#1,1))&&(#1<->2))",
                 "((#1,add(#1,1))&&equal(#1,2))",
-                ArithmeticIntroduction.apply($.$("(2,3)"), true, rng).toString());
+                Arithmeticize.apply($.$("(2,3)"), true, rng).toString());
     }
 
     @Test
     void test2() {
         assertEquals(
                 "(x(#1,add(#1,1))&&equal(#1,2))",
-                ArithmeticIntroduction.apply($.$$("x(2,3)"), true, rng).toString());
+                Arithmeticize.apply($.$$("x(2,3)"), true, rng).toString());
     }
     @Test
     void test2b() {
         assertEquals(
                 "(x(#1,add(#1,1))&|equal(#1,2))",
-                ArithmeticIntroduction.apply($.$$("x(2,3)"), false, rng).toString());
+                Arithmeticize.apply($.$$("x(2,3)"), false, rng).toString());
 
     }
 
@@ -146,7 +146,7 @@ class ArithmeticTest {
     @Test
     void testCompleteAddInduction() {
         NAR n = NARS.tmp(6);
-        new ArithmeticIntroduction(8, n);
+        new Arithmeticize.ArithmeticIntroduction(8, n);
 
         final int cycles = 500;
 

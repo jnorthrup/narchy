@@ -33,9 +33,10 @@ public class Gradius extends NAgentX {
         super("g", fps(25), nar);
 
 
+        //TODO coordinate with fps
         g.updateMS =
-                50;
-                //25; //TODO coordinate with fps
+                //50; //25fps
+                25; //50fps
         //10;
 
 
