@@ -3,7 +3,7 @@ package nars.op;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
-import jcog.memoize.Memoizes;
+import jcog.memoize.Memo;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
@@ -63,7 +63,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         return select.apply(input);
     }
 
-    private final static Function<Term,Term[]> select = Memoizes.the.memoize(DepIndepVarIntroduction::_select);
+    private final static Function<Term,Term[]> select = Memo.the.memoize(DepIndepVarIntroduction::_select);
 
     static protected Term[] _select(Term input) {
         return Terms.nextRepeat(input, depIndepFilter, 2);

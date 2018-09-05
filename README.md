@@ -293,8 +293,8 @@ See VarIntroduction.java and subclasses, and which rules apply them.
 
 
 ## Requirements
- - Java 10+
- - Gradle
+ - Java 12+ http://jdk.java.net/
+ - Gradle https://gradle.org/nightly/
 
 ## References
 

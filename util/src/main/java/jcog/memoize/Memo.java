@@ -5,20 +5,25 @@ import java.util.function.Function;
 
 /** manager for multiple (pre-registered) memoize instances, each with its own key/value type.
  *
- *  TODO each separate memoizer can be managed centrally in terms of its memory consumption,
- *  and access statistics.
+ *  TODO each separate memoizer can be managed centrally
+ *      * memory consumption
+ *      * access patterns
  *
  *  TODO shutdown hook print stats
+ *
+ *  TODO labels for each memoization function
+ *
+ *  TODO byte key convenience method
  * */
 
-public class Memoizes {
+public class Memo {
 
     /** static instance */
-    public static final Memoizes the = new Memoizes();
+    public static final Memo the = new Memo();
 
     private final CopyOnWriteArrayList<Memoize> memoize = new CopyOnWriteArrayList<>();
 
-    public Memoizes() {
+    public Memo() {
 
     }
 

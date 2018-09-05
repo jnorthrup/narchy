@@ -1,7 +1,7 @@
 package nars.op;
 
 import jcog.Paper;
-import jcog.memoize.Memoizes;
+import jcog.memoize.Memo;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -67,7 +67,7 @@ public class Factorize {
         return factorize.apply(x);
     }
 
-    static final Function<Term,Term> factorize = Memoizes.the.memoize(Factorize::_factorize);
+    static final Function<Term,Term> factorize = Memo.the.memoize(Factorize::_factorize);
 
     private static Term _factorize(Term x) {
         Subterms xx = x.subterms();
