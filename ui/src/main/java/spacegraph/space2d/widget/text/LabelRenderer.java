@@ -95,8 +95,6 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
 
 
                 File fontfile = new File(
-
-
                         "/usr/share/fonts/truetype/hack/Hack-Regular.ttf"
                 );
 
