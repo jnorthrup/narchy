@@ -5,7 +5,7 @@ import jcog.Skill;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
-import jcog.data.atomic.AwesomeAtomicIntegerFieldUpdater;
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Consumer;
@@ -39,10 +38,10 @@ import static jcog.pri.bag.impl.HijackBag.Mode.*;
 @Skill("Concurrent_computing")
 public abstract class HijackBag<K, V> implements Bag<K, V> {
 
-    private static final AwesomeAtomicIntegerFieldUpdater<HijackBag> SIZE =
-            new AwesomeAtomicIntegerFieldUpdater(HijackBag.class, "size");
-    private static final AwesomeAtomicIntegerFieldUpdater<HijackBag> CAPACITY =
-            new AwesomeAtomicIntegerFieldUpdater(HijackBag.class, "capacity");
+    private static final MetalAtomicIntegerFieldUpdater<HijackBag> SIZE =
+            new MetalAtomicIntegerFieldUpdater(HijackBag.class, "size");
+    private static final MetalAtomicIntegerFieldUpdater<HijackBag> CAPACITY =
+            new MetalAtomicIntegerFieldUpdater(HijackBag.class, "capacity");
     private static final AtomicFloatFieldUpdater<HijackBag> PRESSURE =
             new AtomicFloatFieldUpdater(HijackBag.class, "pressure");
 

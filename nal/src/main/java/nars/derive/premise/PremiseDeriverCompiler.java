@@ -2,6 +2,7 @@ package nars.derive.premise;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.memoize.Memoizers;
 import jcog.tree.perfect.TrieNode;
 import nars.Op;
 import nars.derive.Derivation;
@@ -38,11 +39,14 @@ public enum PremiseDeriverCompiler {
             (int choice) -> 1f;
 
 
+
     public static PremiseDeriver the(Set<PremiseRuleProto> r) {
-        return the(r, null);
+        return the.apply(r);
     }
 
-    public static PremiseDeriver the(Set<PremiseRuleProto> r, @Nullable Function<PREDICATE<Derivation>, PREDICATE<Derivation>> each) {
+    private static final Function<Set<PremiseRuleProto>,PremiseDeriver> the = Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
+
+    private static PremiseDeriver _the(Set<PremiseRuleProto> r) {
         assert (!r.isEmpty());
 
         /** indexed by local (deriver-specific) id */
@@ -88,10 +92,9 @@ public enum PremiseDeriverCompiler {
         assert (!path.isEmpty());
 
 
-        PREDICATE<Derivation> compiledPaths = PremiseDeriverCompiler.compile(path, each);
-
-
-        return new PremiseDeriver(rootBranches, compiledPaths);
+        return new PremiseDeriver(
+                PremiseDeriverCompiler.compile(path, null),
+                rootBranches);
     }
 
 

@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 import static nars.time.Tense.DTERNAL;
 
-public final class InternedCompound extends ByteKey  {
+public final class InternedCompound extends ByteKey.ByteKeyExternal  {
 
     public final byte op;
     public final int dt;
@@ -24,6 +24,9 @@ public final class InternedCompound extends ByteKey  {
         this.op = o.id; this. dt = dt; this.rawSubs = rawSubs;
     }
 
+    public Term sub0() {
+        return rawSubs.get()[0];
+    }
 
     /** for look-up */
     public static InternedCompound get(Term x, DynBytes tmp) {
@@ -79,6 +82,7 @@ public final class InternedCompound extends ByteKey  {
 
         return new InternedCompound(key, o, dt, rawSubs);
     }
+
 
 
 }

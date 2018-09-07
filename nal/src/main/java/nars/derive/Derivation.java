@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.data.byt.DynBytes;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.ScalarValue;
@@ -162,6 +163,7 @@ public class Derivation extends PreDerivation {
     public transient int ditherTime;
 
     public Deriver deriver;
+    public final DynBytes tmpPremiseKey = new DynBytes(256);
     private ImmutableMap<Term, Termed> derivationFunctors;
 
     /**

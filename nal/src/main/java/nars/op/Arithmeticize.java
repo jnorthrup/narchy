@@ -2,10 +2,15 @@ package nars.op;
 
 import jcog.Paper;
 import jcog.Util;
+import jcog.data.list.FasterIntArrayList;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.HijackMemoize;
-import nars.*;
+import jcog.memoize.Memoizers;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -14,7 +19,6 @@ import nars.term.anon.Anon;
 import nars.term.atom.Int;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -115,13 +119,6 @@ public class Arithmeticize {
 
         List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mmm = mods(ii);
 
-        
-
-        
-
-        
-
-
         int choice = Roulette.selectRoulette(mmm.size(), c -> mmm.get(c).getTwo().size(), random);
 
         IntObjectPair<List<Pair<Term, Function<Term, Term>>>> m = mmm.get(choice);
@@ -160,7 +157,7 @@ public class Arithmeticize {
         return y;
     }
 
-    final static class IntArrayListCached extends IntArrayList {
+    final static class IntArrayListCached extends FasterIntArrayList {
         private final int hash;
 
         public IntArrayListCached(int[] ii) {
@@ -183,10 +180,11 @@ public class Arithmeticize {
 
     static final HijackMemoize<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>>
         modsCache = new HijackMemoize<>(Arithmeticize::_mods, 512, 3);
+    static {
+        Memoizers.the.add(Arithmeticize.class.getSimpleName() + "_mods", modsCache);
+    }
 
     static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mods(int[] ii) {
-
-
         return modsCache.apply(new IntArrayListCached(ii));
     }
 

@@ -39,7 +39,7 @@ public class NARchy extends NARS {
                 .get();
 
 
-        nar.dtDither.set(20);
+        nar.timeResolution.set(20);
 
         nar.beliefPriDefault.set(0.5f);
         nar.goalPriDefault.set(0.75f);

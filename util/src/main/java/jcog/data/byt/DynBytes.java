@@ -92,7 +92,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     @Override
     public int hashCode() {
-        return Util.hash(bytes);
+        return Util.hash(bytes, 0, len);
     }
 
     public int hash(int from, int to) {

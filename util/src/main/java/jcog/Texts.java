@@ -428,16 +428,20 @@ public enum Texts {
     }
 
     public static String i(byte[] b, int radix) {
+       return i(b, 0, b.length, radix);
+    }
+
+    public static String i(byte[] b, int from ,int to,  int radix) {
         assert (radix == 16); //TODO other options
-        byte[] c = new byte[b.length * 2];
+        byte[] c = new byte[(to-from) * 2];
         int i = 0;
-        for (byte x : b) {
+        for (int j = from; j < to; j++) {
+            byte x = b[j];
             c[i++] = (byte) ((x / radix) + '0');
             c[i++] = (byte) ((x % radix) + '0');
         }
         return new String(c);
     }
-
     public static int i(String s, int offset, int ifMissing) {
         int sl = s.length() - offset;
         if (sl <= 0)

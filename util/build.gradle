@@ -13,7 +13,7 @@ dependencies {
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
     compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10'
     compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.16'
-    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.18') {
+    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.16') {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }
@@ -55,6 +55,11 @@ dependencies {
 
     // https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-core
     compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.25.2'
+
+    // https://mvnrepository.com/artifact/net.openhft/zero-allocation-hashing
+    compile (group: 'net.openhft', name: 'zero-allocation-hashing', version: '0.8') {
+        exclude(module: 'guava')
+    }
 
 //// https://mvnrepository.com/artifact/com.squareup/javapoet
 //    compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'

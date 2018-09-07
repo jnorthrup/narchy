@@ -58,7 +58,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
                 Signal sss = new Signal(pixelTerm.get(x, y), f, n) {
-//                    @Override
+                    @Override
+                    protected CauseChannel<ITask> newChannel(NAR n) {
+                        return null;
+                    }
+                    //                    @Override
 //                    protected TermlinkTemplates buildTemplates(Term term) {
 //                        TermlinkTemplates t = super.buildTemplates(term);
 //                        if (xx > 0)

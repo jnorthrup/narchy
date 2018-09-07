@@ -160,7 +160,7 @@ public abstract class TermBuilder {
 //            throw new WTF();
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
             assert(dt == DTERNAL);
-            if (subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
+            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
                 return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
             } else {
                 return new CachedCompound.SimpleCachedCompound(op, subterms);

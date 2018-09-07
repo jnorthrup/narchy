@@ -1397,8 +1397,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * automatically adds the cause id to each input
      */
     public CauseChannel<ITask> newChannel(Object id) {
-        Cause c = newCause(id);
-        return new TaskChannel(c);
+        return new TaskChannel(newCause(id));
     }
 
     public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {

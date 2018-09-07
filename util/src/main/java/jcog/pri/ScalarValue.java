@@ -229,7 +229,7 @@ public interface ScalarValue {
         }
 
         @Override
-        public void priUpdate(FloatFloatToFloatFunction update, float x) {
+        public final void priUpdate(FloatFloatToFloatFunction update, float x) {
             FLOAT.update(this, x, update, this::_v);
         }
     }

@@ -566,6 +566,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
         assert (PRE[PRE.length - 1] == null);
         //Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
         assert rules <= 1 || (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
+        this.PRE = PRE;
 
         //not working yet:
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
@@ -573,7 +574,6 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 //        }
         this.termify = new Termify(concPattern, truthify, time);
 
-        this.PRE = PRE;
 
     }
 

@@ -5,41 +5,16 @@ import jcog.Util;
 import jcog.data.byt.DynBytes;
 import jcog.memoize.byt.ByteKey;
 import nars.derive.Derivation;
-import nars.term.Term;
 import nars.term.control.PREDICATE;
 
 import static nars.Op.*;
 
-public class PremiseKey extends ByteKey {
+public class PremiseKey extends ByteKey.ByteKeyExternal {
 
     public static PremiseKey get(Derivation d) {
 
-        DynBytes k = new DynBytes(64);
-
-        Term _t = d.taskTerm;
-        Term t =
-                //_t.root();
-                _t;
-        Term _b = d.beliefTerm;
-        Term b =
-                //_b.root();
-                _b;
-
-        float pri = 1f/(1+(t.volume() + b.volume()));
-//            if (t.equals(b) && !_t.equals(_b)) {
-//                //temporally different so store a distinction, otherwise the equal version will override it and neq() predicates will fail derivations
-//                t = _t;
-//                b = _b;
-//                pri/=2; //store in cache with lower pri since temporal variations would clutter
-//            }
-
-        t.appendTo((ByteArrayDataOutput) k);
-
-        k.writeByte(0); //delimeter, for safety
-
-        b.appendTo((ByteArrayDataOutput) k);
-
-        k.writeByte(0); //delimeter, for safety
+        DynBytes k = d.tmpPremiseKey;
+        k.clear();
 
         byte taskPuncAndIfDouble;
         switch (d.taskPunc) {
@@ -59,21 +34,40 @@ public class PremiseKey extends ByteKey {
                 throw new UnsupportedOperationException();
         }
 
-        taskPuncAndIfDouble |= (d.hasBeliefTruth() ? 1 : 0) << 3;
+        if (d.hasBeliefTruth())
+            taskPuncAndIfDouble |= 1 << 3;
+
         k.writeByte(taskPuncAndIfDouble);
 
-        return new PremiseKey(d, k.array(), k.hashCode(), pri);
+
+        d.taskTerm.appendTo((ByteArrayDataOutput) k);
+
+        //k.writeByte(0); //delimeter, for safety
+
+        d.beliefTerm.appendTo((ByteArrayDataOutput) k);
+
+        //k.writeByte(0); //delimeter, for safety
+
+
+
+//        float pri = 1f/(1+(t.volume() + b.volume()));
+////            if (t.equals(b) && !_t.equals(_b)) {
+////                //temporally different so store a distinction, otherwise the equal version will override it and neq() predicates will fail derivations
+////                t = _t;
+////                b = _b;
+////                pri/=2; //store in cache with lower pri since temporal variations would clutter
+////            }
+
+        return new PremiseKey(k, d);
     }
 
 
-    transient public final Derivation derivation;
+    transient public Derivation derivation;
 
-    protected final float pri;
 
-    protected PremiseKey(Derivation d, byte[] key, int hash, float pri) {
-        super(key, hash);
+    protected PremiseKey(DynBytes b, Derivation d) {
+        super(b);
         this.derivation = d;
-        this.pri = pri;
     }
 
 
@@ -82,6 +76,8 @@ public class PremiseKey extends ByteKey {
     public short[] solve(PREDICATE<Derivation> what) {
 
         Derivation derivation  = this.derivation;
+
+        this.derivation = null;
 
         derivation.can.clear();
 

@@ -121,7 +121,7 @@ public class TrackXY extends NAgentX {
 
             NAR n = nb.get();
 
-            n.dtDither.set(dur);
+            n.timeResolution.set(dur);
 
 
 //        n.goalPriDefault.set(0.99f);

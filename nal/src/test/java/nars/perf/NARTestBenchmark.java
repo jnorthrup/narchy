@@ -8,7 +8,6 @@ import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal6.NAL6Test;
 import nars.nal.nal8.NAL8Test;
-import nars.term.util.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.test.TestNARSuite;
@@ -74,9 +73,7 @@ public class NARTestBenchmark {
 
         runTests(() -> NARS.tmp());
 
-        TermBuilder c = Op.terms;
-        if (c instanceof InterningTermBuilder)
-            System.out.println(((InterningTermBuilder)c).summary());
+
     }
 
 

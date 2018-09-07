@@ -21,6 +21,7 @@ package jcog.tree.rtree;
          */
 
 
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +46,7 @@ import java.util.stream.Stream;
  */
 public class RTree<T> implements Space<T> {
 
-    private static final AtomicIntegerFieldUpdater size = AtomicIntegerFieldUpdater.newUpdater(RTree.class, "_size");
+    private static final AtomicIntegerFieldUpdater size = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
     private volatile Node<T, ?> root;
 

@@ -51,7 +51,7 @@ class DeriverTest {
 
         PremiseDeriverRuleSet src = new PremiseDeriverRuleSet(NARS.shell(), rules);
         assertNotEquals(0, src.size());
-        PremiseDeriver d = PremiseDeriverCompiler.the(src, null);
+        PremiseDeriver d = PremiseDeriverCompiler.the(src);
 
         if (debug) {
 
@@ -90,7 +90,7 @@ class DeriverTest {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(idx,
                 "Y, Y, task(\"?\") |- (?1 &| Y), (Punctuation:Question)",
                 "X, X, task(\"?\") |- (?1 &&+- X), (Punctuation:Question)"
-        ), null);
+        ));
 
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -110,7 +110,7 @@ class DeriverTest {
         assertThrows(Exception.class, () -> {
             PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(new PatternIndex(NARS.shell()),
                     "Y, Y |- (?1 &| Y), ()"
-            ), null);
+            ));
         });
     }
 

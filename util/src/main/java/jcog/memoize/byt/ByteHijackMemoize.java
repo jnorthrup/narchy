@@ -13,18 +13,13 @@ public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
     }
 
     @Override
-    public final PriProxy<X, Y> computation(X x, Y y) {
-        return new ByteKey.ByteKeyInternal(x.key, x.hash, y, value(x, y));
-    }
-
-    @Override
-    protected final boolean keyEquals(Object k, PriProxy p) {
-        return p.equals(k);
+    public final PriProxy computation(X x, Y y) {
+        return ((ByteKey.ByteKeyExternal) x).internal(y, value(x, y));
     }
 
 
     public Huffman buildCodec() {
-        return buildCodec(new Huffman(stream().map(b -> key(b).key),
+        return buildCodec(new Huffman(bag.stream().map(b -> bag.key(b).array()),
                 Huffman.fastestCompDecompTime()));
     }
 

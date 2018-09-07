@@ -69,14 +69,19 @@ abstract public class Deriver extends Causable {
      */
     protected final Consumer<Predicate<Activate>> source;
 
-    private Deriver(NAR nar, String... rules) {
-        this(new PremiseDeriverRuleSet(nar, rules));
+//    private Deriver(NAR nar, String... rules) {
+//        this(new PremiseDeriverRuleSet(nar, rules));
+//    }
+
+    protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
+        this(source, PremiseDeriverCompiler.the(rules), nar);
+        if (rules.isEmpty())
+            throw new RuntimeException("rules empty");
     }
 
     private Deriver(PremiseDeriverRuleSet rules) {
         this(rules.nar.attn, rules, rules.nar);
     }
-
 
     protected Deriver(Attention attn, Set<PremiseRuleProto> rules, NAR nar) {
         this(attn::fire, rules, nar);
@@ -86,11 +91,6 @@ abstract public class Deriver extends Causable {
         this(source, rules, rules.nar);
     }
 
-    protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
-        this(source, PremiseDeriverCompiler.the(rules), nar);
-        if (rules.isEmpty())
-            throw new RuntimeException("rules empty");
-    }
 
     private Deriver(Consumer<Predicate<Activate>> source, PremiseDeriver rules, NAR nar) {
         super(

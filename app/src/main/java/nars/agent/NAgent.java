@@ -25,6 +25,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.util.TimeAware;
 import org.jetbrains.annotations.Nullable;
@@ -99,7 +100,7 @@ public class NAgent extends NARService implements NSense, NAct {
         super(id);
         this.nar = nar;
         this.frameTrigger = frameTrigger;
-        this.last = nar.time();
+        this.last = ETERNAL;
 
         nar.on(this);
     }
@@ -264,7 +265,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         //Term id = (this.id == null) ? nar.self() : this.id;
 
-        this.last = nar.time();
+        this.last = Tense.dither(nar.time(), nar);
 
 
         this.in = nar.newChannel(this);
@@ -422,14 +423,15 @@ public class NAgent extends NARService implements NSense, NAct {
             return;
 
         try {
-            long now = nar.time();
+            int d = nar.timeResolution.intValue();
+            long now = Tense.dither(nar.time(), d);
             long prev = this.last;
             if (prev == ETERNAL)
                 prev = now;
             else if (now <= prev)
                 return;
 
-            long next = Math.max(now, frameTrigger.next(now));
+            long next = Tense.dither(Math.max(now, frameTrigger.next(now)), d);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now, next);
 

@@ -9,7 +9,7 @@ import jcog.pri.bag.impl.hijack.PriorityHijackBag;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -17,17 +17,13 @@ import java.util.function.Function;
  * TODO add an instrumentation wrapper to collect statistics
  * about cache efficiency and also processing time of the calculations
  */
-public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> implements Memoize<X, Y> {
+public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
-    final Function<X, Y> func;
-    final AtomicLong
-            hit = new AtomicLong(),
-            miss = new AtomicLong(),
-            reject = new AtomicLong(),
-            evict = new AtomicLong();
+    protected final MyHijackBag bag;
+    private final Function<X, Y> func;
     private final boolean soft;
-    protected float DEFAULT_VALUE;
-    float CACHE_HIT_BOOST;
+
+    protected float DEFAULT_VALUE, CACHE_HIT_BOOST;
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
         this(f, initialCapacity, reprobes, false);
@@ -35,26 +31,22 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
 
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes, boolean soft) {
-        super(initialCapacity, reprobes);
-        resize(initialCapacity);
         this.soft = soft;
         this.func = f;
         this.DEFAULT_VALUE = 0.5f / reprobes;
+
+        bag = newBag(initialCapacity, reprobes);
+        bag.resize(initialCapacity);
+    }
+
+
+    protected HijackMemoize<X, Y>.MyHijackBag newBag(int initialCapacity, int reprobes) {
+        return new MyHijackBag(initialCapacity, reprobes);
     }
 
     @Override
-    protected PriProxy<X, Y> merge(PriProxy<X, Y> existing, PriProxy<X, Y> incoming, NumberX overflowing) {
-        if (existing.isDeleted())
-            return incoming;
-        return super.merge(existing, incoming, overflowing);
-    }
-
-    @Override
-    protected void resize(int newSpace) {
-        if (space() > newSpace)
-            return;
-
-        super.resize(newSpace);
+    public final void clear() {
+        bag.clear();
     }
 
     public float statReset(ObjectLongProcedure<String> eachStat) {
@@ -77,52 +69,14 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
 
     }
 
-    @Override
-    public void setCapacity(int i) {
-        super.setCapacity(i);
-
-        float boost = i > 0 ?
-                (float) (1f / Math.sqrt(capacity()))
-                : 0;
-
-
-        float cut = boost / (reprobes / 2f);
-
-        assert (cut > ScalarValue.EPSILON);
-
-        this.CACHE_HIT_BOOST = boost;
-
-
-    }
-
-    @Override
-    protected boolean attemptRegrowForSize(int s) {
-        return false;
-    }
-
-    @Override
-    public void pressurize(float f) {
-
-    }
-
-    @Override
-    public float depressurize() {
-        return 0f;
-    }
-
-    @Override
-    public HijackBag<X, PriProxy<X, Y>> commit(@Nullable Consumer<PriProxy<X, Y>> update) {
-        return this;
-    }
-
     @Nullable
     public Y getIfPresent(Object k) {
-        PriProxy<X, Y> exists = get(k);
+        PriProxy<X, Y> exists = bag.get(k);
         if (exists != null) {
             Y e = exists.get();
             if (e != null) {
                 exists.priAdd(CACHE_HIT_BOOST);
-                hit.incrementAndGet();
+                hit.getAndIncrement();
                 return e;
             }
         }
@@ -131,7 +85,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
 
     @Nullable
     public Y removeIfPresent(X x) {
-        @Nullable PriProxy<X, Y> exists = remove(x);
+        @Nullable PriProxy<X, Y> exists = bag.remove(x);
         if (exists != null) {
             return exists.get();
         }
@@ -145,18 +99,18 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
         if (y == null) {
             y = func.apply(x);
             PriProxy<X, Y> input = computation(x, y);
-            PriProxy<X, Y> output = put(input);
+            PriProxy<X, Y> output = bag.put(input);
             boolean interned = (output == input);
             if (interned) {
-                miss.incrementAndGet();
+                miss.getAndIncrement();
                 onIntern(x);
             } else {
                 if (output!=null) {
                     //result obtained before inserting ours, use that it is more likely to be shared
                     y = output.get();
-                    hit.incrementAndGet();
+                    hit.getAndIncrement();
                 } else {
-                    reject.incrementAndGet();
+                    reject.getAndIncrement();
                 }
             }
         }
@@ -181,42 +135,106 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, PriProxy<X, Y>> im
                 new PriProxy.StrongProxy<>(x, y, pri);
     }
 
-    @Override
-    public X key(PriProxy<X, Y> value) {
-        return value.x();
-    }
-
-    @Override
-    protected boolean keyEquals(Object k, PriProxy<X, Y> p) {
-        return p.x().equals(k);
-    }
-
-    @Override
-    public Consumer<PriProxy<X, Y>> forget(float rate) {
-        return null;
-    }
-
-    @Override
-    public void onRemove(PriProxy<X, Y> value) {
-        value.delete();
-        evict.incrementAndGet();
-    }
-
     /**
      * clears the statistics
      */
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder(64);
-        sb.append(" N=").append(size()).append(' ');
+        sb.append(" N=").append(bag.size()).append(' ');
         float rate = statReset((k, v) -> {
             sb.append(k).append('=').append(v).append(' ');
         });
         sb.setLength(sb.length() - 1);
-        sb.append(" D=").append(Texts.n2percent(density()));
+        sb.append(" D=").append(Texts.n2percent(bag.density()));
         sb.insert(0, Texts.n2percent(rate));
         return sb.toString();
     }
 
+    public Iterator<PriProxy<X, Y>> iterator() {
+        return bag.iterator();
+    }
 
+
+    protected class MyHijackBag extends PriorityHijackBag<X, PriProxy<X,Y>> {
+        public MyHijackBag(int cap, int reprobes) {
+            super(cap, reprobes);
+        }
+
+
+
+        @Override
+        protected PriProxy<X, Y> merge(PriProxy<X, Y> existing, PriProxy<X, Y> incoming, NumberX overflowing) {
+            if (existing.isDeleted())
+                return incoming;
+            return super.merge(existing, incoming, overflowing);
+        }
+
+        @Override
+        protected void resize(int newSpace) {
+            if (space() > newSpace)
+                return;
+
+            super.resize(newSpace);
+        }
+
+        @Override
+        public void setCapacity(int i) {
+            super.setCapacity(i);
+
+            float boost = i > 0 ?
+                    (float) (1f / Math.sqrt(capacity()))
+                    : 0;
+
+
+            float cut = boost / (reprobes / 2f);
+
+            assert (cut > ScalarValue.EPSILON);
+
+            HijackMemoize.this.CACHE_HIT_BOOST = boost;
+
+
+        }
+
+        @Override
+        protected boolean attemptRegrowForSize(int s) {
+            return false;
+        }
+
+        @Override
+        public void pressurize(float f) {
+
+        }
+
+        @Override
+        public float depressurize() {
+            return 0f;
+        }
+
+        @Override
+        public HijackBag<X, PriProxy<X, Y>> commit(@Nullable Consumer<PriProxy<X, Y>> update) {
+            return this;
+        }
+
+        @Override
+        public X key(PriProxy<X, Y> value) {
+            return value.x();
+        }
+
+        @Override
+        protected boolean keyEquals(Object k, PriProxy<X, Y> p) {
+            return p.x().equals(k);
+        }
+
+        @Override
+        public Consumer<PriProxy<X, Y>> forget(float rate) {
+            return null;
+        }
+
+        @Override
+        public void onRemove(PriProxy<X, Y> value) {
+            value.delete();
+            evict.getAndIncrement();
+        }
+    }
 }

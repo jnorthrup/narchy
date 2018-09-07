@@ -156,7 +156,12 @@ public class AutoclassifiedBitmap extends AbstractSensor {
                     Term term = $.prop(coord, $.the(k));
                     int ii = i;  int jj = j; int kk = k;
                     signals.add(
-                        new Signal(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, nar)
+                        new Signal(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, nar) {
+                            @Override
+                            protected CauseChannel<ITask> newChannel(NAR n) {
+                                return null;
+                            }
+                        }
                     );
                 }
             }

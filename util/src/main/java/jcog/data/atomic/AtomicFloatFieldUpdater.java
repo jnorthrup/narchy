@@ -19,16 +19,16 @@ public final class AtomicFloatFieldUpdater<X>  {
     public final AtomicIntegerFieldUpdater<X> updater;
 
 
-    /** for whatever reason, the field updater needs constructed from within the target class
-     * so it must be passed as a parameter here.
-     * ex: AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "f")
-     */
-    @Deprecated public AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater<X> u) {
-        this.updater = u;
-    }
+//    /** for whatever reason, the field updater needs constructed from within the target class
+//     * so it must be passed as a parameter here.
+//     * ex: AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "f")
+//     */
+//    @Deprecated public AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater<X> u) {
+//        this.updater = u;
+//    }
 
     public AtomicFloatFieldUpdater(Class<X> cl, String f) {
-        this(new AwesomeAtomicIntegerFieldUpdater<>(cl, f));
+        this.updater = new MetalAtomicIntegerFieldUpdater<>(cl, f);
     }
 
     public void setNaN(X x) {
@@ -55,6 +55,7 @@ public final class AtomicFloatFieldUpdater<X>  {
         updater.updateAndGet(x, y);
     }
 
+
     public float updateIntAndGet(X x, FloatToIntFunction f) {
         return updateGet(x, v -> f.valueOf(intBitsToFloat(v)));
     }
@@ -66,6 +67,7 @@ public final class AtomicFloatFieldUpdater<X>  {
     public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
         return updateGet(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
+
     public void update(X x, FloatFloatToFloatFunction f, float y) {
         update(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
@@ -124,5 +126,7 @@ public final class AtomicFloatFieldUpdater<X>  {
     public void update(X x, float arg, FloatFloatToFloatFunction update, FloatToFloatFunction post) {
         update(x, (xx,yy)-> post.valueOf(update.apply(xx,yy)), arg);
     }
+
+
 
 }

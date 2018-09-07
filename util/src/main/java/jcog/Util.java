@@ -19,6 +19,7 @@ import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
 import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
+import net.openhft.hashing.LongHashFunction;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
@@ -77,6 +78,7 @@ public enum Util {
     ;
 
     public static final Unsafe unsafe;
+
     static {
         try {
             Field singleoneInstanceField = Unsafe.class.getDeclaredField("theUnsafe");
@@ -96,8 +98,7 @@ public enum Util {
     public static final ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
     public final static ObjectMapper msgPacker =
             new ObjectMapper(new MessagePackFactory())
-                    .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
-            ;
+                    .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
     public final static ObjectMapper jsonMapper =
             new ObjectMapper()
                     .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
@@ -113,7 +114,6 @@ public enum Util {
                     .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
     public static final double log2 = Math.log(2);
-
 
 
     private static final int BIG_ENOUGH_INT = 16 * 1024;
@@ -149,9 +149,34 @@ public enum Util {
         return hash(bytes, 0, bytes.length);
     }
 
+    static final LongHashFunction _hashFn = LongHashFunction.xx();
+
     public static int hash(byte[] bytes, int from, int to) {
-        return hashFNV(bytes, from, to);
+        //return hashBytes(bytes, from, to);
+        //return hashFNV(bytes, from, to);
+        long hash = _hashFn.hashBytes(bytes, from, to);
+        return Long.hashCode(hash);
     }
+
+//    /**
+//     * untested custom byte[] hash function
+//     */
+//    private static int hashBytes(byte[] bytes, int from, int to) {
+//        int x = 1; //0x811c9dc5;
+//        int y = 0;
+//        int count = 3;
+//        for (int i = from; i < to; i++) {
+//            if (count-- == 0) {
+//                x = Util.hashCombine(x, y);
+//                y = 0;
+//                count = 3;
+//            }
+//
+//            y = (y << 8) | bytes[i];
+//
+//        }
+//        return x | y;
+//    }
 
     private static int hashFNV(byte[] bytes, int from, int to) {
         int h = 0x811c9dc5;
@@ -652,13 +677,15 @@ public enum Util {
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
      */
     public static float round(float value, float epsilon) {
-        assertFinite(epsilon); assertFinite(value);
+        assertFinite(epsilon);
+        assertFinite(value);
         if (epsilon <= Float.MIN_NORMAL) return value;
         else return Math.round(value / epsilon) * epsilon;
     }
 
     public static double round(double value, double epsilon) {
-        assertFinite(epsilon); assertFinite(value);
+        assertFinite(epsilon);
+        assertFinite(value);
         if (epsilon <= Double.MIN_NORMAL) return value;
         return Math.round(value / epsilon) * epsilon;
     }
@@ -697,7 +724,7 @@ public enum Util {
         if (Float.isFinite(a) && Float.isFinite(b))
             return Math.abs(a - b) < epsilon;
         else
-            return (a!=a) && (b!=b); //both NaN
+            return (a != a) && (b != b); //both NaN
     }
 
     /**
@@ -709,7 +736,7 @@ public enum Util {
         if (Double.isFinite(a) && Double.isFinite(b))
             return Math.abs(a - b) < epsilon;
         else
-            return (a!=a) && (b!=b); //both NaN
+            return (a != a) && (b != b); //both NaN
     }
 
 
@@ -1386,14 +1413,20 @@ public enum Util {
     }
 
     public static float clamp(float f, float min, float max) {
-        assertFinite(f); assertFinite(min); assertFinite(max); assert(min <= max);
+        assertFinite(f);
+        assertFinite(min);
+        assertFinite(max);
+        assert (min <= max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;
     }
 
     public static double clamp(double f, double min, double max) {
-        assertFinite(f); assertFinite(min); assertFinite(max); assert(min <= max);
+        assertFinite(f);
+        assertFinite(min);
+        assertFinite(max);
+        assert (min <= max);
         if (f < min) f = min;
         if (f > max) f = max;
         return f;
@@ -1408,14 +1441,14 @@ public enum Util {
     }
 
     public static int clamp(int i, int min, int max) {
-        assert(min <= max);
+        assert (min <= max);
         if (i < min) i = min;
         if (i > max) i = max;
         return i;
     }
 
     public static long clamp(long i, long min, long max) {
-        assert(min <= max);
+        assert (min <= max);
         if (i < min) i = min;
         if (i > max) i = max;
         return i;
@@ -1547,7 +1580,7 @@ public enum Util {
 
 
     public static void sleepNS(long periodNS) {
-        if (periodNS > 1_000_000_000/1000/2  /*0.5ms */) {
+        if (periodNS > 1_000_000_000 / 1000 / 2  /*0.5ms */) {
             LockSupport.parkNanos(periodNS);
             return;
         }
@@ -1562,7 +1595,7 @@ public enum Util {
         long now;
         while ((now = System.nanoTime()) < end) {
             Util.pauseNextCountDown(end - now);
-        //while (remainNS > thresholdNS) {
+            //while (remainNS > thresholdNS) {
 
 //            if (remainNS <= 500000 /** 100uS = 0.5ms */) {
 //                Thread.yield();
@@ -2421,15 +2454,18 @@ public enum Util {
         return current;
     }
 
-    /** if the collection is known to be of size==1, get that item in a possibly better-than-default way
-     *  according to the Collection's implementation */
-    @Nullable public static <X> X only(@NotNull Collection<X> next) {
+    /**
+     * if the collection is known to be of size==1, get that item in a possibly better-than-default way
+     * according to the Collection's implementation
+     */
+    @Nullable
+    public static <X> X only(@NotNull Collection<X> next) {
         if (next instanceof List)
-            return ((List<X>)next).get(0);
+            return ((List<X>) next).get(0);
         else if (next instanceof MutableSet)
-            return ((MutableSet<X>)next).getOnly();
+            return ((MutableSet<X>) next).getOnly();
         else if (next instanceof SortedSet)
-            return ((SortedSet<X>)next).first();
+            return ((SortedSet<X>) next).first();
         else
             return next.iterator().next();
         //TODO SortedSet.getFirst() etc

@@ -45,7 +45,7 @@ public class Arkancide extends NAgentX {
 
         runRT((NAR n) -> {
 
-            n.dtDither.set(25); //50fps resolution
+            n.timeResolution.set(25); //50fps resolution
 
 
             return new Arkancide(n, cam, numeric);

@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.Param;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,14 +60,16 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
                 long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
                 assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
                 last.setEnd(midGap);
-                nextStart = midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
+                nextStart =
+                        Tense.dither(midGap, nar);
+                        //midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
                 nextEnd = Math.max(nextStart, nextEnd);
                 stretchPrev = false;
 
             } else {
 
                 stretchPrev = false;
-                nextStart = Math.max(nextStart, lastEnd+1);
+                nextStart = Math.max(nextStart, lastEnd/* +1 */);
                 nextEnd = Math.max(nextEnd, nextStart);
 
                 //form new task at the specified interval, regardless of the previous task since it was excessively long ago

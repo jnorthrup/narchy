@@ -1,6 +1,7 @@
 package jcog.sort;
 
 import jcog.Util;
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.data.iterator.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -60,7 +61,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     public volatile X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
 
     private static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
-            AtomicIntegerFieldUpdater.newUpdater(SortedArray.class, "size");
+            new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");
 
     protected volatile int size;
 

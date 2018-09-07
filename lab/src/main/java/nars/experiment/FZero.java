@@ -64,14 +64,17 @@ public class FZero extends NAgentX {
         this.fz = new FZeroGame();
 
 
-//        Param.DEBUG= true;
+        //Param.DEBUG= true;
+//        Param.DEBUG_ENSURE_DITHERED_OCCURRENCE = true;
+//        Param.DEBUG_ENSURE_DITHERED_DT = true;
+//        Param.DEBUG_ENSURE_DITHERED_TRUTH = true;
 //        Param.DEBUG_EXTRA = true;
 
         Scale vision = new Scale(() -> fz.image,
                 24, 18
                 //8, 8
         );
-        onFrame(()->vision.update());
+        onFrame(vision::update);
         vision.update();
         //c = senseCamera($.func("cam", id), vision/*.blur()*/);//.diff()
                 //.resolution(0.05f);

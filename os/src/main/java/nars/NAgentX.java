@@ -284,7 +284,7 @@ abstract public class NAgentX extends NAgent {
 
 
     public static void config(NAR n) {
-        n.dtDither.set(10);
+        n.timeResolution.set(10);
 
 
         n.confMin.set(0.01f);

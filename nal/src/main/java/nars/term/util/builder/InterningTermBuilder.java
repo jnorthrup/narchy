@@ -1,7 +1,8 @@
 package nars.term.util.builder;
 
-import jcog.Util;
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
+import jcog.memoize.Memoizers;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -12,7 +13,6 @@ import nars.term.util.HijackTermCache;
 import nars.term.util.InternedCompound;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.function.Function;
 
 import static nars.Op.*;
@@ -29,8 +29,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     final HijackTermCache[] terms;
 
-//    private final HijackTermCache statements;
-//    private final HijackTermCache conj;
     private final HijackTermCache normalize;
     private final HijackTermCache concept;
     private final HijackTermCache root;
@@ -41,6 +39,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     public InterningTermBuilder(int cacheSizePerOp) {
         terms = new HijackTermCache[Op.ops.length];
+
+        HijackTermCache statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
+
         for (int i = 0; i < Op.ops.length; i++) {
             Op o = Op.ops[i];
             if (o.atomic || o ==NEG) continue;
@@ -53,27 +54,28 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             HijackTermCache c;
             if (o == CONJ) {
-                 c = newOpCache(this::_conj, cacheSizePerOp);
+                 c = newOpCache("conj", j -> super.conj(j.dt, j.rawSubs.get()), cacheSizePerOp);
             } else if (o.statement) {
-                 c = newOpCache(this::_statement, cacheSizePerOp*3);
+                 c = statements;
             } else {
-                 c = newOpCache(this::compoundInterned, s);
+                 c = newOpCache(o.str, this::compoundInterned, s);
             }
             terms[i] = c;
         }
 
-        concept = newOpCache(this::_concept, cacheSizePerOp);
+        concept = newOpCache("concept", j -> super.concept((Compound) j.sub0()), cacheSizePerOp);
 
-        root = newOpCache(this::_root, cacheSizePerOp);
+        root = newOpCache("root", j -> super.root((Compound) j.sub0()), cacheSizePerOp);
 
-        normalize = newOpCache(this::_normalize, cacheSizePerOp);
+        normalize = newOpCache("normalize", j -> super.normalize((Compound) j.sub0(), (byte)0), cacheSizePerOp);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(()-> System.out.println(InterningTermBuilder.this + "\n" + summary())));
     }
 
 
-    private static HijackTermCache newOpCache(Function<InternedCompound, Term> f, int capacity) {
-        return new HijackTermCache(f, capacity, 4);
+    private static HijackTermCache newOpCache(String name, Function<InternedCompound, Term> f, int capacity) {
+        HijackTermCache h = new HijackTermCache(f, capacity, 4);
+        Memoizers.the.add(InterningTermBuilder.class.getSimpleName() + "_" + name, h);
+        return h;
     }
 
     private Term apply(InternedCompound x) {
@@ -82,16 +84,24 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Nullable private Term get(Term x, DynBytes tmp) {
         Op xo = x.op();
-        HijackTermCache c = terms[xo.id];
-        if (/*c!=null && */internableRoot(xo, x.dt())) {
-            return c.getIfPresent(InternedCompound.get(x, tmp));
+        boolean negate = xo == NEG;
+        if (negate) {
+            x = x.unneg();
+            xo = x.op();
+        }
+        if (internableRoot(xo, x.dt())) {
+            HijackTermCache c = terms[xo.id];
+            Term y = c.apply(InternedCompound.get(x, tmp));
+            //Term y = c.getIfPresent(InternedCompound.get(x, tmp));
+            if (y!=null)
+                return y.negIf(negate);
         }
         return null;
     }
 
 
     private Term compoundInterned(InternedCompound x) {
-        return theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key);
+        return theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), null); //x.arrayFinal());
     }
 
     @Override
@@ -168,22 +178,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (x instanceof Atomic || !internableSub(x))
                 continue;
 
-
             if (tmp == null)
                 tmp = tmpKey();
 
             Term y = get(x, tmp);
 
-            if (y == null) {
-                tmp.clear(); //recycle
-            } else {
-                tmp = null; //force reset to avoid sharing array
-            }
-
-            if (y!=null && x!=y) {
+            if (y!=null)
                 t[i] = y;
-            }
-
         }
     }
 
@@ -215,18 +216,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return x.the() != null;
     }
 
-
-    public String summary() {
-        return summary(terms, normalize);
-        //return summary(terms, conj, statements, normalize, concept, root);
-    }
-
-    private static String summary(HijackTermCache[] termCache, HijackTermCache transforms) {
-        return Arrays.toString(Util.map(0, termCache.length, x -> termCache[x]!=null ?
-                (Op.ops[x] + ": " + termCache[x].summary() + '\n')
-                : "", String[]::new)) + "\ntransforms=" + transforms.summary();
-    }
-
     @Override
     public Term normalize(Compound x, byte varOffset) {
 
@@ -244,10 +233,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-
-    private Term _normalize(InternedCompound i) {
-        return super.normalize((Compound) i.rawSubs.get()[0], (byte)0);
-    }
     @Override
     public Term concept(Compound x) {
         Term xx = x.the();
@@ -255,19 +240,19 @@ public class InterningTermBuilder extends HeapTermBuilder {
             return super.concept(x);
         return concept.apply(InternedCompound.get(PROD, xx));
     }
-    private Term _concept(InternedCompound i) {
-        return super.concept((Compound) i.rawSubs.get()[0]);
-    }
+
     @Override
     public Term root(Compound x) {
         Term xx = x.the();
         if (xx == null)
             return super.root(x);
+        if (xx.volume() < 2)
+            throw new WTF();
         return root.apply(InternedCompound.get(PROD, xx));
     }
-    private Term _root(InternedCompound i) {
-        return super.root((Compound) i.rawSubs.get()[0]);
-    }
+//    private Term _root(InternedCompound i) {
+//        return ;
+//    }
     @Override
     public Term statement(Op op, int dt, Term subject, Term predicate) {
 
@@ -312,10 +297,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
-        if (u.length <= 1)
-            return super.conj(dt, u);
-
-        if (internableRoot(CONJ, dt, u)) {
+        if (u.length > 1 && internableRoot(CONJ, dt, u)) {
             switch(dt) {
                 case 0:
                 case DTERNAL:
@@ -331,11 +313,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
             return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
         } else
             return super.conj(dt, u);
-    }
-
-    private Term _conj(InternedCompound c) {
-        Term[] s = c.rawSubs.get();
-        return super.conj(c.dt, s);
     }
 
 

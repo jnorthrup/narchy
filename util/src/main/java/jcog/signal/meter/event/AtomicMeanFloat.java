@@ -1,6 +1,7 @@
 package jcog.signal.meter.event;
 
 import jcog.data.atomic.AtomicFloat;
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -17,7 +18,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
 
     final static AtomicIntegerFieldUpdater<AtomicMeanFloat> countUpdater =
-            AtomicIntegerFieldUpdater.newUpdater(AtomicMeanFloat.class, "count");
+            new MetalAtomicIntegerFieldUpdater<>(AtomicMeanFloat.class, "count");
 
     public final String id;
 

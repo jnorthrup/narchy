@@ -9,13 +9,13 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
-public final class AwesomeAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldUpdater<T> {
+public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldUpdater<T> {
     private static final sun.misc.Unsafe U = Util.unsafe;
     private final long offset;
     //private final Class<?> cclass;
 //        private final Class<T> tclass;
 
-    public AwesomeAtomicIntegerFieldUpdater(final Class<T> tclass, final String fieldName) {
+    public MetalAtomicIntegerFieldUpdater(final Class<T> tclass, final String fieldName) {
         Field field;
 //            int modifiers;
         try {
@@ -55,13 +55,12 @@ public final class AwesomeAtomicIntegerFieldUpdater<T> extends AtomicIntegerFiel
 //        }
 
     public final boolean compareAndSet(T obj, int expect, int update) {
-
         return U.compareAndSwapInt(obj, this.offset, expect, update);
     }
 
     public final boolean weakCompareAndSet(T obj, int expect, int update) {
-
-        return U.compareAndSwapInt(obj, this.offset, expect, update);
+        //return U.compareAndSwapInt(obj, this.offset, expect, update);
+        return compareAndSet(obj, expect, update);
     }
 
     public final void set(T obj, int newValue) {
@@ -99,11 +98,11 @@ public final class AwesomeAtomicIntegerFieldUpdater<T> extends AtomicIntegerFiel
     }
 
     public final int incrementAndGet(T obj) {
-        return this.getAndAdd(obj, 1) + 1;
+        return addAndGet(obj, +1);
     }
 
     public final int decrementAndGet(T obj) {
-        return this.getAndAdd(obj, -1) - 1;
+        return addAndGet(obj, -1);
     }
 
     public final int addAndGet(T obj, int delta) {

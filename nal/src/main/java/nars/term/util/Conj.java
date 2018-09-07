@@ -14,6 +14,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
+import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.set.MutableSet;
@@ -1317,6 +1318,15 @@ public class Conj extends ByteAnonMap {
                 negatives[0] = true;
         }
         return c;
+    }
+
+    public boolean addDithered(Term term, long start, long end, int maxSamples, int minSegmentLength, NAR nar) {
+        int d = nar.timeResolution.intValue();
+        if (d!=1) {
+            start = Tense.dither(start, d);
+            end = Tense.dither(end, d);
+        }
+        return add(term, start, end, maxSamples, minSegmentLength);
     }
 
     /**

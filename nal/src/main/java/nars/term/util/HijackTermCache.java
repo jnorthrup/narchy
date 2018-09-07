@@ -17,7 +17,7 @@ public class HijackTermCache/*<I extends InternedCompound>*/ extends ByteHijackM
 
     @Override
     public float value(InternedCompound x, Term y) {
-        float base = 1f/reprobes, mult;
+        float base = 1f/ bag.reprobes, mult;
         switch (x.dt) {
             case 0:
             case DTERNAL:

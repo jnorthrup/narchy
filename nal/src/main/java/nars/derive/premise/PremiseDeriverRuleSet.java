@@ -5,6 +5,7 @@ import com.google.common.collect.Streams;
 import jcog.data.set.ArrayUnenforcedSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
+import jcog.memoize.Memoizers;
 import nars.NAR;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -54,6 +55,9 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
         return (PremiseRuleSource.parse(load(bb)).collect(Collectors.toSet()));
 
     }, 32, false);
+    static {
+        Memoizers.the.add(PremiseDeriverRuleSet.class.getSimpleName() + "_rule", ruleCache);
+    }
 
     public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
         return new PremiseDeriverRuleSet(

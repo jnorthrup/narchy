@@ -99,6 +99,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
 
+
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
 
 //    /**
@@ -123,6 +124,9 @@ public abstract class Param {
      */
     public static boolean DEBUG;
     public static boolean DEBUG_EXTRA = false;
+    public static boolean DEBUG_ENSURE_DITHERED_TRUTH = false;
+    public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE = false;
+    public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge conceptMerge =
             PriMerge.plus;
@@ -308,7 +312,7 @@ public abstract class Param {
      * set to zero to disable dithering.  typically the value will be 0..1.0.
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
-    public final IntRange dtDither = new IntRange(1, 1, 1024);
+    public final IntRange timeResolution = new IntRange(1, 1, 1024);
 
     /** how occurrence time is computed for dynamic truth tasks */
     public static long[] DynamicTruthTimeMerge(TaskRegion[] components) {
@@ -321,7 +325,7 @@ public abstract class Param {
      * number of time units (cycles) to dither into
      */
     public int dtDither() {
-        return dtDither.intValue();
+        return timeResolution.intValue();
     }
 
     abstract int dur();

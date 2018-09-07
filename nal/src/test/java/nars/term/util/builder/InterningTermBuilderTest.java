@@ -31,7 +31,7 @@ class InterningTermBuilderTest {
         assertSame(pab, pabSame);
 
         Term paab = t.compound(PROD, a, t.compound(PROD, a, b));
-        prodCache.print();
+//        prodCache.print();
 
         assertSame(pab, paab.sub(1));
 

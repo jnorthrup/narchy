@@ -66,8 +66,12 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         setPri(FloatRange.unit(punc == BELIEF ? n.beliefPriDefault : n.goalPriDefault));
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
 
-        in = n.newChannel(this);
+        in = newChannel(n);
         n.on(this);
+    }
+
+    protected CauseChannel<ITask> newChannel(NAR n) {
+        return n.newChannel(this);
     }
 
     @Override

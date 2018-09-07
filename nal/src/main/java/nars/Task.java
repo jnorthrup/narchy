@@ -420,18 +420,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      */
     static Task project(boolean force, @Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
         if (force && !t.isEternal()) {
-            return project(t, subStart, subEnd, n, negated);
+            return project(t, subStart, subEnd, n, false, negated);
         } else {
             return negated ? Task.negated(t) : t; //just negate
         }
     }
 
+
     @Nullable
-    static Task project(Task t, long start, long end, NAR n) {
-        return project(t, start, end, n, false);
-    }
-    @Nullable
-    static Task project(Task t, long start, long end, NAR n, boolean negated) {
+    static Task project(Task t, long start, long end, NAR n, boolean ditherTruth, boolean negated) {
         if (!negated && t.start()==start && t.end()==end)
             return t;
 
@@ -447,10 +444,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             end = Tense.dither(end, n);
         }
         Truth tt = t.truth(start, end, n.dur());
+        if (tt == null)
+            return null;
 
-        return (tt != null) ?
-                new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt.negIf(negated)) : null;
+        if (ditherTruth) {
+            tt = tt.dithered(n);
+            if (tt == null)
+                return null;
+        }
+
+        return new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt.negIf(negated));
     }
+
 
     /**
      * creates negated proxy of a task

@@ -74,7 +74,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     /**
      * used to reconstruct a dynamic term from some or all components
      */
-    abstract public Term reconstruct(Term superterm, List<Task> c);
+    abstract public Term reconstruct(Term superterm, List<Task> c, NAR nar);
 
     @FunctionalInterface
     interface ObjectLongLongPredicate<T> {
@@ -99,7 +99,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             }
 
             @Override
-            public Term reconstruct(Term superterm, List<Task> components) {
+            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
                 if (!superterm.hasAny(Op.Temporal))
                     return superterm; //shortcut
 
@@ -233,7 +233,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             }
 
             @Override
-            public Term reconstruct(Term superterm, List<Task> c) {
+            public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
                 return stmtReconstruct(superterm, c, subjOrPred, false);
             }
         }
@@ -241,7 +241,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public static final Difference DiffRoot = new Difference() {
 
             @Override
-            public Term reconstruct(Term superterm, List<Task> components) {
+            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
                 return Op.DIFFe.the(
                         components.get(0).task().term(),
                         components.get(1).task().term());
@@ -260,7 +260,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
 
         @Override
-        public Term reconstruct(Term superterm, List<Task> c) {
+        public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
             return superterm; //exact
         }
 
@@ -275,12 +275,12 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public static final DynamicTruthModel ConjIntersection = new Intersection() {
 
             @Override
-            public Term reconstruct(Term superterm, List<Task> components) {
+            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
 
                 Conj c = new Conj(components.size());
 
                 for (TaskRegion t : components)
-                    if (!c.add(((Task) t).term(), t.start(), t.end(), 1, 1))
+                    if (!c.addDithered(((Task) t).term(), t.start(), t.end(), 1, 1, nar))
                         break;
 
                 return c.term();

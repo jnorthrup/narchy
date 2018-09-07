@@ -237,7 +237,7 @@ public class Answer implements Consumer<Task> {
                 if (ss != ETERNAL) { //dont eternalize here
                     long ee = time.end;
                     if (t.isEternal() || !t.containedBy(ss, ee)) {
-                        t = Task.project(t, ss, ee, nar);
+                        t = Task.project(t, ss, ee, nar, true, false);
                     }
                 }
             }

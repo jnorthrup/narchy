@@ -139,7 +139,7 @@ class PremiseRuleTest {
     void testMinSubsRulePredicate() {
         
 
-        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)"), null);
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)"));
         d.printRecursive();
         assertNotNull(d);
     }
@@ -250,7 +250,7 @@ class PremiseRuleTest {
     @Test
     void testTryFork() {
 
-        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)", "X,Y |- (||,X,Y), (Belief:Union)"), null);
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)", "X,Y |- (||,X,Y), (Belief:Union)"));
 /*
 TODO - share unification state for different truth/conclusions
     TruthFork {
@@ -280,7 +280,7 @@ TODO - share unification state for different truth/conclusions
     @Test
     void testConjWithEllipsisIsXternal() {
 
-        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "X,Y |- (&&,X,%A..+), (Belief:Analogy)", "X,Y |- (&&,%A..+), (Belief:Analogy)"), null);
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "X,Y |- (&&,X,%A..+), (Belief:Analogy)", "X,Y |- (&&,%A..+), (Belief:Analogy)"));
             d.printRecursive();
     }
     @Test

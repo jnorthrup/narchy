@@ -7,30 +7,33 @@ import jcog.pri.UnitPri;
 
 import java.util.Arrays;
 
-public class ByteKey extends UnitPri {
+abstract public class ByteKey extends UnitPri {
 
-    /*@Stable*/
-    public final byte[] key;
     protected final int hash;
 
-    public ByteKey(byte[] key, int hash) {
-        this.key = key;
+    protected ByteKey(int hash) {
+        super();
         this.hash = hash;
     }
 
-    public ByteKey(DynBytes key) {
-        this(
-                //key.arrayDeflate(),
-                key.array(),
-                key.hashCode());
-    }
+    /** of size equal or greater than length() */
+    abstract public byte[] array();
+
+    abstract public int length();
 
     @Override
     public final boolean equals(Object o) {
         ByteKey that = (ByteKey) o;
-
-        return hash == that.hash && Arrays.equals(key, that.key);
+        if (hash == that.hash) {
+            int l = length();
+            if (that.length() == l) {
+                return Arrays.equals(array(), 0, l, that.array(), 0, l);
+            }
+        }
+        return false;
     }
+
+
 
     @Override
     public final int hashCode() {
@@ -40,15 +43,23 @@ public class ByteKey extends UnitPri {
     @Override
     public String toString() {
 
-        return Texts.i(key,16) + " [" + Integer.toUnsignedString(hash,32) + "]";
+        return Texts.i(array(),0, length(), 16) + " [" + Integer.toUnsignedString(hash,32) + "]";
     }
 
-    final static class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKey,Y> {
+
+
+    public final static class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKey,Y> {
 
         final Y result;
 
-        public ByteKeyInternal(byte[] key, int hash, Y result, float pri) {
-            super(key, hash);
+        /*@Stable*/
+        public final byte[] key;
+
+
+
+        protected ByteKeyInternal(byte[] key, int hash, Y result, float pri) {
+            super(hash);
+            this.key = key;
             this.result = result;
             pri(pri);
         }
@@ -63,11 +74,56 @@ public class ByteKey extends UnitPri {
             return result;
         }
 
+        @Override
+        public byte[] array() {
+            return key;
+        }
 
+        @Override
+        public int length() {
+            return key.length;
+        }
 
         @Override
         public String toString() {
             return result + " = $" + Texts.n4(pri()) + " " + super.toString();
+        }
+    }
+
+    public static class ByteKeyExternal extends ByteKey {
+
+        private final DynBytes key;
+
+
+        public ByteKeyExternal(DynBytes key) {
+            super(key.hashCode());
+            this.key = key;
+        }
+
+        public final  <Y> PriProxy<?,Y> internal(Y result, float pri) {
+            return internal(result, pri, true);
+        }
+
+        private final  <Y> PriProxy<?,Y> internal(Y result, float pri, boolean forceNew) {
+            byte[] b = array();
+            int l = length();
+            if (!forceNew && l == b.length) {
+                //keep
+            } else {
+                b = Arrays.copyOf(b, l);
+            }
+
+            return new ByteKeyInternal<>(b, hash, result, pri);
+        }
+
+        @Override
+        public final byte[] array() {
+            return key.arrayDirect();
+        }
+
+        @Override
+        public final int length() {
+            return key.length();
         }
     }
 

@@ -2,6 +2,7 @@ package nars.derive.premise;
 
 import jcog.Util;
 import jcog.decide.MutableRoulette;
+import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -37,22 +38,26 @@ public class PremiseDeriver implements Predicate<Derivation> {
     private final DeriveAction[] could;
 
 
-    public PremiseDeriver(DeriveAction[] actions, PREDICATE<Derivation> what) {
+    public PremiseDeriver(PREDICATE<Derivation> what, DeriveAction[] actions) {
 
         this.what = what;
-        this.could = actions;
 
         assert (actions.length > 0);
+        this.could = actions;
 
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
 
-        this.whats = new ByteHijackMemoize<>(k -> k.solve(what), 64 * 1024, 4) {
+        this.whats = new ByteHijackMemoize<>(this::can, 128 * 1024, 4);
 
-            @Override
-            public float value(PremiseKey premiseKey, short[] shorts) {
-                return premiseKey.pri;
-            }
-        };
+//            @Override
+//            public float value(PremiseKey premiseKey, short[] shorts) {
+//                return premiseKey.pri;
+//            }
+        Memoizers.the.add(toString() + "_what", whats);
+    }
+
+    private short[] can(PremiseKey k) {
+        return k.solve(what);
     }
 
     /**
