@@ -64,35 +64,27 @@ public final class Termify extends AbstractPred<Derivation> {
             return false;
         }
 
-
-        boolean negated;
         if (c1.op() == NEG) {
             c1 = c1.unneg();
-            negated = true;
-        } else
-            negated = false;
+            if (d.concTruth != null)
+                d.concTruth = d.concTruth.neg();
+        }
 
         if (c1.volume() > d.termVolMax) {
             d.nar.emotion.deriveFailVolLimit.increment();
             return false;
         }
 
-        if (negated) {
-            if (d.concTruth != null) 
-                d.concTruth = d.concTruth.neg();
-        }
-
-
 
         if (d.temporal) {
 
-            boolean unwrapNeg;
-            if (c1.op()==NEG) {
-                unwrapNeg = true;
-                c1 = c1.unneg();
-            } else {
-                unwrapNeg = false;
-            }
+//            boolean unwrapNeg;
+//            if (c1.op()==NEG) {
+//                unwrapNeg = true;
+//                c1 = c1.unneg();
+//            } else {
+//                unwrapNeg = false;
+//            }
             Pair<Term, long[]> timing = time.solve(d, c1);
             if (timing == null) {
                 d.nar.emotion.deriveFailTemporal.increment();
@@ -145,8 +137,8 @@ public final class Termify extends AbstractPred<Derivation> {
                 throw new RuntimeException("illegal eternal temporalization");
             }
 
-            if (unwrapNeg)
-                c2 = c2.neg();
+//            if (unwrapNeg)
+//                c2 = c2.neg();
 
             d.concOcc = occ;
             d.concTerm = c2;

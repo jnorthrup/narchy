@@ -403,4 +403,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     public Stream<X> stream() {
         return IntStream.range(0, size()).mapToObj(this::peek).filter(Objects::nonNull);
     }
+
+    public boolean isFull() {
+        return isFull(0);
+    }
+    public boolean isFull(int afterAdding) {
+        return size() + afterAdding >= capacity();
+    }
 }

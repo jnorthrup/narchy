@@ -73,11 +73,11 @@ public enum Image { ;
         if (t.op()==INH && t.hasAll(imageBits)) {
             Term s = t.sub(0);
             Subterms ss = null;
-            boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.ImgInt);
-            Term p = t.sub(1);
+            boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
 
+            Term p = t.sub(1);
             Subterms pp = null;
-            boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.ImgExt);
+            boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
 
             if (isInt && !isExt) {
                 

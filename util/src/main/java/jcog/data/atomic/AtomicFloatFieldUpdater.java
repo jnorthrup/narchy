@@ -5,7 +5,6 @@ import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToIntFunction;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.IntUnaryOperator;
 
 import static java.lang.Float.floatToIntBits;
@@ -16,7 +15,7 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     private final static int NAN = floatToIntBits(Float.NaN);
     private final static int ZERO = floatToIntBits(0f);
-    public final AtomicIntegerFieldUpdater<X> updater;
+    public final MetalAtomicIntegerFieldUpdater<X> updater;
 
 
 //    /** for whatever reason, the field updater needs constructed from within the target class
@@ -87,6 +86,9 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     public float get(X x) {
         return get(updater.get(x));
+    }
+    public float getOpaque(X x) {
+        return get(updater.getOpaque(x));
     }
 
     public static float get(int x) {

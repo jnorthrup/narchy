@@ -115,7 +115,7 @@ public class NARS {
                 index = () -> new CaffeineIndex(64 * 1024);
 
             if (nal >= 7) {
-                then((nn)->new STMLinkage(nn, 1, false));
+                then((nn)->new STMLinkage(nn, 1));
             }
 
             then((n)->{

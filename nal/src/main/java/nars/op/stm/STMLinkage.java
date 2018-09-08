@@ -6,7 +6,6 @@ import jcog.pri.PLink;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.Cause;
 import nars.control.TaskService;
 import nars.term.Termed;
 
@@ -16,49 +15,45 @@ import nars.term.Termed;
  * Creates links between sequences of perceived events
  * Empties task buffer when plugin is (re)started.
  */
-public final class STMLinkage extends TaskService {
+public class STMLinkage extends TaskService {
 
     public final MetalConcurrentQueue<Task> stm;
 
     final FloatRange strength = new FloatRange(1f, 0f, 1f);
-    private final boolean allowNonInput;
-    private final Cause cause;
+//    private final Cause cause;
 
 
-    public STMLinkage(NAR nar, int capacity, boolean allowNonInput) {
+    public STMLinkage(NAR nar, int capacity) {
         super(nar);
 
-        this.allowNonInput = allowNonInput;
         strength.set(1f / capacity);
 
         stm = //Util.blockingQueue(capacity + 1 );
-                new MetalConcurrentQueue<>(capacity+1 /* extra slot for good measure */);
+                new MetalConcurrentQueue<>(capacity);
 
-
-
-        cause = nar.newCause(this);
+//        cause = nar.newCause(this);
     }
 
     public static void link(Termed ta, float pri, Termed tb/*, short cid*/, NAR nar) {
 
 
         /** current task's... */
-        Concept ca = nar.conceptualize(ta);
-        if (ca != null) {
-            Concept cb = nar.conceptualize(tb);
-            if (cb != null) {
-                if (!cb.equals(ca)) { 
+        Concept a = nar.conceptualize(ta);
+        if (a != null) {
+            Concept b = nar.conceptualize(tb);
+            if (b != null) {
+                if (a!=b) {
 
-                    
-                    cb.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(ca.term(), pri/*, cid*/));
-                    ca.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(cb.term(), pri/*, cid*/));
+
+                    b.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(a.term(), pri/*, cid*/));
+                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(b.term(), pri/*, cid*/));
                     //ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), pri, cid));
 
 
 
 
                 } else {
-                    ca.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(ca.term(), pri/*, cid*/));
+                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink<>(a.term(), pri/*, cid*/));
                     //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
                 }
             }
@@ -67,8 +62,12 @@ public final class STMLinkage extends TaskService {
     }
 
 
-    boolean stmLinkable(Task newEvent) {
-        return (!newEvent.isEternal() && (allowNonInput || newEvent.isInput()));
+    public boolean hold(Task x) {
+        return x.isInput();
+    }
+
+    public boolean target(Task x) {
+        return x.isInput();
     }
 
     @Override
@@ -79,17 +78,20 @@ public final class STMLinkage extends TaskService {
     @Override
     public final void accept(NAR nar, Task t) {
 
-        if (!t.isBeliefOrGoal() || !stmLinkable(t))
+        if (!t.isBeliefOrGoal() || t.isEternal())
             return;
 
-        float strength = this.strength.floatValue();
-        float tPri = t.priElseZero();
 
+        if (target(t)) {
+            float strength = this.strength.floatValue();
+            float p = strength * t.priElseZero();
+            stm.forEach(u -> link(t, p * u.priElseZero(), u/*, cause.id*/, nar));
+        }
 
-        float p = strength * tPri;
-        stm.forEach(u -> link(t, p * u.priElseZero(), u/*, cause.id*/, nar));
-
-        stm.poll();
-        stm.offer(t);
+        if (hold(t)) {
+            if (stm.isFull(1))
+                stm.poll();
+            stm.offer(t);
+        }
     }
 }

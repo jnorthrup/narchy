@@ -112,8 +112,9 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        this.concPattern = PatternIndex.patternify(postcon[0]);
-
+        this.concPattern = PatternIndex.patternify(postcon[0])
+                .replace(taskPattern, Derivation.TaskTerm) //fast substitute
+                .replace(beliefPattern, Derivation.BeliefTerm); //fast substitute
 
         byte taskPunc = 0;
 

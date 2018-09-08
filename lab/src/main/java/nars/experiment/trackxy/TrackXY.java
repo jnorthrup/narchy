@@ -21,6 +21,7 @@ import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.time.clock.CycleTime;
@@ -88,9 +89,9 @@ public class TrackXY extends NAgentX {
             this.cam = null;
         }
 
-        //actionPushButtonMutex();
+        actionPushButtonMutex();
         //actionSwitch();
-        actionTriState();
+        //actionTriState();
 
 
         reward(this::act);
@@ -149,6 +150,9 @@ public class TrackXY extends NAgentX {
         }
             if (nars) {
 
+                window(new Gridding(
+                        //new CameraSensorView(c, this).withControls(),
+                        NARui.beliefCharts(a.actions, n)), 400, 400);
 
                 Deriver d = new MatrixDeriver(Derivers.nal(n,
 //                        6, 8
@@ -160,7 +164,12 @@ public class TrackXY extends NAgentX {
                 ((MatrixDeriver) d).conceptsPerIteration.set(8);
 
 
-                //new STMLinkage(n, 1, false);
+                new STMLinkage(n, 2) {
+                    @Override
+                    public boolean hold(Task newEvent) {
+                        return newEvent.isGoal();
+                    }
+                };
 
                 ConjClustering cjB = new ConjClustering(n, BELIEF,
                         //x -> true,
@@ -206,7 +215,7 @@ public class TrackXY extends NAgentX {
             });
 
 
-            int experimentTime = 6000;
+            int experimentTime = 16000;
             n.run(experimentTime);
 
             printGoals(n);

@@ -552,7 +552,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public int capacity() {
-        return CAPACITY.get(this);
+        return CAPACITY.getOpaque(this);
     }
 
     @Override
@@ -699,7 +699,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public int size() {
-        return Math.max(0, SIZE.get(this));
+        return Math.max(0, SIZE.getOpaque(this));
     }
 
     @Override

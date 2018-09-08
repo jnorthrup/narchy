@@ -96,7 +96,7 @@ public final class MapSubst implements Subst {
 
     }
 
-    final static class SubstAtomic implements TermTransform {
+    final static class SubstAtomic implements TermTransform.NegObliviousTermTransform {
 
         private final Atomic from;
         private final Term to;
@@ -118,7 +118,7 @@ public final class MapSubst implements Subst {
         public @Nullable Term transformCompound(Compound x) {
             if (x.impossibleSubTerm(from))
                 return x;
-            return TermTransform.super.transformCompound(x);
+            return TermTransform.NegObliviousTermTransform.super.transformCompound(x);
         }
 
     }

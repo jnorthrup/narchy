@@ -583,7 +583,7 @@ public class NAL7Test extends NALTest {
 
                 .input("hold(John,key). :|:")
                 .input("(open(John,door) <-> enter(John,room)). :|:")
-                .mustBelieve(cycles, "(hold(John,key) &&+0 (open(John,door) <-> enter(John,room)))",
+                .mustBelieve(cycles, "(hold(John,key) &| (open(John,door) <-> enter(John,room)))",
                         1.00f, 0.81f,
                         0);
     }
@@ -842,7 +842,7 @@ public class NAL7Test extends NALTest {
     void testDecomposeConjunctionTemporal() {
 
         test
-                .input("(x &&+0 (y)). :|:")
+                .input("(x &| (y)). :|:")
                 .mustBelieve(cycles, "x", 1f, 0.81f, 0)
                 .mustBelieve(cycles, "(y)", 1f, 0.81f, 0);
     }
@@ -879,7 +879,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    void testWTFDontDecomposeConjunctionDTERNAL() {
+    void decomposeConjunctionDTERNAL() {
 
         test
                 .input("(x&&(y)). :|:")
@@ -920,7 +920,7 @@ public class NAL7Test extends NALTest {
 
         test
 
-                .inputAt(0, "((I-->happy) &&+0 (I-->neutral)). :|: %0.06;0.90%")
+                .inputAt(0, "((I-->happy) &| (I-->neutral)). :|: %0.06;0.90%")
                 .inputAt(0, "(I-->sad). :|: %0.0;0.90%")
 
 
@@ -1304,7 +1304,7 @@ public class NAL7Test extends NALTest {
     void testForwardImplChainDTUnion() {
         /** wrong direction: this should have been dt = +20
          $.29;.69$ ((reshape(I,$1)&&($1-->[heated])) ==>-20 ($1-->[hardened])). %1.0;.73% {3: 3;4;5} ((((%2&&%1073742337..+)==>%3),(%4==>%2),time(dtUnion),neq(%3,%2),notImpl(%2),notEqui(%3)),(((%4&&%1073742337..+) ==>+- %3),((Deduction-->Belief))))
-         $.50;.90$ ((reshape(I,$1) &&+0 ($1-->[pliable])) ==>+10 ($1-->[hardened])). %1.0;.90% {0: 5}
+         $.50;.90$ ((reshape(I,$1) &| ($1-->[pliable])) ==>+10 ($1-->[hardened])). %1.0;.90% {0: 5}
          $.41;.81$ (($1-->[heated]) ==>+10 ($1-->[pliable])). %1.0;.81% {1: 3;4} ((%1,(%2<=>%3),neqCom(%1,%3),neq(%1,%2),time(beliefDTSimultaneous)),(substitute(%1,%2,%3,strict),((Intersection-->Belief),(Strong-->Goal))))
          */
 
@@ -1352,14 +1352,14 @@ public class NAL7Test extends NALTest {
         test for 2 things:
             a) the inducted implication should not lose its temporal information in the result
             b) the conjunction with implication can be reduced to an implication of a conjunction precondition
-        $.25 (inside(bob,office) &&+0 (inside(john,playground)==>inside(bob,kitchen))). 0 %1.0;.50% {6: 2;3;5} ((%1,%2,task(positive),belief(positive),task("."),time(raw),time(dtEvents)),((%1 &&+- %2),((Intersection-->Belief))))
+        $.25 (inside(bob,office) &| (inside(john,playground)==>inside(bob,kitchen))). 0 %1.0;.50% {6: 2;3;5} ((%1,%2,task(positive),belief(positive),task("."),time(raw),time(dtEvents)),((%1 &&+- %2),((Intersection-->Belief))))
           $.05 (inside(john,playground) ==>+0 inside(bob,kitchen)). 0 %1.0;.50% {1: 2;5} ((%1,%2,time(raw),belief(positive),task("."),time(dtEventsReverse),notImpl(%1),notImpl(%2)),((%2 ==>+- %1),((Abduction-->Belief))))
             $.50 inside(bob,kitchen). 0 %1.0;.90% {0: 5}
             $.50 inside(john,playground). 0 %1.0;.90% {0: 2}
           $.50 inside(bob,office). 0 %1.0;.90% {0: 3}
 
           instead the result should be:
-            ((inside(bob,office) &&+0 inside(john,playground) ==>+0 inside(bob,kitchen))).
+            ((inside(bob,office) &| inside(john,playground) ==>+0 inside(bob,kitchen))).
           */
 
     }

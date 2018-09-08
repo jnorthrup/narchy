@@ -91,10 +91,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
     @Nullable SeriesBeliefTable.SeriesTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd, n.evidence());
-
-//        SeriesBeliefTable.SeriesTask curiosity =
-//                goals().series.add(term, GOAL, pStart, pEnd, truth, nar.dur(), nar);
+        SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd,
+                n.evidence());
 
         if (curiosity!=null) {
             curiosity.pri(n.priDefault(GOAL));

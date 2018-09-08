@@ -25,6 +25,7 @@ import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
 import nars.term.util.TermHashMap;
+import nars.term.util.transform.Retemporalize;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
@@ -57,6 +58,8 @@ public class Derivation extends PreDerivation {
 
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
+    public static final Atomic TaskTerm = Atomic.the("taskTerm");
+    public static final Atomic BeliefTerm = Atomic.the("beliefTerm");
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
@@ -158,7 +161,7 @@ public class Derivation extends PreDerivation {
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
 
-    public transient boolean temporal;
+    @Deprecated public transient boolean temporal;
     public transient TruthFunc truthFunction;
     public transient int ditherTime;
 
@@ -423,9 +426,17 @@ public class Derivation extends PreDerivation {
 
 
         boolean eternal = (taskStart == ETERNAL) && (_belief == null || beliefStart==ETERNAL);
-        this.temporal = !eternal || (Occurrify.temporal(taskTerm)
-                //|| (_belief != null && Occurrify.temporal(beliefTerm)));
-                || Occurrify.temporal(beliefTerm));
+        this.temporal = !eternal || Occurrify.temporal(taskTerm);
+        if ((_belief == null) && (!temporal)) {
+            if (Occurrify.temporal(beliefTerm)) {
+                Term beliefTermEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(beliefTerm); //HACK
+                if (Occurrify.temporal(beliefTermEternal)) {
+                    temporal = true;
+                } else {
+                    beliefTerm = beliefTermEternal;
+                }
+            }
+        }
 
         this.parentCause = _belief != null ?
                 Cause.merge(Param.causeCapacity.intValue(), _task, _belief) :
@@ -481,6 +492,12 @@ public class Derivation extends PreDerivation {
         }
 
         if (atomic instanceof Atom) {
+            if (atomic == TaskTerm) {
+                return taskTerm;
+            } else if (atomic == BeliefTerm) {
+                return beliefTerm;
+            }
+
             Termed f = derivationFunctors.get(atomic);
             if (f != null)
                 return (Term) f;

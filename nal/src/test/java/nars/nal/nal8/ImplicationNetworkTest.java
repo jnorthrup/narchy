@@ -22,7 +22,6 @@ class ImplicationNetworkTest {
     private static final Term c = $.the("c");
     NAR n = NARS.tmp();
     {
-        Param.DEBUG = true;
         new BeliefContradictionDetector(n);
     }
 

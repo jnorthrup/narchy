@@ -183,8 +183,12 @@ public enum Tense {
 
     /** safely transform occ (64-bit) to dt (32-bit) */
     public static int occToDT(long occ) {
+        if (occ == ETERNAL)
+            return DTERNAL; //HACK
+        if (occ == TIMELESS)
+            return XTERNAL; //HACK
         if (occ > Integer.MAX_VALUE-1 || occ < Integer.MIN_VALUE+1)
-            throw new WTF();
+            throw new WTF(occ + " can not be DT");
         return (int)occ;
     }
 

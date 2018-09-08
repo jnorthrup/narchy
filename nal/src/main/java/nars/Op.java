@@ -617,9 +617,12 @@ public enum Op {
                 if (Conj.concurrent(baseDT)) {
                     if (baseDT == XTERNAL) {
                         //changing to non-XTERNAL, check for repeats
-                        boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
-                        if (repeating)
-                            return xx[0]; //collapse
+                        if (xx.length == 2) {
+                            if (xx[0].equals(xx[1]))
+                                return xx[0]; //collapse
+                            else if (xx[0].equalsNeg(xx[1]))
+                                return False; //contradict
+                        }
                     }
                     //fast transform concurrent -> concurrent, subs wont change
                     return Op.compound(CONJ, nextDT, xx);

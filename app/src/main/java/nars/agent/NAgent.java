@@ -46,8 +46,6 @@ import java.util.function.Supplier;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
 
 /**
  * an integration of sensor concepts and motor functions
@@ -452,9 +450,9 @@ public class NAgent extends NARService implements NSense, NAct {
 //        ArrayUtils.shuffle(aaa, random());
 
         float curiConf =
-                        //nar.confMin.floatValue() * 4;
+                        nar.confMin.floatValue() * 2;
                         //nar.confMin.floatValue();
-                        w2c(c2w(nar.confDefault(GOAL))/2);
+                        //w2c(c2w(nar.confDefault(GOAL))/2);
                         //nar.confDefault(GOAL);
 
         for (ActionConcept a : aaa) {

@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -46,7 +45,7 @@ import java.util.stream.Stream;
  */
 public class RTree<T> implements Space<T> {
 
-    private static final AtomicIntegerFieldUpdater size = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
+    private static final MetalAtomicIntegerFieldUpdater size = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
     private volatile Node<T, ?> root;
 
@@ -183,7 +182,7 @@ public class RTree<T> implements Space<T> {
      */
     @Override
     public int size() {
-        return size.get(this);
+        return size.getOpaque(this);
     }
 
 

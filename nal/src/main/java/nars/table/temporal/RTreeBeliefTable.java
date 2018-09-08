@@ -19,6 +19,7 @@ import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
+import nars.time.Tense;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -407,18 +408,18 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         FloatFunction<Task> taskStrength = null;
         FloatFunction<TaskRegion> leafRegionWeakness = null;
-        int perceptDur = 0;
-        int e = 0, cap;
+        int dur = 0, e = 0, cap;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 long now = nar.time();
-                perceptDur = nar.dur();
-                taskStrength = taskStrengthWithFutureBoost(now - perceptDur,
+                dur = //nar.dur();
+                        Tense.occToDT(tableDur()/2);
+                taskStrength = taskStrengthWithFutureBoost(now,
                         input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
                         now,
-                        perceptDur
+                        dur
                 );
-                leafRegionWeakness = regionWeakness(now - perceptDur, perceptDur, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
+                leafRegionWeakness = regionWeakness(now, dur, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW, e == 0 ? input : null /** only limit by inputRegion on first iter */,
                     taskStrength, leafRegionWeakness,

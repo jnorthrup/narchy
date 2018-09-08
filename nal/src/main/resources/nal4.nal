@@ -6,10 +6,6 @@
     (I --> P), X, is(P,"*"), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?") |- imageInt((I-->P),X), (Punctuation:Question)
     (I --> P), X, is(P,"*"), --subOf(P,\), subsMin(P,2), subOf(P,X), task("@") |- imageInt((I-->P),X), (Punctuation:Quest)
 
-//raw image question
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X) |- imageExt((P-->?1),X), (Belief:Identity, Goal:Identity)
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X), task("?") |- imageExt((P-->?1),X), (Punctuation:Question)
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X), task("@") |- imageExt((P-->?1),X), (Punctuation:Quest)
 
 
 //image structural transform reverse
@@ -21,8 +17,17 @@ P, X, is(P,"*"), subsMin(P,2), subOf(P,X), task("@") |- imageExt((P-->?1),X), (P
     (P --> X), X, task("@"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Punctuation:Quest)
 
 
-//TODO int
-
 //TODO structural transform forward lightweight shortcuts, eliminate need for intermediate image term/concept
 //(P-->I), (R-->I), is(P,"*"), subsMin(P,2), subsMin(R,2), neqAndCom(P,R) |- ...
 
+////composition on both sides of a statement
+    ((X,P) --> ?Z) , (X --> Y), task("?") |- ((B,P) --> (A,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    //TODO generalize: imageComposition(A,X,B,Y)
+    ((X,P) --> (Y,P)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    ((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+//
+//    ((\,N,A,_) --> ?X), (N --> R), task("?") |- ((\,N,A,_) --> (\,R,A,_)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)
+//    ((\,N,A,_) --> (\,R,A,_)), (N --> R), task("?") |- ((\,N,A,_) --> (\,R,A,_)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)
+//
+//    ((/,N,_,B) --> ?X), (S --> B), task("?") |- ((/,N,_,B) --> (/,N,_,S)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)
+//    ((/,N,_,B) --> (/,N,_,S)), (S --> B), task("?") |- ((/,N,_,B) --> (/,N,_,S)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)

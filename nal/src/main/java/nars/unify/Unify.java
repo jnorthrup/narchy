@@ -106,6 +106,10 @@ public abstract class Unify extends Versioning implements Subst {
     protected abstract void tryMatch();
 
 
+    public final boolean tryMutate(Termutator[] chain, int next, int start) {
+        return tryMutate(chain, next) && revertLive(start);
+    }
+
     public final boolean tryMutate(Termutator[] chain, int next) {
 
         if (++next < chain.length) {
@@ -256,6 +260,14 @@ public abstract class Unify extends Versioning implements Subst {
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
+    @Nullable public Versioned<MatchConstraint> constraints(Variable v) {
+        ConstrainedVersionedTerm vv = ((ConstrainedVersionedTerm) xy.map.get(v));
+        if (vv!=null) {
+            return vv.constraints;
+        }
+        return null;
+    }
+
     private class ConstrainedVersionMap extends VersionMap<Variable, Term> {
         ConstrainedVersionMap(Versioning versioning, Map<Variable, Versioned<Term>> termMap) {
             super(versioning,
@@ -292,6 +304,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         private boolean valid(Term x) {
             Versioned<MatchConstraint> c = this.constraints;
+            //return MatchConstraint.valid(x, c);
             return c == null || !c.anySatisfyWith(this, x);
         }
 

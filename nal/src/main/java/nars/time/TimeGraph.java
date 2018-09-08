@@ -67,12 +67,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
      */
-    static int dt(Event aa, Event bb) {
+    static long dt(Event aa, Event bb) {
 
         long aWhen = aa.start();
         long bWhen;
         if (aWhen == ETERNAL || (bWhen = bb.start()) == ETERNAL)
-            return DTERNAL;
+            return ETERNAL;
         else {
             assert (aWhen != XTERNAL);
             assert (bWhen != XTERNAL);
@@ -248,15 +248,15 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                         link(se, ETERNAL, pe);
 
-                        subj.eventsWhile((w, y) -> {
-                            link(know(y), ETERNAL, pe);
-                            return true;
-                        }, 0, true, false, false, 0);
-
-                        pred.eventsWhile((w, y) -> {
-                            link(se, ETERNAL, know(y));
-                            return true;
-                        }, 0, true, false, false, 0);
+//                        subj.eventsWhile((w, y) -> {
+//                            link(know(y), ETERNAL, pe);
+//                            return true;
+//                        }, 0, true, false, false, 0);
+//
+//                        pred.eventsWhile((w, y) -> {
+//                            link(se, ETERNAL, know(y));
+//                            return true;
+//                        }, 0, true, false, false, 0);
 
                     } else if (edt != XTERNAL) {
 
@@ -300,7 +300,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             int esn = es.subs();
                             //Event prevEvent = null;
 
-                            long superSubDT = edt == 0 ? 0 /* left aligned parallel */ : ETERNAL;
                             for (int i = 0; i < esn; i++) {
                                 Term next = es.sub(i);
                                 Event nextEvent = knowComponent(next, eventStart, eventEnd);
@@ -311,7 +310,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                                 //link(prevEvent, ETERNAL, nextEvent);
                                 //prevEvent = nextEvent;
-                                link(event, superSubDT, nextEvent);
+                                link(event, ETERNAL, nextEvent);
                             }
 
                             break;
@@ -496,11 +495,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solvePairDT(Term x, Event a, Event b, Predicate<Event> each) {
-        int dt = dt(a, b);
+        long dt = dt(a, b);
 
         if (x.op() == CONJ) {
-
-            return solveConj2DT(each, a, dt, b);
+            return solveConj2DT(each, a, Tense.occToDT(dt), b);
         } else {
             //for impl and other types cant assume occurrence corresponds with subject
             return solveDT(x, TIMELESS, dt, durMerge(a, b), null, each);
@@ -581,12 +579,15 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     @Deprecated
     private boolean solveDT(Term x, long start, long ddt, long dur,
                             @Nullable List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Predicate<Event> each) {
-        assert (ddt != TIMELESS && ddt != XTERNAL && ddt != ETERNAL);
+        assert (ddt != TIMELESS && ddt != XTERNAL);
+
         int dt;
-
-
-        assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
-        dt = (int) ddt;
+        if (ddt == ETERNAL)
+            dt = DTERNAL;
+        else if (ddt == TIMELESS)
+            dt = XTERNAL;
+        else
+            dt = Tense.occToDT(ddt);
 
         Term y = dt(x, path, dt);
 
@@ -622,9 +623,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return dt;
     }
 
-    protected Term dt(Term x, int dt) {
-        return dt(x, null, dt);
-    }
 
     /**
      * preprocess the dt used to construct a new term.
@@ -1080,7 +1078,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 } else {
 
 
-                    dt = pathTime(path, true);
+                    dt = pathTime(path, false);
                 }
                 if (dt == TIMELESS)
                     return null;

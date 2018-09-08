@@ -152,8 +152,8 @@ public class BiPolarAction extends AbstractSensor {
         feedback.input(
                 pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar),
 
-                (pCuri ? pos.curiosity(p, prev, now, nar) : null),
-                (nCuri ? neg.curiosity(n, prev, now, nar) : null)
+                (pCuri ? pos.curiosity($.t(Pb.freq(), pos.curiConf)/* p*/, prev, now, nar) : null),
+                (nCuri ? neg.curiosity($.t(Nb.freq(), pos.curiConf)/* n*/, prev, now, nar) : null)
         );
     }
 
@@ -261,8 +261,9 @@ public class BiPolarAction extends AbstractSensor {
          * used in the difference comparison. return NaN or value  */
         public float q(Truth t) {
 
-            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
             return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
+            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
+            //return t != null ? ((freqOrExp ? (t.freq()>=0.5f ? t.freq() : 0) : t.expectation()) ) : Float.NaN;
         }
 
     }

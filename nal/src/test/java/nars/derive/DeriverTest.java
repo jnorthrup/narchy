@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.deriver.MatrixDeriver;
+import nars.derive.op.Occurrify;
 import nars.derive.premise.PatternIndex;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -21,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
+import static nars.$.$$;
 import static nars.Op.QUEST;
 import static nars.derive.Deriver.derivers;
 import static org.junit.jupiter.api.Assertions.*;
@@ -171,5 +173,9 @@ class DeriverTest {
         tests.forEach(TestNAR::test);
     }
 
+    @Deprecated @Test void testTemporal() {
+        assertFalse(Occurrify.temporal($$("(x==>y)")));
+        assertTrue(Occurrify.temporal($$("(x ==>+1 y)")));
+    }
 
 }

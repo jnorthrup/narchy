@@ -14,11 +14,13 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:DesireWeak)
-     (B --> C), (A --> B), neqRCom(A,C)      |- (A --> C), (Belief:DeductionReverse)
+    (A --> B), (B --> C), neqRCom(A,C)     |- (A --> C), (Belief:Deduction, Goal:DesireWeak)
+     (B --> C), (A --> B), neqRCom(A,C)    |- (A --> C), (Belief:DeductionReverse)
 
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)
+        (B --> C), (A --> B), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)
             (A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (A --> C), (Punctuation:Quest)
+            (B --> C), (A --> B), task("@"), neqRCom(A,C)  |- (A --> C), (Punctuation:Quest)
 
     (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:DesireWeak)
         (A --> B), (A --> C), task("?"), neqRCom(B,C) |- (C --> B), (Punctuation:Question)

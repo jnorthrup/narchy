@@ -335,7 +335,11 @@ public class PatternIndex extends MapConceptIndex {
 
                 Ellipsis ellipsis = this.ellipsis;
 
-                SortedSet<Term> yFree = y.toSetSorted();
+//                @Nullable Versioned<MatchConstraint> uc = u.constraints(ellipsis);
+
+                SortedSet<Term> yFree =
+                        //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
+                        y.toSetSorted();
 
                 Subterms ss = subterms();
                 int s = ss.subs();
@@ -440,7 +444,8 @@ public class PatternIndex extends MapConceptIndex {
                     case 1:
                         Term x0 = xFixed.getOnly();
                         if (yFree.size() == 1) {
-                            return this.ellipsis.unify(EllipsisMatch.empty, u) && x0.unify(yFree.first(), u);
+                            assert(ellipsis.minArity == 0);
+                            return x0.unify(yFree.first(), u) && this.ellipsis.unify(EllipsisMatch.empty, u);
                         } else {
                             return u.termutes.add(new Choose1(this.ellipsis, x0, yFree));
                         }

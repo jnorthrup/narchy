@@ -26,6 +26,10 @@ import static nars.derive.premise.PremiseRuleSource.pp;
 /** must be stateless */
 public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
+//    public static boolean valid(Term x, @Nullable Versioned<MatchConstraint> c, Unify u) {
+//        return c == null || !c.anySatisfyWith((cc,X) -> cc.invalid(X, u), x);
+//    }
+
     @Override
     public boolean test(Derivation p) {
         return p.constrain(this);

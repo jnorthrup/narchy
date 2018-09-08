@@ -136,9 +136,11 @@ public class Occurrify extends TimeGraph {
      *          if there is any temporal terms with non-DTERNAL dt()
      */
     public static boolean temporal(Term x) {
-        return !x.recurseTerms(z -> z instanceof Compound && z.hasAny(Op.Temporal),
-                z-> z.dt() == DTERNAL,
+        boolean[] nonEternal = new boolean[1];
+        x.recurseTerms(z -> z instanceof Compound && z.hasAny(Op.Temporal),
+                z -> { if (z.dt() != DTERNAL) { nonEternal[0] = true; return false;  } else { return true; } },
                 null);
+        return nonEternal[0];
     }
 
     @Override

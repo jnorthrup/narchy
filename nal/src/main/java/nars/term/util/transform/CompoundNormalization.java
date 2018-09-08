@@ -2,7 +2,6 @@ package nars.term.util.transform;
 
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.util.Image;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,12 +19,13 @@ public class CompoundNormalization extends VariableNormalization {
     public @Nullable Term transformCompound(Compound x) {
         if (!x.equals(root)) {
             /* if x is not the root term (ie. a subterm) */
-            Term y = Image.imageNormalize(x);
-            if (y!=x) {
-                Termed yy = transform(y);
-                if (yy != null)
-                    return yy.term();
-            }
+//            Term y = Image.imageNormalize(x);
+//            if (y!=x) {
+//                Termed yy = transform(y);
+//                if (yy != null)
+//                    return yy.term();
+//            }
+            x = (Compound) Image.imageNormalize(x);
         }
         return super.transformCompound(x);
     }

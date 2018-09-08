@@ -18,87 +18,55 @@ public class NAL4MultistepTest extends NALTest {
 
     @Test
     void nal4_everyday_reasoning() {
-        int time = 3500;
+        int time = 500;
 
-        
 
         TestNAR tester = test;
 
         tester.nar.freqResolution.set(0.1f);
+        tester.confTolerance(0.2f);
 
-        
 
-        
+        tester.input("({sky} --> [blue]).");
+        tester.input("({tom} --> cat).");
+        tester.input("likes({tom},{sky}).");
 
-        tester.input("<{sky} --> [blue]>."); 
-        tester.input("<{tom} --> cat>."); 
-        tester.input("likes({tom},{sky})."); 
+        tester.input("likes(cat,[blue])?");
 
-        tester.input("$0.9 likes(cat,[blue])?"); 
 
-        
         tester.mustBelieve(time, "likes(cat,[blue])",
                 1f,
                 0.45f);
-                
+
 
     }
 
     @Test
     void nal4_everyday_reasoning_easiest() throws Narsese.NarseseException {
-        int time = 550;
 
-        
 
-        TestNAR tester = test;
-        tester.believe("<sky --> blue>",1.0f,0.9f); 
-        
-        
-        tester.believe("<sky --> likes>",1.0f,0.9f); 
-
-        
-        
-        
-        tester.ask("<blue --> likes>"); 
-
-        
-        tester.mustBelieve(time, "<blue --> likes>", 1.0f, 0.4f /* 0.45? */);
+        test.believe("blue:sky", 1.0f, 0.9f)
+                .believe("likes:sky", 1.0f, 0.9f)
+                .ask("likes:blue")
+                .mustBelieve(100, "likes:blue", 1.0f, 0.4f /* 0.45? */);
 
     }
 
     @Test
-    void nal4_everyday_reasoning_easier() throws Narsese.NarseseException {
+    void nal4_everyday_reasoning_easier() {
         int time = 2550;
 
-        
-
-        TestNAR tester = test;
-        
-
-        test.nar.termVolumeMax.set(10);
-        tester.believe("blue:sky",1.0f,0.9f);
-        tester.believe("cat:tom",1.0f,0.9f);
-        tester.believe("likes(tom,sky)",1.0f,0.9f);
-        tester.ask("likes(cat,blue)");
-        tester.mustBelieve(time, "likes(cat,blue)", 1.0f, 0.45f);
+        test.nar.termVolumeMax.set(9);
+        test.nar.freqResolution.set(0.1f);
+        test.nar.confResolution.set(0.1f);
+        test.believe("blue:sky", 1.0f, 0.9f)
+                .believe("cat:tom", 1.0f, 0.9f)
+                .believe("likes(tom,sky)", 1.0f, 0.9f)
+                .input("$0.99 likes(cat,blue)?")
+                .mustBelieve(time, "likes(cat,blue)", 1.0f, 0.45f)
+        ;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

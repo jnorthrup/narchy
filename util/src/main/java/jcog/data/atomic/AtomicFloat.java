@@ -41,7 +41,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     }
 
     public final float floatValue() {
-        return F.get(this);
+        return F.getOpaque(this);
     }
 
     public final float getAndSet(float newValue) {

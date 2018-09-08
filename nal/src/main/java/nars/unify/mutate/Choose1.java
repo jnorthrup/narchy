@@ -78,7 +78,13 @@ public class Choose1 extends Termutator.AbstractTermutator {
             if (!u.revertLive(start))
                 break;
         }
-
+//
+//        if (xEllipsis.minArity == 0) {
+//            if (xEllipsis.unify(EllipsisMatch.empty, u)) {
+//                if (!u.tryMutate(chain, current) && !u.revertLive(start))
+//                    return;
+//            }
+//        }
     }
 
 

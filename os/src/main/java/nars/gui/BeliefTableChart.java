@@ -30,7 +30,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
     final Term term;
     private final TruthGrid beliefGrid, goalGrid;
 
-    public final FloatRange durs = new FloatRange(32, 0.5f, 128f);
+    public final FloatRange durs = new FloatRange(32, 0.5f, 2048f);
 
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range

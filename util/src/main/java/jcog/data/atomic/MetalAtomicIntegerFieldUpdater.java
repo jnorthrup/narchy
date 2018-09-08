@@ -2,6 +2,7 @@ package jcog.data.atomic;
 
 import jcog.TODO;
 import jcog.Util;
+import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.security.AccessController;
@@ -10,7 +11,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldUpdater<T> {
-    private static final sun.misc.Unsafe U = Util.unsafe;
+    private static final Unsafe U = Util.unsafe;
     private final long offset;
     //private final Class<?> cclass;
 //        private final Class<T> tclass;
@@ -55,6 +56,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
 //        }
 
     public final boolean compareAndSet(T obj, int expect, int update) {
+        //return U.compareAndSetInt(obj, this.offset, expect, update);
         return U.compareAndSwapInt(obj, this.offset, expect, update);
     }
 
@@ -75,8 +77,11 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     }
 
     public final int get(T obj) {
-
         return U.getIntVolatile(obj, this.offset);
+    }
+    public final int getOpaque(T obj) {
+        return U.getIntVolatile(obj, this.offset);
+        //return U.getIntOpaque(obj, this.offset);
     }
 
     public final int getAndSet(T obj, int newValue) {

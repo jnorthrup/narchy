@@ -59,7 +59,7 @@ class RuleInductionTest {
 
 
         };
-        new STMLinkage(n, 1, false);
+        new STMLinkage(n, 1);
 
         d.conceptsPerIteration.set(2);
 
