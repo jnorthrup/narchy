@@ -29,21 +29,21 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
 //            return new long[] { ETERNAL, ETERNAL };
 
         long[] tt;
-        switch (rng.nextInt(3)) {
-            case 0:
-                tt = presentDuration(1); break;
-            case 1:
-                tt = taskTime(task); break;
-            case 2: {
-                boolean past =
-                        //(task.mid() < nar.time());
-                        nar.random().nextBoolean();
-                tt = pastFutureRadius(task, past, !past);
-                break;
-            }
-            default:
-                throw new UnsupportedOperationException();
-        }
+//        switch (rng.nextInt(2)) {
+//
+//            case 0:
+//                tt = taskTime(task); break;
+//            case 1: {
+//                boolean past =
+//                        //(task.mid() < nar.time());
+//                        nar.random().nextBoolean();
+                //tt = pastFutureRadius(task, past, !past);
+                tt = pastFutureRadius(task, true, true);
+//                break;
+//            }
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
 
         return tt;
     }
@@ -61,18 +61,21 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
     }
 
     private long[] pastFutureRadius(Task t, boolean past, boolean future) {
+        long now = nar.time();
+
         long[] tt = taskTime(t);
         if (tt[0]==ETERNAL) {
-            return presentDuration(4);
-        } else {
+            tt[0] = tt[1] = now;
+        }
+//            return presentDuration(4);
+//        } else {
 
-            long now = nar.time();
 
-            long range = Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now)) * 2;
+            long range = Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now));
 
             float factor = nar.random().nextFloat();
-            factor *= factor * factor; //^3
-            range = Math.round(factor * range);
+            //factor *= factor * factor; //^3
+            range = Math.round(factor * range * 2);
 
             if (past && future) {
                 return new long[]{now - range, now + range}; //future span
@@ -81,7 +84,7 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
             } else {
                 return new long[]{now - range, now}; //past span
             }
-        }
+//        }
 
     }
 

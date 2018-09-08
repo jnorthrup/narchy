@@ -10,7 +10,7 @@ import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Derivers;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.exe.UniExec;

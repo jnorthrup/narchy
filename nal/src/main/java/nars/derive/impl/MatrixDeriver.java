@@ -1,8 +1,7 @@
-package nars.derive.deriver;
+package nars.derive.impl;
 
 import com.netflix.servo.monitor.Counter;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;
@@ -21,6 +20,7 @@ import nars.link.ActivatedLinks;
 import nars.link.TaskLink;
 import nars.term.Term;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -69,59 +69,62 @@ public class MatrixDeriver extends Deriver {
 
         NAR n = d.nar;
 
-        /** temporary buffer for storing unique premises */
-        ArrayHashSet<Premise> premises = d.premiseBuffer;
-
-        int premisesMax = iterations * conceptsPerIteration.intValue() * premisesPerConcept;
-
-        hypothesize(premisesMax, (t, termlink) -> {
-
-            Premise premise = new Premise(t, termlink);
-            if (!premises.add(premise))
-                n.emotion.premiseBurstDuplicate.increment();
-
-            return true;
-        }, d);
+        Collection<Premise> premises = d.premiseBuffer;
+        try {
 
 
-        int s = premises.size();
-        if (s == 0)
-            return;
+            int premisesMax = iterations * conceptsPerIteration.intValue() * premisesPerConcept;
 
-        if (s > 2)
-            ((FasterList<Premise>) (premises.list)).sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
+            hypothesize(premisesMax, (t, termlink) -> {
+
+                Premise premise = new Premise(t, termlink);
+                if (!premises.add(premise))
+                    n.emotion.premiseBurstDuplicate.increment();
+
+                return true;
+            }, d);
 
 
+            int s = premises.size();
+            if (s == 0)
+                return;
 
-        int matchTTL = matchTTL();
-        int deriveTTL = n.deriveBranchTTL.intValue();
-
-        premises.forEach(p -> {
-
-            Counter counter;
-            if (p.match(d, matchTTL)) {
-
-                if (rules.derivable(d)) {
-
-                    d.derive(deriveTTL);
-
-                    premiseFired(p, d);
-                    counter = n.emotion.premiseFire;
-
-                } else {
-                    premiseUnderivable(p, d);
-                    counter = n.emotion.premiseUnderivable;
-                }
-
-            } else {
-                premiseUnmatched(p);
-                counter = n.emotion.premiseFailMatch;
+            if (s > 2) {
+//            ((FasterList<Premise>) (((ArrayHashSet)premises).list)).sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
+                ((FasterList<Premise>) premises).sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
             }
 
-            counter.increment();
-        });
 
-        premises.clear();
+            int matchTTL = matchTTL();
+            int deriveTTL = n.deriveBranchTTL.intValue();
+
+            premises.forEach(p -> {
+
+                Counter counter;
+                if (p.match(d, matchTTL)) {
+
+                    if (rules.derivable(d)) {
+
+                        d.derive(deriveTTL);
+
+                        premiseFired(p, d);
+                        counter = n.emotion.premiseFire;
+
+                    } else {
+                        premiseUnderivable(p, d);
+                        counter = n.emotion.premiseUnderivable;
+                    }
+
+                } else {
+                    premiseUnmatched(p);
+                    counter = n.emotion.premiseFailMatch;
+                }
+
+                counter.increment();
+            });
+        } finally {
+            premises.clear();
+        }
 
 
     }

@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.Derivers;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.gui.NARui;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.link.Activate;

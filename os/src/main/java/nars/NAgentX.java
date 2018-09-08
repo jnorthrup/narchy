@@ -15,7 +15,7 @@ import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;

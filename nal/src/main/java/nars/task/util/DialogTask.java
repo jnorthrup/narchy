@@ -6,7 +6,7 @@ import jcog.event.Ons;
 import nars.NAR;
 import nars.Task;
 import nars.derive.Deriver;
-import nars.derive.deriver.SimpleDeriver;
+import nars.derive.impl.SimpleDeriver;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

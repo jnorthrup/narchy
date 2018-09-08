@@ -2,7 +2,7 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.byt.DynBytes;
-import jcog.data.set.ArrayHashSet;
+import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.ScalarValue;
 import nars.*;
@@ -32,15 +32,14 @@ import nars.truth.func.TruthFunc;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
@@ -63,14 +62,15 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
-    //    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
-    public final ArrayHashSet<Premise> premiseBuffer =
-            new ArrayHashSet<>(256) {
-                @Override
-                public Set<Premise> newSet() {
-                    return new UnifiedSet<>(256, 0.99f);
-                }
-            };
+//    //    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
+    public final Collection<Premise> premiseBuffer =
+        new FasterList<>(1024);
+//            new ArrayHashSet<>(256) {
+//                @Override
+//                public Set<Premise> newSet() {
+//                    return new UnifiedSet<>(256, 0.99f);
+//                }
+//            };
 
     public final Anon anon;
 
@@ -576,7 +576,7 @@ public class Derivation extends PreDerivation {
     public Derivation clear() {
         anon.clear();
         taskUniques = 0;
-        premiseBuffer.clear();
+//        premiseBuffer.clear();
         untransform.clear();
         termutes.clear();
         time = ETERNAL;

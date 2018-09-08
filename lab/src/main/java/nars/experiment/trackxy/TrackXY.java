@@ -14,7 +14,7 @@ import nars.agent.util.RLBooster;
 import nars.concept.action.SwitchAction;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.exe.Attention;
 import nars.exe.UniExec;
 import nars.gui.EmotionPlot;

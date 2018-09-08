@@ -7,7 +7,7 @@ import jcog.data.graph.GraphMeter;
 import nars.*;
 import nars.derive.Deriver;
 import nars.derive.budget.DefaultDeriverBudgeting;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Disabled;

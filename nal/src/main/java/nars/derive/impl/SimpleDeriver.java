@@ -1,4 +1,4 @@
-package nars.derive.deriver;
+package nars.derive.impl;
 
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;

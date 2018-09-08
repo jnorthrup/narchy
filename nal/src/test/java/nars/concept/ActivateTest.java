@@ -3,7 +3,7 @@ package nars.concept;
 import jcog.pri.PLink;
 import nars.*;
 import nars.derive.Derivers;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.link.Activate;
 import nars.link.ActivatedLinks;
 import nars.term.Term;

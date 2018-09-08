@@ -2,7 +2,7 @@ package nars;
 
 import nars.audio.NARAudio;
 import nars.derive.Derivers;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.exe.MultiExec;
 import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;

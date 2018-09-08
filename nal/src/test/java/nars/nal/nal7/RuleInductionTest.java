@@ -5,7 +5,7 @@ import jcog.Texts;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;

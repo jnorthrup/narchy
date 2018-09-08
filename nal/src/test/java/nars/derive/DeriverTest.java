@@ -4,7 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.PatternIndex;
 import nars.derive.premise.PremiseDeriver;

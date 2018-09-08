@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.derive.Deriver;
 import nars.derive.budget.DefaultDeriverBudgeting;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.nal.multistep.PatrickTests;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;

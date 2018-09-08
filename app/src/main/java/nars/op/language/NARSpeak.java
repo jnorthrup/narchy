@@ -10,7 +10,7 @@ import nars.Narsese;
 import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.derive.Derivers;
-import nars.derive.deriver.MatrixDeriver;
+import nars.derive.impl.MatrixDeriver;
 import nars.op.java.Opjects;
 import nars.term.Functor;
 import nars.term.Term;
