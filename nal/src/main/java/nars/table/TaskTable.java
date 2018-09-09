@@ -79,16 +79,23 @@ public interface TaskTable {
     @Nullable default Task match(long start, long end, Term template, NAR nar) { return match(start, end, template, null, nar); }
 
     @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return !isEmpty() ? Answer.relevance(!(this instanceof QuestionTable), Answer.TASK_LIMIT, start, end, template, filter, nar)
-                .match(this).task(false, true, false) : null;
+        return !isEmpty() ? matching(start, end, template, filter, nar).task(false, true, false) : null;
+    }
+
+    default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+        return matching(start, end, Answer.TASK_LIMIT, template, filter, nar);
+    }
+
+    default Answer matching(long start, long end, int limit, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+        return Answer.relevance(!(this instanceof QuestionTable), limit, start, end, template, filter, nar)
+                .match(this);
     }
 
     @Nullable default Task answer(long start, long end, Term template, NAR n) {
         return answer(start, end, template, null, n);
     }
     @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
-        return !isEmpty() ? Answer.relevance(!(this instanceof QuestionTable), Answer.TASK_LIMIT, start, end, template, filter, n).
-                match(this).task(true, true, true) : null;
+        return !isEmpty() ? matching(start, end, template, filter, n).task(true, true, true) : null;
     }
 
 
@@ -98,8 +105,6 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
-        return Answer.relevance(!(this instanceof QuestionTable),
-                Answer.TASK_LIMIT, start, end, template, null, nar)
-                .match(this).task(false, false, false);
+        return matching(start, end, template, null, nar).task(false, false, false);
     }
 }

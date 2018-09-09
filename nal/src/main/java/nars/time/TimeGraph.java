@@ -1124,10 +1124,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (subTimes == null)
             return DTERNAL;
         else {
-            if (subTimes.length == 1)
-                return subTimes[0];
-            else
-                return subTimes[random().nextInt(subTimes.length)];
+            return subTimes[subTimes.length == 1 ? 0 : random().nextInt(subTimes.length)];
         }
     }
 

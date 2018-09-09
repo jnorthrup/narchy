@@ -195,16 +195,7 @@ public class Conj extends ByteAnonMap {
         return x;
     }
 
-    public static Term firstEventTerm(Term x) {
-        if (x.op() != CONJ)
-            return x;
-        final Term[] w = new Term[1];
-        x.eventsWhile((when, what) -> {
-            w[0] = what;
-            return false;
-        }, 0, true, false, false, 0);
-        return w[0];
-    }
+
 
     public static boolean concurrent(int dt) {
         switch (dt) {
@@ -1004,12 +995,13 @@ public class Conj extends ByteAnonMap {
 
             int removals = 0;
             for (int ii : i) {
-                int bi = ArrayUtils.indexOf(b, (byte) ii);
+                assert(ii!=0);
+                int bi = ArrayUtils.indexOf(b, (byte) ii, 0, num);
                 if (bi != -1) {
-                    if (b[bi] != 0) {
+                    //if (b[bi] != 0) {
                         b[bi] = 0;
                         removals++;
-                    }
+                    //}
                 }
             }
 
@@ -1022,15 +1014,18 @@ public class Conj extends ByteAnonMap {
             } else {
 
 
-                MetalBitSet toRemove = MetalBitSet.bits(b.length);
+                //sort all zeros to the end
+                ArrayUtils.sort(b, 0, num-1, (byte x)-> x==0 ? Byte.MIN_VALUE : x);
 
-                for (int zeroIndex = 0; zeroIndex < b.length; zeroIndex++) {
-                    if (b[zeroIndex] == 0)
-                        toRemove.set(zeroIndex);
-                }
-
-                b = ArrayUtils.removeAll(b, toRemove);
-                event.put(at, b);
+//                MetalBitSet toRemove = MetalBitSet.bits(b.length);
+//
+//                for (int zeroIndex = 0; zeroIndex < b.length; zeroIndex++) {
+//                    if (b[zeroIndex] == 0)
+//                        toRemove.set(zeroIndex);
+//                }
+//
+//                b = ArrayUtils.removeAll(b, toRemove);
+//                event.put(at, b);
                 return 1;
             }
         }

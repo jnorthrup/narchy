@@ -13,13 +13,13 @@ dependencies {
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
     compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10'
     compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.16'
-    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.16') {
+    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.17') {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }
     compile group: 'com.google.guava', name: 'guava', version: '26.0-jre'
     compile group: 'org.ow2.asm', name: 'asm-commons', version: '6.2.1'
-    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.8.21'
+    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.8.22'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
 

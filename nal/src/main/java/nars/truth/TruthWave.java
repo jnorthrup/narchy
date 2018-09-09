@@ -1,5 +1,6 @@
 package nars.truth;
 
+import jcog.WTF;
 import nars.NAR;
 import nars.table.BeliefTable;
 import nars.time.Tense;
@@ -78,11 +79,16 @@ public class TruthWave {
         b.forEachTask(minT, maxT, x -> {
             int ss = size[0];
             if (ss >= s) { 
-                return;
+                throw new WTF("truthwave capacity exceeded");
             }
 
             long xs = x.start();
+
+            if (xs > maxT)
+                return; //OOB
             long xe = x.end();
+            if (xe < minT)
+                return; //OOB
 
             int j = (size[0]++) * ENTRY_SIZE;
             load(t, j, minT, maxT, xs, xe, x);

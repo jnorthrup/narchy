@@ -87,7 +87,6 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
             return equals(event) ? 0 : DTERNAL;
         }
 
-
         @Override
         public final int dt() {
             return DTERNAL;

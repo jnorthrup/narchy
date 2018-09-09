@@ -173,7 +173,7 @@ class BooleanTest {
 
         Param.DEBUG = true;
         NAR n = NARS.tmp();
-        n.log();
+        //n.log();
         n.termVolumeMax.set(8);
         n.believe("--(  x &&   y)");
         n.believe("  (  x && --y)");

@@ -22,7 +22,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
 
     public static Atomic label(int subterm) {
-        return (subterm == 0 ? Derivation.Task : Derivation.Belief);
+        return (subterm == 0 ? Derivation.TaskTerm : Derivation.BeliefTerm);
     }
 
     /**

@@ -5,7 +5,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.unify.op.TermMatch;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -23,13 +22,19 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     public final Function<X, Term> resolve;
 
     public TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, Function<X, Term> resolve) {
-        super($.func(Atomic.the(match.getClass().getSimpleName()), $.the(resolve.toString()), match.param())
-                .negIf(!trueOrFalse));
+        super(name(match, resolve).negIf(!trueOrFalse));
 
         this.resolve = resolve;
         this.match = match;
         this.trueOrFalse = trueOrFalse;
         this.exactOrSuper = exactOrSuper;
+    }
+
+    static Term name(TermMatch match, Function resolve) {
+        Atomic a = Atomic.the(match.getClass().getSimpleName());
+        Term r = $.the(resolve.toString());
+        Term p = match.param();
+        return p!=null ? $.func(a, r, p) : $.func(a, r);
     }
 
 

@@ -12,7 +12,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.TermHashMap;
 import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
@@ -78,7 +77,7 @@ public class EllipsisTest {
 
                 System.out.println(seed + ": " + x + " unify " + y + " => " + r);
 
-                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax, new TermHashMap()) {
+                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax) {
 
                     @Override
                     public void tryMatch() {

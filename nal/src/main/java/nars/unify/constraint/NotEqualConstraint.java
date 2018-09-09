@@ -3,6 +3,7 @@ package nars.unify.constraint;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -11,6 +12,11 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     public NotEqualConstraint(Term target, Term other) {
         super(target, other, "neq");
+    }
+
+    @Override
+    protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        return new NotEqualConstraint(newX, newY);
     }
 
     @Override
@@ -37,6 +43,11 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
+        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+            return new NotEqualRootConstraint(newX, newY);
+        }
+
+        @Override
         public float cost() {
             return 0.15f;
         }
@@ -59,9 +70,15 @@ public final class NotEqualConstraint extends RelationConstraint {
             super(target, other, "eqNeg");
         }
 
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+            return new EqualNegConstraint(newX, newY);
+        }
+
         @Override
         public float cost() {
-            return 0.05f;
+            return 0.15f;
         }
 
         @Override
@@ -106,8 +123,13 @@ public final class NotEqualConstraint extends RelationConstraint {
      */
     public static final class NeqRootAndNotRecursiveSubtermOf extends RelationConstraint {
 
-        public NeqRootAndNotRecursiveSubtermOf(Term target, Term x) {
-            super(target, x, "neqRCom");
+        public NeqRootAndNotRecursiveSubtermOf(Term x, Term y) {
+            super(x, y, "neqRCom");
+        }
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+            return new NeqRootAndNotRecursiveSubtermOf(newX, newY);
         }
 
         @Override

@@ -27,6 +27,7 @@ import nars.op.Factorize;
 import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
@@ -54,6 +55,7 @@ import java.util.function.Supplier;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.widget.tab.TabPane.TabWall;
 
@@ -319,13 +321,13 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 2, 3));
         new MatrixDeriver(Derivers.nal(n, 4, 4));
         new MatrixDeriver(Derivers.nal(n, 5, 6));
-        new MatrixDeriver(Derivers.nal(n, 7, 8));
-        new MatrixDeriver(Derivers.nal(n, 0, 0, "motivation.nal"));
+        new MatrixDeriver(Derivers.rules(n, "motivation.nal"));
 
-        //new STMLinkage(n, 1, false);
+        new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 3, 16);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
+        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> true), 4, 64);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
         Introduction factorizer = new Factorize.FactorIntroduction(64, n);

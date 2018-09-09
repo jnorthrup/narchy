@@ -12,48 +12,44 @@ public class Derivers {
 
     /** HACK range is inclusive */
     private static Set<String> standard(int minLevel, int maxLevel, String... otherFiles) {
-        Set<String> files = new TreeSet();
+        Set<String> f = new TreeSet();
         for (int level = minLevel; level <= maxLevel; level++) {
             switch (level) {
-                case 8:
-                    
-                    
-                case 7:
-                    
-                    
+
                 case 6:
-                    files.add("nal6.nal");
-                    files.add("nal6.guess.nal");
-                    files.add("nal6.layer2.nal");
-                    files.add("nal6.to.nal3.nal");
+                    f.add("nal6.nal");
+                    f.add("nal6.decompose.nal");
+                    f.add("nal6.guess.nal");
+                    f.add("nal6.layer2.nal");
+                    f.add("nal6.to.nal3.nal");
                     //files.add("nal6.misc.nal"); //<- suspect
                     //files.add("nal6.pedantic.nal"); //<- spam
 
-                    files.add("induction.nal");
-                    files.add("hol.nal");
+                    f.add("induction.nal");
+                    f.add("hol.nal");
                     break;
-                case 5:
                 case 4:
-                    files.add("nal4.nal");
+                    f.add("nal4.nal");
                     break;
                 case 3:
+                    f.add("nal3.nal");
+                    f.add("nal3.guess.nal");
+                    break;
                 case 2:
-                    files.add("nal3.nal");
-                    files.add("nal3.guess.nal");
-                    files.add("nal2.nal");
-                    files.add("nal2.guess.nal");
+                    f.add("nal2.nal");
+                    f.add("nal2.guess.nal");
                     break;
                 case 1:
-                    files.add("analogy.nal");
-                    files.add("nal1.nal");
-                    files.add("nal1.guess.nal");
+                    f.add("analogy.nal");
+                    f.add("nal1.nal");
+                    f.add("nal1.guess.nal");
                     break;
             }
         }
 
-        Collections.addAll(files, otherFiles);
+        Collections.addAll(f, otherFiles);
 
-        return files;
+        return f;
     }
 
 
@@ -72,6 +68,9 @@ public class Derivers {
 
 
 
+    public static PremiseDeriverRuleSet rules(NAR nar, String... files) {
+        return nal(nar, 0, 0, files);
+    }
 
     /** standard ruleset */
     public static PremiseDeriverRuleSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {

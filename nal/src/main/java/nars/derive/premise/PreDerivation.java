@@ -1,6 +1,5 @@
 package nars.derive.premise;
 
-import jcog.version.Versioned;
 import nars.Op;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -9,7 +8,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Map;
 import java.util.Random;
 
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm).
@@ -30,8 +28,8 @@ public abstract class PreDerivation extends Unify {
     public final RoaringBitmap can = new RoaringBitmap();
     public short[] will = ArrayUtils.EMPTY_SHORT_ARRAY;
 
-    public PreDerivation(@Nullable Op type, Random random, int stackMax, Map<Term, Versioned<Term>> termMap) {
-        super(type, random, stackMax, termMap);
+    public PreDerivation(@Nullable Op type, Random random, int stackMax) {
+        super(type, random, stackMax);
         symmetric = false;
     }
 

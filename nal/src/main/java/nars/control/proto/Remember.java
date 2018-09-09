@@ -29,9 +29,9 @@ import static nars.time.Tense.ETERNAL;
 public class Remember extends AbstractTask {
     public Task input;
 
-    final FasterList<ITask> next = new FasterList(2);
-    final FasterList<Task> remembered = new FasterList(2);
-    public final FasterList<Task> forgotten = new FasterList(2);
+    final FasterList<ITask> next = new FasterList(0);
+    final FasterList<Task> remembered = new FasterList(0);
+    public final FasterList<Task> forgotten = new FasterList(0);
     public final Concept concept;
 
 
@@ -165,7 +165,6 @@ public class Remember extends AbstractTask {
             //TODO filter next tasks with any involving that task
         }
         add(x, this.forgotten);
-        x.delete();
         if (input == x)
             input = null;
     }

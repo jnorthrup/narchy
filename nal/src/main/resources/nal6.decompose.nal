@@ -1,9 +1,19 @@
 //conjunction/disjunction structural decomposition
 
-    //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOf(C,X)     |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Intersect)
-    C, X, eventOfNeg(C,X)  |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Intersect)
+  //Conjunction structural decompose: C = (&&,a,b,..)
+    C, X,                                 eventOf(C,X)     |-   conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, --is(X,"#"),                     eventOf(C,X)     |-   X, (Belief:StructuralDeduction, Time:TaskSubEventPos)
+    C, X, --is(X,"#"),conjSimultaneous(C), eventOf(C,X)     |-   X, (  Goal:StructuralDeduction, Time:TaskSubEventPos)
+    C, X,                                 eventOfNeg(C,X)  |-   conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, --is(X,"#"),                     eventOfNeg(C,X)  |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
+    C, X, --is(X,"#"),conjSimultaneous(C), eventOfNeg(C,X)  |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
 
-    //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
-    D, X, eventOfNeg(D,X) |- (--,conjWithout(D,--X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN, Time:Intersect)
-    D, X, eventOf(D,X)    |- (--,conjWithout(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN, Time:Intersect)
+  //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
+    D, X,                                 eventOfNeg(D,X)  |- --conjWithout(D,--X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    D, X,                                 eventOf(D,X)     |- --conjWithout(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+
+
+    //D, X, --is(X,"#"),                     eventOf(D,X)     |- --X,  (Belief:StructuralDeductionWeakN, Time:TaskSubEventPos)
+    //D, X, --is(X,"#"),conjSimultaneous(D), eventOf(D,X)     |- --X,  (  Goal:StructuralDeductionWeakN, Time:TaskSubEventPos)
+    //D, X, --is(X,"#"),                     eventOfNeg(D,X)  |-   X,  (Belief:StructuralDeductionWeakN, Time:TaskSubEventNeg)
+    //D, X, --is(X,"#"),conjSimultaneous(D), eventOfNeg(D,X)  |-   X,  (  Goal:StructuralDeductionWeakN, Time:TaskSubEventNeg)

@@ -4,7 +4,9 @@ import nars.$;
 import nars.Op;
 import nars.term.Term;
 import nars.unify.Unify;
-import nars.unify.constraint.MatchConstraint;
+import nars.unify.constraint.UnifyConstraint;
+
+import javax.annotation.Nullable;
 
 abstract public class TermMatch {
 
@@ -24,10 +26,11 @@ abstract public class TermMatch {
     /**
      * term representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
      */
+    @Nullable
     public abstract Term param();
 
-    public MatchConstraint constraint(Term x, boolean trueOrFalse) {
-        return new MyMatchConstraint(x, trueOrFalse);
+    public UnifyConstraint constraint(Term x, boolean trueOrFalse) {
+        return new MyUnifyConstraint(x, trueOrFalse);
     }
 
     public abstract float cost();
@@ -152,11 +155,11 @@ abstract public class TermMatch {
         }
     }
 
-    private final class MyMatchConstraint extends MatchConstraint {
+    private final class MyUnifyConstraint extends UnifyConstraint {
 
         private final boolean trueOrFalse;
 
-        MyMatchConstraint(Term x, boolean trueOrFalse) {
+        MyUnifyConstraint(Term x, boolean trueOrFalse) {
             super(x, TermMatch.this.getClass().getSimpleName(), TermMatch.this.param());
             this.trueOrFalse = trueOrFalse;
         }

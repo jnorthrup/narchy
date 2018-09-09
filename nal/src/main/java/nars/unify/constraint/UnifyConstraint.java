@@ -24,7 +24,7 @@ import static nars.derive.premise.PremiseRuleSource.pp;
 
 
 /** must be stateless */
-public abstract class MatchConstraint extends AbstractPred<Derivation> {
+public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 
 //    public static boolean valid(Term x, @Nullable Versioned<MatchConstraint> c, Unify u) {
 //        return c == null || !c.anySatisfyWith((cc,X) -> cc.invalid(X, u), x);
@@ -55,13 +55,13 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
     private final static Atomic UnifyIf = Atomic.the("unifyIf");
     public final Variable x;
 
-    MatchConstraint(Term x, Term id) {
+    UnifyConstraint(Term x, Term id) {
         super(id);
         this.x = (Variable) x;
     }
 
-    protected MatchConstraint(Term x, String func, Term... args) {
-        this(x, $.funcFast(UnifyIf, x, $.funcFast(func, args)));
+    protected UnifyConstraint(Term x, String func, @Nullable Term... args) {
+        this(x, $.funcFast(UnifyIf, x, args!=null ? $.funcFast(func, args) : $.the(func)));
     }
 
 //    public static MatchConstraint[] combineConstraints(MatchConstraint[] cc) {
@@ -178,24 +178,24 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
     }
 
-    public static final MatchConstraint[] EmptyMatchConstraints = new MatchConstraint[0];
+    public static final UnifyConstraint[] EMPTY_UNIFY_CONSTRAINTS = new UnifyConstraint[0];
 
 
-    public static MatchConstraint[] the(Set<MatchConstraint> c) {
+    public static UnifyConstraint[] the(Set<UnifyConstraint> c) {
         if (c.size() < 2)
-            return c.toArray(EmptyMatchConstraints);
+            return c.toArray(EMPTY_UNIFY_CONSTRAINTS);
         else
-            return CompoundConstraint.the(c.stream()).toArray(MatchConstraint[]::new);
+            return CompoundConstraint.the(c.stream()).toArray(UnifyConstraint[]::new);
     }
 
-    static final class CompoundConstraint extends MatchConstraint {
+    static final class CompoundConstraint extends UnifyConstraint {
 
 
         static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
 
-        private final MatchConstraint[] cache;
+        private final UnifyConstraint[] cache;
 
-        private CompoundConstraint(MatchConstraint[] c) {
+        private CompoundConstraint(UnifyConstraint[] c) {
             super(c[0].x, $.funcFast(UnifyIf, c[0].x, $.sFast(c)));
             this.cache = c;
 
@@ -209,18 +209,18 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         /**
          * groups the constraints into their respective targets
          */
-        private static Stream<MatchConstraint> the(Stream<MatchConstraint> c) {
-            ListMultimap<Term, MatchConstraint> m = matchConstraintMapBuilder.build();
+        private static Stream<UnifyConstraint> the(Stream<UnifyConstraint> c) {
+            ListMultimap<Term, UnifyConstraint> m = matchConstraintMapBuilder.build();
             c.forEach(x -> m.put(x.x, x));
             return m.asMap().entrySet().stream().map(e -> {
-                Collection<MatchConstraint> cc = e.getValue();
+                Collection<UnifyConstraint> cc = e.getValue();
                 int ccn = cc.size();
 
                 assert (ccn > 0);
                 if (ccn == 1) {
                     return (cc.iterator().next());
                 } else {
-                    MatchConstraint[] d = cc.toArray(new MatchConstraint[ccn]);
+                    UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
                     Arrays.sort(d, PREDICATE.sortByCostIncreasing);
                     return new CompoundConstraint(d);
                 }
@@ -230,12 +230,12 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
         @Override
         public float cost() {
-            return Util.sum(MatchConstraint::cost, cache);
+            return Util.sum(UnifyConstraint::cost, cache);
         }
 
         @Override
         public boolean invalid(Term y, Unify f) {
-            for (MatchConstraint c : cache) {
+            for (UnifyConstraint c : cache) {
                 if (c.invalid(y, f))
                     return true;
             }

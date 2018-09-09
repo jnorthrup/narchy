@@ -14,7 +14,7 @@ import static nars.Op.*;
  */
 final public class TaskPunctuation extends AbstractPred<PreDerivation> {
 
-    public static final float COST = 0.05f;
+    private static final float COST = 0.01f;
     public final byte punc;
 
 

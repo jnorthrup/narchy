@@ -92,21 +92,22 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
         private final TruthWave projected, tasks;
         private final boolean beliefOrGoal;
         private final Colorize colorize;
-        private static final float taskHeight = 0.04f;
+        private static final float taskWidthMin = 0.01f;
+        private static final float taskHeightMin = 0.04f;
 
         public TruthGrid(int tDiv, int fDiv, boolean beliefOrGoal) {
           super(tDiv, fDiv);
           projected = new TruthWave(tDiv);
-          tasks = new TruthWave(tDiv);
+          tasks = new TruthWave(256);
           this.beliefOrGoal = beliefOrGoal;
-                this.colorize = beliefOrGoal ?
-                            (ggl, frq, cnf) -> {
-                                float a = 0.65f + 0.2f * cnf;
-                                ggl.glColor4f(0.25f + 0.75f * cnf, 0.1f * (1f - cnf), 0, a);
+          this.colorize = beliefOrGoal ?
+                            (gl, frq, cnf) -> {
+                                float a = 0.4f + 0.2f * cnf;
+                                gl.glColor4f(0.25f + 0.75f * cnf, 0.1f * (1f - cnf), 0, a);
                             } :
-                            (ggl, frq, cnf) -> {
-                                float a = 0.65f + 0.2f * cnf;
-                                ggl.glColor4f(0.1f * (1f - cnf), 0.25f + 0.75f * cnf, 0, a);
+                            (gl, frq, cnf) -> {
+                                float a = 0.4f + 0.2f * cnf;
+                                gl.glColor4f(0, 0.25f + 0.75f * cnf, 0.1f * (1f - cnf), a);
                             };
         }
 
@@ -122,7 +123,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
             super.paint(gl, surfaceRender);
             Draw.bounds(bounds, gl, ggl->{
                 renderWaveLine( /*hack*/ start, end, ggl, projected, (f, c)->f, colorize);
-                renderTasks(start, end, ggl, tasks, beliefOrGoal);
+                renderTasks(start, end, ggl, tasks, colorize);
             });
         }
 
@@ -133,12 +134,15 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
 
 
-        private void renderTasks(long minT, long maxT, GL2 gl, TruthWave wave, boolean beliefOrGoal) {
+        private void renderTasks(long minT, long maxT, GL2 gl, TruthWave wave, Colorize colorize) {
 //            float[] confMinMax = wave.range();
 //            if (confMinMax[0] == confMinMax[1]) {
 //                confMinMax[0] = 0;
 //                confMinMax[1] = 1;
 //            }
+            final float ph =
+                    Math.max(taskHeightMin, nar.freqResolution.floatValue());
+
             wave.forEach((freq, conf, s, e) -> {
 
                 boolean eternal = (s != s);
@@ -146,30 +150,25 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
                     return;
 
 
-
-
-
-                final float ph =
-                        taskHeight;
-
 //                    if (e >= minT && s <= maxT) {
 //                        s = Math.max(minT, s);
 //                        e = Math.min(maxT, e);
 //                    }
                     float start = xTime(minT, maxT, s);
                 float end = xTime(minT, maxT, e + 1);
+                if (start == end)
+                    return; //squashed against the edge or out of bounds completely
 
 
 
-                if (beliefOrGoal) {
-                    gl.glColor4f(1f, 0, 0.25f, 0.15f + 0.75f * conf);
-                } else {
-                    gl.glColor4f(0f, 1, 0.25f, 0.15f + 0.75f * conf);
-                }
+
+                colorize.colorize(gl, freq, conf);
+
+
                 float y = freq - ph / 2;
                 Draw.rect(gl,
                         start, y,
-                        end-start, ph);
+                        Math.max(taskWidthMin,end-start), ph);
 
 
             });

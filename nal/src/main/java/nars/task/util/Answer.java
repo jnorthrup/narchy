@@ -399,6 +399,12 @@ public class Answer implements Consumer<Task> {
         return tasks.isEmpty();
     }
 
+    @Nullable public Task any() {
+        if (tasks.isEmpty())
+            return null;
+        return tasks.top();
+    }
+
 //
 //    @Nullable
 //    private Truth truth(TruthPolation p) {

@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.unify.Unify;
 
-@Deprecated public class SubsMin extends MatchConstraint {
+@Deprecated public class SubsMin extends UnifyConstraint {
 
     final int min;
 

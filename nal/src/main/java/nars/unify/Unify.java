@@ -1,6 +1,7 @@
 package nars.unify;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
 import jcog.version.Versioning;
@@ -11,7 +12,7 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.util.TermHashMap;
 import nars.term.util.transform.Subst;
-import nars.unify.constraint.MatchConstraint;
+import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.jetbrains.annotations.Nullable;
@@ -70,18 +71,21 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     protected Unify(@Nullable Op type, Random random, int stackMax) {
-        this(type, random, stackMax, new TermHashMap());
+        this(type == null ? Op.Variable : type.bit, random, stackMax);
     }
 
     protected Unify(int varBits, Random random, int stackMax) {
-        this(varBits, random, stackMax, new TermHashMap());
+        this(varBits, random, stackMax, new TermHashMap() {
+            @Override
+            public Object put(Term key, Object value) {
+                if (key instanceof Op.ImDep)
+                    throw new WTF();
+                return super.put(key, value);
+            }
+        });
     }
 
-    protected Unify(@Nullable Op type, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {
-        this(type == null ? Op.Variable : type.bit, random, stackMax, termMap);
-    }
-
-    protected Unify(@Nullable int varBits, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {
+    protected Unify(int varBits, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {
         super(stackMax);
 
         this.random = random;
@@ -106,9 +110,6 @@ public abstract class Unify extends Versioning implements Subst {
     protected abstract void tryMatch();
 
 
-    public final boolean tryMutate(Termutator[] chain, int next, int start) {
-        return tryMutate(chain, next) && revertLive(start);
-    }
 
     public final boolean tryMutate(Termutator[] chain, int next) {
 
@@ -138,7 +139,8 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final Term resolve(final Term x) {
         Term /*Variable*/ z = x, y;
-        while (z instanceof Variable && (y = xy.get(z)) != null) {
+
+        while (!constant(z) && (y = xy.get(z)) != null) {
             //assert(y!=z && y!=x);
             z = y;
         }
@@ -161,6 +163,9 @@ public abstract class Unify extends Versioning implements Subst {
      * NOT thread safe, use from single thread only at a time
      */
     public final boolean unify(Term x, Term y, boolean finish) {
+
+        if (!(ttl > 0))
+            throw new WTF("likely needs some TTL");
 
 
         if (x.unify(y, this)) {
@@ -241,15 +246,15 @@ public abstract class Unify extends Versioning implements Subst {
      * whether is constant with respect to the current matched variable type
      */
     public boolean constant(Termlike x) {
-        return !x.hasAny(varBits);
+        return !x.hasAny(varBits) || (x instanceof Op.ImDep);
     }
 
 
-    public boolean constrain(MatchConstraint m) {
+    public boolean constrain(UnifyConstraint m) {
         return constrain(m.x, m);
     }
 
-    private boolean constrain(Variable target, MatchConstraint... mm) {
+    private boolean constrain(Variable target, UnifyConstraint... mm) {
         ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target)).constrain(mm);
         return true;
     }
@@ -260,7 +265,7 @@ public abstract class Unify extends Versioning implements Subst {
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
-    @Nullable public Versioned<MatchConstraint> constraints(Variable v) {
+    @Nullable public Versioned<UnifyConstraint> constraints(Variable v) {
         ConstrainedVersionedTerm vv = ((ConstrainedVersionedTerm) xy.map.get(v));
         if (vv!=null) {
             return vv.constraints;
@@ -285,12 +290,12 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
-    final class ConstrainedVersionedTerm extends Versioned<Term> implements Predicate2<MatchConstraint, Term> {
+    final class ConstrainedVersionedTerm extends Versioned<Term> implements Predicate2<UnifyConstraint, Term> {
 
         /**
          * lazily constructed
          */
-        Versioned<MatchConstraint> constraints;
+        Versioned<UnifyConstraint> constraints;
 
         ConstrainedVersionedTerm() {
             super(Unify.this, new Term[1]);
@@ -303,26 +308,26 @@ public abstract class Unify extends Versioning implements Subst {
         }
 
         private boolean valid(Term x) {
-            Versioned<MatchConstraint> c = this.constraints;
+            Versioned<UnifyConstraint> c = this.constraints;
             //return MatchConstraint.valid(x, c);
             return c == null || !c.anySatisfyWith(this, x);
         }
 
-        void constrain(MatchConstraint... mm) {
+        void constrain(UnifyConstraint... mm) {
 
-            Versioned<MatchConstraint> c = this.constraints;
+            Versioned<UnifyConstraint> c = this.constraints;
             if (c == null)
                 c = constraints = new Versioned<>(Unify.this, 4);
 
-            for (MatchConstraint m : mm) {
-                Versioned<MatchConstraint> wasSet = c.set(m);
+            for (UnifyConstraint m : mm) {
+                Versioned<UnifyConstraint> wasSet = c.set(m);
                 assert (wasSet != null);
             }
 
         }
 
         @Override
-        public boolean accept(MatchConstraint c, Term x) {
+        public boolean accept(UnifyConstraint c, Term x) {
             return c.invalid(x, Unify.this);
         }
     }

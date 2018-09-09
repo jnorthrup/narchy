@@ -615,7 +615,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     @Override
     public long tableDur() {
-        TaskRegion root = (TaskRegion) root().bounds();
+        TaskRegion root = bounds();
         return root == null ? 0 : root.range();
     }
 
@@ -676,6 +676,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     public void print(PrintStream out) {
         forEachTask(t -> out.println(t.toString(true)));
         stats().print(out);
+    }
+
+    public int capacity() {
+        return capacity;
+    }
+
+    @Nullable public TaskRegion bounds() {
+        return (TaskRegion) root().bounds();
     }
 
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {

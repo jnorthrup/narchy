@@ -21,6 +21,7 @@
 package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.TODO;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.IO;
@@ -31,11 +32,12 @@ import nars.subterm.TermList;
 import nars.term.anon.Anon;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -394,11 +396,6 @@ public interface Compound extends Term, IPair, Subterms {
         if (equals(event))
             return new int[]{0};
 
-
-        int dt = dt();
-        if (dt == DTERNAL || dt == XTERNAL)
-            return null;
-
         Op op = op();
         if (op != CONJ)
             return null;
@@ -406,14 +403,40 @@ public interface Compound extends Term, IPair, Subterms {
         if (impossibleSubTerm(event))
             return null;
 
-        RoaringBitmap found = new RoaringBitmap();
+        int dt = dt();
+        if (dt == DTERNAL || dt == 0) {
+            int[] tt = null;
+            boolean needDedup = false;
+            for (Term x : subterms()) {
+                int[] ss = x.subTimes(event);
+                if (ss!=null) {
+                    if (tt == null)
+                        tt = ss;
+                    else if (!Arrays.equals(ss, tt)) {
+                        tt = ArrayUtils.addAll(ss, tt);
+                        needDedup = true;
+                    }
+                }
+            }
+            if (needDedup) {
+                tt = ArrayUtils.removeDuplicates(tt);
+            }
+            return tt;
+        }
+
+        if (dt == XTERNAL)
+            return null;
+
+
+
+        int[][] found = new int[1][];
         if ((subTimesWhile(event, (when) -> {
-            found.add(when);
+            found[0] = found[0] == null ? new int[] { when } : ArrayUtils.add(found[0], when);
             return true;
         })) == 0)
             return null;
 
-        return found.toArray();
+        return found[0];
     }
 
 
@@ -479,7 +502,7 @@ public interface Compound extends Term, IPair, Subterms {
                             level))
                         return false;
 
-                    if (changeDT)
+                    if (changeDT && i < s-1)
                         t += dt + st.eventRange();
                 }
 

@@ -28,6 +28,15 @@ abstract public class MetalBitSet {
         else clear(i);
     }
 
+    /** finds the next bit matching 'what' between from (inclusive) and to (exclusive), or -1 if nothing found */
+    public int next(boolean what, int from, int to) {
+        for (int i = from; i < to; i++) {
+            if (get(i)==what)
+                return i;
+        }
+        return -1;
+    }
+
 
     public static class LongArrayBitSet extends MetalBitSet {
         final long[] data;

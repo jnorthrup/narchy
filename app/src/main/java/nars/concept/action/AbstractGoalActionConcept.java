@@ -2,11 +2,14 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
+import nars.control.proto.Remember;
 import nars.link.TermLinker;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.Answer;
+import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
@@ -74,14 +77,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
         TruthPolation aWithoutCuri = Answer.
                 relevance(true, s, e, term, withoutCuriosity, n).match(goals()).truthpolation();
         if (aWithoutCuri!=null) {
-            aWithoutCuri = aWithoutCuri.filtered();
-            actionTruth = actionTruthAuthentic = aWithoutCuri.truth();
-            action = aWithoutCuri;
+            //aWithoutCuri = aWithoutCuri.filtered();
+            actionTruthAuthentic = aWithoutCuri.truth();
         } else {
             actionTruthAuthentic = null;
-            actionTruth = actionNonAuthentic;
-            action = aWithCuri;
         }
+        actionTruth = actionNonAuthentic;
+        action = aWithCuri;
 
 //        if (a!=null) {
 //            System.out.println(a);
@@ -89,6 +91,30 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
 
+    @Override
+    public void add(Remember t, NAR n) {
+        if (t.input.isGoal()) {
+            RTreeBeliefTable gg = goals().tableFirst(RTreeBeliefTable.class);
+            if (gg.size()+1 >= gg.capacity()) {
+                //HACK
+                //search for oldest curiosity task to eliminate
+                TaskRegion bb = gg.bounds();
+                if (bb!=null) {
+                    long s = bb.start();
+                    Task tc = gg.matching(s, s, 1, term, x -> x instanceof SeriesBeliefTable.SeriesTask, n).any();
+                    if (tc!=null) {
+                        gg.removeTask(tc);
+                        t.forget(tc );
+                    }
+                }
+
+//                if (bb!=null) {
+//                    bb.start()
+//                }
+            }
+        }
+        super.add(t, n);
+    }
 
     @Nullable SeriesBeliefTable.SeriesTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
         SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd,

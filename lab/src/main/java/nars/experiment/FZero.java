@@ -49,7 +49,6 @@ public class FZero extends NAgentX {
     float rotSpeed = 0.15f;
     static float fps = 25f;
 
-    final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
     public static void main(String[] args) {
         NAgentX.runRT(FZero::new, fps);
@@ -363,6 +362,8 @@ public class FZero extends NAgentX {
 
     public GoalActionConcept initUnipolarLinear(float fwdFactor) {
         final float[] _a = {0};
+        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
+
         return actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> 0.5f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a >= 0.5f) {

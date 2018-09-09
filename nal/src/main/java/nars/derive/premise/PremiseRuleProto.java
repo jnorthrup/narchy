@@ -8,7 +8,7 @@ import nars.derive.op.Taskify;
 import nars.derive.op.UnifyTerm;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
-import nars.unify.constraint.MatchConstraint;
+import nars.unify.constraint.UnifyConstraint;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -55,7 +55,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
             post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
         }
 
-        MutableSet<MatchConstraint> constraints = raw.CONSTRAINTS.toSet();
+        MutableSet<UnifyConstraint> constraints = raw.CONSTRAINTS.toSet();
 
         PREDICATE<Derivation>[] postpost = new PREDICATE[
                 1 + constraints.size() + post.size()

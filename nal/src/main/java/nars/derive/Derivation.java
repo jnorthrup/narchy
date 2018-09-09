@@ -198,7 +198,7 @@ public class Derivation extends PreDerivation {
         super(
                 VAR_PATTERN
                 //null
-                , null, Param.UnificationStackMax, new TermHashMap<>()
+                , null, Param.UnificationStackMax
         );
 
         this.anon = new Anon(ANON_INITIAL_CAPACITY);

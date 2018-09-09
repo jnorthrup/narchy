@@ -1,9 +1,11 @@
 package nars.term;
 
+import jcog.WTF;
 import nars.Op;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.term.util.builder.HeapTermBuilder;
+import nars.time.Tense;
 
 import java.util.function.Predicate;
 
@@ -117,10 +119,26 @@ public class Statement {
                         }
 
                         if (dt != DTERNAL) {
-                            Term f = Conj.firstEventTerm(newPred);
-                            int shift = predicate.subTimeFirst(f);
+                            int shift;
+                            if (newPred.op() != CONJ) {
+                                shift = predicate.subTimeFirst(newPred);
+                            } else {
+                                int[] s = new int[] { DTERNAL };
+                                Term finalPredicate = predicate;
+                                newPred.eventsWhile((when, what) -> {
+                                    int wshift = finalPredicate.subTimeFirst(what);
+                                    if (wshift!=DTERNAL) {
+                                        s[0] = Tense.occToDT(wshift - when);
+                                        return false;
+                                    }
+                                    return true; //keep going
+                                }, 0, true, true, false, 0);
+                                shift = s[0];
+                            }
                             if (shift == DTERNAL)
-                                return Null; //??
+                                throw new WTF();
+
+                                //return Null; //??
                             dt += shift;
                         }
 

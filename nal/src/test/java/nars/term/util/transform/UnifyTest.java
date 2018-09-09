@@ -8,7 +8,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.Anon;
-import nars.term.util.TermHashMap;
 import nars.test.TestNAR;
 import nars.unify.Unify;
 import nars.unify.UnifySubst;
@@ -91,7 +90,7 @@ public class UnifyTest {
 
             Unify sub = new Unify(type,
                     new XorShift128PlusRandom(1),
-                    Param.UnificationStackMax, new TermHashMap()) {
+                    Param.UnificationStackMax) {
 
 
                 @Override

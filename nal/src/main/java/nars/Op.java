@@ -913,7 +913,7 @@ public enum Op {
 
     }
 
-    final static class ImDep extends VarDep {
+    public final static class ImDep extends VarDep {
 
         private final String str;
         private final char symChar;

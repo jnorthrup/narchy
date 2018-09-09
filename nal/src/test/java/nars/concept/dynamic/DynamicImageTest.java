@@ -39,10 +39,11 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
                 "%.75;.50%", n.beliefTruth(i1, when).toString()
         );
         assertEquals(
-                i1 + ". %.75;.50%", n.answer(i1, BELIEF, when).toStringWithoutBudget()
+                i1 + ". " + when + " %.75;.50%", n.answer(i1, BELIEF, when).toStringWithoutBudget()
         );
         assertEquals(
-                i2 + ". %.75;.50%", n.answer(i2, BELIEF, when).toStringWithoutBudget()
+                i2 + ". " + when + " %.75;.50%", n.answer(i2, BELIEF, when).toStringWithoutBudget()
         );
     }
+
 }
