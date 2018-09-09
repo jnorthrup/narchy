@@ -819,7 +819,9 @@ public class ConjTest {
         Term x = $$(s);
         assertEquals(Op.False, x.dt(0));
         assertEquals(Op.False, x.dt(DTERNAL));
-        assertEq("(((--,x) &&+1 y) &&+1 x)", x.dt(1).toString());
+        assertThrows(TermException.class, ()->
+            x.dt(1)
+        );
 
     }
 

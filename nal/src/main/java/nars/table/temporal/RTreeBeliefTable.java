@@ -19,7 +19,6 @@ import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
-import nars.time.Tense;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -131,7 +130,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return (TaskRegion r) -> {
 
             long timeDist =
-                    r.maxTimeTo(now)/perceptDur;
+                    r.maxTimeTo(now)/(1+perceptDur);
                     //r.midTimeTo(when);
                     //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
@@ -412,8 +411,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 long now = nar.time();
-                dur = //nar.dur();
-                        Tense.occToDT(tableDur()/2);
+                dur = nar.dur();
+                      //  Math.max(1,Tense.occToDT(tableDur()/2));
                 taskStrength = taskStrengthWithFutureBoost(now,
                         input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
                         now,

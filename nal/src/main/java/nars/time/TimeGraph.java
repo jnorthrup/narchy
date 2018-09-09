@@ -268,12 +268,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         subj.eventsWhile((w, y) -> {
                             link(know(y), edt + st - w, pe);
                             return true;
-                        }, 0, true, false, false, 0);
+                        }, 0, true, true, false, 0);
 
                         pred.eventsWhile((w, y) -> {
                             link(se, edt + st + w, know(y));
                             return true;
-                        }, 0, true, false, false, 0);
+                        }, 0, true, true, false, 0);
 
                     }
 

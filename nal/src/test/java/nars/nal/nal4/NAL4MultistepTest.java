@@ -63,7 +63,7 @@ public class NAL4MultistepTest extends NALTest {
                 .believe("cat:tom", 1.0f, 0.9f)
                 .believe("likes(tom,sky)", 1.0f, 0.9f)
                 .input("$0.99 likes(cat,blue)?")
-                .mustBelieve(time, "likes(cat,blue)", 1.0f, 0.45f)
+                .mustBelieve(time, "likes(cat,blue)", 1.0f, 0.27f /*0.45f*/)
         ;
 
     }

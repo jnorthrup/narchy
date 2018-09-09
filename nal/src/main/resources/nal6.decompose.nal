@@ -1,0 +1,9 @@
+//conjunction/disjunction structural decomposition
+
+    //Conjunction structural decompose: C = (&&,a,b,..)
+    C, X, eventOf(C,X)     |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Intersect)
+    C, X, eventOfNeg(C,X)  |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Intersect)
+
+    //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
+    D, X, eventOfNeg(D,X) |- (--,conjWithout(D,--X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN, Time:Intersect)
+    D, X, eventOf(D,X)    |- (--,conjWithout(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN, Time:Intersect)

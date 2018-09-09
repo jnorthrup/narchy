@@ -117,16 +117,16 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 4000;
+        int cycles = 1000;
 
         tt.confTolerance(0.9f);
 
         tt.nar.freqResolution.set(0.05f);
-        tt.nar.confResolution.set(0.02f);
+        tt.nar.confResolution.set(0.05f);
 
 
         tt.nar.time.dur(cycles);
-        tt.nar.termVolumeMax.set(22);
+        tt.nar.termVolumeMax.set(8);
 
 
         tt.input(
@@ -147,7 +147,7 @@ public class PatrickTests extends NALTest {
         tt.mustGoal(cycles, "molten:toothbrush", 1f, 0.5f, (t) -> t >= 0);
         tt.mustGoal(cycles, "lighter(toothbrush)", 1f,
                 0.3f,
-                (t) -> t >= 0);
+                t -> t >= 0);
 
     }
 

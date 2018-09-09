@@ -37,11 +37,9 @@ class BooleanTest {
         testSAT2Individual(1, 1);
     }
 
-    private void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
+    static private void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
 
         final float confThresh = 0.7f;
-
-
 
 
         NAR d = NARS.tmp();
@@ -49,14 +47,12 @@ class BooleanTest {
         d.termVolumeMax.set(10);
 
 
-
-
         String[] outcomes = {
-                "a", 
-                "b", 
-                "c", 
-                "d"}; 
-        
+                "a",
+                "b",
+                "c",
+                "d"};
+
 
         d.believe("( (--i && --j) ==> " + outcomes[0] + ")");
         d.believe("( (--i && j) ==> " + outcomes[1] + ")");
@@ -67,11 +63,7 @@ class BooleanTest {
         Term J = $.$("j").negIf(j == 0);
 
 
-
         d.believe(CONJ.the(I, J));
-
-
-
 
 
         d.run(768);
@@ -124,23 +116,19 @@ class BooleanTest {
         }
 
 
-
-        
-
-
     }
 
-    @Test
-    void testEternalcept() throws Narsese.NarseseException {
-
-        NAR n = NARS.tmp();
-        n.believe("((&&,(0,x),(1,x),(2,x),(3,x))==>a)");
-        n.believe("((&&,(0,y),(1,y),(2,y),(3,y))==>b)");
-        n.believe("((&&,(0,x),(1,x),(2,x),(3,y))==>c)");
-        n.question("(a ==> c)");
-        n.question("(b ==> c)");
-        n.run(200);
-    }
+//    @Test
+//    void testEternalcept() throws Narsese.NarseseException {
+//
+//        NAR n = NARS.tmp();
+//        n.believe("((&&,(0,x),(1,x),(2,x),(3,x))==>a)");
+//        n.believe("((&&,(0,y),(1,y),(2,y),(3,y))==>b)");
+//        n.believe("((&&,(0,x),(1,x),(2,x),(3,y))==>c)");
+//        n.question("(a ==> c)");
+//        n.question("(b ==> c)");
+//        n.run(200);
+//    }
 
     @Test
     void testConditionalImplication() {
@@ -180,98 +168,33 @@ class BooleanTest {
     }
 
 
+    @Test public void testXOREternal() throws Narsese.NarseseException {
+        //classic XOR example
 
+        Param.DEBUG = true;
+        NAR n = NARS.tmp();
+        n.log();
+        n.termVolumeMax.set(8);
+        n.believe("--(  x &&   y)");
+        n.believe("  (  x && --y)");
+        n.believe("  (--x &&   y)");
+        n.believe("--(--x && --y)");
+        n.run(1600);
 
+        Concept a = n.concept("(x && y)");
 
+        Concept b = n.concept("(x && --y)");
 
+        Concept c = n.concept("(--x && y)");
 
+        Concept d = n.concept("(--x && --y)");
 
 
+        for (Concept x : new Concept[]{ a,b,c,d}) {
+            x.print();
+            x.beliefs().forEachTask(t -> System.out.println(t.proof()));
+            System.out.println();
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 }

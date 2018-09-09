@@ -15,6 +15,7 @@ import static nars.Op.VAR_PATTERN;
 
 /**
  * TODO not finished
+ * https://en.wikipedia.org/wiki/Receptive_aphasia
  */
 public class NLPGen {
 
