@@ -178,7 +178,7 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
 
-    @Override public X get(int index) {
+    @Override public final X get(int index) {
         return copy[index];
     }
 
@@ -214,7 +214,7 @@ public class FastCoWList<X> extends FasterList<X> {
 
     public boolean whileEach(Predicate<X> o) {
         for (X x : copy) {
-            if (!o.test(x))
+            if (x!=null && !o.test(x))
                 return false;
         }
         return true;
@@ -223,7 +223,7 @@ public class FastCoWList<X> extends FasterList<X> {
         @Nullable X[] copy = this.copy;
         for (int i = copy.length - 1; i >= 0; i--) {
             X x = copy[i];
-            if (!o.test(x))
+            if (x!=null && !o.test(x))
                 return false;
         }
         return true;

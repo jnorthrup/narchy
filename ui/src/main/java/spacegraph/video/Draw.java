@@ -851,7 +851,7 @@ public enum Draw {
         Draw.rect(gl, bounds.x, bounds.y, bounds.w, bounds.h);
     }
 
-    public static void rectStroke(GL2 gl, RectFloat2D bounds) {
+    public static void rectStroke(RectFloat2D bounds, GL2 gl) {
         Draw.rectStroke(gl, bounds.x, bounds.y, bounds.w, bounds.h);
     }
 

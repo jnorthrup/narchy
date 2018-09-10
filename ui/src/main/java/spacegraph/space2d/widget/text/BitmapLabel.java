@@ -79,7 +79,7 @@ public class BitmapLabel extends BitmapTextGrid {
         return text;
     }
 
-    private BitmapLabel colorText(float rr, float gg, float bb) {
+    public BitmapLabel colorText(float rr, float gg, float bb) {
         return colorText(round(rr * 255), round(gg * 255), round(bb * 255));
     }
 
@@ -87,7 +87,7 @@ public class BitmapLabel extends BitmapTextGrid {
         return colorBackground(round(rr * 255), round(gg * 255), round(bb * 255));
     }
 
-    private BitmapLabel colorText(int rr, int gg, int bb) {
+    public BitmapLabel colorText(int rr, int gg, int bb) {
         fgColor = (new TextColor.RGB(
                 rr,
                 gg,

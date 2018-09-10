@@ -165,18 +165,10 @@ public class v2 extends Tuple2f {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public int xInt() {
+        return Math.round(x);
+    }
+    public int yInt() {
+        return Math.round(y);
+    }
 }

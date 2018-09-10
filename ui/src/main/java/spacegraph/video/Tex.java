@@ -83,6 +83,28 @@ public class Tex {
         return this;
     }
 
+    public static TexSurface view(BufferedImage b) {
+        Tex t = new Tex();
+        //t.update(b);
+        return new TexSurface(t) {
+
+//            @Override
+//            public boolean start(SurfaceBase parent) {
+//                if (super.start(parent)) {
+//                    return true;
+//                }
+//                return false;
+//            }
+
+            @Override
+            protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                if (t.nextData == null)
+                    t.update(b);
+                super.paint(gl, surfaceRender);
+            }
+        };
+    }
+
     public boolean update(BufferedImage iimage) {
         if (iimage == null || profile == null)
             return false;
@@ -139,7 +161,7 @@ public class Tex {
         );
     }
 
-    public Surface view() {
+    public TexSurface view() {
         return new TexSurface(this);
     }
 
@@ -170,7 +192,7 @@ public class Tex {
 
     }
 
-    static class TexSurface extends Surface {
+    public static class TexSurface extends Surface {
 
         private final Tex tex;
 

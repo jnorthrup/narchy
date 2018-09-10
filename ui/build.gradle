@@ -57,6 +57,8 @@ dependencies {
     }
     compile group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.12'
 
+    compile group: 'cz.vutbr.fit.layout', name: 'layout-cssbox', version: '0.0.4'
+
 //    compile group: 'org.jfxvnc', name: 'jfxvnc-net', version: '1.2.0'
 
 
