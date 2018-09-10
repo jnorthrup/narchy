@@ -8,8 +8,8 @@ import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
-import nars.concept.action.GoalActionConcept;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
@@ -30,10 +30,8 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
-import static nars.Op.CONJ;
 import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
-import static nars.time.Tense.XTERNAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -90,7 +88,7 @@ public class FZero extends NAgentX {
 //        initToggleLeftRight();
 //        initToggleFwdStop();
 
-        GoalActionConcept F = initUnipolarLinear(5f);
+        ActionConcept F = initUnipolarLinear(5f);
 
         //initTankContinuous();
         BiPolarAction A =
@@ -337,9 +335,10 @@ public class FZero extends NAgentX {
         BiPolarAction A = actionBipolarFrequencyDifferential(
                 //$.func("rotate", id),
                 //pn -> CONJ.the(XTERNAL, $.the("rotate"), $.func("rotate", id).negIf(!pn) ),
-                pn -> CONJ.the(XTERNAL, $.func("rotate", id),
-                        pn ? $.func("left",id) : $.func("right",id)  ),
-                fair, d);
+                //pn -> CONJ.the(XTERNAL, $.func("rotate", id),
+                pn -> $.func(pn ? "left" : "right",id)
+                //)
+                , fair, d);
 
         return A;
 
@@ -360,7 +359,7 @@ public class FZero extends NAgentX {
 
     }
 
-    public GoalActionConcept initUnipolarLinear(float fwdFactor) {
+    public ActionConcept initUnipolarLinear(float fwdFactor) {
         final float[] _a = {0};
         final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
@@ -372,7 +371,7 @@ public class FZero extends NAgentX {
             } else
                 fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f)));
             return a0;
-        });
+        }).resolution(0.1f);
     }
 
 //    protected boolean polarized(@NotNull Task task) {

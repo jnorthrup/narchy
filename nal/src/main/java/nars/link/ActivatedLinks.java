@@ -25,7 +25,10 @@ public class ActivatedLinks extends AbstractTask {
 
     final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap();
 
-    public void link(Concept c, Term target, float pri, @Nullable NumberX refund) {
+    /** implements a plus merge (with collected refund)
+     * TODO detect priority clipping (@1.0) statistic
+     * */
+    public void linkPlus(Concept c, Term target, float pri, @Nullable NumberX refund) {
         float overflow = termlink.computeIfAbsent(new TermLinkage(c, target), (cc)-> cc)
                 .priAddOverflow(pri);
         if (overflow > Float.MIN_NORMAL && refund!=null)

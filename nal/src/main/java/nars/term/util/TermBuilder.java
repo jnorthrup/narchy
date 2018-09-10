@@ -9,6 +9,7 @@ import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Statement;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.compound.CachedCompound;
@@ -187,7 +188,33 @@ public abstract class TermBuilder {
 
     }
 
+    static public Term[] conjPrefilter(int dt, Term[] u) {
+        switch(dt) {
+            case 0:
+            case DTERNAL:
+                u = Terms.sorted(u);
+                break;
+            case XTERNAL:
+                Term[] v = Terms.sorted(u);
+                if (v.length != 1)
+                    u = v; //only if not collapsed to one item in case of repeat
+                else if (u.length != 2) {
+                    u = new Term[] { u[0], u[0] };
+                }
+                break;
+        }
+        return u;
+    }
+
     public Term conj(final int dt, Term[] u) {
+        return conj(true, dt, u);
+    }
+
+    public Term conj(boolean prefilter, final int dt, Term[] u) {
+
+        if (prefilter)
+            u = conjPrefilter(dt, u);
+
         switch (u.length) {
 
             case 0:
@@ -294,9 +321,16 @@ public abstract class TermBuilder {
                         return u[0];
 
                     default: {
-                        MutableSet<Term> uux = new UnifiedSet(ul);
+                        if (ul == 2) {
+                            //special case: simple arity=2
+                            if (!u[0].equals(u[1]) && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
+                                return theCompound(CONJ, XTERNAL, sorted(u));
+                            }
+                        }
+
+                        MutableSet<Term> uux = new UnifiedSet(ul, 1f);
                         for (Term uu : u) {
-                            if (uu.op() == CONJ && uu.dt() == XTERNAL) {
+                            if (unfoldableInneralXternalConj(uu)) {
                                 uu.subterms().forEach(uux::add);
                             } else {
                                 uux.add(uu);
@@ -360,6 +394,10 @@ public abstract class TermBuilder {
             }
         }
 
+    }
+
+    private static boolean unfoldableInneralXternalConj(Term x) {
+        return x.op() == CONJ && x.dt() == XTERNAL;
     }
 
     public Term root(Compound x) {

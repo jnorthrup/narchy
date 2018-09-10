@@ -41,7 +41,13 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
     @Override
     public void add(Remember r, NAR n) {
+
+//        //TEMPORARY
 //        Param.DEBUG = true;
+//        if (r.input.isGoal() && !r.input.isEternal() && r.input.range() > 1000*15) {
+//            System.out.println(r.input.proof());
+//        }
+
 //        if (r.input!=null && r.input.isGoal()) {
 //            if (r.input.range() > n.dur() * 256) {
 //                System.err.println("caught long goal task: " + r.input);

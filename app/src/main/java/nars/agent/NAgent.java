@@ -144,8 +144,8 @@ public class NAgent extends NARService implements NSense, NAct {
     public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),
                 ETERNAL, ETERNAL,
-                nar.evidence()
-                //Stamp.UNSTAMPED
+                //nar.evidence()
+                Stamp.UNSTAMPED
         );
 
         always.add((prev,now,next) -> t);

@@ -41,6 +41,7 @@ public class NALTask extends UnitPri implements Task {
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super();
 
+
         if (!term.op().taskable)
             throw new TaskException(term, "invalid term: " + term);
 

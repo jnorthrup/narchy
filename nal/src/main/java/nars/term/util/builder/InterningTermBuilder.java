@@ -7,7 +7,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.util.HijackTermCache;
 import nars.term.util.InternedCompound;
@@ -17,7 +16,6 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * can intern subterms and compounds.
@@ -54,7 +52,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             HijackTermCache c;
             if (o == CONJ) {
-                 c = newOpCache("conj", j -> super.conj(j.dt, j.rawSubs.get()), cacheSizePerOp);
+                 c = newOpCache("conj", j -> super.conj(false, j.dt, j.rawSubs.get()), cacheSizePerOp);
             } else if (o.statement) {
                  c = statements;
             } else {
@@ -297,23 +295,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
-        if (u.length > 1 && internableRoot(CONJ, dt, u)) {
-            switch(dt) {
-                case 0:
-                case DTERNAL:
-                    u = Terms.sorted(u);
-                    break;
-                case XTERNAL:
-                    Term[] uu = Terms.sorted(u);
-                    if (uu.length != 1) {
-                        u = uu; //only if not collapsed to one item in case of repeat
-                    }
-                    break;
-            }
+        u = conjPrefilter(dt, u);
+
+        if (u.length > 1 && internableRoot(CONJ, dt, u))
             return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
-        } else
-            return super.conj(dt, u);
+        else
+            return super.conj(false, dt, u);
     }
+
 
 
 }

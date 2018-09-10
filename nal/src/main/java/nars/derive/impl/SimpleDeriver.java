@@ -1,6 +1,6 @@
 package nars.derive.impl;
 
-import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PLink;
@@ -113,14 +113,15 @@ public class SimpleDeriver extends Deriver {
 
             LinkModel model = linking.apply(concept, d);
 
-            FasterList<TaskLink> fired = (FasterList<TaskLink>) model.tasklinks(tasklinksPerConcept.intValue());
+            d.firedTaskLinks.clear();
+            ArrayHashSet<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue(), d.firedTaskLinks);
             Supplier<PriReference<Term>> termlinker = model.termlinks();
 
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
 //            float taskPriSum = 0;
 
 
-            fired.dropWhile(tasklink -> {
+            fired.forEach(tasklink -> {
 
 
 
@@ -144,11 +145,9 @@ public class SimpleDeriver extends Deriver {
                     }
 
                 }
-
-                return true;
             });
 
-            concept.linker().link(concept, a.pri(), fired, d.deriver.linked, nar);
+            concept.linker().link(a, d);
 
             return kontinue.getAsBoolean();
         });
@@ -156,7 +155,8 @@ public class SimpleDeriver extends Deriver {
     }
 
     interface LinkModel {
-        List<TaskLink> tasklinks(int max);
+        /** buffer is not automatically cleared here, do that first if neceessary */
+        ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer);
 
         Supplier<PriReference<Term>> termlinks();
     }
@@ -173,13 +173,15 @@ public class SimpleDeriver extends Deriver {
         }
 
         @Override
-        public List<TaskLink> tasklinks(int max) {
-            List<TaskLink> t = new FasterList<>(max);
+        public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
+
             Bag<?, TaskLink> tl = c.tasklinks();
             tl.sample(rng, Math.min(max, tl.size()), x -> {
-                if (x!=null) t.add(x);
+                if (x!=null) buffer.add(x);
             });
-            return t;
+
+            return buffer;
+
         }
 
         @Override
@@ -202,12 +204,11 @@ public class SimpleDeriver extends Deriver {
         }
 
         @Override
-        public List<TaskLink> tasklinks(int max) {
-            List<TaskLink> t = new FasterList<>(max);
+        public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
             c.tasklinks().sample(rng, max, x -> {
-                if (x!=null) t.add(x);
+                if (x!=null) buffer.add(x);
             });
-            return t;
+            return buffer;
         }
 
         @Override

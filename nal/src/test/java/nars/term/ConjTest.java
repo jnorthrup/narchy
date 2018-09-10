@@ -351,6 +351,11 @@ public class ConjTest {
                 $("(x,(--,(( a &| b) &| c)))")
                         .concept().toString());
     }
+    @Test
+    void testXternalRepeats() {
+        assertEq("(x &&+- y)", "(&&+-,x,x,y)");
+        assertEq("(x &&+- x)", "(&&+-,x,x,x)");
+    }
 
     @Test
     void testConjRepeatPosNeg() {

@@ -49,11 +49,13 @@ public abstract class Param {
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
            16;
+            //2;
+            //4;
 
     public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
-    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 1024;
+    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
 //    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
     /** auto decompose conjunction beliefs and goals on input */
@@ -72,8 +74,8 @@ public abstract class Param {
 
     /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
     public static final Predicate<Op> eternalizeInDerivation = (o) -> {
-        //return true;
-        return o == IMPL;
+        return true;
+        //return o == IMPL;
     };
 
     public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
@@ -133,15 +135,15 @@ public abstract class Param {
 
 
     public static final PriMerge termlinkMerge =
-            //PriMerge.plus;
+            PriMerge.plus;
             //PriMerge.max;
-            PriMerge.or;
+            //PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.avgGeoFast;
-            PriMerge.max;
-    //PriMerge.plus;
-    //PriMerge.or;
+            //PriMerge.max;
+            PriMerge.plus;
+            //PriMerge.or;
 
     /**
      * for equivalent tasks
@@ -159,8 +161,8 @@ public abstract class Param {
                     //il.aveAri(t, b);
                     //Util.aveGeo(t, b);
                     //Util.and(t, b);
-                    Util.or(t, b);
-                    //(t+b);
+                    //Util.or(t, b);
+                    Util.unitize(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget
@@ -305,6 +307,7 @@ public abstract class Param {
 
 
     public final FloatRange activateConceptRate = new FloatRange(1f, 0, 1f);
+    public final FloatRange activateLinkRate = activateConceptRate;
 
 
     /**

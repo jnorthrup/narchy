@@ -150,10 +150,10 @@ public class BiPolarAction extends AbstractSensor {
 
 
         feedback.input(
-                pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar),
+                pos.feedback(Pb.dithered(nar), now, next, nar), neg.feedback(Nb.dithered(nar), now, next, nar),
 
-                (pCuri ? pos.curiosity($.t(Pb.freq(), pos.curiConf)/* p*/, prev, now, nar) : null),
-                (nCuri ? neg.curiosity($.t(Nb.freq(), pos.curiConf)/* n*/, prev, now, nar) : null)
+                (pCuri ? pos.curiosity($.t(Pb.freq(), pos.curiConf).dithered(nar)/* p*/, prev, now, nar) : null),
+                (nCuri ? neg.curiosity($.t(Nb.freq(), pos.curiConf).dithered(nar)/* n*/, prev, now, nar) : null)
         );
     }
 

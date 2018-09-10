@@ -41,11 +41,6 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
     @Override
     abstract public float cost();
 
-    @Override
-    public Term the() {
-        return null;
-    }
-
 
     @Nullable
     public PREDICATE<Derivation> preFilter(Term taskPattern, Term beliefPattern) {

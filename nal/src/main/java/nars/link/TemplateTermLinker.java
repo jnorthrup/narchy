@@ -4,11 +4,12 @@ import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.pri.ScalarValue;
+import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.concept.Concept;
+import nars.derive.Derivation;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
@@ -17,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static jcog.pri.ScalarValue.EPSILON;
 import static nars.Op.CONJ;
 import static nars.time.Tense.XTERNAL;
 
@@ -278,72 +279,99 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
 
     /** balance = nar.termlinkBalance */
-    @Override public void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks termlinking, Random rng, NAR nar) {
+    @Override public void link(Activate a, Derivation d) {
 
+        float linkRate = d.nar.activateLinkRate.floatValue();
+
+        taskLink(
+            d.firedTaskLinks,
+            conceptualizeAndTermLink(linkRate, a, d),
+            linkRate
+        );
+
+
+    }
+
+    public void taskLink(ArrayHashSet<TaskLink> firedTaskLinks, List<Concept> firedConcepts, float linkRate) {
+        //default all to all exhausive matrix insertion
+        //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
+        if (!firedConcepts.isEmpty()) {
+
+            for (TaskLink f : firedTaskLinks) {
+                NumberX overflow = new MutableFloat(); //keep overflow specific to the tasklink
+                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, Math.max(EPSILON, linkRate * f.priElseZero()), firedConcepts, overflow);
+            }
+
+        }
+    }
+
+    private List<Concept> conceptualizeAndTermLink(float linkRate, Activate a, Derivation d) {
+
+
+
+        ArrayHashSet<Concept> firedConcepts = d.firedConcepts;
+        firedConcepts.clear();
 
         int n = size();
-        if (n == 0)
-            return;
+        if (n > 0) {
 
-        n = Math.min(n, Param.TermLinkFanoutMax);
+            Concept src = a.id;
+            NAR nar = d.nar;
 
-        Term srcTerm = src.term();
+            n = Math.min(n, Param.TermLinkFanoutMax);
 
-        float balance = nar.termlinkBalance.floatValue();
+            float conceptForward = Math.max(EPSILON, a.priElseZero() / n);
 
-        float budgetedReverse = Math.max(ScalarValue.EPSILON, pri * balance / n);
+            float taskLinkPri = Math.max(EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
+                    .sumOfFloat(Prioritized::priElseZero)));
+
+            float balance = nar.termlinkBalance.floatValue();
+
+            float termlinkReverse = Math.max(EPSILON, taskLinkPri * balance / n);
 
 //        //calculate exactly according to the size of the subset that are actually conceptualizable
 //        float budgetedForward = concepts == 0 ? 0 :
 //                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
 
-        float budgetedForward = Math.max(ScalarValue.EPSILON, pri * (1-balance) / n);
+            float termlinkForward = Math.max(EPSILON, taskLinkPri * (1 - balance) / n);
 
-        List<Concept> targets = (concepts==0 ? List.of() : new FasterList<>(concepts));
 
-        NumberX refund = new MutableFloat(0);
+            NumberX refund = new MutableFloat(0);
 
-        int j = rng.nextInt(n); //random starting position
-        for (int i = 0; i < n; i++) {
+            ActivatedLinks linking = d.deriver.linked;
+            Term srcTerm = src.term();
 
-            if (++j == n) j = 0;
-            Term tgtTerm = get(j);
+            int j = d.random.nextInt(n); //random starting position
+            for (int i = 0; i < n; i++) {
 
-            boolean conceptualizable = j < concepts;
-            if (conceptualizable) {
+                if (++j == n) j = 0;
+                Term tgtTerm = get(j);
 
-                /** TODO batch activations */
-                @Nullable Concept tgt = nar.activate(tgtTerm, budgetedForward);
+                boolean conceptualizable = j < concepts;
+                if (conceptualizable) {
 
-                if (tgt != null) {
+                    /** TODO batch activations */
+                    @Nullable Concept tgt = nar.activate(tgtTerm, conceptForward);
 
-                    targets.add(tgt);
+                    if (tgt != null) {
 
-                    termlinking.link(tgt, srcTerm, budgetedForward, refund);
+                        firedConcepts.add(tgt);
 
-                    tgtTerm = tgt.term();
+                        linking.linkPlus(tgt, srcTerm, linkRate * termlinkForward, refund);
 
+                        tgtTerm = tgt.term();
+
+                    }
+
+                } else {
+                    refund.add(termlinkForward);
                 }
 
-            } else {
-                refund.add(budgetedForward);
+                linking.linkPlus(src, tgtTerm, linkRate * termlinkReverse, refund);
             }
 
-
-            termlinking.link(src, tgtTerm, budgetedReverse, refund);
-
         }
-
-
-        //default all to all exhausive matrix insertion
-        //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
-        if (!targets.isEmpty()) {
-
-            for (TaskLink f : fired) {
-                NumberX overflow = new MutableFloat(); //keep overflow specific to the tasklink
-                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, f.priElseZero(), targets, overflow);
-            }
-        }
+        return firedConcepts.list;
     }
 
 }

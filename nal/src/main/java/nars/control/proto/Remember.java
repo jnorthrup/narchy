@@ -210,10 +210,6 @@ public class Remember extends AbstractTask {
         forget(input);
     }
 
-    public final boolean isEternal() {
-        return input.isEternal();
-    }
-
     public final byte punc() {
         return input.punc();
     }

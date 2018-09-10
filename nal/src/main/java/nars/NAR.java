@@ -1416,10 +1416,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         if (c != null && !eventActivate.isEmpty()) {
             eventActivate.emit(new Activate(c, activationApplied * activateConceptRate.floatValue()));
-            return c;
         }
 
-        return null;
+        return c;
 
     }
 

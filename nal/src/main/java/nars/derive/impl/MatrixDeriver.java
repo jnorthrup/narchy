@@ -2,10 +2,10 @@ package nars.derive.impl;
 
 import com.netflix.servo.monitor.Counter;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
@@ -16,11 +16,9 @@ import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.link.Activate;
-import nars.link.ActivatedLinks;
 import nars.link.TaskLink;
 import nars.term.Term;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -34,7 +32,7 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(5, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
@@ -189,24 +187,24 @@ public class MatrixDeriver extends Deriver {
 
     }
 
-    public void premiseMatrix(Activate concept, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int tasklinks, int termlinksPerTasklink, Derivation d) {
-        premiseMatrix(concept, continueHypothesizing, tasklinks, termlinksPerTasklink, d.deriver.linked, d.random, d.nar);
-    }
+
 
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    public void premiseMatrix(Activate conceptActivation, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, ActivatedLinks linkActivations, Random rng, NAR nar) {
-
-        Concept concept = conceptActivation.id;
+    public void premiseMatrix(Activate a, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
 
         nar.emotion.conceptFire.increment();
 
+        Concept concept = a.id;
+
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
-        final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
+        Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
+        final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
+        tasklinksFired.clear();
 
-        List<TaskLink> tasklinksFired;
+        Random rng = d.random;
 
         if (commit(nar, tasklinks, termlinks)) {
 
@@ -220,7 +218,6 @@ public class MatrixDeriver extends Deriver {
 
             int maxTasks = Math.min(_tasklinks, nTaskLinks);
 
-            tasklinksFired = new FasterList<>(maxTasks);
 
             tasklinks.sample(rng, maxTasks, tasklink -> {
 
@@ -247,14 +244,9 @@ public class MatrixDeriver extends Deriver {
 
                 return (--conceptTTL[0] > 0);
             });
-        } else {
-            tasklinksFired = List.of();
         }
 
-
-        concept.linker().link(concept,
-                Math.max(ScalarValue.EPSILON, conceptActivation.priElseZero()),
-                tasklinksFired, linkActivations, rng, nar);
+        concept.linker().link(a, d);
     }
 
 

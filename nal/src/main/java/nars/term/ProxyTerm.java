@@ -2,6 +2,7 @@ package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
+import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.Predicate;
 
 
 public class ProxyTerm implements Compound {
@@ -16,7 +18,14 @@ public class ProxyTerm implements Compound {
     public final /*HACK make unpublic */ Term ref;
 
     public ProxyTerm(Term t) {
+        if (t instanceof ProxyTerm)
+            throw new WTF();
         this.ref = t;
+    }
+
+    @Override
+    public final Term the() {
+        return null;
     }
 
     @Override
@@ -159,6 +168,15 @@ public class ProxyTerm implements Compound {
         return ref.contains(t);
     }
 
+    @Override
+    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        return ref.containsRecursively(x, root, inSubtermsOf);
+    }
+
+    @Override
+    public final int compareTo(Term t) {
+        return ref.compareTo(t);
+    }
 
     @Override
     public int vars() {

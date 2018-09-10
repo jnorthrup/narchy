@@ -3,13 +3,16 @@ package nars.derive;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.ScalarValue;
 import nars.*;
+import nars.concept.Concept;
 import nars.control.Cause;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.PreDerivation;
 import nars.eval.Evaluation;
+import nars.link.TaskLink;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
@@ -24,7 +27,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
-import nars.term.util.TermHashMap;
 import nars.term.util.transform.Retemporalize;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -37,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -167,6 +168,12 @@ public class Derivation extends PreDerivation {
 
     public Deriver deriver;
     public final DynBytes tmpPremiseKey = new DynBytes(256);
+
+    /** temporary storage buffer for recently fired tasklinks */
+    public final ArrayHashSet<TaskLink> firedTaskLinks = new ArrayHashSet<>(32);
+    /** temporary storage buffer for recently activated concepts */
+    public final ArrayHashSet<Concept> firedConcepts = new ArrayHashSet<>(32);
+
     private ImmutableMap<Term, Termed> derivationFunctors;
 
     /**

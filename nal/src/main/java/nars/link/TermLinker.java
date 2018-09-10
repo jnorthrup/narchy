@@ -1,11 +1,9 @@
 package nars.link;
 
-import nars.NAR;
-import nars.concept.Concept;
+import jcog.data.set.ArrayHashSet;
+import nars.derive.Derivation;
 import nars.term.Termed;
 
-import java.util.List;
-import java.util.Random;
 import java.util.stream.Stream;
 
 /** creates termlinks during concept activation */
@@ -22,16 +20,8 @@ public interface TermLinker {
      *
      * balance = nar.termlinkBalance
      */
-    void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks activations, Random rng, NAR nar);
+    void link(Activate asrc, Derivation d);
 
-
-    /** dont override
-     *  preferable to use the RNG local to the derivation instance, not the NAR's.
-     *  also termlinkBalance can be cached or modulated contextually with the newer method
-     * */
-    @Deprecated default void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks activations, NAR nar) {
-        link(src, pri, fired, activations, nar.random(), nar);
-    }
 
     TermLinker NullLinker = new TermLinker() {
         @Override
@@ -41,10 +31,9 @@ public interface TermLinker {
 
 
         @Override
-        public void link(Concept src, float pri, List<TaskLink> fired, ActivatedLinks activations, Random rng, NAR nar) {
-            //nothing
-        }
+        public void link(Activate asrc, Derivation d) {
 
+        }
     };
 
 }

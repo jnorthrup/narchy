@@ -1,0 +1,7 @@
+
+//goal induction
+//  experimental
+G, S, task("!"),neq(G,S),--eventOfNeg(S,G)  |- (G   &&   S), (Goal:DesireWeak, Time:Relative)
+G, S, task("!"),neq(G,S),--eventOf(S,G)     |- (--G &&   S), (Goal:DesireWeakN, Time:Relative)
+G, S, task("!"),neq(G,S),--eventOfNeg(S,G)  |- (G   && --S), (Goal:DesireWeakPN, Time:Relative)
+G, S, task("!"),neq(G,S),--eventOf(S,G)     |- (--G && --S), (Goal:DesireWeakNN, Time:Relative)

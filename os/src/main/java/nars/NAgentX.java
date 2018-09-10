@@ -293,18 +293,21 @@ abstract public class NAgentX extends NAgent {
 
 
     public static void config(NAR n) {
-        n.timeResolution.set(10);
+        n.timeResolution.set(
+                //10
+                20
+        );
 
 
         n.confMin.set(0.01f);
-        n.freqResolution.set(0.01f);
+        n.freqResolution.set(0.03f);
         n.termVolumeMax.set(35);
 
         n.forgetRate.set(0.75f);
-        n.activateConceptRate.set(0.9f);
+        n.activateConceptRate.set(0.01f);
 
 
-        n.beliefConfDefault.set(0.95f);
+        n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
         float basePri = 0.25f;

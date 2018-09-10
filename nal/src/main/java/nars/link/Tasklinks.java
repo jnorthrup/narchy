@@ -46,14 +46,16 @@ public class Tasklinks {
     /**
      * create a batch of tasklinks, sharing common seed data
      */
-    public static void linkTask(TaskLink.GeneralTaskLink tasklink, float priTransferred, List<Concept> targets, NumberX overflow) {
+    public static void linkTask(TaskLink.GeneralTaskLink tasklink, float pri, List<Concept> targets, NumberX overflow) {
         int nTargets = targets.size();
         assert(nTargets > 0);
 
 //        float pEach = Math.max(ScalarValue.EPSILON,
 //                priTransferred / nTargets
 //        );
-        float pEach = priTransferred; //no division
+        float pEach =
+                pri; //no division
+                //pri/nTargets; //no division
 
         TaskLink.Tasklike tlSeed = tasklink.id;
 
