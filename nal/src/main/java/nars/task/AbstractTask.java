@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 /**
- * natively implemented tasks
+ * indestructible system/natively impl tasks
  *
  * the reasoner remains oblivious of these.
  * but it holds a constant 1.0 priority.
@@ -34,12 +34,12 @@ public abstract class AbstractTask implements ITask, Priority {
         }
     }
 
-    public byte punc() {
+    public final byte punc() {
         return 0;
     }
 
     @Override
-    public float pri() {
+    public final float pri() {
         return 1;
     }
 
@@ -49,17 +49,17 @@ public abstract class AbstractTask implements ITask, Priority {
 //    }
 
     @Override
-    public boolean delete() {
+    public final boolean delete() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isDeleted() {
+    public final boolean isDeleted() {
         return false;
     }
 
     @Override
-    public float pri(float p) {
+    public final float pri(float p) {
         return 1f;
     }
 

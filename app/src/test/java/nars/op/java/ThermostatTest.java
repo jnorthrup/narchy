@@ -4,7 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.control.DurService;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
@@ -167,24 +166,24 @@ public class ThermostatTest {
                 Term hot = $.$$("is(a_Thermostat,3)");
                 Truth goalTruth = $.t(1f, 0.9f);
 
-                DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
-                        /*(--maxTries[0] >= 0) && */(t.current != t.target)
-                ));
-                DurService xNeg = n.wantWhile(hot, goalTruth.neg(), new TaskConceptLogger(n, (w) ->
-                        t.current != t.target
-                ));
+//                DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
+//                        /*(--maxTries[0] >= 0) && */(t.current != t.target)
+//                ));
+//                DurService xNeg = n.wantWhile(hot, goalTruth.neg(), new TaskConceptLogger(n, (w) ->
+//                        t.current != t.target
+//                ));
 
                 n.run(1);
-
-                for (int i = 0; i < 16 && xPos.isOn(); i++) {
-                    int period = 100;
-
-
-                    n.run(period);
-                }
-
-                xPos.off();
-                xNeg.off();
+//
+//                for (int i = 0; i < 16 && xPos.isOn(); i++) {
+//                    int period = 100;
+//
+//
+//                    n.run(period);
+//                }
+//
+//                xPos.off();
+//                xNeg.off();
 
                 t.report();
 

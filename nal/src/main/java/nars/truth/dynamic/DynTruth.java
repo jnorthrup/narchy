@@ -66,10 +66,10 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
             if (d.task().isEternal()) {
                 total += p;
             } else {
-                total += p * d.range() / range;
+                total += Util.unitize(p * d.range() / range);
             }
         }
-        return (float) total;
+        return (float) total/s /* average */;
     }
 
     @Override
@@ -163,6 +163,9 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
                 start = u[0];
                 end = u[1];
             }
+
+            start = Tense.dither(start, nar);
+            end = Tense.dither(end, nar);
         } else {
 
             LongInterval only = get(0);
@@ -180,7 +183,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
                 r.getTwo() ? t.neg() : t,
-                nar, Tense.dither(start, nar), Tense.dither(end, nar),
+                nar, start, end,
                 stamp.apply(nar.random()));
 
         dyn.cause = cause();
@@ -195,7 +198,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
 
 
-    public <T extends Task> Consumer<T> adding(@Nullable Predicate<Task> filter) {
+    public <T extends Task> Consumer<T> addIf(@Nullable Predicate<Task> filter) {
         return filter==null ? this::add : (T x) -> {
             if (filter.test(x))
                 add(x);

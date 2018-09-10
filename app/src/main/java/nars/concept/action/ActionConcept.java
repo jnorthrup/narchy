@@ -2,6 +2,7 @@ package nars.concept.action;
 
 import jcog.math.FloatRange;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.BiFunction;
+
+import static nars.truth.TruthFunctions.w2cSafe;
 
 
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
@@ -63,13 +66,16 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     }
 
     @Override
-    public void value(Task t, float activation, NAR n) {
+    public void value(Task t, NAR n) {
 
-        super.value(t, activation, n);
+        super.value(t, n);
 
         if (t.isGoal()) {
-            if (t.start() >= n.time() - n.dur() / 2) {
-                MetaGoal.Action.learn(t.cause(), t.conf(), n.causes);
+            long now = n.time();
+            long dt = t.minTimeTo(now);
+            int dur = n.dur();
+            if (dt <= dur) {
+                MetaGoal.Action.learn(t.cause(), w2cSafe(Param.evi(t.evi(), dt, dur)), n.causes);
             }
         }
     }

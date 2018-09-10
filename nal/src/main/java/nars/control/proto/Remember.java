@@ -32,7 +32,7 @@ public class Remember extends AbstractTask {
     final FasterList<ITask> next = new FasterList(0);
     final FasterList<Task> remembered = new FasterList(0);
     public final FasterList<Task> forgotten = new FasterList(0);
-    public final Concept concept;
+    public Concept concept;
 
 
     static final Logger logger = LoggerFactory.getLogger(Remember.class);
@@ -53,8 +53,20 @@ public class Remember extends AbstractTask {
     }
 
     public Remember(Task input, Concept c) {
-        this.input = input;
-        this.concept = c;
+        setInput(input, c);
+    }
+
+    public void setInput(@Nullable Task input, NAR n) {
+        if (input!=null)
+            setInput(input, n.conceptualize(input));
+    }
+
+    /** concept must correspond to the input task */
+    private void setInput(Task input, @Nullable Concept c) {
+        if (c != null) {
+            this.input = input;
+            this.concept = c;
+        }
     }
 
     @Override
@@ -69,18 +81,28 @@ public class Remember extends AbstractTask {
 
         input(n);
 
-        commit();
-
-        return AbstractTask.of(next);
+        return commit();
     }
 
     /**
      * finalization and cleanup work
      */
-    protected void commit() {
-        if (!forgotten.isEmpty() || !remembered.isEmpty()) {
-            next.add(new Commit(forgotten, remembered));
-        }
+    protected @Nullable ITask commit() {
+        if (!forgotten.isEmpty())
+            forgotten.forEach(Task::delete);
+         if (!remembered.isEmpty()) {
+
+             Term inputConceptTerm = input!=null ? concept.term() : null;
+             for (Task r : remembered) {
+                 Concept c = r == input || (inputConceptTerm!=null && r.term().concept().equals(inputConceptTerm)) ? concept
+                         : null /* determine later */;
+                next.add(new TaskLinkTask(r, c));
+             }
+
+             next.add(Reaction.emit(remembered));
+         }
+
+        return AbstractTask.of(next);
     }
 
     /**
@@ -139,24 +161,22 @@ public class Remember extends AbstractTask {
 
     //TODO: private static final class ListTask extends FasterList<ITask> extends NativeTask {
 
-    @Deprecated
-    private static final class Commit extends AbstractTask {
-
-        FasterList<Task> forgotten, remembered;
-
-        public Commit(FasterList<Task> forgotten, FasterList<Task> remembered) {
-            super();
-            this.forgotten = forgotten;
-            this.remembered = remembered;
-        }
-
-        @Override
-        public ITask next(NAR n) {
-            forgotten.forEach(Task::delete);
-
-            return Reaction.the(remembered);
-        }
-    }
+//    @Deprecated
+//    private static final class Commit extends AbstractTask {
+//
+//        FasterList<Task> forgotten, remembered;
+//
+//        public Commit(FasterList<Task> forgotten, FasterList<Task> remembered) {
+//            super();
+//            this.forgotten = forgotten;
+//            this.remembered = remembered;
+//        }
+//
+//        @Override
+//        public ITask next(NAR n) {
+//
+//        }
+//    }
 
 
     public void forget(Task x) {
@@ -165,13 +185,13 @@ public class Remember extends AbstractTask {
             //TODO filter next tasks with any involving that task
         }
         add(x, this.forgotten);
-        if (input == x)
-            input = null;
+        if (input == x) {
+            input = null; concept = null;
+        }
     }
 
     public void remember(Task x) {
-        if (add(x, this.remembered))
-            next.add(new TaskLinkTask(x, concept));
+        add(x, this.remembered);
     }
 
 
@@ -210,9 +230,6 @@ public class Remember extends AbstractTask {
         forget(input);
     }
 
-    public final byte punc() {
-        return input.punc();
-    }
 
     private static boolean add(Task x, FasterList<Task> f) {
         if (x != null) {

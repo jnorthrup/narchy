@@ -27,20 +27,6 @@ public class Tasklinks {
     }
 
 
-    /**
-     * create source tasklink
-     */
-    public static TaskLink.GeneralTaskLink linkTask(Task t, final float pri, /*Task*/Concept src, NAR nar) {
-
-
-        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, pri);
-
-        linkTask(link, src.tasklinks(), null);
-
-        ((TaskConcept) src).value(t, pri, nar);
-
-        return link;
-    }
 
 
     /**

@@ -108,7 +108,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
     @Override
     public float depressurize() {
-        return Util.max(0, PRESSURE.getAndZero(this));
+        return Math.max((float) 0, PRESSURE.getAndZero(this));
     }
 
     @Override
@@ -200,8 +200,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 p = pri(x);
             }
             if (p == p) {
-                min = Util.min(min, p);
-                max = Util.max(max, p);
+                min = Math.min(min, p);
+                max = Math.max(max, p);
                 mass += p;
                 if (p - above >= ScalarValue.EPSILON)
                     mustSort = i;

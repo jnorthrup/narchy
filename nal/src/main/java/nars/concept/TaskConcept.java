@@ -3,6 +3,7 @@ package nars.concept;
 import jcog.data.list.FasterList;
 import jcog.pri.bag.Bag;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
@@ -106,16 +107,16 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Called exactly once on each task.
      */
     public void add(Remember t, NAR n) {
-        table(t.punc()).add(t, n);
+        if (Param.DEBUG_EXTRA)
+            assert(t.input.term().concept().equals(term));
+        table(t.input.punc()).add(t, n);
     }
 
-    public void value(Task t, float activation, NAR n) {
-
+    public void value(Task t, NAR n) {
         byte punc = t.punc();
-        if (punc == BELIEF || punc == GOAL) {
+        if (punc == BELIEF || punc == GOAL)
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
                     .learn(t.cause(), t.conf(), n.causes);
-        }
 
 
     }

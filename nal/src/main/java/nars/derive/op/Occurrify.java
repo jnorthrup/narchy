@@ -100,7 +100,6 @@ public class Occurrify extends TimeGraph {
     private transient Termed curBelief;
     private transient Map<Term, Term> prevUntransform = Map.of();
     private transient boolean single;
-    private transient boolean taskDominant;
     private boolean decomposeEvents;
 
 
@@ -195,11 +194,11 @@ public class Occurrify extends TimeGraph {
     }
 
     public Occurrify reset(Term pattern) {
-        boolean taskDominant = d.concSingle || (d._task.isGoal() && !d._task.isEternal());
-        return reset(pattern, taskDominant, true);
+        boolean decomposeEvents = d.truthFunction != NALTruth.Identity;
+        return reset(pattern, decomposeEvents);
     }
 
-    public Occurrify reset(Term pattern, boolean taskDominant, boolean decomposeEvents) {
+    public Occurrify reset(Term pattern, boolean decomposeEvents) {
 
 
         seen.clear();
@@ -237,7 +236,6 @@ public class Occurrify extends TimeGraph {
 
         boolean reUse =
                 this.decomposeEvents == decomposeEvents &&
-                        this.taskDominant == taskDominant &&
                         this.single == single &&
                         Objects.equals(autoNeg, autoNegNext) &&
                         Objects.equals(d.task, curTask) &&
@@ -261,7 +259,7 @@ public class Occurrify extends TimeGraph {
 
             clear();
 
-            this.taskDominant = taskDominant;
+
             this.decomposeEvents = decomposeEvents;
             this.single = single;
 
@@ -278,11 +276,7 @@ public class Occurrify extends TimeGraph {
                 know(task, taskStart, taskEnd);
 
                 if (!belief.equals(task)) {
-                    if (taskDominant) {
-                        know(beliefTerm);
-                    } else {
-                        know(belief, beliefStart, beliefEnd);
-                    }
+                    know(belief, beliefStart, beliefEnd);
                 }
             }
 
@@ -547,14 +541,15 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
 
-                boolean isIdentity = d.truthFunction == NALTruth.Identity;
 
-                Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x, true, !isIdentity));
+                Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x));
                 if (p != null) {
                     byte punc = d.concPunc;
 
                     //prevent altering identity transforms
-                    if ((punc == GOAL) && !isIdentity) {
+
+
+                    if ((punc == GOAL) && d.truthFunction != NALTruth.Identity) {
                         if (!immediatize(p.getTwo(), d))
                             return null;
                     }
@@ -630,7 +625,7 @@ public class Occurrify extends TimeGraph {
         TaskPlusBeliefDT() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false, false)), +1);
+                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false)), +1);
             }
 
 
@@ -643,7 +638,7 @@ public class Occurrify extends TimeGraph {
         TaskMinusBeliefDT() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false, false)), -1);
+                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false)), -1);
             }
 
             @Override
@@ -661,7 +656,7 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
 
-                return solveDT(d, x, d.occ.reset(x, false, false));
+                return solveDT(d, x, d.occ.reset(x, false));
             }
 
             @Override
@@ -721,7 +716,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, false, false));
+                return solveDT(d, x, d.occ.reset(x, false));
             }
 
             @Override
@@ -747,7 +742,7 @@ public class Occurrify extends TimeGraph {
 
                 if (x.op() != CONJ || x.subs() != 2) {
                     //degenerated to non-conjunction. use the full solver
-                    return solveOccDT(d, x, d.occ.reset(x, false, false));
+                    return solveOccDT(d, x, d.occ.reset(x, false));
                 }
 
                 long tTime = d.taskStart;

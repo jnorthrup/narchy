@@ -1,9 +1,13 @@
 package nars.truth;
 
+import jcog.Texts;
 import jcog.Util;
 import jcog.random.XorShift128PlusRandom;
+import nars.NAR;
+import nars.NARS;
 import nars.Param;
 import nars.task.Revision;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -19,17 +23,17 @@ class TruthTest {
     @Test
     void testRounding() {
         int discrete = 10;
-        float precision = 1f/discrete;
+        float precision = 1f / discrete;
 
-        for (float x = 0.19f; x<0.31f; x+=0.01f/2) {
+        for (float x = 0.19f; x < 0.31f; x += 0.01f / 2) {
             int i = Util.floatToInt(x, discrete);
             float y = Util.intToFloat(i, discrete);
-            System.out.println(x + " -> " + i + " -> " + y + ", d=" + (Math.abs(y-x)));
+            System.out.println(x + " -> " + i + " -> " + y + ", d=" + (Math.abs(y - x)));
             assertTrue(
                     Util.equals(
                             x,
                             y,
-                            precision/2f)
+                            precision / 2f)
             );
         }
     }
@@ -77,7 +81,7 @@ class TruthTest {
         assertEquals(a, aEqualWithinThresh);
         assertEquals(a.hashCode(), aEqualWithinThresh.hashCode());
 
-        Truth aNotWithinThresh = new DiscreteTruth( 1.0f - Param.TRUTH_EPSILON * 1.0f, 0.9f);
+        Truth aNotWithinThresh = new DiscreteTruth(1.0f - Param.TRUTH_EPSILON * 1.0f, 0.9f);
         assertNotEquals(a, aNotWithinThresh);
         assertNotEquals(a.hashCode(), aNotWithinThresh.hashCode());
 
@@ -97,35 +101,19 @@ class TruthTest {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Test
     void testTruthHash() {
-        assertEquals( new DiscreteTruth(0.5f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
-        assertNotEquals( new DiscreteTruth(1.0f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
-        assertNotEquals( new DiscreteTruth(0.51f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
-        assertNotEquals( new DiscreteTruth(0.506f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
+        assertEquals(new DiscreteTruth(0.5f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode());
+        assertNotEquals(new DiscreteTruth(1.0f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode());
+        assertNotEquals(new DiscreteTruth(0.51f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode());
+        assertNotEquals(new DiscreteTruth(0.506f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode());
 
-        assertEquals( new DiscreteTruth(0, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f).hashCode() );
+        assertEquals(new DiscreteTruth(0, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f).hashCode());
 
-        
-        assertEquals( new DiscreteTruth(0.504f, 0.5f, 0.01f).hashCode(), new DiscreteTruth(0.5f, 0.5f, 0.01f).hashCode() );
-        assertEquals( new DiscreteTruth(0.004f, 0.01f, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f, 0.01f).hashCode() );
-        assertNotEquals( new DiscreteTruth(0.006f, 0.01f, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f, 0.01f).hashCode() );
+
+        assertEquals(new DiscreteTruth(0.504f, 0.5f, 0.01f).hashCode(), new DiscreteTruth(0.5f, 0.5f, 0.01f).hashCode());
+        assertEquals(new DiscreteTruth(0.004f, 0.01f, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f, 0.01f).hashCode());
+        assertNotEquals(new DiscreteTruth(0.006f, 0.01f, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f, 0.01f).hashCode());
 
 
     }
@@ -134,7 +122,7 @@ class TruthTest {
     void testTruthHashUnhash() {
         XorShift128PlusRandom rng = new XorShift128PlusRandom(2);
         for (int i = 0; i < 1000; i++)
-            hashUnhash(rng.nextFloat(), rng.nextFloat() * (1f-Param.TRUTH_EPSILON*2));
+            hashUnhash(rng.nextFloat(), rng.nextFloat() * (1f - Param.TRUTH_EPSILON * 2));
     }
 
     private static void hashUnhash(float f, float c) {
@@ -142,31 +130,9 @@ class TruthTest {
         if (t == null)
             return;
         Truth u = Truth.intToTruth(t.hashCode());
-        assertNotNull( u, t +  " unhased to null via hashCode " + t.hashCode());
+        assertNotNull(u, t + " unhased to null via hashCode " + t.hashCode());
         assertEquals(t, u);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
@@ -195,39 +161,27 @@ class TruthTest {
         assertEquals(0.95f, c.conf(), 0.01f);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Test void testDitheringSanity() {
+        NAR n = NARS.shell();
+        n.confResolution.set(0.1f);
+        int steps = 99;
+        float step = 0.01f;
+        int subSteps = 9;
+        float subStep = 0.001f;
+        for (int i = 0; i < steps; i++) {
+            for (int j = 0; j < subSteps; j++) {
+                float c = step * i + (subStep) * j;
+                @Nullable PreciseTruth p = t(1f, c).dithered(n);
+                if (p!=null)
+                    System.out.println(p + "\t" + Texts.n2(c) +  "\t" + Texts.n4(c)+ "\t" + c );
+            }
+        }
+    }
 
     static void printTruthChart() {
         float c = 0.9f;
-        for (float f1 = 0f; f1 <= 1.001f; f1+=0.1f) {
-            for (float f2 = 0f; f2 <= 1.001f; f2+=0.1f) {
+        for (float f1 = 0f; f1 <= 1.001f; f1 += 0.1f) {
+            for (float f2 = 0f; f2 <= 1.001f; f2 += 0.1f) {
                 Truth t1 = new DiscreteTruth(f1, c);
                 Truth t2 = new DiscreteTruth(f2, c);
                 System.out.println(t1 + " " + t2 + ":\t" +

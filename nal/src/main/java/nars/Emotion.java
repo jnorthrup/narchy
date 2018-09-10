@@ -178,24 +178,17 @@ public class Emotion implements Meter {
      *
      * @param x is a non-command task
      */
-    public void onInput(Task t, NAR nar) {
-
-        float pri = t.priElseZero();
+    public void perceive(Task t) {
 
         int vol = t.volume();
         float cost = ((float)vol) / Param.COMPOUND_VOLUME_MAX;
 
         MetaGoal.Perceive.learn(t.cause(), cost, nar.causes);
 
+        float pri = t.priElseZero();
         busy(pri, vol);
-    }
 
-    /**
-     * effective activation percentage
-     */
-    public void onActivate(Task t, float activation) {
         taskFire.increment();
-        //taskActivation_x100.increment(Math.round(activation * 100));
     }
 
     public void onAnswer(Task questionTask, Task answer) {
@@ -224,6 +217,7 @@ public class Emotion implements Meter {
         float str = ansConf;// * qOrig;
         MetaGoal.Answer.learn(answer.cause(), str, nar.causes);
     }
+
 
 
 }

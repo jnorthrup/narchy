@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.Util;
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
@@ -262,20 +261,20 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
                 } else {
                     return new TasksRegion(
                             Math.min(start(), es), Math.max(end(), ee),
-                            Util.min(coordF(false, 1), ef),
-                            Util.max(coordF(true, 1), ef),
-                            Util.min(coordF(false, 2), ec),
-                            Util.max(coordF(true, 2), ec)
+                            Math.min(coordF(false, 1), ef),
+                            Math.max(coordF(true, 1), ef),
+                            Math.min(coordF(false, 2), ec),
+                            Math.max(coordF(true, 2), ec)
                     );
                 }
             } else {
                 TaskRegion er = (TaskRegion) r;
                 return new TasksRegion(
                         Math.min(start(), er.start()), Math.max(end(), er.end()),
-                        Util.min(coordF(false, 1), er.coordF(false, 1)),
-                        Util.max(coordF(true, 1), er.coordF(true, 1)),
-                        Util.min(coordF(false, 2), er.coordF(false, 2)),
-                        Util.max(coordF(true, 2), er.coordF(true, 2))
+                        Math.min(coordF(false, 1), er.coordF(false, 1)),
+                        Math.max(coordF(true, 1), er.coordF(true, 1)),
+                        Math.min(coordF(false, 2), er.coordF(false, 2)),
+                        Math.max(coordF(true, 2), er.coordF(true, 2))
                 );
             }
         }

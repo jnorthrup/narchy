@@ -836,17 +836,34 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
     }
 
-    @Test void testGoalBeliefDecomposeTimeRanging() {
+    @Test void testGoalBeliefDecomposeTimeRangingRepeat() {
         /*
-        $.03 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.03% {1536601090589: ÖqdUçëìøÏ;ÖqdUçëìùä;ÖqdUçëìúj;ÖqdUçëìúÈ;ÖqdUçëìüÒ;ÖqdUçëìüÔ;ÖqdUçëí2V;ÖqdUçëí4y;ÖqdUçëí7å;ÖqdUçëías;ÖqdUçëídK;ÖqdUçëínp;ÖqdUçëínq;ÖqdUçëípß;ÖqdUçëíqc;ÖqdUçëíqO} ((%1,%2,eventOf(%2,%1)),(conjDropIfLatest(%2,%1),((Desire-->Goal))))
+        $.03 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.03% {1536601090589: } ((%1,%2,eventOf(%2,%1)),(conjDropIfLatest(%2,%1),((Desire-->Goal))))
             //belief timing ignored
 
-            $1.0 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.15% {1536601088494: ÖqdUçëìèB;ÖqdUçëìèH;ÖqdUçëìöý;ÖqdUçëìøÏ;ÖqdUçëìùä;ÖqdUçëìúj;ÖqdUçëìúÈ;ÖqdUçëìüÒ;ÖqdUçëìüÔ;ÖqdUçëí2V;ÖqdUçëí4y;ÖqdUçëí7å;ÖqdUçëías;ÖqdUçëídK;ÖqdUçëínp;ÖqdUçëínq}
+            $1.0 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.15% {1536601088494: }
                     37S
 
             $.09 (vel(fz,move) &&+460 vel(fz,move)). 1536601089440⋈1536601089580 %.39;.82% {1536601090008: ÖqdUçëípß;ÖqdUçëíqc;ÖqdUçëíqO} ((%1,%2,(--,is(%2,"==>")),(--,is(%1,"==>"))),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief),(Relative-->Time),(VarIntro-->Also))))
                     140ms, at the correct start
          */
-        
+        test
+            .input("x! +0..+100")
+            .input("(x &&+5 x). +20..+30")
+            .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t > 20 /* dropping 2nd event */)
+            .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10));
+
     }
+    @Test void testGoalBeliefDecomposeTimeRangingDiffer() {
+        test
+                .input("x! +0..+100")
+                .input("(y &&+5 x). +20..+30")
+                .mustGoal(cycles, "y", 1f, 0.1f, (t) -> t >= 20 /* dropping 2nd event */)
+                .mustNotOutput(cycles, "x", GOAL, (t) -> true /* shouldnt drop first event */)
+                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10))
+                .mustNotOutput(cycles, "y", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10));
+        ;
+
+    }
+
 }

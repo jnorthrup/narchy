@@ -15,6 +15,7 @@ import jcog.util.FloatConsumer;
  * instead use floatValue(), intValue()
  * <p>
  * sorry
+ * TODO maybe use ScalarValue
  */
 public class AtomicFloat extends NumberX implements FloatSupplier {
 

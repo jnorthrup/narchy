@@ -472,7 +472,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 priAdd(existing, -incomingPower / reprobes);
                 return Float.NaN;
             } else {
-                return Util.max(0, incomingPower - e / reprobes);
+                return Math.max((float) 0, incomingPower - e / reprobes);
             }
         }
     }
@@ -637,7 +637,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                         System.arraycopy(wPri, 1, wPri, 0, entryCell);
                     }
                     wVal[entryCell] = v0;
-                    wPri[entryCell] = Util.max(p, ScalarValue.EPSILON);
+                    wPri[entryCell] = Math.max(p, ScalarValue.EPSILON);
 
 
                     //System.out.println(n2(wPri) + "\t" + Arrays.toString(wVal));

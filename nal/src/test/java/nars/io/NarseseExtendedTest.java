@@ -64,6 +64,7 @@ class NarseseExtendedTest extends NarseseTest {
 
         
         tensed(task("(a & b). :|: %1.0;0.9%"), Present);
+        tensed(task("(a & b). | %1.0;0.9%"), Present);
     }
 
 

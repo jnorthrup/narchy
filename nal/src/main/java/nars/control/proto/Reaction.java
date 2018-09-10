@@ -23,6 +23,7 @@ public class Reaction extends AbstractTask {
 
     @Override
     public ITask next(NAR n) {
+
         if (taskOrTasks instanceof Iterable) {
             ((Iterable)taskOrTasks).forEach(t -> emit((Task)t, n));
         } else {
@@ -36,7 +37,7 @@ public class Reaction extends AbstractTask {
     }
 
     @Nullable
-    public static ITask the(Collection<Task> c) {
+    public static ITask emit(Collection<Task> c) {
         switch (c.size()) {
             case 0: return null;
             case 1: return new Reaction(Util.only(c));

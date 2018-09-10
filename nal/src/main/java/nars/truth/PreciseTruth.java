@@ -1,7 +1,5 @@
 package nars.truth;
 
-import nars.Param;
-
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -42,10 +40,11 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     static PreciseTruth theDithered(float f, float fRes, float evi, float cRes) {
-        return PreciseTruth.byFreqConfEvi(
-                Truth.freq(f, Math.max(Param.TRUTH_EPSILON, fRes)),
-                Truth.w2cDithered(evi, Math.max(Param.TRUTH_EPSILON, cRes)),
-                evi);
+        return PreciseTruth.byConf(//byFreqConfEvi(
+                Truth.freq(f, fRes),
+                Truth.w2cDithered(evi, cRes)
+                ); //discard evidence difference
+                //,evi); //keep evidence difference
     }
 
     @Override

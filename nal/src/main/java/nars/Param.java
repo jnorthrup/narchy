@@ -48,7 +48,9 @@ public abstract class Param {
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
-           16;
+           //16;
+            //8;
+            6;
             //2;
             //4;
 

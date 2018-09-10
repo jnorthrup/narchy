@@ -90,8 +90,8 @@ public class TrackXY extends NAgentX {
             this.cam = null;
         }
 
-        //actionPushButtonMutex();
-        actionSwitch();
+        actionPushButtonMutex();
+        //actionSwitch();
         //actionTriState();
 
 
@@ -112,7 +112,8 @@ public class TrackXY extends NAgentX {
             int W = 4;
             int H = 4;
             int dur =
-                    8;
+                    4;
+                    //8;
                     //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 
             NARS nb = new NARS.DefaultNAR(1, true)

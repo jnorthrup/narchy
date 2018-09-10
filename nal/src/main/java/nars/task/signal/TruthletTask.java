@@ -2,7 +2,6 @@ package nars.task.signal;
 
 import nars.NAR;
 import nars.concept.Concept;
-import nars.link.Tasklinks;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
@@ -131,22 +130,22 @@ public class TruthletTask extends SignalTask {
         return truthlet.freq(start, end);
     }
 
-    public void updateEnd(Concept c, long nextEnd) {
-        updateTime(c, start(), nextEnd);
-    }
+//    public void updateEnd(Concept c, long nextEnd) {
+//        updateTime(c, start(), nextEnd);
+//    }
 
-    public void truth(Truthlet newTruthlet, boolean relink, NAR n) {
-        if (truthlet!=newTruthlet) {
-            Concept c = n.concept(term(), true);
-            if (c != null) {
-                update(c, (tt) -> {
-                    tt.truthlet = newTruthlet;
-                    if (relink) {
-                        Tasklinks.linkTask(this, pri(), c, n);
-                    }
-                });
-            }
-        }
-    }
+//    public void truth(Truthlet newTruthlet, boolean relink, NAR n) {
+//        if (truthlet!=newTruthlet) {
+//            Concept c = n.concept(term(), true);
+//            if (c != null) {
+//                update(c, (tt) -> {
+//                    tt.truthlet = newTruthlet;
+//                    if (relink) {
+//                        Tasklinks.linkTask(this, pri(), c, n);
+//                    }
+//                });
+//            }
+//        }
+//    }
 
 }

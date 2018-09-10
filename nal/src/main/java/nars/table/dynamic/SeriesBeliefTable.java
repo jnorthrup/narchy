@@ -140,7 +140,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
             if (y == null) {
                 r.reject();
             } else if (y != x) {
-                r.input = y;
+                r.input = y; //assume same concept
             }
         }
 

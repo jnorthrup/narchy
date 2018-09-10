@@ -576,26 +576,7 @@ public enum Util {
 
 
     public static float max(float a, float b, float c) {
-        return Util.max(Util.max(a, b), c);
-    }
-
-    /**
-     * maximum, simpler and faster than Math.max without its additional tests
-     */
-    public static float max(float a, float b) {
-        /*Compares two Float objects numerically. There are two ways in which comparisons performed by this method differ from those performed by the Java language numerical comparison operators (<, <=, ==, >=, >) when applied to primitive float values:
-        Float.NaN is considered by this method to be equal to itself and greater than all other float values (including Float.POSITIVE_INFINITY).
-        0.0f is considered by this method to be greater than -0.0f.
-        This ensures that the natural ordering of Float objects imposed by this method is consistent with equals. */
-
-
-        return (a >= b) ? a : b;
-    }
-
-    public static float min(float a, float b) {
-
-
-        return (a <= b) ? a : b;
+        return Math.max(Math.max(a, b), c);
     }
 
     public static float mean(float a, float b) {
@@ -677,10 +658,12 @@ public enum Util {
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
      */
     public static float round(float value, float epsilon) {
-        assertFinite(epsilon);
-        assertFinite(value);
-        if (epsilon <= Float.MIN_NORMAL) return value;
-        else return Math.round(value / epsilon) * epsilon;
+//        assertFinite(epsilon);
+//        assertFinite(value);
+//
+//        if (epsilon <= Float.MIN_NORMAL) return value;
+//        else return Math.round(value / epsilon) * epsilon;
+        return (float)round((double)value, (double)epsilon);
     }
 
     public static double round(double value, double epsilon) {
@@ -694,7 +677,9 @@ public enum Util {
      * rounds x to the nearest multiple of the dither parameter
      */
     public static int round(int x, int dither) {
-        return dither * Math.round(((float) x) / dither);
+
+        //return dither * Math.round(((float) x) / dither);
+        return (int)round((long)x, dither);
     }
 
     public static long round(long x, int dither) {
@@ -703,6 +688,7 @@ public enum Util {
 
 
     public static int floatToInt(float f, int discretness) {
+
         return Math.round(f * discretness);
     }
 
@@ -791,10 +777,8 @@ public enum Util {
     }
 
     public static int bin(float x, int bins) {
-        int b = (int) Math.floor((x + (0.5f / bins)) * bins);
-        if (b >= bins)
-            b = bins - 1;
-        return b;
+        int b = (int) Math.floor((x + (0.5 / bins)) * bins);
+        return Util.clamp(b, 0, bins-1);
     }
 
     /**
@@ -1417,9 +1401,7 @@ public enum Util {
         assertFinite(min);
         assertFinite(max);
         assert (min <= max);
-        if (f < min) f = min;
-        if (f > max) f = max;
-        return f;
+        return Math.max(Math.min(f, max), min);
     }
 
     public static double clamp(double f, double min, double max) {
@@ -1427,9 +1409,7 @@ public enum Util {
         assertFinite(min);
         assertFinite(max);
         assert (min <= max);
-        if (f < min) f = min;
-        if (f > max) f = max;
-        return f;
+        return Math.max(Math.min(f, max), min);
     }
 
     public static int clampI(float i, int min, int max) {

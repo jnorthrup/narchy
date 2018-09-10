@@ -40,10 +40,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //    private static final float SCAN_QUALITY =
 //            1f;
 
-    static final float MATCH_QUALITY = 0.33f;
+    static final float MATCH_QUALITY = 0.25f;
 
-    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 2f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 10f;
+    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 1f;
+    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 2f;
 
 
     private static final int SCAN_CONF_OCTAVES_MAX = 1;

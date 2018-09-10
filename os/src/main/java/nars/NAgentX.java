@@ -31,7 +31,6 @@ import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
@@ -58,7 +57,6 @@ import java.util.function.Supplier;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.widget.tab.TabPane.TabWall;
 
@@ -337,7 +335,7 @@ abstract public class NAgentX extends NAgent {
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
-        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof SeriesBeliefTable.SeriesTask /* exclude curiosity */) ), 8, 96);
+        //ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof SeriesBeliefTable.SeriesTask /* exclude curiosity */) ), 8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
         Introduction factorizer = new Factorize.FactorIntroduction(64, n);

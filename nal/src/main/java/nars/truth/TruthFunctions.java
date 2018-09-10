@@ -267,7 +267,7 @@ public final class TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     private static float c2w(float c, float horizon) {
-        if (!((Float.isFinite(c) && (c <= Param.TRUTH_MAX_CONF) && (c >= 0))))
+        if (!Float.isFinite(c) || (c > Param.TRUTH_MAX_CONF) || (c < 0))
             throw new RuntimeException("invalid confidence: " + c);
         return c2wSafe(c, horizon);
     }

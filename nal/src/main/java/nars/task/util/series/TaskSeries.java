@@ -43,7 +43,7 @@ public interface TaskSeries<T extends Task> {
             Task[] ii = inner.items;
             int i;
             for (i = 0; i < l; i++) {
-                d.adding(filter).accept(ii[i]);
+                d.addIf(filter).accept(ii[i]);
             }
             return d;
         }
