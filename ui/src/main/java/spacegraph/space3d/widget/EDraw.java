@@ -2,15 +2,13 @@ package spacegraph.space3d.widget;
 
 
 import jcog.Util;
-import jcog.pri.PLink;
-import org.eclipse.collections.api.tuple.Twin;
-import org.eclipse.collections.impl.tuple.Tuples;
+import jcog.pri.UnitPri;
 import spacegraph.space3d.SimpleSpatial;
 
 /**
  * Drawn edge, lightweight
  */
-public class EDraw<Y extends SimpleSpatial> extends PLink<Twin<Y>> {
+public class EDraw<Y extends SimpleSpatial> extends UnitPri {
 
     private final int hash;
     
@@ -22,16 +20,20 @@ public class EDraw<Y extends SimpleSpatial> extends PLink<Twin<Y>> {
     /** proportional to radius */
     public float attractionDist = 1f;
 
+    final Y src, tgt;
     public EDraw(Y src, Y target, float pri) {
-        super(Tuples.twin(src,target), pri);
+        //super(Tuples.twin(src,target), pri);
+        super(pri);
+        this.src = src;
+        this.tgt = target;
         this.hash = Util.hashCombine(src.id, target.id);
     }
 
     public Y src() {
-        return id.getOne();
+        return src; //id.getOne();
     }
     public Y tgt() {
-        return id.getTwo();
+        return tgt; //id.getTwo();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package jcog.exe.valve;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * micro-managed iterable with implementable pre-batch (start) and post-batch (stop) methods
  */
@@ -31,10 +33,13 @@ public interface Work {
         return i;
     }
 
-    /**
-     * called after work iterations were performed. can be used to implement some clean-up or persist state.
-     */
-    default void stop() {
-
+    default int next(BooleanSupplier kontinue) {
+        int count = 0;
+        do {
+            next();
+            count++;
+        } while (kontinue.getAsBoolean());
+        return count;
     }
+
 }

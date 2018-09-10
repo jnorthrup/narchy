@@ -159,7 +159,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         @Override
         public boolean isDeleted() {
-            boolean inactive = !id.getOne().active() || !id.getTwo().active();
+            boolean inactive = !src().active() || !tgt().active();
             if (inactive) {
                 delete();
                 return true;

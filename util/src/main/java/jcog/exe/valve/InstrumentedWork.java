@@ -2,8 +2,11 @@ package jcog.exe.valve;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.WTF;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
+
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BooleanSupplier;
 
 import static java.lang.System.nanoTime;
 
@@ -13,15 +16,19 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 
     final static int WINDOW = 16;
 
-    /**
-     * total accumulated start/stop tme each cycle
-     */
-    public final SynchronizedDescriptiveStatistics startAndStopTimeNS = new SynchronizedDescriptiveStatistics(WINDOW);
+//    /**
+//     * total accumulated start/stop tme each cycle
+//     */
+//    public final SynchronizedDescriptiveStatistics startAndStopTimeNS = new SynchronizedDescriptiveStatistics(WINDOW);
 
     /**
      * total accumulated work time, each cycle
      */
     public final SynchronizedDescriptiveStatistics iterTimeNS = new SynchronizedDescriptiveStatistics(WINDOW);
+
+    public final AtomicLong accumTimeNS = new AtomicLong(0);
+
+    public final DescriptiveStatistics valuePerSecond = new SynchronizedDescriptiveStatistics(WINDOW);
 
     /**
      * total iterations, each cycle
@@ -29,11 +36,9 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
     public final SynchronizedDescriptiveStatistics iterations = new SynchronizedDescriptiveStatistics(WINDOW);
 
 
-    transient public double valuePerSecond, valueNormalized;
+    transient public double valueNormalized;
+    transient public double valuePerSecondNormalized;
 
-    long beforeStart, afterStart, beforeEnd, afterEnd;
-    long workTimeThisCycleNS;
-    int iterationsThisCycle;
 
     public InstrumentedWork(AbstractWork<Who, What> work) {
         this(work, work);
@@ -47,29 +52,24 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 
     @Override
     public final boolean start() {
-
-        beforeStart = nanoTime();
-        boolean starting = work.start();
-        afterStart = nanoTime();
-
-        return starting;
+        return work.start();
     }
 
-    /**
-     * estimate, in NS
-     */
-    public double timePerIterationMean() {
-        double numer = iterTimeNS.getMean();
-        if (!Double.isFinite(numer) || numer < Double.MIN_NORMAL) {
-            return Double.POSITIVE_INFINITY;
-        } else {
-            double denom = iterations.getMean();
-            if (!Double.isFinite(denom) || denom < Double.MIN_NORMAL) {
-                return Double.POSITIVE_INFINITY;
-            }
-            return numer / denom;
-        }
-    }
+//    /**
+//     * estimate, in NS
+//     */
+//    public double timePerIterationMean() {
+//        double numer = iterTimeNS.getMean();
+//        if (!Double.isFinite(numer) || numer < Double.MIN_NORMAL) {
+//            return Double.POSITIVE_INFINITY;
+//        } else {
+//            double denom = iterations.getMean();
+//            if (!Double.isFinite(denom) || denom < Double.MIN_NORMAL) {
+//                return Double.POSITIVE_INFINITY;
+//            }
+//            return numer / denom;
+//        }
+//    }
     //TODO  timePerIterationPessimistic() {..
 
     @Override
@@ -79,80 +79,87 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 
     @Override
     public final int next(int n) {
-        long a = nanoTime();
+        return worked(nanoTime(), work.next(n));
+    }
 
-        int ran = work.next(n);
-        if (ran > 0) {
-            workTimeThisCycleNS += (nanoTime() - a);
-            iterationsThisCycle += ran;
-        } else {
-            if (ran < 0)
-                throw new WTF();
-        }
+
+    public final int next(BooleanSupplier kontinue) {
+        return worked(nanoTime(), work.next(kontinue));
+    }
+
+
+    private int worked(long a, int ran) {
+        assert (ran >= 0);
+        commit(ran, nanoTime() - a);
+
         return ran;
     }
 
-    @Override
-    public final void stop() {
+    /** resets the accumulated time buffer */
+    public long accumulatedTime(boolean clear) {
+        return clear ? accumTimeNS.getAndSet(0) : accumTimeNS.getOpaque();
+    }
 
-        if (iterationsThisCycle > 0) {
-            iterations.addValue(iterationsThisCycle);
-            iterTimeNS.addValue(workTimeThisCycleNS);
+    protected final void commit(int iterationsThisCycle, long workTimeThisCycleNS) {
+        accumTimeNS.getAndAdd(workTimeThisCycleNS);
+        iterTimeNS.addValue(workTimeThisCycleNS);
+        iterations.addValue(iterationsThisCycle);
 
 
-            iterationsThisCycle = 0;
-            workTimeThisCycleNS = 0;
-        }
 
-        beforeEnd = nanoTime();
-        work.stop();
-        afterEnd = nanoTime();
-        startAndStopTimeNS.addValue((afterStart - beforeStart) + (afterEnd - beforeEnd));
+
+        //}
+//
+//        beforeEnd = nanoTime();
+//        work.stop();
+//        afterEnd = nanoTime();
+//        startAndStopTimeNS.addValue((afterStart - beforeStart) + (afterEnd - beforeEnd));
     }
 
     public String summary() {
         return super.toString() +
-                "{ " + "startStopTimeMeanNS=" + Texts.timeStr(startAndStopTimeNS.getMean())
-                + ", " + "iterTimeMeanNS=" + Texts.timeStr(iterTimeNS.getMean())
-                + ", " + "itersMean=" + Texts.n2(iterations.getMean())
+                "{" + "valuePerSecond=" + Texts.n4(valuePerSecond.getMean()) +
+                ", " + "iterTimeMeanNS=" + Texts.timeStr(iterTimeNS.getMean())
+                + ", " + "itersMean=" + Texts.n4(iterations.getMean())
                 + "}";
+    }
+
+    public void runUntil(long deadlineNS) {
+        if (this.start()) {
+            worked(nanoTime(), this.next(() -> System.nanoTime() < deadlineNS));
+        }
     }
 
     public void runFor(long cycleNS) {
 
+
         if (this.start()) {
 
-            float p = this.pri();
-            if (p == p) {
 
-                long runtimeNS = Math.round(cycleNS * p);
+            long now = nanoTime();
+            long deadlineNS = now + cycleNS;
 
-                long now = nanoTime();
-                long deadlineNS = now + runtimeNS;
+            worked(now, this.next(() -> System.nanoTime() < deadlineNS));
 
-                do {
-                    double meanItertime = Math.min(runtimeNS, timePerIterationMean());
-                    double expectedNexts;
-                    if (meanItertime != meanItertime)
-                        expectedNexts = 1;
-                    else {
-                        expectedNexts = ((deadlineNS - now) / (meanItertime));
-                    }
+//                do {
+//                    double meanItertime = Math.min(runtimeNS, timePerIterationMean());
+//                    double expectedNexts;
+//                    if (meanItertime != meanItertime)
+//                        expectedNexts = 1;
+//                    else {
+//                        expectedNexts = ((deadlineNS - now) / (meanItertime));
+//                    }
+//
+//                    //System.out.println(x + " " + timeStr(deadlineNS - now) + " " + timeStr(deadlineNS - now) + "\t" + timeStr(meanItertime) + " \t= " + expectedNexts);
+//                    int ran = this.next(Util.clamp((int) Math.round(Math.max(1, expectedNexts) + 1), 1, 1024));
+//                    if (ran <= 0)
+//                        break;
+//
+//                } while ((now = nanoTime()) < deadlineNS);
 
-                    //System.out.println(x + " " + timeStr(deadlineNS - now) + " " + timeStr(deadlineNS - now) + "\t" + timeStr(meanItertime) + " \t= " + expectedNexts);
-                    int ran = this.next(Util.clamp((int) Math.round(Math.max(1, expectedNexts) + 1), 1, 1024));
-                    if (ran <= 0)
-                        break;
-
-                } while ((now = nanoTime()) < deadlineNS);
-
-            }
-
-        } else {
 
         }
 
-        this.stop();
 
     }
 

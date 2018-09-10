@@ -5,9 +5,13 @@ public class PLinkHashCached<X> extends PLink<X>{
 
     public final int hash;
 
-    public PLinkHashCached(X x, float p) {
+    public PLinkHashCached(X x, int hash, float p) {
         super(x, p);
-        this.hash = x.hashCode();
+        this.hash = hash;
+    }
+
+    public PLinkHashCached(X x, float p) {
+        this(x, x.hashCode(), p);
     }
 
     @Override

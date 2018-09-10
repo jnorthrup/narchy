@@ -6,8 +6,7 @@ import nars.NAR;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-
-import static nars.time.Tense.ETERNAL;
+import java.util.function.BooleanSupplier;
 
 /**
  * asynchronously controlled implementation of Leak which
@@ -20,69 +19,32 @@ import static nars.time.Tense.ETERNAL;
  */
 public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
-    private final Number rate /* base rate items per dt */;
-    private float RATE_THRESH = 1f;
-    final static float maxBudgetRefund = 1f;
-    protected volatile long lastLeak = ETERNAL;
-    private volatile float savings;
 
-    DtLeak(@NotNull Bag<X, Y> bag, @NotNull Number rate) {
+    DtLeak(@NotNull Bag<X, Y> bag) {
         super(bag);
-        this.rate = rate;
     }
 
-    public void commit(NAR nar, int iterations) {
-
-
-        long now = nar.time();
-        int dur = nar.dur();
-
-        long last = this.lastLeak;
-
+    public void commit(NAR nar, BooleanSupplier kontinue) {
 
         float forgetRate = nar.forgetRate.floatValue();
+
         if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
-
-            
-            float durDT = Math.max(0, (now - last) / ((float) dur));
-
-            float nextBudget = iterations * rate.floatValue() * durDT + savings;
-            
-
-            if (nextBudget >= RATE_THRESH) {
-                this.lastLeak = now;
-
-                commit(nextBudget);
-            }
+            commit(kontinue);
         }
-
 
     }
 
 
-    private void commit(float nextBudget) {
+    private void commit(BooleanSupplier kontinue) {
 
-        final float[] budget = {nextBudget};
 
         Random rng = random();
 
         bag.sample(rng, ((Y v) -> {
-
             float cost = receive(v);
-            budget[0] -= cost;
 
-            float remain = budget[0];
-
-            if (remain < 1) {
-                if (remain <= 0 || rng.nextFloat() > remain)
-                    return Sampler.SampleReaction.RemoveAndStop;
-            }
-
-            return Sampler.SampleReaction.Remove;
+            return kontinue.getAsBoolean() ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
         }));
-
-
-        this.savings = Math.min(maxBudgetRefund, Math.max(0, budget[0]));
 
     }
 

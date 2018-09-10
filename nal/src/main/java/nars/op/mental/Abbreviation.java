@@ -50,7 +50,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
     public Abbreviation(NAR nar, String termPrefix, int volMin, int volMax, float selectionRate, int capacity) {
         super();
-        bag = new TaskLeak(capacity, selectionRate, nar) {
+        bag = new TaskLeak(capacity, nar) {
 
 
             @Override

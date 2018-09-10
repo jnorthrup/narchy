@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements Table<K, V> {
 
 
+
     protected int capacity;
 
     public ArrayListTable(Map<K, V> map) {

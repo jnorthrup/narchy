@@ -69,8 +69,24 @@ public interface Variable extends Atomic {
         if (x!=this || _y != y) {
             if (x.equals(y))
                 return true;
-            if (x.containsRecursively(y) || y.containsRecursively(x))
-                return false; //prevent infinite recursion
+            if (x instanceof Compound || y instanceof Compound) {
+                int xv = x.volume(), yv = y.volume();
+                if (xv != yv) {
+                    Term bigger, smaller;
+                    if (xv > yv) {
+                        bigger = x;
+                        smaller = y;
+                    } else {
+                        bigger = y;
+                        smaller = x;
+                    }
+                    if (bigger.containsRecursively(smaller))
+                        return false; //prevent infinite recursion
+                }
+
+//                if (x.containsRecursively(y) || y.containsRecursively(x))
+//                    return false; //prevent infinite recursion
+            }
         }
 
         if (x != this) {

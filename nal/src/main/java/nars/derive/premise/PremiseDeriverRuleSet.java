@@ -3,8 +3,6 @@ package nars.derive.premise;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Streams;
 import jcog.data.set.ArrayUnenforcedSet;
-import jcog.memoize.CaffeineMemoize;
-import jcog.memoize.Memoize;
 import jcog.memoize.Memoizers;
 import nars.NAR;
 import org.apache.commons.lang3.ArrayUtils;
@@ -12,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,7 +37,9 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
         parsed.distinct().map(x -> x.apply(patterns)).forEach(super::add);
     }
 
-    private final static Memoize<String, Collection<PremiseRuleSource>> ruleCache = CaffeineMemoize.build((String n) -> {
+    private final static Function<String, Collection<PremiseRuleSource>> ruleCache = Memoizers.the.memoize(
+            PremiseDeriverRuleSet.class.getSimpleName() + "_rule", 32,
+            (String n) -> {
 
         byte[] bb;
 
@@ -54,10 +55,8 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
         }
         return (PremiseRuleSource.parse(load(bb)).collect(Collectors.toSet()));
 
-    }, 32, false);
-    static {
-        Memoizers.the.add(PremiseDeriverRuleSet.class.getSimpleName() + "_rule", ruleCache);
-    }
+    });
+
 
     public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
         return new PremiseDeriverRuleSet(

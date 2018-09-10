@@ -20,11 +20,11 @@ import nars.link.ActivatedLinks;
 import nars.link.TaskLink;
 import nars.term.Term;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -40,12 +40,12 @@ public class MatrixDeriver extends Deriver {
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    private int premisesPerConcept = 4;
+    private final int premisesPerConcept = 4;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
     @Range(min = 1, max = 8)
-    private int termLinksPerTaskLink = 2;
+    private final int termLinksPerTaskLink = 2;
 
 
     public MatrixDeriver(PremiseDeriverRuleSet rules) {
@@ -65,40 +65,39 @@ public class MatrixDeriver extends Deriver {
     }
 
     @Override
-    protected void derive(Derivation d, int iterations) {
+    protected void derive(Derivation d, BooleanSupplier kontinue) {
 
         NAR n = d.nar;
 
-        Collection<Premise> premises = d.premiseBuffer;
-        try {
+        FasterList<Premise> premises = d.premiseBuffer;
+        premises.clear();
 
+        do {
 
-            int premisesMax = iterations * conceptsPerIteration.intValue() * premisesPerConcept;
+            if (premises.isEmpty()) {
 
-            hypothesize(premisesMax, (t, termlink) -> {
+                int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept;
 
-                Premise premise = new Premise(t, termlink);
-                if (!premises.add(premise))
-                    n.emotion.premiseBurstDuplicate.increment();
+                hypothesize(premisesMax, (t, termlink) -> {
 
-                return true;
-            }, d);
+                    Premise premise = new Premise(t, termlink);
+                    if (!premises.add(premise))
+                        n.emotion.premiseBurstDuplicate.increment();
 
+                    return true;
+                }, d);
+            }
 
             int s = premises.size();
             if (s == 0)
-                return;
+                break;
 
-            if (s > 2) {
-//            ((FasterList<Premise>) (((ArrayHashSet)premises).list)).sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
-                ((FasterList<Premise>) premises).sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
-            }
+            if (s > 2)
+                premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
 
+            int matchTTL = matchTTL(), deriveTTL = n.deriveBranchTTL.intValue();
 
-            int matchTTL = matchTTL();
-            int deriveTTL = n.deriveBranchTTL.intValue();
-
-            premises.forEach(p -> {
+            premises.dropWhile(p -> {
 
                 Counter counter;
                 if (p.match(d, matchTTL)) {
@@ -121,10 +120,12 @@ public class MatrixDeriver extends Deriver {
                 }
 
                 counter.increment();
+
+                return kontinue.getAsBoolean();
             });
-        } finally {
-            premises.clear();
-        }
+
+        } while (kontinue.getAsBoolean());
+
 
 
     }

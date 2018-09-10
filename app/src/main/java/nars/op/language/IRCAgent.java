@@ -322,7 +322,7 @@ public class IRCAgent extends IRC {
         private final String[] channels;
 
         public MyLeakOut(NAR nar, String... channels) {
-            super(8, 1f, nar);
+            super(8, nar);
             this.channels = channels;
         }
 

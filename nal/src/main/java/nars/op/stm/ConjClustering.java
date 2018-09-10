@@ -2,7 +2,6 @@ package nars.op.stm;
 
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
-import jcog.pri.NLink;
 import jcog.pri.Priority;
 import jcog.pri.VLink;
 import nars.NAR;
@@ -26,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -47,13 +46,12 @@ public class ConjClustering extends Causable {
     private float confMin;
     private int volMax;
     private int ditherTime;
-    private int taskLimitPerCentroid;
 
     //temporary to the current singleton
     transient private int tasksGenerated;
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
-        this(nar, punc, (t)->true, centroids, capacity);
+        this(nar, punc, (t) -> true, centroids, capacity);
     }
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
@@ -113,34 +111,28 @@ public class ConjClustering extends Causable {
 
     }
 
-    @Override
-    public void run(NAR n, int workRequested, Consumer<NLink<Runnable>> buffer) {
-        if (bag == null || bag.bag.isEmpty())
-            return;
-
-        super.run(n, workRequested, buffer);
-    }
 
     @Override
-    protected int next(NAR nar, int iterations /* max tasks generated per centroid, >=1 */) {
+    protected /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
-        if (bag==null || bag.bag.isEmpty()) return 0;
+        if (bag == null || bag.bag.isEmpty()) return;
 
         this.now = nar.time();
         this.dur = nar.dur();
         this.ditherTime = nar.dtDither();
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
-        this.taskLimitPerCentroid = Math.max(1, Math.round(((float) iterations) / bag.net.centroids.length));
+        this.tasksGenerated = 0;
 
-        tasksGenerated = 0;
+        try {
+            bag.commit(nar.forgetRate.floatValue(), 1);
 
-        bag.commitGroups(nar, nar.forgetRate.floatValue(), conjoiner::conjoinCentroid);
-
-        if (tasksGenerated > 0) {
-            in.commit();
+            conjoiner.kontinue = kontinue;
+            bag.cluster(nar, nar.random(), conjoiner::conjoinCentroid);
+        } finally {
+            if (tasksGenerated > 0)
+                in.commit();
         }
-        return iterations;
     }
 
     final CentroidConjoiner conjoiner = new CentroidConjoiner();
@@ -151,15 +143,18 @@ public class ConjClustering extends Causable {
         final FasterList<Task> actualTasks = new FasterList(8);
         final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 8);
 
-        private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
+        /**
+         * HACK
+         */
+        transient volatile public BooleanSupplier kontinue;
+
+        private boolean conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
             Iterator<VLink<Task>> gg =
                     group.filter(x -> x != null && !x.isDeleted()).iterator();
 
-            int centroidGen = 0;
-
             main:
-            while (gg.hasNext() && centroidGen < taskLimitPerCentroid) {
+            while (gg.hasNext()) {
 
                 vv.clear();
                 actualTasks.clear();
@@ -260,27 +255,31 @@ public class ConjClustering extends Causable {
 
 
                                 NALTask m = new STMClusterTask(cp, t, start, start, Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-
-
                                 m.cause = Cause.merge(Param.causeCapacity.intValue(), uu);
 
-
-                                int v = cp.getOne().volume();
-                                float cmplFactor =
-                                        ((float) v) / (v + volMax);
-
-                                float freqFactor =
-                                        t.freq();
-                                float confFactor =
-                                        (conf / (conf + confMax));
-
-                                m.pri(Priority.fund(priMin * freqFactor * cmplFactor * confFactor, false, uu));
-
                                 if (in.inputIfCapacity(m)) {
-                                    centroidGen++;
+
+                                    int v = cp.getOne().volume();
+                                    float cmplFactor =
+                                            ((float) v) / (v + volMax);
+
+                                    float freqFactor =
+                                            t.freq();
+                                    float confFactor =
+                                            (conf / (conf + confMax));
+
+                                    m.pri(Priority.fund(priMin * freqFactor * cmplFactor * confFactor, false, uu));
+
+                                    for (Task aa : actualTasks)
+                                        bag.remove(aa);
+
                                     tasksGenerated++;
+
+                                    if (!kontinue.getAsBoolean())
+                                        return false;
+
                                 } else {
-                                    return;
+                                    return false;
                                 }
                             }
                         }
@@ -289,9 +288,9 @@ public class ConjClustering extends Causable {
                     }
                 }
 
-
             }
 
+            return true;
         }
     }
 

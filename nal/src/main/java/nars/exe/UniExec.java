@@ -7,11 +7,13 @@ import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
+import jcog.math.FloatRange;
 import jcog.service.Service;
 import nars.NAR;
 import nars.control.DurService;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
@@ -20,12 +22,11 @@ import java.util.function.Consumer;
  */
 public class UniExec extends AbstractExec {
 
-    int WORK_PER_CYCLE = 1;
 
-    final Revaluator revaluator;
+    public final Revaluator revaluator;
 
-            //new Focus.AERevaluator(new SplitMix64Random(1));
-            //new Focus.DefaultRevaluator();
+    //new Focus.AERevaluator(new SplitMix64Random(1));
+    //new Focus.DefaultRevaluator();
 
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 
@@ -33,15 +34,20 @@ public class UniExec extends AbstractExec {
     final MetalConcurrentQueue in =
             //new ArrayBlockingQueue(8192);
             new MetalConcurrentQueue(IN_CAPACITY);
-            //new DisruptorBlockingQueue(32*1024);
+    //new DisruptorBlockingQueue(32*1024);
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
     private Ons ons = null;
 
+    public final FloatRange explorationRate = FloatRange.unit(0.1f);
+
+
+
     public UniExec() {
         this(Revaluator.NullRevaluator.the);
     }
+
     public UniExec(Revaluator revaluator) {
         this.revaluator = revaluator;
     }
@@ -51,30 +57,51 @@ public class UniExec extends AbstractExec {
         public final Causable c;
 
         public InstrumentedCausable(Causable c) {
-            super(new AbstractWork<>(sharing.start(c), "CPU", 0.5f) {
-
-                @Override
-                public boolean next() {
-                    return c.next(nar, 1) >= 0;
-                }
-
-                @Override
-                public final int next(int n) {
-                    try {
-                        return c.next(nar, n);
-                    } catch (Throwable t) {
-                        logger.error("{} {}", c, t);
-                        return 0;
-                    }
-                }
-            });
+            super(new MyWork(c));
             this.c = c;
         }
-//
-//        @Override
-//        public boolean next() {
-//            return super.next();
-//        }
+
+
+    }
+
+    private final class MyWork extends AbstractWork {
+
+        private final Causable c;
+
+        public MyWork(Causable c) {
+            super(sharing.start(c), "CPU", 0.5f);
+            this.c = c;
+        }
+
+        @Override
+        public boolean next() {
+            c.next(nar, () -> false);
+            return false;
+        }
+
+        @Override
+        public final int next(int n) {
+            int[] done = new int[]{0};
+            try {
+                c.next(nar, () -> ++done[0] < n);
+            } catch (Throwable t) {
+                logger.error("{} {}", c, t);
+                return 0;
+            }
+            return done[0];
+        }
+
+        @Override
+        public int next(BooleanSupplier kontinue) {
+            int[] done = new int[]{0};
+            try {
+                c.next(nar, kontinue);
+            } catch (Throwable t) {
+                logger.error("{} {}", c, t);
+                return 0;
+            }
+            return done[0];
+        }
     }
 
     @Override
@@ -99,96 +126,86 @@ public class UniExec extends AbstractExec {
             cpu = new TimeSlicing<>("CPU", 1, nar.exe) {
 
 
-                @Deprecated @Override
+                @Deprecated
+                @Override
                 protected void trySpawn() {
 
                 }
 
                 @Override
-                @Deprecated protected boolean work() {
+                @Deprecated
+                protected boolean work() {
                     throw new UnsupportedOperationException();
                 }
 
                 @Override
-                public TimeSlicing commit() {
+                public synchronized TimeSlicing commit() {
                     double[] valMin = {Double.POSITIVE_INFINITY}, valMax = {Double.NEGATIVE_INFINITY};
 
                     int n = size();
 
                     this.forEach((InstrumentedWork s) -> {
-                        double v = ((Causable)s.who).value();
+                        double v = ((Causable) s.who).value();
                         s.valueNormalized = v;
                         if (v > valMax[0]) valMax[0] = v;
                         if (v < valMin[0]) valMin[0] = v;
                     });
 
                     double valRange = valMax[0] - valMin[0];
-                    float UPDATE_RATE = 0.2f;
+
 
                     if (Math.abs(valRange) > Double.MIN_NORMAL) {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY};
                         final double[] valRateMax = {Double.NEGATIVE_INFINITY};
                         this.forEach((InstrumentedWork s) -> {
-                            Object x = s.who;
-                            if (x instanceof Causable) {
+//                            Causable x = (Causable) s.who;
+                            //if (x instanceof Causable) {
 
-                                s.valueNormalized = (s.valueNormalized - valMin[0]) / valRange;
+                            s.valueNormalized = (s.valueNormalized - valMin[0]) / valRange;
 
-                                double value = s.valueNormalized;
-                                //(1 + Util.tanhFast(c.value()))/2;
+                            double value = s.valueNormalized;
 
-                                if (Math.abs(value) > Double.MIN_NORMAL) {
-                                    if (!Double.isFinite(value))
-                                        s.valuePerSecond = 0;
-                                    else {
-                                        //value = Math.max(value, 0);
-                                        double iters = s.iterations.getMean();
-                                        if (iters == iters) {
-                                            double meanTimeNS = s.iterTimeNS.getMean() * iters;
-                                            if (!Double.isFinite(meanTimeNS))
-                                                s.valuePerSecond = 0;
-                                            else {
-                                                //double valuePerNano = (value / Math.log(meanTimeNS));
-                                                s.valuePerSecond = (value / (1.0E-9 * meanTimeNS));
-                                            }
-                                        } else {
-                                            s.valuePerSecond = 0;
-                                        }
-                                    }
-                                } else {
-                                    s.valuePerSecond = 0;
-                                }
-                                double valuePerSecond = s.valuePerSecond;
-                                if (valuePerSecond > valRateMax[0]) valRateMax[0] = valuePerSecond;
-                                if (valuePerSecond < valRateMin[0]) valRateMin[0] = valuePerSecond;
+                            double valuePerSecond;
+                            long accumTime = s.accumulatedTime(true);
+                            if (!Double.isFinite(value) || accumTime < 1)
+                                valuePerSecond = 0;
+                            else {
+                                //value = Math.max(value, 0);
+                                //double valuePerNano = (value / Math.log(meanTimeNS));
+                                valuePerSecond = (value / accumTime);
                             }
+
+                            s.valuePerSecond.addValue(valuePerSecond);
+                            double valuePerSecondMean = s.valuePerSecond.getMean();
+                            if (valuePerSecond > valRateMax[0]) valRateMax[0] = valuePerSecondMean;
+                            if (valuePerSecond < valRateMin[0]) valRateMin[0] = valuePerSecondMean;
+
                         });
                         double valRateRange = valRateMax[0] - valRateMin[0];
-                        if (valRateRange > Double.MIN_NORMAL * can.size()) {
+                        if (valRateRange > Double.MIN_NORMAL * n) {
+                            double valueRateSum[] = { 0 };
                             forEach((InstrumentedWork s) -> {
-                                //s.need((float) s.valueNormalized); //abs
-
-                                double valuePerSecondNormalized = (s.valuePerSecond - valRateMin[0])/valRateRange;
-                                if (Double.isFinite(valuePerSecondNormalized)) {
-                                    s.pri((float) valuePerSecondNormalized, UPDATE_RATE);
-                                } else {
-                                    s.pri(0);
-                                    //throw new TODO();
-                                }
-
-                                //System.out.println(s + " " + s.iterations.getMean());
-
+                                double svsn = s.valuePerSecondNormalized = (s.valuePerSecond.getMean() - valRateMin[0]) / valRateRange;
+                                valueRateSum[0] += svsn;
                             });
 
+                            float explorationRate = UniExec.this.explorationRate.floatValue()/n;
+                            forEach((InstrumentedWork s) -> {
+                                s.pri(
+                                        Math.max(explorationRate,
+                                                (float) (s.valuePerSecondNormalized/valueRateSum[0])) );
+                            });
+                            //print();
                             return this;
                         }
 
                     }
 
                     /** flat */
-                    float flatDemand = n > 1 ?  (1f/n) : 0.5f;
-                    forEach((InstrumentedWork s) -> s.pri(flatDemand, UPDATE_RATE));
+                    float flatDemand = n > 1 ? (1f / n) : 1f;
+                    forEach((InstrumentedWork s) -> s.pri(flatDemand));
+
 
 
                     return this;
@@ -210,11 +227,11 @@ public class UniExec extends AbstractExec {
     @Override
     public void stop() {
         synchronized (this) {
-            if (ons!=null) {
+            if (ons != null) {
                 ons.off();
                 ons = null;
             }
-            if (sharing!=null) {
+            if (sharing != null) {
                 sharing.off(cpu.what, cpu);
             }
             super.stop();
@@ -233,19 +250,19 @@ public class UniExec extends AbstractExec {
         sync();
         nar.time.schedule(this::executeNow);
 
-        can.forEachValue(c->
-            c.c.next(nar, WORK_PER_CYCLE)
+        can.forEachValue(c ->
+                c.c.next(nar, () -> false /* 1 work unit */)
         );
     }
 
     protected void sync() {
         Object next;
-        while ((next = in.poll())!=null) executeNow(next);
+        while ((next = in.poll()) != null) executeNow(next);
     }
 
 
     public boolean remove(Causable s) {
-        return can.remove(s)!=null;
+        return can.remove(s) != null;
     }
 
     public void add(Causable s) {

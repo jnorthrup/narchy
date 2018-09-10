@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -111,21 +112,20 @@ abstract public class Deriver extends Causable {
     }
 
     @Override
-    protected int next(NAR n, final int iterations) {
+    protected void next(NAR n, final BooleanSupplier kontinue) {
 
-        derive(derivation.get().next(n, this), iterations);
+        derive(derivation.get().next(n, this), kontinue);
 
         if (!linked.isEmpty())
             nar.input(linked);
 
         derived.commit(n);
 
-        return iterations;
     }
 
 
 
-    abstract protected void derive(Derivation d, int iterations);
+    abstract protected void derive(Derivation d, BooleanSupplier kontinue);
 
 
     /** returns false if no tasklinks are present */

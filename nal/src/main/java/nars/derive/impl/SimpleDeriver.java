@@ -21,10 +21,7 @@ import nars.term.Term;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * samples freely from concept, termlink, and tasklink bags without any buffering of premises
@@ -86,30 +83,29 @@ public class SimpleDeriver extends Deriver {
     }
 
     @Override
-    protected int next(NAR n, int iterations) {
+    protected void next(NAR n, BooleanSupplier kontinue) {
         float p = enable.floatValue();
         if (p < 1f) {
             if (n.random().nextFloat() > p)
-                return 0;
+                return;
         }
 
-        return super.next(n, iterations);
+        super.next(n, kontinue);
     }
 
     @Override
-    protected void derive(Derivation d, int iterations) {
+    protected void derive(Derivation d, BooleanSupplier kontinue) {
 
 
 
-        final int[] ii = {iterations };
+
 
 
         int deriveTTL = d.nar.deriveBranchTTL.intValue();
         int matchTTL = matchTTL();
 
         source.accept(a -> {
-            if (a == null)
-                return true;
+            assert(a!=null);
 
             Concept concept = a.id;
 
@@ -117,14 +113,14 @@ public class SimpleDeriver extends Deriver {
 
             LinkModel model = linking.apply(concept, d);
 
-            List<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue());
+            FasterList<TaskLink> fired = (FasterList<TaskLink>) model.tasklinks(tasklinksPerConcept.intValue());
             Supplier<PriReference<Term>> termlinker = model.termlinks();
 
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
 //            float taskPriSum = 0;
 
 
-            fired.removeIf(tasklink -> {
+            fired.dropWhile(tasklink -> {
 
 
 
@@ -147,15 +143,14 @@ public class SimpleDeriver extends Deriver {
                         }
                     }
 
-                    return false; //keep
                 }
 
-                return true; //remove from list
+                return true;
             });
 
             concept.linker().link(concept, a.pri(), fired, d.deriver.linked, nar);
 
-            return ii[0]-- > 0;
+            return kontinue.getAsBoolean();
         });
 
     }

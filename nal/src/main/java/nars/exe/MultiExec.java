@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 abstract public class MultiExec extends UniExec {
 
+
     public static final float MIN_BUFFER_AVAILABILITY = 0.1f;
     public final int totalConcurrency;
 
@@ -258,10 +259,10 @@ abstract public class MultiExec extends UniExec {
         final AtomicReference<Runnable> narCycle = new AtomicReference(null);
 
 
+        /** a lucky worker gets to execute the next NAR cycle when ready */
         protected final boolean tryCycle() {
             Runnable r = narCycle.getAndSet(null);
             if (r != null) {
-                //lucky worker gets to execute the NAR cycle
                 nar.run();
                 return true;
             }
@@ -355,15 +356,17 @@ abstract public class MultiExec extends UniExec {
 
             private void play(long playTime) {
 
-                //if (in.size() < totalConcurrency) {
+
                 long until = System.nanoTime() + playTime;
 
                 //generate planning
-                long now, remain;
 
-                double baseTime = nar.loop.jiffy.doubleValue() * nar.loop.throttle.doubleValue() * playTime;
+                long jiffyTime = Math.round(nar.loop.jiffy.doubleValue() * nar.loop.cycleTimeNS);
+                long minTime = 0;
 
-                while (in.availablePct() > MIN_BUFFER_AVAILABILITY && (remain = (until - (now = System.nanoTime()))) > 0) {
+
+                long now;
+                while (in.availablePct() > MIN_BUFFER_AVAILABILITY && (until - (now = System.nanoTime())) > 0) {
                     //int ii = i;
                     InstrumentedCausable c = can.getIndex(rng);
                     if (c == null) break; //empty
@@ -371,11 +374,7 @@ abstract public class MultiExec extends UniExec {
                     boolean singleton = c.c.singleton();
                     if (!singleton || c.c.instance.tryAcquire()) {
                         try {
-                            double timePerIteration = c.timePerIterationMean();
-                            long minExec = Double.isFinite(timePerIteration) ? Math.round(timePerIteration * 1.5) : 0;
-                            long runtimeNS =
-                                    Math.min(remain, Math.max(minExec, Math.round(c.pri() * baseTime)));
-                            c.runFor(runtimeNS);
+                            c.runUntil(now + Util.lerp(c.pri(), minTime, jiffyTime));
                         } finally {
                             if (singleton)
                                 c.c.instance.release();

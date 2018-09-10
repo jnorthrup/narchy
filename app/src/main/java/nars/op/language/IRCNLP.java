@@ -124,7 +124,7 @@ public class IRCNLP extends IRC {
         public final String[] channels;
 
         public MyLeakOut(NAR nar, String... channels) {
-            super(8, 0.05f, nar);
+            super(8, nar);
             this.channels = channels;
         }
 

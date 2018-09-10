@@ -56,7 +56,7 @@ public class Impiler {
         private final CauseChannel<ITask> in;
 
         public ImpilerSolver(int capacity, float ratePerDuration, NAR n) {
-            super(capacity, ratePerDuration, n);
+            super(capacity, n);
             in = n.newChannel(this);
         }
 
@@ -102,7 +102,7 @@ public class Impiler {
     public static class ImpilerDeduction extends TaskLeak {
 
         public ImpilerDeduction(int capacity, float ratePerDuration, NAR n) {
-            super(capacity, ratePerDuration, n);
+            super(capacity, n);
         }
 
         @Override
@@ -310,7 +310,7 @@ public class Impiler {
 //        final static long whenStart = ETERNAL, whenEnd = ETERNAL;
 
         public ImpilerTracker(int capacity, float ratePerDuration, NAR n) {
-            super(capacity, ratePerDuration, n);
+            super(capacity, n);
         }
 
         @Override

@@ -9,16 +9,15 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
+import java.util.Random;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 
 
 /**
@@ -55,10 +54,7 @@ public class BagClustering<X> {
     /**
      * TODO allow dynamic change
      */
-    protected /*Flip<*/ FasterList<VLink<X>> sorted =
-            new FasterList<>();
-    
-    AtomicBoolean bagBusy = new AtomicBoolean(false);
+    protected /*Flip<*/ FasterList<VLink<X>> sorted = new FasterList<>();
 
 
     public BagClustering(Dimensionalize<X> model, int centroids, int initialCap) {
@@ -77,22 +73,6 @@ public class BagClustering<X> {
             }
 
         };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -114,19 +94,6 @@ public class BagClustering<X> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void forEachCluster(Consumer<Centroid> c) {
         for (Centroid b : net.centroids) {
             c.accept(b);
@@ -137,76 +104,73 @@ public class BagClustering<X> {
         return bag.size();
     }
 
-    public <Y> void commitGroups(Y y, float forgetRate, BiConsumer<Stream<VLink<X>>, Y> each) {
-        commit(forgetRate, (sorted) -> {
-            int current = -1;
-            int n = sorted.size();
-            int bs = -1;
-            for (int i = 0; i < n; i++) {
-                VLink<X> x = sorted.get(i);
+    public <A> void cluster(A arg, @Nullable Random rng, BiPredicate<Stream<VLink<X>>, A> each) {
 
-                if (current != x.centroid || (i == n - 1)) {
-                    current = x.centroid;
-                    if (bs != -1 && i - bs > 1) {
-                        each.accept(IntStream.range(bs, i + 1).mapToObj(sorted::get), y);
-                    }
-                    bs = i;
+        FasterList<VLink<X>> sorted = cluster(rng);
+
+        int current = -1;
+        int n = sorted.size();
+        int bs = -1;
+        for (int i = 0; i < n; i++) {
+            VLink<X> x = sorted.get(i);
+
+            if (current != x.centroid || (i == n - 1)) {
+                current = x.centroid;
+                if (bs != -1 && i - bs > 1) {
+                    if (!each.test(IntStream.range(bs, i + 1).mapToObj(sorted::get), arg))
+                        break;
                 }
+                bs = i;
             }
-        });
+        }
+
+
     }
 
-    public void commit(float forgetRate, Consumer<List<VLink<X>>> takeSortedClusters) {
-
-        FasterList<VLink<X>> x;
-
-        if (bagBusy.weakCompareAndSetAcquire(false, true)) {
-
-            
-
-            try {
-
-                
-                
-                bag.commit(t -> {
-                    X tt = t.id;
-                    if ((tt instanceof Prioritized) && ((Prioritized)tt).isDeleted())
-                        t.delete();
-                    
-                    
-                });
-                bag.commit(bag.forget(forgetRate)); 
-
-                
-                
-
-                int learningIterations = 1;
-                for (int i = 0; i < learningIterations; i++)
-                    bag.forEach(this::learn);
+    public void commit(float forgetRate, int learningIterations) {
 
 
+        bag.commit(t -> {
+            X tt = t.id;
+            if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
+                t.delete();
+        });
+        bag.commit(bag.forget(forgetRate));
 
-            } finally {
-                bagBusy.setRelease(false);
-            }
-        }
 
-        x = new FasterList<>(bag.size());
+        for (int i = 0; i < learningIterations; i++)
+            bag.forEach(this::learn);
+    }
+
+    private FasterList<VLink<X>> cluster(@Nullable Random rng) {
+
+        int s = bag.size();
+        if (s == 0)
+            return null;
+
+        FasterList<VLink<X>> x = new FasterList<>(s);
         bag.forEach(x::add);
 
-        int s = x.size();
-        if (s>0) {
+
+        s = x.size();
+        if (s > 0) {
+            IntToIntFunction shuffler;
+            if (rng != null) {
+                int shuffle = rng.nextInt();
+                shuffler = (c) -> c ^ shuffle;
+            } else {
+                shuffler = (c) -> c;
+            }
+
             if (s > 2) {
                 ArrayUtils.quickSort(0, s,
-                        (a, b) -> Integer.compare(x.get(a).centroid, x.get(b).centroid),
+                        (a, b) -> a == b ? 0 : Integer.compare(shuffler.applyAsInt(x.get(a).centroid), shuffler.applyAsInt(x.get(b).centroid)),
                         x::swap);
             }
-//            x.sortThisByInt(xx -> xx.centroid);
-            takeSortedClusters.accept(x);
         }
 
 
-
+        return x;
     }
 
 
@@ -225,11 +189,11 @@ public class BagClustering<X> {
         }
     }
 
-    public void put(X x, float pri) {
-        bag.putAsync(new VLink<>(x, pri, model.dims)); 
+    public final void put(X x, float pri) {
+        bag.putAsync(new VLink<>(x, pri, model.dims));
     }
 
-    public void remove(X x) {
+    public final void remove(X x) {
         bag.remove(x);
     }
 
@@ -237,7 +201,9 @@ public class BagClustering<X> {
      * returns NaN if either or both of the items are not present
      */
     public double distance(X x, X y) {
-        assert (!x.equals(y));
+        //assert (!x.equals(y));
+        assert(x!=y);
+
         @Nullable VLink<X> xx = bag.get(x);
         if (xx != null && xx.centroid >= 0) {
             @Nullable VLink<X> yy = bag.get(y);
@@ -261,7 +227,7 @@ public class BagClustering<X> {
             int centroid = link.centroid;
             if (centroid >= 0) {
                 Centroid[] nodes = net.centroids;
-                if (centroid < nodes.length) 
+                if (centroid < nodes.length)
                     return stream(centroid)
                             .filter(y -> !y.equals(x))
                             ;

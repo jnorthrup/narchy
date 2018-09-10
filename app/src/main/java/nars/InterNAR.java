@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.function.BooleanSupplier;
 
 import static jcog.net.UDPeer.Command.TELL;
 
@@ -59,7 +60,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
      * @throws UnknownHostException
      */
     public InterNAR(NAR nar, float outRate, int port, boolean discover) {
-        super(256, outRate, nar);
+        super(256, nar);
 
         this.nar = nar;
 
@@ -95,13 +96,13 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     }
 
     @Override
-    protected int next(NAR nar, int iterations) {
-        if (peer == null) return 0; //HACK TODO
+    protected void next(NAR nar, BooleanSupplier kontinue) {
+        if (enabled())
+            super.next(nar, kontinue);
+    }
 
-        if (!peer.connected())
-            return 0;
-
-        return super.next(nar, iterations);
+    private boolean enabled() {
+        return peer != null && peer.connected();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package nars.bag.leak;
 
-import jcog.data.atomic.AtomicFloat;
 import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
@@ -10,6 +9,7 @@ import nars.Task;
 import nars.exe.Causable;
 
 import java.util.Random;
+import java.util.function.BooleanSupplier;
 
 
 /**
@@ -20,7 +20,7 @@ public abstract class TaskLeak extends Causable {
 
     protected final DtLeak<Task, PLink<Task>> queue;
 
-    protected TaskLeak(int capacity, float ratePerDuration, NAR n) {
+    protected TaskLeak(int capacity, NAR n) {
         
         this(
                 
@@ -30,18 +30,14 @@ public abstract class TaskLeak extends Causable {
 
 
 
-                , ratePerDuration, n
+                , n
         );
     }
 
-    protected TaskLeak(Bag<Task, PLink<Task>> bag, float ratePerDuration, NAR n) {
-        this(bag, new AtomicFloat(ratePerDuration), n);
-    }
 
-
-    TaskLeak(Bag<Task, PLink<Task>> bag, Number rate, NAR n) {
-        super(n);
-        this.queue = new DtLeak<>(bag, rate) {
+    TaskLeak(Bag<Task, PLink<Task>> bag, NAR n) {
+        super();
+        this.queue = new DtLeak<>(bag) {
             @Override
             protected Random random() {
                 return n.random();
@@ -54,7 +50,7 @@ public abstract class TaskLeak extends Causable {
             }
 
         };
-        queue.lastLeak = nar.time();
+        n.on(this);
     }
 
 
@@ -70,13 +66,12 @@ public abstract class TaskLeak extends Causable {
     }
 
     @Override
-    protected int next(NAR nar, int iterations) {
+    protected void next(NAR nar, BooleanSupplier kontinue) {
 
         if (queue == null /* HACK */ || queue.isEmpty())
-            return 0;
+            return;
 
-        queue.commit(nar, iterations);
-        return iterations; //(int) Math.ceil(done);
+        queue.commit(nar, kontinue);
     }
 
     public final void accept(Task t) {

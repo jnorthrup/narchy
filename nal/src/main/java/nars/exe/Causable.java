@@ -1,13 +1,12 @@
 package nars.exe;
 
 import jcog.exe.Can;
-import jcog.pri.NLink;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
 
 import java.util.concurrent.Semaphore;
-import java.util.function.Consumer;
+import java.util.function.BooleanSupplier;
 
 /**
  * instruments the runtime resource consumption of its iteratable procedure.
@@ -65,71 +64,6 @@ abstract public class Causable extends NARService {
         return true;
     }
 
-
-
-
-//    final ThreadLocal<MiniPID> rate = ThreadLocal.withInitial(()->
-//        new MiniPID(0.5, 0.3, 0.4)
-//                .outLimit(1, Double.MAX_VALUE)
-//    );
-
-    @Deprecated public void run(NAR n, int workRequested, Consumer<NLink<Runnable>> buffer) {
-        assert(workRequested> 0);
-        buffer.accept(new NLink<>(()-> next(n, workRequested), workRequested));
-    }
-
-
-
-//
-//        Throwable error = null;
-//
-////        MiniPID r = rate.get();
-//
-////        int iterations = Math.max(1, (int)Math.round(r.setpoint(workRequested).out()));
-//
-//        long start = System.nanoTime(), end;
-//        int workDone = 0;
-//
-//        try {
-//
-//            workDone = next(n, iterations);
-//
-//        } catch (Throwable t) {
-//            error = t;
-//        } finally {
-//            end = System.nanoTime();
-//        }
-//
-//        record(iterations, workDone, start, end/*, r*/);
-//
-//        if (error != null) {
-//            report(error);
-//        }
-//
-//        return workDone;
-//    }
-
-//    public void record(int iterations, int workDone, long start, long end/*, MiniPID r*/) {
-//        if (workDone >= 0) {
-//            can.add((end - start), iterations, workDone);
-////            r.out(workDone);
-//        }
-//
-//        Exe.profiled(can, start, end);
-//    }
-
-//    public void report(Throwable error) {
-//        if (Param.DEBUG) {
-//            if (error instanceof RuntimeException) {
-//                throw ((RuntimeException) error);
-//            } else {
-//                throw new RuntimeException(error);
-//            }
-//        } else
-//            logger.error("{} {}", this, error);
-//    }
-
-
     /**
      * returns iterations actually completed
      * returns 0 if no work was done, although the time taken will still be recorded
@@ -138,7 +72,16 @@ abstract public class Causable extends NARService {
      * this will remain true for the remainder of the cycle, so it can be
      * removed from the eligible execution list for the current cycle.
      */
-    protected abstract int next(NAR n, int iterations);
+    protected abstract void next(NAR n, BooleanSupplier kontinue);
+
+    protected final int nextCounted(NAR n, BooleanSupplier kontinue) {
+        final int[] count = {0};
+        next(n, ()-> {
+            count[0]++;
+            return kontinue.getAsBoolean();
+        });
+        return count[0];
+    }
 
     /**
      * returns a system estimated instantaneous-sampled value of invoking this. between 0..1.0

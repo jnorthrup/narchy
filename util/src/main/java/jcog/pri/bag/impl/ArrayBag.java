@@ -12,9 +12,9 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -39,7 +39,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     private volatile int mass, pressure;
 
     protected ArrayBag(PriMerge mergeFunction, int capacity) {
-        this(mergeFunction, new HashMap<>(capacity, 0.99f));
+        this(mergeFunction,
+                //new HashMap<>(capacity, 0.99f)
+                new UnifiedMap<>(capacity, 0.99f)
+        );
         setCapacity(capacity);
     }
 
@@ -78,8 +81,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public Stream<Y> stream() {
         int s = size();
-        Object[] x = items.array();
-        return IntStream.range(0, s).mapToObj(i -> (Y) x[i]).filter(y -> y != null && !y.isDeleted());
+        if (s == 0) return Stream.empty();
+        else {
+            Object[] x = items.array();
+            return IntStream.range(0, Math.min(s, x.length)).mapToObj(i -> (Y) x[i]).filter(y -> y != null && !y.isDeleted());
+        }
     }
 
     /**

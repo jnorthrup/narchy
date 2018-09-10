@@ -63,7 +63,7 @@ public class Derivation extends PreDerivation {
 
 
 //    //    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
-    public final Collection<Premise> premiseBuffer =
+    public final FasterList<Premise> premiseBuffer =
         new FasterList<>(1024);
 //            new ArrayHashSet<>(256) {
 //                @Override
