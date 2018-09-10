@@ -93,4 +93,9 @@ public class BufferedCauseChannel<X extends Priority> implements Consumer<X> {
     public final short id() {
         return target.id;
     }
+
+    /** # pending items */
+    public int size() {
+        return buffer.size();
+    }
 }

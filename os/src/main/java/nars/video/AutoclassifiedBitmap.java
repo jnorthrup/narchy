@@ -26,7 +26,8 @@ import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import java.util.Arrays;
 
 import static nars.$.$$;
-import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * similar to a convolutional autoencoder
@@ -220,19 +221,19 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = ae.put(in, alpha, noise, 0, true, false, true);
+                    float regionError = ae.put(in, alpha, noise, 0, true,  false);
                     sumErr += regionError;
 
                     
                     
                     
-                    float evi;
-                    if ((evi = 1f - (regionError / regionPixels)) > 0) {
+                    float conf;
+                    if ((conf = 1f - (regionError / regionPixels)) > 0) {
                         short[] features = ae.max(outputThresh);
                         if (features != null) {
                             
-                                evi /= features.length;
-                                if ((pixConf[i][j] = (baseConf * w2c(evi))) >= minConf) {
+                                conf = w2cSafe(c2wSafe(baseConf * conf)/features.length);
+                                if ((pixConf[i][j] = (conf)) >= minConf) {
                                     po = features;
                                 }
                             
@@ -241,7 +242,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
                     
                 } else {
                     
-                    ae.recode(in, true, false, true);
+                    ae.recode(in, true, false);
                 }
 
                 float mult;

@@ -88,7 +88,11 @@ abstract public class Exec implements Executor {
      */
     public abstract boolean concurrent();
 
+    /** current concurrency level; may change */
+    public abstract int concurrency();
 
+    /** maximum possible concurrency; should remain constant */
+    abstract public int concurrencyMax();
 
 
     public void print(PrintStream out) {

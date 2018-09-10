@@ -10,11 +10,11 @@ import jcog.exe.realtime.FixedRateTimedFuture;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.NARLoop;
+import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
@@ -25,14 +25,14 @@ import java.util.function.Consumer;
 abstract public class MultiExec extends UniExec {
 
 
-    public static final float MIN_BUFFER_AVAILABILITY = 0.1f;
-    public final int totalConcurrency;
+    public static final float inputQueueSizeSafetyThreshold = 0.1f;
+    private final Revaluator revaluator;
 
     protected volatile long idleTimePerCycle;
 
-    public MultiExec(int concurrency) {
-        super(new Revaluator.DefaultRevaluator());
-        this.totalConcurrency = concurrency;
+    public MultiExec(Revaluator revaluator, int concurrency  /* TODO adjustable dynamically */) {
+        super(concurrency, concurrency);
+        this.revaluator = revaluator;
     }
 
     @Override
@@ -43,7 +43,7 @@ abstract public class MultiExec extends UniExec {
             executeLater(x);
     }
 
-    public void executeLater(@NotNull Object x) {
+    public void executeLater(/*@NotNull */Object x) {
 
         if (!in.offer(x)) {
             logger.warn("{} blocked queue on: {}", this, x);
@@ -62,7 +62,6 @@ abstract public class MultiExec extends UniExec {
     }
 
 
-
     /**
      * receives the NARLoop cycle update. should execute immediately, preferably in a worker thread (not synchronously)
      */
@@ -74,18 +73,8 @@ abstract public class MultiExec extends UniExec {
         executeLater(r);
     }
 
-
-    @Override
-    public boolean concurrent() {
-        return true;
-    }
-
-
-    @Override
     protected void onDur() {
-        super.onDur();
-        sharing.commit();
-
+        revaluator.update(nar);
 
         if (nar.time instanceof RealTime) {
             double throttle = nar.loop.throttle.floatValue();
@@ -99,7 +88,14 @@ abstract public class MultiExec extends UniExec {
         } else
             throw new TODO();
 
+        sharing.commit();
 
+    }
+
+    @Override
+    public void start(NAR n) {
+        super.start(n);
+        ons.add(DurService.on(n, this::onDur));
     }
 
     protected void onCycle(NAR nar) {
@@ -246,12 +242,12 @@ abstract public class MultiExec extends UniExec {
         final AffinityExecutor exe = new AffinityExecutor();
         private List<Worker> workers;
 
-        public WorkerExec(int threads) {
-            this(threads, false);
+        public WorkerExec(Revaluator r, int threads) {
+            this(r, threads, false);
         }
 
-        public WorkerExec(int threads, boolean affinity) {
-            super(threads);
+        public WorkerExec(Revaluator revaluator, int threads, boolean affinity) {
+            super(revaluator, threads);
             this.threads = threads;
             this.affinity = affinity;
         }
@@ -259,7 +255,9 @@ abstract public class MultiExec extends UniExec {
         final AtomicReference<Runnable> narCycle = new AtomicReference(null);
 
 
-        /** a lucky worker gets to execute the next NAR cycle when ready */
+        /**
+         * a lucky worker gets to execute the next NAR cycle when ready
+         */
         protected final boolean tryCycle() {
             Runnable r = narCycle.getAndSet(null);
             if (r != null) {
@@ -272,7 +270,7 @@ abstract public class MultiExec extends UniExec {
         @Override
         protected void nextCycle(Runnable r) {
             //it will be the same instance each time.  so only concerned if it wasnt already cleared by now
-            if (this.narCycle.getAndSet(r)!=null) {
+            if (this.narCycle.getAndSet(r) != null) {
 
                 //TODO measure
                 //if this happens excessively then probably need to reduce the framerate, ie. backpressure
@@ -293,7 +291,7 @@ abstract public class MultiExec extends UniExec {
 
                 workers = exe.execute(Worker::new, threads, affinity);
 
-                if (totalConcurrency > procs /2) {
+                if (concurrency() > procs / 2) {
                     /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
                     Exe.setExecutor(this);
                 }
@@ -321,7 +319,7 @@ abstract public class MultiExec extends UniExec {
 
         private final class Worker implements Runnable, Off {
 
-            private final FasterList schedule = new FasterList(IN_CAPACITY);
+            private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
 
             private boolean alive = true;
 
@@ -330,28 +328,36 @@ abstract public class MultiExec extends UniExec {
             @Override
             public void run() {
 
-
-
                 while (alive) {
 
-                    tryCycle();
+                    long workTime = work();
 
-                    long workStart = System.nanoTime();
+                    long playTime = cpu.cycleTimeNS.longValue() - workTime;
+                    if (playTime > 0) {
+                        play(playTime);
+                    }
 
-                    int batchSize = (int) Math.ceil( (((float)in.capacity()) / Math.max(1,(totalConcurrency - 1))));
+                    sleep();
+                }
+            }
+
+
+            private long work() {
+                long workStart = System.nanoTime();
+
+                int batchSize = (int) Math.ceil((((float) in.capacity()) / Math.max(1, (concurrency() - 1))));
+                do {
                     int drained = in.remove(schedule, batchSize);
                     if (drained > 0) {
                         execute(schedule, 1);
                     }
-                    long workEnd = System.nanoTime();
+                } while (!queueSafe());
 
-                    long playTime =  cpu.cycleTimeNS.longValue() - (workEnd - workStart);
-                    if (playTime > 0) {
-                        play(playTime);
+                tryCycle();
 
-                        sleep();
-                    }
-                }
+                long workEnd = System.nanoTime();
+
+                return workEnd - workStart;
             }
 
             private void play(long playTime) {
@@ -362,11 +368,12 @@ abstract public class MultiExec extends UniExec {
                 //generate planning
 
                 long jiffyTime = Math.round(nar.loop.jiffy.doubleValue() * nar.loop.cycleTimeNS);
-                long minTime = 0;
+                if (jiffyTime == 0) return;
+
+                long minTime = 1;
 
 
-                long now;
-                while (in.availablePct() > MIN_BUFFER_AVAILABILITY && (until - (now = System.nanoTime())) > 0) {
+                while (queueSafe() && (until > System.nanoTime())) {
                     //int ii = i;
                     InstrumentedCausable c = can.getIndex(rng);
                     if (c == null) break; //empty
@@ -374,7 +381,10 @@ abstract public class MultiExec extends UniExec {
                     boolean singleton = c.c.singleton();
                     if (!singleton || c.c.instance.tryAcquire()) {
                         try {
-                            c.runUntil(now + Util.lerp(c.pri(), minTime, jiffyTime));
+                            long runtimeNS = Util.lerp(c.pri(), minTime, jiffyTime);
+                            long start = System.nanoTime();
+                            c.runUntil(start, runtimeNS);
+
                         } finally {
                             if (singleton)
                                 c.c.instance.release();
@@ -382,10 +392,10 @@ abstract public class MultiExec extends UniExec {
                     }
 
                     tryCycle();
-                        //if (ii == 0)
-                        //System.out.println(c + " for " + Texts.timeStr(runtimeNS) + " " + c.iterations.getMean() + " iters");
+                    //if (ii == 0)
+                    //System.out.println(c + " for " + Texts.timeStr(runtimeNS) + " " + c.iterations.getMean() + " iters");
 
-                        //schedule.add((Runnable) () -> c.runFor(runtimeNS));
+                    //schedule.add((Runnable) () -> c.runFor(runtimeNS));
                     //});
                 }
                 //}
@@ -411,6 +421,11 @@ abstract public class MultiExec extends UniExec {
                     return true;
                 });
             }
+        }
+
+
+        private boolean queueSafe() {
+            return in.availablePct(inputQueueCapacityPerThread) > inputQueueSizeSafetyThreshold;
         }
     }
 

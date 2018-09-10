@@ -72,32 +72,38 @@ public class MatrixDeriver extends Deriver {
         FasterList<Premise> premises = d.premiseBuffer;
         premises.clear();
 
+//        final int[] tried = {0};
+
+
         do {
 
             if (premises.isEmpty()) {
+
 
                 int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept;
 
                 hypothesize(premisesMax, (t, termlink) -> {
 
                     Premise premise = new Premise(t, termlink);
-                    if (!premises.add(premise))
-                        n.emotion.premiseBurstDuplicate.increment();
-
+                    if (!premises.add(premise)) {
+                        //n.emotion.premiseBurstDuplicate.increment();
+                    }
                     return true;
                 }, d);
+
+                int s = premises.size();
+                if (s == 0)
+                    return;
+
+                if (s > 2)
+                    premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
             }
 
-            int s = premises.size();
-            if (s == 0)
-                break;
 
-            if (s > 2)
-                premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
 
             int matchTTL = matchTTL(), deriveTTL = n.deriveBranchTTL.intValue();
 
-            premises.dropWhile(p -> {
+            for (Premise p : premises) {
 
                 Counter counter;
                 if (p.match(d, matchTTL)) {
@@ -121,8 +127,11 @@ public class MatrixDeriver extends Deriver {
 
                 counter.increment();
 
-                return kontinue.getAsBoolean();
-            });
+//                if ((++tried[0] % burst) == 0 && !kontinue.getAsBoolean())
+//                    return;
+
+            }
+            premises.clear();
 
         } while (kontinue.getAsBoolean());
 

@@ -1,7 +1,5 @@
 package jcog.pri;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 
 /**
@@ -16,7 +14,6 @@ public final class VLink<X> extends PLink<X> {
     /**
      * feature vector representing the item as learned by clusterer
      */
-    @NotNull
     public final double[] coord;
 
     /**
@@ -26,10 +23,10 @@ public final class VLink<X> extends PLink<X> {
     public int centroid = -1;
 
 
-    public VLink(X t, float pri, double[] coord) {
-        super(t, pri);
-        this.coord = coord;
-    }
+//    public VLink(X t, float pri, double[] coord) {
+//        super(t, pri);
+//        this.coord = coord;
+//    }
 
     public VLink(X t, float pri, int dims) {
         super(t, pri);

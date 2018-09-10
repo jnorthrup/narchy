@@ -138,43 +138,34 @@ abstract public class Inperience extends LeakBack {
 
         @Override
         protected Term reify(Task t) {
-            Term ss = t.term();
-            Term tt = ss;
-            //Term tt = ss.eval(nar);
-            if (!tt.op().conceptualizable)
-                tt = ss; //use the task as-is, ignore the eval result
+            Term tt = t.term().eval(nar);
 
-            return reifyBelief(t, tt, nar);
+            if (!tt.op().conceptualizable)
+                return Null;
+
+            return reifyBeliefOrGoal(t, tt.negIf(t.isNegative()), nar);
         }
 
-        @Deprecated protected Term reifyBelief(Task t, Term tt, NAR nar) {
+        @Deprecated protected Term reifyBeliefOrGoal(Task t, Term tt, NAR nar) {
             Concept c = nar.conceptualizeDynamic(tt.unneg());
             if (c == null)
                 return Null;
 
             Term self = nar.self();
 
-            Term taskTerm = t.term();
             if (t.punc() == BELIEF) {
                 Task belief = c.table(BELIEF)
-                        .answer(t.start(), t.end(), taskTerm, null, nar);
+                        .answer(t.start(), t.end(), tt.unneg(), null, nar);
 
-                Term bb = belief != null ? Described.transform(belief.term()) : Described.transform(taskTerm);
-
-
-                if (belief == null)
-                    return Null;
-                return $.func(believe, self, bb.negIf(belief.isNegative()));
+                Term bb = belief != null ? Described.transform(belief.term().negIf(belief.isNegative())) : Described.transform(tt);
+                return $.func(believe, self, bb);
             } else {
                 Task goal = c.table(GOAL)
-                        .answer(t.start(), t.end(), taskTerm, null, nar);
+                        .answer(t.start(), t.end(), tt.unneg(), null, nar);
 
+                Term gg = goal!=null ? Described.transform(goal.term().negIf(goal.isNegative())) : Described.transform(tt);
+                return $.func(want, self, gg);
 
-                Term gg = goal!=null ? Described.transform(goal.term()) : null;
-                Term want = gg != null ? $.func(Inperience.want, self, gg.negIf(goal.isNegative())) : Null;
-
-//                if (belief == null)
-                    return want;
 //                else {
 //
 //                    return CONJ.the(want, 0, $.func(believe, self, bb.negIf(belief.isNegative())));
@@ -196,10 +187,6 @@ abstract public class Inperience extends LeakBack {
             return t.isGoal();
         }
 
-        @Override
-        protected Term reify(Task t) {
-            return reifyBelief(t, t.term().eval(nar), nar);
-        }
 
 
     }

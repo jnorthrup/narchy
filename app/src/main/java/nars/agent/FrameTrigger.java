@@ -1,6 +1,8 @@
 package nars.agent;
 
+import jcog.TODO;
 import jcog.event.Off;
+import jcog.event.On;
 import jcog.exe.Loop;
 import nars.control.DurService;
 import nars.time.clock.RealTime;
@@ -69,16 +71,16 @@ abstract public class FrameTrigger {
     /** measured in # of perceptual durations */
     public static class Durs extends FrameTrigger {
 
-        private transient final float initialDurs;
+        private transient final float durPeriod;
 
         public DurService loop = null;
 
-        public Durs(float initialDurs) {
-            this.initialDurs = initialDurs;
+        public Durs(float durPeriod) {
+            this.durPeriod = durPeriod;
         }
         @Override protected Off install(NAgent a) {
             loop = DurService.on(a.nar(), a::next);
-            loop.durs(initialDurs);
+            loop.durs(durPeriod);
             return loop;
         }
 
@@ -88,7 +90,31 @@ abstract public class FrameTrigger {
             return l !=null ?  now + l.durCycles() : now;
         }
     }
+    /** measured in # of cycles */
+    public static class Cycs extends FrameTrigger {
 
+        private transient float cyclePeriod;
+
+        public On loop = null;
+
+        public Cycs (float cyclePeriod) {
+            if (cyclePeriod !=1)
+                throw new TODO();
+            this.cyclePeriod = cyclePeriod;
+        }
+        @Override protected Off install(NAgent a) {
+            //loop = DurService.on(a.nar(), a::next);
+            //loop.durs(initialCycs);
+            loop = a.nar().eventCycle.on(a::next);
+            return loop;
+        }
+
+        @Override
+        public long next(long now) {
+            return Math.round(now + ((double)cyclePeriod));
+        }
+    }
     public static FPS fps(float fps) { return new FPS(fps); }
     public static Durs durs(float durs) { return new Durs(durs); }
+    public static Cycs cycles(float cycles) { return new Cycs(cycles); }
 }

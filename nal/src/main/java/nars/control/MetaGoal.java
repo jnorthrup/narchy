@@ -63,7 +63,9 @@ public enum MetaGoal {
         if (n == 0)
             return;
 
-        float s = strength / n;
+        float s =
+                strength / n;
+                //strength;
 
         int ordinal = ordinal();
         Cause[] cc = causes.array();

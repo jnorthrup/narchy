@@ -2,7 +2,6 @@ package jcog.exe.valve;
 
 import jcog.Texts;
 import jcog.Util;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -14,7 +13,7 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 
     final Work work;
 
-    final static int WINDOW = 16;
+    final static int WINDOW = 4;
 
 //    /**
 //     * total accumulated start/stop tme each cycle
@@ -28,7 +27,7 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 
     public final AtomicLong accumTimeNS = new AtomicLong(0);
 
-    public final DescriptiveStatistics valuePerSecond = new SynchronizedDescriptiveStatistics(WINDOW);
+
 
     /**
      * total iterations, each cycle
@@ -36,8 +35,8 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
     public final SynchronizedDescriptiveStatistics iterations = new SynchronizedDescriptiveStatistics(WINDOW);
 
 
-    transient public double valueNormalized;
-    transient public double valuePerSecondNormalized;
+    transient public double valueNext;
+    transient public double valuePerSecond, valuePerSecondNormalized;
 
 
     public InstrumentedWork(AbstractWork<Who, What> work) {
@@ -50,10 +49,6 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
         this.work = work;
     }
 
-    @Override
-    public final boolean start() {
-        return work.start();
-    }
 
 //    /**
 //     * estimate, in NS
@@ -118,28 +113,26 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 
     public String summary() {
         return super.toString() +
-                "{" + "valuePerSecond=" + Texts.n4(valuePerSecond.getMean()) +
+                "{" + "valuePerSecond=" + Texts.n4(valuePerSecond) +
                 ", " + "iterTimeMeanNS=" + Texts.timeStr(iterTimeNS.getMean())
-                + ", " + "itersMean=" + Texts.n4(iterations.getMean())
+                //+ ", " + "itersMean=" + Texts.n4(iterations.getMean())
                 + "}";
     }
 
-    public void runUntil(long deadlineNS) {
-        if (this.start()) {
-            worked(nanoTime(), this.next(() -> System.nanoTime() < deadlineNS));
-        }
+    public void runUntil(long start, long runForNS) {
+        assert(runForNS > 0);
+        long deadline = start + runForNS;
+        BooleanSupplier kontinue = () -> System.nanoTime() < deadline;
+        worked(start, this.next(kontinue));
     }
 
     public void runFor(long cycleNS) {
 
 
-        if (this.start()) {
+        long now = nanoTime();
+        long deadlineNS = now + cycleNS;
 
-
-            long now = nanoTime();
-            long deadlineNS = now + cycleNS;
-
-            worked(now, this.next(() -> System.nanoTime() < deadlineNS));
+        worked(now, this.next(() -> System.nanoTime() < deadlineNS));
 
 //                do {
 //                    double meanItertime = Math.min(runtimeNS, timePerIterationMean());
@@ -156,9 +149,6 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 //                        break;
 //
 //                } while ((now = nanoTime()) < deadlineNS);
-
-
-        }
 
 
     }

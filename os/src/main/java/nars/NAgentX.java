@@ -5,6 +5,7 @@ import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
@@ -19,6 +20,7 @@ import nars.derive.impl.MatrixDeriver;
 import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
+import nars.exe.Revaluator;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
@@ -29,6 +31,7 @@ import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
@@ -113,10 +116,14 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(512))
+                .attention(() -> new Attention(1024))
 
                 //.exe(new UniExec() {
-                .exe(new MultiExec.WorkerExec(Util.concurrency(), false /* true */))
+                .exe(new MultiExec.WorkerExec(
+                        //new Revaluator.DefaultRevaluator(),
+                        new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
+
+                        Util.concurrencyExcept(1), true))
 
 //                .exe(MixMultiExec.get(
 //                            1024,
@@ -310,8 +317,8 @@ abstract public class NAgentX extends NAgent {
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
         n.emotion.want(MetaGoal.Believe, 0f);
-        n.emotion.want(MetaGoal.Answer, +0.1f);
-        n.emotion.want(MetaGoal.Desire, +0.5f);
+        n.emotion.want(MetaGoal.Answer, +0f);
+        n.emotion.want(MetaGoal.Desire, +1f);
         n.emotion.want(MetaGoal.Action, +1f);
     }
 
@@ -327,7 +334,7 @@ abstract public class NAgentX extends NAgent {
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
-        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> true), 4, 64);
+        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof SeriesBeliefTable.SeriesTask /* exclude curiosity */) ), 8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
         Introduction factorizer = new Factorize.FactorIntroduction(64, n);

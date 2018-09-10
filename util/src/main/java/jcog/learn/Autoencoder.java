@@ -16,7 +16,7 @@ import static java.util.Arrays.fill;
  */
 public class Autoencoder {
 
-    final static float NORMALIZATION_EPSILON = ScalarValue.EPSILON * 2;
+    final static float NORMALIZATION_EPSILON = (float) Math.sqrt(ScalarValue.EPSILON);
 
 
     /**
@@ -90,6 +90,16 @@ public class Autoencoder {
         }
     }
 
+    /** preprocessing filter, applied to each x[]'s value */
+    public float pre(float x) {
+        if(!Float.isFinite(x))
+            return 0;
+        return x;
+    }
+    public float post(float x) {
+        return pre(x);
+    }
+
     private float[] preprocess(float[] x, float noiseLevel, float corruptionRate) {
 
 
@@ -98,7 +108,7 @@ public class Autoencoder {
 
         float[] xx = this.x;
         for (int i = 0; i < ins; i++) {
-            float v = x[i];
+            float v = pre(x[i]);
             if ((corruptionRate > 0) && (r.nextFloat() < corruptionRate)) {
                 v = 0;
             }
@@ -112,14 +122,16 @@ public class Autoencoder {
             xx[i] = v;
         }
 
-        for (int i = 0, inputLength = xx.length; i < inputLength; i++)
-            xx[i] = Util.clamp(xx[i], 0, 1f);
+//        for (int i = 0, inputLength = xx.length; i < inputLength; i++)
+//            xx[i] = Util.clamp(xx[i], 0, 1f);
 
         return xx;
     }
 
 
-    public float[] encode(float[] x, float[] y, boolean sigmoid, boolean normalize) {
+    public float[] encode(float[] _x, float[] y, float noise, float corruption, boolean sigmoid, boolean normalize) {
+
+        float[] x = preprocess(_x, noise, corruption);
 
         float[][] W = this.W;
 
@@ -129,23 +141,35 @@ public class Autoencoder {
 
         float[] hbias = this.hbias;
 
-        float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
+        //float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
         for (int i = 0; i < outs; i++) {
             float yi = hbias[i];
+            if (yi!=yi) {
+                hbias[i] = 0; //corrupted hbias
+                y[i] = 0;
+                continue;
+            }
+
             float[] wi = W[i];
 
             for (int j = 0; j < ins; j++) {
-                yi += wi[j] * x[j];
+                float wij = wi[j];
+                if (wij!=wij)
+                    wi[j] = 0; //corrupted weight
+                else
+                    yi += wij * pre(x[j]);
             }
+
+            yi = post(yi);
 
             if (sigmoid)
                 yi = Util.sigmoid(yi);
+            //TODO tanH as modular output functions
 
-
-            if (yi > max)
-                max = yi;
-            if (yi < min)
-                min = yi;
+//            if (yi > max)
+//                max = yi;
+//            if (yi < min)
+//                min = yi;
 
             y[i] = yi;
 
@@ -154,15 +178,16 @@ public class Autoencoder {
 
         if (normalize) {
             float lengthSq = 0;
-            for (int i = 0; i < outs; i++) {
+            for (int i = 0; i < outs; i++)
                 lengthSq += Util.sqr(y[i]);
-            }
-            if (lengthSq > NORMALIZATION_EPSILON * NORMALIZATION_EPSILON) {
+
+            if (lengthSq > NORMALIZATION_EPSILON) {
                 float length = (float) Math.sqrt(lengthSq);
-                assert (length > ScalarValue.EPSILON);
-                for (int i = 0; i < outs; i++) {
+                for (int i = 0; i < outs; i++)
                     y[i] /= length;
-                }
+            } else {
+                for (int i = 0; i < outs; i++)
+                    y[i] = 0;
             }
 
 
@@ -171,14 +196,14 @@ public class Autoencoder {
 
         return y;
     }
-
-    private float cartesianLength(float[] y) {
-        float d = 0;
-        for (float z : y) {
-            d += z * z;
-        }
-        return (float) Math.sqrt(d);
-    }
+//
+//    private float cartesianLength(float[] y) {
+//        float d = 0;
+//        for (float z : y) {
+//            d += z * z;
+//        }
+//        return (float) Math.sqrt(d);
+//    }
 
     /**
      * TODO some or all of the bias vectors may need modified too here
@@ -218,7 +243,7 @@ public class Autoencoder {
                     zi;
 
 
-            z[i++] = zi;
+            z[i++] = pre(zi);
         }
 
         return z;
@@ -236,13 +261,13 @@ public class Autoencoder {
     public float put(float[] x, float learningRate,
                      float noiseLevel, float corruptionRate,
                      boolean sigmoid) {
-        return put(x, learningRate, noiseLevel, corruptionRate, sigmoid, sigmoid);
+        return put(x, learningRate, noiseLevel, corruptionRate, sigmoid, false);
     }
 
     public float put(float[] x, float learningRate,
                      float noiseLevel, float corruptionRate,
-                     boolean sigmoidEnc, boolean sigmoidDec) {
-        return put(x, learningRate, noiseLevel, corruptionRate, sigmoidEnc, true, sigmoidDec);
+                     boolean sigmoidIn, boolean normalize) {
+        return put(x, learningRate, noiseLevel, corruptionRate, sigmoidIn, normalize, true);
     }
 
     /**
@@ -252,7 +277,8 @@ public class Autoencoder {
                      float noiseLevel, float corruptionRate,
                      boolean sigmoidIn, boolean normalize, boolean sigmoidOut) {
 
-        recode(preprocess(x, noiseLevel, corruptionRate), sigmoidIn, normalize, sigmoidOut);
+        float[] z = recode(x, noiseLevel, corruptionRate, sigmoidIn, normalize, sigmoidOut);
+        //float[] y = encode(x, y, noiseLevel, corruptionRate, sigmoidIn, normalize);
         return put(x, y, learningRate);
     }
 
@@ -314,18 +340,20 @@ public class Autoencoder {
         return error;
     }
 
-    public float[] recode(float[] x, boolean sigmoidIn, boolean normalize, boolean sigmoidOut) {
-        return decode(encode(x, y, sigmoidIn, normalize), sigmoidOut);
+    public float[] recode(float[] x, boolean sigmoidIn, boolean sigmoidOut) {
+        return recode(x, 0, 0, sigmoidIn, false, sigmoidOut);
+    }
+
+    public float[] recode(float[] x, float noise, float corruption, boolean sigmoidIn, boolean normalizeIn, boolean sigmoidOut) {
+        return decode(encode(x, y, noise, corruption, sigmoidIn, normalizeIn), sigmoidOut);
     }
 
     public float[] reconstruct(float[] x) {
-        float[] y = new float[this.y.length];
-
-        return reconstruct(x, y, true, true);
+        return reconstruct(x, new float[this.y.length], true, true);
     }
 
     public float[] reconstruct(float[] x, float[] yTmp, boolean sigmoidEnc, boolean sigmoidDec) {
-        return decode(encode(x, yTmp, sigmoidEnc, true), sigmoidDec);
+        return decode(encode(x,yTmp, 0, 0, sigmoidEnc, false), sigmoidDec);
     }
 
     public int decide(Deciding d) {

@@ -3,6 +3,8 @@ package jcog.learn.gng.impl;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+import java.util.Arrays;
+
 import static jcog.Texts.n4;
 
 /**
@@ -17,6 +19,7 @@ public class Centroid extends ArrayRealVector {
     public Centroid(int id, int dimensions) {
         super(dimensions);
         this.id = id;
+        Arrays.fill(getDataRef(), Double.NaN);
     }
 
     @Override
@@ -156,7 +159,14 @@ public class Centroid extends ArrayRealVector {
     }
 
     public double learn(double[] x, DistanceFunction dist) {
-        return (this.localDistanceSq = dist.distance(getDataRef(), x));
+        double[] d = getDataRef();
+        if (d[0]!=d[0]) {
+            //inactive, assign the value as-is
+            System.arraycopy(x, 0, d, 0, x.length);
+            return this.localDistanceSq = 0;
+        } else {
+            return (this.localDistanceSq = dist.distance(d, x));
+        }
     }
 
     public double localDistanceSq() {

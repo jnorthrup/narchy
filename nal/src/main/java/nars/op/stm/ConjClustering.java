@@ -61,20 +61,21 @@ public class ConjClustering extends Causable {
 
         this.dur = nar.dur();
 
-        this.model = new BagClustering.Dimensionalize<>(4) {
+        this.model = new BagClustering.Dimensionalize<>(5) {
 
             @Override
             public void coord(Task t, double[] c) {
-                c[0] = t.start();
-                c[3] = t.priElseZero();
                 Truth tt = t.truth();
                 c[1] = tt.polarity();
                 c[2] = tt.conf();
+                c[0] = t.start();
+                c[4] = t.range();
+                c[3] = t.priElseZero();
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return (1 + Math.abs(a[0] - b[0]) / dur)
+                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4]-b[4])/dur))
                         *
                         (
                                 Math.abs(a[1] - b[1])
@@ -98,11 +99,11 @@ public class ConjClustering extends Causable {
         ons.add(nar.onTask(t -> {
             if (!t.isEternal()
                     && t.punc() == punc
-                    && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
+                    && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets) //TODO allow ImDep's
                     && filter.test(t)) {
                 bag.put(t,
 
-                        t.priElseZero()
+                        t.priElseZero() * t.originality()
 
                 );
 

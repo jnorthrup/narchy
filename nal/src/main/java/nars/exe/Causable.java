@@ -75,10 +75,13 @@ abstract public class Causable extends NARService {
     protected abstract void next(NAR n, BooleanSupplier kontinue);
 
     protected final int nextCounted(NAR n, BooleanSupplier kontinue) {
-        final int[] count = {0};
+        final int[] count = {1};
         next(n, ()-> {
-            count[0]++;
-            return kontinue.getAsBoolean();
+            if (kontinue.getAsBoolean()) {
+                count[0]++;
+                return true;
+            }
+            return false;
         });
         return count[0];
     }

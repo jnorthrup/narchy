@@ -45,7 +45,7 @@ public class Emotion implements Meter {
     /**
      * indicates lack of novelty in premise selection
      */
-    public final Counter premiseBurstDuplicate = new FastCounter("premise burst duplicate");
+    //public final Counter premiseBurstDuplicate = new FastCounter("premise burst duplicate");
 
     public final Counter premiseUnderivable = new FastCounter("premise underivable");
 

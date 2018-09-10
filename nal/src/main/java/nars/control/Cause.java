@@ -64,6 +64,7 @@ public class Cause implements Comparable<Cause> {
      * value may be in any range (not normalized); 0 is neutral
      */
     public void setValue(float nextValue) {
+        assert(Float.isFinite(nextValue));
         value = nextValue;
     }
 
@@ -215,7 +216,7 @@ public class Cause implements Comparable<Cause> {
             return ArrayUtils.EMPTY_SHORT_ARRAY;
 
 
-        AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);
+        AwesomeShortArrayList ll = new AwesomeShortArrayList(Math.min(maxLen, totalItems));
         RoaringBitmap r = deduplicate ? new RoaringBitmap() : null;
         int ls = 0;
         int n = 0;
@@ -230,6 +231,7 @@ public class Cause implements Comparable<Cause> {
                     if (deduplicate)
                         if (!r.checkedAdd(next))
                             continue;
+
                     if (ll.add/*adder.accept*/(next)) {
                         if (++ls >= maxLen)
                             break main;

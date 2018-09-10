@@ -32,7 +32,8 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public final Term sub(int i) {
-        if (i!=0) throw new ArrayIndexOutOfBoundsException();
+        if (i!=0)
+            throw new ArrayIndexOutOfBoundsException();
         return sub();
     }
 

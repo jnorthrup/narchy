@@ -78,7 +78,7 @@ public class PiTester {
 
     private static void run(final Set<String> mutees, final Predicate<String> testFilter) {
 
-        int concurrency = Util.concurrency();
+        int concurrency = Util.concurrencyExcept(1);
 
 
         final Collection<MutationResult> results = new FasterList().asSynchronized();

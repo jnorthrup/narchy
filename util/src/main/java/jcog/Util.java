@@ -1732,10 +1732,16 @@ public enum Util {
     }
 
     public static <X> boolean and(X[] xx, Predicate<X> p) {
-        for (X x : xx) {
+        for (X x : xx)
             if (!p.test(x))
                 return false;
-        }
+        return true;
+    }
+
+    public static boolean and(float[] xx, FloatPredicate p) {
+        for (float x : xx)
+            if (!p.accept(x))
+                return false;
         return true;
     }
 
@@ -1752,10 +1758,9 @@ public enum Util {
     }
 
     public static <X> boolean or(Predicate<X> p, X... xx) {
-        for (X x : xx) {
+        for (X x : xx)
             if (p.test(x))
                 return true;
-        }
         return false;
     }
 
@@ -2186,6 +2191,10 @@ public enum Util {
     }
 
     public static int concurrency() {
+        return concurrencyExcept(0);
+    }
+
+    public static int concurrencyExcept(int reserve) {
         int minThreads = 2;
         int maxThreads = Integer.MAX_VALUE;
 
@@ -2194,7 +2203,7 @@ public enum Util {
         if (specifiedThreads != null)
             threads = Texts.i(specifiedThreads);
         else
-            threads = Runtime.getRuntime().availableProcessors() - 1;
+            threads = Runtime.getRuntime().availableProcessors() - reserve;
 
         return Util.clamp(
                 threads, minThreads, maxThreads);

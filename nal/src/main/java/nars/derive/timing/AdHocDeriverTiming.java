@@ -13,13 +13,13 @@ import static nars.time.Tense.ETERNAL;
 /** naively applies a variety of methods for calculating time focus targets */
 public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
 
-    private final Time clock;
+    private final Time time;
     private final Random rng;
     private final NAR nar;
 
     public AdHocDeriverTiming(NAR n) {
         this.nar = n;
-        this.clock = n.time;
+        this.time = n.time;
         this.rng = n.random();
     }
 
@@ -38,7 +38,7 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
 //                        //(task.mid() < nar.time());
 //                        nar.random().nextBoolean();
                 //tt = pastFutureRadius(task, past, !past);
-                tt = pastFutureRadius(task, true, true);
+                tt = pastFutureRadius(task);
 //                break;
 //            }
 //            default:
@@ -51,8 +51,8 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
 
 
     private long[] presentDuration(float factor) {
-        long now = clock.now();
-        int dur = Math.round(factor * clock.dur());
+        long now = time.now();
+        int dur = Math.round(factor * time.dur());
         return new long[] { now - dur/2, now + dur/2 };
     }
 
@@ -60,31 +60,53 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
         return new long[] {t.start(), t.end() };
     }
 
-    private long[] pastFutureRadius(Task t, boolean past, boolean future) {
-        long now = nar.time();
+    private long[] pastFutureRadius(Task t) {
+        long now = time.now();
+        int dur = time.dur();
 
         long[] tt = taskTime(t);
         if (tt[0]==ETERNAL) {
-            tt[0] = tt[1] = now;
-        }
+            tt[0] = now - dur;
+            tt[1] = now + dur;
+            return tt;
+        } else {
 //            return presentDuration(4);
 //        } else {
 
 
-            long range = Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now));
+            double focus = 0.5f;
+            long range =
+                    //Math.max(Math.abs(tt[0] - now), Math.abs(tt[1] - now));
+                    Math.max(dur, Math.round(Math.min(Math.abs(tt[0] - now), Math.abs(tt[1] - now)) * focus));
 
-            float factor = nar.random().nextFloat();
-            //factor *= factor * factor; //^3
-            range = Math.round(factor * range * 2);
-
-            if (past && future) {
-                return new long[]{now - range, now + range}; //future span
-            } else if (future) {
-                return new long[]{now, now + range}; //future span
-            } else {
-                return new long[]{now - range, now}; //past span
+            //float factor = rng.nextFloat();
+            long center;
+            switch (rng.nextInt(3)) {
+                case 0:
+                    center = (now + ((tt[0] + tt[1]) / 2L)) / 2L; //midpoint between now and the task
+                    break;
+                case 1:
+                    center = now;
+                    break;
+                case 2:
+                    center = ((tt[0] + tt[1]) / 2L); //task midpoint
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
             }
-//        }
+            return new long[]{center - range, center + range};
+        }
+
+//            //factor *= factor * factor; //^3
+//            range = Math.round(factor * range * 2);
+//
+//            if (past && future) {
+//            } else if (future) {
+//                return new long[]{now, now + range}; //future span
+//            } else {
+//                return new long[]{now - range, now}; //past span
+//            }
+////        }
 
     }
 

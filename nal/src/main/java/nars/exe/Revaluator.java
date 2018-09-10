@@ -10,6 +10,7 @@ import nars.control.Cause;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import static nars.time.Tense.ETERNAL;
@@ -23,19 +24,6 @@ public interface Revaluator {
 
     void update(NAR nar);
 
-    final class NullRevaluator implements Revaluator {
-
-        public static final Revaluator the = new NullRevaluator();
-
-        private NullRevaluator() {
-
-        }
-
-        @Override
-        public void update(NAR nar) {
-
-        }
-    }
 
     /**
      * uses an RBM as an adaptive associative memory to learn and reinforce the co-occurrences of the causes
@@ -112,51 +100,57 @@ public interface Revaluator {
 
 
         public float learning_rate = 0.1f;
-        public float[] next;
         public Autoencoder ae;
         float NOISE = 0.01f;
         /**
-         * hidden to visible neuron ratio
+         * hidden to visible neuron ratio; determines amount of dimensionality reduction
          */
-        private final float hiddenMultipler = 0.25f;
+        private final float hiddenMultipler = 0.1f;
 
         private float[] tmp;
 
         public AERevaluator(Random rng) {
             super();
-            this.momentum.set(0.95f);
+            this.momentum.set(0f);
             this.rng = rng;
         }
 
         @Override
-        protected void update(float[] val) {
+        protected float[] update(float[] val) {
 
             int numCauses = val.length;
             if (numCauses < 2)
-                return;
+                return val;
 
-            if (ae == null || ae.inputs() != numCauses) {
-                int numHidden = Math.max(16, Math.round(hiddenMultipler * numCauses));
+            boolean sigmoidEnc = true;
+            boolean sigmoidDec = false;
+            float[] next = ae.reconstruct(val, tmp, sigmoidEnc, sigmoidDec);
 
-                ae = new Autoencoder(numCauses, numHidden, rng);
+            float err = ae.put(val, learning_rate, NOISE, 0f, sigmoidEnc, false, sigmoidDec);
+
+            //System.out.println(this + "  " + err);
+
+            return next;
+        }
+
+        @Override
+        protected void resize(int causes) {
+            super.resize(causes);
+            if (ae == null || ae.inputs() != causes) {
+                int numHidden = Math.max(2, Math.round(hiddenMultipler * causes));
+
+                ae = new Autoencoder(causes, numHidden, rng);
                 tmp = new float[numHidden];
             }
-
-            next = ae.reconstruct(val, tmp, true, false);
-
-            float err = ae.put(val, learning_rate, NOISE, 0f, true, false);
-
-
         }
     }
 
     /** exponential decay memory */
     class DefaultRevaluator implements Revaluator {
 
-        final static double minUpdateDurs = 1f;
 
 
-        public final FloatRange momentum = FloatRange.unit(0.9f);
+        public final FloatRange momentum = FloatRange.unit(0f);
 
         volatile long lastUpdate = ETERNAL;
         /**
@@ -173,60 +167,62 @@ public interface Revaluator {
                 lastUpdate = time;
             int dur = nar.dur();
             double dt = (time - lastUpdate) / ((double) dur);
-            if (dt < minUpdateDurs)
-                return;
 
-            FasterList<Cause> causes = nar.causes;
-            float[] goal = nar.emotion.want;
 
             lastUpdate = time;
 
+            FasterList<Cause> causes = nar.causes;
+
 
             int cc = causes.size();
+            if (cc == 0)
+                return;
 
             if (val.length != cc) {
-                val = new float[cc];
+                resize(cc);
             }
 
-            for (Cause cause : causes) {
-                cause
+            Cause[] ccc = causes.array();
 
-                        .commitFast();
-            }
+            float[] want = nar.emotion.want;
+            if (Util.and(want, (float w) -> Util.equals(Math.abs(w), Float.MIN_NORMAL))) {
+                Arrays.fill(val, 0);
+                return; //no effect
+            } else {
 
+                final float momentum = (float) Math.pow(this.momentum.floatValue(), dt);
+                for (int i = 0; i < cc; i++) {
 
-            int goals = goal.length;
+                    Traffic[] cg = ccc[i].goal;
 
+                    ccc[i].commitFast();
 
-            final float momentum = (float) Math.pow(this.momentum.floatValue(), dt);
-            for (int i = 0; i < cc; i++) {
-                Cause c = causes.get(i);
+                    float v = 0;
+                    for (int j = 0; j < want.length; j++) {
+                        v += want[j] * cg[j].last;
+                    }
 
-                Traffic[] cg = c.goal;
-
-
-                float v = 0;
-                for (int j = 0; j < goals; j++) {
-                    v += goal[j] * cg[j].last;
+                    float next = momentum > 0 ? momentum * val[i] + (1f - momentum) * v : v;
+                    assert(next==next);
+                    val[i] = next;
                 }
-
-
-                float prev = val[i];
-                float next = momentum * prev + (1f - momentum) * v;
-                val[i] = next;
             }
 
-            update(val);
+            float[] post = update(val);
 
             for (int i = 0; i < cc; i++)
-                causes.get(i).setValue(val[i]);
+                ccc[i].setValue(post[i]);
+        }
+
+        protected void resize(int causes) {
+            val = new float[causes];
         }
 
         /**
-         * subclasses can implement their own filters and post-processing of the value vector
+         * subclasses can implement their own post-processing filter chain of the value vector
          */
-        protected void update(float[] val) {
-
+        protected float[] update(float[] val) {
+            return val;
         }
 
     }

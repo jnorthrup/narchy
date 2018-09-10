@@ -173,11 +173,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         private int lastPixel;
         private long lastUpdate;
 
-        private int pixelsRemainPerUpdate;
 
         final BufferedCauseChannel<ITask> in;
-
-        static final int minUpdateDurs = 1;
 
 
         float conf = Float.NaN;
@@ -187,7 +184,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         public Bitmap2DReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
             super();
             lastUpdate = nar.time();
-            pixelsRemainPerUpdate = area;
+
 
             int maxPendingHistory = 8;
             this.in = in.buffered(maxPendingHistory * width * height /* plus extra? */);
@@ -208,7 +205,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         protected void next(NAR nar, BooleanSupplier kontinue) {
 
 
-            priPixel.set(priPixel(pri.floatValue()));
 
             int dur = nar.dur();
 
@@ -219,15 +215,10 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             conf = nar.confDefault(BELIEF);
 
             long now = nar.time();
-            if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
-                Bitmap2DConcepts.this.update();
-                pixelsRemainPerUpdate = totalPixels;
-                this.lastUpdate = now;
-            } else {
-                if (pixelsRemainPerUpdate <= 0)
-                    return; //return -1;
-            }
+            Bitmap2DConcepts.this.update();
+            this.lastUpdate = now;
 
+            priPixel.set(priPixel(pri.floatValue()));
 
 //            int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
 //
@@ -237,39 +228,38 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
 //            pixelsRemainPerUpdate -= pixelsToProcess;
 
-            int start, end;
 
 
-            start = this.lastPixel;
-            end = (start + totalPixels);
+
+            int start = this.lastPixel;
+            int end = (start + totalPixels);
             Stream<ITask> s;
 
             if (end > totalPixels) {
-
-                int extra = end - totalPixels;
                 s = Stream.concat(
                         stream(mode, start, totalPixels, dur, nar),
-                        stream(mode, 0, extra, dur, nar)
+                        stream(mode, 0, end - totalPixels, dur, nar)
                 );
-                this.lastPixel = extra;
             } else {
                 s = Bitmap2DConcepts.this.stream(mode, start, end, dur, nar);
-                this.lastPixel = end;
             }
 
             //TODO stop using Stream<> its not necessary here
-            int pixelsGenerated = (int) in.input(s.takeWhile((z) -> kontinue.getAsBoolean() ) );
-            if (pixelsGenerated > 0)
+            int generatedTasks = in.size();
+            int pixelsRead = (int) in.input(s.takeWhile((z) -> generatedTasks == in.size() || kontinue.getAsBoolean() ) );
+            if (pixelsRead > 0) {
+                this.lastPixel = (pixelsRead + this.lastPixel ) % totalPixels;
                 in.commit();
+            }
         }
 
-        /**
-         * how many pixels to process for the given work amount
-         * can be 1:1 or some other amount
-         */
-        protected int workToPixels(int work) {
-            return work;
-        }
+//        /**
+//         * how many pixels to process for the given work amount
+//         * can be 1:1 or some other amount
+//         */
+//        protected int workToPixels(int work) {
+//            return work;
+//        }
 
 
     }

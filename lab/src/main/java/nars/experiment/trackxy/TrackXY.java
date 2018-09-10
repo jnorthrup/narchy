@@ -67,6 +67,7 @@ public class TrackXY extends NAgentX {
 
     protected TrackXY(NAR nar, int W, int H) {
         super("trackXY",
+                //FrameTrigger.cycles(W*H*2),
                 FrameTrigger.durs(1),
                 //FrameTrigger.fps(1),
                 nar);
@@ -89,8 +90,8 @@ public class TrackXY extends NAgentX {
             this.cam = null;
         }
 
-        actionPushButtonMutex();
-        //actionSwitch();
+        //actionPushButtonMutex();
+        actionSwitch();
         //actionTriState();
 
 
@@ -108,7 +109,11 @@ public class TrackXY extends NAgentX {
             boolean nars = true, rl = false;
 //        boolean rl = false;
 
-            int dur = 1;
+            int W = 4;
+            int H = 4;
+            int dur =
+                    8;
+                    //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 
             NARS nb = new NARS.DefaultNAR(1, true)
                     .attention(() -> new Attention(64))
@@ -136,7 +141,7 @@ public class TrackXY extends NAgentX {
 //            n.confResolution.set(0.05f);
 
 
-            TrackXY a = new TrackXY(n, 4, 4);
+            TrackXY a = new TrackXY(n, W, H);
 
 
         if (rl) {

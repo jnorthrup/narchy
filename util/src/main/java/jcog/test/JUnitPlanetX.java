@@ -258,7 +258,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
         }
 
 
-        ForkJoinPool exe = new ForkJoinPool(Util.concurrency());
+        ForkJoinPool exe = new ForkJoinPool(Util.concurrencyExcept(1));
 
 
         do {

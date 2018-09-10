@@ -72,7 +72,7 @@ public class HaiQae extends HaiQ {
 
     @Override
     protected int perceive(float[] input) {
-        lastPerceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption, false, true, false);
+        lastPerceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption, false);
         int w = ae.decide(decideState);
         if (perceptionForget > 0)
             ae.forget(perceptionForget);
