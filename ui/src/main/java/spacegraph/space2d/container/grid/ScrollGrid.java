@@ -29,8 +29,8 @@ public class ScrollGrid<X> extends Bordering {
 
 
     private static final float MIN_DISPLAYED_CELLS = 0.25f;
-    private static final int MAX_DISPLAYED_CELLS_X = 32;
-    private static final int MAX_DISPLAYED_CELLS_Y = 32;
+//    private static final int MAX_DISPLAYED_CELLS_X = 32;
+    private static final int MAX_DISPLAYED_CELLS = 32;
 
     private final GridModel<X> model;
     private final GridRenderer<X> render;
@@ -51,8 +51,8 @@ public class ScrollGrid<X> extends Bordering {
 
     private static final boolean autoHideScrollForSingleColumnOrRow = true;
 
-    /** layout temporary values */
-    private transient float cw, ch, dx, dy;
+//    /** layout temporary values */
+//    private transient float cw, ch, dx, dy;
 
 
     public ScrollGrid(GridModel<X> model, GridRenderer<X> render, int visX, int visY) {
@@ -65,7 +65,7 @@ public class ScrollGrid<X> extends Bordering {
      */
     public ScrollGrid(GridModel<X> model, GridRenderer<X> render) {
         super();
-        edge(defaultScrollEdge);
+        borderSize(defaultScrollEdge);
         this.model = model;
         this.render = render;
 
@@ -147,7 +147,7 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Util.clamp(model.cellsX() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS_Y);
+                                return Util.clamp(model.cellsX() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS);
                             }
                         }
                 ),
@@ -167,7 +167,7 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Util.clamp(model.cellsY() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS_Y);
+                                return Util.clamp(model.cellsY() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS);
                             }
                         }
                 ).type(KnobVert),
@@ -318,8 +318,11 @@ public class ScrollGrid<X> extends Bordering {
 
     @Override
     public boolean start(SurfaceBase parent) {
-        model.start(this);
-        return super.start(parent);
+        if (super.start(parent)) {
+            model.start(this);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -392,41 +395,38 @@ public class ScrollGrid<X> extends Bordering {
 
             
             
-            cells.cache.forEachValue(e -> {
-                int cellID = e.key;
+            cells.cache.removeIf(e -> {
                 Surface s = ((SurfaceCacheCell)e).surface;
 
-                boolean deleted = false;
                 if (s == null) { 
-                    deleted = true;
+                    //return true;
                 } else {
+                    int cellID = e.key;
                     short sx = (short) (cellID >> 16);
                     short sy = (short) (cellID & 0xffff);
                     if (!cellVisible(sx, sy)) {
-                        deleted = true; 
+                        return true;
                     }
                 }
 
-                if (deleted) {
-                    boolean removed = cells.remove(cellID); //assert(removed);
-                }
+                return false;
             });
 
-            invalidate();
 
 
-            short x1 = this.x1;
-            short y1 = this.y1;
-            short x2 = this.x2;
-            short y2 = this.y2;
+            short x1 = this.x1, y1 = this.y1, x2 = this.x2, y2 = this.y2;
 
             for (short sx = x1; sx < x2; sx++) {
                 for (short sy = y1; sy < y2; sy++) {
                     SurfaceCacheCell e = (SurfaceCacheCell) set(sx, sy, value(sx, sy), true);
                     if (e!=null) {
                         Surface s = e.surface;
-                        if (s!=null)
-                            doLayout(s, sx, sy);
+                        if (s == null)
+                            continue;
+
+                        if (s.parent==null)
+                            s.start(this);
+                        doLayout(s, sx, sy);
                     }
                 }
             }

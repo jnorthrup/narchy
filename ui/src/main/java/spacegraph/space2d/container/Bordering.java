@@ -40,7 +40,7 @@ public class Bordering extends MutableContainer {
     /**
      * sets all edge sizes to a value
      */
-    protected Bordering edge(float size) {
+    protected Bordering borderSize(float size) {
         borderNorth = borderSouth = borderEast = borderWest = size;
         layout(); 
         return this;

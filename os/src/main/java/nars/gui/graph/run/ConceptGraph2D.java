@@ -183,7 +183,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
 
     final static float WEIGHT_UPDATE_RATE = 0.1f;
-    final static float COLOR_UPDATE_RATE = 0.25f;
+    final static float COLOR_UPDATE_RATE = 0.5f;
     final static float COLOR_FADE_RATE = 0.05f;
 
     private static class TermlinkVis implements Graph2DRenderer<Concept> {
@@ -241,8 +241,8 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             n.tasklinks().forEach(l -> {
 
                 Term targetTerm = l.term();
-                if (targetTerm.equals(sourceTerm.term()))
-                    return; //ignore
+//                if (targetTerm.equals(sourceTerm.term()))
+//                    return; //ignore
 
                 Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(targetTerm));
                 if (e != null) {

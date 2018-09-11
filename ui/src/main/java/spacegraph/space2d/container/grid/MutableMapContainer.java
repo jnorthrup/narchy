@@ -22,8 +22,7 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 
         @Override
         protected final void unmaterialize(CacheCell<K, V> entry) {
-            V v = entry.value;
-            MutableMapContainer.this.unmaterialize(v);
+            MutableMapContainer.this.unmaterialize(entry.value);
             super.unmaterialize(entry);
         }
         //        @Override
@@ -37,11 +36,10 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 //        }
 
 
-        @Override
-        protected void invalidated() {
-            super.invalidated();
-            invalidate();
-        }
+//        @Override
+//        protected void invalidated() {
+//            super.invalidated();
+//        }
     };
 
     protected void unmaterialize(V v) {
@@ -121,9 +119,7 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
         return cells.removeSilently(key);
     }
 
-    void invalidate() {
-        cells.cache.invalidate();
-    }
+
 
     public void getValues(Collection<V> l) {
         cells.getValues(l);
