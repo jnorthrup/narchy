@@ -103,7 +103,7 @@ public class TrackXY extends NAgentX {
 
     }
 
-    public static class X1 {
+
         public static void main(String[] args) {
 
             boolean nars = true, rl = false;
@@ -231,7 +231,7 @@ public class TrackXY extends NAgentX {
             n.conceptsActive().forEach(System.out::println);
 
         }
-    }
+
 
     public static void printGoals(NAR n) {
         int dur = n.dur();

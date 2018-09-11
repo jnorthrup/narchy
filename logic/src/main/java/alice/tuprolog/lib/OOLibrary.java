@@ -1245,28 +1245,28 @@ public class OOLibrary extends Library {
                     values[i] = null;
                     switch (castTo_name) {
                         case "byte":
-                            types[i] = Byte.TYPE;
+                            types[i] = java.lang.Byte.TYPE;
                             break;
                         case "short":
-                            types[i] = Short.TYPE;
+                            types[i] = java.lang.Short.TYPE;
                             break;
                         case "char":
-                            types[i] = Character.TYPE;
+                            types[i] = java.lang.Character.TYPE;
                             break;
                         case "int":
-                            types[i] = Integer.TYPE;
+                            types[i] = java.lang.Integer.TYPE;
                             break;
                         case "long":
-                            types[i] = Long.TYPE;
+                            types[i] = java.lang.Long.TYPE;
                             break;
                         case "float":
-                            types[i] = Float.TYPE;
+                            types[i] = java.lang.Float.TYPE;
                             break;
                         case "double":
-                            types[i] = Double.TYPE;
+                            types[i] = java.lang.Double.TYPE;
                             break;
                         case "boolean":
-                            types[i] = Boolean.TYPE;
+                            types[i] = java.lang.Boolean.TYPE;
                             break;
                         default:
                             try {

@@ -16,6 +16,7 @@
 package jcog.io;
 
 import jdk.nashorn.api.scripting.URLReader;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -518,7 +519,17 @@ public class Grok implements Serializable {
     public static Grok withThe(String... patternLibs) {
         Grok g = new Grok();
         for (String s : patternLibs) {
-            g.addPatterns(new URLReader(Grok.class.getClassLoader().getResource("patterns/" + s)));
+
+            try (InputStream nn = Grok.class.getClassLoader().getResourceAsStream("patterns/" + s)) {
+
+                g.addPatterns(new InputStreamReader(nn));
+
+            } catch (IOException e) {
+
+                e.printStackTrace();
+
+            }
+
         }
         return g;
     }
