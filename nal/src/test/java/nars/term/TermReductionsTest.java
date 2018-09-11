@@ -1,5 +1,6 @@
 package nars.term;
 
+import nars.$;
 import nars.*;
 import nars.io.NarseseTest;
 import nars.task.util.TaskException;

@@ -16,7 +16,6 @@ import nars.term.atom.Bool;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;

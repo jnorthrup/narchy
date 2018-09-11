@@ -37,7 +37,7 @@ public class Memoizers {
     }
 
     @Deprecated public <X,Y> Function<X,Y> memoize(String id, Function<X,Y> computation) {
-        return memoize(id, 64*1024, computation);
+        return memoize(id, 32*1024, computation);
     }
 
     /** registers a new memoizer with a default memoization implementation */
@@ -53,7 +53,7 @@ public class Memoizers {
 
     /** provides default memoizer implementation */
     private <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
-        return new HijackMemoize<>(computation, capacity, 3);
+        return new HijackMemoize<>(computation, capacity, 4);
     }
 
     private static class MemoizationStatistics {

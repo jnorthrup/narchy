@@ -1,6 +1,9 @@
 package nars.nal.nal8;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Task;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.test.analyze.BeliefContradictionDetector;

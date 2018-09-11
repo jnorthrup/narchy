@@ -2,10 +2,7 @@ package nars.link;
 
 import jcog.data.NumberX;
 import jcog.pri.bag.Bag;
-import nars.NAR;
-import nars.Task;
 import nars.concept.Concept;
-import nars.concept.TaskConcept;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

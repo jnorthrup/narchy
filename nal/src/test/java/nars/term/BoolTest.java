@@ -1,5 +1,6 @@
 package nars.term;
 
+import nars.$;
 import nars.*;
 import nars.eval.Evaluation;
 import nars.truth.Truth;
@@ -8,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.*;
 import static nars.$.or;
+import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;

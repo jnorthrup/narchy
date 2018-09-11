@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.data.list.FasterList;
 import jcog.random.XoRoShiRo128PlusRandom;
+import nars.$;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;

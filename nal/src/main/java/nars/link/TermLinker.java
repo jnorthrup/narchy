@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.data.set.ArrayHashSet;
 import nars.derive.Derivation;
 import nars.term.Termed;
 

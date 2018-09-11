@@ -35,8 +35,8 @@ import spacegraph.video.Tex;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL2.GL_POLYGON;

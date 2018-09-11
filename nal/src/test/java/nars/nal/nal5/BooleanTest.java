@@ -171,7 +171,6 @@ class BooleanTest {
     @Test public void testXOREternal() throws Narsese.NarseseException {
         //classic XOR example
 
-        Param.DEBUG = true;
         NAR n = NARS.tmp();
         //n.log();
         n.termVolumeMax.set(8);

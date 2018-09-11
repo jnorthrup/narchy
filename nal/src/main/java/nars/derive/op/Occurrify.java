@@ -543,17 +543,13 @@ public class Occurrify extends TimeGraph {
 
 
                 Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x));
-                if (p != null) {
-                    byte punc = d.concPunc;
-
-                    //prevent altering identity transforms
-
-
-                    if ((punc == GOAL) && d.truthFunction != NALTruth.Identity) {
-                        if (!immediatize(p.getTwo(), d))
-                            return null;
-                    }
-                }
+//                if (p != null) {
+//                    byte punc = d.concPunc;
+//                    if ((punc == GOAL) && d.truthFunction != NALTruth.Identity) {
+//                        if (!immediatize(p.getTwo(), d))
+//                            return null;
+//                    }
+//                }
                 return p;
             }
 
@@ -576,13 +572,13 @@ public class Occurrify extends TimeGraph {
 //                        return new long[]{ ts, T.end()};
 //
 
-                    long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
-                    return i;
+//                    long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+//                    return i;
 
 
-//                    //TODO unionArray
-//                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
-//                    return new long[]{i.a, i.b};
+                    //Union is acceptable since intersection has alrady been tested. this includes when the tasks meet end-to-end in whch case union is just the loosest concatenation of them
+                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                    return new long[]{i.a, i.b};
                 } else if (ts == ETERNAL && B != null && bs != ETERNAL) {
                     return new long[]{bs, B.end()};
                 } else if (ts != ETERNAL && (B == null || bs == ETERNAL)) {

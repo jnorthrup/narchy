@@ -17,8 +17,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;

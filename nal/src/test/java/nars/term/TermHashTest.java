@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.*;
-import static nars.Op.*;
 import static nars.Op.or;
+import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
