@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.*;
 import jcog.data.iterator.ArrayIterator;
@@ -16,8 +17,8 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.container.AbstractUnitContainer;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.collision.RayCastOutput;
@@ -31,6 +32,7 @@ import spacegraph.space2d.phys.dynamics.joints.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.particle.ParticleColor;
 import spacegraph.space2d.phys.particle.ParticleSystem;
+import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
@@ -58,7 +60,28 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
  */
-public class Dyn2DSurface extends Wall implements Animated {
+public class Dyn2DSurface<X> extends AbstractUnitContainer<Graph2D<X>> implements Animated {
+
+    final Graph2D<X> content;
+
+    public Dyn2DSurface() {
+        super();
+
+        content = new Graph2D<>();
+                //.render()...
+        W.setParticleRadius(0.2f);
+        W.setParticleDensity(1.0f);
+
+        W.setWarmStarting(true);
+        W.setAllowSleep(true);
+        W.setContinuousPhysics(true);
+
+    }
+
+    @Override
+    public Graph2D<X> the() {
+        return content;
+    }
 
     private static final float SHAPE_SIZE_EPSILON = 0.0001f;
     private final static int MOUSE_JOINT_BUTTON = 0;
@@ -176,17 +199,6 @@ public class Dyn2DSurface extends Wall implements Animated {
 
     };
 
-    public Dyn2DSurface() {
-        super();
-
-        W.setParticleRadius(0.2f);
-        W.setParticleDensity(1.0f);
-
-        W.setWarmStarting(true);
-        W.setAllowSleep(true);
-        W.setContinuousPhysics(true);
-        
-    }
 
     @Override
     public boolean tangible() {
@@ -293,9 +305,9 @@ public class Dyn2DSurface extends Wall implements Animated {
 
 
 
-        if (body.data() instanceof PhyWindow.WallBody) {
-            return; 
-        }
+//        if (body.data() instanceof PhyWindow.WallBody) {
+//            return;
+//        }
         if (body instanceof Consumer) { 
             ((Consumer) body).accept(gl);
             return;
@@ -379,8 +391,8 @@ public class Dyn2DSurface extends Wall implements Animated {
      * spawns in view center at the given size
      */
     public PhyWindow put(Surface content, float w, float h) {
-        Ortho view = (Ortho) root();
-        return put(content, RectFloat2D.XYWH(view.x(), view.y(), w, h));
+        //Ortho view = (Ortho) root();
+        return put(content, RectFloat2D.XYWH(0, 0, w, h)); //view.x(), view.y(),
     }
 
     public PhyWindow frame(Surface content, float w, float h) {
@@ -393,8 +405,6 @@ public class Dyn2DSurface extends Wall implements Animated {
 
     private PhyWindow put(Surface content, RectFloat2D initialBounds, boolean collides) {
         PhyWindow s = new PhyWindow(initialBounds, collides);
-
-        add(s);
 
         s.add(content);
 
@@ -572,8 +582,8 @@ public class Dyn2DSurface extends Wall implements Animated {
     public Surface tryTouch(Finger finger) {
 
         Surface s = super.tryTouch(finger);
-        if (s != null && s != this && !(s instanceof PhyWindow))
-            return s; 
+//        if (s != null && s != this && !(s instanceof PhyWindow))
+//            return s;
 
         if (doubleClicking.update(finger))
             return this;
@@ -722,7 +732,8 @@ public class Dyn2DSurface extends Wall implements Animated {
                 links.removeNode(this);
             }
             W.removeBody(this.body);
-            Dyn2DSurface.this.remove(this);
+            //Dyn2DSurface.this.remove(this);
+            throw new TODO();
         }
 
 

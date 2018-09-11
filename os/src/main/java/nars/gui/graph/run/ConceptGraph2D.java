@@ -9,6 +9,7 @@ import nars.concept.Concept;
 import nars.control.DurService;
 import nars.gui.NARui;
 import nars.term.ProxyTerm;
+import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
@@ -58,7 +59,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         this.nar = n;
         this.source = source;
 
-        nodeBuilder((nn)->{
+        build((nn)->{
            nn.set(
                new Scale(
                    new PushButton(new VectorLabel(nn.id.toString()))
@@ -72,7 +73,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
            );
         });
 
-        this.layout(getLayout())
+        this.update(getLayout())
 //        layout(new TreeMap2D<>() {
 //            @Override
 //            public void layout(Graph2D<Concept> g, int dtMS) {
@@ -84,30 +85,33 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 //                super.layout(g, dtMS);
 //            }
 //        })
-                .layer(new TermlinkVis(n))
-                .layer(new TasklinkVis(n))
-                .layer(new StatementVis(n));
+                .render(
+                        Graph2D.InvalidateEdges,
+                        new TermlinkVis(n),
+                        new TasklinkVis(n),
+                        new StatementVis(n)
+                );
     }
 
 
-    public Graph2DLayout<Concept> getLayout() {
+    public Graph2DUpdater<Concept> getLayout() {
         return new ForceDirected2D<>() {
 
             @Override
-            public void initialize(Graph2D<Concept> g, NodeVis<Concept> n) {
-                updateNode(n);
-                super.initialize(g, n);
+            public void init(Graph2D<Concept> g, NodeVis<Concept> newNode) {
+                updateNode(newNode);
+                super.init(g, newNode);
             }
 
             @Override
-            public void layout(Graph2D<Concept> g, int dtMS) {
+            public void update(Graph2D<Concept> g, int dtMS) {
 
                 g.forEachValue(nn -> {
                     if (nn.showing())
                         updateNode(nn);
                 });
 
-                super.layout(g, dtMS);
+                super.update(g, dtMS);
 
             }
         };
@@ -175,7 +179,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
 
-    private static class TermlinkVis implements Graph2D.Graph2DLayer<Concept> {
+    private static class TermlinkVis implements Graph2DRenderer<Concept> {
         public final AtomicBoolean termlinks = new AtomicBoolean(true);
         final NAR n;
 
@@ -184,7 +188,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(NodeVis<Concept> node, GraphBuilder<Concept> graph) {
+        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
             if (!termlinks.get())
                 return;
 
@@ -194,14 +198,14 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                     Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.get()));
                     if (e != null) {
                         float p = l.priElseZero();
-                        e.weight(p).color((0.9f * p) + 0.1f, 0, 0);
+                        e.weightDecayAdd(p).colorMerge((0.9f * p) + 0.1f, 0, 0);
                     }
                 });
             }
         }
     }
 
-    private static class TasklinkVis implements Graph2D.Graph2DLayer<Concept> {
+    private static class TasklinkVis implements Graph2DRenderer<Concept> {
         public final AtomicBoolean tasklinks = new AtomicBoolean(true);
         final NAR n;
 
@@ -210,18 +214,24 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(NodeVis<Concept> node, GraphBuilder<Concept> graph) {
+        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
             if (!tasklinks.get())
                 return;
             Concept n = node.id;
             if (n==null)
                 return;
+
+            Term sourceTerm = n.term();
             n.tasklinks().forEach(l -> {
 
-                Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.term()));
+                Term targetTerm = l.term();
+                if (targetTerm.equals(sourceTerm))
+                    return; //ignore
+
+                Graph2D.EdgeVis<Concept> e = graph.edge(node, targetTerm); // new ProxyTerm(l.term()));
                 if (e != null) {
                     float p = l.priElseZero();
-                    e.weight(p).color(0, (0.9f * p) + 0.1f, 0);
+                    e.weightDecayAdd(p).colorMerge(0, (0.9f * p) + 0.1f, 0);
                 }
 
             });
@@ -231,7 +241,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
     
 
-    private static class StatementVis implements Graph2D.Graph2DLayer<Concept> {
+    private static class StatementVis implements Graph2DRenderer<Concept> {
         public final AtomicBoolean statements = new AtomicBoolean(true);
         final NAR n;
 
@@ -240,7 +250,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(NodeVis<Concept> node, Graph2D.GraphBuilder<Concept> graph) {
+        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
 
             if (!statements.get())
                 return;
@@ -252,7 +262,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                 @Nullable EdgeVis<Concept> e = graph.edge(new ProxyTerm(t.sub(0)), new ProxyTerm(t.sub(1)));
                 if (e != null) {
                     float p = 1;
-                    e.weight(p).color(0, 0, (0.9f * p) + 0.1f);
+                    e.weightDecayAdd(p).colorMerge(0, 0, (0.9f * p) + 0.1f);
                 }
 
             }

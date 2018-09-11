@@ -1,5 +1,6 @@
 package spacegraph;
 
+import jcog.exe.Exe;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.space2d.SpaceGraphFlat;
@@ -75,10 +76,16 @@ public enum SpaceGraph { ;
 //                return true;
 //            }
         };
-        SpaceGraphFlat g = new SpaceGraphFlat(ortho);
-        g.show(width, height, false);
 
-        ortho.zoom(s);
+        Exe.invokeLater(()->{
+            SpaceGraphFlat g = new SpaceGraphFlat(ortho);
+            g.show(width, height);
+            Exe.invokeLater(()->{
+                ortho.zoom(s);
+            });
+        });
+
+
 
         return s;
     }

@@ -111,7 +111,7 @@ public interface Revaluator {
 
         public AERevaluator(Random rng) {
             super();
-            this.momentum.set(0f);
+            this.momentum.set(0.5f);
             this.rng = rng;
         }
 

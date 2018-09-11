@@ -1,16 +1,12 @@
 package jcog.data.map;
 
-import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.util.FlipArray;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
@@ -102,8 +98,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
      * this is the fast value iterating method
      */
     public void forEachValue(Consumer<? super Y> action) {
-        Y[] x = valueArray();
-        for (Y y : x) {
+        for (Y y : valueArray()) {
             if (y !=null)
                 action.accept(y);
         }
@@ -111,39 +106,40 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     @Override
     public Y compute(X key, BiFunction<? super X, ? super Y, ? extends Y> remappingFunction) {
-        throw new TODO();
+        final boolean[] changed = {false};
+        Y v = map.compute(key, (k, pv) -> {
+            Y next = remappingFunction.apply(k, pv);
+            if (next != pv)
+                changed[0] = true;
+            return next;
+        });
+        if (changed[0])
+            invalidate();
+        return v;
     }
 
     @Override
     public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
         final boolean[] changed = {false};
-        Y prev = map.computeIfAbsent(key, (p) -> {
+        Y v = map.computeIfAbsent(key, (p) -> {
             Y next = mappingFunction.apply(p);
-            if (next != p)
-                changed[0] = true;
+            changed[0] = true;
             return next;
         });
-        if (changed[0]) {
+        if (changed[0])
             invalidate();
-        }
-
-//        Y prev = map.computeIfAbsent(key, mappingFunction);
-//        invalidate();
-
-
-        return prev;
+        return v;
     }
 
 
-    public void invalidate() {
+    public final void invalidate() {
         list.invalidate();
     }
 
     public boolean whileEachValue(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        for (int i = 0, xLength = x.length; i < xLength; i++) {
-            Y xi = x[i];
-            if (xi!=null && !action.test(xi))
+        for (Y xi : x) {
+            if (xi != null && !action.test(xi))
                 return false;
         }
         return true;
@@ -249,21 +245,30 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
     public boolean removeIf(Predicate<? super Y> filter) {
-        FasterList toRemove = new FasterList(1);
-        map.forEach((k,v)->{
-            if (filter.test(v))
-                toRemove.add(k);
-        });
-        if (toRemove.isEmpty())
-            return false;
-        if (toRemove.anySatisfy((x -> map.remove(x)!=null)))
+        if (map.values().removeIf(filter)) {
             invalidate();
-        return true;
+            return true;
+        }
+        return false;
     }
 
 
+    public boolean removeIf(BiPredicate<X, ? super Y> filter) {
+        if (map.entrySet().removeIf((e) -> filter.test(e.getKey(), e.getValue()))) {
+            invalidate();
+            return true;
+        }
+        return false;
+    }
 
-    private final class MyAbstractList extends AbstractList {
+    public void clear(Consumer<Y> each) {
+        removeIf((y)-> {
+            each.accept(y);
+            return true;
+        });
+    }
+
+    private final class MyAbstractList extends AbstractList<Y> {
 
         @Override
         public int size() {

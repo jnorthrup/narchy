@@ -30,10 +30,10 @@ public class ConceptGraphMeshTest {
 
         ConceptGraph2D g = new ConceptGraph2D(n) { //Iterables.transform(mesh.coords, x -> n.concept(x)), n) {
             @Override
-            public @NotNull Graph2DLayout<Concept> getLayout() {
+            public @NotNull Graph2D.Graph2DUpdater<Concept> getLayout() {
                 return new ForceDirected2D<>() {
                     @Override
-                    public void layout(Graph2D<Concept> g, int dtMS) {
+                    public void update(Graph2D<Concept> g, int dtMS) {
 
                         float gw = g.w()*0.8f;
                         float gh = g.h()*0.8f;
@@ -54,7 +54,7 @@ public class ConceptGraphMeshTest {
                             }
                         });
 
-                        super.layout(g, dtMS);
+                        super.update(g, dtMS);
 
 
                     }

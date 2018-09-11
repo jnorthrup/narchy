@@ -5,7 +5,7 @@ import jcog.data.pool.DequePool;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.util.MovingRectFloat2D;
 
-public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements Graph2D.Graph2DLayout<X> {
+public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements Graph2D.Graph2DUpdater<X> {
     protected final FasterList<M> nodes = new FasterList();
     private final DequePool<M> nodesPool = new DequePool<>(128) {
         @Override
@@ -23,7 +23,7 @@ public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements
     abstract protected M newContainer();
 
     @Override
-    public void layout(Graph2D<X> g, int dtMS) {
+    public void update(Graph2D<X> g, int dtMS) {
         if (!get(g))
             return;
 

@@ -5,10 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * concurrent map wrapping key,value pairs in cell instances
@@ -71,9 +68,7 @@ public class CellMap<K, V> {
             remove(key);
             return null;
         } else {
-
             added(entry);
-
             return entry;
         }
     }
@@ -92,7 +87,7 @@ public class CellMap<K, V> {
 
     public void removeAll(Iterable<K> x) {
         final boolean[] changed = {false};
-        x.forEach(xx -> changed[0] |= remove(xx, false));
+        x.forEach(xx -> changed[0] |= removeSilently(xx));
         if (changed[0])
             invalidated();
     }
@@ -109,27 +104,40 @@ public class CellMap<K, V> {
         CacheCell<K, V> entry = cache.computeIfAbsent(key, k -> cellPool.get());
         return update(key, entry, entry.update(key, builder));
     }
+    public CacheCell<K, V> compute(K key, BiFunction<K, V, V> builder) {
+        CacheCell<K, V> entry = cache.computeIfAbsent(key, k -> cellPool.get());
+        return update(key, entry, entry.update(key, builder));
+    }
 
 
     public boolean remove(K key) {
-        return remove(key, true);
-    }
-
-    public boolean remove(K key, boolean invalidate) {
         CacheCell<K, V> entry = cache.remove(key);
         if (entry != null) {
             removed(entry);
-            if (invalidate) {
-                invalidated();
-            }
+            invalidated();
             return true;
         }
         return false;
     }
 
-    public void removed(CacheCell<K, V> entry) {
+    /** removes without immediately signaling invalidation, for use in batch updates */
+    public boolean removeSilently(K key) {
+        CacheCell<K, V> entry = cache.remove(key);
+        if (entry != null) {
+            removed(entry);
+            return true;
+        }
+        return false;
+    }
+
+    protected final void removed(CacheCell<K, V> entry) {
+        unmaterialize(entry);
         entry.clear();
         cellPool.put(entry);
+    }
+
+    protected void unmaterialize(CacheCell<K, V> entry) {
+
     }
 
     protected void invalidated() {
@@ -181,14 +189,18 @@ public class CellMap<K, V> {
         }
 
 
+        public final boolean update(K nextKey, Function<V, V> update) {
+            return update(nextKey, (k, v) -> update.apply(v));
+        }
+
         /**
          * return true to keep or false to remove from the map
          */
-        public boolean update(K nextKey, Function<V, V> update) {
+        public boolean update(K nextKey, BiFunction<K, V, V> update) {
             this.key = nextKey;
             V prev = value;
 
-            V next = update.apply(prev);
+            V next = update.apply(nextKey, prev);
 
             boolean create = false, delete = false;
 
@@ -212,9 +224,7 @@ public class CellMap<K, V> {
                 }
             }
 
-            if (delete) {
-                clear();
-            }
+
 
             if (create) {
                 set(next);

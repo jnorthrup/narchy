@@ -392,7 +392,7 @@ public class ScrollGrid<X> extends Bordering {
 
             
             
-            cellMap.cache.forEachValue(e -> {
+            cells.cache.forEachValue(e -> {
                 int cellID = e.key;
                 Surface s = ((SurfaceCacheCell)e).surface;
 
@@ -408,7 +408,7 @@ public class ScrollGrid<X> extends Bordering {
                 }
 
                 if (deleted) {
-                    boolean removed = cellMap.remove(cellID); //assert(removed);
+                    boolean removed = cells.remove(cellID); //assert(removed);
                 }
             });
 

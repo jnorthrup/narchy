@@ -13,28 +13,29 @@ import java.util.function.Predicate;
 
 abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
-    protected final CellMap<K, V> cellMap = new CellMap<>() {
+    /** "cells" of the container; maintain the mapping between the indexed keys and their "materialized" representations or projections  */
+    protected final CellMap<K, V> cells = new CellMap<>() {
         @Override
         protected CacheCell<K, V> newCell() {
             return new SurfaceCacheCell<>();
         }
 
         @Override
-        protected void added(CacheCell<K, V> entry) {
-            if (parent != null) {
-                Surface es = ((SurfaceCacheCell) entry).surface;
-                if (es != null && es.parent == null)
-                    es.start(MutableMapContainer.this);
-            }
-        }
-
-        @Override
-        public void removed(CacheCell<K, V> entry) {
+        protected final void unmaterialize(CacheCell<K, V> entry) {
             V v = entry.value;
-            if (v!=null)
-                removing(entry.key, v);
-            super.removed(entry);
+            MutableMapContainer.this.unmaterialize(v);
+            super.unmaterialize(entry);
         }
+        //        @Override
+//        protected void added(CacheCell<K, V> entry) {
+//            if (parent == null)
+//                return;
+//
+//            Surface es = ((SurfaceCacheCell) entry).surface;
+//            //if (es != null && es.parent == null)
+//            es.start(MutableMapContainer.this);
+//        }
+
 
         @Override
         protected void invalidated() {
@@ -43,13 +44,14 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
         }
     };
 
-    protected void removing(K key, V value) {
+    protected void unmaterialize(V v) {
 
     }
 
+
     @Override
     public void forEach(Consumer<Surface> each) {
-        cellMap.forEachCell(e -> {
+        cells.forEachCell(e -> {
             if (e == null)
                 throw new NullPointerException();
 
@@ -76,60 +78,60 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 //    }
 
     public void forEachValue(Consumer<? super V> each) {
-        cellMap.forEachValue(each);
+        cells.forEachValue(each);
     }
 
 
     @Override
     public int childrenCount() {
-        return Math.max(1, cellMap.size());
+        return Math.max(1, cells.size());
     }
 
     @Override
     protected void clear() {
-        cellMap.clear();
+        cells.clear();
     }
 
     protected void removeAll(Iterable<K> x) {
-        cellMap.removeAll(x);
+        cells.removeAll(x);
     }
 
     @Nullable
     public V getValue(K x) {
-        return cellMap.getValue(x);
+        return cells.getValue(x);
     }
 
     public CellMap.CacheCell<K, V> compute(K key, Function<V, V> builder) {
-        return cellMap.compute(key, builder);
+        return cells.compute(key, builder);
     }
 
     CellMap.CacheCell put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
 
-        CellMap.CacheCell entry = cellMap.cache.computeIfAbsent(key, k -> cellMap.cellPool.get());
-        return cellMap.update(key, entry, ((SurfaceCacheCell) entry).update(key, nextValue, renderer));
+        CellMap.CacheCell entry = cells.cache.computeIfAbsent(key, k -> cells.cellPool.get());
+        return cells.update(key, entry, ((SurfaceCacheCell) entry).update(key, nextValue, renderer));
 
     }
 
 
     public boolean remove(K key) {
-        return cellMap.remove(key);
+        return cells.remove(key);
     }
 
-    public boolean remove(K key, boolean invalidate) {
-        return cellMap.remove(key, invalidate);
+    public boolean removeSilently(K key) {
+        return cells.removeSilently(key);
     }
 
     void invalidate() {
-        cellMap.cache.invalidate();
+        cells.cache.invalidate();
     }
 
     public void getValues(Collection<V> l) {
-        cellMap.getValues(l);
+        cells.getValues(l);
     }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        return cellMap.whileEach(e -> {
+        return cells.whileEach(e -> {
             Surface s = ((SurfaceCacheCell) e).surface;
             return s == null || o.test(s);
         });
@@ -137,7 +139,7 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        return cellMap.whileEachReverse(e -> {
+        return cells.whileEachReverse(e -> {
             Surface s = ((SurfaceCacheCell) e).surface;
             return s == null || o.test(s);
         });
@@ -163,10 +165,10 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 
             Surface es = this.surface;
             surface = null;
-            if (es != null) {
-                es.stop();
-//                es.hide();
-            }
+//            if (es != null) {
+//                es.stop();
+////                es.hide();
+//            }
 
         }
 

@@ -135,7 +135,7 @@ public class ExeCharts {
         fd.repelSpeed.set(0.5f);
 
         Graph2D<UniExec.InstrumentedCausable> s = new Graph2D<UniExec.InstrumentedCausable>()
-            .layer((node, g)->{
+            .render((node, g)->{
                 UniExec.InstrumentedCausable c = node.id;
 
                 final float epsilon = 0.01f;
@@ -151,8 +151,8 @@ public class ExeCharts {
                 node.pri = Math.max(epsilon, p);
             })
             //.layout(fd)
-            .layout(new TreeMap2D<>())
-            .nodeBuilder((node)->{
+            .update(new TreeMap2D<>())
+            .build((node)->{
                 node.add(new Scale(new CausableWidget(node.id), 0.9f));
             });
 

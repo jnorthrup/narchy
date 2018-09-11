@@ -30,9 +30,9 @@ public class Graph2DTest {
 
             Graph2D<Node<Object, Object>> sg = new Graph2D<Node<Object, Object>>()
 
-                .layout(new ForceDirected2D())
+                .update(new ForceDirected2D())
 
-                .layer(new Graph2D.NodeGraphLayer())
+                .render(new Graph2D.NodeGraphRenderer())
 
                 .set(h.nodes());
 
@@ -58,9 +58,9 @@ public class Graph2DTest {
 
             Graph2D<Node<Object, Object>> sg = new Graph2D<Node<Object, Object>>()
 
-                    .layout(new ForceDirected2D())
+                    .update(new ForceDirected2D())
 
-                    .layer(new Graph2D.NodeGraphLayer())
+                    .render(new Graph2D.NodeGraphRenderer())
 
                     .set(h.nodes());
 

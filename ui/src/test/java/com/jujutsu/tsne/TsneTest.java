@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class TsneTest {
 
     //TODO maxGain parameter for SimpleTsne
-    public static class TsneModel implements Graph2D.Graph2DLayout<Schema.Instance> {
+    public static class TsneModel implements Graph2D.Graph2DUpdater<Schema.Instance> {
 
 
 
@@ -36,7 +36,7 @@ public class TsneTest {
         final ArrayHashSet<Graph2D.NodeVis<Schema.Instance>> nn = new ArrayHashSet<>();
         double[][] X = new double[0][0];
 
-        @Override public void layout(Graph2D<Schema.Instance> g, int dtMS) {
+        @Override public void update(Graph2D<Schema.Instance> g, int dtMS) {
             g.forEachValue(nn::add);
             if (!nn.equals(xx)) {
                 xx.clear();
@@ -91,10 +91,10 @@ public class TsneTest {
 
     }
 
-    public static class TsneRenderer implements Graph2D.Graph2DLayer<Schema.Instance> {
+    public static class TsneRenderer implements Graph2D.Graph2DRenderer<Schema.Instance> {
 
         @Override
-        public void node(Graph2D.NodeVis<Schema.Instance> node, Graph2D.GraphBuilder<Schema.Instance> graph) {
+        public void node(Graph2D.NodeVis<Schema.Instance> node, Graph2D.GraphEditing<Schema.Instance> graph) {
             node.set(new PushButton() {
                 @Override
                 protected void paintWidget(GL2 gl, RectFloat2D bounds) {
@@ -116,8 +116,8 @@ public class TsneTest {
 
         try {
             SpaceGraph.window(new Graph2D<Schema.Instance>().
-                    layout(new TsneModel()).
-                    layer(new TsneRenderer()).set((Stream)new ARFF(new File("/tmp/x.arff")).stream()), 800, 800);
+                    update(new TsneModel()).
+                    render(new TsneRenderer()).set((Stream)new ARFF(new File("/tmp/x.arff")).stream()), 800, 800);
 
             Util.sleepMS(1000000);
 

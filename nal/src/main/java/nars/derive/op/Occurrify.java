@@ -568,17 +568,20 @@ public class Occurrify extends TimeGraph {
 
                     if (d.concSingle)
                         return new long[]{ts, T.end()};
+                    else {
 //                    if (d.concSingle || d.concPunc == GOAL)
 //                        return new long[]{ ts, T.end()};
 //
 
-//                    long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
-//                    return i;
+                        long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                        return i;
+                    }
 
 
-                    //Union is acceptable since intersection has alrady been tested. this includes when the tasks meet end-to-end in whch case union is just the loosest concatenation of them
-                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
-                    return new long[]{i.a, i.b};
+                    //when might Union acceptable since intersection has alrady been tested. this includes when the tasks meet end-to-end in whch case union is just the loosest concatenation of them
+//                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+//                    return new long[]{i.a, i.b};
+
                 } else if (ts == ETERNAL && B != null && bs != ETERNAL) {
                     return new long[]{bs, B.end()};
                 } else if (ts != ETERNAL && (B == null || bs == ETERNAL)) {

@@ -154,8 +154,8 @@ public class Utils {
             }
         });
 
-        if (toRemove.size() > 0) {
-            toRemove.forEach(t->r.removeKey(t));
+        if (!toRemove.isEmpty()) {
+            toRemove.forEach(r::removeKey);
             return r;
             
         }

@@ -36,9 +36,9 @@ public class Timeline2D<E> extends Graph2D<E> {
     public Timeline2D(TimelineModel<E> model, Consumer<NodeVis<E>> view) {
         super();
         this.model = model;
-        nodeBuilder(view);
+        build(view);
 
-        layout(new DefaultTimelineLayout());
+        update(new DefaultTimelineUpdater());
     }
 
     public Surface withControls() {
@@ -271,13 +271,13 @@ public class Timeline2D<E> extends Graph2D<E> {
     }
 
 
-    private class DefaultTimelineLayout implements Graph2DLayout<E> {
+    private class DefaultTimelineUpdater implements Graph2DUpdater<E> {
 
 
         FasterList<NodeVis<E>> next = new FasterList<>();
 
         @Override
-        public void layout(Graph2D<E> g, int dtMS) {
+        public void update(Graph2D<E> g, int dtMS) {
             next.clear();
 
             g.forEachValue(next::add);

@@ -17,8 +17,8 @@ public class BagChart<X> extends Graph2D<X> {
     public BagChart(Iterable<X> b, Consumer<NodeVis<X>> decorator) {
         super();
         this.input = b;
-        nodeBuilder(decorator);
-        layout(new TreeMap2D<>());
+        build(decorator);
+        update(new TreeMap2D<>());
         update();
     }
 

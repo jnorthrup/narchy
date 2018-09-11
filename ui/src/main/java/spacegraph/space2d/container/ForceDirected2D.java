@@ -41,9 +41,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
     private float equilibriumDist;
 
     @Override
-    public void initialize(Graph2D<X> g, Graph2D.NodeVis<X> n) {
+    public void init(Graph2D<X> g, Graph2D.NodeVis<X> newNode) {
         float rx = g.w()/2*(rng.nextFloat()*2-1), ry = g.h()/2*(rng.nextFloat()*2-1);
-        n.posXYWH(g.cx() + rx, g.cy() + ry, 1, 1);
+        newNode.posXYWH(g.cx() + rx, g.cy() + ry, 1, 1);
     }
 
 //    @Override protected void put(MovingRectFloat2D mover, Graph2D.NodeVis node) {
@@ -116,7 +116,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         float fromRad = b.radius();
 
-        ConcurrentFastIteratingHashMap<X, Graph2D.EdgeVis<X>> read = from.edgeOut.read();
+        ConcurrentFastIteratingHashMap<X, Graph2D.EdgeVis<X>> read = from.outs;
         //int neighbors = read.size();
 
         v2 total = new v2();
