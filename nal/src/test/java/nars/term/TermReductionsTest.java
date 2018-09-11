@@ -7,7 +7,6 @@ import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -606,8 +605,8 @@ public class TermReductionsTest extends NarseseTest {
     void taskWithFlattenedConunctions() throws Narsese.NarseseException {
 
 
-        @NotNull Term x = $("((hear(what)&&(hear(is)&&(hear(is)&&(hear(what)&&(hear(is)&&(hear(is)&&(hear(what)&&(hear(is)&&(hear(is)&&(hear(is)&&hear(what))))))))))) ==>+153 hear(is)).");
-        assertEquals("((hear(what)&&hear(is)) ==>+153 hear(is))", x.toString());
+        Term x = $("((hear(what)&&(hear(is)&&(hear(is)&&(hear(what)&&(hear(is)&&(hear(is)&&(hear(what)&&(hear(is)&&(hear(is)&&(hear(is)&&hear(what))))))))))) ==>+153 hear(is)).");
+        assertEquals("((hear(is)&&hear(what)) ==>+153 hear(is))", x.toString());
 
     }
 

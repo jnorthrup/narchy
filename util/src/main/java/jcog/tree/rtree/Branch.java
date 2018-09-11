@@ -76,6 +76,10 @@ public class Branch<X> extends AbstractNode<X> {
         return false;
     }
 
+    @Override
+    public Object get(int i) {
+        return data[i];
+    }
 
     /**
      * Add a new node to this branch's list of children
@@ -365,14 +369,13 @@ public class Branch<X> extends AbstractNode<X> {
 
     @Override
     public Stream<Node<X>> streamNodes() {
-        //TODO optimize
-        return streamLocal().map(x -> x instanceof Node ? (Node<X>)x : null).filter(Objects::nonNull);
+        return ArrayIterator.streamNonNull(data, size);
     }
 
     @Override
     public Stream<X> streamValues() {
         //TODO optimize
-        return streamLocal().flatMap(x -> x instanceof Node ? ((Node)x).streamValues() : Stream.of(x)).filter(Objects::nonNull);
+        return size() > 1 ? streamNodes().flatMap(x -> ((Node)x).streamValues()).filter(Objects::nonNull) : data[0].streamValues();
     }
 
 

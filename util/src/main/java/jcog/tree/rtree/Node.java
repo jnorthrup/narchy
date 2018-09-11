@@ -148,24 +148,5 @@ public interface Node<X> extends Nodelike<X> {
     Node<X> instrument();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    Object get(int i);
 }

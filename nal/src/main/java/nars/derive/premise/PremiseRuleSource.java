@@ -113,12 +113,14 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        Term c = PatternIndex.patternify(postcon[0]);
-        if (!c.equals(taskPattern))
-            c = c.replace(taskPattern, Derivation.TaskTerm); //fast substitute
-        if (!c.equals(beliefPattern))
-            c = c.replace(beliefPattern, Derivation.BeliefTerm); //fast substitute
-        this.concPattern = c;
+        Term originalConcPattern = PatternIndex.patternify(postcon[0]);
+        Term filteredConcPattern = originalConcPattern;
+        {
+            if (!filteredConcPattern.equals(taskPattern))
+                filteredConcPattern = filteredConcPattern.replace(taskPattern, Derivation.TaskTerm); //fast substitute
+            if (!filteredConcPattern.equals(beliefPattern))
+                filteredConcPattern = filteredConcPattern.replace(beliefPattern, Derivation.BeliefTerm); //fast substitute
+        }
 
         byte taskPunc = 0;
         for (int i = 2; i < precon.length; i++) {
@@ -406,15 +408,15 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
 
-        Term finalConcPattern = this.concPattern;
+
 
 
         {
             //subIfUnify prefilter
-            Term concFunc = Functor.func(finalConcPattern);
+            Term concFunc = Functor.func(originalConcPattern);
             if (concFunc.equals(SubIfUnify.SubIfUnify)) {
 
-                Subterms a = Operator.args(finalConcPattern);
+                Subterms a = Operator.args(originalConcPattern);
                 UnifyPreFilter.tryAdd(a.sub(1), a.sub(2),
                         taskPattern, beliefPattern,
                         a, pre);
@@ -493,8 +495,8 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
         {
 
 
-            assert (puncOverride > 0) || !taskPattern.equals(concPattern) :
-                    "punctuation not modified yet rule task equals pattern: " + this; //TODO this test should acount for any substituted macros in the concPattern
+            assert (puncOverride > 0) || !taskPattern.equals(originalConcPattern) :
+                    "punctuation not modified yet rule task equals pattern: " + this;
 
 
             if (taskPunc == 0) {
@@ -546,7 +548,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
 //            PRE[i] = INDEX.intern(PRE[i]);
 //        }
-        this.termify = new Termify(concPattern, truthify, time);
+        this.termify = new Termify(this.concPattern = filteredConcPattern, truthify, time);
 
 
     }

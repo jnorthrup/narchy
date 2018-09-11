@@ -93,8 +93,8 @@ public interface Compound extends Term, IPair, Subterms {
     /** reference impl for compound hashcode */
     static int hashCode(Compound c) {
         return Util.hashCombine(
-                c.op().id,
-                c.hashCodeSubterms()
+                c.hashCodeSubterms(),
+                c.op().id
                 );
     }
 

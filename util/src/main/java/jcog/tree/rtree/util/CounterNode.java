@@ -153,9 +153,10 @@ public final class CounterNode<X> implements Node<X> {
         return this;
     }
 
-
-
-
+    @Override
+    public Object get(int i) {
+        return node.get(i);
+    }
 
 
     @Override

@@ -50,7 +50,7 @@ public class HyperIterator<X> {
     /** at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse) */
     FasterList<FasterList> plan = null;
 
-    @Nullable private DoubleFunction distanceFunction;
+
     @Nullable private SerializableComparator<Pair<Object, HyperRegion>> distanceComparator;
 
     private HyperIterator() {
@@ -89,31 +89,30 @@ public class HyperIterator<X> {
 
         do {
             FasterList p = level();
-            if (p == null)
-                return null;
+//            if (p == null)
+//                return null;
 
-            if (p.isEmpty()) {
-                plan.removeLast();
-                //System.out.println("pop");
-                continue;
-            }
+            while (!p.isEmpty()) {
 
-            Object z = p.removeLast();
-            if (z instanceof Node) {
-                FasterList nextLevel = push((Node<X>) z);
-                if (nextLevel != null) {
-                    //System.out.println("[" + plan.size() + "] push: " + nextLevel.size());
-                    plan.add(nextLevel);
+                Object z = p.removeLast();
+                if (z instanceof Node) {
+                    FasterList nextLevel = push((Node<X>) z);
+                    if (nextLevel != null && !nextLevel.isEmpty()) {
+                        //System.out.println("[" + plan.size() + "] push: " + nextLevel.size());
+                        plan.add(p = nextLevel);
+                    }
+
+                } else {
+                    return (X) z;
                 }
 
-                //else nothing in the next level, proceed to next node
-
-            } else {
-                return (X) z;
             }
 
-        } while (true);
+            plan.removeLast();
 
+        } while (!plan.isEmpty());
+
+        return null;
     }
 
 
@@ -132,21 +131,32 @@ public class HyperIterator<X> {
 
         FasterList p = new FasterList<>(atSize);
 
-        boolean notNodeFiltering = (plan==null || nodeFilter==null); //dont filter root node (traversed while plan is null)
+        boolean notNodeFiltering = (nodeFilter==null || plan==null ); //dont filter root node (traversed while plan is null)
 
         at.iterateLocal().forEachRemaining(itemOrNode -> {
             if (itemOrNode instanceof Node) {
                 Node node = (Node) itemOrNode;
                 HyperRegion nodeBounds = node.bounds();
                 if (mode.acceptNode(target, nodeBounds)) {
+
+                    //inline 1-arity branches for optimization
+                    while (node.size() == 1) {
+                        Object first = node.get(0);
+                        if (first instanceof Node)
+                            node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
+                        else {
+                            if (notNodeFiltering || nodeFilter.tryVisit(node)) {
+                                tryItem(p, (X) first);
+                            }
+                            return;
+                        }
+                    }
+
                     if (notNodeFiltering || nodeFilter.tryVisit(node))
                         p.add(pair(node, nodeBounds));
                 }
             } else {
-                X item = (X) itemOrNode;
-                HyperRegion<X> itemBounds = model.bounds(item);
-                if (mode.acceptItem(target, itemBounds))
-                    p.add(pair(item, itemBounds));
+                tryItem(p, (X) itemOrNode);
             }
         });
 
@@ -160,6 +170,12 @@ public class HyperIterator<X> {
         p.replaceAll(x -> ((Pair)x).getOne());
 
         return p;
+    }
+
+    private void tryItem(FasterList p, X item) {
+        HyperRegion<X> itemBounds = model.bounds(item);
+        if (mode.acceptItem(target, itemBounds))
+            p.add(pair(item, itemBounds));
     }
 
     /** sort highest priority to the end of the list so it will be popped first */
@@ -214,8 +230,7 @@ public class HyperIterator<X> {
     };
 
     public void setDistanceFunction(DoubleFunction h) {
-        this.distanceFunction = h;
-        this.distanceComparator = Functions.toDoubleComparator((Pair<Object,HyperRegion> b) -> this.distanceFunction.applyAsDouble(b.getTwo()));
+        this.distanceComparator = Functions.toDoubleComparator((Pair<Object,HyperRegion> b) -> h.applyAsDouble(b.getTwo()));
     }
 
     /**

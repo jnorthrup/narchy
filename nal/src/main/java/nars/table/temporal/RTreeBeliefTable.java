@@ -30,20 +30,9 @@ import static jcog.math.LongInterval.ETERNAL;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-//    /**
-//     * max fraction of the fully capacity table to compute in a single truthpolation
-//     */
-//    private static final float SCAN_QUALITY =
-//            1f;
-
-    static final float MATCH_QUALITY = 0.25f;
-
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 1f;
     private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 2f;
 
-
-    private static final int SCAN_CONF_OCTAVES_MAX = 1;
-    private static final int SCAN_TIME_OCTAVES_MAX = 3;
 
     private static final int MIN_TASKS_PER_LEAF = 2;
     private static final int MAX_TASKS_PER_LEAF = 4;
@@ -51,10 +40,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             new AxialSplitLeaf<>();
 
 
-    /**
-     * if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps)
-     */
-    private static final int COMPLETE_SCAN_SIZE_THRESHOLD = MAX_TASKS_PER_LEAF;
 
 
     private static final int RejectInput = 0, EvictWeakest = 1, MergeInputClosest = 2, MergeLeaf = 3;
@@ -65,12 +50,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     public RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
     }
-
-//    @Deprecated
-//    private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
-//
-//        return t -> ts.floatValueOf((Task) t);
-//    }
 
 
     /**
@@ -278,27 +257,44 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (s == 0)
             return;
 
-        //TODO use iterative expansion like already impl, just not adapted for the new TaskRank API
-
-        Predicate<TaskRegion> each = TaskRegion.asTask(m::tryAccept);
-
         TimeRangeFilter time = m.time;
+
         @Nullable TaskRegion bounds = this.bounds();
+
         boolean mustContain = !(time.intersectOrContain);
-//            if (bounds.contains(time) && !time.contains(bounds)) {
-//                //the target region is contained within the existing bounds.
-//                // prioritize the search in that area first with a left/right scan.
-//                // if still searching, then proceed outwards to some limit
-//
-//            }
-//
-//            whileEachIntersecting(expandLerpToTableBounds(time, MATCH_QUALITY), each);
-//
-//        } else {
-        //strict containment
+
         if (!mustContain || bounds.intersects(time)) { //else nothing would match
-            if (s <= MIN_TASKS_PER_LEAF || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
-                whileEachContaining(time, each);
+
+            Predicate<TaskRegion> each = !mustContain ?
+                            TaskRegion.asTask(m::tryAccept)
+                            :
+                            (n) -> {
+                                if (time.contains(n)) {
+                                    if (!m.tryAccept((Task) n)) {
+                                        return false;
+                                    }
+                                }
+
+                                return true;
+                            };
+
+
+
+            if (s == 1) {
+                whileEach(each);
+                return;
+            }
+
+            DoubleFunction timeDist = TimeConfRange.distanceFunction(time);
+
+            if (s <= MIN_TASKS_PER_LEAF*2 || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
+                //single iterator
+                read((tree)-> {
+                    HyperIterator<TaskRegion> ii = tree.iterate(time, BoundsMatch.ANY);
+                    ii.setDistanceFunction(timeDist);
+                    while (ii.hasNext() && each.test(ii.next())) {
+                    }
+                });
             } else {
 
                 read((tree) -> {
@@ -320,7 +316,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     L.setNodeFilter(f);
                     R.setNodeFilter(f);
 
-                    DoubleFunction timeDist = TimeConfRange.distanceFunction(time);
                     L.setDistanceFunction(timeDist);
                     R.setDistanceFunction(timeDist);
 
