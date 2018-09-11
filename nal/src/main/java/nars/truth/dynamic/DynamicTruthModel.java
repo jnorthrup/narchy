@@ -15,6 +15,7 @@ import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.term.util.Image;
 import nars.time.Tense;
@@ -172,7 +173,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                             Term x = stmtDecompose(op, subjOrPred, y, common,
                                     ixTernal ? DTERNAL : occ, union);
 
-                            if (x == Null)
+                            if (x == Bool.Null)
                                 return false;
 
                             return each.accept(x, subStart, subEnd);
@@ -391,7 +392,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
 
         if (!y.op().conceptualizable)
-            return Null; //throw new WTF();
+            return Bool.Null; //throw new WTF();
 
         return y;
 
@@ -511,7 +512,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
             }
 
             sect = c.term();
-            if (sect == Null)
+            if (sect == Bool.Null)
                 return null; //but allow other Bool's
 
             long cs = c.shift();

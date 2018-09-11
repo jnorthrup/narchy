@@ -101,10 +101,10 @@ public interface Atomic extends Term {
         return t.op() == NEG && equals(t.unneg());
     }
 
-    @Override
-    default boolean equalsNegRoot(Term t) {
-        return equalsNeg(t.root());
-    }
+//    @Override
+//    default boolean equalsNegRoot(Term t) {
+//        return equalsNeg(t.root());
+//    }
 
     @Override
     default Term replace(Map<? extends Term, Term> m) {
@@ -140,7 +140,7 @@ public interface Atomic extends Term {
                 case Op.ImdexSym:
                     return Op.VarAuto;
                 case Op.NullSym:
-                    return Op.Null;
+                    return Bool.Null;
 
                 case Op.imIntSym:
                     return Op.ImgInt;
@@ -180,11 +180,11 @@ public interface Atomic extends Term {
 
         switch (id) {
             case "true":
-                return True;
+                return Bool.True;
             case "false":
-                return False;
+                return Bool.False;
             case "null":
-                return Null;
+                return Bool.Null;
             default:
                 if (isQuoteNecessary(id))
                     return $.quote(id);
@@ -246,24 +246,28 @@ public interface Atomic extends Term {
      * atoms contain no subterms so impossible for anything to fit "inside" it
      */
     @Override
-    default boolean impossibleSubTermVolume(int otherTermVolume) {
+    default boolean impossibleSubVolume(int otherTermVolume) {
         return true;
     }
 
+//    @Override
+//    default boolean impossibleSubTermOrEquality(Term target) {
+//        return !equals(target);
+//    }
+
+
     @Override
-    default boolean impossibleSubTermOrEquality(Term target) {
-        return !equals(target);
-    }
+    default boolean impossibleSubStructure(int structure) { return true; }
 
     @Override
     default boolean impossibleSubTerm(Termlike target) {
         return true;
     }
 
-    @Override
-    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
-        return otherTermsVolume != 1;
-    }
+//    @Override
+//    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
+//        return otherTermsVolume != 1;
+//    }
 
     @Override
     default boolean contains(Term t) {

@@ -69,8 +69,8 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
 
-    public final Term[] termsExcept(int i) {
-        assert(i==0);
+    public final Term[] subsExcept(int index) {
+        assert(index ==0);
         return Op.EmptyTermArray;
     }
 

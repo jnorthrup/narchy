@@ -193,11 +193,11 @@ public class IO {
                     byte code = in.readByte();
                     switch (code) {
                         case -1:
-                            return Null;
+                            return Bool.Null;
                         case 0:
-                            return False;
+                            return Bool.False;
                         case 1:
-                            return True;
+                            return Bool.True;
                         default:
                             throw new UnsupportedEncodingException();
                     }
@@ -507,43 +507,9 @@ public class IO {
                 case PROD:
                     productAppend(c.subterms(), p);
                     return;
-
-
                 case NEG:
-                    /**
-                     * detect a negated conjunction of negated subterms:
-                     * (--, (&&, --A, --B, .., --Z) )
-                     */
-
-                    if (c.hasAll(CONJ.bit|NEG.bit)) {
-                        Term cx = c.unneg();
-                        int dt = cx.dt();
-                        if (cx.op() == CONJ) {
-                            Subterms cxx = cx.subterms();
-                            if (Terms.negatedNonConjCount(cxx) >= cxx.subs()/2) {
-                                String s;
-                                switch (dt) {
-                                    case XTERNAL:
-                                        s = Op.DISJstr + "+- ";
-                                        break;
-                                    case DTERNAL:
-                                        s = Op.DISJstr;
-                                        break;
-                                    default:
-                                        s = null;
-                                        break;
-                                }
-                                if (s != null) {
-//                                    if (cxx.subs() == 2) {
-//                                        statementAppend(cx, op, p); //infix
-//                                    } else {
-                                        compoundAppend(s, cxx, Term::neg, p);
-//                                    }
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    negAppend(c, p);
+                    return;
             }
 
             if (op.statement || c.subs() == 2) {
@@ -568,6 +534,46 @@ public class IO {
             }
         }
 
+        static void negAppend(final Compound neg, Appendable p) throws IOException {
+            /**
+             * detect a negated conjunction of negated subterms:
+             * (--, (&&, --A, --B, .., --Z) )
+             */
+
+            final Term sub = neg.unneg();
+
+            if ((sub.op() == CONJ) && sub.hasAny(NEG.bit)) {
+                int dt;
+                if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
+                    Subterms cxx = sub.subterms();
+                    if (Terms.negatedNonConjCount(cxx) >= cxx.subs()/2) {
+                        String s;
+                        switch (dt) {
+                            case XTERNAL:
+                                s = Op.DISJstr + "+- ";
+                                break;
+                            case DTERNAL:
+                                s = Op.DISJstr;
+                                break;
+                            default:
+                                throw new UnsupportedOperationException();
+                        }
+
+//                                    if (cxx.subs() == 2) {
+//                                        statementAppend(cx, op, p); //infix
+//                                    } else {
+                        compoundAppend(s, cxx, Term::neg, p);
+//                                    }
+                        return;
+
+                    }
+                }
+            }
+
+            p.append("(--,");
+            sub.appendTo(p);
+            p.append(')');
+        }
 
 
         static void statementAppend(Term c, Op op, Appendable p /*@NotNull*/) throws IOException {

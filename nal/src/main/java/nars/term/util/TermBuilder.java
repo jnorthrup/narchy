@@ -12,6 +12,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
+import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.transform.CompoundNormalization;
@@ -120,8 +121,8 @@ public abstract class TermBuilder {
         boolean hasEllipsis = false;
 
         for (Term x : t) {
-            if (x == Null)
-                return Null;
+            if (x == Bool.Null)
+                return Bool.Null;
             if (!hasEllipsis && (x instanceof Ellipsislike))
                 hasEllipsis = true;
         }
@@ -218,7 +219,7 @@ public abstract class TermBuilder {
         switch (u.length) {
 
             case 0:
-                return True;
+                return Bool.True;
 
             case 1:
                 Term only = u[0];
@@ -238,9 +239,9 @@ public abstract class TermBuilder {
 
         int trues = 0;
         for (Term t : u) {
-            if (t == Null || t == False)
+            if (t == Bool.Null || t == Bool.False)
                 return t;
-            else if (t == True)
+            else if (t == Bool.True)
                 trues++;
         }
 
@@ -250,11 +251,11 @@ public abstract class TermBuilder {
             switch (sizeAfterTrueRemoved) {
                 case 0:
 
-                    return True;
+                    return Bool.True;
                 case 1: {
 
                     for (Term uu : u) {
-                        if (uu != True) {
+                        if (uu != Bool.True) {
                             assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
                             return uu;
                         }
@@ -266,7 +267,7 @@ public abstract class TermBuilder {
                     int j = 0;
                     for (int i = 0; j < y.length; i++) {
                         Term uu = u[i];
-                        if (uu != True)
+                        if (uu != Bool.True)
                             y[j++] = uu;
                     }
                     assert (j == y.length);
@@ -289,7 +290,7 @@ public abstract class TermBuilder {
                         if (a.equals(b))
                             return u[0];
                         if (a.equalsNeg(b))
-                            return False;
+                            return Bool.False;
                     }
 
                     if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
@@ -315,7 +316,7 @@ public abstract class TermBuilder {
                 int ul = u.length;
                 switch (ul) {
                     case 0:
-                        return True;
+                        return Bool.True;
 
                     case 1:
                         return u[0];
@@ -409,13 +410,13 @@ public abstract class TermBuilder {
         Op op = term.op();
         assert (op != NEG): this + " concept() to NEG: " + x.unneg().root();
         if (!op.conceptualizable)
-            return Null;
+            return Bool.Null;
 
 
         Term term2 = term.normalize();
         if (term2 != term) {
             if (term2 == null)
-                return Null;
+                return Bool.Null;
 
             //assert (term2.op() == op): term2 + " not a normal normalization of " + term; //<- allowed to happen when image normalization is involved
 

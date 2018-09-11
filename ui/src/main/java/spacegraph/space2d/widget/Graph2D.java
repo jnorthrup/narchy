@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
@@ -19,7 +18,10 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.video.Draw;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -276,8 +278,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             if (t == null)
                 return null;
 
-            if (from == t)
-                throw new TODO("self referencing edges not supported yet");
+            if (from == t) {
+//                if (Param.DEBUG)
+//                    throw new TODO("self referencing edges not supported yet");
+//                else
+                    return null; //ignored
+            }
 
             return from.out(t, graph.edgePool);
         }
@@ -524,9 +530,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             return this;
         }
 
-        @Deprecated public EdgeVis<X> weightDecayAdd(float w) {
-            weight /= 2;
-            weight += w;
+        public EdgeVis<X> weightAddLerp(float w, float rate) {
+            this.weight = Util.lerp(rate, this.weight, this.weight + w);
+            return this;
+        }
+        public EdgeVis<X> weightLerp(float w, float rate) {
+            this.weight = Util.lerp(rate, this.weight, w);
             return this;
         }
 
@@ -536,10 +545,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             this.b = b;
             return this;
         }
-        public void colorMerge(float r, float g, float b /* TODO type */) {
-            this.r += r;
-            this.g += g;
-            this.b += b;
+
+        public EdgeVis<X> colorLerp(float r, float g, float b /* TODO type */, float rate) {
+            if (r==r) this.r = Util.lerp(rate, this.r, r);
+            if (g==g) this.g = Util.lerp(rate, this.g, g);
+            if (b==b) this.b = Util.lerp(rate, this.b, b);
+            return this;
         }
 
         final void draw(NodeVis<X> from, GL2 gl) {

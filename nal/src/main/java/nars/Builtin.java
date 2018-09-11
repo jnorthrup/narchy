@@ -87,7 +87,7 @@ public class Builtin {
                 protected Term apply(Term conj, Term event) {
                     Term x = Conj.without(conj, event, false);
                     if (conj.equals(x))
-                        return Null;
+                        return Bool.Null;
                     return x;
                 }
             },
@@ -97,7 +97,7 @@ public class Builtin {
                 protected Term apply(Term include, Term exclude) {
                     Term x = Conj.withoutAll(include, exclude);
                     if (include.equals(x))
-                        return Null;
+                        return Bool.Null;
                     return x;
                 }
             },
@@ -105,7 +105,7 @@ public class Builtin {
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
                 if (from.equals(to))
-                    return Null;
+                    return Bool.Null;
 
                 int n;
                 if (from.op() == to.op() && (n = from.subs()) == to.subs()) {
@@ -125,7 +125,7 @@ public class Builtin {
                             return y;
                     }
                 }
-                return Null;
+                return Bool.Null;
             }),
 
             /** similar to C/Java "indexOf" but returns a set of all numeric indices where the 2nd argument occurrs as a subterm of the first
@@ -145,13 +145,13 @@ public class Builtin {
                         }
                     }
                     if (indices == null)
-                        return Null;
+                        return Bool.Null;
                     else {
                         return SETe.the(indices);
 
                     }
                 }
-                return Null;
+                return Bool.Null;
             }),
             Functor.f2("keyValues", (x, y) -> {
 
@@ -166,11 +166,11 @@ public class Builtin {
                         }
                     }
                     if (indices == null)
-                        return Null;
+                        return Bool.Null;
                     else {
                         switch (indices.size()) {
                             case 0:
-                                return Null;
+                                return Bool.Null;
                             case 1:
                                 return indices.first();
                             default:
@@ -179,7 +179,7 @@ public class Builtin {
                         }
                     }
                 }
-                return Null;
+                return Bool.Null;
             }),
 
             Functor.f2("varMask", (x, y) -> {
@@ -191,7 +191,7 @@ public class Builtin {
                     }
                     return $.p(t);
                 }
-                return Null;
+                return Bool.Null;
             }),
 
 
@@ -219,9 +219,9 @@ public class Builtin {
 
 
             Functor.f2("ifThen", (condition, conseq) -> {
-                if (!condition.equals(True)) {
-                    if (condition==Null)
-                        return Null;
+                if (!condition.equals(Bool.True)) {
+                    if (condition== Bool.Null)
+                        return Bool.Null;
                     return null;
                 } else
                     return conseq;
@@ -231,28 +231,28 @@ public class Builtin {
                 if (!(condition instanceof Bool))
                     return null;
                 else {
-                    if (condition == True)
+                    if (condition == Bool.True)
                         return ifTrue;
-                    else if (condition == False)
+                    else if (condition == Bool.False)
                         return ifFalse;
                     else
-                        return Null;
+                        return Bool.Null;
                 }
             }),
 
             Functor.f3("ifOrElse", (condition, conseqTrue, conseqFalse) -> {
                 if (condition.hasVars()) return null;
                 else {
-                    if (condition.equals(True))
+                    if (condition.equals(Bool.True))
                         return conseqTrue;
-                    else if (condition.equals(False))
+                    else if (condition.equals(Bool.False))
                         return conseqFalse;
                 }
-                return Null;
+                return Bool.Null;
             }),
 
             Functor.f2("ifNeqRoot", (returned, compareTo) ->
-                    !returned.equalsRoot(compareTo) ? returned : Null
+                    !returned.equalsRoot(compareTo) ? returned : Bool.Null
             ),
 
 
@@ -319,16 +319,16 @@ public class Builtin {
 
         nar.on(Functor.f1("varIntro", (x) -> {
             Pair<Term, Map<Term, Term>> result = nars.op.DepIndepVarIntroduction.the.apply(x, nar.random());
-            return result != null ? result.getOne() : Null;
+            return result != null ? result.getOne() : Bool.Null;
         }));
 
         nar.on(Functor.f1((Atom) $.the("termlinkRandom"), (Term t) -> {
             @Nullable Concept c = nar.conceptualize(t);
             if (c == null)
-                return Null;
+                return Bool.Null;
             @Nullable PriReference<Term> tl = c.termlinks().sample(nar.random());
             if (tl == null)
-                return Null;
+                return Bool.Null;
             return tl.get();
         }));
 
@@ -339,20 +339,20 @@ public class Builtin {
 
             Term x = c.sub(0, null);
             if (x == null)
-                return Null;
+                return Bool.Null;
 
-            Term index = c.sub(1, Null);
-            if (index == Null)
-                return Null;
+            Term index = c.sub(1, Bool.Null);
+            if (index == Bool.Null)
+                return Bool.Null;
 
             int which;
             if (index != null) {
                 if (index instanceof Variable)
-                    return Null;
+                    return Bool.Null;
 
                 which = $.intValue(index, -1);
                 if (which < 0) {
-                    return Null;
+                    return Bool.Null;
                 }
             } else {
 
@@ -391,15 +391,15 @@ public class Builtin {
             Op oo = t.op();
 
             if (!oo.in(SETi.bit | SETe.bit | SECTi.bit | SECTe.bit))
-                return Null;
+                return Bool.Null;
 
             int size = t.subs();
             switch (size) {
                 case 0:
                     assert (false) : "empty set impossible here";
-                    return Null;
+                    return Bool.Null;
                 case 1:
-                    return Null; /* can't shrink below one element */
+                    return Bool.Null; /* can't shrink below one element */
                 case 2:
                     int n = nar.random().nextInt(2);
                     return oo.the(t.sub(n)) /* keep the remaining term wrapped in a set */;
@@ -435,13 +435,13 @@ public class Builtin {
                 oo = t.op();
             }
             if (oo != CONJ)
-                return Null;
+                return Bool.Null;
 
             FasterList<LongObjectPair<Term>> ee = Conj.eventList(t);
             ee.remove(nar.random().nextInt(ee.size()));
             Term x = Conj.conj(ee);
             if (x.equals(t))
-                return Null;
+                return Bool.Null;
             assert(x != null);
             return x.negIf(negated);
         }));
@@ -453,7 +453,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.without(conj, event, true);
                 if (conj.equals(x))
-                    return Null;
+                    return Bool.Null;
                 return x;
             }
         });
@@ -465,7 +465,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.conjDrop(conj, event, false, false);
                 if (conj.equals(x))
-                    return Null;
+                    return Bool.Null;
                 return x;
             }
         });
@@ -475,7 +475,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.conjDrop(conj, event, true, false);
                 if (conj.equals(x))
-                    return Null;
+                    return Bool.Null;
                 return x;
             }
         });
@@ -484,7 +484,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.conjDrop(conj, event, true, true);
                 if (conj.equals(x))
-                    return Null;
+                    return Bool.Null;
                 return x;
             }
         });
@@ -493,7 +493,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.conjDrop(conj, event, false, true);
                 if (conj.equals(x))
-                    return Null;
+                    return Bool.Null;
                 return x;
             }
         });
@@ -540,7 +540,7 @@ public class Builtin {
                         if (i >= 0 && i < len)
                             return x.sub(i);
                         else
-                            return False;
+                            return Bool.False;
 
                     } else if (o == PROD && index.subs() == 2) {
                         Term start = (index).sub(0);
@@ -559,7 +559,7 @@ public class Builtin {
                                     }
                                 }
 
-                                return False;
+                                return Bool.False;
                             }
                         }
 
@@ -580,7 +580,7 @@ public class Builtin {
 
         nar.onOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)
-                assertSame(True, x);
+                assertSame(Bool.True, x);
         });
 
         nar.onOp2("assertEquals", (x, y, nn) -> {

@@ -1,24 +1,24 @@
 package jcog.tree.rtree;
 
-        /*
-         * #%L
-         * Conversant RTree
-         * ~~
-         * Conversantmedia.com © 2016, Conversant, Inc. Conversant® is a trademark of Conversant, Inc.
-         * ~~
-         * Licensed under the Apache License, Version 2.0 (the "License");
-         * you may not use this file except in compliance with the License.
-         * You may obtain a copy of the License at
-         *
-         *      http:
-         *
-         * Unless required by applicable law or agreed to in writing, software
-         * distributed under the License is distributed on an "AS IS" BASIS,
-         * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-         * See the License for the specific language governing permissions and
-         * limitations under the License.
-         * #L%
-         */
+/*
+ * #%L
+ * Conversant RTree
+ * ~~
+ * Conversantmedia.com © 2016, Conversant, Inc. Conversant® is a trademark of Conversant, Inc.
+ * ~~
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http:
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
@@ -47,10 +47,11 @@ public class RTree<T> implements Space<T> {
 
     private static final MetalAtomicIntegerFieldUpdater size = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
-    private volatile Node<T, ?> root;
+    private volatile Node<T> root;
 
-    /** size counter
-     *  volatile for concurrent implementations
+    /**
+     * size counter
+     * volatile for concurrent implementations
      */
     private volatile int _size;
 
@@ -67,17 +68,17 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public Stream<T> stream() {
-        return root.stream();
+        return root.streamValues();
     }
 
     @Override
     public Iterator<T> iterator() {
-        return root.iterator();
+        return root.iterateValues();
     }
 
     @Override
     public final void clear() {
-        size.updateAndGet(this, (sizeBeforeClear)->{
+        size.updateAndGet(this, (sizeBeforeClear) -> {
             if (sizeBeforeClear > 0 || root == null)
                 this.root = model.newLeaf();
             return 0;
@@ -102,7 +103,7 @@ public class RTree<T> implements Space<T> {
 
 
         boolean[] added = new boolean[1];
-        Node<T, ?> nextRoot = root.add(t, this, model, added);
+        Node<T> nextRoot = root.add(t, this, model, added);
         if (nextRoot != null) {
             this.root = nextRoot;
             if (added[0]) {
@@ -110,7 +111,7 @@ public class RTree<T> implements Space<T> {
                 return true;
             }
         }
-        return false; 
+        return false;
     }
 
 
@@ -140,15 +141,15 @@ public class RTree<T> implements Space<T> {
     public boolean replace(final T told, final T tnew) {
         if (told == tnew) {
             return true;
-            
+
         }
 
         if (model.bounds(told).equals(model.bounds(tnew))) {
-            
+
             root = root.replace(told, tnew, model);
             return true;
         } else {
-            
+
             boolean removed = remove(told);
             if (!removed) {
                 return false;
@@ -162,21 +163,6 @@ public class RTree<T> implements Space<T> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * @return number of data entries stored in the RTree
      */
@@ -186,26 +172,35 @@ public class RTree<T> implements Space<T> {
     }
 
 
+    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode) {
+        return iterate(bounds, mode, null);
+    }
 
+    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode, byte[] gradient) {
+        if (isEmpty())
+            return HyperIterator.Empty;
+        else
+            return new HyperIterator(model, root, bounds, mode, gradient);
+    }
 
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
-        if (root!=null)
+        if (root != null)
             root.forEach(consumer);
     }
 
     @Override
     public void whileEachIntersecting(HyperRegion rect, Predicate<T> t) {
         HyperRegion b = root.bounds();
-        if (b!=null && rect.intersects(b))
+        if (b != null && rect.intersects(b))
             root.intersecting(rect, t, model);
     }
 
     @Override
     public void whileEachContaining(HyperRegion rect, final Predicate<T> t) {
         HyperRegion b = root.bounds();
-        if (b!=null && rect.intersects(b))
+        if (b != null && rect.intersects(b))
             root.containing(rect, t, model);
     }
 
@@ -250,20 +245,13 @@ public class RTree<T> implements Space<T> {
     }
 
 
-
-
-
-
-
-
-
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[size=" + size() + ']';
     }
 
     @Override
-    public Node<T, ?> root() {
+    public Node<T> root() {
         return this.root;
     }
 

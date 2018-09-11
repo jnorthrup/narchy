@@ -26,6 +26,7 @@ import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/** TODO edge capacity limiting */
 public class ConceptGraph2D extends Graph2D<Concept> {
 
     private final NAR nar;
@@ -35,7 +36,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
 
     public class Controls {
-        public final IntRange maxNodes = new IntRange(64, 2, 128) {
+        public final IntRange maxNodes = new IntRange(256, 1, 512) {
             @Override
             public void set(int value) {
                 super.set(value);
@@ -48,7 +49,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     public final Controls controls = new Controls();
 
     public ConceptGraph2D(NAR n) {
-        this(new Bagregate<>(() -> n.conceptsActive().iterator(), 128, 0.001f).
+        this(new Bagregate<>(() -> n.conceptsActive().iterator(), 256, 0.01f).
                         iterable(activate -> activate.id),
                 n);
     }
@@ -58,6 +59,8 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
         this.nar = n;
         this.source = source;
+
+        nodesMax(128);
 
         build((nn)->{
            nn.set(
@@ -169,7 +172,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             @Override
             protected void paintBelow(GL2 gl) {
 
-                
+
                 gl.glColor4f(0,0,0, 0.9f);
                 Draw.rect(bounds, gl);
 
@@ -178,6 +181,10 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }, cfg, 0.1f);
     }
 
+
+    final static float WEIGHT_UPDATE_RATE = 0.1f;
+    final static float COLOR_UPDATE_RATE = 0.25f;
+    final static float COLOR_FADE_RATE = 0.05f;
 
     private static class TermlinkVis implements Graph2DRenderer<Concept> {
         public final AtomicBoolean termlinks = new AtomicBoolean(true);
@@ -195,14 +202,23 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             Concept id = node.id;
             if (id!=null) {
                 id.termlinks().forEach(l -> {
-                    Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.get()));
+                    Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(l.get()));
                     if (e != null) {
                         float p = l.priElseZero();
-                        e.weightDecayAdd(p).colorMerge((0.9f * p) + 0.1f, 0, 0);
+                        e.weightLerp(p, WEIGHT_UPDATE_RATE)
+                                .colorLerp((0.9f * p) + 0.1f, Float.NaN, Float.NaN, COLOR_UPDATE_RATE)
+                                .colorLerp(Float.NaN,0,0,COLOR_FADE_RATE)
+                        ;
+
                     }
                 });
             }
         }
+    }
+
+    /** bad HACK to avoid a term/concept equality issue */
+    @Deprecated public static ProxyTerm wrap(Term l) {
+        return new ProxyTerm(l);
     }
 
     private static class TasklinkVis implements Graph2DRenderer<Concept> {
@@ -225,13 +241,16 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             n.tasklinks().forEach(l -> {
 
                 Term targetTerm = l.term();
-                if (targetTerm.equals(sourceTerm))
+                if (targetTerm.equals(sourceTerm.term()))
                     return; //ignore
 
-                Graph2D.EdgeVis<Concept> e = graph.edge(node, targetTerm); // new ProxyTerm(l.term()));
+                Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(targetTerm));
                 if (e != null) {
                     float p = l.priElseZero();
-                    e.weightDecayAdd(p).colorMerge(0, (0.9f * p) + 0.1f, 0);
+                    e.weightLerp(p, WEIGHT_UPDATE_RATE)
+                            .colorLerp(Float.NaN, (0.9f * p) + 0.1f, Float.NaN, COLOR_UPDATE_RATE)
+                            .colorLerp(0,Float.NaN,0,COLOR_FADE_RATE)
+                    ;
                 }
 
             });
@@ -239,7 +258,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
     }
 
-    
+
 
     private static class StatementVis implements Graph2DRenderer<Concept> {
         public final AtomicBoolean statements = new AtomicBoolean(true);
@@ -259,10 +278,13 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
             if (t!=null && t.op().statement) {
 
-                @Nullable EdgeVis<Concept> e = graph.edge(new ProxyTerm(t.sub(0)), new ProxyTerm(t.sub(1)));
+                @Nullable EdgeVis<Concept> e = graph.edge((t.sub(0)), (t.sub(1)));
                 if (e != null) {
-                    float p = 1;
-                    e.weightDecayAdd(p).colorMerge(0, 0, (0.9f * p) + 0.1f);
+                    float p = 0.5f;
+                    e.weightLerp(p, WEIGHT_UPDATE_RATE)
+                            .colorLerp(Float.NaN, Float.NaN, (0.9f * p) + 0.1f, COLOR_UPDATE_RATE)
+                            .colorLerp(0,0,Float.NaN,COLOR_FADE_RATE)
+                    ;
                 }
 
             }

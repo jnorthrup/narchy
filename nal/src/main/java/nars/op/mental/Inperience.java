@@ -141,7 +141,7 @@ abstract public class Inperience extends LeakBack {
             Term tt = t.term().eval(nar);
 
             if (!tt.op().conceptualizable)
-                return Null;
+                return Bool.Null;
 
             return reifyBeliefOrGoal(t, tt.negIf(t.isNegative()), nar);
         }
@@ -149,7 +149,7 @@ abstract public class Inperience extends LeakBack {
         @Deprecated protected Term reifyBeliefOrGoal(Task t, Term tt, NAR nar) {
             Concept c = nar.conceptualizeDynamic(tt.unneg());
             if (c == null)
-                return Null;
+                return Bool.Null;
 
             Term self = nar.self();
 
@@ -309,7 +309,7 @@ abstract public class Inperience extends LeakBack {
     @Deprecated private static Term reifyQuestion(Term x, byte punc, NAR nar) {
         x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
-        if (x instanceof Bool) return Null;
+        if (x instanceof Bool) return Bool.Null;
 
         return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), x);
     }

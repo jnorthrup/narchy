@@ -18,6 +18,7 @@ import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.LightCompound;
 import nars.term.control.LambdaPred;
@@ -501,7 +502,7 @@ public enum $ {
     }
 
     public static Term the(boolean b) {
-        return b ? Op.True : Op.False;
+        return b ? Bool.True : Bool.False;
     }
 
     public static Term the(double x) {

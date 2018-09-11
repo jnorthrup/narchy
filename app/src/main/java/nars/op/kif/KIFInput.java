@@ -262,11 +262,11 @@ public class KIFInput {
 
         if (args.contains(null)) {
             
-            return Null;
+            return Bool.Null;
         }
 
         if (args.isEmpty())
-            return Null;
+            return Bool.Null;
         
 
         /**
@@ -533,7 +533,7 @@ public class KIFInput {
 
         if (y instanceof Bool) {
             logger.warn("{} Bool singularity: args={}",x, args);
-            return Null;
+            return Bool.Null;
         }
 
         return y;
@@ -566,7 +566,7 @@ public class KIFInput {
         Term tmp = IMPL.the(a, b);
         if (tmp.unneg().op() != IMPL) {
             logger.warn("un-impl: {} ==> {} ", a, b);
-            return Null;
+            return Bool.Null;
         }
         boolean negated = tmp.op()==NEG;
 

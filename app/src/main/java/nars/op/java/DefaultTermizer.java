@@ -5,10 +5,10 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
-import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,10 +57,10 @@ public class DefaultTermizer implements Termizer {
     );
 
     public DefaultTermizer() {
-        termToObj.put(Op.True, true);
-        termToObj.put(Op.False, false);
-        objToTerm.put(true, Op.True);
-        objToTerm.put(false, Op.False);
+        termToObj.put(Bool.True, true);
+        termToObj.put(Bool.False, false);
+        objToTerm.put(true, Bool.True);
+        objToTerm.put(false, Bool.False);
     }
 
     public void put(Term x, Object y) {
@@ -117,7 +117,7 @@ public class DefaultTermizer implements Termizer {
             return $.quote(o);
 
         if (o instanceof Boolean)
-            return ((Boolean) o) ? Op.True : Op.False;
+            return ((Boolean) o) ? Bool.True : Bool.False;
 
         if (o instanceof Character)
             return $.quote(String.valueOf(o));
@@ -293,7 +293,7 @@ public class DefaultTermizer implements Termizer {
     public Term term(@Nullable Object o) {
         if (o == null) return NULL;
         else if (o instanceof Boolean) {
-            return (Boolean) o ? Op.True : Op.False;
+            return (Boolean) o ? Bool.True : Bool.False;
         } else if (o instanceof Number) {
             if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long) o) < Integer.MAX_VALUE - 1)) {
                 return Int.the(((Number) o).intValue());

@@ -16,20 +16,20 @@ import static nars.time.Tense.*;
 public class Statement {
 
     public static Term statement(Op op, int dt, Term subject, Term predicate) {
-        if (subject == Null || predicate == Null)
-            return Null;
+        if (subject == Bool.Null || predicate == Bool.Null)
+            return Bool.Null;
 
         boolean dtConcurrent = Conj.concurrent(dt) && dt!=XTERNAL;
         if (dtConcurrent) {
             if (subject.equals(predicate))
-                return True;
+                return Bool.True;
             if (op == INH || op == SIM) {
 
-                if ((subject == False && predicate == True) || (predicate == False && subject == True))
-                    return False;
+                if ((subject == Bool.False && predicate == Bool.True) || (predicate == Bool.False && subject == Bool.True))
+                    return Bool.False;
 
                 if (subject.equalsRoot(predicate))
-                    return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
+                    return Bool.Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
             }
         }
 
@@ -39,21 +39,21 @@ public class Statement {
         if (op == IMPL) {
 
 
-            if (subject == True)
+            if (subject == Bool.True)
                 return predicate;
-            if (subject == False)
-                return Null;
+            if (subject == Bool.False)
+                return Bool.Null;
             //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
             //TODO valid cases where subj has impl?
 
             switch (predicate.op()) {
                 case BOOL:
                     //reduce to the subject as a general condition for the superclass to utilize
-                    if (predicate == True)
+                    if (predicate == Bool.True)
                         return subject;
-                    if (predicate == False)
+                    if (predicate == Bool.False)
                         return subject.neg();
-                    return Null;
+                    return Bool.Null;
                 case NEG:
                     return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {
@@ -68,7 +68,7 @@ public class Statement {
             }
 
             if (subject.hasAny(IMPL))
-                return Null;
+                return Bool.Null;
 
 
 
@@ -147,7 +147,7 @@ public class Statement {
                     if (subjChange[0]) {
                         Term newSubj = se.term().negIf(subjNeg);
                         if (newSubj instanceof Bool) {
-                            if (newSubj == True)
+                            if (newSubj == Bool.True)
                                 return predicate;
                         }
                         if (dt != DTERNAL) {
@@ -187,7 +187,7 @@ public class Statement {
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
 
             if ((containEachOther(subject, predicate, delim)))
-                return Null;
+                return Bool.Null;
 
 //            boolean sa = subject instanceof AliasConcept.AliasAtom;
 //            if (sa) {

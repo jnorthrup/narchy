@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-import static nars.Op.Null;
+import static nars.term.atom.Bool.Null;
 import static nars.Op.VAR_DEP;
 
 /**

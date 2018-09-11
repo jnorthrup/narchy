@@ -852,7 +852,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
                 tried[0]++;
 
-                if (y == Null)
+                if (y == Bool.Null)
                     return true; //continue TODO maybe limit these
 
                 if (Perceive.tryPerceive(this, y, yy, n)) {
@@ -865,10 +865,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 @Override
                 protected Term bool(Term y, Bool b) {
                     //filter non-true
-                    if (b == True && y.equals(x))
+                    if (b == Bool.True && y.equals(x))
                         return y;
                     else
-                        return Null;
+                        return Bool.Null;
                 }
             };
             e.eval(new Evaluator(n::functor), x);

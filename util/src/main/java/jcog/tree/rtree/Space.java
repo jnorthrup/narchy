@@ -37,67 +37,13 @@ import java.util.stream.Stream;
 public interface Space<T> extends Nodelike<T> {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Spatialization<T> model();
 
 
     /**
      * Update entry in tree
-     *  @param told - Entry to update
+     *
+     * @param told - Entry to update
      * @param tnew - Entry to update it to
      */
     boolean replace(final T told, final T tnew);
@@ -110,20 +56,65 @@ public interface Space<T> extends Nodelike<T> {
     int size();
 
     boolean OR(Predicate<T> o);
+
     boolean AND(Predicate<T> o);
+
     void forEach(Consumer<? super T> consumer);
 
 
+    enum BoundsMatch {
+        //TODO meet, equal, disjoint, etc...
+
+        /** allows everything; filtering must rely on sorting */
+        ANY {
+            @Override
+            public boolean acceptItem(HyperRegion target, HyperRegion something) {
+                return true;
+            }
+            @Override
+            public boolean acceptNode(HyperRegion target, HyperRegion something) {
+                return true;
+            }
+        },
+        INTERSECT {
+            @Override
+            public boolean acceptItem(HyperRegion target, HyperRegion something) {
+                return target.intersects(something);
+            }
+
+            @Override
+            public boolean acceptNode(HyperRegion target, HyperRegion container) {
+                return target.intersects(container);
+            }
+        },
+        CONTAINS {
+            @Override
+            public boolean acceptItem(HyperRegion target, HyperRegion something) {
+                return target.contains(something);
+            }
+
+            @Override
+            public boolean acceptNode(HyperRegion target, HyperRegion container) {
+                return target.contains(container);
+            }
+        };
 
 
 
+        abstract public boolean acceptItem(HyperRegion target, HyperRegion x);
+
+        abstract public boolean acceptNode(HyperRegion target, HyperRegion x);
+    }
 
 
-
-    /** continues finding intersecting regions until the predicate returns false */
+    /**
+     * continues finding intersecting regions until the predicate returns false
+     */
     void whileEachIntersecting(HyperRegion rect, Predicate<T> t);
 
-    /** continues finding containing regions until the predicate returns false */
+    /**
+     * continues finding containing regions until the predicate returns false
+     */
     void whileEachContaining(HyperRegion rect, Predicate<T> t);
 
     /**
@@ -153,7 +144,9 @@ public interface Space<T> extends Nodelike<T> {
      */
     boolean add(final T t);
 
-    /** adds, deferred if necessary until un-busy */
+    /**
+     * adds, deferred if necessary until un-busy
+     */
     default void addAsync(T t) {
         throw new UnsupportedOperationException();
     }
@@ -167,17 +160,15 @@ public interface Space<T> extends Nodelike<T> {
     boolean remove(/*@NotNull*/ final T x);
 
 
-    /** removes, deferred if necessary until un-busy */
+    /**
+     * removes, deferred if necessary until un-busy
+     */
     default void removeAsync(T x) {
         throw new UnsupportedOperationException();
     }
 
 
-
-
-
-    Node<T, ?> root();
-
+    Node<T> root();
 
 
     HyperRegion bounds(T task);
@@ -186,30 +177,13 @@ public interface Space<T> extends Nodelike<T> {
 
     default Iterator<T> iterator() {
         int s = size();
-        if (s ==0)
+        if (s == 0)
             return Collections.emptyIterator();
 
-        
+
         List<T> snapshot = new FasterList(s);
         forEach(snapshot::add);
         return snapshot.iterator();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }

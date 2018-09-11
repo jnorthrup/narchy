@@ -3,6 +3,7 @@ package nars.nal.nal1;
 import nars.*;
 import nars.task.util.TaskStatistics;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.test.TestNAR;
 import nars.test.impl.DeductiveMeshTest;
 import org.jetbrains.annotations.NotNull;
@@ -205,7 +206,7 @@ class QuestionTest {
         n.on("odd", a->{
             if (a.subs() == 1 && a.sub(0).op()== Op.ATOM) {
                 try {
-                    return $.intValue(a.sub(0)) % 2 == 0 ? Op.False : Op.True;
+                    return $.intValue(a.sub(0)) % 2 == 0 ? Bool.False : Bool.True;
                 } catch (NumberFormatException ignored) {
 
                 }

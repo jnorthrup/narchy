@@ -17,6 +17,7 @@ import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
@@ -130,7 +131,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
                 p = p.unneg();
 
             Term name = Functor.func(p);
-            if (name == Null)
+            if (name == Bool.Null)
                 throw new RuntimeException("invalid precondition: " + p);
 
             String predicateNameStr = name.toString();
@@ -829,11 +830,11 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
         @Override
         public boolean test(Derivation d) {
             Term x = xpInT != null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB);
-            assert (x != Null);
+            assert (x != Bool.Null);
             if (x == null)
                 return false; //ex: seeking a negation but wasnt negated
             Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
-            assert (y != Null);
+            assert (y != Bool.Null);
             if (y == null)
                 return false; //ex: seeking a negation but wasnt negated
 

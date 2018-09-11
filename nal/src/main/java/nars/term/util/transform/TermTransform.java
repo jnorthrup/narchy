@@ -8,6 +8,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
 import nars.term.var.UnnormalizedVariable;
 import nars.unify.match.Ellipsis;
@@ -33,7 +34,7 @@ public interface TermTransform {
             return transformCompound((Compound)x, out);
         } else {
             @Nullable Term y = transformAtomic((Atomic) x);
-            if (y == null || y == Null)
+            if (y == null || y == Bool.Null)
                 return false;
             out.add(y);
             return true;
@@ -67,15 +68,15 @@ public interface TermTransform {
         Subterms xx = x.subterms();
         Subterms yy = xx.transformSubs(this, targetOp);
         if (yy == null)
-            return Null;
+            return Bool.Null;
 
         if (yy == xx && (sameOpAndDT || (x.op() == targetOp && x.dt() == dt)))
             return x; //no change
 
         if (targetOp == CONJ) {
-            if (yy == Op.FalseSubterm) return False;
+            if (yy == Op.FalseSubterm) return Bool.False;
             switch (yy.subs()) {
-                case 0: return True;
+                case 0: return Bool.True;
                 case 1: {
                     Term yyy = yy.sub(0);
                     if (!(yyy instanceof Ellipsis))
@@ -219,8 +220,8 @@ public interface TermTransform {
             if (x.op()==NEG) {
                 Term xx = x.unneg();
                 Term yy = transform(xx);
-                if (yy == null || yy == Null)
-                    return Null;
+                if (yy == null || yy == Bool.Null)
+                    return Bool.Null;
 
                 return yy == xx ? x : yy.neg();
 

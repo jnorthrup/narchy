@@ -22,6 +22,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -172,7 +173,7 @@ public class Impiler {
                             }
 
 
-                            Term Z = Null;
+                            Term Z = Bool.Null;
                             int zDT = DTERNAL;
                             for (int s = 0; s < n; s++) {
                                 ImplEdge e = path.get(s).getTwo().id();

@@ -6,6 +6,8 @@ import jcog.math.Longerval;
 import jcog.tree.rtree.HyperRegion;
 import nars.time.Tense;
 
+import java.util.function.DoubleFunction;
+
 /**
  * only valid for comparison during rtree iteration
  */
@@ -81,4 +83,6 @@ public class TimeRange implements HyperRegion, LongInterval {
     public long end() {
         return end;
     }
+
+
 }

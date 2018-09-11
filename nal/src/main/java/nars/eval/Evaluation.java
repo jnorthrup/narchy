@@ -23,7 +23,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.$.$$;
-import static nars.Op.*;
 
 public class Evaluation {
 
@@ -217,8 +216,8 @@ public class Evaluation {
                         Subterms args = a.sub(0).subterms();
 
                         z = func.apply(this, args);
-                        if (z == Null) {
-                            return each.test(Null);
+                        if (z == Bool.Null) {
+                            return each.test(Bool.Null);
                         }
                         substAdded = now() != vStart;
                         mutAdded = mutStart != termutators();
@@ -254,14 +253,14 @@ public class Evaluation {
                             if (z != null) {
                                 p = o.replace(finalA, z);
                                 if (o != p && !Functor.isFunc(p))
-                                    return Null;
+                                    return Bool.Null;
                             } else
                                 p = o;
 
                             if (substAdded) {
                                 q = p.replace(subst);
                                 if (p != q && !Functor.isFunc(q))
-                                    return Null;
+                                    return Bool.Null;
                             } else
                                 q = p;
 
@@ -307,12 +306,12 @@ public class Evaluation {
     }
 
     protected Term bool(Term x, Bool b) {
-        if (b == True) {
+        if (b == Bool.True) {
             return x;
-        } else if ( b == False) {
+        } else if ( b == Bool.False) {
             return x.neg();
         } else {
-            return Null;
+            return Bool.Null;
         }
     }
 
@@ -382,9 +381,9 @@ public class Evaluation {
             }
             //TODO extract this to a 'wrap' method
             if (y instanceof Bool) {
-                if (y == True)
+                if (y == Bool.True)
                     yy[0].add(x);
-                else if (y == False) {
+                else if (y == Bool.False) {
                     yy[0].add(x.neg());
                 } else {
                     //Null, but continue..

@@ -81,10 +81,6 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     abstract public boolean equals(Object obj);
 
 
-    @Override
-    public final int hashCodeSubterms() {
-        return hash;
-    }
 
     @Override
     public final int hashCode() {

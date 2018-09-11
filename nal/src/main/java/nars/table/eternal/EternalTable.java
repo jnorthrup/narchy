@@ -79,7 +79,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (size == 0)
             return Stream.empty();
         else {
-            return ArrayIterator.stream((Task[]) list, size).filter(Objects::nonNull);
+            return ArrayIterator.streamNonNull((Task[]) list, size);
         }
     }
 

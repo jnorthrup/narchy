@@ -53,10 +53,6 @@ public class BiSubterm extends TermVector {
                 return hashReversed;
             }
 
-            @Override
-            public int hashCodeSubterms() {
-                return hashReversed;
-            }
 
             @Override
             public boolean equals(Object obj) {

@@ -74,7 +74,7 @@ class LinearSplitLeafTest {
         rTree.add(new RectDouble2D(0, 2, 1, 4));
 
         Branch root = (Branch) rTree.root();
-        Node<RectDouble2D, Object>[] children = root.data;
+        Node<RectDouble2D>[] children = root.data;
         int childCount = 0;
         for (Node c : children) {
             if (c != null) {
@@ -83,13 +83,13 @@ class LinearSplitLeafTest {
         }
         assertEquals(2, childCount, "Expected different number of children after split");
 
-        Node<RectDouble2D, Object> child1 = children[0];
+        Node<RectDouble2D> child1 = children[0];
         RectDouble2D child1Mbr = (RectDouble2D) child1.bounds();
         RectDouble2D expectedChild1Mbr = new RectDouble2D(0, 0, 4, 4);
         assertEquals( 4, child1.size(), "Child 1 size incorrect after split");
         assertEquals(expectedChild1Mbr, child1Mbr, "Child 1 mbr incorrect after split");
 
-        Node<RectDouble2D, Object> child2 = children[1];
+        Node<RectDouble2D> child2 = children[1];
         RectDouble2D child2Mbr = (RectDouble2D) child2.bounds();
         RectDouble2D expectedChild2Mbr = new RectDouble2D(4, 0, 5, 1);
         assertEquals(1, child2.size(), "Child 2 size incorrect after split");

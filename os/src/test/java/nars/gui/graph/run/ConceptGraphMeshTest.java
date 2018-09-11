@@ -18,7 +18,7 @@ public class ConceptGraphMeshTest {
     public static void main(String[] args) {
 
         NAR n = NARS.tmp(4);
-        n.termVolumeMax.set(10);
+        n.termVolumeMax.set(14);
 
 
 
@@ -69,7 +69,7 @@ public class ConceptGraphMeshTest {
                 , 1200, 800
         );
 
-        n.startFPS(0.5f);
+        n.startFPS(35f);
     }
 
 

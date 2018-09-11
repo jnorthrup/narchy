@@ -1,6 +1,6 @@
 package jcog.tree.rtree;
 
-abstract public class AbstractNode<T, R> implements Node<T, R> {
+abstract public class AbstractNode<V> implements Node<V> {
 
     public short size;
     public HyperRegion bounds;

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 
 import static nars.$.$$;
-import static nars.Op.Null;
+import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** arithmetic operators and arithmetic introduction tests */

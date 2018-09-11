@@ -276,105 +276,6 @@ public enum Op {
     public static final char imIntSym = '\\';
     public static final char imExtSym = '/';
 
-    /**
-     * absolutely nonsense
-     */
-    public static final Bool Null = new Bool(String.valueOf(Op.NullSym), ((byte)-1) ) {
-
-        final int rankBoolNull = Term.opX(BOOL, (short) 0);
-
-        @Override
-        public final int opX() {
-            return rankBoolNull;
-        }
-
-        @Override
-        public Term neg() {
-            return this;
-        }
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return false;
-        }
-
-        @Override
-        public boolean equalsNegRoot(Term t) {
-            return false;
-        }
-
-        @Override
-        public Term unneg() {
-            return this;
-        }
-    };
-    /**
-     * tautological absolute false
-     */
-    public static final Bool False = new Bool("false", (byte)0) {
-
-
-
-        final int rankBoolFalse = Term.opX(BOOL, (short) 1);
-
-        @Override
-        public final int opX() {
-            return rankBoolFalse;
-        }
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return t == True;
-        }
-
-        @Override
-        public boolean equalsNegRoot(Term t) {
-            return t == True;
-        }
-
-        @Override
-        public Term neg() {
-            return True;
-        }
-
-        @Override
-        public Term unneg() {
-            return True;
-        }
-    };
-    /**
-     * tautological absolute true
-     */
-    public static final Bool True = new Bool("true", (byte)1) {
-
-        final int rankBoolTrue = Term.opX(BOOL, (short) 2);
-
-        @Override
-        public final int opX() {
-            return rankBoolTrue;
-        }
-
-        @Override
-        public Term neg() {
-            return False;
-        }
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return t == False;
-        }
-
-        @Override
-        public boolean equalsNegRoot(Term t) {
-            return t == False;
-        }
-
-        @Override
-        public Term unneg() {
-            return True;
-        }
-    };
-
     public static final int AtomicConstant = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 
     public static final VarDep ImgInt = new ImDep((byte) 126, (byte) '\\');
@@ -426,10 +327,10 @@ public enum Op {
 
 
     /** True wrapped in a subterm as the only element */
-    public static final Subterms TrueSubterm = Op.terms.subterms(True);
+    public static final Subterms TrueSubterm = Op.terms.subterms(Bool.True);
 
     /** False wrapped in a subterm as the only element */
-    public static final Subterms FalseSubterm = Op.terms.subterms(False);
+    public static final Subterms FalseSubterm = Op.terms.subterms(Bool.False);
 
 
     static {
@@ -621,7 +522,7 @@ public enum Op {
                             if (xx[0].equals(xx[1]))
                                 return xx[0]; //collapse
                             else if (xx[0].equalsNeg(xx[1]))
-                                return False; //contradict
+                                return Bool.False; //contradict
                         }
                     }
                     //fast transform concurrent -> concurrent, subs wont change
@@ -644,13 +545,13 @@ public enum Op {
     }
 
     public static boolean isTrueOrFalse(Term x) {
-        return x == True || x == False;
+        return x == Bool.True || x == Bool.False;
     }
 
 
     public static boolean hasNull(Term[] t) {
         for (Term x : t)
-            if (x == Null)
+            if (x == Bool.Null)
                 return true;
         return false;
     }
@@ -710,19 +611,19 @@ public enum Op {
 
         int i = cs.indexOf(filter, rand);
         if (i == -1)
-            return Null;
+            return Bool.Null;
 
 
         switch (cs.subs()) {
             case 1:
-                return Null;
+                return Bool.Null;
             case 2:
 
                 Term remain = cs.sub(1 - i);
                 Op o = container.op();
                 return o.isSet() ? o.the(remain) : remain;
             default:
-                return container.op().the(container.dt(), cs.termsExcept(i));
+                return container.op().the(container.dt(), cs.subsExcept(i));
         }
 
     }
@@ -928,7 +829,7 @@ public enum Op {
 
         @Override
         public Term concept() {
-            return Null;
+            return Bool.Null;
         }
 
         @Override

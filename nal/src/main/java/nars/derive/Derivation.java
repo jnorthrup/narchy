@@ -91,7 +91,7 @@ public class Derivation extends PreDerivation {
                 compared = beliefTruthRaw;
             }
             if (compared == null)
-                return Null;
+                return Bool.Null;
             return compared.isNegative() ? subterm.neg() : subterm;
         }
     };

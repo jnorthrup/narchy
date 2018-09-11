@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static nars.Op.Null;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 
 public class SetFunc {

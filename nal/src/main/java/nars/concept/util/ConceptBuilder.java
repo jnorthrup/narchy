@@ -15,6 +15,7 @@ import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.*;
+import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
@@ -62,7 +63,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         } else {
             Term conceptor = Functor.func(t);
-            if (conceptor != Op.Null) {
+            if (conceptor != Bool.Null) {
                 @Nullable Conceptor cc = conceptors.get(conceptor);
                 if (cc instanceof Conceptor) {
 

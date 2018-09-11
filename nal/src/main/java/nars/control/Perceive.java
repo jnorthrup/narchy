@@ -13,6 +13,7 @@ import nars.op.stm.ConjClustering;
 import nars.task.ITask;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
@@ -36,7 +37,7 @@ public enum Perceive { ;
     /** returns true if the task is acceptable */
     public static boolean tryPerceive(Task input, Term y, Collection<ITask> queue, NAR n) {
 
-        if (y == Null) {
+        if (y == Bool.Null) {
             //logger.debug("nonsense {}", input);
             return false;
         }
@@ -173,7 +174,7 @@ public enum Perceive { ;
     private static boolean execute(Task t, Collection<ITask> queue, NAR n, boolean cmd) {
         Term maybeOperator = Functor.func(t.term());
 
-        if (maybeOperator!=Null) {
+        if (maybeOperator!= Bool.Null) {
             Concept oo = n.concept(maybeOperator);
             if (oo instanceof Operator) {
                 Operator o = (Operator)oo;

@@ -37,9 +37,9 @@ import java.util.stream.Stream;
  * <p>
  * Created by jcairns on 4/30/15.
  */
-public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
+public class Branch<X> extends AbstractNode<X> {
 
-    public final Node<T, ?>[] data;
+    public final Node<X>[] data;
 
     public Branch(int cap) {
         this.bounds = null;
@@ -47,7 +47,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         this.data = new Node[cap];
     }
 
-    protected Branch(int cap, Leaf<T> a, Leaf<T> b) {
+    protected Branch(int cap, Leaf<X> a, Leaf<X> b) {
         this(cap);
         assert (cap >= 2);
         assert (a != b);
@@ -56,21 +56,19 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         this.size = 2;
         this.bounds = a.bounds.mbr(b.bounds);
     }
-    @Override
-    public Stream<Node<T,?>> streamNodes() {
-        return data!=null ? ArrayIterator.stream(data, Math.min(data.length, size)).filter(Objects::nonNull) : Stream.empty();
-    }
-    @Override
-    public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
 
-        if (!this.bounds.contains(b)) 
+
+    @Override
+    public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
+
+        if (!this.bounds.contains(b))
             return false;
 
         int s = size;
         if (s > 0) {
             Node[] c = this.data;
             for (int i = 0; i < s; i++) {
-                if (c[i].contains(t, b, model))
+                if (c[i].contains(x, b, model))
                     return true;
             }
         }
@@ -85,7 +83,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
      * @param n node to be added (can be leaf or branch)
      * @return position of the added node
      */
-    public int addChild(final Node<T, ?> n) {
+    public int addChild(final Node<X> n) {
         if (size < data.length) {
             data[size++] = n;
 
@@ -97,10 +95,6 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         }
     }
 
-    @Override
-    public final Node<T, ?> get(int i) {
-        return data[i];
-    }
 
     @Override
     public final boolean isLeaf() {
@@ -111,56 +105,48 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     /**
      * Adds a data entry to one of the child nodes of this branch
      *
-     * @param t      data entry to add
+     * @param x      data entry to add
      * @param parent
      * @param model
      * @param added
      * @return Node that the entry was added to
      */
     @Override
-    public Node<T, ?> add(final T t, Nodelike<T> parent, Spatialization<T> model, boolean[] added) {
+    public Node<X> add(final X x, Nodelike<X> parent, Spatialization<X> model, boolean[] added) {
 
-        final HyperRegion tRect = model.bounds(t);
+        final HyperRegion tRect = model.bounds(x);
 
         Node[] child = this.data;
 
         if (bounds.contains(tRect)) {
-            
+
             for (int i = 0; i < size; i++) {
                 Node ci = child[i];
                 if (ci.bounds().contains(tRect)) {
-                    
-                    
-                    
 
-                    Node m = ci.add(t, null, model, null);
+
+                    Node m = ci.add(x, null, model, null);
                     if (m == null) {
-                        return null; 
+                        return null;
                     }
 
 
-                    
-                    
-                    
-                    
-                    
                 }
             }
             if (parent == null)
-                return this; 
+                return this;
         }
 
         if (added == null)
-            return this; 
+            return this;
 
         assert (!added[0]);
 
-        
 
         if (size < child.length) {
 
-            
-            grow(addChild(model.newLeaf().add(t, parent, model, added)));
+
+            grow(addChild(model.newLeaf().add(x, parent, model, added)));
             assert (added[0]);
 
             return this;
@@ -169,32 +155,22 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
 
             final int bestLeaf = chooseLeaf(tRect);
 
-            Node nextBest = child[bestLeaf].add(t, this, model, added);
-            if (nextBest == null) {                return null; /*merged*/             }
+            Node nextBest = child[bestLeaf].add(x, this, model, added);
+            if (nextBest == null) {
+                return null; /*merged*/
+            }
 
             child[bestLeaf] = nextBest;
 
 
             grow(nextBest);
 
-            
-            
+
             if (size < child.length && nextBest.size() == 2 && !nextBest.isLeaf()) {
-                Node[] bc = ((Branch<T>) nextBest).data;
+                Node[] bc = ((Branch<X>) nextBest).data;
                 child[bestLeaf] = bc[0];
                 child[size++] = bc[1];
             }
-
-
-
-
-
-
-
-
-
-
-
 
 
             return this;
@@ -210,27 +186,27 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
     @Override
-    public Node<T, ?> remove(final T x, HyperRegion xBounds, Spatialization<T> model, boolean[] removed) {
+    public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
         assert (!removed[0]);
 
         for (int i = 0; i < size; i++) {
-            Node<T, ?> cBefore = data[i];
+            Node<X> cBefore = data[i];
             if (cBefore.bounds().contains(xBounds)) {
 
-                Node<T, ?> cAfter = cBefore.remove(x, xBounds, model, removed);
+                Node<X> cAfter = cBefore.remove(x, xBounds, model, removed);
 
                 if (removed[0]) {
                     if (data[i].size() == 0) {
                         System.arraycopy(data, i + 1, data, i, size - i - 1);
                         data[--size] = null;
-                        
+
                     }
 
                     if (size > 0) {
 
                         if (size == 1) {
-                            
+
                             return data[0];
                         }
 
@@ -252,10 +228,10 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
     @Override
-    public Node<T, ?> replace(final T OLD, final T NEW, Spatialization<T> model) {
+    public Node<X> replace(final X OLD, final X NEW, Spatialization<X> model) {
         final HyperRegion tRect = model.bounds(OLD);
 
-        
+
         boolean found = false;
         Node[] cc = this.data;
         HyperRegion region = null;
@@ -274,12 +250,11 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
 
-
     private int chooseLeaf(final HyperRegion tRect) {
-        Node<T, ?>[] cc = this.data;
+        Node<X>[] cc = this.data;
         if (size > 0) {
             int bestNode = -1;
-            
+
             double leastEnlargement = Double.POSITIVE_INFINITY;
             double leastPerimeter = Double.POSITIVE_INFINITY;
 
@@ -288,10 +263,10 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                 HyperRegion cir = cc[i].bounds();
                 HyperRegion childMbr = tRect.mbr(cir);
                 final double nodeEnlargement =
-                        (cir!=childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
-                
+                        (cir != childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
+
                 int dc = Double.compare(nodeEnlargement, leastEnlargement);
-                if (dc == -1) { 
+                if (dc == -1) {
                     leastEnlargement = nodeEnlargement;
                     leastPerimeter = childMbr.perimeter();
                     bestNode = i;
@@ -302,16 +277,15 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                         leastPerimeter = perimeter;
                         bestNode = i;
                     }
-                } 
+                }
 
             }
             if (bestNode == -1) {
                 throw new RuntimeException("rtree fault");
             }
-            
+
             return bestNode;
         } else {
-
 
 
             throw new RuntimeException("shouldnt happen");
@@ -320,12 +294,12 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
 
 
     @Override
-    public void forEach(Consumer<? super T> consumer) {
+    public void forEach(Consumer<? super X> consumer) {
         short s = this.size;
         if (s > 0) {
-            Node<T, ?>[] cc = this.data;
+            Node<X>[] cc = this.data;
             for (int i = 0; i < s; i++) {
-                Node<T, ?> x = cc[i];
+                Node<X> x = cc[i];
                 if (x != null)
                     x.forEach(consumer);
             }
@@ -333,48 +307,39 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
     @Override
-    public boolean AND(Predicate<T> p) {
-        Node<T, ?>[] c = this.data;
+    public boolean AND(Predicate<X> p) {
+        Node<X>[] c = this.data;
         short s = this.size;
         for (int i = 0; i < s; i++) {
-            Node<T, ?> x = c[i];
-            if (x!=null && !x.AND(p))
+            Node<X> x = c[i];
+            if (x != null && !x.AND(p))
                 return false;
         }
         return true;
     }
 
 
-
-
-
-
-
-
-
-
-
     @Override
-    public boolean OR(Predicate<T> p) {
-        Node<T, ?>[] c = this.data;
+    public boolean OR(Predicate<X> p) {
+        Node<X>[] c = this.data;
         int s = size;
         for (int i = 0; i < s; i++) {
-            Node<T, ?> x = c[i];
-            if (x!=null && x.OR(p))
+            Node<X> x = c[i];
+            if (x != null && x.OR(p))
                 return true;
         }
         return false;
     }
 
     @Override
-    public boolean containing(final HyperRegion rect, final Predicate<T> t, Spatialization<T> model) {
+    public boolean containing(final HyperRegion rect, final Predicate<X> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
         if (b != null) {
             int s = size;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
                 if (d == null)
-                    continue; 
+                    continue;
                 else if (!d.containing(rect, t, model))
                     return false;
             }
@@ -383,15 +348,15 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
     @Override
-    public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
+    public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
         if (b != null) {
             int s = size;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
                 if (d == null)
-                    continue; 
-                else if (!d.intersecting(rect, t, model)) 
+                    continue;
+                else if (!d.intersecting(rect, t, model))
                     return false;
             }
         }
@@ -399,13 +364,24 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
     @Override
-    public Stream<T> stream() {
-        return streamNodes().flatMap(Node::stream);
+    public Stream<Node<X>> streamNodes() {
+        //TODO optimize
+        return streamLocal().map(x -> x instanceof Node ? (Node<X>)x : null).filter(Objects::nonNull);
     }
 
     @Override
-    public Iterator<Node<T, ?>> iterateNodes() {
+    public Stream<X> streamValues() {
+        //TODO optimize
+        return streamLocal().flatMap(x -> x instanceof Node ? ((Node)x).streamValues() : Stream.of(x)).filter(Objects::nonNull);
+    }
+
+
+    @Override public Iterator<?> iterateLocal() {
         return ArrayIterator.get(data, size);
+    }
+
+    @Override public Stream<?> streamLocal() {
+        return ArrayIterator.streamNonNull(data, size);
     }
 
     @Override
@@ -416,7 +392,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
     @Override
-    public Node<T, ?> instrument() {
+    public Node<X> instrument() {
         for (int i = 0; i < size; i++)
             data[i] = data[i].instrument();
         return new CounterNode(this);
@@ -426,17 +402,6 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     public String toString() {
         return "Branch" + '{' + bounds + 'x' + size + ":\n\t" + Joiner.on("\n\t").skipNulls().join(data) + "\n}";
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

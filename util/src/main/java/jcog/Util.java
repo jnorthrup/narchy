@@ -443,20 +443,38 @@ public enum Util {
     }
 
     public static int hashCombine(Object a, Object b) {
-        return hashCombine(a.hashCode(), b.hashCode());
+        if (a != b) {
+            return hashCombine(a.hashCode(), b.hashCode());
+        } else {
+            int ah = a.hashCode();
+            return hashCombine(ah, ah);
+        }
     }
 
     /**
      * hashCombine(1, b)
      */
     public static int hashCombine1(Object bb) {
-        return 1 ^ (bb.hashCode() + 0x9e3779b9 + (1 << 6));
+        return hashCombine(1, bb.hashCode());
     }
 
     public static int hashCombine(int a, int b, int c) {
 
         return hashCombine(hashCombine(a, b), c);
 
+
+    }
+
+    /** custom designed to preserve some alpha numeric natural ordering */
+    public static int hashByteString(byte[] str) {
+        switch (str.length) {
+            case 0: return 0;
+            case 1: return str[0];
+            case 2: return str[0] << 8 | str[1];
+            case 3: return str[0] << 16 | str[1] << 8 | str[2];
+            case 4: return str[0] << 24 | str[1] << 16 | str[2] << 8 | str[3];
+            default: return Long.hashCode(hashELF(str, 0));
+        }
 
     }
 

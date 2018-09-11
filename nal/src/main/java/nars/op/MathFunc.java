@@ -11,7 +11,7 @@ import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INT;
-import static nars.Op.Null;
+import static nars.term.atom.Bool.Null;
 
 public enum MathFunc { ;
 

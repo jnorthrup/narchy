@@ -2,12 +2,12 @@ package nars.term;
 
 import nars.$;
 import nars.Narsese;
+import nars.term.atom.Bool;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.Op.*;
 import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,15 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class ImplTest {
     @Test
     public void testInvalidImpl1() {
-        assertEq(False, "(--y =|> y)");
+        assertEq(Bool.False, "(--y =|> y)");
     }
     @Test
     public void testInvalidImpl2() {
-        assertEq(False, "(--(x &| y) =|> y)");
+        assertEq(Bool.False, "(--(x &| y) =|> y)");
     }
     @Test
     public void testInvalidImpl3() {
-        assertEq(False, "(--(--x &| y) =|> y)");
+        assertEq(Bool.False, "(--(--x &| y) =|> y)");
     }
 
     @Test
@@ -68,20 +68,20 @@ public class ImplTest {
         assertEq("(--,((--,x)==>y))", "(--x ==> (--y && --x))");
 
         assertEq("(x=|>y)", "(x ==>+0 (y &| x))");
-        assertEq(True, "((y &| x) =|> x)");
+        assertEq(Bool.True, "((y &| x) =|> x)");
         assertEq("(--,((--,$1)=|>#2))", "((--,$1)=|>((--,$1)&|(--,#2)))");
     }
 
     @Test
     void testReducibleImplConjCoNeg() {
-        assertEq(False, "((y &| --x) ==> x)");
+        assertEq(Bool.False, "((y &| --x) ==> x)");
 
         for (String i : new String[]{"==>", "=|>"}) {
             for (String c : new String[]{"&&", "&|"}) {
-                assertEq(False, "(x " + i + " (y " + c + " --x))");
-                assertEq(False, "(--x " + i + " (y " + c + " x))");
-                assertEq(False, "((y " + c + " --x) " + i + " x)");
-                assertEq(False, "((y " + c + " x) " + i + " --x)");
+                assertEq(Bool.False, "(x " + i + " (y " + c + " --x))");
+                assertEq(Bool.False, "(--x " + i + " (y " + c + " x))");
+                assertEq(Bool.False, "((y " + c + " --x) " + i + " x)");
+                assertEq(Bool.False, "((y " + c + " x) " + i + " --x)");
             }
         }
     }
@@ -90,13 +90,13 @@ public class ImplTest {
     @Test
     void testReducibleImplParallelNeg() {
         assertEq("(--,((--,x)=|>y))", "(--x =|> (--y &| --x))");
-        assertEq(True, "((--y &| --x) =|> --x)");
+        assertEq(Bool.True, "((--y &| --x) =|> --x)");
 
     }
 
     @Test
     void testInvalidCircularImpl() throws Narsese.NarseseException {
-        assertNotEquals(Null, $("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
+        assertNotEquals(Bool.Null, $("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
         assertEq("(--,(x(intValue,(),1)=|>x(intValue,(),0)))", "(x(intValue,(),1) =|> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
     }
 
@@ -183,7 +183,7 @@ public class ImplTest {
 
     @Test
     void testReducedAndInvalidImplications3() {
-        assertEq(True, "(R==>(P==>R))");
+        assertEq(Bool.True, "(R==>(P==>R))");
     }
 
     @Test

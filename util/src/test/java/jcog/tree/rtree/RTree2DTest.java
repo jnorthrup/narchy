@@ -290,18 +290,18 @@ class RTree2DTest {
         final Random rand = new XoRoShiRo128PlusRandom(1);
 
         
-        final int minX = 500;
-        final int minY = 500;
-        final int maxXRange = 25;
-        final int maxYRange = 25;
+        final int minXRange = 500;
+        final int minYRange = 500;
+        final int maxXRange = 100;
+        final int maxYRange = 100;
 
-        final double hitProb = 1.0 * count * maxXRange * maxYRange / (minX * minY);
+        //final double hitProb = 1.0 * count * maxXRange * maxYRange / (minXRange * minYRange);
 
         Set<RectDouble2D> added = new HashSet(count);
         final RectDouble2D[] rects = new RectDouble2D[count];
         for (int i = 0; i < count; ) {
-            final int x1 = rand.nextInt(minX);
-            final int y1 = rand.nextInt(minY);
+            final int x1 = rand.nextInt(minXRange);
+            final int y1 = rand.nextInt(minYRange);
             final int x2 = x1 + rand.nextInt(maxXRange);
             final int y2 = y1 + rand.nextInt(maxYRange);
             RectDouble2D next = new RectDouble2D(x1, y1, x2, y2);

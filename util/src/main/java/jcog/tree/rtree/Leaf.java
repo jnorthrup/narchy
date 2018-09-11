@@ -26,8 +26,8 @@ import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -38,54 +38,64 @@ import java.util.stream.Stream;
  * Created by jcairns on 4/30/15.
  * <p>
  */
-public class Leaf<T> extends AbstractNode<T, T> {
+public class Leaf<X> extends AbstractNode<X> {
 
-    public final T[] data;
+    public final X[] data;
 
 
     protected Leaf(int mMax) {
-        this((T[]) new Object[mMax]);
+        this((X[]) new Object[mMax]);
     }
 
-    private Leaf(T[] arrayInit) {
+    private Leaf(X[] arrayInit) {
         this.bounds = null;
         this.data = arrayInit;
         this.size = 0;
     }
 
+
     @Override
-    public Stream<T> stream() {
-        return streamNodes();
+    public Iterator iterateNodes() {
+        return Collections.emptyIterator();
     }
 
     @Override
-    public Stream<T> streamNodes() {
-        return ArrayIterator.stream(data, Math.min(data.length, size)).filter(Objects::nonNull);
+    public Stream streamNodes() {
+        return Stream.empty();
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return iterateNodes();
-    }
-
-    @Override
-    public Iterator<T> iterateNodes() {
+    public Iterator<X> iterateValues() {
         return ArrayIterator.get(data, size);
     }
 
     @Override
-    public T get(int i) {
+    public Stream<X> streamValues() {
+        return ArrayIterator.streamNonNull(data, size);
+    }
+
+    @Override
+    public Stream<?> streamLocal() {
+        return streamValues();
+    }
+
+    @Override
+    public Iterator<?> iterateLocal() {
+        return iterateValues();
+    }
+
+    public X get(int i) {
         return data[i];
     }
 
-    public double variance(int dim, Spatialization<T> model) {
+    public double variance(int dim, Spatialization<X> model) {
         int s = size();
         if (s < 2)
             return 0;
         double mean = bounds().center(dim);
         double sumDiffSq = 0;
         for (int i = 0; i < s; i++) {
-            T c = get(i);
+            X c = get(i);
             if (c == null) continue;
             double diff = model.bounds(c).center(dim) - mean;
             sumDiffSq += diff * diff;
@@ -95,17 +105,17 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
 
     @Override
-    public Node<T, ?> add(/*@NotNull*/ final T t, Nodelike<T> parent, /*@NotNull*/ Spatialization<T> model, boolean[] added) {
+    public Node<X> add(/*@NotNull*/ final X t, Nodelike<X> parent, /*@NotNull*/ Spatialization<X> model, boolean[] added) {
 
         final HyperRegion tb = model.bounds(t);
 
         if (parent != null) {
             boolean mightContain = size > 0 && bounds.contains(tb);
 
-            Node<T, ?> next;
+            Node<X> next;
 
             for (int i = 0, s = size; i < s; i++) {
-                T x = data[i];
+                X x = data[i];
 
                 if (x == null) continue;
 
@@ -138,11 +148,11 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
 
     @Override
-    public boolean AND(Predicate<T> p) {
-        T[] data = this.data;
+    public boolean AND(Predicate<X> p) {
+        X[] data = this.data;
         int s = size;
         for (int i = 0; i < s; i++) {
-            T d = data[i];
+            X d = data[i];
             if (d!=null && !p.test(d))
                 return false;
         }
@@ -150,11 +160,11 @@ public class Leaf<T> extends AbstractNode<T, T> {
     }
 
     @Override
-    public boolean OR(Predicate<T> p) {
-        T[] data = this.data;
+    public boolean OR(Predicate<X> p) {
+        X[] data = this.data;
         short s = this.size;
         for (int i = 0; i < s; i++) {
-            T d = data[i];
+            X d = data[i];
             if (d!=null && p.test(d))
                 return true;
         }
@@ -162,16 +172,16 @@ public class Leaf<T> extends AbstractNode<T, T> {
     }
 
     @Override
-    public boolean contains(T x, HyperRegion b, Spatialization<T> model) {
+    public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
 
         final int s = size;
         if (s > 0) {
             if (!bounds.contains(b))
                 return false;
 
-            T[] data = this.data;
+            X[] data = this.data;
             for (int i = 0; i < s; i++) {
-                T t = data[i];
+                X t = data[i];
                 if (t == null) continue;
                 if (t.equals(x)) {
                     if (t != x)
@@ -185,16 +195,16 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
 
     @Override
-    public Node<T, ?> remove(final T t, HyperRegion xBounds, Spatialization<T> model, boolean[] removed) {
+    public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
         final int size = this.size;
         if (size == 0)
             return this;
-        T[] data = this.data;
+        X[] data = this.data;
         int i;
         for (i = 0; i < size; i++) {
-            T d = data[i];
-            if (t.equals(d))
+            X d = data[i];
+            if (x.equals(d))
                 break; 
         }
         if (i == size)
@@ -219,15 +229,15 @@ public class Leaf<T> extends AbstractNode<T, T> {
     }
 
     @Override
-    public Node<T, ?> replace(final T told, final T tnew, Spatialization<T> model) {
+    public Node<X> replace(final X told, final X tnew, Spatialization<X> model) {
         final int s = size;
         if (s <= 0)
             return this;
 
-        T[] data = this.data;
+        X[] data = this.data;
         HyperRegion r = null;
         for (int i = 0; i < s; i++) {
-            T d = data[i];
+            X d = data[i];
             if (d!=null && d.equals(told)) {
                 data[i] = tnew;
             }
@@ -242,13 +252,13 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
 
     @Override
-    public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
+    public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
         if (s > 0) {
             boolean containsAll = s > 1 ? rect.contains(bounds) : false; 
-            T[] data = this.data;
+            X[] data = this.data;
             for (int i = 0; i < s; i++) {
-                T d = data[i];
+                X d = data[i];
                 if (d != null && (containsAll || rect.intersects(model.bounds(d))) && !t.test(d))
                     return false;
             }
@@ -257,13 +267,13 @@ public class Leaf<T> extends AbstractNode<T, T> {
     }
 
     @Override
-    public boolean containing(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
+    public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
         if (s > 0) {
             boolean containsAll = rect.contains(bounds); 
-            T[] data = this.data;
+            X[] data = this.data;
             for (int i = 0; i < s; i++) {
-                T d = data[i];
+                X d = data[i];
                 if (d != null && (containsAll || rect.contains(model.bounds(d))) && !t.test(d))
                     return false;
             }
@@ -278,12 +288,12 @@ public class Leaf<T> extends AbstractNode<T, T> {
     }
 
     @Override
-    public void forEach(Consumer<? super T> consumer) {
+    public void forEach(Consumer<? super X> consumer) {
         short s = this.size;
         if (s > 0) {
-            T[] data = this.data;
+            X[] data = this.data;
             for (int i = 0; i < s; i++) {
-                T d = data[i];
+                X d = data[i];
                 if (d != null)
                     consumer.accept(d);
             }
@@ -305,12 +315,12 @@ public class Leaf<T> extends AbstractNode<T, T> {
      *
      * @param l1Node left node
      * @param l2Node right node
-     * @param t      data entry to be added
+     * @param x      data entry to be added
      * @param model
      */
-    public final void transfer(final Node<T, T> l1Node, final Node<T, T> l2Node, final T t, Spatialization<T> model) {
+    public final void transfer(final Node<X> l1Node, final Node<X> l2Node, final X x, Spatialization<X> model) {
 
-        final HyperRegion tRect = model.bounds(t);
+        final HyperRegion tRect = model.bounds(x);
         double tCost = tRect.cost();
 
         final HyperRegion l1Region = l1Node.bounds();
@@ -323,7 +333,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
         double l2c = l2Mbr.cost();
         final double l2CostInc = Math.max(l2c - (l2Region.cost() + tCost), 0.0);
 
-        Node<T, T> target;
+        Node<X> target;
         double eps = model.epsilon();
         if (Util.equals(l1CostInc, l2CostInc, eps)) {
             if (Util.equals(l1c, l2c, eps)) {
@@ -343,12 +353,12 @@ public class Leaf<T> extends AbstractNode<T, T> {
         }
 
         boolean[] added = new boolean[1];
-        target.add(t, this, model, added);
+        target.add(x, this, model, added);
         assert (added[0]);
     }
 
     @Override
-    public Node<T, Object> instrument() {
+    public Node<X> instrument() {
         return new CounterNode(this);
     }
 

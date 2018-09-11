@@ -9,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.util.Conj;
 
@@ -76,9 +77,9 @@ public enum ListFunc {
 
             int l = xy.subs();
             if (l == 0) {
-                return e.is(x, Op.EmptyProduct,y, Op.EmptyProduct) ? null : Null;
+                return e.is(x, Op.EmptyProduct,y, Op.EmptyProduct) ? null : Bool.Null;
             } else if (l == 1) {
-                return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : Null;
+                return e.is(x, Op.EmptyProduct, y, xy) && e.is(x, xy, y, Op.EmptyProduct) ? null : Bool.Null;
             } else {
                 Subterms xys = xy.subterms();
 
@@ -110,13 +111,13 @@ public enum ListFunc {
             if (remainderLength >= 0) {
                 if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
                     if (remainderLength == 0) {
-                        return e.is(x, Op.EmptyProduct) ? null : Null;
+                        return e.is(x, Op.EmptyProduct) ? null : Bool.Null;
                     } else {
-                        return e.is(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys))) ? null : Null;
+                        return e.is(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys))) ? null : Bool.Null;
                     }
                 }
             }
-            return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Null;
+            return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Bool.Null;
         }
 
         @Override
@@ -134,13 +135,13 @@ public enum ListFunc {
                 if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
 
                     if (remainderLength == 0) {
-                        return e.is(y, Op.EmptyProduct) ? null : Null;
+                        return e.is(y, Op.EmptyProduct) ? null : Bool.Null;
                     } else {
-                        return e.is(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Null;
+                        return e.is(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Bool.Null;
                     }
                 }
             }
-            return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Null;
+            return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Bool.Null;
         }
     };
 
@@ -175,7 +176,7 @@ public enum ListFunc {
 
     public static Functor sub = Functor.f2("sub", (x, n) -> {
         if (n.op() == INT) {
-            return x.sub(((Int) n).id, Null);
+            return x.sub(((Int) n).id, Bool.Null);
         } else {
             return null;
         }
@@ -193,7 +194,7 @@ public enum ListFunc {
                 if (nn < m) {
                     return PROD.the(xx.subRangeArray(nn, m));
                 } else {
-                    return Null;
+                    return Bool.Null;
                 }
             } else {
                 return null;

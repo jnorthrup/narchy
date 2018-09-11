@@ -1,6 +1,7 @@
 package nars.term;
 
 import nars.Op;
+import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
@@ -29,7 +30,7 @@ public interface Termlike {
     /** returns Null if the index is out of bounds;
      *  also dont expect a negative index, just >=0 */
     default Term subSafe(int i) {
-        return sub(i, Null);
+        return sub(i, Bool.Null);
     }
 
     /**
@@ -194,37 +195,29 @@ public interface Termlike {
         return hasAny(Op.VAR_PATTERN);
     }
 
-    default boolean impossibleSubTerm(/*@NotNull*/Termlike target) {
-        return !hasAll(target.structure()) || impossibleSubTermVolume(target.volume());
+
+    default boolean impossibleSubTerm(Termlike target) {
+        return impossibleSubStructure(target.structure()) || impossibleSubVolume(target.volume());
     }
 
-    /**
-     * if it's larger than this term it can not be equal to this.
-     * if it's larger than some number less than that, it can't be a subterm.
-     */
-    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
-        return otherTermsVolume > volume();
-    }
+    boolean impossibleSubStructure(int structure);
 
-
-
-
-
-
-
-
-
-
-
-    default boolean impossibleSubTermVolume(int otherTermVolume) {
+    default boolean impossibleSubVolume(int otherTermVolume) {
         return otherTermVolume > volume() - subs();
     }
 
+//    /**
+//     * if it's larger than this term it can not be equal to this.
+//     * if it's larger than some number less than that, it can't be a subterm.
+//     */
+//    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
+//        return otherTermsVolume > volume();
+//    }
 
-    default boolean impossibleSubTermOrEquality(/*@NotNull*/Term target) {
-        return ((!hasAll(target.structure())) ||
-                (impossibleSubTermOrEqualityVolume(target.volume())));
-    }
+//    default boolean impossibleSubTermOrEquality(/*@NotNull*/Term target) {
+//        return ((!hasAll(target.structure())) ||
+//                (impossibleSubTermOrEqualityVolume(target.volume())));
+//    }
 
     /**
      * returns true if evaluates true for any terms

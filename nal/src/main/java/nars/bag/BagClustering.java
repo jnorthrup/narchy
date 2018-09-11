@@ -13,6 +13,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -106,7 +107,7 @@ public class BagClustering<X> {
 
     public <A> void cluster(A arg, @Nullable Random rng, BiPredicate<Stream<VLink<X>>, A> each) {
 
-        FasterList<VLink<X>> sorted = cluster(rng);
+        List<VLink<X>> sorted = cluster(rng);
 
         int current = -1;
         int n = sorted.size();
@@ -142,11 +143,11 @@ public class BagClustering<X> {
             bag.forEach(this::learn);
     }
 
-    private FasterList<VLink<X>> cluster(@Nullable Random rng) {
+    private List<VLink<X>> cluster(@Nullable Random rng) {
 
         int s = bag.size();
         if (s == 0)
-            return null;
+            return List.of();
 
         FasterList<VLink<X>> x = new FasterList<>(s);
         bag.forEach(x::add);

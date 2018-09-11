@@ -34,19 +34,9 @@ import java.util.stream.Stream;
  */
 public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
-    private final Space<T> tree;
+    private final RTree<T> tree;
 
-
-
-
-
-
-
-
-
-
-
-    public ConcurrentRTree(Space<T> tree) {
+    public ConcurrentRTree(RTree<T> tree) {
         super();
         this.tree = tree;
     }
@@ -79,7 +69,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
     @Override
-    public Node<T, ?> root() {
+    public Node<T> root() {
         return tree.root();
     }
 
@@ -94,15 +84,6 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
 
-
-
-
-
-
-
-
-
-
     /**
      * prefer this instead of add() in multithread environments, because it elides what might ordinarily involve a lock wait
      */
@@ -110,13 +91,11 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     public void addAsync(T t) {
 
 
-
         add(t);
     }
 
     @Override
     public void removeAsync(T t) {
-
 
 
         remove(t);
@@ -133,7 +112,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
 
-    public void read(Consumer<Space<T>> x) {
+    public void read(Consumer<RTree<T>> x) {
         read(() -> x.accept(tree));
     }
 
@@ -166,7 +145,8 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
     /**
      * Blocking locked update
-     *  @param told - entry to update
+     *
+     * @param told - entry to update
      * @param tnew - entry with new value
      */
     @Override
@@ -178,7 +158,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     @Override
     public int size() {
         return tree.size();
-        
+
     }
 
     @Override
@@ -192,7 +172,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
     public void forEachOptimistic(Consumer<? super T> consumer) {
-        readOptimistic(()->tree.forEach(consumer));
+        readOptimistic(() -> tree.forEach(consumer));
     }
 
     @Override
@@ -210,7 +190,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
      */
     @Override
     public Stream<T> stream() {
-        return root().stream().filter(Objects::nonNull);
+        return root().streamValues().filter(Objects::nonNull);
     }
 
     /**
@@ -240,7 +220,6 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     public boolean contains(T t) {
         return read(() -> tree.contains(t));
     }
-
 
 
 }

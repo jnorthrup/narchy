@@ -474,10 +474,6 @@ abstract public class FastCompound implements Compound /* The */ {
             }
         }
 
-        @Override
-        public int hashCodeSubterms() {
-            return this.hashCode();
-        }
 
         public SubtermView go(int offset) {
             int o = this.offset;

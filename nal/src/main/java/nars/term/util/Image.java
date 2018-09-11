@@ -33,7 +33,7 @@ public enum Image { ;
                 }
             }
         }
-        return Null;
+        return Bool.Null;
     }
 
     public static boolean imaged(Term p) {
@@ -53,7 +53,7 @@ public enum Image { ;
                 }
             }
         }
-        return Null;
+        return Bool.Null;
     }
 
     public static Term imageNormalize(Term _t) {

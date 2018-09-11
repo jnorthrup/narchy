@@ -160,7 +160,7 @@ public class TermTest {
 
     @Test
     void testInstantiateBoolsFromEquivString() {
-        for (Term b : new Term[]{True, False, Null})
+        for (Term b : new Term[]{Bool.True, Bool.False, Bool.Null})
             assertSame(b, $.the(b.toString()));
     }
 
@@ -777,19 +777,19 @@ public class TermTest {
         assertEq("((a ==>+- b)&x)", $$("((a==>+1 b) & x)").concept());
 
 
-        assertEq(Null, "((a==>+1 b) & (a ==>+2 b))");
-        assertEq(Null, "(&, (a==>b),(a ==>+2 b),(c==>d))");
+        assertEq(Bool.Null, "((a==>+1 b) & (a ==>+2 b))");
+        assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),(c==>d))");
         assertEq("(((a ==>+2 b)-->d)&(a ==>+1 b))", "((a==>+1 b) & ((a ==>+2 b)-->d))");
-        assertEq(Null, "(((a ==> b)-->d) & ((a ==>+2 b)-->d))");
-        assertEq(Null, "(&, (a==>b),(a ==>+2 b),((c==>d)-->e))");
+        assertEq(Bool.Null, "(((a ==> b)-->d) & ((a ==>+2 b)-->d))");
+        assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),((c==>d)-->e))");
 
 
     }
 
     @Test void testDiffConceptualization() {
-        assertEq(Null, "((a==>+1 b)~(a ==>+2 b))");
+        assertEq(Bool.Null, "((a==>+1 b)~(a ==>+2 b))");
         assertEq("((a ==>+1 b)~(c ==>+2 d))", "((a ==>+1 b)~(c ==>+2 d))");
 
-        assertEq(Null, "((X &&+837 Y)~(--,(Y &&+1424 X)))");
+        assertEq(Bool.Null, "((X &&+837 Y)~(--,(Y &&+1424 X)))");
     }
 }

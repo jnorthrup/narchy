@@ -5,6 +5,7 @@ import nars.*;
 import nars.io.NarseseTest;
 import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,7 +68,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testIntersectExtReduction5() {
-        assertEquals(Null /* emptyset */, SECTe.the(SETi.the(p, q), SETi.the(r, s)));
+        assertEquals(Bool.Null /* emptyset */, SECTe.the(SETi.the(p, q), SETi.the(r, s)));
     }
 
     @Test
@@ -146,14 +147,14 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testImplicationTrue2() {
-        assertEq(True, "((&&,a,b) ==> a)");
+        assertEq(Bool.True, "((&&,a,b) ==> a)");
     }
     @Test
     void testImplicationTrue3() {
 
 
 
-        assertEq(True, "((&&,x1,$1) ==> $1)");
+        assertEq(Bool.True, "((&&,x1,$1) ==> $1)");
     }
 
     @Test
@@ -180,13 +181,13 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testDiffIntEqual() {
 
-        assertEquals(False, DIFFi.the(p, p));
+        assertEquals(Bool.False, DIFFi.the(p, p));
     }
 
     @Test
     void testDiffExtEqual() {
 
-        assertEquals(False, DIFFe.the(p, p));
+        assertEquals(Bool.False, DIFFe.the(p, p));
     }
 
 
@@ -205,7 +206,7 @@ public class TermReductionsTest extends NarseseTest {
 
 
         assertEquals(
-                Null,
+                Bool.Null,
                 SetSectDiff.differenceSet(Op.SETe, SETe.the(p, q), SETe.the(p, q))
         );
     }
@@ -333,10 +334,10 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testImplicationTrue() {
-        assertEq(False, "(--x==>x)");
-        assertEq(True, "(x==>x)");
-        assertEq(True, "((x)==>(x))");
-        assertEq(False, "(--(x)==>(x))");
+        assertEq(Bool.False, "(--x==>x)");
+        assertEq(Bool.True, "(x==>x)");
+        assertEq(Bool.True, "((x)==>(x))");
+        assertEq(Bool.False, "(--(x)==>(x))");
     }
 
     @Test
@@ -364,7 +365,7 @@ public class TermReductionsTest extends NarseseTest {
         assertEq("((a&&d)==>(b&&c))", "((&&, a, d) ==> (&&, a, b, c))");
         assertInvalidTerms("((&&, a, b, c) ==> (&&, a, b))");
         assertEq("((a&&b)==>c)", "((&&, a, b) ==> (&&, a, b, c))");
-        assertEq(True, "((&&, a, b, c) ==> a)");
+        assertEq(Bool.True, "((&&, a, b, c) ==> a)");
 
         assertEq("(a==>(b&&c))", "(a ==> (&&, a, b, c))");
     }
@@ -386,7 +387,7 @@ public class TermReductionsTest extends NarseseTest {
     void testRepeatInverseEquivalent() throws Narsese.NarseseException {
         assertEquals($("(x &&-1 x)"), $("(x &&+1 x)"));
         assertEquals($("(x =|> x)"), $("(x =|> x)"));
-        assertEquals(True, $("(x =|> x)"));
+        assertEquals(Bool.True, $("(x =|> x)"));
         assertEquals($("x"), $("(x &| x)"));
     }
 
@@ -395,14 +396,14 @@ public class TermReductionsTest extends NarseseTest {
     void testDisallowInhAndSimBetweenTemporallySimilarButInequalTerms() {
 
 
-        assertEq(Null, "((x &&+1 y)<->(x &&+10 y))");
-        assertEq(Null, "((y &&+10 x)<->(x &&+1 y))");
-        assertEq(Null, "((x=|>y)-->(x ==>-10 y))");
+        assertEq(Bool.Null, "((x &&+1 y)<->(x &&+10 y))");
+        assertEq(Bool.Null, "((y &&+10 x)<->(x &&+1 y))");
+        assertEq(Bool.Null, "((x=|>y)-->(x ==>-10 y))");
     }
 
     @Test
     void testAllowInhNegationStatements() throws Narsese.NarseseException {
-        assertEq(True, "(a-->a)");
+        assertEq(Bool.True, "(a-->a)");
 
         assertEq("((--,a)-->b)", "((--,a) --> b)");
         assertNotEquals("(a-->b)", $("((--,a) --> b)").toString());
@@ -417,7 +418,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testAllowSimNegationStatements() throws Narsese.NarseseException {
-        assertEq(True, "(a<->a)");
+        assertEq(Bool.True, "(a<->a)");
 
         assertNotEquals($("(--a <-> b)"), $("(a <-> --b)"));
 
@@ -451,23 +452,23 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testConjInImplicationTautology() {
         Term x0 = $.$$("((x &&+2 x) ==>-2 x)");
-        assertEquals(True, x0);
+        assertEquals(Bool.True, x0);
 
         Term x = $.$$("((((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3))) ==>-2 ((_1,_2)&|(_1,_3)))");
-        assertEquals(True, x);
+        assertEquals(Bool.True, x);
     }
 
     @Test
     void testCommutizeRepeatingImpl() throws Narsese.NarseseException {
 
-        assertEquals(True,
+        assertEquals(Bool.True,
                 $("(a ==>+1 a)").dt(DTERNAL));
-        assertEquals(False,
+        assertEquals(Bool.False,
                 $("(--a ==>+1 a)").dt(DTERNAL));
 
-        assertEquals(True,
+        assertEquals(Bool.True,
                 $("(a ==>+1 a)").dt(0));
-        assertEquals(False,
+        assertEquals(Bool.False,
                 $("(--a ==>+1 a)").dt(0));
 
 
@@ -488,10 +489,10 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testImplCommonSubterms2() {
-        assertEq(True, "((tetris(isRowClear,7,true)&&tetris(7,14))==>tetris(7,14))");
+        assertEq(Bool.True, "((tetris(isRowClear,7,true)&&tetris(7,14))==>tetris(7,14))");
 
 
-        assertEq(True, "((tetris(isRowClear,7,true)&&tetris(7,14))=|>tetris(7,14))");
+        assertEq(Bool.True, "((tetris(isRowClear,7,true)&&tetris(7,14))=|>tetris(7,14))");
 
         assertEq("((tetris(isRowClear,7,true)&&tetris(7,14)) ==>+10 tetris(7,14))", "((tetris(isRowClear,7,true)&&tetris(7,14)) ==>+10 tetris(7,14))");
     }
@@ -499,7 +500,7 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testImplCommonSubterms3() {
 
-        assertEq(True, "((x(intValue,(),0)&&x(set,0))==>x(intValue,(),0))");
+        assertEq(Bool.True, "((x(intValue,(),0)&&x(set,0))==>x(intValue,(),0))");
         assertEq("x(set,0)", "((x(intValue,(),0)==>x(intValue,(),0)) && x(set,0))");
         assertEq(
 

@@ -3,13 +3,13 @@ package nars.io;
 import nars.*;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.Present;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,9 +33,9 @@ class NarseseExtendedTest extends NarseseTest {
     }
 
     @Test void testBoolean() {
-        assertSame(True, $$("true"));
-        assertSame(False, $$("false"));
-        assertSame(Null, $$("null"));
+        assertSame(Bool.True, $$("true"));
+        assertSame(Bool.False, $$("false"));
+        assertSame(Bool.Null, $$("null"));
     }
 
     private void eternal(Task t) {

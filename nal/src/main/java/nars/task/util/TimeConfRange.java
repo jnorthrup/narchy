@@ -1,6 +1,7 @@
 package nars.task.util;
 
 import jcog.tree.rtree.HyperRegion;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 
 public class TimeConfRange extends TimeRange {
 
@@ -26,4 +27,13 @@ public class TimeConfRange extends TimeRange {
         return t.contains(start, end) && t.containsConf(cMin,cMax);
     }
 
+    /** sorts nearest to the end of a list */
+    public static DoubleFunction distanceFunction(TimeRange a) {
+        DoubleFunction<TaskRegion> d =
+                a.start!=a.end ?
+                    b -> -(b.maxTimeTo(a.start) + b.maxTimeTo(a.end))
+                        :
+                    b -> -b.midTimeTo(a.start);
+        return d;
+    }
 }

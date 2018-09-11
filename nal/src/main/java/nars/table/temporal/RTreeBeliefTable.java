@@ -3,23 +3,20 @@ package nars.table.temporal;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.Deleteable;
-import jcog.sort.CachedTopN;
 import jcog.sort.Top;
 import jcog.sort.Top2;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.Revision;
 import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
-import nars.task.util.Answer;
-import nars.task.util.TaskRegion;
-import nars.task.util.TimeConfRange;
-import nars.task.util.TimeRange;
+import nars.task.util.*;
 import nars.truth.polation.TruthIntegration;
+import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.WTF.WTF;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static jcog.math.LongInterval.ETERNAL;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -81,7 +77,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.
      */
-    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion, ?> next, @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Consumer<Leaf<TaskRegion>> weakLeaf) {
+    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion> next, @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Consumer<Leaf<TaskRegion>> weakLeaf) {
         if (next instanceof Leaf) {
 
             Leaf l = (Leaf) next;
@@ -130,11 +126,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return (TaskRegion r) -> {
 
             long timeDist =
-                    r.maxTimeTo(now)/(1+perceptDur);
-                    //r.midTimeTo(when);
-                    //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
+                    r.maxTimeTo(now) / (1 + perceptDur);
+            //r.midTimeTo(when);
+            //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
-            float conf = (((float) r.coord(false, 2))+((float) r.coord(true, 2)))/2;
+            float conf = (((float) r.coord(false, 2)) + ((float) r.coord(true, 2))) / 2;
 
             float v = //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
                     (timeDist) * (1 - conf);
@@ -171,20 +167,20 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //    }
 
     static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
-        return taskStrengthWithFutureBoost(now, presentAndFutureBoost, when - perceptDur/2, when + perceptDur/2, perceptDur);
+        return taskStrengthWithFutureBoost(now, presentAndFutureBoost, when - perceptDur / 2, when + perceptDur / 2, perceptDur);
     }
 
     static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long start, long end, int perceptDur) {
         long futureStarts = now;
-                // - perceptDur;
+        // - perceptDur;
         return (Task x) -> (x.endsAfter(futureStarts) ? presentAndFutureBoost : 1f) *
                 TruthIntegration.eviInteg(x, start, end, perceptDur);
     }
 
 
-
     @Override
-    @Deprecated public void update(SignalTask task, Runnable change) {
+    @Deprecated
+    public void update(SignalTask task, Runnable change) {
         write(treeRW -> {
 
             boolean removed = treeRW.remove(task);
@@ -281,24 +277,91 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         int s = size();
         if (s == 0)
             return;
-        if (s < COMPLETE_SCAN_SIZE_THRESHOLD) {
-            forEachTask(m);
-        }
-
 
         //TODO use iterative expansion like already impl, just not adapted for the new TaskRank API
 
-        Predicate<TaskRegion> each = TaskRegion.asTask((Task t) -> {
-            m.accept(t);
-            return true;
-        });
-        if (m.time.intersectOrContain) {
+        Predicate<TaskRegion> each = TaskRegion.asTask(m::tryAccept);
 
-            whileEachIntersecting(expandLerpToTableBounds(m.time, MATCH_QUALITY), each);
-        } else {
-            whileEachContaining(m.time, each);
+        TimeRangeFilter time = m.time;
+        @Nullable TaskRegion bounds = this.bounds();
+        boolean mustContain = !(time.intersectOrContain);
+//            if (bounds.contains(time) && !time.contains(bounds)) {
+//                //the target region is contained within the existing bounds.
+//                // prioritize the search in that area first with a left/right scan.
+//                // if still searching, then proceed outwards to some limit
+//
+//            }
+//
+//            whileEachIntersecting(expandLerpToTableBounds(time, MATCH_QUALITY), each);
+//
+//        } else {
+        //strict containment
+        if (!mustContain || bounds.intersects(time)) { //else nothing would match
+            if (s <= MIN_TASKS_PER_LEAF || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
+                whileEachContaining(time, each);
+            } else {
+
+                read((tree) -> {
+                    long mid = time.mid();
+
+
+                    HyperIterator.NodeFilter<TaskRegion> f = new HyperIterator.NodeFilter<>(
+                            (int) Math.round(Math.log(s)/Math.log((MIN_TASKS_PER_LEAF+MAX_TASKS_PER_LEAF)/2) )
+                    );
+
+                    TimeRange left = new TimeRange(mustContain ? time.start() : Long.MIN_VALUE+1, mid);
+
+                    TimeRange right = new TimeRange(mid + 1,
+                            mustContain ? time.end() : Long.MAX_VALUE-1);
+
+                    HyperIterator<TaskRegion> L = tree.iterate(left, BoundsMatch.ANY);
+                    HyperIterator<TaskRegion> R = tree.iterate(right, BoundsMatch.ANY);
+
+                    L.setNodeFilter(f);
+                    R.setNodeFilter(f);
+
+                    DoubleFunction timeDist = TimeConfRange.distanceFunction(time);
+                    L.setDistanceFunction(timeDist);
+                    R.setDistanceFunction(timeDist);
+
+                    //must allow intersect for first stage match because the iterators may cut the item in half but it will still be a contained from the total bounds
+                    HyperIterator[] ii;
+                    ii = new HyperIterator[]{L, R};
+
+                    boolean swap = m.nar.random().nextBoolean();
+                    if (swap)
+                        ArrayUtils.swap(ii, 0, 1);
+
+                    int active;
+                    all:
+                    do {
+
+                        active = ii.length;
+                        for (int i = 0, iiLength = ii.length; i < iiLength; i++) {
+                            HyperIterator<TaskRegion> h = ii[i];
+
+                            if (h == null) {
+                                active--;
+                                continue;
+                            }
+
+                            if (h.hasNext()) {
+                                TaskRegion next = h.next();
+                                if (!mustContain || time.contains(next))
+                                    if (!each.test(next))
+                                        break all; //done
+                            } else {
+                                ii[i] = null; //finished
+                                active--;
+                            }
+                        }
+
+                    } while (active > 0);
+
+                });
+
+            }
         }
-
 //        ExpandingScan tt = new ExpandingScan(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
 //                m,//task(m.value()),
 //                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
@@ -322,41 +385,47 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
     }
-    /** TODO refactor as TimeRange method */
-    private TimeRange expandLerpToTableBounds(TimeRange time, float lerpToTableExtents) {
-        if (time.start != ETERNAL) { //not already fully expanded?
-            long tableDur = tableDur();
-            long initialRange = time.end - time.start;
-            if (initialRange < tableDur) {
 
-
-                long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
-                if (halfExpand > 0) {
-                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
-                }
-            }
-
-        }
-        return time;
-    }
-    /** TODO refactor as TimeRange method */
-    private TimeRange expandFactor(TimeRange time, double factor) {
-        if (time.start != ETERNAL) { //not already fully expanded?
-
-            long initialRange = time.end - time.start;
-            if (initialRange > 0) {
-
-
-                //long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
-                long halfExpand = Math.round(initialRange * factor)/2;
-                if (halfExpand > 0) {
-                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
-                }
-            }
-
-        }
-        return time;
-    }
+//    /**
+//     * TODO refactor as TimeRange method
+//     */
+//    private TimeRange expandLerpToTableBounds(TimeRange time, float lerpToTableExtents) {
+//        if (time.start != ETERNAL) { //not already fully expanded?
+//            long tableDur = tableDur();
+//            long initialRange = time.end - time.start;
+//            if (initialRange < tableDur) {
+//
+//
+//                long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
+//                if (halfExpand > 0) {
+//                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
+//                }
+//            }
+//
+//        }
+//        return time;
+//    }
+//
+//    /**
+//     * TODO refactor as TimeRange method
+//     */
+//    private TimeRange expandFactor(TimeRange time, double factor) {
+//        if (time.start != ETERNAL) { //not already fully expanded?
+//
+//            long initialRange = time.end - time.start;
+//            if (initialRange > 0) {
+//
+//
+//                //long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
+//                long halfExpand = Math.round(initialRange * factor) / 2;
+//                if (halfExpand > 0) {
+//                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
+//                }
+//            }
+//
+//        }
+//        return time;
+//    }
 
     @Override
     public void setCapacity(int capacity) {
@@ -377,7 +446,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         Task input;
         if (r.input instanceof TaskProxy) {
-            input = ((TaskProxy)r.input).the();
+            input = ((TaskProxy) r.input).the();
         } else {
             input = r.input;
         }
@@ -412,7 +481,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (taskStrength == null) {
                 long now = nar.time();
                 dur = nar.dur();
-                      //  Math.max(1,Tense.occToDT(tableDur()/2));
+                //  Math.max(1,Tense.occToDT(tableDur()/2));
                 taskStrength = taskStrengthWithFutureBoost(now,
                         input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
                         now,
@@ -435,7 +504,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember remember, NAR nar) {
+    private boolean compress(Space<TaskRegion> tree, @Nullable Task
+            input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
+                                     remember, NAR nar) {
 
 
         float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
@@ -447,7 +518,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Top<Leaf<TaskRegion>> weakLeaf = new Top<>(leafWeakness);
 
         FloatFunction<TaskRegion> weakestTask = t ->
-                -taskStrength.floatValueOf((Task)t);
+                -taskStrength.floatValueOf((Task) t);
 //                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t),
 //                        //t.midTimeTo(now)
 //                         t.maxTimeTo(now)
@@ -652,7 +723,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (minT == Long.MIN_VALUE && maxT == Long.MAX_VALUE) {
             forEach(TaskRegion.asTask(x));
         } else {
-            whileEach(minT, maxT, (t)->{
+            whileEach(minT, maxT, (t) -> {
                 x.accept(t);
                 return true;
             });
@@ -682,7 +753,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return capacity;
     }
 
-    @Nullable public TaskRegion bounds() {
+    /**
+     * bounds of the entire table
+     */
+    @Nullable
+    public TaskRegion bounds() {
         return (TaskRegion) root().bounds();
     }
 
@@ -714,200 +789,200 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private final static class ExpandingScan extends CachedTopN<TaskRegion> implements Predicate<TaskRegion> {
-
-        private final Predicate<Task> filter;
-        private final int minResults, attempts;
-        int attemptsRemain;
-
-
-        ExpandingScan(int minResults, int maxResults, FloatFunction<TaskRegion> strongestTask, int maxTries) {
-            this(minResults, maxResults, strongestTask, maxTries, null);
-        }
-
-
-        ExpandingScan(int minResults, int maxResults, FloatFunction<TaskRegion> strongestTask, int maxTries, Predicate<Task> filter) {
-            super(maxResults, strongestTask);
-            this.minResults = minResults;
-            this.attempts = maxTries;
-            this.filter = filter;
-        }
-
-        @Override
-        public boolean accept(TaskRegion taskRegion) {
-
-            return (!(taskRegion instanceof Task)) || super.accept(taskRegion);
-        }
-
-        @Override
-        public boolean test(TaskRegion x) {
-            accept(x);
-            return --attemptsRemain > 0;
-        }
-
-        @Override
-        public boolean valid(TaskRegion x) {
-            return ((!(x instanceof Task)) || (filter == null || filter.test((Task) x)));
-        }
-
-        boolean continueScan(TimeRange t) {
-            return size() < minResults && attemptsRemain > 0;
-        }
-
-        /**
-         * TODO add a Random argument so it can decide randomly whether to scan the left or right zone first.
-         * order matters because the quality limit may terminate it.
-         * however maybe the quality can be specified in terms that are compared
-         * only after the pair has been scanned making the order irrelevant.
-         */
-        ExpandingScan scan(RTreeBeliefTable table, long _start, long _end) {
-
-            /* whether eternal is the time bounds */
-            boolean eternal = _start == ETERNAL;
-
-
-            this.attemptsRemain = attempts;
-
-            int s = table.size();
-            if (s == 0)
-                return this;
-
-            /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
-                otherwise limit by the Leaf capacity */
-            if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= Answer.TASK_LIMIT)) {
-                table.forEach /*forEachOptimistic*/(this::accept);
-                //TODO this might be faster to add directly then sort the results after
-                //eliminating need for the Cache map
-                return this;
-            }
-
-            TaskRegion bounds = (TaskRegion) (table.root().bounds());
-
-            long boundsStart = bounds.start();
-            long boundsEnd = bounds.end();
-            if (boundsEnd == XTERNAL || boundsEnd < boundsStart) {
-                throw WTF();
-            }
-
-            int ss = s / COMPLETE_SCAN_SIZE_THRESHOLD;
-
-            long scanStart, scanEnd;
-            int confDivisions, timeDivisions;
-            if (!eternal) {
-
-                scanStart = Math.min(boundsEnd, Math.max(boundsStart, _start));
-                scanEnd = Math.max(boundsStart, Math.min(boundsEnd, _end));
-
-
-                timeDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX, ss));
-                confDivisions = Math.max(1, Math.min(SCAN_CONF_OCTAVES_MAX,
-                        ss / Util.sqr(1 + timeDivisions)));
-            } else {
-                scanStart = boundsStart;
-                scanEnd = boundsEnd;
-
-                confDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX /* yes TIME here, ie. the axes are switched */,
-                        Math.max(1, ss - minResults)));
-                timeDivisions = 1;
-            }
-
-            long expand = Math.max(1, (
-                    Math.round(((double) (boundsEnd - boundsStart)) / (1 << (timeDivisions))))
-            );
-
-
-            long mid = (scanStart + scanEnd) / 2;
-            long leftStart = scanStart, leftMid = mid, rightMid = mid, rightEnd = scanEnd;
-            boolean leftComplete = false, rightComplete = false;
-
-
-            TimeRange ll = confDivisions > 1 ? new TimeConfRange() : new TimeRange();
-            TimeRange rr = confDivisions > 1 ? new TimeConfRange() : new TimeRange();
-
-            float maxConf = bounds.confMax();
-            float minConf = bounds.confMin();
-
-            int FATAL_LIMIT = s * 2;
-            int count = 0;
-            boolean done = false;
-            do {
-
-                float cMax, cDelta, cMin;
-                if (confDivisions == 1) {
-                    cMax = 1;
-                    cMin = 0;
-                    cDelta = 0;
-                } else {
-                    cMax = maxConf;
-                    cDelta =
-                            Math.max((maxConf - minConf) / Math.min(s, confDivisions), Param.TRUTH_EPSILON);
-                    cMin = maxConf - cDelta;
-                }
-
-                for (int cLayer = 0;
-                     cLayer < confDivisions && !(done = !continueScan(ll.set(leftStart, rightEnd)));
-                     cLayer++, cMax -= cDelta, cMin -= cDelta) {
-
-
-                    TimeRange lll;
-                    if (!leftComplete) {
-                        if (confDivisions > 1)
-                            ((TimeConfRange) ll).set(leftStart, leftMid, cMin, cMax);
-                        else
-                            ll.set(leftStart, leftMid);
-
-                        lll = ll;
-                    } else {
-                        lll = null;
-                    }
-
-                    TimeRange rrr;
-                    if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd)) {
-                        if (confDivisions > 1)
-                            ((TimeConfRange) rr).set(rightMid, rightEnd, cMin, cMax);
-                        else
-                            rr.set(rightMid, rightEnd);
-                        rrr = rr;
-                    } else {
-                        rrr = null;
-                    }
-
-                    if (lll != null || rrr != null) {
-                        table.read /*readOptimistic*/((Space<TaskRegion> tree) -> {
-                            if (lll != null)
-                                tree.whileEachIntersecting(lll, this);
-                            if (rrr != null)
-                                tree.whileEachIntersecting(rrr, this);
-                        });
-                    }
-
-                    if (count++ == FATAL_LIMIT) {
-                        throw new RuntimeException("livelock in rtree scan");
-                    }
-                }
-
-                if (done)
-                    break;
-
-
-                long ls0 = leftStart;
-                leftComplete |= (ls0 == (leftStart = Math.max(boundsStart, leftStart - expand - 1)));
-
-                if (leftComplete && rightComplete) break;
-
-                long rs0 = rightEnd;
-                rightComplete |= (rs0 == (rightEnd = Math.min(boundsEnd, rightEnd + expand + 1)));
-
-                if (leftComplete && rightComplete) break;
-
-                leftMid = ls0 - 1;
-                rightMid = rs0 + 1;
-                expand *= 2;
-            } while (true);
-
-            return this;
-        }
-    }
+//    private final static class ExpandingScan extends CachedTopN<TaskRegion> implements Predicate<TaskRegion> {
+//
+//        private final Predicate<Task> filter;
+//        private final int minResults, attempts;
+//        int attemptsRemain;
+//
+//
+//        ExpandingScan(int minResults, int maxResults, FloatFunction<TaskRegion> strongestTask, int maxTries) {
+//            this(minResults, maxResults, strongestTask, maxTries, null);
+//        }
+//
+//
+//        ExpandingScan(int minResults, int maxResults, FloatFunction<TaskRegion> strongestTask, int maxTries, Predicate<Task> filter) {
+//            super(maxResults, strongestTask);
+//            this.minResults = minResults;
+//            this.attempts = maxTries;
+//            this.filter = filter;
+//        }
+//
+//        @Override
+//        public boolean accept(TaskRegion taskRegion) {
+//
+//            return (!(taskRegion instanceof Task)) || super.accept(taskRegion);
+//        }
+//
+//        @Override
+//        public boolean test(TaskRegion x) {
+//            accept(x);
+//            return --attemptsRemain > 0;
+//        }
+//
+//        @Override
+//        public boolean valid(TaskRegion x) {
+//            return ((!(x instanceof Task)) || (filter == null || filter.test((Task) x)));
+//        }
+//
+//        boolean continueScan(TimeRange t) {
+//            return size() < minResults && attemptsRemain > 0;
+//        }
+//
+//        /**
+//         * TODO add a Random argument so it can decide randomly whether to scan the left or right zone first.
+//         * order matters because the quality limit may terminate it.
+//         * however maybe the quality can be specified in terms that are compared
+//         * only after the pair has been scanned making the order irrelevant.
+//         */
+//        ExpandingScan scan(RTreeBeliefTable table, long _start, long _end) {
+//
+//            /* whether eternal is the time bounds */
+//            boolean eternal = _start == ETERNAL;
+//
+//
+//            this.attemptsRemain = attempts;
+//
+//            int s = table.size();
+//            if (s == 0)
+//                return this;
+//
+//            /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
+//                otherwise limit by the Leaf capacity */
+//            if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= Answer.TASK_LIMIT)) {
+//                table.forEach /*forEachOptimistic*/(this::accept);
+//                //TODO this might be faster to add directly then sort the results after
+//                //eliminating need for the Cache map
+//                return this;
+//            }
+//
+//            TaskRegion bounds = (TaskRegion) (table.root().bounds());
+//
+//            long boundsStart = bounds.start();
+//            long boundsEnd = bounds.end();
+//            if (boundsEnd == XTERNAL || boundsEnd < boundsStart) {
+//                throw WTF();
+//            }
+//
+//            int ss = s / COMPLETE_SCAN_SIZE_THRESHOLD;
+//
+//            long scanStart, scanEnd;
+//            int confDivisions, timeDivisions;
+//            if (!eternal) {
+//
+//                scanStart = Math.min(boundsEnd, Math.max(boundsStart, _start));
+//                scanEnd = Math.max(boundsStart, Math.min(boundsEnd, _end));
+//
+//
+//                timeDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX, ss));
+//                confDivisions = Math.max(1, Math.min(SCAN_CONF_OCTAVES_MAX,
+//                        ss / Util.sqr(1 + timeDivisions)));
+//            } else {
+//                scanStart = boundsStart;
+//                scanEnd = boundsEnd;
+//
+//                confDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX /* yes TIME here, ie. the axes are switched */,
+//                        Math.max(1, ss - minResults)));
+//                timeDivisions = 1;
+//            }
+//
+//            long expand = Math.max(1, (
+//                    Math.round(((double) (boundsEnd - boundsStart)) / (1 << (timeDivisions))))
+//            );
+//
+//
+//            long mid = (scanStart + scanEnd) / 2;
+//            long leftStart = scanStart, leftMid = mid, rightMid = mid, rightEnd = scanEnd;
+//            boolean leftComplete = false, rightComplete = false;
+//
+//
+//            TimeRange ll = confDivisions > 1 ? new TimeConfRange() : new TimeRange();
+//            TimeRange rr = confDivisions > 1 ? new TimeConfRange() : new TimeRange();
+//
+//            float maxConf = bounds.confMax();
+//            float minConf = bounds.confMin();
+//
+//            int FATAL_LIMIT = s * 2;
+//            int count = 0;
+//            boolean done = false;
+//            do {
+//
+//                float cMax, cDelta, cMin;
+//                if (confDivisions == 1) {
+//                    cMax = 1;
+//                    cMin = 0;
+//                    cDelta = 0;
+//                } else {
+//                    cMax = maxConf;
+//                    cDelta =
+//                            Math.max((maxConf - minConf) / Math.min(s, confDivisions), Param.TRUTH_EPSILON);
+//                    cMin = maxConf - cDelta;
+//                }
+//
+//                for (int cLayer = 0;
+//                     cLayer < confDivisions && !(done = !continueScan(ll.set(leftStart, rightEnd)));
+//                     cLayer++, cMax -= cDelta, cMin -= cDelta) {
+//
+//
+//                    TimeRange lll;
+//                    if (!leftComplete) {
+//                        if (confDivisions > 1)
+//                            ((TimeConfRange) ll).set(leftStart, leftMid, cMin, cMax);
+//                        else
+//                            ll.set(leftStart, leftMid);
+//
+//                        lll = ll;
+//                    } else {
+//                        lll = null;
+//                    }
+//
+//                    TimeRange rrr;
+//                    if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd)) {
+//                        if (confDivisions > 1)
+//                            ((TimeConfRange) rr).set(rightMid, rightEnd, cMin, cMax);
+//                        else
+//                            rr.set(rightMid, rightEnd);
+//                        rrr = rr;
+//                    } else {
+//                        rrr = null;
+//                    }
+//
+//                    if (lll != null || rrr != null) {
+//                        table.read /*readOptimistic*/((Space<TaskRegion> tree) -> {
+//                            if (lll != null)
+//                                tree.whileEachIntersecting(lll, this);
+//                            if (rrr != null)
+//                                tree.whileEachIntersecting(rrr, this);
+//                        });
+//                    }
+//
+//                    if (count++ == FATAL_LIMIT) {
+//                        throw new RuntimeException("livelock in rtree scan");
+//                    }
+//                }
+//
+//                if (done)
+//                    break;
+//
+//
+//                long ls0 = leftStart;
+//                leftComplete |= (ls0 == (leftStart = Math.max(boundsStart, leftStart - expand - 1)));
+//
+//                if (leftComplete && rightComplete) break;
+//
+//                long rs0 = rightEnd;
+//                rightComplete |= (rs0 == (rightEnd = Math.min(boundsEnd, rightEnd + expand + 1)));
+//
+//                if (leftComplete && rightComplete) break;
+//
+//                leftMid = ls0 - 1;
+//                rightMid = rs0 + 1;
+//                expand *= 2;
+//            } while (true);
+//
+//            return this;
+//        }
+//    }
 
 
 }

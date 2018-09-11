@@ -32,6 +32,7 @@ import nars.subterm.Subterms;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
@@ -105,7 +106,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     static Term nullIfNull(@Nullable Term maybeNull) {
-        return (maybeNull == null) ? Null : maybeNull;
+        return (maybeNull == null) ? Bool.Null : maybeNull;
     }
 
     /**
@@ -267,7 +268,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         Term ptr = this;
         int s = path.size();
         for (int i = 0; i < s; i++)
-            if ((ptr = ptr.subSafe(path.get(i))) == Null)
+            if ((ptr = ptr.subSafe(path.get(i))) == Bool.Null)
                 return null;
         return ptr;
     }
@@ -286,7 +287,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default Term subPath(int subPathLen, byte... path) {
         Term ptr = this;
         for (int i = 0; i < subPathLen; i++) {
-            if ((ptr = ptr.subSafe(path[i])) == Null)
+            if ((ptr = ptr.subSafe(path[i])) == Bool.Null)
                 return null;
         }
         return ptr;
@@ -296,7 +297,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default Term subPath(int subPathLen, ByteList path) {
         Term ptr = this;
         for (int i = 0; i < subPathLen; i++) {
-            if ((ptr = ptr.subSafe(path.get(i))) == Null)
+            if ((ptr = ptr.subSafe(path.get(i))) == Bool.Null)
                 return null;
         }
         return ptr;
@@ -721,17 +722,17 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         }
     }
 
-    default boolean equalsNegRoot(Term t) {
-        if (this == t) {
-            return false;
-        } else if (t.op() == NEG) {
-            return equalsRoot(t.unneg());
-        } else if (op() == NEG) {
-            return unneg().equalsRoot(t);
-        } else {
-            return false;
-        }
-    }
+//    default boolean equalsNegRoot(Term t) {
+//        if (this == t) {
+//            return false;
+//        } else if (t.op() == NEG) {
+//            return equalsRoot(t.unneg());
+//        } else if (op() == NEG) {
+//            return unneg().equalsRoot(t);
+//        } else {
+//            return false;
+//        }
+//    }
 
     default MutableSet<Term> eventSet() {
         assert(op()==CONJ);

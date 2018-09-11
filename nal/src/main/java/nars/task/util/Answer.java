@@ -38,6 +38,7 @@ public class Answer implements Consumer<Task> {
 
 
     public final NAR nar;
+    private int triesRemain;
     public TimeRangeFilter time;
     public Term template = null;
 
@@ -45,11 +46,17 @@ public class Answer implements Consumer<Task> {
     private final TopN<Task> tasks;
     public final Predicate<Task> filter;
 
-    public Answer(int limit, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
+    public Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
+        this(capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), rank, filter, nar);
+    }
+
+    /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
+    public Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
         this.cache = start(rank.filter(filter));
         this.filter = filter;
-        this.tasks = new TopN<>(new Task[limit], cache);
+        this.tasks = new TopN<>(new Task[capacity], cache);
+        this.triesRemain = maxTries;
     }
 
     /**
@@ -403,6 +410,18 @@ public class Answer implements Consumer<Task> {
         if (tasks.isEmpty())
             return null;
         return tasks.top();
+    }
+
+    /** consume a limited 'tries' iteration. also applies the filter.
+     *  a false return value should signal a stop to any iteration supplying results */
+    public boolean tryAccept(Task t) {
+        if (triesRemain-- < 0)
+            return false;
+
+        if (filter==null || filter.test(t))
+            accept(t);
+
+        return true;
     }
 
 //

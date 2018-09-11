@@ -20,7 +20,6 @@ package jcog.tree.rtree;
  * #L%
  */
 
-import jcog.data.list.FasterList;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,41 +29,37 @@ import java.util.stream.Stream;
 
 /**
  * Created by jcairns on 4/30/15.
- * @param L the leaf type, ie. the type which will be found at the edges and which characterizes the type of the tree this may be used within
- * @param V the type of child values, which will either be Node<L,?> for Branch, or L for leaves
  */
-public interface Node<L, V> extends Nodelike<L> {
+public interface Node<X> extends Nodelike<X> {
     /**
      * @return boolean - true if this node is a leaf
      */
     boolean isLeaf();
 
-    Stream<L> stream();
+    Stream<X> streamValues();
 
-    default java.util.Iterator<L> iterator() {
-        return stream().iterator();
+    /** iterate leaves only */
+    default java.util.Iterator<X> iterateValues() {
+        return streamValues().iterator();
     }
 
-    Stream<V> streamNodes();
-    //{
-      //  return IntStream.range(0, size()).mapToObj(this::get);
-    //}
+    Stream<Node<X>> streamNodes();
 
-    java.util.Iterator<V> iterateNodes();
+    /** the values only in this specific branch or leaf, regardless of type */
+    Stream<?> streamLocal();
 
-
-    default FasterList<V> toList() {
-        int s = size();
-        FasterList f = new FasterList(s);
-        Object[] ff = f.array();
-        for (int i = 0; i < s; i++) {
-            ff[i] = get(i);
-        }
-        return f;
+    /** the values only in this specific branch or leaf, regardless of type */
+    default java.util.Iterator<?> iterateLocal() {
+        return streamLocal().iterator();
     }
 
-    /** gets contained child i */
-    V get(int i);
+    /** iterate nodes only */
+    default java.util.Iterator<Node<X>> iterateNodes() {
+        return streamNodes().iterator();
+    }
+
+
+
 
     /**
      * @return Rect - the bounding rectangle for this node
@@ -73,7 +68,7 @@ public interface Node<L, V> extends Nodelike<L> {
 
     /**
      * Add t to the index
-     *  @param l      - value to add to index
+     *  @param x      - value to add to index
      * @param parent - the callee which is the parent of this instance.
      *                  if parent is null, indicates it is in the 'merge attempt' stage
      *                  if parent is non-null, in the 'insertion attempt' stage
@@ -81,16 +76,16 @@ public interface Node<L, V> extends Nodelike<L> {
      * @param added
      * @return null if Leaf merged it with existing item
      */
-    Node<L, ?> add(/*@NotNull */L l, @Nullable Nodelike<L> parent, /*@NotNull */Spatialization<L> model, boolean[] added);
+    Node<X> add(/*@NotNull */X x, @Nullable Nodelike<X> parent, /*@NotNull */Spatialization<X> model, boolean[] added);
 
     /**
      * Remove t from the index
-     * @param l      - value to remove from index
+     * @param x      - value to remove from index
      * @param xBounds - the bounds of t which may not necessarily need to be the same as the bounds as model might report it now; for removing a changing value
      * @param model
      * @param removed
      */
-    Node<L, ?> remove(L l, HyperRegion xBounds, Spatialization<L> model, boolean[] removed);
+    Node<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed);
 
     /**
      * update an existing t in the index
@@ -98,7 +93,7 @@ public interface Node<L, V> extends Nodelike<L> {
      * @param tnew - value to update old index to
      * @param model
      */
-    Node<L, ?> replace(L told, L tnew, Spatialization<L> model);
+    Node<X> replace(X told, X tnew, Spatialization<X> model);
 
 
 
@@ -115,11 +110,11 @@ public interface Node<L, V> extends Nodelike<L> {
      *
      * @param consumer
      */
-    void forEach(Consumer<? super L> consumer);
+    void forEach(Consumer<? super X> consumer);
 
-    boolean AND(Predicate<L> p);
+    boolean AND(Predicate<X> p);
 
-    boolean OR(Predicate<L> p);
+    boolean OR(Predicate<X> p);
 
     /**
      * Consumer "accepts" every node in the given rect
@@ -129,9 +124,9 @@ public interface Node<L, V> extends Nodelike<L> {
      * @param model
      * @return whether to continue visit
      */
-    boolean intersecting(HyperRegion rect, Predicate<L> t, Spatialization<L> model);
+    boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model);
 
-    boolean containing(HyperRegion rect, Predicate<L> t, Spatialization<L> model);
+    boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model);
 
 
 
@@ -150,7 +145,7 @@ public interface Node<L, V> extends Nodelike<L> {
      *
      * @return instrumented node wrapper
      */
-    Node<L, ?> instrument();
+    Node<X> instrument();
 
 
 

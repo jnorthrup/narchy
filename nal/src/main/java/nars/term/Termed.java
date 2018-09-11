@@ -26,4 +26,8 @@ public interface Termed extends Termlike {
         return term().containsRecursively(t, root, inSubtermsOf);
     }
 
+    @Override
+    default boolean impossibleSubStructure(int structure) {
+        return term().impossibleSubStructure(structure);
+    }
 }

@@ -12,12 +12,12 @@ import nars.The;
 import nars.subterm.util.DisposableTermList;
 import nars.term.Variable;
 import nars.term.*;
+import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -394,6 +394,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         forEach(target::add);
     }
 
+    @Override
+    default boolean impossibleSubStructure(int structure) {
+        return !hasAll(structure);
+    }
 
 //
 //    /**
@@ -659,7 +663,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return (t.length == 0) ? Op.EmptyTermArray : t;
 //    }
 
-    default Term[] termsExcept(MetalBitSet toRemove) {
+    default Term[] subsExcept(MetalBitSet toRemove) {
         int numRemoved = toRemove.cardinality();
         assert(numRemoved > 0);
         int size = subs();
@@ -673,7 +677,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return t.length == 0 ? Op.EmptyTermArray : t;
     }
 
-    default Term[] termsExcept(Collection<Term> except) {
+    default Term[] subsExcept(Collection<Term> except) {
         assert(!except.isEmpty());
         FasterList<Term> fxs = new FasterList<>(subs());
         forEach(t -> {
@@ -732,8 +736,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * removes first occurrence only
      */
-    default Term[] termsExcept(int i) {
-        return ArrayUtils.remove(arrayShared(), Term[]::new, i);
+    default Term[] subsExcept(int index) {
+        int s = subs();
+        Term[] x = new Term[s -1];
+        int k = 0;
+        for (int j = 0; j < s; j++) {
+            if (j!=index)
+                x[k++] = sub(j);
+        }
+        return x;
+
+        //return ArrayUtils.remove(arrayShared(), Term[]::new, i);
     }
 
     default int hashWith(Op op) {
@@ -745,9 +758,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /** only removes the next found item. if this is for use in non-commutive term, you may need to call this repeatedly */
-    @Nullable default Term[] termsExcept(Term x) {
+    @Nullable default Term[] subsExcept(Term x) {
         int index = indexOf(x);
-        return (index == -1) ? null : termsExcept(index);
+        return (index == -1) ? null : subsExcept(index);
     }
 
     default void appendTo(ByteArrayDataOutput out) {
@@ -791,7 +804,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             Term yi = f.transform(xi);
 
-            if (yi == null || yi == Null)
+            if (yi == null || yi == Bool.Null)
                 return null;
 
             //these fail-fast cases must be consistent with the term construction process.
@@ -799,11 +812,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
             switch (superOp) {
                 case CONJ:
                     //cant skip the True yet
-                    if (yi == False)
+                    if (yi == Bool.False)
                         return Op.FalseSubterm;
                     break;
                 case IMPL:
-                    if (i==0 && yi == False)
+                    if (i==0 && yi == Bool.False)
                         return null;
                     break;
 //                case INH:
@@ -826,7 +839,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     for (int j = 0; j < xes; j++) {
                         @Nullable Term k = f.transform(xe.sub(j));
                         assert(!(k instanceof EllipsisMatch)): "recursive EllipsisMatch unsupported";
-                        if (k == null || k == Null) {
+                        if (k == null || k == Bool.Null) {
                             return null;
                         } else {
                             y.addWithoutResizeCheck(k);

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static jcog.Util.ITEM;
@@ -94,14 +95,30 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         return stream(list, list.length);
     }
 
+
     public static <X> Stream<X> stream(X[] list, int size) {
         switch (size) {
             case 0: return Stream.empty();
             case 1: return Stream.of(list[0]);
             case 2: return Stream.of(list[0], list[1]);
-            
             default:
-                return Stream.of(list).limit(size);
+                Stream<X> s = Stream.of(list);
+                if (list.length>size)
+                    s = s.limit(size);
+                return s;
+        }
+    }
+
+    public static <X> Stream<X> streamNonNull(X[] list, int size) {
+        switch (size) {
+            case 0: return Stream.empty();
+            case 1: { X x0 = list[0]; return x0==null ? Stream.empty() : Stream.of(x0); }
+            case 2: { X x0 = list[0], x1 = list[1]; if (x0!=null && x1!=null) return Stream.of(x0, x1); else if (x0 == null && x1 == null) return Stream.empty(); else if (x1 == null) return Stream.of(x0); else return Stream.of(x1); }
+            default:
+                Stream<X> s = Stream.of(list);
+                if (list.length>size)
+                    s = s.limit(size);
+                return s.filter(Objects::nonNull);
         }
     }
 

@@ -41,7 +41,7 @@ public final class AxialSplitLeaf<T> implements Split<T> {
     public AxialSplitLeaf() { }
 
     @Override
-    public Node<T, ?> split(T t, Leaf<T> leaf, Spatialization<T> model) {
+    public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> model) {
 
 
         HyperRegion r = leaf.bounds;

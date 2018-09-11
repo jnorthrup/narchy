@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X>> {
 
-    private final Bag<X, PriReference<X>> bag;
+    public final Bag<X, PriReference<X>> bag;
     private final Iterable<X> src;
     private final NumberX scale;
     private final AtomicBoolean busy = new AtomicBoolean();

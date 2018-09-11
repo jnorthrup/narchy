@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.Arrays.copyOfRange;
-import static nars.Op.Null;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /** NAL2/NAL3 intersection and difference functions */
@@ -27,9 +27,9 @@ public class SetSectDiff {
         int trues = 0;
         for (Term x : t) {
             if (x instanceof Bool) {
-                if (x == Op.True) {
+                if (x == Bool.True) {
                     trues++;
-                } else if (x == Null || x == Op.False) {
+                } else if (x == Null || x == Bool.False) {
                     return Null;
                 }
             }
@@ -42,11 +42,11 @@ public class SetSectDiff {
 
         if (trues > 0) {
             if (trues == t.length) {
-                return Op.True;
+                return Bool.True;
             } else if (t.length - trues == 1) {
 
                 for (Term x : t) {
-                    if (x != Op.True)
+                    if (x != Bool.True)
                         return x;
                 }
             } else {
@@ -54,7 +54,7 @@ public class SetSectDiff {
                 Term[] t2 = new Term[t.length - trues];
                 int yy = 0;
                 for (Term x : t) {
-                    if (x != Op.True)
+                    if (x != Bool.True)
                         t2[yy++] = x;
                 }
                 t = t2;
@@ -192,7 +192,7 @@ public class SetSectDiff {
 
 
                 if (et0.equals(et1))
-                    return Op.False;
+                    return Bool.False;
 
                 //((--,X)~(--,Y)) reduces to (Y~X)
                 if (et0.op() == Op.NEG && et1.op() == Op.NEG) {
@@ -204,7 +204,7 @@ public class SetSectDiff {
 
                 Op o0 = et0.op();
                 if (et1.equalsNeg(et0)) {
-                    return o0 == Op.NEG || et0 == Op.False ? Op.False : Op.True;
+                    return o0 == Op.NEG || et0 == Bool.False ? Bool.False : Bool.True;
                 }
 
 
@@ -252,7 +252,7 @@ public class SetSectDiff {
                 if (aa.subs() == cs || bb.subs() == cs)
                     return Null;
                 return ao.the(common.with(
-                        diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
+                        diffOp.the(ao.the(aa.subsExcept(common)), ao.the(bb.subsExcept(common)))
                 ));
             }
         }
@@ -266,7 +266,7 @@ public class SetSectDiff {
                 if (aa.subs() == cs || bb.subs() == cs)
                     return Null;
                 return ao.the(common.collect(Term::neg).with(
-                        diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
+                        diffOp.the(ao.the(aa.subsExcept(common)), ao.the(bb.subsExcept(common)))
                 ));
             }
         }

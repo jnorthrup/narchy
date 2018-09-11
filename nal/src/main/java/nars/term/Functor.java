@@ -17,6 +17,7 @@ import nars.op.Equal;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +45,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     public static Atomic func(Term x) {
-        return isFunc(x) ? (Atomic) x.sub(1) : Op.Null;
+        return isFunc(x) ? (Atomic) x.sub(1) : Bool.Null;
     }
     public static boolean isFunc(Term x) {
         return (x.hasAll(Op.FuncBits) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).op()==ATOM );
@@ -95,13 +96,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
     private static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
         return f(termAtom, tt ->
-                (tt.subs() == arityRequired) ? ff.apply(tt) : Null
+                (tt.subs() == arityRequired) ? ff.apply(tt) : Bool.Null
         );
     }
     private static LambdaFunctor f(@NotNull Atom termAtom, int minArity, int maxArity, @NotNull Function<Subterms, Term> ff) {
         return f(termAtom, (tt) -> {
             int n = tt.subs();
-            return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : Null;
+            return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : Bool.Null;
         });
     }
     /**
@@ -292,13 +293,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
         @Override
         public final Term applyInline(Subterms args) {
-            if (args.subs()!=1) return Null;
+            if (args.subs()!=1) return Bool.Null;
             return apply1(args.sub(0));
         }
 
         @Override
         public final Term apply(Evaluation e, Subterms terms) {
-            return terms.subs() != 1 ? Null : apply1(terms.sub(0));
+            return terms.subs() != 1 ? Bool.Null : apply1(terms.sub(0));
         }
 
     }
@@ -311,7 +312,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
         @Override
         final public Term apply(Evaluation e, Subterms terms) {
-            return terms.subs() != 2 ? Null : apply(terms.sub(0), terms.sub(1));
+            return terms.subs() != 2 ? Bool.Null : apply(terms.sub(0), terms.sub(1));
         }
 
         protected abstract Term apply(Term a, Term b);
@@ -357,7 +358,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 case 2:
                     return apply2(e, terms.sub(0), terms.sub(1));
                 default:
-                    return Null; 
+                    return Bool.Null;
             }
         }
 
@@ -386,7 +387,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     Term XY = compute(x);
                     if (XY!=null) {
                         return e.is(y, XY) ?
-                                null : Null;
+                                null : Bool.Null;
                     } else {
                         return null; 
                     }
@@ -396,7 +397,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     Term X = uncompute(x, y);
                     if (X!=null) {
                         return e.is(x, X) ?
-                            null : Null;
+                            null : Bool.Null;
                     } else {
                         return null; 
                     }
@@ -436,7 +437,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 case 3:
                     return apply2(e, terms.sub(0), terms.sub(1), terms.sub(2));
                 default:
-                    return Null; 
+                    return Bool.Null;
             }
         }
 
@@ -460,7 +461,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(x, param);
                     if (XY!=null) {
-                        return e.is(y, XY) ? null : Null;
+                        return e.is(y, XY) ? null : Bool.Null;
                     } else {
                         return null; 
                     }
@@ -469,7 +470,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 if (x.hasAny(Op.Variable)) {
                     Term X = uncompute(e, x, param, y);
                     if (X!=null) {
-                        return e.is(x, X) ? null : Null;
+                        return e.is(x, X) ? null : Bool.Null;
                     } else {
                         return null; 
                     }
@@ -477,7 +478,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     
                     Term XY = compute(x, param);
                     if (XY != null) {
-                        return XY.equals(y) ? True  : Null;
+                        return XY.equals(y) ? Bool.True  : Bool.Null;
                     } else {
                         return null;
                     }
@@ -507,7 +508,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 case 3:
                     return apply3(e, terms.sub(0), terms.sub(1), terms.sub(2));
                 default:
-                    return Null; 
+                    return Bool.Null;
             }
         }
 
@@ -531,7 +532,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 } else {
                     Term XY = compute(e, x, y);
                     if (XY!=null) {
-                        return e.is(xy, XY) ? null : Null;
+                        return e.is(xy, XY) ? null : Bool.Null;
                     } else {
                         return null; 
                     }
@@ -550,7 +551,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                         return null; //true, keep
                     } else {
                         
-                        return Null;
+                        return Bool.Null;
                     }
                 } else {
                     return computeFromXY(e, x, y, xy);

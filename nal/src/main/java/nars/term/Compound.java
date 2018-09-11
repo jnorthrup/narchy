@@ -21,6 +21,7 @@
 package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.Util;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.IO;
@@ -29,6 +30,7 @@ import nars.The;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.anon.Anon;
+import nars.term.atom.Bool;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
 import org.apache.commons.lang3.ArrayUtils;
@@ -56,6 +58,10 @@ public interface Compound extends Term, IPair, Subterms {
     static boolean equals(/*@NotNull*/ Compound a, Object b) {
         if (a == b) return true;
 
+//        if (b instanceof Termed && !(b instanceof Term)) {
+//            throw new TODO(); //ex: term == concept?  technically no but if it happens it might be expected here
+//        }
+
         return (b instanceof Compound) &&
                 (a.hashCode() == b.hashCode())
                 &&
@@ -72,13 +78,24 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     static StringBuilder toStringBuilder(Compound c) {
-        StringBuilder sb = new StringBuilder(/* conservative estimate */ c.volume() * 2);
+        StringBuilder sb = new StringBuilder(
+                ///* conservative estimate */ c.volume() * 2
+                32
+        );
         try {
             c.appendTo(sb);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return sb;
+    }
+
+    /** reference impl for compound hashcode */
+    static int hashCode(Compound c) {
+        return Util.hashCombine(
+                c.op().id,
+                c.hashCodeSubterms()
+                );
     }
 
     Op op();
@@ -338,6 +355,10 @@ public interface Compound extends Term, IPair, Subterms {
         subterms().addTo(set);
     }
 
+    @Override
+    default boolean impossibleSubStructure(int structure) {
+        return !subterms().hasAll(structure);
+    }
 
     @Override
     default boolean isNormalized() {
@@ -369,7 +390,7 @@ public interface Compound extends Term, IPair, Subterms {
             return this;
 
         if (newSubs == null)
-            return Null;
+            return Bool.Null;
 
         int dt = dt();
         Op o = op();

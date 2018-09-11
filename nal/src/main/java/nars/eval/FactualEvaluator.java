@@ -35,11 +35,11 @@ public class FactualEvaluator extends Evaluator {
 
     ProofTruth truth(Term x) {
 
-        if (x == True)
+        if (x == Bool.True)
             return ProofTruth.True;
-        else if (x == False)
+        else if (x == Bool.False)
             return ProofTruth.False;
-        else if (x == Null)
+        else if (x == Bool.Null)
             return ProofTruth.Conflict;
 
         Node f = nodes.get(x);
@@ -219,9 +219,9 @@ public class FactualEvaluator extends Evaluator {
 
                         Node nx = nodeOrAdd(x);
                         if (y.equals(x)) {
-                            nx.add(True); //if x==y add True ?
+                            nx.add(Bool.True); //if x==y add True ?
                         } else if (y.equalsNeg(x)) {
-                            nx.add(False);
+                            nx.add(Bool.False);
                         } else {
                             nx.add(y);
                         }

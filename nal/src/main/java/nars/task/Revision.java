@@ -64,12 +64,12 @@ public class Revision {
             return a;
 
         if (a instanceof Atomic || b instanceof Atomic)
-            return Null; //atomics differ
+            return Bool.Null; //atomics differ
 
         Op ao = a.op();
         Op bo = b.op();
         if (ao != bo)
-            return Null;
+            return Bool.Null;
 
 
         int len = a.subs();
@@ -102,7 +102,7 @@ public class Revision {
                 if (!ai.equals(bi)) {
                     Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
                     if (y instanceof Bool)
-                        return Null;
+                        return Bool.Null;
 
                     if (!ai.equals(y)) {
                         change = true;
@@ -130,10 +130,10 @@ public class Revision {
             return a.dt(dt);
         } else {
             Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
-            if (na == Null || na == False) return na;
+            if (na == Bool.Null || na == Bool.False) return na;
 
             Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
-            if (nb == Null || nb == False) return nb;
+            if (nb == Bool.Null || nb == Bool.False) return nb;
 
 
             return a.op().the(dt, na, nb);

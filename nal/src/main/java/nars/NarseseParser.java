@@ -15,6 +15,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.obj.QuantityTerm;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -392,7 +393,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     @Nullable
     static Term TemporalRelationBuilder(Term pred, Object timeDelta, Op o, Term subj) {
-        if (subj == null || subj == Null || pred == null || pred == Null)
+        if (subj == null || subj == Bool.Null || pred == null || pred == Bool.Null)
             return null;
         else {
             if (timeDelta instanceof Integer) {
@@ -751,11 +752,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 return IMPL.the(0, subs);
 
             case "-{-":
-                return subs.size() != 2 ? Null : $.inst(subs.get(0), subs.get(1));
+                return subs.size() != 2 ? Bool.Null : $.inst(subs.get(0), subs.get(1));
             case "-]-":
-                return subs.size() != 2 ? Null : $.prop(subs.get(0), subs.get(1));
+                return subs.size() != 2 ? Bool.Null : $.prop(subs.get(0), subs.get(1));
             case "{-]":
-                return subs.size() != 2 ? Null : $.instprop(subs.get(0), subs.get(1));
+                return subs.size() != 2 ? Bool.Null : $.instprop(subs.get(0), subs.get(1));
 
             default: {
                 Op o = Op.stringToOperator.get(op);
@@ -861,7 +862,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         opp[0] = op;
         FasterList<Term> vectorterms = popTerms(opp);
         if (vectorterms == null)
-            return Null;
+            return Bool.Null;
 
         op = opp[0];
 
@@ -912,9 +913,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 
                 tt.add(Atomic.the((String) p));
             } else if (p instanceof Term) {
-                if (p == Null) {
+                if (p == Bool.Null) {
                     stack.clear();
-                    return new FasterList(1).addingAll(Null);
+                    return new FasterList(1).addingAll(Bool.Null);
                 }
                 tt.add((Term)p);
             } else if (p instanceof Op) {

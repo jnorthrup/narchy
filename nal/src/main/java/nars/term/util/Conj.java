@@ -115,12 +115,12 @@ public class Conj extends ByteAnonMap {
     @Nullable
     public static Term conjDrop(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
-            return Null;
+            return Bool.Null;
 
         int cdt = conj.dt();
 
         if (concurrent(cdt)) {
-            Term[] csDropped = conj.subterms().termsExcept(event);
+            Term[] csDropped = conj.subterms().subsExcept(event);
             if (csDropped != null) {
                 if (csDropped.length == 1)
                     return csDropped[0];
@@ -169,13 +169,13 @@ public class Conj extends ByteAnonMap {
                         contradiction[0] = true;
                 });
                 if (contradiction[0])
-                    return Null;
+                    return Bool.Null;
             }
 
 
             boolean removed = c.remove(event, targetTime);
             if (!removed) {
-                return Null;
+                return Bool.Null;
             }
 
             return c.term();
@@ -216,7 +216,7 @@ public class Conj extends ByteAnonMap {
         int eventsSize = events.size();
         switch (eventsSize) {
             case 0:
-                return Null;
+                return Bool.Null;
             case 1:
                 return events.get(0).getTwo();
         }
@@ -236,7 +236,7 @@ public class Conj extends ByteAnonMap {
         int eventsSize = events.size();
         switch (eventsSize) {
             case 0:
-                return Null;
+                return Bool.Null;
             case 1:
                 return events.iterator().next().getTwo();
         }
@@ -254,9 +254,9 @@ public class Conj extends ByteAnonMap {
 
     public static Term without(Term include, Term exclude, boolean excludePosNeg) {
         if (include.equals(exclude))
-            return True;
+            return Bool.True;
         if (excludePosNeg && include.equalsNeg(exclude))
-            return True;
+            return Bool.True;
         if (include.op() != CONJ || include.impossibleSubTerm(exclude))
             return include;
 
@@ -265,13 +265,13 @@ public class Conj extends ByteAnonMap {
             Subterms s = include.subterms();
             Term[] ss = null;
             if (excludePosNeg) {
-                ss = s.termsExcept(exclude.neg());
+                ss = s.subsExcept(exclude.neg());
                 if (ss!=null) {
                     s = Op.terms.subterms(ss);
                 }
             }
 
-            ss = s.termsExcept(exclude);
+            ss = s.subsExcept(exclude);
             if (ss!=null) {
                 return CONJ.the(include.dt(), ss);
             } else {
@@ -293,7 +293,7 @@ public class Conj extends ByteAnonMap {
             return include;
 
         if (include.equals(exclude))
-            return True;
+            return Bool.True;
 
         if (exclude.op()!=CONJ)
             return without(include, exclude, false);
@@ -384,12 +384,12 @@ public class Conj extends ByteAnonMap {
 
 
         Term left = conjSeq(events, start, center + 1);
-        if (left == Null) return Null;
-        if (left == False) return False;
+        if (left == Bool.Null) return Bool.Null;
+        if (left == Bool.False) return Bool.False;
 
         Term right = conjSeq(events, center + 1, end);
-        if (right == Null) return Null;
-        if (right == False) return False;
+        if (right == Bool.Null) return Bool.Null;
+        if (right == Bool.False) return Bool.False;
 
         int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.eventRange());
 
@@ -399,13 +399,13 @@ public class Conj extends ByteAnonMap {
     private static Term conjSeqFinal(int dt, Term left, Term right) {
         assert (dt != XTERNAL);
 
-        if (left == False) return False;
-        if (left == Null) return Null;
-        if (left == True) return right;
+        if (left == Bool.False) return Bool.False;
+        if (left == Bool.Null) return Bool.Null;
+        if (left == Bool.True) return right;
 
-        if (right == False) return False;
-        if (right == Null) return Null;
-        if (right == True) return left;
+        if (right == Bool.False) return Bool.False;
+        if (right == Bool.Null) return Bool.Null;
+        if (right == Bool.True) return left;
 
 //        if (dt == 0 || dt == DTERNAL) {
 //            return CONJ.the(left, dt, right);
@@ -454,7 +454,7 @@ public class Conj extends ByteAnonMap {
         }
 
         //return new Conjterpolate(a, b, bOffset, aProp, nar).term();
-        return Null; //probably better not to bother
+        return Bool.Null; //probably better not to bother
     }
 
     public void clear() {
@@ -522,7 +522,7 @@ public class Conj extends ByteAnonMap {
     private boolean added(boolean success) {
         if (!success) {
             if (term == null)
-                term = False;
+                term = Bool.False;
             return false;
         }
         return true;
@@ -571,13 +571,13 @@ public class Conj extends ByteAnonMap {
 
         if (x instanceof Bool) {
             //short circuits
-            if (x == True)
+            if (x == Bool.True)
                 return true;
-            else if (x == False) {
-                this.term = False;
+            else if (x == Bool.False) {
+                this.term = Bool.False;
                 return false;
-            } else if (x == Null) {
-                this.term = Null;
+            } else if (x == Bool.Null) {
+                this.term = Bool.Null;
                 return false;
             }
         }
@@ -610,9 +610,9 @@ public class Conj extends ByteAnonMap {
                     Term result = merge(bi, x, at == ETERNAL);
 
                     if (result != null) {
-                        if (result == Op.True)
+                        if (result == Bool.True)
                             return true; //absorbed input
-                        if (result == False || result == Null) {
+                        if (result == Bool.False || result == Bool.Null) {
                             this.term = result;
                             return false;
                         } else  {
@@ -711,11 +711,11 @@ public class Conj extends ByteAnonMap {
             if (eternal || when == 0) {
                 if (incoming.equalsNeg(what)) {
                     //overlap with the option so annihilate the disj
-                    result[0] = True;
+                    result[0] = Bool.True;
                     return false; //stop iterating
                 } else if (incoming.equals(what)) {
                     //contradict
-                    result[0] = False;
+                    result[0] = Bool.False;
                     return false;
                 }
             }
@@ -723,11 +723,11 @@ public class Conj extends ByteAnonMap {
         }, 0, true, true, false, 0);
 
 
-        if (result[0] == True) {
+        if (result[0] == Bool.True) {
             return incoming; //disjunction annihilated
         }
 
-        if (result[0] == False) {
+        if (result[0] == Bool.False) {
             //removing the matching subterm from the disjunction and reconstruct it
             //then merge the incoming term
 
@@ -782,11 +782,11 @@ public class Conj extends ByteAnonMap {
                         //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
 
                         Term A = CONJ.the(adt, aa).neg();
-                        if (A == False || A == Null || aa.equals(bb))
+                        if (A == Bool.False || A == Bool.Null || aa.equals(bb))
                             return A;
 
                         Term B = CONJ.the(bdt, bb).neg();
-                        if (B == True || B == False || B == Null || A.equals(B))
+                        if (B == Bool.True || B == Bool.False || B == Bool.Null || A.equals(B))
                             return B;
 
                         return CONJ.the(eternal ? DTERNAL : 0, A, B);
@@ -797,7 +797,7 @@ public class Conj extends ByteAnonMap {
         } else {
             //TODO sequence conditions
             //throw new TODO(a + " vs " + b);
-            return Null; //disallow for now. the complexity might be excessive
+            return Bool.Null; //disallow for now. the complexity might be excessive
         }
     }
 
@@ -814,20 +814,20 @@ public class Conj extends ByteAnonMap {
             } else if ((cdt == 0 && !eternal) || (eternal && cdt == DTERNAL)) {
                 //commutive merge
                 if (cs.containsNeg(incoming))
-                    return False; //contradiction
+                    return Bool.False; //contradiction
                 else if (cs.contains(incoming))
-                    return True;//present, ignore
+                    return Bool.True;//present, ignore
 
                 return CONJ.the(cdt, cs.toSet().with(incoming));
             } else {
                 if (cdt == 0) {
                     if (cs.containsNeg(incoming))
-                        return False; //contradiction
+                        return Bool.False; //contradiction
                     else if (cs.contains(incoming))
-                        return Op.True; //present, ignore
+                        return Bool.True; //present, ignore
                 } else if (cdt == DTERNAL) {
                     if (cs.containsNeg(incoming))
-                        return False; //contradiction
+                        return Bool.False; //contradiction
                     else if (cs.contains(incoming))
                         return conj.dt(0); //present, promote to parallel
                 }
@@ -874,9 +874,9 @@ public class Conj extends ByteAnonMap {
         Term existingUnneg = idToTerm.get((existingPolarity ? existingId : -existingId) - 1);
         Term existing = existingUnneg.negIf(!existingPolarity);
         if (existing.equals(incoming))
-            return True; //exact same
+            return Bool.True; //exact same
         if (existing.equalsNeg(incoming))
-            return False; //contradiction
+            return Bool.False; //contradiction
 
         Term incomingUnneg = incoming.unneg();
         if (!Term.commonStructure(existingUnneg, incomingUnneg))
@@ -898,7 +898,7 @@ public class Conj extends ByteAnonMap {
             return null; //neither a conj/disj
         }
         if (result!=null && result.equals(existing))
-            return True;
+            return Bool.True;
         return result;
     }
 
@@ -1085,7 +1085,7 @@ public class Conj extends ByteAnonMap {
 
         int numTimes = event.size();
         if (numTimes == 0)
-            return True;
+            return Bool.True;
 
 
         IntPredicate validator = null;
@@ -1126,12 +1126,12 @@ public class Conj extends ByteAnonMap {
 
                 Term wt = term(when, next.getTwo(), validator);
 
-                if (wt == True) {
+                if (wt == Bool.True) {
                     continue;
-                } else if (wt == False) {
-                    return this.term = False;
-                } else if (wt == Null) {
-                    return this.term = Null;
+                } else if (wt == Bool.False) {
+                    return this.term = Bool.False;
+                } else if (wt == Bool.Null) {
+                    return this.term = Bool.Null;
                 }
 
                 temporals.add(pair(when, wt));
@@ -1162,7 +1162,7 @@ public class Conj extends ByteAnonMap {
         }
 
         if (ci == null)
-            return True;
+            return Bool.True;
 
         if (ci.op() == CONJ && ci.hasAny(NEG)) {
             Subterms cci;
@@ -1199,7 +1199,7 @@ public class Conj extends ByteAnonMap {
                             }
                         }
                         if (toRemove.cardinality() > 0) {
-                            return CONJ.the(ciDT, cci.termsExcept(toRemove));
+                            return CONJ.the(ciDT, cci.subsExcept(toRemove));
                         }
                     }
 
@@ -1247,7 +1247,7 @@ public class Conj extends ByteAnonMap {
         }
 
         if (n == 0) {
-            return True; //does this happen?
+            return Bool.True; //does this happen?
         }
         if (n == 1) {
             //only event at this time
@@ -1262,7 +1262,7 @@ public class Conj extends ByteAnonMap {
                     break;
                 Term s = sub(x, negatives, validator);
                 if (s instanceof Bool) {
-                    if (s == False || s == Null)
+                    if (s == Bool.False || s == Bool.Null)
                         return s;
                     else {
                         //ignore True case
@@ -1277,7 +1277,7 @@ public class Conj extends ByteAnonMap {
         int ts = t.size();
         switch (ts) {
             case 0:
-                return True;
+                return Bool.True;
             case 1:
                 return t.getOnly();
             default: {
@@ -1304,7 +1304,7 @@ public class Conj extends ByteAnonMap {
         }
 
         if (validator != null && !validator.test(termIndex))
-            return False;
+            return Bool.False;
 
         Term c = idToTerm.get(termIndex - 1);
         if (neg) {

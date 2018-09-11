@@ -51,4 +51,5 @@ public final class Neg extends UnitCompound implements The {
         return sub.equals(t);
     }
 
+
 }

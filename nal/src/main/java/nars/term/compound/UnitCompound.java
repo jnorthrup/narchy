@@ -2,7 +2,6 @@ package nars.term.compound;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
-import nars.$;
 import nars.Op;
 import nars.The;
 import nars.subterm.ArrayTermVector;
@@ -10,7 +9,6 @@ import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termlike;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -40,9 +38,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public int hashCode() {
-         return Util.hashCombine(
-                 hashCodeSubterms(),
-                 op().id);
+        return Compound.hashCode(this);
     }
 
     @Override
@@ -125,16 +121,14 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public boolean impossibleSubTermVolume(int otherTermVolume) {
+    public boolean impossibleSubVolume(int otherTermVolume) {
         return otherTermVolume > sub().volume() /* volume() -  size() */;
     }
 
     @Override
-    public boolean impossibleSubTerm(Termlike target) {
-        Term sub = sub();
-        return !sub.hasAll(target.structure()) || impossibleSubTermVolume(target.volume());
+    public final boolean impossibleSubStructure(int structure) {
+        return !sub().hasAll(structure);
     }
-
 
     @Override
     public final int dt() {
@@ -142,16 +136,17 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public boolean isNormalized() {
-        Term s = sub();
-        switch (s.op()) {
-            case ATOM: return true;
-            case VAR_PATTERN: return s == $.varPattern(1);
-            case VAR_DEP: return s == $.varDep(1);
-            case VAR_INDEP: return s == $.varIndep(1);
-            case VAR_QUERY: return s == $.varQuery(1);
-        }
-        return s.isNormalized();
+    public final boolean isNormalized() {
+//        Term s = sub();
+//        switch (s.op()) {
+//            case ATOM: return true;
+//            case VAR_PATTERN: return s == $.varPattern(1);
+//            case VAR_DEP: return s == $.varDep(1);
+//            case VAR_INDEP: return s == $.varIndep(1);
+//            case VAR_QUERY: return s == $.varQuery(1);
+//            default: return s.isNormalized();
+//        }
+        return sub().isNormalized();
     }
 
 

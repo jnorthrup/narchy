@@ -6,6 +6,7 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 
 import static nars.Op.*;
@@ -32,14 +33,14 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             Term x = args.sub(0), y = args.sub(1);
 
-            if (x == Null || y == Null)
-                return Null;
+            if (x == Bool.Null || y == Bool.Null)
+                return Bool.Null;
 
-            if (x.equals(y)) return True;
-            if (x.equalsNeg(y)) return False;
+            if (x.equals(y)) return Bool.True;
+            if (x.equalsNeg(y)) return Bool.False;
 
             if (!x.hasVars() && !y.hasVars())
-                return False; //constant in-equal
+                return Bool.False; //constant in-equal
 
         }
         //TODO support N-ary equality
@@ -51,13 +52,13 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     protected Term compute(Evaluation e, Term x, Term y) {
 
         /** null != null, like NaN!=NaN .. it represents an unknokwn or invalid value.  who can know if it equals another one */
-        if (x == Null || y == Null)
-            return Null;
+        if (x == Bool.Null || y == Bool.Null)
+            return Bool.Null;
 
         if (x.equals(y))
-            return True; //fast equality pre-test
+            return Bool.True; //fast equality pre-test
         if (x.equalsNeg(y))
-            return False;
+            return Bool.False;
 
         if (x.hasVars() || y.hasVars()) {
             //algebraic solutions TODO use symbolic algebra system
@@ -67,7 +68,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
                 if (xa.length == 2 && xa[1].op()==INT && xa[0].op().var) {
                     if (y.op()==INT) {
                         //"equal(add(#x,a),b)"
-                        return e.is(xa[0], Int.the( ((Int)y).id - ((Int)xa[1]).id )) ? True : Null;
+                        return e.is(xa[0], Int.the( ((Int)y).id - ((Int)xa[1]).id )) ? Bool.True : Bool.Null;
                     }
                 }
             }
@@ -79,11 +80,11 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             if (xVar) {
                 if (e != null) {
-                    return e.is(x, y) ? True : Null;
+                    return e.is(x, y) ? Bool.True : Bool.Null;
                 }
             } else {
                 if (e != null) {
-                    return e.is(y, x) ? True : Null;
+                    return e.is(y, x) ? Bool.True : Bool.Null;
                 }
             }
 
@@ -93,7 +94,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
             //indeterminable
             return null;
         } else {
-            return False;
+            return Bool.False;
         }
 
     }
@@ -105,7 +106,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
     @Override
     protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
-        return xy == True ? y : null;
+        return xy == Bool.True ? y : null;
     }
 
 }

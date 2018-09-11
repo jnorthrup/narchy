@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static nars.Op.CONJ;
-import static nars.Op.True;
+import static nars.term.atom.Bool.True;
 
 /** mutable subterms, used in intermediate operations */
 public class TermList extends FasterList<Term> implements Subterms {

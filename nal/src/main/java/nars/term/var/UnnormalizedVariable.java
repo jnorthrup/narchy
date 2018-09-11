@@ -6,12 +6,12 @@ import nars.Op;
 import nars.The;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.AtomicConst;
+import nars.term.atom.AbstractAtomic;
 
 /**
  * Unnormalized, labeled variable
  */
-public class UnnormalizedVariable extends AtomicConst implements Variable, The {
+public class UnnormalizedVariable extends AbstractAtomic implements Variable, The {
 
     private final Op type;
 

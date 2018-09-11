@@ -11,19 +11,19 @@ import static java.lang.System.arraycopy;
 /**
  * an Atomic impl which relies on the value provided by toString()
  */
-public abstract class AtomicConst implements Atomic {
+public abstract class AbstractAtomic implements Atomic {
 
 
     /*@Stable*/
     private final transient byte[] bytesCached;
     final transient int hash;
 
-    protected AtomicConst(byte[] raw) {
+    protected AbstractAtomic(byte[] raw) {
         this.bytesCached = raw;
-        this.hash = (int) Util.hashELF(raw, 1); 
+        this.hash = Util.hashByteString(raw);
     }
 
-    AtomicConst(Op op, String s) {
+    AbstractAtomic(Op op, String s) {
         this(bytes(op, s));
     }
 

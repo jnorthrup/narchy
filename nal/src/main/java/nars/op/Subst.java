@@ -9,7 +9,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.Null;
+import static nars.term.atom.Bool.Null;
 
 
 /**

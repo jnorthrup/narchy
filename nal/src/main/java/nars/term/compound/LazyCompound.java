@@ -8,7 +8,7 @@ import nars.term.util.ByteAnonMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.Null;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /**

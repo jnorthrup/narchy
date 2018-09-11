@@ -50,11 +50,11 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
             return equals(x);
         }
 
-        @Override
-        public final boolean equalsNegRoot(Term x) {
-            //return x instanceof SimpleCachedCompound ? equalsNeg(x) : equalsNeg(x.root());
-            return equalsNeg(x);
-        }
+//        @Override
+//        public final boolean equalsNegRoot(Term x) {
+//            //return x instanceof SimpleCachedCompound ? equalsNeg(x) : equalsNeg(x.root());
+//            return equalsNeg(x);
+//        }
 
         @Override
         public final Term root() {

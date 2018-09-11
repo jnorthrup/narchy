@@ -8,8 +8,8 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
 
-import static nars.Op.False;
-import static nars.Op.True;
+import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.True;
 
 /** equivalent to prolog member/2:
  *      member(U,S)  |-   U is in S

@@ -8,19 +8,19 @@ import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
 
 import java.util.function.Function;
 
-public class Spatialization<T> {
+public class Spatialization<X> {
 
     public static final double EPSILON = Math.sqrt(Float.MIN_NORMAL);
     public static final float EPSILONf = (float) Math.sqrt(Float.MIN_NORMAL);
     public static final float sqrEPSILONf = Util.sqr(Float.MIN_NORMAL);
     public static final float sqrtEPSILONf = (float) Math.sqrt(Math.sqrt(Float.MIN_NORMAL));
 
-    public final Split<T> split;
-    public final Function<T, HyperRegion> bounds;
+    public final Split<X> split;
+    public final Function<X, HyperRegion> bounds;
     public final short max;       
     public final short min;       
 
-    public Spatialization(@Deprecated final Function<T, HyperRegion> bounds, final Split<T> split, final int min, final int max) {
+    public Spatialization(@Deprecated final Function<X, HyperRegion> bounds, final Split<X> split, final int min, final int max) {
         if (min<2)
             throw new UnsupportedOperationException("min split must be >=2");
         if (max < min)
@@ -31,24 +31,24 @@ public class Spatialization<T> {
         this.split = split;
     }
 
-    public HyperRegion bounds(/*@NotNull*/ T t) {
-        return bounds.apply(t);
+    public HyperRegion<X> bounds(/*@NotNull*/ X x) {
+        return bounds.apply(x);
     }
 
-    public Leaf<T> newLeaf() {
+    public Leaf<X> newLeaf() {
         return new Leaf<>(max);
     }
 
-    public Branch<T> newBranch() {
+    public Branch<X> newBranch() {
         return new Branch<>(max);
     }
 
-    public Branch<T> newBranch(Leaf<T> a, Leaf<T> b) {
+    public Branch<X> newBranch(Leaf<X> a, Leaf<X> b) {
         return new Branch<>(max, a, b);
     }
 
-    public Node<T, ?> split(T t, Leaf<T> leaf) {
-        return split.split(t, leaf, this);
+    public Node<X> split(X x, Leaf<X> leaf) {
+        return split.split(x, leaf, this);
     }
 
 
@@ -56,14 +56,14 @@ public class Spatialization<T> {
 
 
     /** existing may be the same instance, or .equals() to the incoming */
-    protected void merge(T existing, T incoming) {
+    protected void merge(X existing, X incoming) {
 
     }
 
-    public final Leaf<T> transfer(Leaf<T> leaf, IntDoublePair[] sortedMbr, int from, int to) {
-        final Leaf<T> l = newLeaf();
-        final T[] ld = leaf.data;
-        final Node<T, ?> nl = l;
+    public final Leaf<X> transfer(Leaf<X> leaf, IntDoublePair[] sortedMbr, int from, int to) {
+        final Leaf<X> l = newLeaf();
+        final X[] ld = leaf.data;
+        final Node<X> nl = l;
         for (int i = from; i < to; i++) {
             nl.add(ld[sortedMbr[i].getOne()], leaf, this, new boolean[] { false });
         }

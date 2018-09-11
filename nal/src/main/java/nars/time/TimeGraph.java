@@ -664,10 +664,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         } else if (pStart.equals(x1)) {
                             return Conj.the(x1, 0, x0, -dt);
                         } else {
-                            return Null; //TODO
+                            return Bool.Null; //TODO
                         }
                     } else {
-                        return Null;
+                        return Bool.Null;
                     }
                 } else {
 

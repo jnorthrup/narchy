@@ -2,6 +2,7 @@ package nars.term.compound;
 
 import nars.Op;
 import nars.The;
+import nars.term.Compound;
 import nars.term.Term;
 
 import static nars.Op.*;
@@ -27,7 +28,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
         this.sub = sub;
         this.op = op.id;
-        this.chash = super.hashCode();
+        this.chash = Compound.hashCode(this);
         this.cstruct = super.structure();
 
         int v = sub.volume() + 1;
@@ -70,7 +71,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
     }
 
     @Override
-    public boolean impossibleSubTermVolume(int otherTermVolume) {
+    public boolean impossibleSubVolume(int otherTermVolume) {
         return otherTermVolume > volume-1;
     }
 

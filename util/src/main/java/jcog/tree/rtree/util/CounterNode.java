@@ -33,33 +33,49 @@ import java.util.stream.Stream;
 /**
  * Created by jcovert on 6/18/15.
  */
-public final class CounterNode<T> implements Node<T, Object> {
+public final class CounterNode<X> implements Node<X> {
     public static int searchCount;
     public static int bboxEvalCount;
-    private final Node<T, Object> node;
+    private final Node<X> node;
 
-    public CounterNode(final Node<T, Object> node) {
+    public CounterNode(final Node<X> node) {
         this.node = node;
     }
 
 
+//    @Override
+//    public Object get(int i) {
+//        return node.get(i);
+//    }
+
     @Override
-    public Object get(int i) {
-        return node.get(i);
+    public Stream<X> streamValues() {
+        return node.streamValues();
     }
 
     @Override
-    public Stream<T> stream() {
-        return node.stream();
-    }
-
-    @Override
-    public Stream<Object> streamNodes() {
+    public Stream<Node<X>> streamNodes() {
         return node.streamNodes();
     }
 
     @Override
-    public Iterator<Object> iterateNodes() {
+    public Stream<?> streamLocal() {
+        return node.streamLocal();
+    }
+
+    @Override
+    public Iterator<?> iterateLocal() {
+        return node.iterateLocal();
+    }
+
+    @Override
+    public Iterator<X> iterateValues() {
+        return node.iterateValues();
+    }
+
+
+    @Override
+    public Iterator<Node<X>> iterateNodes() {
         return node.iterateNodes();
     }
 
@@ -74,33 +90,33 @@ public final class CounterNode<T> implements Node<T, Object> {
     }
 
     @Override
-    public Node<T, ?> add(T t, Nodelike<T> parent, Spatialization<T> model, boolean[] added) {
-        return this.node.add(t, parent!=null ? this : null, model, added);
+    public Node<X> add(X x, Nodelike<X> parent, Spatialization<X> model, boolean[] added) {
+        return this.node.add(x, parent!=null ? this : null, model, added);
     }
 
     @Override
-    public Node<T, ?> remove(T x, HyperRegion xBounds, Spatialization<T> model, boolean[] removed) {
+    public Node<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
         return this.node.remove(x, xBounds, model, removed);
     }
 
     @Override
-    public Node<T, ?> replace(T told, T tnew, Spatialization<T> model) {
+    public Node<X> replace(X told, X tnew, Spatialization<X> model) {
         return this.node.replace(told, tnew, model);
     }
 
     @Override
-    public boolean AND(Predicate<T> p) {
+    public boolean AND(Predicate<X> p) {
         throw new UnsupportedOperationException("TODO");
     }
 
     @Override
-    public boolean OR(Predicate<T> p) {
+    public boolean OR(Predicate<X> p) {
         throw new UnsupportedOperationException("TODO");
     }
 
 
     @Override
-    public boolean containing(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
+    public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         searchCount++;
         bboxEvalCount += this.node.size();
         return this.node.containing(rect, t, model);
@@ -117,12 +133,12 @@ public final class CounterNode<T> implements Node<T, Object> {
     }
 
     @Override
-    public void forEach(Consumer<? super T> consumer) {
+    public void forEach(Consumer<? super X> consumer) {
         this.node.forEach(consumer);
     }
 
     @Override
-    public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
+    public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         this.node.intersecting(rect, t, model);
         return false;
     }
@@ -133,7 +149,7 @@ public final class CounterNode<T> implements Node<T, Object> {
     }
 
     @Override
-    public Node<T, ?> instrument() {
+    public Node<X> instrument() {
         return this;
     }
 
@@ -143,7 +159,7 @@ public final class CounterNode<T> implements Node<T, Object> {
 
 
     @Override
-    public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
-        return node.contains(t, b, model);
+    public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
+        return node.contains(x, b, model);
     }
 }
