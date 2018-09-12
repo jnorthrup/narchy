@@ -6,8 +6,11 @@ import jcog.pri.PLink;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.TaskService;
+import nars.control.NARService;
 import nars.term.Termed;
+
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 
 /**
@@ -15,7 +18,7 @@ import nars.term.Termed;
  * Creates links between sequences of perceived events
  * Empties task buffer when plugin is (re)started.
  */
-public class STMLinkage extends TaskService {
+public class STMLinkage extends NARService {
 
     public final MetalConcurrentQueue<Task> stm;
 
@@ -24,7 +27,8 @@ public class STMLinkage extends TaskService {
 
 
     public STMLinkage(NAR nar, int capacity) {
-        super(nar);
+        super();
+
 
         strength.set(1f / capacity);
 
@@ -32,6 +36,15 @@ public class STMLinkage extends TaskService {
                 new MetalConcurrentQueue<>(capacity);
 
 //        cause = nar.newCause(this);
+
+        nar.on(this);
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        on(
+                nar.onTask(this::accept, BELIEF, GOAL)
+        );
     }
 
     public static void link(Termed ta, float pri, Termed tb/*, short cid*/, NAR nar) {
@@ -75,10 +88,9 @@ public class STMLinkage extends TaskService {
         stm.clear();
     }
 
-    @Override
-    public final void accept(NAR nar, Task t) {
+    public final void accept(Task t) {
 
-        if (!t.isBeliefOrGoal() || t.isEternal())
+        if (t.isEternal())
             return;
 
 

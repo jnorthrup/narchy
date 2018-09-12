@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.adapter;
 
 import com.jogamp.newt.event.KeyEvent;
-import jcog.event.On;
+import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.Keyboard;
@@ -46,7 +46,7 @@ public class AWTSurface extends Widget {
     private BufferedImage buffer = null;
     private int lpx = -1;
     private int lpy = -1;
-    private On ons;
+    private Off ons;
     private volatile Component myFocus;
 
     public AWTSurface(Component component) {

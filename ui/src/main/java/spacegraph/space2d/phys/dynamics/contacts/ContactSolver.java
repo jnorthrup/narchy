@@ -53,7 +53,6 @@ public class ContactSolver {
      */
     private static final float k_maxConditionNumber = 100.0f;
 
-    private TimeStep m_step;
     private Position[] m_positions;
     private Velocity[] m_velocities;
     private ContactPositionConstraint[] m_positionConstraints;
@@ -71,8 +70,8 @@ public class ContactSolver {
     }
 
     public final void init(ContactSolverDef def) {
-        
-        m_step = def.step;
+
+        TimeStep m_step = def.step;
         m_count = def.count;
 
         if (m_positionConstraints.length < m_count) {

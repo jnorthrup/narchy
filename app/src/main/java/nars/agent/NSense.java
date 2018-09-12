@@ -1,7 +1,7 @@
 package nars.agent;
 
 import jcog.Util;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.math.*;
 import jcog.util.FloatConsumer;
 import nars.$;
@@ -186,7 +186,7 @@ public interface NSense {
         return fs;
     }
 
-    On onFrame(Consumer r);
+    Off onFrame(Consumer r);
 
     
     default DigitizedScalar senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, DigitizedScalar.ScalarEncoder model) {

@@ -4,7 +4,6 @@ import jcog.WTF;
 import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
-import jcog.event.On;
 import jcog.event.Topic;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
@@ -516,11 +515,11 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
-    public On onFrame(Consumer/*<NAR>*/ each) {
+    public Off onFrame(Consumer/*<NAR>*/ each) {
         return eventFrame.on(each);
     }
 
-    public On onFrame(Runnable each) {
+    public Off onFrame(Runnable each) {
         //return DurService.on(nar, ()->{ if (enabled.get()) each.run(); });
         return eventFrame.on((x) -> each.run());
     }

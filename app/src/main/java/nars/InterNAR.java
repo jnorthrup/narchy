@@ -29,37 +29,37 @@ import static jcog.net.UDPeer.Command.TELL;
 public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestionTask, Task> {
 
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
+    private final int port;
+    private final boolean discover; //TODO AtomicBoolean for GUI control etc
 
 
+    UDPeer peer;
 
-    public final UDPeer peer;
     protected final CauseChannel<ITask> recv;
 
     public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
 
     /**
      * @param nar
-     * @param outRate output rate in tasks per cycle, some value > 0, ammortize over multiple cycles with a fraction < 1
      * @param port
      * @throws SocketException
      * @throws UnknownHostException
      */
-    public InterNAR(NAR nar, float outRate, int port) {
-        this(nar, outRate, port, true);
+    public InterNAR(NAR nar, int port) {
+        this(nar, port, true);
     }
-    public InterNAR(NAR nar, float outRate) {
-        this(nar, outRate, 0);
+    public InterNAR(NAR nar) {
+        this(nar, 0);
     }
 
     /**
      * @param nar
-     * @param outRate  output rate in tasks per cycle, some value > 0, ammortize over multiple cycles with a fraction < 1
      * @param port
      * @param discover
      * @throws SocketException
      * @throws UnknownHostException
      */
-    public InterNAR(NAR nar, float outRate, int port, boolean discover) {
+    public InterNAR(NAR nar, int port, boolean discover) {
         super(256, nar);
 
         this.nar = nar;
@@ -67,12 +67,8 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
         assert(nar.time instanceof RealTime.MS && ((RealTime.MS)nar.time).t0 !=0 );
         recv = nar.newChannel(this);
 
-        try {
-            peer = new UDPeer(port, discover);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        ons.add(peer.receive.on(this::receive));
+        this.port = port;
+        this.discover = discover;
 
         nar.onOp1("ping", (term,nn)->{
            try {
@@ -90,6 +86,26 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
         });
 
     }
+
+    @Override
+    protected void starting(NAR nar) {
+        try {
+            peer = new UDPeer(port, discover);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        super.starting(nar);
+
+        on(peer.receive.on(this::receive));
+    }
+
+    @Override
+    protected void stopping(NAR nar) {
+        peer.stop();
+        peer = null;
+    }
+
     @Override
     public float value() {
         return recv.value();
@@ -122,11 +138,11 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     }
 
     @Override
-    public boolean preFilter(Task next) {
+    public boolean filter(Task next) {
         if (next.isCommand() || !peer.connected())
             return false;
 
-        return super.preFilter(next);
+        return super.filter(next);
     }
 
     private static byte ttl(Task x) {
@@ -155,10 +171,6 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
         }
     }
 
-    @Override
-    protected void stopping(NAR nar) {
-        peer.stop();
-    }
 
 
 

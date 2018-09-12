@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.Sets;
 import jcog.TODO;
 import jcog.data.list.FasterList;
-import jcog.event.Ons;
+import jcog.event.Offs;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
@@ -48,7 +48,7 @@ public class ObjectSurface<X> extends Gridding {
      * root
      */
     private final X obj;
-    private Ons ons = null;
+    private Offs ons = null;
 
     public ObjectSurface(X x) {
         this(x, 1);
@@ -65,7 +65,7 @@ public class ObjectSurface<X> extends Gridding {
 
         if (super.start(parent)) {
             seen.clear();
-            ons = new Ons();
+            ons = new Offs();
             List<Surface> l = new FasterList();
             collect(obj, l, 0);
 

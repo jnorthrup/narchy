@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
@@ -23,14 +23,14 @@ import static jcog.Texts.n4;
 public class Plot2D extends Widget {
     private final List<Series> series;
     private String title;
-    private On on;
+    private Off on;
     private volatile boolean requireUpdate = false;
 
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public Plot2D on(Function<Runnable, On> trigger) {
+    public Plot2D on(Function<Runnable, Off> trigger) {
         synchronized (series) {
             if (on != null)
                 on.off();

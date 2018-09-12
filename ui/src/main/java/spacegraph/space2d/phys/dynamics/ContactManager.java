@@ -33,6 +33,9 @@ import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.dynamics.contacts.ContactRegister;
 import spacegraph.space2d.phys.fracture.FractureListener;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
+import spacegraph.space2d.phys.pooling.IWorldPool;
+
+import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 
 /**
  * Delegate of World.
@@ -47,25 +50,25 @@ public class ContactManager implements PairCallback {
     public ContactListener contactListener;
     public FractureListener m_fractureListener;
 
-    private final Dynamics2D dyn;
 
     private final ContactRegister[][] contactStacks =
             new ContactRegister[ShapeType.values().length][ShapeType.values().length];
 
+    
     public ContactManager(Dynamics2D dyn, BroadPhase broadPhase) {
         m_contactList = null;
         m_contactCount = 0;
         contactListener = null;
         this.broadPhase = broadPhase;
-        this.dyn = dyn;
 
-        addType(this.dyn.pool.getCircleContactStack(), ShapeType.CIRCLE, ShapeType.CIRCLE);
-        addType(this.dyn.pool.getPolyCircleContactStack(), ShapeType.POLYGON, ShapeType.CIRCLE);
-        addType(this.dyn.pool.getPolyContactStack(), ShapeType.POLYGON, ShapeType.POLYGON);
-        addType(this.dyn.pool.getEdgeCircleContactStack(), ShapeType.EDGE, ShapeType.CIRCLE);
-        addType(this.dyn.pool.getEdgePolyContactStack(), ShapeType.EDGE, ShapeType.POLYGON);
-        addType(this.dyn.pool.getChainCircleContactStack(), ShapeType.CHAIN, ShapeType.CIRCLE);
-        addType(this.dyn.pool.getChainPolyContactStack(), ShapeType.CHAIN, ShapeType.POLYGON);
+        IWorldPool pool = dyn.pool;
+        addType(pool.getCircleContactStack(), ShapeType.CIRCLE, ShapeType.CIRCLE);
+        addType(pool.getPolyCircleContactStack(), ShapeType.POLYGON, ShapeType.CIRCLE);
+        addType(pool.getPolyContactStack(), ShapeType.POLYGON, ShapeType.POLYGON);
+        addType(pool.getEdgeCircleContactStack(), ShapeType.EDGE, ShapeType.CIRCLE);
+        addType(pool.getEdgePolyContactStack(), ShapeType.EDGE, ShapeType.POLYGON);
+        addType(pool.getChainCircleContactStack(), ShapeType.CHAIN, ShapeType.CIRCLE);
+        addType(pool.getChainPolyContactStack(), ShapeType.CHAIN, ShapeType.POLYGON);
     }
     private void addType(IDynamicStack<Contact> creator, ShapeType type1, ShapeType type2) {
         ContactRegister register = new ContactRegister();
@@ -105,9 +108,10 @@ public class ContactManager implements PairCallback {
         Body2D bodyB = fixtureB.getBody();
 
         
-        if (bodyA == bodyB) {
+        if (bodyA == bodyB || !bodyB.shouldCollide(bodyA)) {
             return;
         }
+
 
         
         
@@ -135,10 +139,6 @@ public class ContactManager implements PairCallback {
             edge = edge.next;
         }
 
-        
-        if (!bodyB.shouldCollide(bodyA)) {
-            return;
-        }
 
         
         if (!ContactFilter.shouldCollide(fixtureA, fixtureB)) {
@@ -329,6 +329,10 @@ public class ContactManager implements PairCallback {
     }
 
     private Contact popContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
+
+        if (fixtureA.getBody().getType()!=DYNAMIC && fixtureB.getBody().getType()!=DYNAMIC)
+            return null;
+
         final ShapeType type1 = fixtureA.type();
         final ShapeType type2 = fixtureB.type();
 

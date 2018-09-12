@@ -3,7 +3,7 @@ package spacegraph.space2d.hud;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
-import jcog.event.On;
+import jcog.event.Off;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
@@ -105,7 +105,7 @@ public class ZoomOrtho extends Ortho {
 
 
     @Override
-    public On onUpdate(Consumer<JoglWindow> c) {
+    public Off onUpdate(Consumer<JoglWindow> c) {
         return super.onUpdate(c);
     }
 

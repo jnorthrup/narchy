@@ -44,6 +44,9 @@ import spacegraph.util.math.v2;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
+import static spacegraph.space2d.phys.dynamics.BodyType.STATIC;
+
 /**
  * A rigid body. These are created via World.createBody.
  *
@@ -103,7 +106,7 @@ public class Body2D extends Transform {
     public float m_massArea;
     public boolean m_fractureTransformUpdate = false;
 
-    
+
     private float m_I;
     public float m_invI;
 
@@ -176,7 +179,7 @@ public class Body2D extends Transform {
 
         type = bd.type;
 
-        if (type == BodyType.DYNAMIC) {
+        if (type == DYNAMIC) {
             mass = 1f;
             m_invMass = 1f;
         } else {
@@ -200,7 +203,7 @@ public class Body2D extends Transform {
 
     @Override
     public boolean equals(Object obj) {
-        return this==obj;
+        return this == obj;
     }
 
     /**
@@ -230,12 +233,9 @@ public class Body2D extends Transform {
             ++fixtureCount;
 
 
-            
-            
             W.flags |= Dynamics2D.NEW_FIXTURE;
 
 
-            
             if (fixture.density > 0.0f) {
                 resetMassData();
             }
@@ -251,17 +251,15 @@ public class Body2D extends Transform {
         W.invoke(() -> {
             for (Fixture f = fixtures; f != null; f = f.next) {
 
-                
-                
+
                 BroadPhase broadPhase = W.contactManager.broadPhase;
                 f.destroyProxies(broadPhase);
 
                 tx.accept(f);
 
                 f.createProxies(broadPhase, this);
-                
 
-                
+
                 if (f.density > 0.0f) {
                     resetMassData();
                 }
@@ -306,8 +304,7 @@ public class Body2D extends Transform {
         Polygon[] convex = polygon.convexDecomposition();
 
         def.polygon = convex.length > 1 ? polygon : null;
-        
-        
+
 
         for (Polygon p : convex) {
             p.flip();
@@ -332,12 +329,12 @@ public class Body2D extends Transform {
         W.invoke(() -> {
             assert (fixture.body == this);
 
-            
+
             assert (fixtureCount > 0);
 
-            
+
             Fixture node = fixtures;
-            Fixture last = null; 
+            Fixture last = null;
             boolean found = false;
             while (node != null) {
                 if (node == fixture) {
@@ -349,17 +346,17 @@ public class Body2D extends Transform {
                 node = node.next;
             }
 
-            
+
             assert (found);
 
-            
+
             if (last == null) {
                 fixtures = fixture.next;
             } else {
                 last.next = fixture.next;
             }
 
-            
+
             ContactEdge edge = contacts;
             while (edge != null) {
                 Contact c = edge.contact;
@@ -369,8 +366,8 @@ public class Body2D extends Transform {
                 Fixture fixtureB = c.bFixture;
 
                 if (fixture == fixtureA || fixture == fixtureB) {
-                    
-                    
+
+
                     W.contactManager.destroy(c);
                 }
             }
@@ -386,7 +383,7 @@ public class Body2D extends Transform {
 
             --fixtureCount;
 
-            
+
             resetMassData();
         });
 
@@ -407,13 +404,14 @@ public class Body2D extends Transform {
     protected final boolean setTransform(Tuple2f position, float angle, float epsilon) {
 
         if (getPosition().equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
-            return false; 
+            return false;
+
 
         W.invoke(() -> {
+
             this.set(angle);
             pos.set(position);
 
-            
             Transform.mulToOutUnsafe(this, sweep.localCenter, sweep.c);
             sweep.a = angle;
 
@@ -426,6 +424,10 @@ public class Body2D extends Transform {
         });
 
         return true;
+    }
+
+    private void setTransformStatic(Tuple2f position, float angle) {
+
     }
 
     /**
@@ -466,7 +468,7 @@ public class Body2D extends Transform {
      * @param v the new linear velocity of the center of mass.
      */
     public final void setLinearVelocity(Tuple2f v) {
-        if (type == BodyType.STATIC) {
+        if (type == STATIC) {
             return;
         }
 
@@ -493,7 +495,7 @@ public class Body2D extends Transform {
      * @param omega the new angular velocity in radians/second.
      */
     public final void setAngularVelocity(float w) {
-        if (type == BodyType.STATIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -539,7 +541,7 @@ public class Body2D extends Transform {
      * @param point the world position of the point of application.
      */
     public final void applyForce(Tuple2f force, Tuple2f point) {
-        if (type != BodyType.DYNAMIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -547,10 +549,6 @@ public class Body2D extends Transform {
             setAwake(true);
         }
 
-        
-        
-        
-        
 
         this.force.x += force.x;
         this.force.y += force.y;
@@ -564,7 +562,7 @@ public class Body2D extends Transform {
      * @param force the world force vector, usually in Newtons (N).
      */
     public final void applyForceToCenter(Tuple2f force) {
-        if (type != BodyType.DYNAMIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -583,7 +581,7 @@ public class Body2D extends Transform {
      * @param torque about the z-axis (out of the screen), usually in N-m.
      */
     public final void applyTorque(float torque) {
-        if (type != BodyType.DYNAMIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -605,7 +603,7 @@ public class Body2D extends Transform {
      * @param wake    also wake up the body
      */
     public final void applyLinearImpulse(Tuple2f impulse, Tuple2f point, boolean wake) {
-        if (type != BodyType.DYNAMIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -630,7 +628,7 @@ public class Body2D extends Transform {
      * @param impulse the angular impulse in units of kg*m*m/s
      */
     public void applyAngularImpulse(float impulse) {
-        if (type != BodyType.DYNAMIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -667,9 +665,7 @@ public class Body2D extends Transform {
      * @return a struct containing the mass, inertia and center of the body.
      */
     public final void getMassData(MassData data) {
-        
-        
-        
+
 
         data.mass = mass;
         data.I =
@@ -689,13 +685,9 @@ public class Body2D extends Transform {
      * @param massData the mass properties.
      */
     public final void setMassData(MassData massData) {
-        
 
 
-
-
-
-        if (type != BodyType.DYNAMIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -717,15 +709,14 @@ public class Body2D extends Transform {
         }
 
         final Tuple2f oldCenter = W.pool.popVec2();
-        
+
         oldCenter.set(sweep.c);
         sweep.localCenter.set(massData.center);
-        
+
         Transform.mulToOutUnsafe(this, sweep.localCenter, sweep.c0);
         sweep.c.set(sweep.c0);
 
-        
-        
+
         final Tuple2f temp = W.pool.popVec2();
         temp.set(sweep.c).subbed(oldCenter);
         Tuple2f.crossToOut(velAngular, temp, temp);
@@ -742,7 +733,7 @@ public class Body2D extends Transform {
      * later want to reset the mass.
      */
     private void resetMassData() {
-        
+
         mass = 0.0f;
         m_massArea = 0.0f;
         m_invMass = 0.0f;
@@ -758,18 +749,18 @@ public class Body2D extends Transform {
             }
         }
 
-        
-        if (type == BodyType.STATIC || type == BodyType.KINEMATIC) {
-            
+
+        if (type == STATIC || type == BodyType.KINEMATIC) {
+
             sweep.c0.set(pos);
             sweep.c.set(pos);
             sweep.a0 = sweep.a;
             return;
         }
 
-        assert (type == BodyType.DYNAMIC);
+        assert (type == DYNAMIC);
 
-        
+
         final Tuple2f localCenter = W.pool.popVec2();
         localCenter.set(0, 0);
         final Tuple2f temp = W.pool.popVec2();
@@ -779,24 +770,24 @@ public class Body2D extends Transform {
             }
             f.getMassData(massData);
             mass += massData.mass;
-            
+
             temp.set(massData.center).scaled(massData.mass);
             localCenter.added(temp);
             m_I += massData.I;
         }
 
-        
+
         if (mass > 0.0f) {
             m_invMass = 1.0f / mass;
             localCenter.scaled(m_invMass);
         } else {
-            
+
             mass = 1.0f;
             m_invMass = 1.0f;
         }
 
         if (m_I > 0.0f && (flags & e_fixedRotationFlag) == 0) {
-            
+
             m_I -= mass * Tuple2f.dot(localCenter, localCenter);
             assert (m_I > 0.0f);
             m_invI = 1.0f / m_I;
@@ -806,15 +797,14 @@ public class Body2D extends Transform {
         }
 
         Tuple2f oldCenter = W.pool.popVec2();
-        
+
         oldCenter.set(sweep.c);
         sweep.localCenter.set(localCenter);
-        
+
         Transform.mulToOutUnsafe(this, sweep.localCenter, sweep.c0);
         sweep.c.set(sweep.c0);
 
-        
-        
+
         temp.set(sweep.c).subbed(oldCenter);
 
         final Tuple2f temp2 = oldCenter;
@@ -972,51 +962,51 @@ public class Body2D extends Transform {
      * Set the type of this body. This may alter the mass and velocity.
      *
      * @param type
+     * @param dyn
      */
-    public void setType(BodyType type) {
+    public void setType(BodyType type, Dynamics2D dyn) {
 
-
-
-
-
-        if (this.type == type) {
+        if (this.type == type)
             return;
-        }
+        dyn.invoke(() -> {
 
-        this.type = type;
+            this.type = type;
 
-        resetMassData();
+            resetMassData();
 
-        if (this.type == BodyType.STATIC) {
-            vel.setZero();
-            velAngular = 0.0f;
-            sweep.a0 = sweep.a;
-            sweep.c0.set(sweep.c);
-            synchronizeFixtures();
-        }
+            force.setZero();
+            torque = 0.0f;
 
-        setAwake(true);
-
-        force.setZero();
-        torque = 0.0f;
-
-        
-        ContactEdge ce = contacts;
-        while (ce != null) {
-            ContactEdge ce0 = ce;
-            ce = ce.next;
-            W.contactManager.destroy(ce0.contact);
-        }
-        contacts = null;
-
-        
-        BroadPhase broadPhase = W.contactManager.broadPhase;
-        for (Fixture f = fixtures; f != null; f = f.next) {
-            int proxyCount = f.m_proxyCount;
-            for (int i = 0; i < proxyCount; ++i) {
-                broadPhase.touchProxy(f.proxies[i].id);
+            if (this.type == STATIC) {
+                vel.setZero();
+                velAngular = 0.0f;
+                sweep.a0 = sweep.a;
+                sweep.c0.set(sweep.c);
+                synchronizeFixtures();
             }
-        }
+
+            setAwake(true);
+
+
+
+
+            ContactEdge ce = contacts;
+            while (ce != null) {
+                ContactEdge ce0 = ce;
+                ce = ce.next;
+                W.contactManager.destroy(ce0.contact);
+            }
+            contacts = null;
+
+
+            BroadPhase broadPhase = W.contactManager.broadPhase;
+            for (Fixture f = fixtures; f != null; f = f.next) {
+                int proxyCount = f.m_proxyCount;
+                for (int i = 0; i < proxyCount; ++i) {
+                    broadPhase.touchProxy(f.proxies[i].id);
+                }
+            }
+        });
     }
 
     /**
@@ -1115,23 +1105,23 @@ public class Body2D extends Transform {
             if (flag) {
                 flags |= e_activeFlag;
 
-                
+
                 BroadPhase broadPhase = W.contactManager.broadPhase;
                 for (Fixture f = fixtures; f != null; f = f.next) {
                     f.createProxies(broadPhase, this);
                 }
 
-                
+
             } else {
                 flags &= ~e_activeFlag;
 
-                
+
                 BroadPhase broadPhase = W.contactManager.broadPhase;
                 for (Fixture f = fixtures; f != null; f = f.next) {
                     f.destroyProxies(broadPhase);
                 }
 
-                
+
                 ContactEdge ce = contacts;
                 while (ce != null) {
                     ContactEdge ce0 = ce;
@@ -1216,23 +1206,18 @@ public class Body2D extends Transform {
     }
 
 
-    
     private final Transform pxf = new Transform();
 
     protected void synchronizeFixtures() {
         final Transform xf1 = pxf;
-        
 
-        
-        
-        
-        
+
         Rot r = xf1;
         r.s = (float) Math.sin(sweep.a0);
         r.c = (float) Math.cos(sweep.a0);
         xf1.pos.x = sweep.c0.x - r.c * sweep.localCenter.x + r.s * sweep.localCenter.y;
         xf1.pos.y = sweep.c0.y - r.s * sweep.localCenter.x - r.c * sweep.localCenter.y;
-        
+
 
         for (Fixture f = fixtures; f != null; f = f.next) {
             f.synchronize(W.contactManager.broadPhase, xf1, this);
@@ -1240,12 +1225,8 @@ public class Body2D extends Transform {
     }
 
     public final void synchronizeTransform() {
-        
-        
-        
-        
-        
-        
+
+
         Rot q = this;
         q.s = (float) Math.sin(sweep.a);
         q.c = (float) Math.cos(sweep.a);
@@ -1262,12 +1243,12 @@ public class Body2D extends Transform {
      * @return
      */
     public boolean shouldCollide(Body2D other) {
-        
-        if (type != BodyType.DYNAMIC && other.type != BodyType.DYNAMIC) {
+
+        if (type != DYNAMIC && other.type != DYNAMIC) {
             return false;
         }
 
-        
+
         for (JointEdge jn = joints; jn != null; jn = jn.next) {
             if (jn.other == other && !jn.joint.getCollideConnected()) {
                 return false;
@@ -1278,17 +1259,19 @@ public class Body2D extends Transform {
     }
 
     final void advance(float t) {
-        
+
         sweep.advance(t);
         sweep.c.set(sweep.c0);
         sweep.a = sweep.a0;
         this.set(sweep.a);
-        
+
         Rot.mulToOutUnsafe(this, sweep.localCenter, pos);
         pos.scaled(-1).added(sweep.c);
     }
 
-    /** return false to immediately remove this body */
+    /**
+     * return false to immediately remove this body
+     */
     public boolean preUpdate() {
         return true;
     }
@@ -1306,7 +1289,9 @@ public class Body2D extends Transform {
         W.removeBody(this);
     }
 
-    /** called prior to removal */
+    /**
+     * called prior to removal
+     */
     protected void onRemoval() {
 
     }

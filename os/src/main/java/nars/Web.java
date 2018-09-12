@@ -6,7 +6,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.Off;
-import jcog.event.Ons;
+import jcog.event.Offs;
 import jcog.exe.Exe;
 import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
@@ -107,7 +107,7 @@ abstract public class Web implements HttpModel {
     protected abstract NAR nar(WebSocketConnection conn, String url);
 
 
-    static class NARConnection extends Ons {
+    static class NARConnection extends Offs {
         public final NAR nar;
 
         public NARConnection(NAR n, Off... ons) {
@@ -133,7 +133,7 @@ abstract public class Web implements HttpModel {
 
     @Override
     public void wssClose(WebSocket ws, int code, String reason, boolean remote) {
-        Ons o = ws.getAttachment();
+        Offs o = ws.getAttachment();
         if (o != null) {
             ws.setAttachment(null);
             o.off();

@@ -20,7 +20,7 @@ public abstract class Material {
     /**
      * Najmensi ulomok, ktory je mozne triestit - aby sa zabranilo rekurzivnemu triesteniu.
      */
-    public static final float MINMASSDESCTRUCTION = 0.005f;
+    public static final float MASS_DESTRUCTABLE_MIN = 0.005f;
 
 
     /**

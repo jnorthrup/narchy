@@ -115,7 +115,11 @@ abstract public class Inperience extends LeakBack {
     public static class Believe extends Inperience {
 
         public Believe(NAR n, int capacity) {
-            super(n, capacity);
+            this(n, BELIEF, capacity);
+        }
+
+        Believe(NAR n, byte punc, int capacity) {
+            super(n, punc, capacity);
         }
 
         /**
@@ -123,6 +127,8 @@ abstract public class Inperience extends LeakBack {
          * use the < 0.5 value here, ex: 0.1 means that 0..0.1 and 0.9..1.0 will be accepted
          */
         public final FloatRange freqMax = new FloatRange(0.1f, 0f, 1f);
+
+
 
         /** whether a belief or goal is sufficiently polarized */
         boolean polarized(float f) {
@@ -133,7 +139,7 @@ abstract public class Inperience extends LeakBack {
 
         @Override
         public boolean acceptTask(Task t) {
-            return t.isBelief() && polarized(t.freq());
+            return polarized(t.freq());
         }
 
         @Override
@@ -179,26 +185,20 @@ abstract public class Inperience extends LeakBack {
     public static class Want extends Believe {
 
         public Want(NAR n, int capacity) {
-            super(n, capacity);
+            super(n, GOAL, capacity);
         }
-
-        @Override
-        public boolean acceptTask(Task t) {
-            return t.isGoal();
-        }
-
-
 
     }
+
     public static class Wonder extends Inperience {
 
         public Wonder(NAR n, int capacity) {
-            super(n, capacity);
+            super(n, QUESTION, capacity);
         }
 
         @Override
         public boolean acceptTask(Task t) {
-            return t.isQuestion();
+            return true;
         }
 
         @Override
@@ -206,15 +206,16 @@ abstract public class Inperience extends LeakBack {
             return reifyQuestion(t.term().eval(nar), t.punc(), nar);
         }
     }
+
     public static class Plan extends Inperience {
 
         public Plan(NAR n, int capacity) {
-            super(n, capacity);
+            super(n, QUEST, capacity);
         }
 
         @Override
         public boolean acceptTask(Task t) {
-            return t.isQuest();
+            return true;
         }
 
         @Override
@@ -223,8 +224,8 @@ abstract public class Inperience extends LeakBack {
         }
     }
 
-    protected Inperience(NAR n, int capacity) {
-        super(capacity, n);
+    protected Inperience(NAR n, byte punc, int capacity) {
+        super(capacity, n, punc);
     }
 
     /** prefilter on task punc */
@@ -247,7 +248,7 @@ abstract public class Inperience extends LeakBack {
 
 
     @Override
-    public boolean preFilter(Task next) {
+    public boolean filter(Task next) {
 
 
         if (next.isCommand() || next.isInput() || !acceptTask(next)

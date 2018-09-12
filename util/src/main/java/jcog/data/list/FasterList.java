@@ -485,8 +485,12 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList addingAll(X... x) {
-        for (X y : x)
-            add(y);
+        int l = x.length;
+        if (l > 0) {
+            ensureExtraCapacity(l);
+            for (X y : x)
+                add(y);
+        }
         return this;
     }
 

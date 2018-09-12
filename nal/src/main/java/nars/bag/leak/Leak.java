@@ -10,7 +10,7 @@ class Leak<X, Y> {
 
     
 
-    @NotNull
+
     final Bag<X, Y> bag;
 
 
@@ -21,6 +21,9 @@ class Leak<X, Y> {
         this.bag = bag;
     }
 
+    public void put(Y x) {
+        bag.putAsync(x);
+    }
 
     public void setCapacity(int capacity) {
         bag.setCapacity(capacity);

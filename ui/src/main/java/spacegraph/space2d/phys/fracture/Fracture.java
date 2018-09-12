@@ -1,8 +1,6 @@
 package spacegraph.space2d.phys.fracture;
 
 import jcog.data.list.FasterList;
-import spacegraph.space2d.phys.callbacks.ContactImpulse;
-import spacegraph.space2d.phys.collision.WorldManifold;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.collision.shapes.Shape;
@@ -17,6 +15,7 @@ import spacegraph.util.math.v2;
 import java.util.List;
 import java.util.Objects;
 
+import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 import static spacegraph.space2d.phys.fracture.Material.CIRCLEVERTICES;
 
 /**
@@ -41,7 +40,7 @@ public final class Fracture {
     /**
      * Vytvori Frakturu. Ta este nieje aplikovana na svet.
      */
-    private Fracture(Fixture f1, Fixture f2, Material m, Contact contact, float normalImpulse, Tuple2f point) {
+    public Fracture(Fixture f1, Fixture f2, Material m, Contact contact, float normalImpulse, Tuple2f point) {
         this.f1 = f1;
         this.f2 = f2;
         this.b1 = f1.body;
@@ -58,14 +57,15 @@ public final class Fracture {
      * premennych.
      *
      * @param dt casova dlzka framu
+     * @param dyn
      */
-    public void smash(Smasher smasher, float dt) {
+    public void smash(Smasher smasher, float dt, Dynamics2D dyn) {
         Shape s = f1.shape;
         if (s == null)
             return;
 
         if (contact == null) { 
-            b1.setType(BodyType.DYNAMIC);
+            //b1.setType(DYNAMIC, dyn);
             return;
         }
 
@@ -110,9 +110,13 @@ public final class Fracture {
         boolean fixA = f1 == contact.aFixture; 
         float oldAngularVelocity = fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
         Tuple2f oldLinearVelocity = fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
-        b1.setAngularVelocity((b1.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
-        b1.setLinearVelocity(b1.vel.sub(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
-        if (!w.isFractured(f2) && b2.type == BodyType.DYNAMIC && !b2.m_fractureTransformUpdate) { 
+
+        //if (b1.type==DYNAMIC) {
+            b1.setAngularVelocity((b1.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
+            b1.setLinearVelocity(b1.vel.sub(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
+        //}
+
+        if (!smasher.isFractured(f2) && b2.type == DYNAMIC && !b2.m_fractureTransformUpdate) {
             oldAngularVelocity = !fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
             oldLinearVelocity = !fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
             b2.setAngularVelocity((b2.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
@@ -176,7 +180,7 @@ public final class Fracture {
             if (pg.isCorrect()) {
                 if (pg instanceof Fragment) {
                     Polygon[] convex = pg.convexDecomposition();
-                    bodyDef.type = BodyType.DYNAMIC;
+                    bodyDef.type = DYNAMIC;
                     for (Polygon pgx : convex) {
                         Body2D f_body = w.addBody(bodyDef);
                         pgx.flip();
@@ -215,23 +219,6 @@ public final class Fracture {
         }
     }
 
-    /**
-     * Detekuje, ci dany kontakt vytvara frakturu
-     *
-     * @param contact
-     * @param impulse
-     * @param w
-     */
-    public static void init(Contact contact, ContactImpulse impulse, Dynamics2D w) {
-        Fixture f1 = contact.aFixture;
-        Fixture f2 = contact.bFixture;
-        float[] impulses = impulse.normalImpulses;
-        for (int i = 0; i < impulse.count; ++i) {
-            float iml = impulses[i];
-            fractureCheck(f1, f2, iml, w, contact, i);
-            fractureCheck(f2, f1, iml, w, contact, i);
-        }
-    }
 
 
 
@@ -240,26 +227,6 @@ public final class Fracture {
 
 
 
-    private static void fractureCheck(final Fixture f1, final Fixture f2, final float iml, Dynamics2D w, Contact contact, int i) {
-
-
-
-
-
-            Material m = f1.material;
-            if (m!=null && m.m_rigidity < iml) {
-                f1.body.m_fractureTransformUpdate = f2.body.m_fractureTransformUpdate = false;
-                if (f1.body.m_massArea > Material.MINMASSDESCTRUCTION) {
-                    WorldManifold wm = new WorldManifold();
-                    contact.getWorldManifold(wm); 
-                    w.addFracture(new Fracture(f1, f2, m, contact, iml, new v2(wm.points[i])));
-                } else if (f1.body.type != BodyType.DYNAMIC) {
-                    w.addFracture(new Fracture(f1, f2, m, null, 0, null));
-                }
-            }
-
-
-    }
 
     private static boolean equals(Fixture f1, Fixture f2) {
         PolygonFixture p1 = f1.polygon;

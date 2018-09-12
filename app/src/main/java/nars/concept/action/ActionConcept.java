@@ -2,7 +2,6 @@ package nars.concept.action;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
@@ -14,12 +13,11 @@ import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
+import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.BiFunction;
-
-import static nars.truth.TruthFunctions.w2cSafe;
 
 
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
@@ -75,7 +73,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
             long dt = t.minTimeTo(now);
             int dur = n.dur();
             if (dt <= dur) {
-                MetaGoal.Action.learn(t.cause(), w2cSafe(Param.evi(t.evi(), dt, dur)), n.causes);
+                MetaGoal.Action.learn(t.cause(), TruthIntegration.eviInteg(t), n.causes);
             }
         }
     }

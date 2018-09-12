@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.impl.ArrayBag;
@@ -37,7 +37,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     private final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
 
     final ArrayBag<Task, PriReference<Task>> answers;
-    private On onTask;
+    private Off onTask;
 
     private transient int ttl;
     private transient Random random;

@@ -6,7 +6,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.AnimatorBase;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
@@ -422,18 +422,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
 
-    public On onUpdate(Consumer<JoglWindow> c) {
+    public Off onUpdate(Consumer<JoglWindow> c) {
         return onUpdate.on(c);
     }
 
     /**
      * adapter
      */
-    public On onUpdate(Animated c) {
+    public Off onUpdate(Animated c) {
         return onUpdate.on((JoglWindow s) -> c.animate(dtS));
     }
 
-    public On onUpdate(Runnable c) {
+    public Off onUpdate(Runnable c) {
         return onUpdate.on((JoglWindow s) -> c.run());
     }
 

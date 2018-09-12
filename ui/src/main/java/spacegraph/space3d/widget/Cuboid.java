@@ -3,7 +3,7 @@ package spacegraph.space3d.widget;
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import jcog.Util;
-import jcog.event.On;
+import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -215,12 +215,12 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     }
 
     @Override
-    public On onUpdate(Consumer<JoglWindow> c) {
+    public Off onUpdate(Consumer<JoglWindow> c) {
         throw new TODO();
     }
 
     @Override
-    public On animate(Animated c) {
+    public Off animate(Animated c) {
         throw new TODO();
     }
 }

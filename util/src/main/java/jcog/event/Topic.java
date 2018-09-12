@@ -31,7 +31,7 @@ public interface Topic<V> {
     }
 
 
-    static Ons all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
+    static Offs all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
         return all(obj, f, (key)->true);
     }
 
@@ -54,9 +54,9 @@ public interface Topic<V> {
     /** registers to all public Topic fields in an object
      * BiConsumer<String  fieldName, Object  value >
      * */
-    static Ons all(Object obj, BiConsumer<String, Object> f, Predicate<String> includeKey) {
+    static Offs all(Object obj, BiConsumer<String, Object> f, Predicate<String> includeKey) {
 
-        Ons s = new Ons();
+        Offs s = new Offs();
 
         each(obj.getClass(), (field) -> {
             String fieldName = field.getName();
@@ -89,13 +89,13 @@ public interface Topic<V> {
     /** TODO rename to 'out' to match Streams api */
     void emit(V arg);
 
-    default On on(long minUpdatePeriodMS, Consumer<V> o) {
+    default Off on(long minUpdatePeriodMS, Consumer<V> o) {
         if (minUpdatePeriodMS == 0)
             return on(o);
         return on(System::currentTimeMillis, ()->minUpdatePeriodMS, o);
     }
 
-    default On on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<V> o) {
+    default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<V> o) {
         AtomicLong lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong() );
         return on((v) -> {
             long now = time.getAsLong();
@@ -106,19 +106,19 @@ public interface Topic<V> {
         });
     }
 
-    default On on(Consumer<V> o) {
-        return new On.Strong<>(this, o);
+    default Off on(Consumer<V> o) {
+        return new AbstractOff.Strong<>(this, o);
     }
 
-    default On on(Runnable o) {
-        return new On.Strong<>(this, (ignored)->o.run());
+    default Off on(Runnable o) {
+        return new AbstractOff.Strong<>(this, (ignored)->o.run());
     }
 
-    default On onWeak(Consumer<V> o) {
-        return new On.Weak<>(this, o);
+    default Off onWeak(Consumer<V> o) {
+        return new AbstractOff.Weak<>(this, o);
     }
-    default On onWeak(Runnable o) {
-        return new On.Weak<>(this, (x) -> o.run());
+    default Off onWeak(Runnable o) {
+        return new AbstractOff.Weak<>(this, (x) -> o.run());
     }
 
 

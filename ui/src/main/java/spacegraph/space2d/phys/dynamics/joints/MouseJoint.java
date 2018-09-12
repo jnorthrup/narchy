@@ -101,7 +101,7 @@ public class MouseJoint extends Joint {
 
 
     public void setTarget(Tuple2f target) {
-        if (B.isAwake() == false) {
+        if (!B.isAwake()) {
             B.setAwake(true);
         }
         m_targetA.set(target);

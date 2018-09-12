@@ -23,6 +23,10 @@ abstract public class MetalBitSet {
 
     public abstract int cardinality();
 
+    public boolean isEmpty() {
+        return cardinality() == 0;
+    }
+
     public final void set(int i, boolean v) {
         if (v) set(i);
         else clear(i);
@@ -73,6 +77,14 @@ abstract public class MetalBitSet {
                 sum += Long.bitCount(l);
             return sum;
         }
+        @Override
+        public boolean isEmpty() {
+            for (long l : data)
+                if (l != 0)
+                    return false;
+            return true;
+        }
+
         /**
          * Sets the bit at specified index.
          *
@@ -166,12 +178,18 @@ abstract public class MetalBitSet {
 
         }
 
+
     }
 
 
     public static class IntBitSet extends MetalBitSet {
 
         private int x;
+
+        @Override
+        public boolean isEmpty() {
+            return x == 0;
+        }
 
         @Override
         public void setAll() {

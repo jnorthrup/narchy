@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.data.graph.*;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -98,7 +98,7 @@ public class Dyn2DSurface<X> extends AbstractUnitContainer<Graph2D<X>> implement
     private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
     private final AtomicBoolean busy = new AtomicBoolean(false);
     private final float linearDampening = 0.9f;
-    private On on;
+    private Off on;
     private float scaling = 1f;
     private FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
 

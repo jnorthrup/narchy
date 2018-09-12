@@ -1,6 +1,6 @@
 package nars.audio;
 
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingBufferTensor;
@@ -52,7 +52,7 @@ public class NARAudio extends WaveIn {
                     bmp.update();
                 }
 
-                private final On off;
+                private final Off off;
                 {
                     this.off = capture.frame.on(this::update);
                 }
@@ -92,7 +92,7 @@ public class NARAudio extends WaveIn {
 
                 new Gridding(
                     new WaveView(a.capture.buffer, 1024, 256) {
-                        private final On off;
+                        private final Off off;
                         {
                             this.off = a.capture.frame.on(this::update);
                         }

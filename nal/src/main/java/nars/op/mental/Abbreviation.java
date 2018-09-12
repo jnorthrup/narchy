@@ -59,12 +59,12 @@ public class Abbreviation/*<S extends Term>*/ {
             }
 
             @Override
-            protected boolean preFilter(Task next) {
+            protected boolean filter(Task next) {
                 int vol = next.volume();
                 if (vol < volume.lo() || vol > volume.hi())
                     return false;
 
-                return super.preFilter(next);
+                return super.filter(next);
             }
 
             @Override

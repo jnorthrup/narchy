@@ -3,7 +3,7 @@ package spacegraph.space2d.hud;
 import com.jogamp.newt.event.*;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
@@ -144,15 +144,15 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
-    public On onUpdate(Consumer<JoglWindow> c) {
+    public Off onUpdate(Consumer<JoglWindow> c) {
         return window.onUpdate(c);
     }
 
-    public On animate(Animated c) {
+    public Off animate(Animated c) {
         return window.onUpdate(c);
     }
 
-    private On animate(Runnable c) {
+    private Off animate(Runnable c) {
         return window.onUpdate(c);
     }
 

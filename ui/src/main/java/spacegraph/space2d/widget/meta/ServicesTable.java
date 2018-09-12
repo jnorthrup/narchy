@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.meta;
 
 import com.jogamp.opengl.GL2;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.service.Service;
 import jcog.service.Services;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ServicesTable extends Gridding implements GridModel, ScrollGrid.GridRenderer {
 
     private final Services context;
-    private On updater;
+    private Off updater;
     private ScrollGrid grid;
 
     

@@ -19,7 +19,7 @@ import com.googlecode.lanterna.terminal.ansi.TelnetTerminalServer;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.MutableInteger;
 import jcog.pri.PLink;
@@ -554,7 +554,7 @@ public class TextUI {
 
         class TaskListBox extends BagListBox<Task> {
 
-            private final On onTask;
+            private final Off onTask;
 
 
             @Override

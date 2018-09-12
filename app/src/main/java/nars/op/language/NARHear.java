@@ -1,7 +1,7 @@
 package nars.op.language;
 
 import com.google.common.collect.Lists;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.exe.Loop;
 import jcog.io.Twokenize;
 import nars.$;
@@ -36,7 +36,7 @@ public class NARHear extends Loop {
     
     
     private final List<Term> tokens;
-    public final On onReset;
+    public final Off onReset;
     private final Term context;
     int token;
 

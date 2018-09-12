@@ -13,6 +13,7 @@ import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
+import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,7 +117,7 @@ public class TaskConcept extends NodeConcept implements Concept {
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL)
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
-                    .learn(t.cause(), t.conf(), n.causes);
+                    .learn(t.cause(), TruthIntegration.eviInteg(t), n.causes);
 
 
     }

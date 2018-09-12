@@ -2,7 +2,7 @@ package spacegraph.input.key;
 
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
-import jcog.event.On;
+import jcog.event.Off;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -25,7 +25,7 @@ abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
     private final MutableIntObjectMap<FloatProcedure> keyPressed = _keyPressed.asSynchronized();
     private final IntObjectHashMap<FloatProcedure> _keyReleased = new IntObjectHashMap();
     private final MutableIntObjectMap<FloatProcedure> keyReleased = _keyReleased.asSynchronized();
-    private final On on;
+    private final Off on;
 
     SpaceKeys(JoglSpace g) {
         this.space = g;

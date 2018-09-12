@@ -4,10 +4,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamEventType;
 import com.github.sarxos.webcam.WebcamListener;
-import jcog.event.ListTopic;
-import jcog.event.On;
-import jcog.event.Ons;
-import jcog.event.Topic;
+import jcog.event.*;
 import jcog.signal.Tensor;
 import jcog.signal.named.RGB;
 import jcog.signal.tensor.AsyncTensor;
@@ -44,7 +41,7 @@ public class WebCam {
 
     private com.github.sarxos.webcam.Webcam webcam;
 
-    private final Ons webcamListeners = new Ons();
+    private final Offs webcamListeners = new Offs();
 
     public final Topic<WebcamEvent> eventChange = new ListTopic();
 
@@ -152,7 +149,7 @@ public class WebCam {
 
 
     public void on(WebcamListener wl) {
-        webcamListeners.add(new On() {
+        webcamListeners.add(new AbstractOff() {
             {
                 webcam.addWebcamListener(wl);
             }
@@ -171,7 +168,7 @@ public class WebCam {
 
         private final Tex ts;
         private final WebCam webcam;
-        private On on;
+        private Off on;
 
         public WebCamSurface(WebCam wc) {
             this(wc, new Tex());

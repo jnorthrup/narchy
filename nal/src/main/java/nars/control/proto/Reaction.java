@@ -33,7 +33,7 @@ public class Reaction extends AbstractTask {
     }
 
     protected final void emit(Task x, NAR n) {
-        n.eventTask.emit(x);
+        n.eventTask.emit(x, x.punc());
     }
 
     @Nullable

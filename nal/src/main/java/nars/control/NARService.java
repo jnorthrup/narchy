@@ -1,6 +1,7 @@
 package nars.control;
 
-import jcog.event.Ons;
+import jcog.event.Off;
+import jcog.event.Offs;
 import jcog.service.Service;
 import nars.$;
 import nars.NAR;
@@ -15,7 +16,9 @@ public class NARService extends Service<NAR> implements Termed {
     static final Logger logger = LoggerFactory.getLogger(NARService.class);
 
     public final Term id;
-    protected final Ons ons = new Ons();
+
+    /** TODO encapsulate */
+    protected final Offs ons = new Offs();
 
     protected volatile NAR nar;
 
@@ -40,6 +43,10 @@ public class NARService extends Service<NAR> implements Termed {
                 $.p($.quote(getClass().getName()), $.the(System.identityHashCode(this)));
     }
 
+    /** attach a handler.  should only be called in starting() implementations */
+    public void on(Off... x) {
+        ons.addingAll(x);
+    }
 
     @Override
     protected final void start(NAR nar) {

@@ -23,9 +23,8 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
+import jcog.data.list.FasterList;
 import spacegraph.space2d.phys.dynamics.Body2D;
-
-import java.util.ArrayList;
 
 /**
  * Definition for a {@link ConstantVolumeJoint}, which connects a group a bodies together so they
@@ -35,12 +34,12 @@ public class ConstantVolumeJointDef extends JointDef {
     public float frequencyHz;
     public float dampingRatio;
 
-    final ArrayList<Body2D> bodies;
-    ArrayList<DistanceJoint> joints;
+    final FasterList<Body2D> bodies;
+    FasterList<DistanceJoint> joints;
 
     public ConstantVolumeJointDef() {
         super(JointType.CONSTANT_VOLUME);
-        bodies = new ArrayList<>();
+        bodies = new FasterList(0);
         joints = null;
         collideConnected = false;
         frequencyHz = 0.0f;
@@ -68,7 +67,7 @@ public class ConstantVolumeJointDef extends JointDef {
     public void addBodyAndJoint(Body2D argBody, DistanceJoint argJoint) {
         addBody(argBody);
         if (joints == null) {
-            joints = new ArrayList<>();
+            joints = new FasterList<>();
         }
         joints.add(argJoint);
     }

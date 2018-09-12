@@ -2,7 +2,7 @@ package nars.exe;
 
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
-import jcog.event.Ons;
+import jcog.event.Offs;
 import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
@@ -33,7 +33,7 @@ public class UniExec extends AbstractExec {
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
-    protected Ons ons = null;
+    protected Offs ons = null;
 
     public UniExec() {
         this(1, 1);
@@ -224,7 +224,7 @@ public class UniExec extends AbstractExec {
             };
             sharing.can(cpu);
 
-            ons = new Ons();
+            ons = new Offs();
             ons.add(n.onCycle(this::onCycle));
 
         }

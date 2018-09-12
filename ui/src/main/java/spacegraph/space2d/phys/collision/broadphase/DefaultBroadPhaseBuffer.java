@@ -250,15 +250,15 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
             }
         }
 
+        Pair thePair = m_pairBuffer[m_pairCount++];
         if (proxyId < m_queryProxyId) {
-            m_pairBuffer[m_pairCount].proxyIdA = proxyId;
-            m_pairBuffer[m_pairCount].proxyIdB = m_queryProxyId;
+            thePair.proxyIdA = proxyId;
+            thePair.proxyIdB = m_queryProxyId;
         } else {
-            m_pairBuffer[m_pairCount].proxyIdA = m_queryProxyId;
-            m_pairBuffer[m_pairCount].proxyIdB = proxyId;
+            thePair.proxyIdA = m_queryProxyId;
+            thePair.proxyIdB = proxyId;
         }
 
-        ++m_pairCount;
         return true;
     }
 }

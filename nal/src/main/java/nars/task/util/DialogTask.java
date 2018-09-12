@@ -1,8 +1,8 @@
 package nars.task.util;
 
 import jcog.data.map.ConcurrentFastIteratingHashSet;
-import jcog.event.On;
-import jcog.event.Ons;
+import jcog.event.Off;
+import jcog.event.Offs;
 import nars.NAR;
 import nars.Task;
 import nars.derive.Deriver;
@@ -15,8 +15,8 @@ public class DialogTask {
 
     final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(new Task[0]);
     private final Deriver deriver;
-    private final Ons ons;
-    private final On monitor;
+    private final Offs ons;
+    private final Off monitor;
     private final NAR nar;
 
     public void add(Task t) {
@@ -29,7 +29,7 @@ public class DialogTask {
             add(i);
         }
 
-        ons= new Ons(
+        ons= new Offs(
 
             deriver = SimpleDeriver.forConcepts(n, tasks.asList().stream().map(t -> {
 

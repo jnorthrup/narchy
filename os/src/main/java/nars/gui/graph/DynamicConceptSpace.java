@@ -2,7 +2,7 @@ package nars.gui.graph;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.event.Ons;
+import jcog.event.Offs;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
 import jcog.pri.PriReference;
@@ -55,7 +55,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     public SpaceWidget.TermVis vis;
 
     private DurService onDur;
-    private Ons onClear;
+    private Offs onClear;
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
@@ -107,7 +107,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 }
 
             }).durs(1);
-            this.onClear = new Ons(nar.eventClear.on(() -> {
+            this.onClear = new Offs(nar.eventClear.on(() -> {
                 synchronized (this) {
                     next.write().clear();
                     next.commit();

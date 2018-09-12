@@ -62,7 +62,7 @@ public class Impiler {
         }
 
         @Override
-        protected boolean preFilter(Task next) {
+        protected boolean filter(Task next) {
             return (next.isGoal() || next.isQuestionOrQuest()) && !next.term().hasVars() && !next.hasXternal();
         }
 
@@ -107,7 +107,7 @@ public class Impiler {
         }
 
         @Override
-        protected boolean preFilter(Task next) {
+        protected boolean filter(Task next) {
             return true;
         }
 
@@ -315,7 +315,7 @@ public class Impiler {
         }
 
         @Override
-        protected boolean preFilter(Task next) {
+        protected boolean filter(Task next) {
             return next.op() == IMPL && next.punc() == (beliefOrGoal ? BELIEF : GOAL) && !next.hasVars();
         }
 

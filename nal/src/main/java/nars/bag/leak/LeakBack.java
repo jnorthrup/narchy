@@ -17,8 +17,8 @@ abstract public class LeakBack extends TaskLeak {
 
     protected final BufferedCauseChannel in;
 
-    protected LeakBack(int capacity, NAR nar) {
-        super(capacity, nar);
+    protected LeakBack(int capacity, NAR nar, byte... puncs) {
+        super(capacity, nar, puncs);
         this.in = nar.newChannel(this).buffered();
     }
 

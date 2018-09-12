@@ -7,9 +7,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
-import jcog.event.ListTopic;
-import jcog.event.On;
-import jcog.event.Topic;
+import jcog.event.*;
 import jcog.exe.Cycled;
 import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
@@ -95,7 +93,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Exec exe;
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
-    public final Topic<Task> eventTask = new ListTopic<>();
+    public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
     public final Services<NAR, Term> services;
     public final Time time;
     public final ConceptIndex concepts;
@@ -1045,23 +1043,27 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * a frame batches a burst of multiple cycles, for coordinating with external systems in which multiple cycles
      * must be run per control frame.
      */
-    public final On onCycle(Consumer<NAR> each) {
+    public final Off onCycle(Consumer<NAR> each) {
         return eventCycle.on(each);
     }
 
-    public final On onCycle(Runnable each) {
+    public final Off onCycle(Runnable each) {
         return onCycle((ignored) -> each.run());
     }
 
     /**
      * avoid using lambdas with this, instead use an interface implementation of the class that is expected to be garbage collected
      */
-    public final On onCycleWeak(Consumer<NAR> each) {
+    public final Off onCycleWeak(Consumer<NAR> each) {
         return eventCycle.onWeak(each);
     }
 
-    public On onTask(Consumer<Task> listener) {
+    public final Off onTask(Consumer<Task> listener) {
         return eventTask.on(listener);
+    }
+
+    public final Off onTask(Consumer<Task> listener, byte... punctuations) {
+        return eventTask.on(listener, punctuations);
     }
 
 

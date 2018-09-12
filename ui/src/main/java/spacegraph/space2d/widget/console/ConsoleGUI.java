@@ -9,7 +9,7 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
-import jcog.event.On;
+import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
 
@@ -25,7 +25,7 @@ public class ConsoleGUI extends ConsoleTerminal {
 
     private MultiWindowTextGUI gui;
     private TerminalScreen screen = null;
-    private On updates = null;
+    private Off updates = null;
     private BasicWindow window = null;
 
     ConsoleGUI(int cols, int rows) {

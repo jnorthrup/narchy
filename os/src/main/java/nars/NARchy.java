@@ -87,7 +87,7 @@ public class NARchy extends NARS {
 
 
 
-            InterNAR i = new InterNAR(nar, 8, 0);
+            InterNAR i = new InterNAR(nar, 0);
             i.runFPS(2);
 
 

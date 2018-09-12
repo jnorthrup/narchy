@@ -346,9 +346,9 @@ public class IRCAgent extends IRC {
         }
 
         @Override
-        public boolean preFilter(@NotNull Task next) {
+        public boolean filter(@NotNull Task next) {
             if (trace || next.isCommand())
-                return super.preFilter(next);
+                return super.filter(next);
             return false;
         }
 

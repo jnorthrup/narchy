@@ -229,6 +229,7 @@ public enum Op {
     public static final byte GOAL = '!';
     public static final byte QUEST = '@';
     public static final byte COMMAND = ';';
+    public static final byte[] Punctuation = new byte[] {BELIEF, QUESTION, GOAL, QUEST, COMMAND};
     public static final String TENSE_PAST = ":\\:";
     public static final String TENSE_PRESENT = ":|:";
     public static final String TENSE_FUTURE = ":/:";
@@ -331,6 +332,8 @@ public enum Op {
 
     /** False wrapped in a subterm as the only element */
     public static final Subterms FalseSubterm = Op.terms.subterms(Bool.False);
+
+
 
 
     static {

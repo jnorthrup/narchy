@@ -95,10 +95,9 @@ public class ConjClustering extends Causable {
 
     @Override
     protected void starting(NAR nar) {
-        super.starting(nar);
-        ons.add(nar.onTask(t -> {
+
+        on(nar.onTask(t -> {
             if (!t.isEternal()
-                    && t.punc() == punc
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets) //TODO allow ImDep's
                     && filter.test(t)) {
                 bag.put(t,
@@ -108,7 +107,7 @@ public class ConjClustering extends Causable {
                 );
 
             }
-        }));
+        }, punc));
 
     }
 

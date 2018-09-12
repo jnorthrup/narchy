@@ -1,6 +1,6 @@
 package nars.concept.util;
 
-import jcog.event.Ons;
+import jcog.event.Offs;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.util.TimeAware;
@@ -14,7 +14,7 @@ public abstract class ConceptMap {
 	@NotNull
 	public final TimeAware timeAware;
 
-	Ons regs;
+	Offs regs;
 	int frame = -1;
 	protected int cycleInFrame = -1;
 
@@ -27,7 +27,7 @@ public abstract class ConceptMap {
 
 	protected ConceptMap(@NotNull NAR nar) {
 
-        regs = new Ons(
+        regs = new Offs(
         nar.eventClear.on(n -> {
             frame = 0;
             reset();

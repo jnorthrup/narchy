@@ -11,25 +11,25 @@ import java.util.function.Consumer;
 /**
  * Represents the active state of a topic stream (Subscription)
  */
-abstract public class On<V> implements Off {
+abstract public class AbstractOff<V> implements Off {
 
     public final Consumer<Consumer<V>> disconnector;
 
-    protected On() {
+    protected AbstractOff() {
         this.disconnector = null;
     }
 
-    protected On(Consumer<Consumer<V>> t) {
+    protected AbstractOff(Consumer<Consumer<V>> t) {
         this.disconnector = t;
     }
 
-    protected On(Topic<V> t) {
+    protected AbstractOff(Topic<V> t) {
         this(t::disable);
     }
 
     abstract public void off();
 
-    public static class Strong<V> extends On<V> {
+    public static class Strong<V> extends AbstractOff<V> {
 
         public final Consumer<V> reaction;
 
@@ -57,7 +57,7 @@ abstract public class On<V> implements Off {
 
 
 
-    public static class Weak<V> extends On<V> implements Consumer<V> {
+    public static class Weak<V> extends AbstractOff<V> implements Consumer<V> {
 
 
         protected static final Logger logger = LoggerFactory.getLogger(Weak.class);

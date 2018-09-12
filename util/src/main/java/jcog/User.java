@@ -2,7 +2,7 @@ package jcog;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.event.ListTopic;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.math.Longerval;
@@ -164,7 +164,7 @@ public class User {
         notice.emitAsync(x);
     }
 
-    public On onNotice(Consumer x) {
+    public Off onNotice(Consumer x) {
         logger.info("noticing {}", x);
         return notice.onWeak(x);
     }

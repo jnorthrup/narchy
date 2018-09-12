@@ -53,7 +53,7 @@ public class Arithmeticize {
         }
 
         @Override
-        protected boolean preFilter(Task next) {
+        protected boolean filter(Task next) {
             Term x = next.term();
             return
                     x.hasAny(Op.INT) &&

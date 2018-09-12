@@ -2,7 +2,7 @@ package spacegraph.space2d.dyn2d;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.Util;
-import jcog.event.On;
+import jcog.event.Off;
 import jcog.math.IntRange;
 import jcog.net.UDPeer;
 import spacegraph.SpaceGraph;
@@ -28,7 +28,7 @@ public class MeshChipTest {
         private final Port in, out;
 //        private final BagChart<UDPeer.UDProfile> themChart;
 //        private final Every display;
-        private On recv;
+        private Off recv;
 
         public MeshChip(UDPeer peer) {
             this.peer = peer;

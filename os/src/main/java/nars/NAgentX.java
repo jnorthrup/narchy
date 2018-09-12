@@ -301,26 +301,26 @@ abstract public class NAgentX extends NAgent {
         n.freqResolution.set(0.03f);
         n.termVolumeMax.set(35);
 
-        n.forgetRate.set(0.75f);
-        n.activateConceptRate.set(0.01f);
+        n.forgetRate.set(0.9f);
+        n.activateConceptRate.set(0.1f);
 
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-        float basePri = 0.25f;
-        n.beliefPriDefault.set(basePri * 0.5f);
-        n.goalPriDefault.set(basePri * 1f);
-        n.questionPriDefault.set(basePri * 0.1f);
-        n.questPriDefault.set(basePri * 0.2f);
-
-
+        float basePri = 0.05f;
+        n.beliefPriDefault.set(basePri);
+        n.goalPriDefault.set(basePri);
+        n.questionPriDefault.set(basePri);
+        n.questPriDefault.set(basePri);
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
-        n.emotion.want(MetaGoal.Believe, 0f);
-        n.emotion.want(MetaGoal.Answer, +0f);
-        n.emotion.want(MetaGoal.Desire, +1f);
+
+        n.emotion.want(MetaGoal.Believe, 0.01f);
+        n.emotion.want(MetaGoal.Desire, 0.01f);
         n.emotion.want(MetaGoal.Action, +1f);
+
+        n.emotion.want(MetaGoal.Answer, 0f);
     }
 
     public static void initPlugins(NAR n) {
@@ -349,7 +349,7 @@ abstract public class NAgentX extends NAgent {
 
 
         try {
-            InterNAR i = new InterNAR(n, 8, 0);
+            InterNAR i = new InterNAR(n, 0);
             i.runFPS(4);
         } catch (Exception e) {
             e.printStackTrace();

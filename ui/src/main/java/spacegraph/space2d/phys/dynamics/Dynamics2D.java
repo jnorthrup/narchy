@@ -44,7 +44,6 @@ import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.dynamics.joints.Joint;
 import spacegraph.space2d.phys.dynamics.joints.JointDef;
 import spacegraph.space2d.phys.dynamics.joints.JointEdge;
-import spacegraph.space2d.phys.fracture.Fracture;
 import spacegraph.space2d.phys.fracture.FractureListener;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.particle.*;
@@ -54,8 +53,7 @@ import spacegraph.space2d.phys.pooling.normal.DefaultWorldPool;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -84,9 +82,9 @@ public class Dynamics2D {
 
     final ContactManager contactManager;
 
-    private final Set<Body2D> bodies = new ConcurrentFastIteratingHashSet<>(new Body2D[0]);
+    private final Collection<Body2D> bodies = new ConcurrentFastIteratingHashSet<>(new Body2D[0]);
 
-    private final Set<Joint> joints = new ConcurrentFastIteratingHashSet<>(new Joint[0]);
+    private final Collection<Joint> joints = new ConcurrentFastIteratingHashSet<>(new Joint[0]);
 
     private int jointCount;
 
@@ -128,7 +126,7 @@ public class Dynamics2D {
 
 
 
-    private final Island toiIsland = new Island(this);
+    private final Island toiIsland = new Island(smasher);
     private final TimeOfImpact.TOIInput toiInput = new TimeOfImpact.TOIInput();
     private final TimeOfImpact.TOIOutput toiOutput = new TimeOfImpact.TOIOutput();
     private final TimeStep subStep = new TimeStep();
@@ -212,23 +210,6 @@ public class Dynamics2D {
         return m_allowSleep;
     }
 
-    public void addFracture(Fracture fracture) {
-        
-        
-        Fracture f = smasher.fractures.get(fracture);
-        if (f != null) {
-            if (f.normalImpulse < fracture.normalImpulse) {
-                smasher.fractures.remove(f);
-                smasher.fractures.add(fracture);
-            }
-        } else {
-            smasher.fractures.add(fracture);
-        }
-    }
-
-    public boolean isFractured(Fixture fx) {
-        return smasher.fractures.contains(fx);
-    }
 
 
     public DestructionListener getDestructionListener() {
@@ -542,48 +523,17 @@ public class Dynamics2D {
      * @param velocityIterations for the velocity constraint solver.
      * @param positionIterations for the position constraint solver.
      */
-    public void step(float dt, int velocityIterations, int positionIterations) {
-
-
-
-
-
-
-
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
+    public synchronized void step(float dt, int velocityIterations, int positionIterations) {
 
         sync();
 
-        invoke(() -> {
+        //invoke(() -> {
 
             realtimeMS = System.currentTimeMillis();
 
             stepTimer.reset();
             tempTimer.reset();
 
-
-
-
-
-            
-            
             if ((flags & NEW_FIXTURE) == NEW_FIXTURE) {
                 
                 contactManager.findNewContacts();
@@ -633,26 +583,17 @@ public class Dynamics2D {
                 clearForces();
             }
 
-
-
-
-
+            smasher.update(this, dt);
 
             m_profile.step.record(stepTimer.getMilliseconds());
 
-
-
-            smasher.fractures.forEach(f -> f.smash(smasher, dt));
-            smasher.fractures.clear();
-
-
-        });
+        //});
 
 
 
     }
 
-    public void sync() {
+    private void sync() {
         Runnable next;
         while ((next = queue.poll()) != null)
             next.run();
@@ -665,7 +606,7 @@ public class Dynamics2D {
      *
      * @see setAutoClearForces
      */
-    public void clearForces() {
+    private void clearForces() {
         bodies(b -> {
            b.force.setZero();
            b.torque = 0;
@@ -953,7 +894,7 @@ public class Dynamics2D {
         return m_profile;
     }
 
-    private final Island island = new Island(this);
+    private final Island island = new Island(smasher);
 
     private final Timer broadphaseTimer = new Timer();
 
@@ -962,7 +903,7 @@ public class Dynamics2D {
         m_profile.solveVelocity.startAccum();
         m_profile.solvePosition.startAccum();
 
-        List<Body2D> preRemove = new FasterList(0);
+        Collection<Body2D> preRemove = new FasterList(0);
         bodies(b->{
             
             b.flags &= ~Body2D.e_islandFlag;
@@ -1826,7 +1767,7 @@ public class Dynamics2D {
         final ProfileEntry broadphase = new ProfileEntry();
         final ProfileEntry solveTOI = new ProfileEntry();
 
-        public void toDebugStrings(List<String> strings) {
+        public void toDebugStrings(Collection<String> strings) {
             strings.add("Profile:");
             strings.add(" step: " + step);
             strings.add("  init: " + stepInit);

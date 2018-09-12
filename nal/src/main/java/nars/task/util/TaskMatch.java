@@ -1,6 +1,6 @@
 package nars.task.util;
 
-import jcog.event.On;
+import jcog.event.Off;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 abstract public class TaskMatch implements Consumer<Task>, Predicate<Task> {
 
     protected final NAR nar;
-    private final On on;
+    private final Off on;
     private PREDICATE<Term> term;
 
     private PREDICATE<Byte> punctuation;

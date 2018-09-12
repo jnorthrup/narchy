@@ -1,9 +1,15 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
 import jcog.data.list.FasterList;
+import spacegraph.space2d.phys.callbacks.ContactImpulse;
+import spacegraph.space2d.phys.collision.WorldManifold;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
+import spacegraph.space2d.phys.dynamics.Dynamics2D;
+import spacegraph.space2d.phys.dynamics.Fixture;
+import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.fracture.Fracture;
 import spacegraph.space2d.phys.fracture.Fragment;
+import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.util.HashTabulka;
 import spacegraph.space2d.phys.fracture.util.MyList;
@@ -15,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
+import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 
 /**
  * Hlavny objekt, ktory robi prienik voronoi diagramu generovany ohniskami
@@ -31,7 +39,7 @@ public class Smasher {
      */
     public Polygon[] fragments;
 
-    public final HashTabulka<Fracture> fractures = new HashTabulka<>(); 
+    private final HashTabulka<Fracture> fractures = new HashTabulka<>();
 
     private Tuple2f[] focee;
     private Polygon p;
@@ -54,14 +62,14 @@ public class Smasher {
     public void calculate(Polygon p, Tuple2f[] focee, Tuple2f contactPoint, IContains ic) {
         this.focee = focee;
         this.p = p;
-        
+
         List<Fragment> list = getVoronoi();
 
         List<EdgePolygon> polygonEdgesList = new FasterList<>();
         HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
         HashTabulka<EdgePolygon> polygonEdges = new HashTabulka<>();
 
-        
+
         int count = p.size();
         for (int i = 1; i <= count; i++) {
             Tuple2f p1 = p.get(i - 1);
@@ -71,7 +79,7 @@ public class Smasher {
             polygonEdgesList.add(e);
         }
 
-        
+
         for (Fragment pp : list) {
             count = pp.size();
             for (int i = 1; i <= count; i++) {
@@ -117,7 +125,7 @@ public class Smasher {
 
         EVec2[] vectors = vectorList.toArray(new EVec2[0]);
 
-        Arrays.sort(vectors); 
+        Arrays.sort(vectors);
 
 
         for (EVec2 e : vectors) {
@@ -127,21 +135,17 @@ public class Smasher {
                     diagramEdges.add(ex);
 
 
-
-
                     polygonEdges.forEach(px -> process(px, ex));
 
                 } else {
                     diagramEdges.remove(e.e);
                 }
-            } else { 
+            } else {
                 if (e.start) {
                     EdgePolygon px = (EdgePolygon) e.e;
                     polygonEdges.add(px);
 
                     diagramEdges.forEach(ex -> process(px, ex));
-
-
 
 
                 } else {
@@ -183,13 +187,13 @@ public class Smasher {
         }
 
         MyList<Fragment> allIntersections = new MyList<>();
-        
+
 
         precalc_values();
 
         for (Fragment ppp : list) {
             List<Fragment> intsc = getIntersections(ppp, polygonAll);
-            if (intsc == null) { 
+            if (intsc == null) {
                 fragments = new Polygon[]{p};
                 return;
             }
@@ -198,8 +202,7 @@ public class Smasher {
 
         table.clear();
 
-        
-        
+
         for (Fragment f : allIntersections) {
             for (int i = 0; i < f.size(); ++i) {
                 Tuple2f v1 = f.get(i);
@@ -216,17 +219,17 @@ public class Smasher {
             }
         }
 
-        
+
         final double[] distance = {Double.MAX_VALUE};
         final Fragment[] startPolygon = {null};
         final Tuple2f[] kolmicovyBod = {null};
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
-        
-        table.forEach(ep->{
+
+        table.forEach(ep -> {
             if (ep.d2 == null) {
 
-                
+
                 Tuple2f vv = ep.kolmicovyBod(contactPoint);
                 double newDistance = contactPoint.distanceSq(vv);
                 if (newDistance <= distance[0]) {
@@ -262,14 +265,14 @@ public class Smasher {
                     if (ic.contains(centroid)) {
                         boolean intersection = false;
                         for (EdgeDiagram edge : allEdgesPolygon) {
-                            
+
                             if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
                                 intersection = true;
                                 break;
                             }
                         }
 
-                        
+
                         if (!intersection) {
                             ppx.add(opposite);
                         }
@@ -294,6 +297,72 @@ public class Smasher {
         result.add(fragmentsArray);
         fragments = new Polygon[result.size()];
         result.addToArray(fragments);
+    }
+
+    public void addFracture(Fracture fracture) {
+
+
+        Fracture f = fractures.get(fracture);
+        if (f != null) {
+            if (f.normalImpulse < fracture.normalImpulse) {
+                fractures.remove(f);
+                fractures.add(fracture);
+            }
+        } else {
+            fractures.add(fracture);
+        }
+    }
+
+    public boolean isFractured(Fixture fx) {
+        return fractures.contains(fx);
+    }
+
+    /**
+     * Detekuje, ci dany kontakt vytvara frakturu
+     *
+     * @param contact
+     * @param impulse
+     * @param w
+     */
+    public void init(Contact contact, ContactImpulse impulse) {
+        Fixture f1 = contact.aFixture;
+        Fixture f2 = contact.bFixture;
+
+//        if (f1.getBody().getType()!=DYNAMIC && f2.getBody().getType()!=DYNAMIC) {
+//            contact.setEnabled(false);
+//            Arrays.fill(impulse.normalImpulses, 0);
+//            Arrays.fill(impulse.tangentImpulses, 0);
+//            return;
+//        }
+
+        float[] impulses = impulse.normalImpulses;
+        for (int i = 0; i < impulse.count; ++i) {
+
+            float iml = impulses[i];
+
+
+            tryFracture(f1, f2, iml, contact, i);
+            tryFracture(f2, f1, iml, contact, i);
+        }
+    }
+
+
+    private void tryFracture(final Fixture f1, final Fixture f2, final float iml, Contact contact, int i) {
+
+
+        Material m = f1.material;
+        if (m != null && m.m_rigidity < iml) {
+            f1.body.m_fractureTransformUpdate = f2.body.m_fractureTransformUpdate = false;
+            if (f1.body.m_massArea >= Material.MASS_DESTRUCTABLE_MIN) {
+                WorldManifold wm = new WorldManifold();
+                contact.getWorldManifold(wm);
+                addFracture(new Fracture(f1, f2, m, contact, iml, new v2(wm.points[i])));
+            } else if (f1.body.type != DYNAMIC) {
+                addFracture(new Fracture(f1, f2, m, null, 0, null));
+            }
+        }
+
+
     }
 
     private static final Comparator<Vec2Intersect> c = (o1, o2) -> {
@@ -549,5 +618,10 @@ public class Smasher {
             j = i;
         }
         return b;
+    }
+
+    public void update(Dynamics2D dyn, float dt) {
+        fractures.forEach(f -> f.smash(this, dt, dyn));
+        fractures.clear();
     }
 }

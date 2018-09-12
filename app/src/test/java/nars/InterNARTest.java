@@ -20,7 +20,7 @@ public class InterNARTest {
     @ValueSource(ints={1,0})
     public void testDiscoverDoesntSelfConnect(int pingSelf) {
         NAR a = NARS.realtime(1f).get();
-        InterNAR x = new InterNAR(a, 4f);
+        InterNAR x = new InterNAR(a);
         a.synch();
         x.runFPS(8f);
         if (pingSelf==1) {
@@ -63,14 +63,14 @@ public class InterNARTest {
         }
 
 
-        InterNAR ai = new InterNAR(a, outRate, 0, false) {
+        InterNAR ai = new InterNAR(a, 0, false) {
             @Override
             protected void starting(NAR nar) {
                 super.starting(nar);
                 runFPS(NET_FPS);
             }
         };
-        InterNAR bi = new InterNAR(b, outRate, 0, false) {
+        InterNAR bi = new InterNAR(b, 0, false) {
 
             @Override
             protected void starting(NAR nar) {

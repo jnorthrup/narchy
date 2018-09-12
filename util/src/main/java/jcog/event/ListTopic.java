@@ -98,13 +98,13 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
     }
 
     @Override
-    public final void enable(Consumer<V> o) {
+    public void enable(Consumer<V> o) {
         assert (o != null);
         add(o);
     }
 
     @Override
-    public final void disable(Consumer<V> o) {
+    public void disable(Consumer<V> o) {
         assert (o != null);
         remove(o);
     }

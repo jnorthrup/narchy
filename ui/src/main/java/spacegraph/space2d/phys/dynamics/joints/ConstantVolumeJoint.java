@@ -35,7 +35,6 @@ import spacegraph.util.math.Tuple2f;
 public class ConstantVolumeJoint extends Joint {
 
     private final Body2D[] bodies;
-    private final float[] targetLengths;
     private float targetVolume;
 
     private final Tuple2f[] normals;
@@ -67,7 +66,7 @@ public class ConstantVolumeJoint extends Joint {
         }
         bodies = def.bodies.toArray(new Body2D[n]);
 
-        targetLengths = new float[n];
+        float[] targetLengths = new float[n];
         for (int i = 0; i < targetLengths.length; ++i) {
             final int next = (i == targetLengths.length - 1) ? 0 : i + 1;
             float dist = bodies[i].getWorldCenter().sub(bodies[next].getWorldCenter()).length();
