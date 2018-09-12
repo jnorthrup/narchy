@@ -3,10 +3,13 @@ package spacegraph.space2d.widget.text;
 
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
+import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
+
+import java.util.Arrays;
 
 import static java.lang.Math.round;
 
@@ -35,6 +38,11 @@ public class BitmapLabel extends BitmapTextGrid {
         //setUpdateNecessary();
 
     }
+
+    public BitmapLabel() {
+        this("");
+    }
+
     @Override
     protected boolean prePaint(SurfaceRender r) {
         float p = r.visP(bounds).minDimension();
@@ -66,11 +74,18 @@ public class BitmapLabel extends BitmapTextGrid {
     public BitmapLabel text(String newText) {
         if (!this.text.equals(newText)) {
             this.text = newText;
-            resize(text.length(), 1);
-            layoutText();
-        }
 
-        //setUpdateNecessary();
+            int rows = 1 + Texts.count(newText, '\n');
+            if (rows == 1) {
+                resize(newText.length(), 1);
+            } else {
+                //HACK do better
+                int cols = Arrays.stream(newText.split("\n")).mapToInt(String::length).max().getAsInt();
+                resize(cols, rows);
+            }
+            layoutText();
+            invalidate();
+        }
 
         return this;
     }
@@ -108,17 +123,25 @@ public class BitmapLabel extends BitmapTextGrid {
 
     @Override
     protected boolean updateBackBuffer() {
-        int c = this.cols;
-        int r = this.rows;
-        for (int i = 0; i < c; i++) {
-            for (int j = 0; j < r; j++)
-                redraw(charAt(i,j),i,j);
+
+        clearBackground(); //may not be necessary if only one line and all characters are used but in multiline the matrix currently isnt regular so some chars will not be redrawn
+
+        int n = text.length();
+        int row = 0, col =0;
+        for (int i = 0; i < n; i++) {
+            char c = text.charAt(i);
+            if (c == '\n') {
+                row++;
+                col = 0;
+            } else {
+                redraw(new TextCharacter(c, fgColor, bgColor), col++, row);
+            }
         }
         return true;
     }
 
     @Override
-    public TextCharacter charAt(int col, int row) {
+    @Deprecated public TextCharacter charAt(int col, int row) {
         return new TextCharacter(text.charAt(col), fgColor, bgColor);
     }
 

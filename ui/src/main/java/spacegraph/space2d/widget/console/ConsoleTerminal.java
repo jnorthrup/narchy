@@ -158,7 +158,7 @@ public class ConsoleTerminal extends Widget {
 
                 @Override
                 public void onFlush() {
-                    text.setUpdateNecessary();
+                    text.invalidate();
                 }
 
                 @Override
@@ -172,11 +172,11 @@ public class ConsoleTerminal extends Widget {
 
                 @Override
                 public void onResized(Terminal terminal, TerminalSize terminalSize) {
-                    text.setUpdateNecessary();
+                    text.invalidate();
                 }
             });
 
-            text.setUpdateNecessary();
+            text.invalidate();
 
 
             return true;

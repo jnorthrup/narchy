@@ -58,7 +58,6 @@ import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.space2d.widget.tab.TabPane.TabWall;
 
 /**
  * Extensions to NAgent interface:
@@ -180,7 +179,7 @@ abstract public class NAgentX extends NAgent {
 
 
                 //Gridding aa = new Gridding(
-                TabPane aa = new TabWall().addToggles(Map.of(
+                TabPane aa = new TabPane().addToggles(Map.of(
                     a.toString(), () -> NARui.agent(a),
                     "emotion", () -> new EmotionPlot(128, a)
                 ) );

@@ -83,7 +83,7 @@ public class Timeline2D<E> extends Graph2D<E> {
                 return "";
             }
         }.type(SliderModel.KnobVert);
-        b.edge(Bordering.E, 0.5f).east(zoomSlider);
+        b.borderSize(Bordering.E, 0.5f).east(zoomSlider);
 
         return b;
     }

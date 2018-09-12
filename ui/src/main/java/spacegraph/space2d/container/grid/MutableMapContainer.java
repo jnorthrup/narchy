@@ -42,6 +42,7 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 //        }
     };
 
+
     protected void unmaterialize(V v) {
 
     }
@@ -94,6 +95,10 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
         cells.removeAll(x);
     }
 
+    public Collection<K> keySet() {
+        return cells.map.keySet();
+    }
+
     @Nullable
     public V getValue(K x) {
         return cells.getValue(x);
@@ -102,20 +107,23 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
     public CellMap.CacheCell<K, V> compute(K key, Function<V, V> builder) {
         return cells.compute(key, builder);
     }
+    public CellMap.CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
+        return cells.computeIfAbsent(key, builder);
+    }
 
-    CellMap.CacheCell put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
+    protected CellMap.CacheCell<K,V> put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
 
-        CellMap.CacheCell entry = cells.cache.computeIfAbsent(key, k -> cells.cellPool.get());
+        CellMap.CacheCell<K,V> entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
         return cells.update(key, entry, ((SurfaceCacheCell) entry).update(key, nextValue, renderer));
 
     }
 
 
-    public boolean remove(K key) {
-        return cells.remove(key);
+    public V remove(K key) {
+        return cells.remove(key).value;
     }
 
-    public boolean removeSilently(K key) {
+    protected boolean removeSilently(K key) {
         return cells.removeSilently(key);
     }
 

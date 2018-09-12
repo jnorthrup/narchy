@@ -7,10 +7,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
-import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Wall;
-import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -148,13 +145,13 @@ public class TabPane extends Splitting {
     }
 
 
-    public static class TabWall extends TabPane {
-
-        public TabWall() {
-            super();
-            setContent(new Wall());
-            setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
-        }
-    }
+//    public static class TabWall extends TabPane {
+//
+//        public TabWall() {
+//            super();
+//            setContent(new Wall());
+//            setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
+//        }
+//    }
 
 }

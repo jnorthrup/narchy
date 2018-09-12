@@ -49,7 +49,7 @@ public class Bordering extends MutableContainer {
     /**
      * sets a specific edge size
      */
-    public Bordering edge(int direction, float size) {
+    public Bordering borderSize(int direction, float size) {
         switch (direction) {
             case N:
                 borderNorth = size;

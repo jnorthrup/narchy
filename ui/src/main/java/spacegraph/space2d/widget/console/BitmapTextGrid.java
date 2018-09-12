@@ -71,7 +71,10 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 //        backbufferGraphics.setComposite(composite);
 //        backbufferGraphics.clearRect(0,0,pixelWidth(), pixelHeight());
 
-        Arrays.fill(((DataBufferInt)newBackbuffer.getRaster().getDataBuffer()).getData(), 0);
+        this.backbufferGraphics = backbufferGraphics;
+        this.backbuffer = newBackbuffer;
+
+        clearBackground();
 
         //backbufferGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
         //backbufferGraphics.setBackground(new Color(0,0,0,0.5f));
@@ -83,10 +86,13 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         backbufferGraphics.setFont(font);
 
 
-        this.backbufferGraphics = backbufferGraphics;
-        this.backbuffer = newBackbuffer;
+
 
         return true;
+    }
+
+    protected void clearBackground() {
+        Arrays.fill(((DataBufferInt)backbuffer.getRaster().getDataBuffer()).getData(), 0);
     }
 
 
@@ -231,7 +237,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
     }
 
-    public void setUpdateNecessary() {
+    protected void invalidate() {
         needUpdate.set(true);
     }
 }

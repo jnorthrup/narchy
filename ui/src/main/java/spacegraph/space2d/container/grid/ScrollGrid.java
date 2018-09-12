@@ -210,14 +210,14 @@ public class ScrollGrid<X> extends Bordering {
     public ScrollGrid<X> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
         if (xOrY) {
             scrollX.visible(scrollVisible);
-            edge(S, scrollVisible ? defaultScrollEdge : 0);
+            borderSize(S, scrollVisible ? defaultScrollEdge : 0);
             scaleW.visible(scaleVisible);
-            edge(N, scaleVisible ? defaultScrollEdge : 0);
+            borderSize(N, scaleVisible ? defaultScrollEdge : 0);
         } else {
             scrollY.visible(scrollVisible);
-            edge(E, scrollVisible ? defaultScrollEdge : 0);
+            borderSize(E, scrollVisible ? defaultScrollEdge : 0);
             scaleH.visible(scaleVisible);
-            edge(W, scaleVisible ? defaultScrollEdge : 0);
+            borderSize(W, scaleVisible ? defaultScrollEdge : 0);
         }
         return this;
     }
@@ -395,7 +395,7 @@ public class ScrollGrid<X> extends Bordering {
 
             
             
-            cells.cache.removeIf(e -> {
+            cells.map.removeIf(e -> {
                 Surface s = ((SurfaceCacheCell)e).surface;
 
                 if (s == null) { 

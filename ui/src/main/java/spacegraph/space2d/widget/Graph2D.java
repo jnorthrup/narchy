@@ -185,7 +185,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private void updateNodes(Iterator<X> nodes, boolean addOrReplace) {
         if (!addOrReplace) {
-            cells.cache.forEach((k, v) -> wontRemain.add(k));
+            cells.map.forEach((k, v) -> wontRemain.add(k));
         }
 
         int count = 0;
@@ -202,7 +202,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         if (!wontRemain.isEmpty()) {
             wontRemain.forEach(cells::removeSilently);
-            cells.cache.invalidate();
+            cells.map.invalidate();
             wontRemain.clear();
         }
     }
@@ -366,8 +366,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         void end(Pool<EdgeVis<X>> edgePool) {
             hide();
-            removeOuts(edgePool);
             this.mover = null;
+            removeOuts(edgePool);
         }
 
 //        @Override
@@ -461,7 +461,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         public void clear() {
             invalid = true;
-            r = g = b = 0.25f;
+            r = g = b = 0f;
             a = 0.75f;
             to = null;
             weight = 1f;

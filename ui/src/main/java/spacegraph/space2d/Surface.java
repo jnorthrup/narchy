@@ -148,13 +148,26 @@ abstract public class Surface implements SurfaceBase {
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
         SurfaceBase p = PARENT.getAndSet(this, parent);
-        return p == null;
+        if (p == null) {
+            starting();
+            return true;
+        }
+        return false;
     }
 
+
+    protected void starting() {
+        //for implementing in subclasses
+    }
+
+    protected void stopping() {
+        //for implementing in subclasses
+    }
 
     public boolean stop() {
         if (PARENT.getAndSet(this, null) != null) {
             showing = false;
+            stopping();
             return true;
         }
         return false;

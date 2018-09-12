@@ -179,7 +179,7 @@ public class NALSchema {
                     } else {
                         
                         assert (q instanceof NormalizedVariable);
-                        int col = ((NormalizedVariable) q).id - 1;
+                        int col = ((NormalizedVariable) q).hashCode() - 1;
                         return INH.the(q, attrTerm(dataset.attrName(col)));
                     }
                 }).toArray(Term[]::new);

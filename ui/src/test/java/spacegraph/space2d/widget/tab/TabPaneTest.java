@@ -15,13 +15,13 @@ class TabPaneTest {
                                 "b", () -> new PushButton("x")), CheckBox::new), 800, 800);
         }
     }
-    public static class TestAlternateContentMode {
-        public static void main(String[] args) {
-            SpaceGraph.window(new TabPane.TabWall().addToggles(Map.of(
-                    "a", () -> new Sketch2DBitmap(40, 40),
-                    "b", () -> new PushButton("x")))
-
-                    , 800, 800);
-        }
-    }
+//    public static class TestAlternateContentMode {
+//        public static void main(String[] args) {
+//            SpaceGraph.window(new TabPane.TabWall().addToggles(Map.of(
+//                    "a", () -> new Sketch2DBitmap(40, 40),
+//                    "b", () -> new PushButton("x")))
+//
+//                    , 800, 800);
+//        }
+//    }
 }

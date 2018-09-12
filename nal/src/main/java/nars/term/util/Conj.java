@@ -747,7 +747,10 @@ public class Conj extends ByteAnonMap {
             try {
                 return CONJ.the(existingShortened, dt, incoming);
             } catch (StackOverflowError e) {
-                throw new WTF("stack overflow:" + existingShortened + ' ' + dt + ' ' + incoming);
+                if(Param.DEBUG_EXTRA)
+                    throw new WTF("stack overflow:" + existingShortened + ' ' + dt + ' ' + incoming);
+                else
+                    throw new WTF();
             }
         }
 

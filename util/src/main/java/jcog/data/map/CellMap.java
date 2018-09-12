@@ -24,7 +24,7 @@ import java.util.function.*;
  */
 public class CellMap<K, V> {
 
-    public final ConcurrentFastIteratingHashMap<K, CacheCell<K, V>> cache =
+    public final ConcurrentFastIteratingHashMap<K, CacheCell<K, V>> map =
             new ConcurrentFastIteratingHashMap<>(new CacheCell[0]);
 
     public final DequePool<CacheCell<K, V>> cellPool = new DequePool<>(32) {
@@ -43,7 +43,7 @@ public class CellMap<K, V> {
     }
 
     public final void forEachCell(Consumer<? super CacheCell<K,V>> each) {
-        cache.forEachValue(each);
+        map.forEachValue(each);
     }
 
     public final void forEachValue(Consumer<? super V> each) {
@@ -78,11 +78,11 @@ public class CellMap<K, V> {
     }
 
     public boolean whileEach(Predicate<CacheCell<K,V>> o) {
-        return cache.whileEachValue(o::test);
+        return map.whileEachValue(o::test);
     }
 
     public boolean whileEachReverse(Predicate<CacheCell<K,V>> o) {
-        return cache.whileEachValueReverse(o::test);
+        return map.whileEachValueReverse(o::test);
     }
 
     public void removeAll(Iterable<K> x) {
@@ -94,35 +94,40 @@ public class CellMap<K, V> {
 
     @Nullable
     public V getValue(Object x) {
-        CacheCell<K, V> y = cache.get(x);
+        CacheCell<K, V> y = map.get(x);
         if (y != null)
             return y.value;
         return null;
     }
 
     public CacheCell<K, V> compute(K key, Function<V, V> builder) {
-        CacheCell<K, V> entry = cache.computeIfAbsent(key, k -> cellPool.get());
+        CacheCell<K, V> entry = map.computeIfAbsent(key, k -> cellPool.get());
         return update(key, entry, entry.update(key, builder));
     }
+
     public CacheCell<K, V> compute(K key, BiFunction<K, V, V> builder) {
-        CacheCell<K, V> entry = cache.computeIfAbsent(key, k -> cellPool.get());
+        CacheCell<K, V> entry = map.computeIfAbsent(key, k -> cellPool.get());
         return update(key, entry, entry.update(key, builder));
     }
 
+    public CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
+        return compute(key, (K k, V pv)-> (pv == null) ? builder.apply(k) : pv);
+    }
 
-    public boolean remove(K key) {
-        CacheCell<K, V> entry = cache.remove(key);
+
+    public CacheCell<K, V> remove(K key) {
+        CacheCell<K, V> entry = map.remove(key);
         if (entry != null) {
             removed(entry);
             invalidated();
-            return true;
+            return entry;
         }
-        return false;
+        return null;
     }
 
     /** removes without immediately signaling invalidation, for use in batch updates */
     public boolean removeSilently(K key) {
-        CacheCell<K, V> entry = cache.remove(key);
+        CacheCell<K, V> entry = map.remove(key);
         if (entry != null) {
             removed(entry);
             return true;
@@ -141,7 +146,7 @@ public class CellMap<K, V> {
     }
 
     protected void invalidated() {
-        cache.invalidate();
+        map.invalidate();
     }
 
     public void getValues(Collection<V> l) {
@@ -149,24 +154,26 @@ public class CellMap<K, V> {
     }
 
     public int size() {
-        return this.cache.size();
+        return this.map.size();
     }
 
     public Collection<CacheCell<K,V>> cells() {
-        return cache.values();
+        return map.values();
     }
 
     public void clear() {
-        cache.removeIf(e -> {
+        map.removeIf(e -> {
             removed(e);
             return true;
         });
     }
 
     @Nullable public V get(Object from) {
-        CacheCell<K, V> v = cache.get(from);
+        CacheCell<K, V> v = map.get(from);
         return v != null ? v.value : null;
     }
+
+
 
     /**
      * (key, value, surface) triple
