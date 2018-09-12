@@ -20,7 +20,7 @@ import static nars.time.Tense.DTERNAL;
 /**
  * on-heap, caches many commonly used methods for fast repeat access while it survives
  */
-abstract public class CachedCompound implements SeparateSubtermsCompound, The {
+abstract public class CachedCompound extends SeparateSubtermsCompound implements The {
 
     /**
      * subterm vector

@@ -98,8 +98,7 @@ public class Int implements Intlike, The {
 
     @Override
     public int hashCode() {
-        return (id + 1) * 31;
-
+        return Atom.hashCode(id, INT);
     }
 
     @Override
@@ -107,8 +106,7 @@ public class Int implements Intlike, The {
         if (this == obj) return true;
         if (id >= Param.MAX_INTERNED_INTS && obj instanceof Int) {
             Int o = (Int) obj;
-
-            return (id == o.id) && (o.op() == INT);
+            return (id == o.id);
         }
         return false;
     }

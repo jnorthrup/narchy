@@ -31,12 +31,11 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.anon.Anom;
+import nars.term.anon.AnonID;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.atom.Int;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
-import nars.term.var.NormalizedVariable;
 import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -451,34 +450,27 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         if (this.equals(t)) return 0;
 
 
-        int vc = Integer.compare(t.volume(), this.volume());
+        int volume = t.volume();
+        int vc = Integer.compare(volume, this.volume());
         if (vc != 0)
             return vc;
 
         Op op = this.op();
-        int oc = Integer.compareUnsigned(op.id, t.op().id);
+        int oc = op.compareTo(t.op()); //Integer.compare(op.id, t.op().id);
         if (oc != 0)
             return oc;
 
+        if (volume == 1) {
+            assert(this instanceof Atomic);
 
-        if (this instanceof Atomic) {
+            if (this instanceof AnonID && t instanceof AnonID) {
+                return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
+            }
 
-
-            int h = Integer.compare(hashCode(), t.hashCode());
-            if (h != 0)
-                return h;
-
-            if (this instanceof NormalizedVariable || this instanceof Int) {
-                return 0;
-            } else /*if (this instanceof Atomic)*/ {
-                return Util.compare(
-                        ((Atomic) this).bytes(),
-                        ((Atomic) t).bytes()
-                );
-            }/* else {
-                throw new UnsupportedOperationException("unimplemented comparison: " + this + ' ' + y);
-            }*/
-
+            return Util.compare(
+                    ((Atomic) this).bytes(),
+                    ((Atomic) t).bytes()
+            );
 
         } else {
 

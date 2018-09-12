@@ -12,16 +12,23 @@ import static nars.Op.NEG;
 /**
  * indicates the term has an anonymous, canonical identifier (16-bit short)
  */
-public interface AnonID extends Atomic, The {
+public abstract class AnonID implements Atomic, The {
 
     
-    short ATOM_MASK = 0;
-    short VARDEP_MASK = 1 << 8;
-    short VARINDEP_MASK = 2 << 8;
-    short VARQUERY_MASK = 3 << 8;
-    short VARPATTERN_MASK = 4 << 8;
+    public static final short ATOM_MASK = 0;
+    public static final short VARDEP_MASK = 1 << 8;
+    public static final short VARINDEP_MASK = 2 << 8;
+    public static final short VARQUERY_MASK = 3 << 8;
+    public static final short VARPATTERN_MASK = 4 << 8;
 
-    static short termToId(Op o, byte id) {
+    /** meant to be a perfect hash among all normalized variables */
+    protected final short id;
+
+    protected AnonID(short id) {
+        this.id = id;
+    }
+
+    public static short termToId(Op o, byte id) {
 
         short mask;
         switch (o) {
@@ -47,22 +54,22 @@ public interface AnonID extends Atomic, The {
         return (short) (mask | id);
     }
 
-    /** fast Anom (non-Var) test. works for either positive or negative */
-    static boolean isAnonPosOrNeg(short i) {
-        return isAnom(Math.abs(i));
-    }
+//    /** fast Anom (non-Var) test. works for either positive or negative */
+//    static boolean isAnonPosOrNeg(short i) {
+//        return isAnom(Math.abs(i));
+//    }
 
     /** fast Anom (non-Var) test. assumes positive */
-    static boolean isAnom(int i) {
+    public static boolean isAnom(int i) {
         return (i & 0xff00) == ATOM_MASK;
     }
 
-    static int isVariable(short i, int ifNot) {
+    public static int isVariable(short i, int ifNot) {
         return ((i & 0xff00) != ATOM_MASK) ? (i & 0xff) : ifNot;
     }
 
     /** POS ONLY assumes non-negative; if the input is negative use idToTermPosOrNeg */
-    static Term idToTermPos(short /* short */ i) {
+    public static Term idToTermPos(short /* short */ i) {
         byte num = (byte) (i & 0xff);
         int m = idToMask(i);
         switch (m) {
@@ -80,7 +87,7 @@ public interface AnonID extends Atomic, The {
                 throw new UnsupportedOperationException();
         }
     }
-    static Term idToTerm(short /* short */ i) {
+    public static Term idToTerm(short /* short */ i) {
         boolean neg = i < 0;
         if (neg)
             i = (short) -i;
@@ -105,16 +112,16 @@ public interface AnonID extends Atomic, The {
         return NormalizedVariable.the(varType, num).negIf(neg);
     }
 
-    static int idToMask(short i) {
+    public static int idToMask(short i) {
         return i & 0xff00;
     }
 
-    static boolean isAnonPosOrNeg(Term t0) {
+    public static boolean isAnonPosOrNeg(Term t0) {
         return t0 instanceof AnonID || t0.unneg() instanceof AnonID;
     }
 
     /** returns 0 if the term is not anon ID */
-    static short id(Term t) {
+    public static short id(Term t) {
         if (t instanceof AnonID) {
             return ((AnonID)t).anonID();
         }
@@ -126,7 +133,7 @@ public interface AnonID extends Atomic, The {
         return 0;
     }
 
-    static SubtermMetadataCollector subtermMetadata(short[] s) {
+    public static SubtermMetadataCollector subtermMetadata(short[] s) {
         SubtermMetadataCollector c = new SubtermMetadataCollector();
         for (short x : s)
             idToTerm(x).collectMetadata(c);
@@ -134,19 +141,34 @@ public interface AnonID extends Atomic, The {
     }
 
     @Override
-    default Term anon() {
+    public Term anon() {
         return this;
     }
 
-    short anonID();
+    public final short anonID() {
+        return id;
+    }
 
-    default byte anonNum() {
+    public byte anonNum() {
         return (byte) (anonID() & 0xff);
     }
 
 
-    default short anonID(boolean neg) {
+    public short anonID(boolean neg) {
         short id = anonID();
         return neg ? (short) (-id) : id;
     }
+
+    @Override
+    public final int hashCode() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this
+                   ||
+              (obj instanceof AnonID) && id==((AnonID)obj).id;
+    }
+
 }

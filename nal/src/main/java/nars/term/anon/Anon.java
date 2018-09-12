@@ -5,7 +5,6 @@ import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
 import nars.term.util.ByteAnonMap;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.UnnormalizedVariable;
@@ -119,7 +118,7 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
             return getCompound((Compound) x);
         } else {
             if (x instanceof Anom) {
-                return interned((byte) ((Int) x).id);
+                return interned((byte) ((Anom) x).id);
             } else {
                 return x;
             }

@@ -21,7 +21,7 @@ import static nars.time.Tense.XTERNAL;
  * referring to the base for all other details.
  * TODO a CachedCompound version of this
  */
-public final class LightDTCompound implements SeparateSubtermsCompound {
+public final class LightDTCompound extends SeparateSubtermsCompound {
 
     /**
      * numeric (term or "dt" temporal relation)

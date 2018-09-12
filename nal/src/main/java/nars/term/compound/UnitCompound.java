@@ -178,8 +178,13 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public int complexity() {
+    public final int complexity() {
         return sub().complexity()+1;
+    }
+
+    @Override
+    public final float voluplexity() {
+        return sub().voluplexity()+1;
     }
 
     @Override

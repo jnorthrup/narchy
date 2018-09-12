@@ -7,7 +7,7 @@ import nars.term.Compound;
 import nars.term.Term;
 
 /** use with extreme caution when op is not PROD */
-public class LightCompound implements SeparateSubtermsCompound, AbstractLightCompound {
+public class LightCompound extends SeparateSubtermsCompound implements AbstractLightCompound {
 
     private final Subterms subs;
     private final int hash;

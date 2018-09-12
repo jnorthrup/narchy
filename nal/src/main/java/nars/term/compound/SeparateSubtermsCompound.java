@@ -9,132 +9,132 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public interface SeparateSubtermsCompound extends Compound {
+public abstract class SeparateSubtermsCompound implements Compound {
 
     /*@NotNull*/
     @Override
-    default Term[] arrayClone() {
+    public Term[] arrayClone() {
         return subterms().arrayClone();
     }
 
     @Override
-    default Term[] arrayShared() {
+    public Term[] arrayShared() {
         return subterms().arrayShared();
     }
 
     @Override
-    default Term[] arrayClone(Term[] x, int from, int to) {
+    public Term[] arrayClone(Term[] x, int from, int to) {
         return subterms().arrayClone(x, from, to);
     }
 
     @Override
-    default int subs() {
+    public int subs() {
         return subterms().subs();
     }
 
     @Override
-    default Term sub(int i) {
+    public Term sub(int i) {
         return subterms().sub(i);
     }
 
     @Override
-    default boolean subIs(int i, Op o) {
+    public boolean subIs(int i, Op o) {
         return subterms().subIs(i, o);
     }
 
     @Override
-    default void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {
+    public void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {
         subterms().forEach(action, start, stop);
     }
 
     @Override
-    default Iterator<Term> iterator() {
+    public Iterator<Term> iterator() {
         return subterms().iterator();
     }
 
     @Override
-    default int subs(Op matchingOp) {
+    public int subs(Op matchingOp) {
         return subterms().subs(matchingOp);
     }
 
     @Override
-    default int subs(Predicate<Term> match) {
+    public int subs(Predicate<Term> match) {
         return subterms().subs(match);
     }
 
 
     @Override
-    default void forEach(/*@NotNull*/ Consumer<? super Term> c) {
+    public void forEach(/*@NotNull*/ Consumer<? super Term> c) {
         subterms().forEach(c);
     }
 
     @Override
-    default boolean contains(Term t) {
+    public boolean contains(Term t) {
         return subterms().contains(t);
     }
 
     @Override
-    default boolean containsNeg(Term x) {
+    public boolean containsNeg(Term x) {
         return subterms().containsNeg(x);
     }
 
     @Override
-    default int structure() {
+    public int structure() {
         return subterms().structure() | op().bit;
     }
 
     @Override
-    default int complexity() {
+    public int complexity() {
         return subterms().complexity();
     }
 
     @Override
-    default int volume() {
+    public int volume() {
         return subterms().volume();
     }
 
     @Override
-    default int varQuery() {
+    public int varQuery() {
         return subterms().varQuery();
     }
 
     @Override
-    default int varPattern() {
+    public int varPattern() {
         return subterms().varPattern();
     }
     @Override
-    default int varDep() {
+    public int varDep() {
         return subterms().varDep();
     }
 
     @Override
-    default int varIndep() {
+    public int varIndep() {
         return subterms().varIndep();
     }
 
     @Override
-    default int vars() {
+    public int vars() {
         return subterms().vars();
     }
 
     @Override
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+    public int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         return subterms().intifyRecurse(reduce, v);
     }
 
     @Override
-    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         return subterms().intifyShallow(reduce, v);
     }
 
 
     @Override
-    default boolean OR(/*@NotNull*/ Predicate<Term> p) {
+    public boolean OR(/*@NotNull*/ Predicate<Term> p) {
         return subterms().OR(p);
     }
 
     @Override
-    default boolean AND(/*@NotNull*/ Predicate<Term> p) {
+    public boolean AND(/*@NotNull*/ Predicate<Term> p) {
         return subterms().AND(p);
     }
 

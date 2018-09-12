@@ -5,19 +5,27 @@ import nars.IO;
 import nars.Op;
 import nars.subterm.Neg;
 import nars.term.Term;
-import nars.term.atom.Int;
 
 import static nars.Op.ATOM;
 
 /* indexed anonymous term */
-public final class Anom extends Int implements AnonID {
+public final class Anom extends AnonID {
 
     private static final byte ANOM_SUBTYPE = 1;
     private static final int ANOM_OPX = Term.opX(ATOM, ANOM_SUBTYPE);
     private static final byte ANOM_HEADER = IO.opAndSubType(ATOM, ANOM_SUBTYPE);
 
+    private final byte[] bytes;
+
+
     private Anom(byte i) {
-        super(i, new byte[] { ANOM_HEADER, i } );
+        super(i);
+        this.bytes = new byte[] { ANOM_HEADER, i };
+    }
+
+    @Override
+    public byte[] bytes() {
+        return bytes;
     }
 
     @Override
@@ -42,20 +50,9 @@ public final class Anom extends Int implements AnonID {
     }
 
     @Override
-    public short anonID() {
-        return (short) id; 
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         return this == obj;
     }
-
 
 
     //    @Override

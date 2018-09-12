@@ -34,7 +34,7 @@ import static nars.Op.VAR_DEP;
  * Normalized variable
  * "highly immutable" and re-used
  */
-public abstract class NormalizedVariable implements Variable, AnonID {
+public abstract class NormalizedVariable extends AnonID implements Variable {
 
 
     /**
@@ -52,14 +52,13 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         }
     }
 
-    public final short id;
+
     /*@Stable*/
     private final byte[] bytes;
 
     NormalizedVariable(/*@NotNull*/ Op type, byte num) {
+        super(AnonID.termToId(type, num));
         assert num > 0;
-
-        id = AnonID.termToId(type, num);
 
         byte[] b = new byte[2];
         b[0] = type.id;
@@ -148,11 +147,6 @@ public abstract class NormalizedVariable implements Variable, AnonID {
     }
 
     @Override
-    public final short anonID() {
-        return id;
-    }
-
-    @Override
     public byte anonNum() {
         return bytes[1];
     }
@@ -160,12 +154,6 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         return bytes[0];
     }
 
-    @Override
-    public final boolean equals(Object obj) {
-        return obj == this ||
-                (obj instanceof NormalizedVariable
-                        && ((NormalizedVariable) obj).id == id);
-    }
 
     @Override
     public @Nullable NormalizedVariable normalize(byte vid) {
@@ -175,10 +163,8 @@ public abstract class NormalizedVariable implements Variable, AnonID {
             return $.v(op(), vid);
     }
 
-    @Override
-    public final int hashCode() {
-        return id;
-    }
+
+
 
 
     @Override
