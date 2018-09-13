@@ -203,7 +203,7 @@ public class Shell {
 
             SpaceGraph.window(termView = new ConsoleTerminal(term) {
                 @Override
-                public boolean tryKey(KeyEvent e, boolean pressed) {
+                public boolean key(KeyEvent e, boolean pressed) {
 
                         
 //                        js.eval(String.valueOf(e.getKeyChar()));
@@ -211,7 +211,7 @@ public class Shell {
 
 
 
-                    return super.tryKey(e, pressed);
+                    return super.key(e, pressed);
                 }
             },1000,800);
 

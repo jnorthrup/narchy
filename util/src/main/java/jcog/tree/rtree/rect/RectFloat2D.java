@@ -168,9 +168,9 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         final RectFloat2D r2 = (RectFloat2D) r;
 
         return x <= r2.x &&
-                x + w >= r2.x + w &&
+                x + w >= r2.x + r2.w &&
                 y <= r2.y &&
-                y + h >= r2.y + h;
+                y + h >= r2.y + r2.h;
     }
 
     @Override
@@ -178,8 +178,8 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         if (this == r) return true;
         final RectFloat2D r2 = (RectFloat2D) r;
 
-        return !((x > r2.x + w) || (r2.x > x + w) ||
-                (y > r2.y + h) || (r2.y > y + h));
+        return !((x > r2.x + r2.w) || (r2.x > x + w) ||
+                (y > r2.y + r2.h) || (r2.y > y + h));
     }
 
     @Override

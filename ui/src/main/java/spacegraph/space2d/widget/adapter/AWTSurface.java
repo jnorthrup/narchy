@@ -133,7 +133,7 @@ public class AWTSurface extends Widget {
     }
 
     @Override
-    public boolean tryKey(KeyEvent e, boolean pressed) {
+    public boolean key(KeyEvent e, boolean pressed) {
         int code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
 
         /*

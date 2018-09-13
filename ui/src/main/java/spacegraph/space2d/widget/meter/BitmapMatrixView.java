@@ -139,7 +139,7 @@ public class BitmapMatrixView extends Surface {
     }
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
         if (finger != null) {
             updateTouch(finger);
         } else {

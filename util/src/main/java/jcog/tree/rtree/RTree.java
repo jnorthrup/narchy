@@ -57,6 +57,10 @@ public class RTree<T> implements Space<T> {
 
     public final Spatialization<T> model;
 
+    public RTree(int min, int max, Split<T> splitType) {
+        this((x-> (HyperRegion) x), min, max, splitType);
+    }
+
     public RTree(@Nullable Function<T, HyperRegion> spatialize, final int mMin, final int mMax, final Split<T> splitType) {
         this(new Spatialization<>(spatialize, splitType, mMin, mMax));
     }
@@ -77,7 +81,7 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public final void clear() {
+    public void clear() {
         size.updateAndGet(this, (sizeBeforeClear) -> {
             if (sizeBeforeClear > 0 || root == null)
                 this.root = model.newLeaf();

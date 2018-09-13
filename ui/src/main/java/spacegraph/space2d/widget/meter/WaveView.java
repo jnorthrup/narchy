@@ -78,7 +78,7 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
     };
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
 
 //        if (selectStart!=null && !finger.pressing(SELECT_BUTTON)) {
 //            selectStart

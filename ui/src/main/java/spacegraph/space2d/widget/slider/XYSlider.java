@@ -41,7 +41,7 @@ public class XYSlider extends Surface {
     }
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
 
         if (finger!=null && finger.pressing(0)) {
             finger.tryFingering(new FingerDragging(0) {

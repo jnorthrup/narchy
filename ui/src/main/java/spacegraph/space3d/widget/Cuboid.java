@@ -73,7 +73,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     public boolean onKey(Collidable body, v3 hitPoint, char charCode, boolean pressed) {
         if (!super.onKey(body, hitPoint, charCode, pressed)) {
 
-            return front != null && front.tryKey(null, charCode, pressed);
+            return front != null && front.key(null, charCode, pressed);
         }
         return true;
     }

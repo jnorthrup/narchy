@@ -105,7 +105,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
 
         if (!showing())
             return null;
@@ -114,7 +114,7 @@ abstract public class Container extends Surface {
 
             
             if (finger == null) {
-                forEach(c -> c.tryTouch(null));
+                forEach(c -> c.finger(null));
                 return null;
             } else {
 
@@ -148,7 +148,7 @@ abstract public class Container extends Surface {
                             fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
 
 
-                        Surface s = c.tryTouch(finger);
+                        Surface s = c.finger(finger);
                         if (s != null) {
 
 
@@ -176,17 +176,17 @@ abstract public class Container extends Surface {
     }
 
     @Override
-    public boolean tryKey(KeyEvent e, boolean pressed) {
-        if (visible() && !super.tryKey(e, pressed)) {
-            return whileEach(c -> c.tryKey(e, pressed));
+    public boolean key(KeyEvent e, boolean pressed) {
+        if (visible() && !super.key(e, pressed)) {
+            return whileEach(c -> c.key(e, pressed));
         }
         return false;
     }
 
     @Override
-    public boolean tryKey(v2 hitPoint, char charCode, boolean pressed) {
-        if (visible() && !super.tryKey(hitPoint, charCode, pressed)) {
-            return whileEach(c -> c.tryKey(hitPoint, charCode, pressed));
+    public boolean key(v2 hitPoint, char charCode, boolean pressed) {
+        if (visible() && !super.key(hitPoint, charCode, pressed)) {
+            return whileEach(c -> c.key(hitPoint, charCode, pressed));
         }
         return false;
     }

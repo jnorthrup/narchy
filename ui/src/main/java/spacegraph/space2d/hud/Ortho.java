@@ -371,7 +371,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         Widget t = finger.touching.get();
         if (t != null) {
-            if (!t.tryKey(e, pressOrRelease))
+            if (!t.key(e, pressOrRelease))
                 e.setConsumed(true);
         }
 

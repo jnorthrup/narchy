@@ -164,10 +164,10 @@ public class TextEdit extends DefaultVirtualTerminal {
             }
 
             @Override
-            public Surface tryTouch(Finger finger) {
+            public Surface finger(Finger finger) {
                 /** middle mouse button paste */
                 Finger.clicked(2, () -> paste());
-                return super.tryTouch(finger);
+                return super.finger(finger);
             }
 
 

@@ -95,22 +95,24 @@ public class Synthiano extends Widget {
                 if (finger.pressing(0))
                     key( Math.round((touchPos.y * 4)+touchPos.x));
             }
+
+            protected void key(int key) {
+                frequency = midiPitchToFrequency(30+key);
+
+                beatClock.reset();
+
+
+                gainEnvelope.clear();
+
+                gainEnvelope.add(0.5f, 10.0f);
+            }
         });
 
 
         beatClock.start();
     }
 
-    protected void key(int key) {
-        frequency = midiPitchToFrequency(30+key);
 
-        beatClock.reset();
-
-        
-        gainEnvelope.clear();
-        
-        gainEnvelope.add(0.5f, 10.0f);
-    }
 
     public static void main(String[] args) {
         SpaceGraph.window(new Synthiano(), 500, 500);

@@ -14,17 +14,17 @@ public class EmptySurface extends Surface {
     }
 
     @Override
-    public boolean tryKey(KeyEvent e, boolean pressed) {
+    public boolean key(KeyEvent e, boolean pressed) {
         return false;
     }
 
     @Override
-    public boolean tryKey(v2 hitPoint, char charCode, boolean pressed) {
+    public boolean key(v2 hitPoint, char charCode, boolean pressed) {
         return false;
     }
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
         return null;
     }
 

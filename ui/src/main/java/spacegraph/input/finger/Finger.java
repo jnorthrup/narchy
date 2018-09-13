@@ -197,7 +197,7 @@ public class Finger {
             
 
             if (ff == null || ff.escapes()) {
-                touchedNext = root.tryTouch(this);
+                touchedNext = root.finger(this);
             } else {
                 touchedNext = touching.get(); 
             }

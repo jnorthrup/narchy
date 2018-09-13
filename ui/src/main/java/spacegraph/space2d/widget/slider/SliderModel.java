@@ -65,7 +65,7 @@ public class SliderModel extends Surface {
     }
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
 
 
         if (finger!=null && finger.pressing(0)) {

@@ -80,8 +80,8 @@ public class ScrollGrid<X> extends Bordering {
             }
 
             @Override
-            public Surface tryTouch(Finger finger) {
-                Surface inner = super.tryTouch(finger);
+            public Surface finger(Finger finger) {
+                Surface inner = super.finger(finger);
                 final int moveDragButton = 1;
                 if ((inner == null || inner == this) && finger.pressing(moveDragButton)) {
                     if (finger.tryFingering(new FingerMove(moveDragButton,

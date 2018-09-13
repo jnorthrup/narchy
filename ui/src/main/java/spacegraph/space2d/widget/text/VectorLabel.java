@@ -36,7 +36,7 @@ public class VectorLabel extends EmptyContainer {
     }
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
         return null;
     }
 

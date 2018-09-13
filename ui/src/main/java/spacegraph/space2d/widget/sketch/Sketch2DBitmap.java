@@ -55,7 +55,7 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
 
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
 
 
         if (finger!=null) {
@@ -97,7 +97,7 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
             }
         }
 
-        return super.tryTouch(finger);
+        return super.finger(finger);
     }
 
     private void mix(int[] pix, int i) {

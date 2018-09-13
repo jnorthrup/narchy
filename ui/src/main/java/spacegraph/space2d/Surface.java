@@ -212,14 +212,14 @@ abstract public class Surface implements SurfaceBase {
 
     }
 
-    public boolean tryKey(KeyEvent e, boolean pressed) {
+    public boolean key(KeyEvent e, boolean pressed) {
         return false;
     }
 
     /**
      * returns true if the event has been absorbed, false if it should continue propagating
      */
-    public boolean tryKey(v2 hitPoint, char charCode, boolean pressed) {
+    public boolean key(v2 hitPoint, char charCode, boolean pressed) {
         return false;
     }
 
@@ -228,7 +228,7 @@ abstract public class Surface implements SurfaceBase {
      * returns non-null if the event has been absorbed by a speciifc sub-surface
      * or null if nothing absorbed the gesture
      */
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
         return null;
     }
 

@@ -35,7 +35,7 @@ package spacegraph.util.math;
  * Utility vecmath class used when computing the hash code for vecmath
  * objects containing float or double values. This fixes Issue 36.
  */
-final class VecMathUtil {
+public final class VecMathUtil {
     /**
      * Returns the representation of the specified floating-point
      * value according to the IEEE 754 floating-point "single format"

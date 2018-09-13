@@ -50,7 +50,7 @@ public class WiredWall<S extends Surface> extends Wall<S> {
 
     }
 
-    
+
     @Override
     public void doLayout(int dtMS) {
         raw.pos(bounds);
@@ -240,9 +240,9 @@ public class WiredWall<S extends Surface> extends Wall<S> {
     }
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
 
-        Surface s = super.tryTouch(finger);
+        Surface s = super.finger(finger);
 //        if (s != null && s != this && !(s instanceof PhyWindow))
 //            return s;
 

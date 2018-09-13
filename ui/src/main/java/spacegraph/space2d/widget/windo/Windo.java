@@ -31,7 +31,7 @@ public class Windo extends Stacking {
     }
 
     @Override
-    public Surface tryTouch(Finger finger) {
+    public Surface finger(Finger finger) {
 
 
         if (dragMode != null && dragMode.isStopped()) {
@@ -44,7 +44,7 @@ public class Windo extends Stacking {
 
         Surface other = null;
         if (/*dragMode==null && */finger != null) {
-            Surface c = super.tryTouch(finger);
+            Surface c = super.finger(finger);
             other = c;
 
 
