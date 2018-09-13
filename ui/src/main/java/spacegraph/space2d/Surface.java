@@ -90,9 +90,9 @@ abstract public class Surface implements SurfaceBase {
 
     abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
-    public Surface pos(RectFloat2D next) {
+    public <S extends Surface> S pos(RectFloat2D next) {
         bounds = next;
-        return this;
+        return (S) this;
     }
 
     protected final boolean posChanged(RectFloat2D next) {
@@ -200,7 +200,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     @Deprecated public final void render(GL2 gl, float pw, float ph, int dtMS) {
-        render(gl, new SurfaceRender(1, 1, dtMS).setScale(pw, ph, pw/2, ph/2));
+        render(gl, new SurfaceRender(1, 1, dtMS).set(pw, ph, pw/2, ph/2));
     }
 
     public final void render(GL2 gl, SurfaceRender r) {

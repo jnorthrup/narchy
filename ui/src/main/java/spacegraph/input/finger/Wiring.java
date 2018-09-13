@@ -2,8 +2,9 @@ package spacegraph.input.finger;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.Ortho;
-import spacegraph.space2d.widget.meta.SketchedPath;
-import spacegraph.space2d.widget.windo.Dyn2DSurface;
+import spacegraph.space2d.shape.PathSurface;
+import spacegraph.space2d.widget.windo.Wire;
+import spacegraph.space2d.widget.windo.WiredWall;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;
@@ -21,15 +22,15 @@ public class Wiring extends FingerDragging {
     private Path2D path;
 
     protected final Surface start;
-    private SketchedPath pathVis;
+    private PathSurface pathVis;
     protected Surface end = null;
 
-    protected Dyn2DSurface.PhyWindow source() {
-        return start.parent(Dyn2DSurface.PhyWindow.class);
-    }
-    public Dyn2DSurface.PhyWindow target() {
-        return end!=null ? end.parent(Dyn2DSurface.PhyWindow.class) : null;
-    }
+//    protected Windo source() {
+//        return start.parent(Windo.class);
+//    }
+//    public Windo target() {
+//        return end!=null ? end.parent(Windo.class) : null;
+//    }
 
     protected Wiring(Surface start) {
         super(2);
@@ -56,7 +57,7 @@ public class Wiring extends FingerDragging {
     protected boolean drag(Finger f) {
         if (path == null) {
             path = new Path2D(64);
-            ((Ortho)(start.root())).addOverlay(pathVis = new SketchedPath(path));
+            ((Ortho)(start.root())).addOverlay(pathVis = new PathSurface(path));
         }
 
         path.add(f.pos, 64);
@@ -74,9 +75,9 @@ public class Wiring extends FingerDragging {
         }
 
         if (end != null) {
-            start.root().debug(start, 1, () -> "WIRE: " + start + " -> " + end);
 
-            onWired();
+
+            tryWire();
         }
 
         if (this.start instanceof Wireable)
@@ -87,8 +88,25 @@ public class Wiring extends FingerDragging {
 
     }
 
-    protected void onWired() {
+    /** called when wire has been established
+     * @param start
+     * @param end
+     * @param y
+     * @param wall*/
+    protected void wired(Surface start, Surface end, Wire y, WiredWall wall) {
 
+    }
+
+    protected boolean tryWire() {
+        Wire x = new Wire(start, end);
+        WiredWall wall = start.parent(WiredWall.class);
+        Wire y = wall.link(x);
+        if (y == x) {
+            start.root().debug(start, 1, () -> "WIRE: " + start + " -> " + end);
+            wired(start, end, y, wall);
+            return true;
+        }
+        return false;
     }
 
     private void updateEnd(Finger finger) {

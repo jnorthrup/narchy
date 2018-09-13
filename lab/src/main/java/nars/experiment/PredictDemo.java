@@ -11,7 +11,7 @@ import nars.op.BeliefPredict;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 
 import java.util.List;
 

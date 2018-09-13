@@ -2,12 +2,13 @@ package spacegraph.space2d.container;
 
 import jcog.TODO;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.collection.MutableListContainer;
 
 /* 9-element subdivision
 
 
  */
-public class Bordering extends MutableContainer {
+public class Bordering extends MutableListContainer {
     public final static int C = 0;
     public final static int N = 1;
     public final static int S = 2;

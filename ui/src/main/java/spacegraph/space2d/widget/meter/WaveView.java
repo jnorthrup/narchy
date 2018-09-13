@@ -9,7 +9,7 @@ import spacegraph.input.finger.FingerMove;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.windo.Widget;

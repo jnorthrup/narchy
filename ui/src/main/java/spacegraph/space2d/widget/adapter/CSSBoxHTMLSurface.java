@@ -20,7 +20,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.MutableContainer;
+import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.util.math.v2;
@@ -50,7 +51,7 @@ import static spacegraph.SpaceGraph.window;
  * https://github.com/radkovo/CSSBox/blob/master/src/main/java/org/fit/cssbox/demo/ImageRenderer.java
  * https://github.com/radkovo/CSSBox/blob/master/src/main/java/org/fit/cssbox/demo/SimpleBrowser.java
  */
-public class CSSBoxHTMLSurface extends MutableContainer {
+public class CSSBoxHTMLSurface extends MutableListContainer {
 
     private final v2 pixels;
     private Twin<String> url;
@@ -762,7 +763,7 @@ public class CSSBoxHTMLSurface extends MutableContainer {
         }
 
         @Override
-        protected void paintBelow(GL2 gl) {
+        protected void paintBelow(GL2 gl, SurfaceRender r) {
             float[] bg = bgColor;
             if (bg!=null) {
                 gl.glColor4fv(bg, 0);

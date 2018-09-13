@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meta;
 import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import jcog.math.MutableInteger;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.IntSpinner;

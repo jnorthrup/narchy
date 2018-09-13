@@ -15,21 +15,21 @@ public abstract class DequePool<X> implements Pool<X> {
 
 
 
-    public DequePool(int initialCapacity, int preallocate) {
-        data = new ArrayDeque(initialCapacity);
-        
-
-        setCapacity(initialCapacity);
-        
-
-        for (int i = 0; i < preallocate; i++)
-            put(create());
-
+    public DequePool() {
+        this(Integer.MAX_VALUE);
     }
 
     public DequePool(int initialCapacity) {
-        this(initialCapacity, 0);
+        data = new ArrayDeque();
+                //new ConcurrentLinkedDeque<>();
+        setCapacity(initialCapacity);
     }
+
+    public void prepare(int preallocate) {
+        for (int i = 0; i < preallocate; i++)
+            put(create());
+    }
+
 
     public void setCapacity(int c) {
         capacity = c;
@@ -38,21 +38,14 @@ public abstract class DequePool<X> implements Pool<X> {
     @Override
     public void put(X i) {
         assert (i != null);
-        data.offer(i);
+        if (capacity == Integer.MAX_VALUE || data.size() < capacity)
+            data.offer(i);
     }
 
     @Override
     public final X get() {
-        
-
-        Deque<X> d = data;
-
-        if (d.isEmpty()) {
-            
-            return create();
-        }
-        return d.poll();
-        
+        X e = data.poll();
+        return e == null ? create() : e;
     }
 
     public boolean isEnabled() {

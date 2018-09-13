@@ -8,9 +8,9 @@ import jcog.net.UDPeer;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.windo.Dyn2DSurface;
+import spacegraph.space2d.widget.windo.WiredWall;
 import spacegraph.space2d.widget.windo.Port;
 
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class MeshChipTest {
 
     public static void main(String[] args) throws IOException {
 
-        Dyn2DSurface p = SpaceGraph.wall(800, 800);
+        WiredWall p = SpaceGraph.wall(800, 800);
         p.put(new MessageChip(), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);

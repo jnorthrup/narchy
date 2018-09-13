@@ -493,7 +493,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
 
     @Override
-    protected void paintBelow(GL2 gl) {
+    protected void paintBelow(GL2 gl, SurfaceRender r) {
 
 
         gl.glLoadIdentity();
@@ -533,11 +533,20 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     public void addOverlay(Surface s) {
-        overlays.add(s);
+        synchronized(overlays) {
+            if (s.start(this)) {
+                overlays.add(s);
+            }
+        }
     }
 
     public void removeOverlay(Surface s) {
-        overlays.remove(s);
+        synchronized(overlays) {
+            boolean ss = overlays.remove(s);
+            if (ss) {
+                s.stop();
+            }
+        }
     }
 
     public void set(Surface content) {

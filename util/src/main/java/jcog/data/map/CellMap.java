@@ -4,7 +4,6 @@ import jcog.data.pool.DequePool;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.*;
 
 /**
@@ -27,11 +26,13 @@ public class CellMap<K, V> {
     public final ConcurrentFastIteratingHashMap<K, CacheCell<K, V>> map =
             new ConcurrentFastIteratingHashMap<>(new CacheCell[0]);
 
-    public final DequePool<CacheCell<K, V>> cellPool = new DequePool<>(32) {
+    public final DequePool<CacheCell<K, V>> cellPool = new DequePool<>() {
         @Override
         public CacheCell<K, V> create() {
             return newCell();
         }
+
+
     };
 
     public CellMap() {
@@ -64,18 +65,16 @@ public class CellMap<K, V> {
 
     @Nullable
     public CellMap.CacheCell<K, V> update(K key, CellMap.CacheCell<K, V> entry, boolean keep) {
-        if (!keep) {
+        if (keep) {
+            //added or continues
+            return entry;
+        } else {
             remove(key);
             return null;
-        } else {
-            added(entry);
-            return entry;
         }
     }
 
-    protected void added(CacheCell<K, V> entry) {
-        
-    }
+
 
     public boolean whileEach(Predicate<CacheCell<K,V>> o) {
         return map.whileEachValue(o::test);
@@ -95,24 +94,23 @@ public class CellMap<K, V> {
     @Nullable
     public V getValue(Object x) {
         CacheCell<K, V> y = map.get(x);
-        if (y != null)
-            return y.value;
-        return null;
-    }
-
-    public CacheCell<K, V> compute(K key, Function<V, V> builder) {
-        CacheCell<K, V> entry = map.computeIfAbsent(key, k -> cellPool.get());
-        return update(key, entry, entry.update(key, builder));
+        return y != null ? y.value : null;
     }
 
     public CacheCell<K, V> compute(K key, BiFunction<K, V, V> builder) {
         CacheCell<K, V> entry = map.computeIfAbsent(key, k -> cellPool.get());
-        return update(key, entry, entry.update(key, builder));
+        entry.update(key, builder);
+        return update(key, entry, entry.key!=null);
+    }
+
+    public CacheCell<K, V> compute(K key, Function<V, V> builder) {
+        return compute(key, (z, w)->builder.apply(w));
     }
 
     public CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
-        return compute(key, (K k, V pv)-> (pv == null) ? builder.apply(k) : pv);
+        return compute(key, (z, w) -> { if (w==null) return builder.apply(z); else return w; } );
     }
+
 
 
     public CacheCell<K, V> remove(K key) {
@@ -192,52 +190,51 @@ public class CellMap<K, V> {
         }
 
         public void clear() {
+            key = null;
             value = null;
         }
 
 
-        public final boolean update(K nextKey, Function<V, V> update) {
-            return update(nextKey, (k, v) -> update.apply(v));
+        public final void update(K nextKey, Function<V, V> update) {
+            update(nextKey, (k, v) -> update.apply(v));
         }
 
-        /**
-         * return true to keep or false to remove from the map
-         */
-        public boolean update(K nextKey, BiFunction<K, V, V> update) {
-            this.key = nextKey;
-            V prev = value;
+
+        public void update(K nextKey, BiFunction<K, V, V> update) {
+
+            final V prev = value;
 
             V next = update.apply(nextKey, prev);
+            if (next == prev) {
+                key = next == null ? null : nextKey;
+            } else {
 
-            boolean create = false, delete = false;
+                boolean create = false, delete = false;
 
-            if (prev != null) {
-
-                if (next == null) {
-                    delete = true;
-                } else {
-                    if (Objects.equals(value, prev)) {
-                        
-                    } else {
+                if (prev != null) {
+                    if (next == null) {
                         delete = true;
-                        create = true; 
+                    } else {
+                        create = delete = true;
+                    }
+                } else {
+                    if (next == null) {
+                        delete = true;
+                    } else {
+                        create = true;
                     }
                 }
-            } else {
-                if (next == null) {
-                    delete = true;
-                } else {
-                    create = true;
+
+                if (delete) {
+                    key = null;
                 }
+
+                if (create) {
+                    key = nextKey;
+                    set(next);
+                }
+
             }
-
-
-
-            if (create) {
-                set(next);
-            }
-
-            return !delete;
         }
 
     }

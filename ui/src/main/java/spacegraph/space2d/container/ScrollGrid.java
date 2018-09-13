@@ -1,4 +1,4 @@
-package spacegraph.space2d.container.grid;
+package spacegraph.space2d.container;
 
 import jcog.TODO;
 import jcog.Util;
@@ -10,9 +10,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Clipped;
-import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 
@@ -393,12 +391,10 @@ public class ScrollGrid<X> extends Bordering {
             ch = hh / view.h;
 
 
-            
-            
             cells.map.removeIf(e -> {
                 Surface s = ((SurfaceCacheCell)e).surface;
 
-                if (s == null) { 
+                if (s == null) {
                     //return true;
                 } else {
                     int cellID = e.key;

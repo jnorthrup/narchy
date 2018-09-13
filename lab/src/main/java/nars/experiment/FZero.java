@@ -22,7 +22,7 @@ import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 
 import javax.swing.*;
 import java.awt.*;

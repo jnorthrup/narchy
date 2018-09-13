@@ -1,7 +1,6 @@
 package nars.gui.graph.run;
 
 import com.jogamp.opengl.GL2;
-import jcog.math.IntRange;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
@@ -13,11 +12,8 @@ import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Clipped;
-import spacegraph.space2d.container.ForceDirected2D;
-import spacegraph.space2d.container.Scale;
-import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.*;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -36,13 +32,13 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
 
     public class Controls {
-        public final IntRange maxNodes = new IntRange(256, 1, 512) {
-            @Override
-            public void set(int value) {
-                super.set(value);
-                nodesMax(value);
-            }
-        };
+//        public final IntRange maxNodes = new IntRange(256, 1, 512) {
+//            @Override
+//            public void set(int value) {
+//                super.set(value);
+////                nodesMax(value);
+//            }
+//        };
         public final AtomicBoolean update = new AtomicBoolean(true);
     }
 
@@ -59,8 +55,6 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
         this.nar = n;
         this.source = source;
-
-        nodesMax(128);
 
         build((nn)->{
            nn.set(
@@ -170,13 +164,13 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                 this
         ) {
             @Override
-            protected void paintBelow(GL2 gl) {
+            protected void paintBelow(GL2 gl, SurfaceRender r) {
 
 
                 gl.glColor4f(0,0,0, 0.9f);
                 Draw.rect(bounds, gl);
 
-                super.paintBelow(gl);
+                super.paintBelow(gl, r);
             }
         }, cfg, 0.1f);
     }

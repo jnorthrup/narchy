@@ -1,6 +1,7 @@
 package spacegraph.util;
 
 import com.jogamp.opengl.GL2;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.util.math.Tuple2f;
@@ -17,8 +18,18 @@ import static spacegraph.util.math.Simplify2D.collinearity;
  */
 public class Path2D extends FloatArrayList {
 
+    public Path2D() {
+        super();
+    }
+
     public Path2D(int capacity) {
-        super(capacity);
+        super(capacity*2);
+    }
+
+    /** points are preallocated, useful for direct array access */
+    public Path2D(int capacity, int size) {
+        this(capacity);
+        this.size = size*2;
     }
 
     public void add(float x, float y) {
@@ -173,5 +184,27 @@ public class Path2D extends FloatArrayList {
 
     public int points() {
         return size / 2;
+    }
+
+    public final float[] array() {
+        return items;
+    }
+
+    public RectFloat2D bounds() {
+        int n = points();
+        if (n < 2)
+            return RectFloat2D.Zero;
+
+        float x1 = Float.POSITIVE_INFINITY, y1 = Float.POSITIVE_INFINITY, x2 = Float.NEGATIVE_INFINITY, y2 = Float.NEGATIVE_INFINITY;
+        float[] a = array();
+        for (int i = 0; i < n; ) {
+            float x = a[i++], y = a[i++];
+            if (x < x1) x1 = x;
+            if (x > x2) x2 = x;
+            if (y < y1) y1 = y;
+            if (y > y2) y2 = y;
+        }
+
+        return RectFloat2D.XYXY(x1, y1, x2, y2);
     }
 }

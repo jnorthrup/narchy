@@ -2,6 +2,7 @@ package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
@@ -21,7 +22,7 @@ public class Timeline2DTest {
 
         SpaceGraph.window(new Timeline2D<>(dummyModel, e -> e.set(new Scale(new PushButton(e.id.name), 0.8f))) {
             @Override
-            protected void paintBelow(GL2 gl) {
+            protected void paintBelow(GL2 gl, SurfaceRender r) {
                 gl.glColor3f(0.1f, 0, 0.1f);
                 Draw.rect(bounds, gl);
             }

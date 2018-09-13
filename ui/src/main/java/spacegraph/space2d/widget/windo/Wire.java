@@ -10,10 +10,9 @@ public class Wire {
 
     private final int hash;
 
+
     private volatile long aLastActive = Long.MIN_VALUE, bLastActive = Long.MIN_VALUE;
     private volatile int aTypeHash = 0, bTypeHash = 0;
-
-    
 
     final Surface a, b;
 

@@ -7,10 +7,11 @@ import jcog.service.Services;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.grid.GridModel;
-import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.container.grid.ScrollGrid;
+import spacegraph.space2d.container.GridModel;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.ScrollGrid;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
@@ -118,7 +119,7 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
         }
 
         @Override
-        protected void paintBelow(GL2 gl) {
+        protected void paintBelow(GL2 gl, SurfaceRender r) {
             if (s.isOff()) {
                 Draw.rectRGBA(bounds, 1, 0, 0, 0.5f, gl);
             } else if (s.isOn()) {

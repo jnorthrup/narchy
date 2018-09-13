@@ -7,7 +7,7 @@ import spacegraph.util.MovingRectFloat2D;
 
 public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements Graph2D.Graph2DUpdater<X> {
     protected final FasterList<M> nodes = new FasterList();
-    private final DequePool<M> nodesPool = new DequePool<>(128) {
+    private final DequePool<M> nodesPool = new DequePool<>() {
         @Override
         public M create() {
             return newContainer();

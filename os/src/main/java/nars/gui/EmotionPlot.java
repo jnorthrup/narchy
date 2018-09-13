@@ -2,7 +2,7 @@ package nars.gui;
 
 import nars.NAR;
 import nars.agent.NAgent;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meter.Plot2D;
 
 public class EmotionPlot extends DurSurface<Gridding> {

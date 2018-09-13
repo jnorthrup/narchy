@@ -42,17 +42,17 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public final Surface pos(RectFloat2D r) {
+    public final <S extends Surface> S pos(RectFloat2D r) {
         if (posChanged(r))
             layout();
-        return this;
+        return (S) this;
     }
 
     protected void paintAbove(GL2 gl, SurfaceRender r) {
 
     }
 
-    protected void paintBelow(GL2 gl) {
+    protected void paintBelow(GL2 gl, SurfaceRender r) {
 
     }
 
@@ -81,13 +81,17 @@ abstract public class Container extends Surface {
             doLayout(dtMS);
         }
 
-        paintBelow(gl);
+        paintBelow(gl, r);
 
         paintIt(gl);
 
-        forEach(c -> c.render(gl, r));
+        renderContents(gl, r);
 
         paintAbove(gl, r);
+    }
+
+    public final void renderContents(GL2 gl, SurfaceRender r) {
+        forEach(c -> c.render(gl, r));
     }
 
     protected boolean prePaint(SurfaceRender r) {

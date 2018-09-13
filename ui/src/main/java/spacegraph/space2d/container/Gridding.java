@@ -1,10 +1,10 @@
-package spacegraph.space2d.container.grid;
+package spacegraph.space2d.container;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.MutableContainer;
+import spacegraph.space2d.container.collection.MutableListContainer;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +18,7 @@ import static jcog.Util.lerp;
     aspect ratio=+inf: col (x)
                  else: grid( %x, %(ratio * x) )
  */
-public class Gridding extends MutableContainer {
+public class Gridding extends MutableListContainer {
 
 
     public static final float HORIZONTAL = 0f;

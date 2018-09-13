@@ -10,8 +10,8 @@ import jcog.data.pool.Pool;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
-import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.container.grid.MutableMapContainer;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.Windo;
@@ -39,7 +39,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private List<Graph2DRenderer<X>> renderers = new FasterList<>();
 
-    private final DequePool<NodeVis<X>> nodePool = new DequePool<>(1024) {
+    private final DequePool<NodeVis<X>> nodePool = new DequePool<>() {
         @Override
         public NodeVis<X> create() {
             NodeVis<X> v = new NodeVis<>();
@@ -47,7 +47,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             return v;
         }
     };
-    private final DequePool<EdgeVis<X>> edgePool = new DequePool<>(2048) {
+    private final DequePool<EdgeVis<X>> edgePool = new DequePool<>() {
         @Override
         public EdgeVis<X> create() {
             return new EdgeVis<>();
@@ -60,7 +60,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     };
 
-    private int nodesMax = 2048;
 
     private volatile Graph2DUpdater<X> updater;
 
@@ -134,11 +133,10 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     @Override
-    protected void paintBelow(GL2 gl) {
+    protected void paintBelow(GL2 gl, SurfaceRender r) {
         cells.forEachValue(n -> {
-            //if (n.visible()) {
-            n.paintEdges(gl);
-            //}
+            if (n.showing())
+                n.paintEdges(gl);
         });
     }
 
@@ -188,21 +186,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             cells.map.forEach((k, v) -> wontRemain.add(k));
         }
 
-        int count = 0;
         while (nodes.hasNext()) {
             X x = nodes.next();
             if (x == null)
                 continue;
 
             cells.compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
-
-            if (count++ == nodesMax())
-                break;
         }
 
         if (!wontRemain.isEmpty()) {
-            wontRemain.forEach(cells::removeSilently);
-            cells.map.invalidate();
+            cells.removeAll(wontRemain);
             wontRemain.clear();
         }
     }
@@ -239,16 +232,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     }
 
-    /**
-     * hard limit on # nodes
-     */
-    public int nodesMax() {
-        return nodesMax;
-    }
-
-    public void nodesMax(int nodesMax) {
-        this.nodesMax = nodesMax;
-    }
 
     /**
      * wraps all graph construction procedure in this interface for which layers construct graph with
@@ -368,9 +351,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             hide();
             this.mover = null;
             removeOuts(edgePool);
+            clear();
+            this.id = null;
+            this.showing = false;
         }
 
-//        @Override
+
+
+        //        @Override
 //        public boolean stop() {
 //            if (super.stop()) {
 //                return true;
@@ -383,9 +371,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         @Override
-        protected void paintBelow(GL2 gl) {
+        protected void paintBelow(GL2 gl, SurfaceRender r) {
             float alpha = 0.8f;
-            gl.glColor4f(r, g, b, alpha);
+            gl.glColor4f(this.r, g, b, alpha);
             Draw.rect(bounds, gl);
         }
 
@@ -492,10 +480,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             Triangle {
                 @Override
                 public void render(EdgeVis e, NodeVis from, GL2 gl) {
-                    NodeVis to = e.to;
-                    if (to == null)
-                        return;
 
+                    NodeVis to = e.to;
                     float fx = from.cx(), fy = from.cy();
 
                     float tx = to.cx(), ty = to.cy();
@@ -504,7 +490,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     float base = Util.lerp(e.weight, scale / 3f, scale);
 
                     float len = (float) Math.sqrt(sqr(fx - tx) + sqr(fy - ty));
-                    float theta = (float) (Math.atan2(ty - fy, tx - fx) * 180 / Math.PI) + 90f;
+                    float theta = (float) (Math.atan2(ty - fy, tx - fx) * 180 / Math.PI) + 270f;
 
                     //isosceles triangle
                     gl.glPushMatrix();
@@ -554,6 +540,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         final void draw(NodeVis<X> from, GL2 gl) {
+
+            NodeVis<X> t = this.to;
+            if (t == null || !t.showing())
+                return;
+
             renderer.render(this, from, gl);
         }
     }

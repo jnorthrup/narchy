@@ -7,7 +7,6 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.DistanceJointDef;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
-import spacegraph.space2d.phys.explosive.Explosives;
 import spacegraph.util.math.v2;
 
 import static java.lang.Math.abs;
@@ -21,9 +20,9 @@ public class TheoJansen {
     private final Body2D wheel;
     protected final Body2D chassis;
     public final RevoluteJoint motorJoint;
-
-    public final RevoluteJoint turretJoint;
-    protected final Explosives.Gun gun;
+//
+//    public final RevoluteJoint turretJoint;
+//    protected final Explosives.Gun gun;
 
     public TheoJansen(Dynamics2D w, float scale) {
 
@@ -68,17 +67,17 @@ public class TheoJansen {
             chassis = world.addBody(bd);
             chassis.addFixture(sd);
         }
-        {
-            gun = new Explosives.Gun(5*scale, world);
-            Body2D b = gun.barrel;
-            RevoluteJointDef jj = new RevoluteJointDef(chassis, b);
-            jj.referenceAngle = (float) (Math.PI);
-            jj.enableMotor = true;
-            jj.localAnchorB.set(b.getWorldPoint(new v2(-gun.barrelLength/4f, 0)));
-            jj.collideConnected = false;
-            turretJoint = (RevoluteJoint) world.addJoint(jj);
-            turretJoint.setMotorSpeed(1f);
-        }
+//        {
+//            gun = new Explosives.Gun(5*scale, world);
+//            Body2D b = gun.barrel;
+//            RevoluteJointDef jj = new RevoluteJointDef(chassis, b);
+//            jj.referenceAngle = (float) (Math.PI);
+//            jj.enableMotor = true;
+//            jj.localAnchorB.set(b.getWorldPoint(new v2(-gun.barrelLength/4f, 0)));
+//            jj.collideConnected = false;
+//            turretJoint = (RevoluteJoint) world.addJoint(jj);
+//            turretJoint.setMotorSpeed(1f);
+//        }
 
         {
             CircleShape shape = new CircleShape();

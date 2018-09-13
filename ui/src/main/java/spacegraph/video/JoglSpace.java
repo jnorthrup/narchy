@@ -231,7 +231,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
                 if (l.visible()) {
                     if (l instanceof Ortho) {
                         Ortho o = (Ortho) l;
-                        r.setScale(o.cam, o.scale);
+                        r.set(o.cam, o.scale);
                     }
 
 

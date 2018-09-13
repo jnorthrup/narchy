@@ -16,7 +16,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Clipped;
 import spacegraph.space2d.container.Scale;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.Timeline2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -136,7 +136,7 @@ public class SpaceLog {
                             final int eHash = e.id.name.hashCode();
 
                             @Override
-                            protected void paintBelow(GL2 gl) {
+                            protected void paintBelow(GL2 gl, SurfaceRender r) {
                                 Draw.colorHashRange(gl, eHash, 0.3f, 0.6f, 0.8f);
                                 Draw.rect(bounds, gl);
                             }
@@ -145,7 +145,7 @@ public class SpaceLog {
             boolean autoNow = true;
 
             @Override
-            protected void paintBelow(GL2 gl) {
+            protected void paintBelow(GL2 gl, SurfaceRender r) {
                 gl.glColor3f(0, 0, 0.1f);
                 Draw.rect(bounds, gl);
             }

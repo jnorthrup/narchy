@@ -35,7 +35,7 @@ public final class DequeCleaningPool<X> {
     final Supplier<X> builder;
     final Consumer<X> cleaner;
 
-    private final DequePool<X> pool = new DequePool<>(1) {
+    private final DequePool<X> pool = new DequePool<>() {
 
         @Override
         public X create() {

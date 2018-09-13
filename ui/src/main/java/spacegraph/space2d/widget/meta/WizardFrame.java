@@ -4,9 +4,9 @@ import jcog.data.list.FasterList;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.windo.Dyn2DSurface;
+import spacegraph.space2d.widget.windo.WiredWall;
 
 public class WizardFrame extends Splitting {
 
@@ -67,7 +67,7 @@ public class WizardFrame extends Splitting {
 
     private void close() {
         synchronized (this) {
-            parent(Dyn2DSurface.PhyWindow.class).remove();
+            parent(WiredWall.PhyWindow.class).remove();
         }
 
 

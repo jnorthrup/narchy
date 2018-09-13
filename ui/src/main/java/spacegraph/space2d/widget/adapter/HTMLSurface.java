@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.adapter;
 
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;

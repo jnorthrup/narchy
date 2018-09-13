@@ -273,6 +273,11 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         return y + h / 2;
     }
 
+    public RectFloat2D transform(float s, float ox, float oy) {
+        ////        if (Util.equals(scale, 1f, ScalarValue.EPSILON) && offset.equalsZero())
+            return RectFloat2D.XYWH(cx()+ox, cy()+oy, w * s, h * s);
+    }
+
     public RectFloat2D scale(float s) {
         if (s == 1)
             return this;

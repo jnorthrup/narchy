@@ -14,8 +14,8 @@ import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.MutableContainer;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
@@ -153,7 +153,7 @@ public class ProtoWidget extends Widget {
 
     private PushButton becoming(String label, Supplier<Surface> replacement) {
         return new PushButton(label,
-                () -> ((MutableContainer) parent).replace(ProtoWidget.this,
+                () -> ((MutableListContainer) parent).replace(ProtoWidget.this,
                         replacement.get()));
     }
 

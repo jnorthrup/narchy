@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
@@ -19,8 +20,8 @@ abstract public class IconBuilder<X> implements Function<X,Surface> {
                 final int classHash = o.getClass().hashCode();
 
                 @Override
-                protected void paintBelow(GL2 gl) {
-                    super.paintBelow(gl);
+                protected void paintBelow(GL2 gl, SurfaceRender r) {
+                    super.paintBelow(gl, r);
                     Draw.colorHash(gl, classHash);
                     Draw.rect(bounds, gl);
                 }

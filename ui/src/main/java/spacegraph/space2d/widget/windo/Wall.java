@@ -5,8 +5,8 @@ import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Animating;
-import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.container.grid.MutableMapContainer;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.BitmapLabel;
 
@@ -25,6 +25,21 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
         clipBounds = false;
     }
 
+//    /** scale applied to inner content */
+//    float scale = 1;
+//
+//    /** offset applied to inner content */
+//    final v2 offset = new v2();
+
+//    /** set inner transform for contents */
+//    public void transform(float scale, float ox, float oy) {
+//        if (offset.setIfChanged(ox, oy, ScalarValue.EPSILON) || !Util.equals(this.scale, scale, ScalarValue.EPSILON)) {
+//            this.scale = scale;
+//            layout();
+//        }
+//    }
+
+    /** uses put() semantics */
     public final Windo add(S x) {
         Windo w = computeIfAbsent(x, (xx) -> {
             Windo ww = new Windo(new MetaFrame(xx));
@@ -33,6 +48,7 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
         }).value;
         return w;
     }
+
 
     @Override
     public Windo remove(S key) {
@@ -70,6 +86,11 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
         Debugger d = new Debugger();
         return new Animating<>(d, d::update, 0.25f);
     }
+//    public Surface controls() {
+//        return new Gridding(
+//            new PushButton("..")
+//        );
+//    }
 
     class Debugger extends Gridding {
 
@@ -93,6 +114,7 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
         }
 
     }
+
 
 }
 

@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.collection;
 
 import com.google.common.collect.Sets;
 import jcog.data.list.BufferedCoWList;
@@ -6,6 +6,8 @@ import jcog.data.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.container.AbstractMutableContainer;
+import spacegraph.space2d.container.Container;
 
 import java.util.List;
 import java.util.Set;
@@ -13,25 +15,26 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-abstract public class MutableContainer extends AbstractMutableContainer {
+public class MutableListContainer extends AbstractMutableContainer {
 
 
     private final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
     private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
     private final FastCoWList<Surface> children;
 
-    protected MutableContainer(Surface... children) {
+    public MutableListContainer(Surface... children) {
         this(false, children);
     }
 
-    protected MutableContainer(boolean buffered, Surface... children) {
+    protected MutableListContainer(boolean buffered, Surface... children) {
         this(buffered ? new BufferedCoWList(children.length + 1, NEW_SURFACE_ARRAY)
-                :
-                new FastCoWList(children.length + 1, NEW_SURFACE_ARRAY),
-            children
+                        :
+                        new FastCoWList(children.length + 1, NEW_SURFACE_ARRAY),
+                children
         );
     }
-    private MutableContainer(FastCoWList<Surface> childrenModel, Surface... children) {
+
+    private MutableListContainer(FastCoWList<Surface> childrenModel, Surface... children) {
         super();
 
         this.children = childrenModel;
@@ -76,7 +79,7 @@ abstract public class MutableContainer extends AbstractMutableContainer {
 
                 Surface existing = children.set(index, next);
                 if (existing != next) {
-                    if (existing!=null)
+                    if (existing != null)
                         existing.stop();
 
                     next.start(this);
@@ -88,22 +91,21 @@ abstract public class MutableContainer extends AbstractMutableContainer {
         }
     }
 
-    
 
     public void addAll(Surface... s) {
         if (s.length == 0) return;
-        
+
         for (Surface x : s)
             _add(x);
 
-        if (!(children instanceof BufferedCoWList)) 
+        if (!(children instanceof BufferedCoWList))
             layout();
     }
 
     public void add(Surface s) {
         _add(s);
 
-        if (!(children instanceof BufferedCoWList)) 
+        if (!(children instanceof BufferedCoWList))
             layout();
     }
 
@@ -114,14 +116,14 @@ abstract public class MutableContainer extends AbstractMutableContainer {
                 s.start(this);
             }
         }
-        children.add(s); 
+        children.add(s);
     }
 
     public boolean remove(Surface s) {
         boolean removed = children.remove(s);
         if (removed) {
             if (s.stop()) {
-                if (!(children instanceof BufferedCoWList)) 
+                if (!(children instanceof BufferedCoWList))
                     layout();
                 return true;
             }
@@ -141,7 +143,7 @@ abstract public class MutableContainer extends AbstractMutableContainer {
                 int numExisting = size();
                 if (numExisting == 0) {
 
-                    
+
                     addAll(next);
 
                 } else if (next.length == 0) {
@@ -149,7 +151,7 @@ abstract public class MutableContainer extends AbstractMutableContainer {
                     clear();
 
                 } else {
-                    
+
 
                     Sets.SetView unchanged = Sets.intersection(
                             Set.of(children.copy), Set.of(next)
@@ -182,7 +184,9 @@ abstract public class MutableContainer extends AbstractMutableContainer {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        children.forEach((z) -> { if (z!=null) o.accept(z); } );
+        children.forEach((z) -> {
+            if (z != null) o.accept(z);
+        });
     }
 
     @Override
@@ -227,101 +231,8 @@ abstract public class MutableContainer extends AbstractMutableContainer {
         add(replacement);
     }
 
+    @Override
+    protected void doLayout(int dtMS) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 }

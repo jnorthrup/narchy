@@ -10,8 +10,7 @@ public class SurfaceRender {
 
 
     /** viewable pixel resolution */
-    private final float pw;
-    private final float ph;
+    private final float pw, ph;
 
     /** ms since last update */
     public final int dtMS;
@@ -24,11 +23,35 @@ public class SurfaceRender {
         this.dtMS = dtMS;
     }
 
-    public SurfaceRender setScale(v3 cam, v2 scale) {
-        return setScale(scale.x, scale.y, cam.x, cam.y);
+//    public void clone(float scale, v2 offset, Consumer<SurfaceRender> run, GL2 gl) {
+//        SurfaceRender s = clone(scale, offset);
+//        if (s!=this) {
+//            gl.glPushMatrix();
+//            {
+//                gl.glTranslatef(offset.x, offset.y, 0);
+//                gl.glScalef(scale, scale, 1);
+//                run.accept(s);
+//            }
+//            gl.glPopMatrix();
+//        } else {
+//            run.accept(this);
+//        }
+//    }
+//
+//    public SurfaceRender clone(float scale, v2 offset) {
+//        if (Util.equals(scale, 1f, ScalarValue.EPSILON) && offset.equalsZero())
+//            return this; //unchanged
+//        else
+//            return new SurfaceRender(pw, ph, dtMS)
+//                    .set(scaleX * scale, scaleY * scale,
+//                        (x1 + x2)/2 + offset.x, (y1 + y2)/2 + offset.y);
+//    }
+
+    public SurfaceRender set(v3 cam, v2 scale) {
+        return set(scale.x, scale.y, cam.x, cam.y);
     }
 
-    public SurfaceRender setScale(float scalex, float scaley, float cx, float cy) {
+    public SurfaceRender set(float scalex, float scaley, float cx, float cy) {
         this.scaleX = scalex;
         this.scaleY = scaley;
         float sxh = 0.5f * pw / scaleX;
@@ -37,9 +60,9 @@ public class SurfaceRender {
         this.x2 = cx + sxh;
         this.y1 = cy - syh;
         this.y2 = cy + syh;
-        
         return this;
     }
+
 
     public boolean visible(RectFloat2D r) {
         if (r.right() < x1 || r.left() > x2)

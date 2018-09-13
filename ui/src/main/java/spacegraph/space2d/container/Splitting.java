@@ -3,11 +3,12 @@ package spacegraph.space2d.container;
 import jcog.TODO;
 import jcog.Util;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.collection.MutableListContainer;
 
 /**
  * Splits a surface into a top and bottom or left and right sections
  */
-public class Splitting<X extends Surface, Y extends Surface> extends MutableContainer {
+public class Splitting<X extends Surface, Y extends Surface> extends MutableListContainer {
 
     private volatile float split;
     private volatile boolean vertical;

@@ -133,7 +133,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
 
-    private Stream<FromTo<Node<N,E>,E>> edges() {
+    public Stream<FromTo<Node<N,E>,E>> edges() {
         return nodes().stream().flatMap(Node::streamOut);
     }
 

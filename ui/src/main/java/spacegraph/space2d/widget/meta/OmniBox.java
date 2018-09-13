@@ -3,8 +3,8 @@ package spacegraph.space2d.widget.meta;
 import com.googlecode.lanterna.TerminalPosition;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.MutableContainer;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -104,9 +104,9 @@ public class OmniBox extends Widget {
     }
 
     abstract public static class Model {
-        abstract public void onTextChange(String text, int cursorPos, MutableContainer target);
+        abstract public void onTextChange(String text, int cursorPos, MutableListContainer target);
 
-        public void onTextChangeControlEnter(String t, MutableContainer target) {
+        public void onTextChangeControlEnter(String t, MutableListContainer target) {
             /** default nothing */
         }
     }

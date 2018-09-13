@@ -242,7 +242,7 @@ public class Port extends Widget implements Wiring.Wireable {
     public boolean start(@Nullable SurfaceBase parent) {
 
         if (super.start(parent)) {
-            this.node = parent(Dyn2DSurface.class).links.addNode(this);
+            this.node = parent(WiredWall.class).links.addNode(this);
             IntObjectProcedure<Port> u = this.updater;
             if (u !=null)
                 u.value(0, this);
@@ -253,7 +253,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
     @Override
     public boolean stop() {
-        Dyn2DSurface p = parent(Dyn2DSurface.class);
+        WiredWall p = parent(WiredWall.class);
         if (super.stop()) {
             if (p!=null)
                 p.links.removeNode(this);
@@ -262,13 +262,13 @@ public class Port extends Widget implements Wiring.Wireable {
         }
         return false;
     }
-
+    /** TODO Supplier-called version of this */
     private void out(Port sender, Object x) {
         
         if (enabled) {
             Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> n = this.node;
             if (n!=null)
-                n.edges(true, true).forEach(t -> t.id().in(sender, x));
+                n.edges(true, true).forEach(t -> { if (t!=sender) { t.id().in(sender, x); } } );
         }
     }
 

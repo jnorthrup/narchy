@@ -21,28 +21,9 @@ public class Windo extends Stacking {
     public DragEdit potentialDragMode = null;
     private boolean hover;
 
+
     protected Windo() {
         super();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     public Windo(Surface content) {
@@ -53,7 +34,7 @@ public class Windo extends Stacking {
     public Surface tryTouch(Finger finger) {
 
 
-        if (dragMode!=null && dragMode.isStopped()) {
+        if (dragMode != null && dragMode.isStopped()) {
             dragMode = null;
         }
         if (finger == null) {
@@ -62,20 +43,15 @@ public class Windo extends Stacking {
         }
 
         Surface other = null;
-        if (/*dragMode==null && */finger!=null) {
+        if (/*dragMode==null && */finger != null) {
             Surface c = super.tryTouch(finger);
             other = c;
-
-
-
 
 
         }
 
 
-
-
-        if (other!=null && other!=this) {
+        if (other != null && other != this) {
             this.dragMode = null;
             this.potentialDragMode = null;
             this.hover = false;
@@ -91,12 +67,12 @@ public class Windo extends Stacking {
 
             DragEdit potentialDragMode = null;
 
-            
+
             v2 hitPoint = windowHitPointRel(finger);
 
             this.hover = true;
 
-            
+
             {
 
                 if (hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
@@ -146,14 +122,14 @@ public class Windo extends Stacking {
                 }
             }
 
-            
+
             this.potentialDragMode = potentialDragMode;
 
             if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
-                
-                FingerDragging d = potentialDragMode!=null ? (FingerDragging) fingering(potentialDragMode) : null;
+
+                FingerDragging d = potentialDragMode != null ? (FingerDragging) fingering(potentialDragMode) : null;
                 if (d != null && finger.tryFingering(d)) {
-                    
+
                     this.dragMode = d;
                 } else {
                     this.dragMode = null;
@@ -175,9 +151,6 @@ public class Windo extends Stacking {
     protected v2 windowHitPointRel(Finger finger) {
         return finger.relativePos(this);
     }
-
-
-
 
 
     private Fingering fingering(DragEdit mode) {
@@ -212,10 +185,10 @@ public class Windo extends Stacking {
     protected void postpaint(GL2 gl) {
 
         DragEdit p = potentialDragMode;
-        if (p != null && p!=DragEdit.MOVE) {
+        if (p != null && p != DragEdit.MOVE) {
 
             Ortho root = (Ortho) root();
-            if (root==null) {
+            if (root == null) {
                 return;
             }
 
@@ -225,20 +198,20 @@ public class Windo extends Stacking {
             gl.glPushMatrix();
 
 
-
             float pmx, pmy;
             if (this instanceof ZoomOrtho.HUD) {
                 W = w();
                 H = h();
                 v2 mousePos = root.finger.posPixel;
-                pmx = mousePos.x; pmy = mousePos.y;
+                pmx = mousePos.x;
+                pmy = mousePos.y;
             } else {
                 W = H = 0.5f;
                 v2 mousePos = root.finger.pos;
-                pmx = mousePos.x; pmy = mousePos.y;
-                
-                
-                
+                pmx = mousePos.x;
+                pmy = mousePos.y;
+
+
             }
 
 
@@ -246,25 +219,25 @@ public class Windo extends Stacking {
             switch (p) {
                 case RESIZE_N:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W/2, H-resizeBorder,
-                            W/2+resizeBorder/2, H,
-                            W/2-resizeBorder/2, H);
+                    Draw.quad2d(gl, pmx, pmy, W / 2, H - resizeBorder,
+                            W / 2 + resizeBorder / 2, H,
+                            W / 2 - resizeBorder / 2, H);
                     break;
                 case RESIZE_S:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W/2, resizeBorder,
-                            W/2+resizeBorder/2, 0,
-                            W/2-resizeBorder/2, 0);
+                    Draw.quad2d(gl, pmx, pmy, W / 2, resizeBorder,
+                            W / 2 + resizeBorder / 2, 0,
+                            W / 2 - resizeBorder / 2, 0);
                     break;
                 case RESIZE_E:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W-resizeBorder, H/2,
-                            W,H/2+resizeBorder/2,
-                            W,H/2-resizeBorder/2);
+                    Draw.quad2d(gl, pmx, pmy, W - resizeBorder, H / 2,
+                            W, H / 2 + resizeBorder / 2,
+                            W, H / 2 - resizeBorder / 2);
                     break;
                 case RESIZE_NE:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W, H-resizeBorder, W, H, W - resizeBorder, H);
+                    Draw.quad2d(gl, pmx, pmy, W, H - resizeBorder, W, H, W - resizeBorder, H);
                     break;
                 case RESIZE_SE:
                     colorDragIndicator(gl);
@@ -281,7 +254,7 @@ public class Windo extends Stacking {
     }
 
     private void colorDragIndicator(GL2 gl) {
-        if (dragMode!=null) {
+        if (dragMode != null) {
             gl.glColor4f(0.75f, 1f, 0f, 0.75f);
         } else {
             gl.glColor4f(1f, 0.75f, 0f, 0.5f);
@@ -293,25 +266,6 @@ public class Windo extends Stacking {
         paintBack(gl);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         postpaint(gl);
 
 
@@ -319,7 +273,7 @@ public class Windo extends Stacking {
 
     private void paintBack(GL2 gl) {
         if (opaque()) {
-            gl.glColor4f(0.5f,0.5f,0.5f, 0.5f);
+            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
             Draw.rect(bounds, gl);
         }
     }
@@ -332,167 +286,6 @@ public class Windo extends Stacking {
         RESIZE_NE,
         RESIZE_SE
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

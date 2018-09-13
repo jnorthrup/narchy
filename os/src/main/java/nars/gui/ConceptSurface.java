@@ -9,7 +9,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Plot2D;

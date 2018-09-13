@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import spacegraph.input.finger.Wiring;
 import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.slider.FloatSlider;
 
 import javax.annotation.Nullable;

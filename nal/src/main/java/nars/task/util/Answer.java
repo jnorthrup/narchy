@@ -365,7 +365,7 @@ public class Answer implements Consumer<Task> {
 
 
             ThreadLocal.withInitial(()->
-                    new DequePool<CachedFloatRank<Task>>(8) {
+                    new DequePool<CachedFloatRank<Task>>() {
                         @Override
                         public CachedFloatRank<Task> create() {
                             return new CachedFloatRank<>(64);

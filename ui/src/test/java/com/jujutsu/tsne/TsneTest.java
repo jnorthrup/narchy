@@ -102,7 +102,7 @@ public class TsneTest {
                 }
 
                 @Override
-                protected void paintBelow(GL2 gl) {
+                protected void paintBelow(GL2 gl, SurfaceRender r) {
                     Draw.colorHash(gl, node.id.hashCode(), 0.8f);
                     Draw.rect(bounds, gl);
                 }

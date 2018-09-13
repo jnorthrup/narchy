@@ -5,7 +5,7 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.control.DurService;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;

@@ -11,6 +11,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.space3d.AbstractSpatial;
 import spacegraph.space3d.phys.Collidable;
@@ -146,7 +147,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         }
 
         @Override
-        protected void paintBelow(GL2 gl) {
+        protected void paintBelow(GL2 gl, SurfaceRender r) {
 
         }
 

@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import static spacegraph.space2d.container.grid.Gridding.col;
-import static spacegraph.space2d.container.grid.Gridding.row;
+import static spacegraph.space2d.container.Gridding.col;
+import static spacegraph.space2d.container.Gridding.row;
 
 /**
  * Created by me on 11/29/16.

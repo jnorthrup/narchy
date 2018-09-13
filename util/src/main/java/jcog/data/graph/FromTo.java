@@ -18,18 +18,10 @@ public interface FromTo<F, X> /* extends Triple<F,X,F> */ {
 
     @Nullable
     default F other(F x) {
-        F f = from();
-        F t = to();
+        F f = from(), t = to();
         if (f == x) return t;
         else if (t == x) return f;
         else return null;
     }
-//    default F other(F at) {
-//        if (at.equals(from()))
-//            return to();
-//        else {
-//            //assert(to().equals(at));
-//            return from();
-//        }
-//    }
+
 }

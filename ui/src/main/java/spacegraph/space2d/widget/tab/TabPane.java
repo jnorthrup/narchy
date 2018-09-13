@@ -3,7 +3,8 @@ package spacegraph.space2d.widget.tab;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
@@ -23,7 +24,7 @@ public class TabPane extends Splitting {
 
     private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
     private final Gridding tabs;
-    private MutableContainer content;
+    private MutableListContainer content;
     private Function<Surface, Surface> wrapper = x->x;
 
 
@@ -121,7 +122,7 @@ public class TabPane extends Splitting {
         }
     }
 
-    public TabPane setContent(MutableContainer next) {
+    public TabPane setContent(MutableListContainer next) {
         synchronized (this) {
             content = next;
             set(1, new Clipped(next));

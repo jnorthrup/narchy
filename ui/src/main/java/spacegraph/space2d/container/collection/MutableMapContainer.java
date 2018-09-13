@@ -1,4 +1,4 @@
-package spacegraph.space2d.container.grid;
+package spacegraph.space2d.container.collection;
 
 import jcog.data.map.CellMap;
 import org.jetbrains.annotations.Nullable;
@@ -6,14 +6,17 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AbstractMutableContainer;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer {
+public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
-    /** "cells" of the container; maintain the mapping between the indexed keys and their "materialized" representations or projections  */
+    /**
+     * "cells" of the container; maintain the mapping between the indexed keys and their "materialized" representations or projections
+     */
     protected final CellMap<K, V> cells = new CellMap<>() {
         @Override
         protected CacheCell<K, V> newCell() {
@@ -82,6 +85,11 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 
 
     @Override
+    protected void doLayout(int dtMS) {
+
+    }
+
+    @Override
     public int childrenCount() {
         return Math.max(1, cells.size());
     }
@@ -107,14 +115,18 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
     public CellMap.CacheCell<K, V> compute(K key, Function<V, V> builder) {
         return cells.compute(key, builder);
     }
+
     public CellMap.CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
         return cells.computeIfAbsent(key, builder);
     }
 
-    protected CellMap.CacheCell<K,V> put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
+    protected CellMap.CacheCell<K, V> put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {
 
-        CellMap.CacheCell<K,V> entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
-        return cells.update(key, entry, ((SurfaceCacheCell) entry).update(key, nextValue, renderer));
+        CellMap.CacheCell<K, V> entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
+
+        ((SurfaceCacheCell) entry).update(key, nextValue, renderer);
+
+        return cells.update(key, entry, entry.key != null);
 
     }
 
@@ -126,7 +138,6 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
     protected boolean removeSilently(K key) {
         return cells.removeSilently(key);
     }
-
 
 
     public void getValues(Collection<V> l) {
@@ -152,76 +163,59 @@ abstract public class MutableMapContainer<K, V> extends AbstractMutableContainer
 
     public static class SurfaceCacheCell<K, V> extends CellMap.CacheCell<K, V> {
 
-        transient volatile Surface surface = null;
-
-        @Override
-        protected void set(V next) {
-
-            if (next instanceof Surface)
-                surface = (Surface) next;
-
-            super.set(next);
-        }
+        public transient volatile Surface surface = null;
 
         @Override
         public void clear() {
             super.clear();
 
-            Surface es = this.surface;
+            Surface s = surface;
             surface = null;
-//            if (es != null) {
-//                es.stop();
-////                es.hide();
-//            }
 
+            if (s != null) {
+                if (s.parent != null)
+                    s.stop();
+            }
+        }
+
+        @Override
+        protected void set(V next) {
+            super.set(next);
+            if (next instanceof Surface) {
+                setSurface((Surface) next);
+            }
+        }
+
+        private void setSurface(Surface next) {
+            assert (surface == null);
+            if (next != surface) {
+                if (this.surface != null) {
+                    this.surface.stop();
+                }
+                this.surface = (Surface) next;
+            }
         }
 
         /**
          * return true to keep or false to remove from the map
          */
-        boolean update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer) {
+        void update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer) {
 
-//            if (this.key!=nextKey && this.key!=null) {
-//                clear();
-//            }
-            if (nextValue == value)
-                return true;
+            if (nextValue == null) {
+                this.key = null;
 
-            this.key = nextKey;
-
-            Surface existingSurface = surface;
-
-            boolean create = false, delete = false;
-
-            if (existingSurface != null) {
-                if (nextValue == null) {
-                    delete = true;
-                } else {
-                    if (value!=nextValue)  { //Objects.equals(value, nextValue)
-
-                    } else {
-                        create = true;
-                    }
-                }
-                if (delete || create) {
-
-                    existingSurface.stop();
-                }
             } else {
-                if (nextValue != null)
-                    create = true;
-                else
-                    delete = true;
+
+                if (!Objects.equals(this.value, nextValue) || surface == null) {
+                    this.key = null;
+                    Surface nextSurface = renderer.apply(nextKey, nextValue);
+                    set(nextValue);
+                    setSurface(nextSurface);
+                }
+
+                this.key = nextKey; //ready
             }
 
-            if (delete) {
-                return false;
-            } else if (create) {
-                this.surface = renderer.apply(key, this.value = nextValue);
-            }
-
-            return true;
         }
-
     }
 }

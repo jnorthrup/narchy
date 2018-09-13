@@ -10,7 +10,7 @@ import nars.truth.Truth;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.video.Draw;
 
 import java.util.Collection;

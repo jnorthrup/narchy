@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.MutableContainer;
+import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
-import spacegraph.space2d.widget.windo.Dyn2DSurface;
+import spacegraph.space2d.widget.windo.WiredWall;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,7 +50,7 @@ public class GUI {
     }
 
     static void wall(NAR nar) {
-        Dyn2DSurface w = SpaceGraph.wall(800, 600);
+        WiredWall w = SpaceGraph.wall(800, 600);
         w.frame(new ServicesTable(nar.services), 5, 4);
         w.frame(new OmniBox(new LuceneQueryModel()), 6, 1);
         w.frame(NARui.top(nar), 4, 4);
@@ -79,9 +79,9 @@ public class GUI {
 
             public final String q;
             final List<Result> results = new FasterList();
-            private final MutableContainer target;
+            private final MutableListContainer target;
 
-            Querying(String text, MutableContainer target) {
+            Querying(String text, MutableListContainer target) {
                 this.q = text;
                 this.target = target;
             }
@@ -157,7 +157,7 @@ public class GUI {
         }
 
         @Override
-        public void onTextChange(String next, int cursorPos, MutableContainer target) {
+        public void onTextChange(String next, int cursorPos, MutableListContainer target) {
             Querying prev = null;
             if (next.isEmpty()) {
                 prev = query.getAndSet(null);

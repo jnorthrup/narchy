@@ -6,6 +6,7 @@ import nars.NARS;
 import nars.Task;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.Timeline2D;
@@ -96,8 +97,8 @@ public class TasksView implements Timeline2D.TimelineModel<Task> {
         }
 
         @Override
-        protected void paintBelow(GL2 gl) {
-            Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
+        protected void paintBelow(GL2 gl, SurfaceRender r) {
+            Draw.rectRGBA(bounds, this.r, g, b, 0.5f, gl);
         }
 
         @Override

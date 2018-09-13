@@ -31,6 +31,9 @@
 
 package spacegraph.util.math;
 
+import jcog.Util;
+import jcog.pri.ScalarValue;
+
 /**
  * A 2-element vector that is represented by single-precision floating
  * point x,y coordinates.
@@ -170,5 +173,9 @@ public class v2 extends Tuple2f {
     }
     public int yInt() {
         return Math.round(y);
+    }
+
+    public boolean equalsZero() {
+        return Util.equals(x, 0, ScalarValue.EPSILON) && Util.equals(y, 0, ScalarValue.EPSILON);
     }
 }

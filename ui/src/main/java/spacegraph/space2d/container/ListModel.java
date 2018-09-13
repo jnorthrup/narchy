@@ -1,4 +1,4 @@
-package spacegraph.space2d.container.grid;
+package spacegraph.space2d.container;
 
 import jcog.TODO;
 import org.jetbrains.annotations.Nullable;

@@ -15,7 +15,7 @@ import spacegraph.space2d.container.ForceDirected2D;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.TreeMap2D;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.LoopPanel;
@@ -30,7 +30,7 @@ import spacegraph.video.Draw;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.sqrt;
-import static spacegraph.space2d.container.grid.Gridding.*;
+import static spacegraph.space2d.container.Gridding.*;
 
 public class ExeCharts {
 
