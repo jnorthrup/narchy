@@ -1,25 +1,25 @@
 /*
- *   __               .__       .__  ._____.           
+ *   __               .__       .__  ._____.
  * _/  |_  _______  __|__| ____ |  | |__\_ |__   ______
  * \   __\/  _ \  \/  /  |/ ___\|  | |  || __ \ /  ___/
- *  |  | (  <_> >    <|  \  \___|  |_|  || \_\ \\___ \ 
+ *  |  | (  <_> >    <|  \  \___|  |_|  || \_\ \\___ \
  *  |__|  \____/__/\_ \__|\___  >____/__||___  /____  >
- *                   \/       \/             \/     \/ 
+ *                   \/       \/             \/     \/
  *
  * Copyright (c) 2006-2011 Karsten Schmidt
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * http://creativecommons.org/licenses/LGPL/2.1/
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
@@ -27,16 +27,19 @@
 
 package toxi.physics2d;
 
+import jcog.data.list.FasterList;
+import jcog.pri.ScalarValue;
 import org.jetbrains.annotations.Nullable;
+import toxi.geom.Polygon2D;
 import toxi.geom.ReadonlyVec2D;
 import toxi.geom.Rect;
 import toxi.geom.Vec2D;
 import toxi.physics2d.behaviors.ParticleBehavior2D;
 import toxi.physics2d.constraints.ParticleConstraint2D;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An individual 3D particle for use by the VerletPhysics and VerletSpring
@@ -45,7 +48,7 @@ import java.util.List;
  */
 public class VerletParticle2D extends Vec2D {
 
-    protected Vec2D prev;
+    protected Vec2D next, prev;
     protected boolean isLocked;
 
     /**
@@ -68,9 +71,12 @@ public class VerletParticle2D extends Vec2D {
 
     protected Vec2D force = new Vec2D();
 
+    final AtomicInteger serial = new AtomicInteger(0);
+    private final int id = serial.getAndIncrement();
+
     /**
      * Creates particle at position xyz
-     * 
+     *
      * @param x
      * @param y
      */
@@ -80,22 +86,21 @@ public class VerletParticle2D extends Vec2D {
 
     /**
      * Creates particle at position xyz with weight w
-     * 
+     *
      * @param x
      * @param y
      * @param w
      */
     public VerletParticle2D(float x, float y, float w) {
         super(x, y);
-        prev = new Vec2D(this);
+        next = new Vec2D(this); prev = new Vec2D(this);
         setWeight(w);
     }
 
     /**
      * Creates particle at the position of the passed in vector
-     * 
-     * @param v
-     *            position
+     *
+     * @param v position
      */
     public VerletParticle2D(ReadonlyVec2D v) {
         this(v.x(), v.y(), 1);
@@ -103,11 +108,9 @@ public class VerletParticle2D extends Vec2D {
 
     /**
      * Creates particle with weight w at the position of the passed in vector
-     * 
-     * @param v
-     *            position
-     * @param w
-     *            weight
+     *
+     * @param v position
+     * @param w weight
      */
     public VerletParticle2D(ReadonlyVec2D v, float w) {
         this(v.x(), v.y(), w);
@@ -115,7 +118,7 @@ public class VerletParticle2D extends Vec2D {
 
     /**
      * Creates a copy of the passed in particle
-     * 
+     *
      * @param p
      */
     public VerletParticle2D(VerletParticle2D p) {
@@ -128,22 +131,19 @@ public class VerletParticle2D extends Vec2D {
     }
 
     public VerletParticle2D addBehavior(ParticleBehavior2D behavior,
-            float timeStep) {
-        if (behaviors == null) {
-            behaviors = new ArrayList<>(1);
-        }
+                                        float timeStep) {
+        if (behaviors == null)
+            behaviors = new FasterList<>(1);
         behavior.configure(timeStep);
         behaviors.add(behavior);
         return this;
     }
 
-    public VerletParticle2D addBehaviors(
-            Collection<ParticleBehavior2D> behaviors) {
+    public VerletParticle2D addBehaviors(Collection<ParticleBehavior2D> behaviors) {
         return addBehaviors(behaviors, 1);
     }
 
-    public VerletParticle2D addBehaviors(
-            Collection<ParticleBehavior2D> behaviors, float timeStemp) {
+    public VerletParticle2D addBehaviors(Collection<ParticleBehavior2D> behaviors, float timeStemp) {
         for (ParticleBehavior2D b : behaviors) {
             addBehavior(b, timeStemp);
         }
@@ -153,21 +153,19 @@ public class VerletParticle2D extends Vec2D {
     /**
      * Adds the given constraint implementation to the list of constraints
      * applied to this particle at each time step.
-     * 
-     * @param c
-     *            constraint instance
+     *
+     * @param c constraint instance
      * @return itself
      */
     public VerletParticle2D addConstraint(ParticleConstraint2D c) {
         if (constraints == null) {
-            constraints = new ArrayList<>(1);
+            constraints = new FasterList<>(1);
         }
         constraints.add(c);
         return this;
     }
 
-    public VerletParticle2D addConstraints(
-            Collection<ParticleConstraint2D> constraints) {
+    public VerletParticle2D addConstraints(Collection<ParticleConstraint2D> constraints) {
         for (ParticleConstraint2D c : constraints) {
             addConstraint(c);
         }
@@ -179,10 +177,10 @@ public class VerletParticle2D extends Vec2D {
         return this;
     }
 
-    public VerletParticle2D addVelocity(Vec2D v) {
-        prev.subSelf(v);
-        return this;
-    }
+//    public VerletParticle2D addVelocity(Vec2D v) {
+//        prev.subSelf(v);
+//        return this;
+//    }
 
     public void applyBehaviors() {
         if (behaviors != null) {
@@ -200,11 +198,40 @@ public class VerletParticle2D extends Vec2D {
         }
     }
 
-    protected void applyForce() {
-        Vec2D temp = new Vec2D().set(this);
-        addSelf(sub(prev).addSelf(force.scale(weight)));
-        prev.set(temp);
-        force.clear();
+
+    protected void applyForce(float drag) {
+        //Pos(next) = Pos(now) + (Pos(now) - Pos(prev)) + Accel * dt * dt
+        //F = ma, a = F/m
+
+        Vec2D d = (this.sub(prev).scale(1f - drag)).addSelf(force.scale(
+                //invWeight * dt * dt
+                //invWeight * dt
+                invWeight
+        ));
+
+        next.addSelf(d);
+
+        clearForce();
+    }
+
+    @Override
+    public Vec2D constrain(Rect r) {
+        return next.constrain(r);
+    }
+
+    @Override
+    public Vec2D constrain(Polygon2D poly) {
+        return next.constrain(poly);
+    }
+
+    @Override
+    public Vec2D constrain(Vec2D min, Vec2D max) {
+        return next.constrain(min, max);
+    }
+
+    public void commit() {
+        prev.set(this);
+        set(next);
     }
 
     public VerletParticle2D clearForce() {
@@ -213,7 +240,7 @@ public class VerletParticle2D extends Vec2D {
     }
 
     public VerletParticle2D clearVelocity() {
-        prev.set(this);
+        next.set(this);
         return this;
     }
 
@@ -228,14 +255,14 @@ public class VerletParticle2D extends Vec2D {
         return invWeight;
     }
 
-    /**
-     * Returns the particle's position at the most recent time step.
-     * 
-     * @return previous position
-     */
-    public Vec2D getPreviousPosition() {
-        return prev;
-    }
+//    /**
+//     * Returns the particle's position at the most recent time step.
+//     *
+//     * @return previous position
+//     */
+//    public Vec2D getPreviousPosition() {
+//        return prev;
+//    }
 
     public Vec2D getVelocity() {
         return sub(prev);
@@ -244,8 +271,19 @@ public class VerletParticle2D extends Vec2D {
     public float getSpeed() {
         return (float) Math.sqrt(getSpeedSq());
     }
+
     public float getSpeedSq() {
-        return sub(prev).magSquared();
+        return getVelocity().magSquared();
+    }
+
+    @Override
+    public final int hashCode() {
+        return id;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return this == obj;
     }
 
     /**
@@ -264,7 +302,7 @@ public class VerletParticle2D extends Vec2D {
 
     /**
      * Locks/immobilizes particle in space
-     * 
+     *
      * @return itself
      */
     public VerletParticle2D lock() {
@@ -279,7 +317,7 @@ public class VerletParticle2D extends Vec2D {
 
     /**
      * Removes any currently applied constraints from this particle.
-     * 
+     *
      * @return itself
      */
     public VerletParticle2D removeAllConstraints() {
@@ -298,9 +336,8 @@ public class VerletParticle2D extends Vec2D {
     /**
      * Attempts to remove the given constraint instance from the list of active
      * constraints.
-     * 
-     * @param c
-     *            constraint to remove
+     *
+     * @param c constraint to remove
      * @return true, if successfully removed
      */
     public boolean removeConstraint(ParticleConstraint2D c) {
@@ -312,15 +349,22 @@ public class VerletParticle2D extends Vec2D {
         return this.constraints.removeAll(constraints);
     }
 
-    public VerletParticle2D scaleVelocity(float scl) {
-        prev.interpolateToSelf(this, 1f - scl);
-        return this;
-    }
+//    public VerletParticle2D scaleVelocity(float scl) {
+//        //prev.interpolateToSelf(this, 1f - scl);
+//        next.interpolateToSelf(this, 1f-scl);
+//        return this;
+//    }
+//    public VerletParticle2D scaleForce(float scl) {
+//        //prev.interpolateToSelf(this, 1f - scl);
+//        force.scale(scl);
+//        return this;
+//    }
 
-    public VerletParticle2D setPreviousPosition(Vec2D p) {
-        prev.set(p);
-        return this;
-    }
+
+//    public VerletParticle2D setPreviousPosition(Vec2D p) {
+//        prev.set(p);
+//        return this;
+//    }
 
     public final void setWeight(float w) {
         weight = w;
@@ -329,7 +373,7 @@ public class VerletParticle2D extends Vec2D {
 
     /**
      * Unlocks particle again
-     * 
+     *
      * @return itself
      */
     public VerletParticle2D unlock() {
@@ -338,11 +382,15 @@ public class VerletParticle2D extends Vec2D {
         return this;
     }
 
-    public void update() {
+    public void update(float drag) {
         if (!isLocked) {
             applyBehaviors();
-            applyForce();
+            applyForce(drag);
             applyConstraints();
         }
+    }
+
+    public boolean changed() {
+        return !equalsWithTolerance(next, ScalarValue.EPSILON);
     }
 }

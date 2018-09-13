@@ -26,6 +26,7 @@
  */
 package toxi.geom;
 
+import jcog.Util;
 import toxi.math.InterpolateStrategy;
 import toxi.math.MathUtils;
 import toxi.math.ScaleMap;
@@ -38,14 +39,14 @@ import java.util.Random;
  */
 public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
 
-    public static enum Axis {
+    public enum Axis {
 
         X(Vec2D.X_AXIS),
         Y(Vec2D.Y_AXIS);
 
         private final ReadonlyVec2D vector;
 
-        private Axis(ReadonlyVec2D v) {
+        Axis(ReadonlyVec2D v) {
             this.vector = v;
         }
 
@@ -63,7 +64,6 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      * Defines positive Y axis
      */
     public static final ReadonlyVec2D Y_AXIS = new Vec2D(0, 1);
-    ;
 
     /** Defines the zero vector. */
     public static final ReadonlyVec2D ZERO = new Vec2D();
@@ -417,30 +417,19 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      * @return true or false
      */
     public boolean equals(ReadonlyVec2D v) {
-        final ReadonlyVec2D other = (ReadonlyVec2D) v;
+        final ReadonlyVec2D other = v;
             if (!((Float) x).equals(other.x())) {
                 return false;
             }
             return ((Float) y).equals(other.y());
-        }
+    }
+
 
     @Override
-    public boolean equalsWithTolerance(ReadonlyVec2D v, float tolerance) {
-        if (v instanceof ReadonlyVec2D){
-            float diff = x - v.x();
-            if (Float.isNaN(diff)) {
-                return false;
-            }
-            if ((diff < 0 ? -diff : diff) > tolerance) {
-                return false;
-            }
-            diff = y - v.y();
-            if (Float.isNaN(diff)) {
-                return false;
-            }
-            return ((diff < 0 ? -diff : diff) < tolerance);
-        } 
-            return false;        
+    public boolean equalsWithTolerance(ReadonlyVec2D v, float epsilon) {
+        final ReadonlyVec2D other = v;
+        if (this == other) return true;
+        return Util.equals(x, v.x(), epsilon) && Util.equals(y, v.y(), epsilon);
     }
 
     /**

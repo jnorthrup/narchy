@@ -2,11 +2,12 @@ package spacegraph.space2d.shape;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.exe.Loop;
+import jcog.event.Off;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.util.animate.Animated;
 import spacegraph.video.Draw;
 import toxi.geom.PointQuadtree;
 import toxi.geom.Rect;
@@ -21,16 +22,18 @@ import toxi.physics2d.behaviors.GravityBehavior2D;
  */
 public class SoftSurface {
 
-    public static class AttractTest2D extends Surface {
+    public static class AttractTest2D extends Surface implements Animated {
 
         final int W = 800;
-        private Loop update;
+
+        private Off update;
 
         public static void main(String[] args) {
             SpaceGraph.window(new AttractTest2D(), 1200, 800);
         }
 
-        int NUM_PARTICLES = 500;
+        int NUM_PARTICLES = 1500;
+        float timeScale = 0.5f;
 
         VerletPhysics2D physics;
 
@@ -40,26 +43,21 @@ public class SoftSurface {
 
         @Override
         protected void starting() {
-            physics = new VerletPhysics2D(null, 2, 0, 0.02f);
-            physics.setDrag(0.04f);
+            physics = new VerletPhysics2D(null, 2, 0);
+            physics.setDrag(0.05f);
             physics.setWorldBounds(new Rect(0, 0, W, W));
-            physics.addBehavior(new GravityBehavior2D(new Vec2D(0, 0.15f)));
+            physics.addBehavior(new GravityBehavior2D(new Vec2D(0, 0.1f)));
             physics.setIndex(
                     new PointQuadtree(null, 0, 0, W + 1, W + 1)
                     //new RTreeQuadTree()
             );
 
-            update = Loop.of(() -> {
-                if (physics.particles.size() < NUM_PARTICLES) {
-                    addParticle();
-                }
-                physics.update();
-            }).setFPS(30f);
+            update = root().animate(this);
         }
 
         @Override
         protected void stopping() {
-            update.stop();
+            update.off();
             update = null;
         }
 
@@ -80,7 +78,7 @@ public class SoftSurface {
 
             for (VerletParticle2D p : physics.particles) {
                 float t = 2 * p.getWeight();
-                Draw.colorGrays(gl, 0.5f + Util.tanhFast(p.getSpeedSq()));
+                Draw.colorGrays(gl, 0.3f + 0.7f * Util.tanhFast(p.getSpeed()), 0.7f);
                 Draw.rect(gl, p.x - t / 2, p.y - t / 2, t, t);
             }
             // Quadtree tree = (Quadtree) physics.getIndex();
@@ -107,7 +105,7 @@ public class SoftSurface {
                 if (finger.pressing(0)) {
                     synchronized (physics) {
                         if (mouseAttractor == null) {
-                            mouseAttractor = new AttractionBehavior2D(mousePos, 400, 32f);
+                            mouseAttractor = new AttractionBehavior2D(mousePos, 400, 332f);
                             physics.addBehavior(mouseAttractor);
                         }
                     }
@@ -126,5 +124,13 @@ public class SoftSurface {
         }
 
 
+        @Override
+        public boolean animate(float dt) {
+            if (physics.particles.size() < NUM_PARTICLES) {
+                addParticle();
+            }
+            physics.update(dt * timeScale);
+            return true;
+        }
     }
 }

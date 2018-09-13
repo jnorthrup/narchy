@@ -830,6 +830,9 @@ public enum Draw {
     public static void colorGrays(GL2 gl, float x) {
         gl.glColor3f(x, x, x);
     }
+    public static void colorGrays(GL2 gl, float x, float a) {
+        gl.glColor4f(x, x, x, a);
+    }
 
     public static void bounds(GL2 gl, Surface s, Consumer<GL2> c) {
         bounds(s.bounds, gl, c);
