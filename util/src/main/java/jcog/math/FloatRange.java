@@ -1,9 +1,9 @@
 package jcog.math;
 
-import jcog.data.atomic.AtomicFloat;
+import jcog.data.MutableFloat;
 
 
-public class FloatRange extends AtomicFloat {
+public class FloatRange extends MutableFloat /*AtomicFloat*/ {
 
     public final float max;
     public final float min;

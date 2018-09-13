@@ -43,7 +43,7 @@ public class SoftSurface {
 
         @Override
         protected void starting() {
-            physics = new VerletPhysics2D(null, 2, 0);
+            physics = new VerletPhysics2D(null, 4, 0);
             physics.setDrag(0.05f);
             physics.setWorldBounds(new Rect(0, 0, W, W));
             physics.addBehavior(new GravityBehavior2D(new Vec2D(0, 0.1f)));

@@ -36,8 +36,8 @@ import toxi.physics2d.VerletParticle2D;
  */
 public class AxisConstraint implements ParticleConstraint2D {
 
-    public float constraint;
-    public Axis axis;
+    public final float constraint;
+    public final Axis axis;
 
     /**
      * @param axis

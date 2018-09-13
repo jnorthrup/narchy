@@ -52,7 +52,8 @@ public class VerletSpring2D {
     /**
      * Spring end points / particles
      */
-    public VerletParticle2D a, b;
+    public final VerletParticle2D a;
+    public final VerletParticle2D b;
 
     /**
      * Spring rest length to which it always wants to return too

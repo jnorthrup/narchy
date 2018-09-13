@@ -43,5 +43,5 @@ public interface ParticleConstraint2D {
      * @param p
      *            particle
      */
-    public void apply(VerletParticle2D p);
+    void apply(VerletParticle2D p);
 }

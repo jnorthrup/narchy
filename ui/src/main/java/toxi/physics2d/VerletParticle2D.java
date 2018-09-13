@@ -48,7 +48,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class VerletParticle2D extends Vec2D {
 
-    protected Vec2D next, prev;
+    protected final Vec2D next;
+    protected final Vec2D prev;
     protected boolean isLocked;
 
     /**
@@ -69,7 +70,7 @@ public class VerletParticle2D extends Vec2D {
      */
     protected float weight, invWeight;
 
-    protected Vec2D force = new Vec2D();
+    protected final Vec2D force = new Vec2D();
 
     final AtomicInteger serial = new AtomicInteger(0);
     private final int id = serial.getAndIncrement();
@@ -93,7 +94,7 @@ public class VerletParticle2D extends Vec2D {
      */
     public VerletParticle2D(float x, float y, float w) {
         super(x, y);
-        next = new Vec2D(this); prev = new Vec2D(this);
+        next = new Vec2D(x,y); prev = new Vec2D(x,y);
         setWeight(w);
     }
 
@@ -116,15 +117,15 @@ public class VerletParticle2D extends Vec2D {
         this(v.x(), v.y(), w);
     }
 
-    /**
-     * Creates a copy of the passed in particle
-     *
-     * @param p
-     */
-    public VerletParticle2D(VerletParticle2D p) {
-        this(p.x, p.y, p.weight);
-        isLocked = p.isLocked;
-    }
+//    /**
+//     * Creates a copy of the passed in particle
+//     *
+//     * @param p
+//     */
+//    public VerletParticle2D(VerletParticle2D p) {
+//        this(p.x, p.y, p.weight);
+//        isLocked = p.isLocked;
+//    }
 
     public VerletParticle2D addBehavior(ParticleBehavior2D behavior) {
         return addBehavior(behavior, 1);
@@ -143,7 +144,7 @@ public class VerletParticle2D extends Vec2D {
         return addBehaviors(behaviors, 1);
     }
 
-    public VerletParticle2D addBehaviors(Collection<ParticleBehavior2D> behaviors, float timeStemp) {
+    public VerletParticle2D addBehaviors(Iterable<ParticleBehavior2D> behaviors, float timeStemp) {
         for (ParticleBehavior2D b : behaviors) {
             addBehavior(b, timeStemp);
         }
@@ -165,7 +166,7 @@ public class VerletParticle2D extends Vec2D {
         return this;
     }
 
-    public VerletParticle2D addConstraints(Collection<ParticleConstraint2D> constraints) {
+    public VerletParticle2D addConstraints(Iterable<ParticleConstraint2D> constraints) {
         for (ParticleConstraint2D c : constraints) {
             addConstraint(c);
         }

@@ -34,7 +34,7 @@ import toxi.physics2d.VerletParticle2D;
 public class AngularConstraint implements ParticleConstraint2D {
 
     public Vec2D rootPos;
-    public float theta;
+    public final float theta;
 
     public AngularConstraint(float theta) {
         this.theta = theta;

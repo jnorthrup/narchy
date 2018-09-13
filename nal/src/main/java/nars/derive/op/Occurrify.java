@@ -543,13 +543,12 @@ public class Occurrify extends TimeGraph {
 
 
                 Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x));
-//                if (p != null) {
-//                    byte punc = d.concPunc;
-//                    if ((punc == GOAL) && d.truthFunction != NALTruth.Identity) {
-//                        if (!immediatize(p.getTwo(), d))
-//                            return null;
-//                    }
-//                }
+                if (p != null) {
+                    if (d.truthFunction != NALTruth.Identity && immediatizable(d)) {
+                        if (!immediatize(p.getTwo(), d))
+                            return null;
+                    }
+                }
                 return p;
             }
 
@@ -904,7 +903,7 @@ public class Occurrify extends TimeGraph {
                     o[0] += bdt;
                     o[1] += bdt;
 
-                    if (d.concPunc == GOAL /*|| d.concPunc == QUEST*/)
+                    if (immediatizable(d))
                         if (!immediatize(o, d))
                             return null;
                 }
@@ -917,35 +916,40 @@ public class Occurrify extends TimeGraph {
          */
         private static boolean immediatize(long[] o, Derivation d) {
 
-            long NOW = d.time;
 
-            int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
+
+
             if (o[0] == ETERNAL) {
                 if (d.task.isEternal() && (d.belief == null || d.belief.isEternal()))
                     return true; //both task and belief are eternal; keep eternal
 
-                o[0] = NOW - rad;
+                long NOW = d.time;
+                int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
+                o[0] = NOW;
                 o[1] = NOW + rad;
                 return true;
             }
 
-            if (o[0] < NOW && o[1] < NOW) {
+            long target =
+                    //d.time;
+                    d.taskStart;
 
-                int dur = d.dur;
+            if (o[0] < target) {
 
-                if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+                if (d.concPunc == GOAL || d.concPunc == BELIEF) {
                     //starts and ends before now; entirely past
                     // shift and project to present, "as-if" past-perfect/subjunctive tense
 
                     //discount for projection
-                    long deltaT = Math.abs(NOW - o[1]); //project from end, closer to now if fully in the past
-                    float eStartFactor = Param.evi(1, deltaT, dur);
+                    long deltaT = Math.abs(target - o[0]); //project from end, closer to now if fully in the past
+                    float eStartFactor = Param.evi(1, deltaT, d.dur);
                     if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
                         return false; //insufficient evidence
                 }
 
-                o[0] = NOW;
-                o[1] = NOW + rad; //allow only fixed time: benefit of the doubt
+                long range = o[1] - o[0];
+                o[0] = target;
+                o[1] = target + range; //allow only fixed time: benefit of the doubt
             }
 
             return true;
@@ -1098,6 +1102,10 @@ public class Occurrify extends TimeGraph {
         public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
         }
+    }
+
+    private static boolean immediatizable(Derivation d) {
+        return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST);
     }
 
     @NotNull

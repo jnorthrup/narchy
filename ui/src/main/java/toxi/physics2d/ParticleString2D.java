@@ -41,9 +41,9 @@ import java.util.List;
  */
 public class ParticleString2D {
 
-    protected VerletPhysics2D physics;
-    public List<VerletParticle2D> particles;
-    public List<VerletSpring2D> links;
+    protected final VerletPhysics2D physics;
+    public final List<VerletParticle2D> particles;
+    public final List<VerletSpring2D> links;
 
     /**
      * Takes a list of already created particles connects them into a continuous

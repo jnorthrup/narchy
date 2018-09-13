@@ -36,6 +36,7 @@ import toxi.physics2d.behaviors.GravityBehavior2D;
 import toxi.physics2d.behaviors.ParticleBehavior2D;
 import toxi.physics2d.constraints.ParticleConstraint2D;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -63,12 +64,12 @@ public class VerletPhysics2D {
     /**
      * List of particles
      */
-    public List<VerletParticle2D> particles;
+    public final List<VerletParticle2D> particles;
 
     /**
      * List of spring/stick connectors
      */
-    public List<VerletSpring2D> springs;
+    public final List<VerletSpring2D> springs;
 
 //    /**
 //     * Default time step = 1.0
@@ -78,23 +79,24 @@ public class VerletPhysics2D {
     /**
      * Default iterations for verlet solver = 50
      */
-    protected int numIterations;
+    protected int maxIterations;
 
     /**
      * Optional bounding rect to constrain particles too
      */
     protected Rect worldBounds;
 
-    public final List<ParticleBehavior2D> behaviors = new CopyOnWriteArrayList();
+    public final Collection<ParticleBehavior2D> behaviors = new CopyOnWriteArrayList();
 
-    public final List<ParticleConstraint2D> constraints = new FasterList<>(
+    public final Collection<ParticleConstraint2D> constraints = new FasterList<>(
             1);
 
     protected float drag;
 
     protected SpatialIndex<VerletParticle2D> index;
 
-    private float maxTimeStep = 1f; //in seconds
+    private final float maxTimeStep = 1f;
+    private final float minTimeStep = 0.01f; //in seconds
 
 
     /**
@@ -107,7 +109,7 @@ public class VerletPhysics2D {
     public VerletPhysics2D(Vec2D gravity, int numIterations, float drag) {
         particles = new FastCoWList<>(VerletParticle2D[]::new);
         springs = new FastCoWList<>(VerletSpring2D[]::new);
-        this.numIterations = numIterations;
+        this.maxIterations = numIterations;
         setDrag(drag);
         if (gravity != null) {
             addBehavior(new GravityBehavior2D(gravity));
@@ -276,10 +278,10 @@ public class VerletPhysics2D {
     }
 
     /**
-     * @param numIterations the numIterations to set
+     * @param maxIterations the numIterations to set
      */
-    public void setNumIterations(int numIterations) {
-        this.numIterations = numIterations;
+    public void setMaxIterations(int maxIterations) {
+        this.maxIterations = maxIterations;
     }
 
 
@@ -302,12 +304,23 @@ public class VerletPhysics2D {
      * @return itself
      */
     public VerletPhysics2D update(float dt) {
-        float subDT = Math.min(dt, maxTimeStep) / numIterations;
+
+
+        dt = Math.min(dt, maxTimeStep); //hard uppper limit on timestep
+
+        int ii = 0;
+        while (++ii < maxIterations) {
+            if (dt / ii < minTimeStep)
+                break;
+            //further subdivide
+        }
+
+        float subDT = dt / ii;
 
         for (ParticleBehavior2D b : behaviors)
             b.configure(subDT);
 
-        for (int i = numIterations - 1; i >= 0; i--) {
+        for (int i = ii - 1; i >= 0; i--) {
             behave(subDT);
             integrate();
             spring(i, subDT);

@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 600;
+    public static final int cycles = 100;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.confResolution.set(0.04f); //coarse
         test.nar.freqResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(24);
+        test.nar.termVolumeMax.set(14);
     }
 
     @Test
@@ -578,8 +578,8 @@ public class NAL8Test extends NALTest {
     void testPredictiveImplicationTemporalTemporalOpposite() {
 
         test
-                .inputAt(0, "(happy ==>-3 out). :|:")
-                .inputAt(2, "happy! :|:")
+                .inputAt(0, "(happy ==>-3 out). |")
+                .inputAt(2, "happy! |")
                 .mustGoal(cycles, "out", 1f, 0.45f, (t) -> (t >= 2));
 
 

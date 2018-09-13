@@ -33,7 +33,7 @@ import toxi.physics2d.VerletParticle2D;
 
 public class CircularConstraint implements ParticleConstraint2D {
 
-    public Circle circle;
+    public final Circle circle;
 
     public CircularConstraint(Circle circle) {
         this.circle = circle;

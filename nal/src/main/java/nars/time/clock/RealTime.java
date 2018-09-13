@@ -21,7 +21,9 @@ public abstract class RealTime extends Time {
 
     public final long t0;
 
-    final AtomicLong t = new AtomicLong();
+    //final AtomicLong t = new AtomicLong();
+    long t;
+
     private long start;
 
     final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000; 
@@ -39,7 +41,9 @@ public abstract class RealTime extends Time {
 
         long now = realtime();
         this.t0 = relativeToStart ? 0 : now;
-        this.t.set(this.last = this.start = relativeToStart ? now : 0L);
+        this.last = this.start = relativeToStart ? now : 0L;
+        //this.t.set(last);
+        t = last;
 
         reset();
     }
@@ -62,17 +66,20 @@ public abstract class RealTime extends Time {
         if (start!=0)
             start = rt;
 
-        t.set(rt - start);
+        //t.set(rt - start);
+        t = rt - start;
     }
 
     @Override
     public final void cycle(NAR n) {
-        last = t.getAndSet(realtime() - start);
+        //last = t.getAndSet(realtime() - start);
+        last = t; t = realtime() - start;
     }
 
     @Override
     public final long now() {
-        return t.getOpaque();
+        //return t.getOpaque();
+        return t;
     }
 
 

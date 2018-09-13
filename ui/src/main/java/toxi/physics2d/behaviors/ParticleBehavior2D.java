@@ -40,11 +40,11 @@ public interface ParticleBehavior2D<V extends Vec2D> {
      * @param p
      *            particle
      */
-    public void apply(Vec2D p);
+    void apply(Vec2D p);
 
-    public void applyWithIndex(SpatialIndex<VerletParticle2D> index);
+    void applyWithIndex(SpatialIndex<VerletParticle2D> index);
 
-    public void configure(float timeStep);
+    void configure(float timeStep);
 
-    public boolean supportsSpatialIndex();
+    boolean supportsSpatialIndex();
 }

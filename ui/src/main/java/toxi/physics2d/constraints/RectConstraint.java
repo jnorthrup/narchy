@@ -36,7 +36,7 @@ public class RectConstraint implements ParticleConstraint2D {
 
     protected Rect rect;
     protected Ray2D intersectRay;
-    protected boolean isContainer;
+    protected final boolean isContainer;
 
     public RectConstraint(Rect rect) {
         this(rect, false);

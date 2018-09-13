@@ -32,8 +32,8 @@ import toxi.physics2d.VerletParticle2D;
 
 public class MaxConstraint implements ParticleConstraint2D {
 
-    public Axis axis;
-    public float threshold;
+    public final Axis axis;
+    public final float threshold;
 
     public MaxConstraint(Axis axis, float threshold) {
         this.axis = axis;

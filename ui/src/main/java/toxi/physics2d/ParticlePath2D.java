@@ -27,11 +27,11 @@
 
 package toxi.physics2d;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import toxi.geom.Spline2D;
 import toxi.geom.Vec2D;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is used as a builder to dynamically construct a
@@ -42,7 +42,7 @@ import toxi.geom.Vec2D;
  */
 public class ParticlePath2D extends Spline2D {
 
-    List<VerletParticle2D> particles = new ArrayList<>();
+    final List<VerletParticle2D> particles = new ArrayList<>();
 
     public ParticlePath2D() {
         super();
