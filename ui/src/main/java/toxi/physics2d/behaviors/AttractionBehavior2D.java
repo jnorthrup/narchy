@@ -31,6 +31,8 @@ import toxi.geom.SpatialIndex;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 
+import java.util.Random;
+
 public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D<V> {
 
     protected V attractor;
@@ -41,15 +43,17 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
     protected float jitter;
     protected float timeStep;
 
+    final Random rng;
+
     public AttractionBehavior2D(V attractor, float radius, float strength) {
-        this(attractor, radius, strength, 0);
+        this(attractor, radius, strength, 0, null);
     }
 
-    public AttractionBehavior2D(V attractor, float radius, float strength,
-            float jitter) {
+    public AttractionBehavior2D(V attractor, float radius, float strength, float jitter, Random rng) {
         this.attractor = attractor;
         this.strength = strength;
         this.jitter = jitter;
+        this.rng = rng;
         setRadius(radius);
     }
 
@@ -64,7 +68,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     public void move(VerletParticle2D p, Vec2D delta, float dist) {
         Vec2D f = delta.normalizeTo((1.0f - dist / radiusSquared))
-                .jitter(jitter).scaleSelf(attrStrength);
+                .jitter(rng, jitter).scaleSelf(attrStrength);
         p.addForce(f);
     }
 

@@ -29,6 +29,8 @@ package toxi.physics2d;
 
 import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
+import jcog.tree.rtree.rect.RectFloat2D;
+import org.jetbrains.annotations.Nullable;
 import toxi.geom.Rect;
 import toxi.geom.SpatialIndex;
 import toxi.geom.Vec2D;
@@ -84,7 +86,7 @@ public class VerletPhysics2D {
     /**
      * Optional bounding rect to constrain particles too
      */
-    protected Rect worldBounds;
+    protected RectFloat2D worldBounds;
 
     public final Collection<ParticleBehavior2D> behaviors = new CopyOnWriteArrayList();
 
@@ -130,11 +132,12 @@ public class VerletPhysics2D {
      * @param p
      * @return itself
      */
+    @Nullable
     public VerletPhysics2D addParticle(VerletParticle2D p) {
-        if (particles.add(p)) {
-            index.index(p);
+        if (index.index(p) && particles.add(p)) {
+            return this;
         }
-        return this;
+        return null;
     }
 
     /**
@@ -217,12 +220,6 @@ public class VerletPhysics2D {
     }
 
 
-    /**
-     * @return the worldBounds
-     */
-    public Rect getWorldBounds() {
-        return worldBounds;
-    }
 
     public boolean removeBehavior(ParticleBehavior2D c) {
         return behaviors.remove(c);
@@ -239,6 +236,7 @@ public class VerletPhysics2D {
      * @return true, if removed successfully
      */
     public boolean removeParticle(VerletParticle2D p) {
+        index.unindex(p);
         return particles.remove(p);
     }
 
@@ -291,7 +289,7 @@ public class VerletPhysics2D {
      * @param world
      * @return itself
      */
-    public VerletPhysics2D setWorldBounds(Rect world) {
+    public VerletPhysics2D setWorldBounds(RectFloat2D world) {
         worldBounds = world;
         return this;
     }

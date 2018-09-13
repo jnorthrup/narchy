@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex<V> {
 
     private static int LeafCapacity = 4;
-    private static float MinLeafArea = 0.0001f;
+    private static float MinLeafDimension = 0.0000001f;
 
     public enum Type {
         EMPTY,
@@ -59,12 +59,15 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
     private Set<V> values = null;
     private float mx, my;
 
+    public PointQuadtree() {
+        this(null, 0.5f, 0.5f, 1, 1);
+    }
+
     public PointQuadtree(float x, float y, float w, float h) {
         this(null, x, y, w, h);
     }
 
-    public PointQuadtree(PointQuadtree parent, float x, float y, float w,
-            float h) {
+    public PointQuadtree(PointQuadtree parent, float x, float y, float w, float h) {
         super(x, y, w, h);
         this.parent = parent;
         this.type = Type.EMPTY;
@@ -140,7 +143,7 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
             case LEAF:
                 return contains(p) ? this : null; //value.x == x && value.y == y ? this : null;
             case BRANCH:
-                return getQuadrantForPoint(p.x, p.y).findNode(p);
+                return quadrant(p.x, p.y).findNode(p);
             default:
                 throw new IllegalStateException("Invalid node type");
         }
@@ -151,7 +154,7 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
 
-    private PointQuadtree getQuadrantForPoint(float x, float y) {
+    private PointQuadtree quadrant(float x, float y) {
         if (x < mx) {
             return y < my ? childNW : childSW;
         } else {
@@ -173,21 +176,29 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
                     return true;
 
                 case LEAF:
-                    if (size() < LeafCapacity || getArea() <= MinLeafArea) {
+                    if (size() < LeafCapacity || Math.max(width,height) <= MinLeafDimension) {
                         return values.add(p);
                     } else {
                         if (values.contains(p))
                             return false;
                         else {
                             split();
-                            return getQuadrantForPoint(p.x, p.y).index(p);
+                            return quadrant(p.x, p.y).index(p);
                         }
                     }
 
 
                 case BRANCH:
-                    return getQuadrantForPoint(p.x, p.y).index(p);
+                    return quadrant(p.x, p.y).index(p);
             }
+        } else {
+//            if (parent == null && stretchPoint(p, MinLeafArea)) {
+//                //resize the entire tree
+//                //experimental
+//                split();
+//                boolean added = quadrant(p.x, p.y).index(p);
+//                return added;
+//            }
         }
         return false;
     }
@@ -281,13 +292,17 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
     private void split() {
+        split(x, y, width, height);
+    }
+
+    private void split(float x, float y, float w, float h) {
         Set<V> oldPoints = values;
         values = null;
 
         type = Type.BRANCH;
 
-        float w2 = width * 0.5f;
-        float h2 = height * 0.5f;
+        float w2 = w * 0.5f;
+        float h2 = h * 0.5f;
 
         childNW = new PointQuadtree(this, x, y, w2, h2);
         childNE = new PointQuadtree(this, x + w2, y, w2, h2);

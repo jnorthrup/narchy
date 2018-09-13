@@ -29,6 +29,7 @@ package toxi.physics2d;
 
 import jcog.data.list.FasterList;
 import jcog.pri.ScalarValue;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import toxi.geom.Polygon2D;
 import toxi.geom.ReadonlyVec2D;
@@ -68,7 +69,7 @@ public class VerletParticle2D extends Vec2D {
     /**
      * Particle weight, default = 1
      */
-    protected float weight, invWeight;
+    protected float mass, invMass;
 
     protected final Vec2D force = new Vec2D();
 
@@ -95,7 +96,7 @@ public class VerletParticle2D extends Vec2D {
     public VerletParticle2D(float x, float y, float w) {
         super(x, y);
         next = new Vec2D(x,y); prev = new Vec2D(x,y);
-        setWeight(w);
+        mass(w);
     }
 
     /**
@@ -207,7 +208,7 @@ public class VerletParticle2D extends Vec2D {
         Vec2D d = (this.sub(prev).scale(1f - drag)).addSelf(force.scale(
                 //invWeight * dt * dt
                 //invWeight * dt
-                invWeight
+                invMass
         ));
 
         next.addSelf(d);
@@ -217,6 +218,11 @@ public class VerletParticle2D extends Vec2D {
 
     @Override
     public Vec2D constrain(Rect r) {
+        return next.constrain(r);
+    }
+
+    @Override
+    public Vec2D constrain(RectFloat2D r) {
         return next.constrain(r);
     }
 
@@ -252,8 +258,8 @@ public class VerletParticle2D extends Vec2D {
     /**
      * @return the inverse weight (1/weight)
      */
-    public final float getInvWeight() {
-        return invWeight;
+    public final float getInvMass() {
+        return invMass;
     }
 
 //    /**
@@ -290,8 +296,8 @@ public class VerletParticle2D extends Vec2D {
     /**
      * @return the weight
      */
-    public final float getWeight() {
-        return weight;
+    public final float getMass() {
+        return mass;
     }
 
     /**
@@ -367,9 +373,9 @@ public class VerletParticle2D extends Vec2D {
 //        return this;
 //    }
 
-    public final void setWeight(float w) {
-        weight = w;
-        invWeight = 1f / w;
+    public final void mass(float w) {
+        mass = w;
+        invMass = 1f / w;
     }
 
     /**

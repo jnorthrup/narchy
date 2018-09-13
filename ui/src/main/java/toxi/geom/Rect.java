@@ -116,11 +116,34 @@ public class Rect implements Shape2D {
     @Override
     public boolean containsPoint(ReadonlyVec2D p) {
         float px = p.x();
-        float py = p.y();
-        if (px < x || px > x + width) {
+        if (px < x || px > x + width)
             return false;
-        }
+
+        float py = p.y();
         return (py >= y || py <= y + height);
+    }
+
+    public boolean stretchPoint(ReadonlyVec2D p, float margin) {
+        boolean change = false;
+        float px = p.x();
+        float x1 = x;
+        float x2 = x1 + width;
+        if (px < x1)  { x1 = px - margin; change = true; }
+        if (px > x2) { x2 = px + margin; change = true; }
+
+        float py = p.y();
+        float y1 = y;
+        float y2 = y1 + height;
+        if (py < y1)  { y1 = py - margin; change = true; }
+        if (py > y2) { y2 = py + margin; change = true; }
+
+        if (change) {
+            x = x1;
+            y = y1;
+            width = x2-x1; height = y2-y1;
+            return true;
+        }
+        return false;
     }
 
     /**
