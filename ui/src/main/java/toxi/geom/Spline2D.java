@@ -29,6 +29,7 @@ package toxi.geom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -65,7 +66,7 @@ public class Spline2D {
 
     protected Vec2D[] points;
 
-    public List<Vec2D> pointList = new ArrayList<>();
+    public final List<Vec2D> pointList = new ArrayList<>();
 
     
     public BernsteinPolynomial bernstein;
@@ -110,8 +111,8 @@ public class Spline2D {
      *            default curve tightness used for the interpolated vertices
      *            {@linkplain #setTightness(float)}
      */
-    public Spline2D(List<Vec2D> rawPoints, BernsteinPolynomial b,
-            float tightness) {
+    public Spline2D(Collection<Vec2D> rawPoints, BernsteinPolynomial b,
+                    float tightness) {
         pointList.addAll(rawPoints);
         bernstein = b;
         setTightness(tightness);
@@ -204,7 +205,7 @@ public class Spline2D {
      *            the pointList to set
      * @return itself
      */
-    public Spline2D setPointList(List<Vec2D> plist) {
+    public Spline2D setPointList(Iterable<Vec2D> plist) {
         pointList.clear();
         for (ReadonlyVec2D p : plist) {
             pointList.add(p.copy());

@@ -12,6 +12,7 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.util.TermHashMap;
 import nars.term.util.transform.Subst;
+import nars.term.var.ImDep;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.block.predicate.Predicate2;
@@ -78,7 +79,7 @@ public abstract class Unify extends Versioning implements Subst {
         this(varBits, random, stackMax, new TermHashMap() {
             @Override
             public Object put(Term key, Object value) {
-                if (key instanceof Op.ImDep)
+                if (key instanceof ImDep)
                     throw new WTF();
                 return super.put(key, value);
             }
@@ -246,7 +247,7 @@ public abstract class Unify extends Versioning implements Subst {
      * whether is constant with respect to the current matched variable type
      */
     public boolean constant(Termlike x) {
-        return !x.hasAny(varBits) || (x instanceof Op.ImDep);
+        return !x.hasAny(varBits) || (x instanceof ImDep);
     }
 
 

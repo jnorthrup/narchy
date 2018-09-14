@@ -27,16 +27,11 @@
 
 package toxi.geom;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-
 import toxi.geom.Line2D.LineIntersection;
 import toxi.geom.Line2D.LineIntersection.Type;
-
 import toxi.math.MathUtils;
+
+import java.util.*;
 
 /**
  * Container type for convex polygons. Implements {@link Shape2D}.
@@ -100,12 +95,12 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         return len / (2 * MathUtils.sin(MathUtils.PI / res));
     }
 
-    public List<Vec2D> vertices = new ArrayList<Vec2D>();
+    public List<Vec2D> vertices = new ArrayList<>();
 
     public Polygon2D() {
     }
 
-    public Polygon2D(List<Vec2D> points) {
+    public Polygon2D(Iterable<Vec2D> points) {
         for (Vec2D p : points) {
             add(p.copy());
         }
@@ -337,7 +332,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      */
     public List<Line2D> getEdges() {
         int num = vertices.size();
-        List<Line2D> edges = new ArrayList<Line2D>(num);
+        List<Line2D> edges = new ArrayList<>(num);
         for (int i = 0; i < num; i++) {
             edges.add(new Line2D(vertices.get(i), vertices.get((i + 1) % num)));
         }
@@ -415,7 +410,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         return this;
     }
 
-    protected boolean intersectsLine(Line2D l, List<Line2D> edges) {
+    protected static boolean intersectsLine(Line2D l, Iterable<Line2D> edges) {
         for (Line2D e : edges) {
             final Type isec = l.intersectLine(e).getType();
             if (isec == Type.INTERSECTING || isec == Type.COINCIDENT) {
@@ -432,7 +427,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * @param poly
      * @return true, if polygons intersect.
      */
-    public boolean intersectsPolygon(Polygon2D poly) {
+    public boolean intersectsPolygon(Shape2D poly) {
         List<Line2D> edgesB = poly.getEdges();
         for (Line2D ea : getEdges()) {
             if (intersectsLine(ea, edgesB)) {
@@ -442,7 +437,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         return false;
     }
 
-    public boolean intersectsRect(Rect r) {
+    public boolean intersectsRect(Shape2D r) {
         List<Line2D> edges = r.getEdges();
         for (Line2D ea : getEdges()) {
             if (intersectsLine(ea, edges)) {
@@ -509,8 +504,8 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * 
      * @see http://alienryderflex.com/polygon_inset/
      */
-    protected void offsetCorner(float x1, float y1, float x2, float y2,
-            float x3, float y3, float distance, Vec2D out) {
+    protected static void offsetCorner(float x1, float y1, float x2, float y2,
+                                       float x3, float y3, float distance, Vec2D out) {
 
         float c1 = x2, d1 = y2, c2 = x2, d2 = y2;
         float dx1, dy1, dist1, dx2, dy2, dist2, insetX, insetY;
@@ -601,7 +596,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      */
     public Polygon2D reduceVertices(float minEdgeLen) {
         minEdgeLen *= minEdgeLen;
-        List<Vec2D> reduced = new ArrayList<Vec2D>();
+        List<Vec2D> reduced = new ArrayList<>();
         Vec2D prev = vertices.get(0);
         reduced.add(prev);
         int num = vertices.size() - 1;
@@ -705,7 +700,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     public Polygon2D smooth(float amount, float baseWeight) {
         Vec2D centroid = getCentroid();
         int num = vertices.size();
-        List<Vec2D> filtered = new ArrayList<Vec2D>(num);
+        Collection<Vec2D> filtered = new ArrayList<>(num);
         for (int i = 0, j = num - 1, k = 1; i < num; i++) {
             Vec2D a = vertices.get(i);
             Vec2D dir = vertices.get(j).sub(a).addSelf(vertices.get(k).sub(a))
@@ -762,7 +757,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     public boolean toOutline() {
         int corners = vertices.size();
         int maxSegs = corners * 3;
-        List<Vec2D> newVerts = new ArrayList<Vec2D>(corners);
+        List<Vec2D> newVerts = new ArrayList<>(corners);
         Vec2D[] segments = new Vec2D[maxSegs];
         Vec2D[] segEnds = new Vec2D[maxSegs];
         float[] segAngles = new float[maxSegs];
@@ -901,7 +896,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         for (Iterator<Vec2D> i = vertices.iterator(); i.hasNext();) {
-            buf.append(i.next().toString());
+            buf.append(i.next());
             if (i.hasNext()) {
                 buf.append(", ");
             }

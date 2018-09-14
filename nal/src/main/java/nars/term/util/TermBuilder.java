@@ -26,7 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.term.Terms.sorted;
 import static nars.time.Tense.*;
 

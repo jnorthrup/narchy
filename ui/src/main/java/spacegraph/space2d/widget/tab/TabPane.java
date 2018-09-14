@@ -4,7 +4,6 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProced
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
 import spacegraph.space2d.container.collection.MutableListContainer;
-import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;

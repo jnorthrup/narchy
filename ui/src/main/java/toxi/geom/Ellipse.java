@@ -37,9 +37,9 @@ import java.util.List;
  */
 public class Ellipse extends Vec2D implements Shape2D {
 
-    public static int DEFAULT_RES = 20;
+    public static final int DEFAULT_RES = 20;
 
-    protected Vec2D radius = new Vec2D();
+    protected final Vec2D radius = new Vec2D();
     protected float focus;
 
     public Ellipse() {

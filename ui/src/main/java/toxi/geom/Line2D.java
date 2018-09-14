@@ -108,8 +108,8 @@ public class Line2D {
      *            false, if A is NOT to be added to results
      * @return list of result vectors
      */
-    public static final List<Vec2D> splitIntoSegments(Vec2D a, Vec2D b,
-            float stepLength, List<Vec2D> segments, boolean addFirst) {
+    public static List<Vec2D> splitIntoSegments(Vec2D a, ReadonlyVec2D b,
+                                                float stepLength, List<Vec2D> segments, boolean addFirst) {
         if (segments == null) {
             segments = new ArrayList<>();
         }
@@ -255,7 +255,7 @@ public class Line2D {
         return b.sub(a).perpendicular();
     }
 
-    public boolean hasEndPoint(Vec2D p) {
+    public boolean hasEndPoint(ReadonlyVec2D p) {
         return a.equals(p) || b.equals(p);
     }
 
@@ -365,6 +365,6 @@ public class Line2D {
 
     @Override
     public String toString() {
-        return a.toString() + " -> " + b.toString();
+        return a + " -> " + b;
     }
 }

@@ -3,8 +3,8 @@ package spacegraph.space2d.widget.meta;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.windo.WiredWall;
 

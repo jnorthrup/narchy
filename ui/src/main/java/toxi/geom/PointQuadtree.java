@@ -42,22 +42,23 @@ import java.util.function.Consumer;
  */
 public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex<V> {
 
-    private static int LeafCapacity = 4;
-    private static float MinLeafDimension = 0.0000001f;
+    private static final int LeafCapacity = 4;
+    private static final float MinLeafDimension = 0.0000001f;
 
     public enum Type {
         EMPTY,
         BRANCH,
-        LEAF;
+        LEAF
     }
 
-    private PointQuadtree parent;
+    private final PointQuadtree parent;
     private PointQuadtree childNW, childNE, childSW, childSE;
 
     private Type type;
 
     private Set<V> values = null;
-    private float mx, my;
+    private final float mx;
+    private final float my;
 
     public PointQuadtree() {
         this(null, 0.5f, 0.5f, 1, 1);

@@ -141,7 +141,7 @@ public class VerletParticle2D extends Vec2D {
         return this;
     }
 
-    public VerletParticle2D addBehaviors(Collection<ParticleBehavior2D> behaviors) {
+    public VerletParticle2D addBehaviors(Iterable<ParticleBehavior2D> behaviors) {
         return addBehaviors(behaviors, 1);
     }
 

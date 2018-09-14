@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
 /**

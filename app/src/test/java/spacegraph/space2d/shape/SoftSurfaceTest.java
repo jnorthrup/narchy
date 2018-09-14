@@ -15,6 +15,7 @@ import toxi.geom.PointQuadtree;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletPhysics2D;
+import toxi.physics2d.VerletSpring2D;
 import toxi.physics2d.behaviors.AttractionBehavior2D;
 import toxi.physics2d.behaviors.GravityBehavior2D;
 
@@ -28,7 +29,7 @@ class SoftSurfaceTest {
 
         private Off update;
 
-        int NUM_PARTICLES = 1500;
+        int NUM_PARTICLES = 500;
         float timeScale = 1f;
 
         VerletPhysics2D physics;
@@ -36,6 +37,7 @@ class SoftSurfaceTest {
         private Vec2D mousePos = new Vec2D();
         final Random rng = new XoRoShiRo128PlusRandom(1);
         private AttractionBehavior2D mouseAttractor;
+        private VerletParticle2D lastParticle;
 
         @Override
         protected void starting() {
@@ -59,16 +61,25 @@ class SoftSurfaceTest {
             update = null;
         }
 
-        private void addParticle() {
+        private synchronized void addParticle() {
             VerletParticle2D p = new VerletParticle2D(Vec2D.randomVector().scale(5).addSelf(W * 0.5f, 0));
             p.mass((float) (0.5f + Math.random() * 4f));
 
-            float str = Math.random() < 0.05f ? +2.2f : -1.2f;
 
-            AttractionBehavior2D forceField = new AttractionBehavior2D(p, 30, str, 0.01f, rng);
-            physics.addBehavior(forceField);
+
 
             physics.addParticle(p);
+
+            if (lastParticle!=null && Math.random() < 0.8f) {
+                physics.addSpring(new VerletSpring2D(lastParticle, p, W/100f, 0.5f));
+            } else {
+                float str = Math.random() < 0.05f ? +2.2f : -1.2f;
+
+                AttractionBehavior2D forceField = new AttractionBehavior2D(p, 30, str, 0.01f, rng);
+                physics.addBehavior(forceField);
+            }
+
+            lastParticle = p;
         }
 
 
@@ -230,6 +241,12 @@ class SoftSurfaceTest {
             float t = 2 * p.getMass();
             Draw.colorGrays(gl, 0.3f + 0.7f * Util.tanhFast(p.getSpeed()), 0.7f);
             Draw.rect(gl, p.x - t / 2, p.y - t / 2, t, t);
+        }
+        gl.glLineWidth(2);
+        gl.glColor3f(0, 0.5f, 0);
+        for (VerletSpring2D s : physics.springs) {
+            VerletParticle2D a = s.a, b = s.b;
+            Draw.line(gl, a.x, a.y, b.x, b.y);
         }
     }
 

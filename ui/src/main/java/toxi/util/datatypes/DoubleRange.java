@@ -44,7 +44,7 @@ public class DoubleRange {
         return new DoubleRange(min, max);
     }
 
-    public static DoubleRange fromSamples(List<Double> samples) {
+    public static DoubleRange fromSamples(Iterable<Double> samples) {
         double min = Double.MAX_VALUE;
         double max = Double.MIN_VALUE;
         for (double s : samples) {
@@ -54,7 +54,8 @@ public class DoubleRange {
         return new DoubleRange(min, max);
     }
 
-    public double min, max;
+    public final double min;
+    public final double max;
 
     public double currValue;
 

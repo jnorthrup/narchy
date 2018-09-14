@@ -9,7 +9,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 
-import static nars.Op.*;
+import static nars.Op.INT;
 
 public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
 

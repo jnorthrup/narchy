@@ -7,11 +7,11 @@ import jcog.math.IntRange;
 import jcog.net.UDPeer;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.windo.WiredWall;
 import spacegraph.space2d.widget.windo.Port;
+import spacegraph.space2d.widget.windo.WiredWall;
 
 import java.io.IOException;
 

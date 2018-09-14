@@ -19,7 +19,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Random;
 
 import static nars.$.*;
-import static nars.Op.*;
+import static nars.Op.CONJ;
 import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TemporalTermTest.*;
 import static nars.term.TermTest.*;

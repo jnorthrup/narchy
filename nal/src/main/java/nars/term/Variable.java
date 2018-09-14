@@ -3,6 +3,7 @@ package nars.term;
 import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
+import nars.term.var.ImDep;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +61,7 @@ public interface Variable extends Atomic {
 
         Term y;
         if (_y instanceof Variable) {
-            if (_y instanceof Op.ImDep)
+            if (_y instanceof ImDep)
                 return false;
             y = u.resolve(_y);
         } else

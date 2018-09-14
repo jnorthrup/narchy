@@ -10,8 +10,8 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
-import spacegraph.space2d.widget.windo.WiredWall;
 import spacegraph.space2d.widget.windo.Port;
+import spacegraph.space2d.widget.windo.WiredWall;
 
 import java.lang.reflect.Field;
 

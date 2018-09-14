@@ -26,13 +26,13 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static jcog.data.graph.search.Search.pathStart;
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
 

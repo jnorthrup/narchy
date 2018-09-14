@@ -28,7 +28,6 @@
 package toxi.physics2d;
 
 import jcog.data.list.FastCoWList;
-import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import toxi.geom.Rect;
@@ -40,7 +39,6 @@ import toxi.physics2d.constraints.ParticleConstraint2D;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 3D particle physics engine using Verlet integration based on:
@@ -49,34 +47,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class VerletPhysics2D {
 
-//    public static void addConstraintToAll(ParticleConstraint2D c,
-//            List<VerletParticle2D> list) {
-//        for (VerletParticle2D p : list) {
-//            p.addConstraint(c);
-//        }
-//    }
-//
-//    public static void removeConstraintFromAll(ParticleConstraint2D c,
-//            List<VerletParticle2D> list) {
-//        for (VerletParticle2D p : list) {
-//            p.removeConstraint(c);
-//        }
-//    }
 
-    /**
-     * List of particles
-     */
-    public final List<VerletParticle2D> particles;
+    /** TODO use FastIteratingConcurrentHashMap indexed by particle ID */
+    public final List<VerletParticle2D> particles = new FastCoWList<>(VerletParticle2D[]::new);
 
-    /**
-     * List of spring/stick connectors
-     */
-    public final List<VerletSpring2D> springs;
+    public final List<VerletSpring2D> springs = new FastCoWList<>(VerletSpring2D[]::new);
 
-//    /**
-//     * Default time step = 1.0
-//     */
-//    protected float timeStep;
+    public final Collection<ParticleBehavior2D> behaviors = new FastCoWList<>(ParticleBehavior2D[]::new);
+
+    public final Collection<ParticleConstraint2D> constraints = new FastCoWList<>(ParticleConstraint2D[]::new);
 
     /**
      * Default iterations for verlet solver = 50
@@ -87,11 +66,6 @@ public class VerletPhysics2D {
      * Optional bounding rect to constrain particles too
      */
     protected RectFloat2D worldBounds;
-
-    public final Collection<ParticleBehavior2D> behaviors = new CopyOnWriteArrayList();
-
-    public final Collection<ParticleConstraint2D> constraints = new FasterList<>(
-            1);
 
     protected float drag;
 
@@ -109,8 +83,7 @@ public class VerletPhysics2D {
      * @param drag          drag value 0...1
      */
     public VerletPhysics2D(Vec2D gravity, int numIterations, float drag) {
-        particles = new FastCoWList<>(VerletParticle2D[]::new);
-        springs = new FastCoWList<>(VerletSpring2D[]::new);
+
         this.maxIterations = numIterations;
         setDrag(drag);
         if (gravity != null) {
@@ -237,6 +210,7 @@ public class VerletPhysics2D {
      */
     public boolean removeParticle(VerletParticle2D p) {
         index.unindex(p);
+        //TODO remove associated springs
         return particles.remove(p);
     }
 
@@ -310,7 +284,7 @@ public class VerletPhysics2D {
         while (++ii < maxIterations) {
             if (dt / ii < minTimeStep)
                 break;
-            //further subdivide
+            //else: further subdivide
         }
 
         float subDT = dt / ii;
@@ -321,7 +295,7 @@ public class VerletPhysics2D {
         for (int i = ii - 1; i >= 0; i--) {
             behave(subDT);
             integrate();
-            spring(i, subDT);
+            spring(subDT);
             constrain();
             index();
         }
@@ -330,15 +304,12 @@ public class VerletPhysics2D {
 
     private void index() {
         if (index != null) {
-            //index.clear();
-            for (VerletParticle2D p : particles) {
+            for (VerletParticle2D p : particles)
                 if (p.changed())
                     index.reindex(p, VerletParticle2D::commit);
-            }
         } else {
-            for (VerletParticle2D p : particles) {
+            for (VerletParticle2D p : particles)
                 p.commit();
-            }
         }
     }
 
@@ -373,10 +344,10 @@ public class VerletPhysics2D {
      *
      * @param subDT
      */
-    protected void spring(int i, float subDT) {
+    protected void spring(float subDT) {
         if (!springs.isEmpty()) {
             for (VerletSpring2D s : springs) {
-                s.update(i == 0);
+                s.update(false);
             }
         }
     }

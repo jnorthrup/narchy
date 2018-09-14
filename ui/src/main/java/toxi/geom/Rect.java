@@ -44,7 +44,7 @@ public class Rect implements Shape2D {
      * @param extent
      * @return new rect
      */
-    public static final Rect fromCenterExtent(ReadonlyVec2D center, Vec2D extent) {
+    public static Rect fromCenterExtent(ReadonlyVec2D center, Vec2D extent) {
         return new Rect(center.sub(extent), center.add(extent));
     }
 
@@ -56,7 +56,7 @@ public class Rect implements Shape2D {
      * @return bounding rect
      * @since 0021
      */
-    public static final Rect getBoundingRect(List<? extends Vec2D> points) {
+    public static Rect getBoundingRect(List<? extends Vec2D> points) {
         final Vec2D first = points.get(0);
         final Rect bounds = new Rect(first.x, first.y, 0, 0);
         for (int i = 1, num = points.size(); i < num; i++) {
@@ -547,8 +547,8 @@ public class Rect implements Shape2D {
      * @param theta
      * @param res
      */
-    private void toPolyArc(Polygon2D poly, Vec2D o, float radius, float theta,
-            int res) {
+    private static void toPolyArc(Polygon2D poly, Vec2D o, float radius, float theta,
+                                  int res) {
         for (int i = 0; i <= res; i++) {
             poly.add(o.add(Vec2D.fromTheta(theta + i * MathUtils.HALF_PI / res)
                     .scaleSelf(radius)));
@@ -597,7 +597,7 @@ public class Rect implements Shape2D {
     @Override
     public String toString() {
         return "rect: {x:" + x + ", y:" + y + ", width:" + width + ", height:"
-                + height + "}";
+                + height + '}';
     }
 
     public Rect translate(float dx, float dy) {

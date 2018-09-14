@@ -74,13 +74,13 @@ public class VerletConstrainedSpring2D extends VerletSpring2D {
         float normDistStrength = (dist - restLength)
                 / (dist * (a.invMass + b.invMass)) * strength;
         if (!a.isLocked && !isALocked) {
-            a.addSelf(delta.scale(normDistStrength * a.invMass).limit(limit));
+            a.next.addSelf(delta.scale(normDistStrength * a.invMass).limit(limit));
             if (applyConstraints) {
                 a.applyConstraints();
             }
         }
         if (!b.isLocked && !isBLocked) {
-            b.subSelf(delta.scale(normDistStrength * b.invMass).limit(limit));
+            b.next.subSelf(delta.scale(normDistStrength * b.invMass).limit(limit));
             if (applyConstraints) {
                 b.applyConstraints();
             }

@@ -17,11 +17,10 @@ import nars.term.util.Conj;
 import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
-import nars.term.var.NormalizedVariable;
+import nars.term.var.ImDep;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
 import nars.time.Tense;
-import nars.unify.Unify;
 import org.apache.lucene.util.MathUtil;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
@@ -814,56 +813,6 @@ public enum Op {
         static final IntIntPair GTEZero = pair(0, Param.COMPOUND_SUBTERMS_MAX);
         static final IntIntPair GTEOne = pair(1, Param.COMPOUND_SUBTERMS_MAX);
         static final IntIntPair GTETwo = pair(2, Param.COMPOUND_SUBTERMS_MAX);
-
-    }
-
-    public final static class ImDep extends VarDep {
-
-        private final String str;
-        private final char symChar;
-        private final int rank;
-
-        public ImDep(byte id, byte sym) {
-            super(id);
-            this.str = String.valueOf((char) sym);
-            this.symChar = (char) sym;
-            this.rank = Term.opX(VAR_DEP, (short) id);
-        }
-
-        @Override
-        public Term concept() {
-            return Bool.Null;
-        }
-
-        @Override
-        public int opX() {
-            return rank;
-        }
-
-        @Override
-        public @Nullable NormalizedVariable normalize(byte vid) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean unify(Term y, Unify u) {
-            return y == this;
-        }
-
-        @Override
-        public boolean unifyReverse(Term x, Unify u) {
-            return false;
-        }
-
-        @Override
-        public final void appendTo(Appendable w) throws IOException {
-            w.append(symChar);
-        }
-
-        @Override
-        public final String toString() {
-            return str;
-        }
 
     }
 

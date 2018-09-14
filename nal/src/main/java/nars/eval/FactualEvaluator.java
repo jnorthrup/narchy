@@ -20,7 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static nars.Op.*;
+import static nars.Op.IMPL;
 import static nars.eval.FactualEvaluator.ProofTruth.Choose;
 import static nars.eval.FactualEvaluator.ProofTruth.Unknown;
 

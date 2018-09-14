@@ -33,8 +33,11 @@ package toxi.geom;
  */
 public class BernsteinPolynomial {
 
-    public float[] b0, b1, b2, b3;
-    public int resolution;
+    public final float[] b0;
+    public final float[] b1;
+    public final float[] b2;
+    public final float[] b3;
+    public final int resolution;
 
     /**
      * @param res

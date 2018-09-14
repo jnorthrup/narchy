@@ -15,8 +15,6 @@
  */
 package jcog.io;
 
-import jdk.nashorn.api.scripting.URLReader;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;

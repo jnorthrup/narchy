@@ -18,7 +18,8 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static nars.Op.*;
+import static nars.Op.INT;
+import static nars.Op.PROD;
 
 /**
  * Prolog contains its own library of list programs, such as:

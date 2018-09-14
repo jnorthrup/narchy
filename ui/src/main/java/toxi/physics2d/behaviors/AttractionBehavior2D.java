@@ -74,9 +74,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     @Override
     public void applyWithIndex(SpatialIndex spaceHash) {
-        spaceHash.itemsWithinRadius(attractor, radius, (p)->{
-            spaceHash.reindex(p, pp->apply((Vec2D) pp));
-        });
+        spaceHash.itemsWithinRadius(attractor, radius, (p)-> spaceHash.reindex(p, pp->apply((Vec2D) pp)));
     }
 
     public void configure(float timeStep) {

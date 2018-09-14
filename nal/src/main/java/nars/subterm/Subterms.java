@@ -10,7 +10,6 @@ import nars.$;
 import nars.Op;
 import nars.The;
 import nars.subterm.util.DisposableTermList;
-import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
@@ -25,13 +24,12 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.ATOM;
 
 
 /**

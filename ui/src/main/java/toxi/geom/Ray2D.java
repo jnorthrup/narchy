@@ -33,7 +33,7 @@ package toxi.geom;
  */
 public class Ray2D extends Vec2D {
 
-    protected Vec2D dir;
+    protected final Vec2D dir;
 
     public Ray2D() {
         super();
@@ -65,7 +65,7 @@ public class Ray2D extends Vec2D {
      * @param p
      * @return distance
      */
-    public float getDistanceToPoint(Vec2D p) {
+    public float getDistanceToPoint(ReadonlyVec2D p) {
         Vec2D sp = p.sub(this);
         return sp.distanceTo(dir.scale(sp.dot(dir)));
     }

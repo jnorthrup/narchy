@@ -27,9 +27,9 @@
 
 package toxi.geom;
 
-import java.util.List;
-
 import toxi.math.MathUtils;
+
+import java.util.Collection;
 
 /**
  * This class overrides {@link Ellipse} to define a 2D circle and provides
@@ -91,7 +91,7 @@ public class Circle extends Ellipse {
         return circle;
     }
 
-    public static Circle newBoundingCircle(List<Vec2D> vertices) {
+    public static Circle newBoundingCircle(Collection<Vec2D> vertices) {
         Vec2D origin = new Vec2D();
         float maxD = 0;
         for (Vec2D v : vertices) {

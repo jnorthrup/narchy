@@ -139,8 +139,8 @@ public class ParticleString2D {
      * @param strength
      * @return spring
      */
-    protected final VerletSpring2D createSpring(VerletParticle2D a,
-            VerletParticle2D b, float len, float strength) {
+    protected static VerletSpring2D createSpring(VerletParticle2D a,
+                                                 VerletParticle2D b, float len, float strength) {
         return new VerletSpring2D(a, b, len, strength);
     }
 

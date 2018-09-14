@@ -87,7 +87,7 @@ public class ParticlePath2D extends Spline2D {
      * @param mass
      * @return particle
      */
-    protected VerletParticle2D createSingleParticle(Vec2D pos, float mass) {
+    protected static VerletParticle2D createSingleParticle(Vec2D pos, float mass) {
         return new VerletParticle2D(pos, mass);
     }
 }

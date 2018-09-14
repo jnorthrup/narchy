@@ -94,7 +94,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      * @param theta
      * @return new vector pointing into the direction of the passed in angle
      */
-    public static final Vec2D fromTheta(float theta) {
+    public static Vec2D fromTheta(float theta) {
         return new Vec2D((float) Math.cos(theta), (float) Math.sin(theta));
     }
 
@@ -107,7 +107,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      *
      * @return result as new vector
      */
-    public static final Vec2D max(ReadonlyVec2D a, ReadonlyVec2D b) {
+    public static Vec2D max(ReadonlyVec2D a, ReadonlyVec2D b) {
         return new Vec2D(MathUtils.max(a.x(), b.x()), MathUtils.max(a.y(),
                 b.y()));
     }
@@ -121,7 +121,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      *
      * @return result as new vector
      */
-    public static final Vec2D min(ReadonlyVec2D a, ReadonlyVec2D b) {
+    public static Vec2D min(ReadonlyVec2D a, ReadonlyVec2D b) {
         return new Vec2D(MathUtils.min(a.x(), b.x()), MathUtils.min(a.y(),
                 b.y()));
     }
@@ -132,7 +132,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      *
      * @return a new random normalized unit vector.
      */
-    public static final Vec2D randomVector() {
+    public static Vec2D randomVector() {
         return randomVector(MathUtils.RND);
     }
 
@@ -145,7 +145,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      * @param rnd
      * @return a new random normalized unit vector.
      */
-    public static final Vec2D randomVector(Random rnd) {
+    public static Vec2D randomVector(Random rnd) {
         Vec2D v = new Vec2D(rnd.nextFloat() * 2 - 1, rnd.nextFloat() * 2 - 1);
         return v.normalize();
     }
@@ -388,10 +388,11 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
     public boolean equals(Object obj) {
         if (obj instanceof ReadonlyVec2D) {
             final ReadonlyVec2D other = (ReadonlyVec2D) obj;
-            if (!((Float) x).equals(other.x())) {
-                return false;
-            }
-            return ((Float) y).equals(other.y());
+            return Util.equals(x, other.x()) && Util.equals(y, other.y());
+//            if (!((Float) x).equals(other.x())) {
+//                return false;
+//            }
+//            return ((Float) y).equals(other.y());
         }
         return false;
     }
@@ -1118,9 +1119,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(32);
-        sb.append("{x:").append(x).append(", y:").append(y).append("}");
-        return sb.toString();
+        return "{x:" + x + ", y:" + y + '}';
     }
 
     @Override

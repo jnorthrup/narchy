@@ -18,7 +18,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import static java.lang.Integer.MIN_VALUE;
-import static nars.Op.*;
+import static nars.Op.NEG;
 
 
 /**

@@ -36,7 +36,8 @@ import java.util.Set;
 import java.util.function.IntPredicate;
 
 import static java.lang.System.arraycopy;
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 

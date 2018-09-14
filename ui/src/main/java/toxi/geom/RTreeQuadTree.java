@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implements SpatialIndex<X> {
 
     public RTreeQuadTree() {
-        super((p)->b(p), 2, 3, Spatialization.DefaultSplits.AXIAL.get());
+        super(RTreeQuadTree::b, 2, 3, Spatialization.DefaultSplits.AXIAL.get());
     }
 
     static RectFloat2D b(Vec2D v) {
