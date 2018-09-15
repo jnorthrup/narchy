@@ -20,6 +20,8 @@ public class Timeline2DTest {
             dummyModel.add(new Timeline2D.SimpleEvent("x" + i, start, start+length));
         }
 
+
+
         SpaceGraph.window(new Timeline2D<>(dummyModel, e -> e.set(new Scale(new PushButton(e.id.name), 0.8f))) {
             @Override
             protected void paintBelow(GL2 gl, SurfaceRender r) {
