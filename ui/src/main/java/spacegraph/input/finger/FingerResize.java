@@ -1,6 +1,7 @@
 package spacegraph.input.finger;
 
 import jcog.tree.rtree.rect.RectFloat2D;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 
@@ -38,17 +39,21 @@ public abstract class FingerResize extends FingerDragging {
 
         switch (mode) {
             case RESIZE_S: {
-                float top, bottom;
+                float pmy = before.bottom();
                 float bh = before.h;
                 float ty = (fy - posStart.y);
-//                if (!invY) {
-//                    bottom = before.bottom();
-//                    top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh + ty);
-//                } else {
-                    top = before.top();
-                    bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh - ty);
-//                }
-                resize(before.left(), top, before.right(), bottom );
+                resize(before.left(), pmy - bh + ty, before.right(), pmy);
+                break;
+            }
+
+            case RESIZE_SW: {
+                float pmx = before.right();
+                float pmy = before.bottom();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
+                resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy);
                 break;
             }
             case RESIZE_N: {
@@ -79,10 +84,20 @@ public abstract class FingerResize extends FingerDragging {
                 float bh = before.h;
                 float tx = (fx - posStart.x);
                 float ty = (fy - posStart.y);
-                resize(
-                        pmx,
-                        pmy,
+                resize( pmx, pmy,
                         Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
+                        Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
+            }
+            break;
+            case RESIZE_NW: {
+                float pmx = before.right();
+                float pmy = before.top();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
+                resize( pmx -bw + tx, pmy,
+                        pmx,
                         Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
             }
             break;
@@ -91,26 +106,18 @@ public abstract class FingerResize extends FingerDragging {
                 float pmx = before.left();
                 float bw = before.w;
                 float tx = (fx - posStart.x);
-                resize(
-                        pmx,
-                        before.top(),
-                        pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx),
-                        before.bottom());
+                resize(pmx, before.top(),
+                       pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx), before.bottom());
                 break;
             }
-
-
-
-            case RESIZE_SW: {
+            case RESIZE_W: {
                 float pmx = before.right();
-                float pmy = before.bottom();
                 float bw = before.w;
-                float bh = before.h;
-                float tx = (fx - posStart.x);
-                float ty = (fy - posStart.y);
-                resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy); 
+                float tx = (posStart.x - fx);
+                resize(pmx - Math.max(aspectRatioRatioLimit * bw, bw + tx), before.top(),
+                        pmx, before.bottom());
+                break;
             }
-            break;
 
             
 
@@ -127,4 +134,19 @@ public abstract class FingerResize extends FingerDragging {
     protected abstract RectFloat2D size();
 
     protected abstract void resize(float x1, float y1, float x2, float y2);
+
+    @Override
+    public @Nullable FingerRenderer renderer() {
+        if (mode!=null) {
+            return mode.cursor();
+        }
+        return null;
+    }
+
+    @Override
+    public void stop(Finger finger) {
+        finger.renderer = finger.rendererDefault;
+        super.stop(finger);
+    }
+
 }

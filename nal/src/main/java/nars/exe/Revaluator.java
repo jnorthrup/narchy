@@ -158,6 +158,13 @@ public interface Revaluator {
          */
         float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
+        public DefaultRevaluator() {
+            this(0.5f);
+        }
+
+        public DefaultRevaluator(float momentum) {
+            this.momentum.set(momentum);
+        }
 
         @Override
         public void update(NAR nar) {

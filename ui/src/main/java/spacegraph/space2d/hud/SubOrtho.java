@@ -18,7 +18,7 @@ public class SubOrtho extends Ortho {
     @Override
     public void start(JoglSpace s) {
         super.start(s);
-        set(content);
+        setSurface(content);
     }
 
 

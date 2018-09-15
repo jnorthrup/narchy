@@ -308,48 +308,49 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-
-    DecomposePositiveNegativeNegative() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, true, false, false, minConf);
-        }
-    },
-
-    DecomposeNegativeNegativeNegative() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, false, false, false, minConf);
-        }
-    },
-
-    DecomposePositiveNegativePositive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, true, false, true, minConf);
-        }
-    },
-
-    DecomposePositivePositiveNegative() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, true, true, false, minConf);
-        }
-    },
-
-    DecomposeNegativePositivePositive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, false, true, true, minConf);
-        }
-    },
-
     DecomposePositivePositivePositive() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, true, true, true, minConf);
         }
     },
+
+    @Deprecated DecomposePositiveNegativeNegative() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.decompose(T, B, true, false, false, minConf);
+        }
+    },
+
+    @Deprecated DecomposeNegativeNegativeNegative() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.decompose(T, B, false, false, false, minConf);
+        }
+    },
+
+    @Deprecated DecomposePositiveNegativePositive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.decompose(T, B, true, false, true, minConf);
+        }
+    },
+
+    @Deprecated DecomposePositivePositiveNegative() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.decompose(T, B, true, true, false, minConf);
+        }
+    },
+
+    @Deprecated DecomposeNegativePositivePositive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.decompose(T, B, false, true, true, minConf);
+        }
+    },
+
+
 
     @SinglePremise
     Identity() {

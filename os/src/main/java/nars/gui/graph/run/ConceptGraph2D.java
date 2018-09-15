@@ -2,7 +2,6 @@ package nars.gui.graph.run;
 
 import com.jogamp.opengl.GL2;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
@@ -32,23 +31,10 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
 
     public class Controls {
-//        public final IntRange maxNodes = new IntRange(256, 1, 512) {
-//            @Override
-//            public void set(int value) {
-//                super.set(value);
-////                nodesMax(value);
-//            }
-//        };
         public final AtomicBoolean update = new AtomicBoolean(true);
     }
 
     public final Controls controls = new Controls();
-
-    public ConceptGraph2D(NAR n) {
-        this(new Bagregate<>(() -> n.conceptsActive().iterator(), 256, 0.01f).
-                        iterable(activate -> activate.id),
-                n);
-    }
 
     public ConceptGraph2D(Iterable<Concept> source, NAR n) {
         super();
@@ -159,6 +145,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     public Surface widget() {
         Gridding cfg = configWidget();
         cfg.add(new ObjectSurface(controls));
+        addControls(cfg);
 
         return new Splitting(new Clipped(
                 this
@@ -173,6 +160,10 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                 super.paintBelow(gl, r);
             }
         }, cfg, 0.1f);
+    }
+
+    protected void addControls(Gridding cfg) {
+
     }
 
 

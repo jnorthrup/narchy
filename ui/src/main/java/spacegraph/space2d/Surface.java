@@ -235,6 +235,7 @@ abstract public class Surface implements SurfaceBase {
 
     public Surface hide() {
         visible = false;
+        showing = false;
         return this;
     }
 

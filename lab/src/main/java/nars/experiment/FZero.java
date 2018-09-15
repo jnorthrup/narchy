@@ -84,22 +84,25 @@ public class FZero extends NAgentX {
         camAE.alpha(0.1f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
-
-//        initToggleLeftRight();
-//        initToggleFwdStop();
-
         ActionConcept F = initUnipolarLinear(5f);
 
-        //initTankContinuous();
-        BiPolarAction A =
-                //initBipolarRotateRelative(true, 1f);
-                //initBipolarRotateAbsolute(true);
-                //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.25f);
-
+        initToggleLeftRight();
+//        initToggleFwdStop();
         window(new Gridding(
                 //new CameraSensorView(c, this).withControls(),
-                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
+                NARui.beliefCharts(actions, nar)), 400, 400);
+
+
+        //initTankContinuous();
+//        BiPolarAction A =
+//                //initBipolarRotateRelative(true, 1f);
+//                //initBipolarRotateAbsolute(true);
+//                //initBipolarRotateDirect(false, 0.9f);
+//                initBipolarRotateDirect(false, 0.25f);
+//
+//        window(new Gridding(
+//                //new CameraSensorView(c, this).withControls(),
+//                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
 
 

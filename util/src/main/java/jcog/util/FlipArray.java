@@ -1,5 +1,7 @@
 package jcog.util;
 
+import jcog.Util;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -75,20 +77,23 @@ public class FlipArray<X> extends AtomicInteger {
         valid.setRelease(INVALID);
     }
 
-    public X[] readValid(Function<X[],X[]> writeTransform) {
+    public X[] readValid(boolean waitIfBusy, Function<X[],X[]> writeTransform) {
 
         if (valid.compareAndSet(INVALID, BUSY)) {
             X[] x;
             try {
                 x = commit(writeTransform);
-//                writeClear();
             } finally {
                 valid.compareAndSet(BUSY, OK);
             }
 
             return x;
-        } else {
-            valid.compareAndSet(BUSY, INVALID); //set invalid for next read but return current value while busy
+        }
+        if (waitIfBusy) {
+            int waits = 0;
+            while (valid.get() == BUSY) {
+                Util.pauseNextIterative(waits++);
+            }
         }
         return read();
     }

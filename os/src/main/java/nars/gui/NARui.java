@@ -4,7 +4,7 @@ import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.agent.NAgent;
-import nars.gui.graph.run.ConceptGraph2D;
+import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import spacegraph.space2d.Surface;
@@ -92,7 +92,7 @@ public class NARui {
                                                         "nar", () -> new ObjectSurface<>(n),
                                                         "exe", () -> ExeCharts.exePanel(n),
                                                         "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
-                                                        "grp", () -> new ConceptGraph2D(n).widget(),
+                                                        "grp", () -> BagregateConceptGraph2D.get(n).widget(),
                                                         "svc", () -> new ServicesTable(n.services),
                                                         "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n),
                                                         "snp", () -> memoryView(n),

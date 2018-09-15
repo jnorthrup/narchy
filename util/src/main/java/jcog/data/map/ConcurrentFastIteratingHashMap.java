@@ -192,7 +192,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
 
     public final Y[] valueArray() {
-        return list.readValid(this::_valueArray);
+        return list.readValid(true, this::_valueArray);
     }
 
     private Y[] _valueArray(Y[] prev) {

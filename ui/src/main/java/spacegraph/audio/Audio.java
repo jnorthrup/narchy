@@ -3,7 +3,6 @@ package spacegraph.audio;
 import jcog.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
 
 import javax.sound.sampled.*;
@@ -174,9 +173,9 @@ public class Audio implements Runnable {
     }
 
 
-    public void play(SoundSample sample, SoundSource soundSource, float volume, float priority) {
-        play(new SamplePlayer(sample, rate), soundSource, volume, priority);
-    }
+//    public void play(SoundSample sample, SoundSource soundSource, float volume, float priority) {
+//        play(new SamplePlayer(sample, rate), soundSource, volume, priority);
+//    }
 
     public <S extends SoundProducer> Sound<S> play(S p, float volume, float priority, float balance) {
         return play(p, new DefaultSource(p, balance), volume, priority);

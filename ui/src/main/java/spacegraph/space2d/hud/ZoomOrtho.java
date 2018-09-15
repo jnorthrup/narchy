@@ -21,7 +21,9 @@ public class ZoomOrtho extends Ortho {
 
     public final static short PAN_BUTTON = 0;
     private final static short MOVE_WINDOW_BUTTON = 1;
+
     private final HUD hud = new HUD();
+
     private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
 
         float speed = 1f;
@@ -80,22 +82,16 @@ public class ZoomOrtho extends Ortho {
         }
 
     };
-    private final Surface content;
 
     public ZoomOrtho(Surface content) {
         super();
-
-        this.content = content;
-        this.surface = hud;
-
-
+        hud.add(content);
     }
 
     @Override
     public void start(JoglSpace s) {
         super.start(s);
-        hud.start(this);
-        hud.add(content);
+        setSurface(hud);
     }
 
     @Override
@@ -126,13 +122,11 @@ public class ZoomOrtho extends Ortho {
             debug(this, 1f, () -> "touch(" + touchNext + ')');
         }
 
-        if (touchNext == null) {
+        //if (touchNext == null) {
+            if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {
 
-            if (!finger.tryFingering(fingerWindowMove)) {
-                if (!finger.tryFingering(fingerContentPan)) {
-                }
             }
-        }
+        //}
 
         return touchNext;
     }
@@ -163,13 +157,9 @@ public class ZoomOrtho extends Ortho {
 
     public class HUD extends Windo {
 
-
         {
-
-
             clipBounds = false;
         }
-
 
         @Override
         protected FingerResize fingeringResize(Windo.DragEdit mode) {
@@ -197,27 +187,19 @@ public class ZoomOrtho extends Ortho {
 
                 super.postpaint(gl);
 
-                finger.drawCrossHair(this, gl);
-
                 gl.glPopMatrix();
             }
 
         }
 
-
-
-
         @Override
         public boolean fingeringBounds(Finger finger) {
-
             return true;
         }
 
         public v2 windowHitPointRel(Finger finger) {
-            v2 v = new v2(finger.posPixel);
-            v.x = v.x / w();
-            v.y = v.y / h();
-            return v;
+            v2 pp = finger.posPixel;
+            return new v2(pp.x/w(), pp.y/h() );
         }
 
         @Override

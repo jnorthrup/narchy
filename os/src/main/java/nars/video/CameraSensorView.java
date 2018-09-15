@@ -67,13 +67,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     public void updateTouch(Finger finger) {
 
 
-        super.updateTouch(finger);
-
-        if (finger == null) {
-            touchConcept = null;
-        } else {
-            touchConcept = cam.get(touchPixel.x, cam.height - 1 - touchPixel.y);
-        }
+        updateTouchedConcept(finger);
 
         if (finger.clickedNow(OPEN_CONCEPT_BUTTON, this)) {
             TaskConcept c = this.touchConcept;
@@ -84,7 +78,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         finger.tryFingering(new FingerDragging(0) {
             @Override
             protected boolean drag(Finger f) {
-                updateTouch(finger);
+                updateTouchedConcept(f);
                 TaskConcept c = touchConcept;
                 if (c!=null)
                     onTouch(touchConcept);
@@ -94,6 +88,16 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
 
 
+    }
+
+    public void updateTouchedConcept(Finger finger) {
+        super.updateTouch(finger);
+
+        if (finger == null) {
+            touchConcept = null;
+        } else {
+            touchConcept = cam.get(touchPixel.x, cam.height - 1 - touchPixel.y);
+        }
     }
 
 

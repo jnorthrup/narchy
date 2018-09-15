@@ -20,19 +20,7 @@ import static spacegraph.space2d.container.Gridding.*;
 public class WidgetTest {
 
     public static void main(String[] args) {
-
-        SpaceGraph.window(
-
-                widgetDemo()
-                , 1200, 800);
-
-
-        
-
-
-
-
-
+        SpaceGraph.window(widgetDemo(), 1200, 800);
     }
 
 
@@ -61,7 +49,7 @@ public class WidgetTest {
                         ),
                         new XYSlider(),
                         new DummyConsole().surface(),
-                        new MetaFrame(new Sketch2DBitmap(256, 256)) 
+                        new MetaFrame(new Sketch2DBitmap(256, 256))
                 );
     }
 
@@ -82,7 +70,7 @@ public class WidgetTest {
 
                 addLine((Math.random()) + "");
                 if (++i % 7 == 0) {
-                    text(""); 
+                    text("");
                 }
 
                 Util.sleepMS(400);

@@ -194,12 +194,12 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         }
 
         private void setSurface(Surface next) {
-            assert (surface == null);
+            ///assert (surface == null);
             if (next != surface) {
                 if (this.surface != null) {
                     this.surface.stop();
                 }
-                this.surface = (Surface) next;
+                this.surface = next;
             }
         }
 

@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
@@ -8,6 +9,8 @@ import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
+
+import java.util.EnumMap;
 
 import static spacegraph.space2d.widget.windo.Windo.DragEdit.MOVE;
 
@@ -34,13 +37,14 @@ public class Windo extends Stacking {
     public Surface finger(Finger finger) {
 
 
-        if (dragMode != null && dragMode.isStopped()) {
-            dragMode = null;
-        }
         if (finger == null) {
             dragMode = null;
             potentialDragMode = null;
         }
+        else if (dragMode != null && dragMode.isStopped()) {
+            dragMode = null;
+        }
+
 
         Surface other = null;
         if (/*dragMode==null && */finger != null) {
@@ -129,13 +133,18 @@ public class Windo extends Stacking {
 
                 FingerDragging d = potentialDragMode != null ? (FingerDragging) fingering(potentialDragMode) : null;
                 if (d != null && finger.tryFingering(d)) {
-
                     this.dragMode = d;
+                    return null;
                 } else {
                     this.dragMode = null;
                 }
             }
 
+            if (potentialDragMode!=null) {
+                finger.tryFingering(potentialDragMode.hover());
+            } else {
+                finger.tryFingering(RenderWhileHovering.Reset);
+            }
 
             return null;
         }
@@ -284,7 +293,40 @@ public class Windo extends Stacking {
         RESIZE_NW,
         RESIZE_SW,
         RESIZE_NE,
-        RESIZE_SE
+        RESIZE_SE;
+
+        static final EnumMap<DragEdit,FingerRenderer> cursor = new EnumMap(DragEdit.class);
+        static final EnumMap<DragEdit,RenderWhileHovering> hover = new EnumMap(DragEdit.class);
+
+        static {
+
+            cursor.put(DragEdit.RESIZE_NE, new FingerRenderer.PolygonWithArrow(45f));
+            cursor.put(DragEdit.RESIZE_SW, new FingerRenderer.PolygonWithArrow(45+180));
+            cursor.put(DragEdit.RESIZE_SE, new FingerRenderer.PolygonWithArrow(-45));
+            cursor.put(DragEdit.RESIZE_NW, new FingerRenderer.PolygonWithArrow(45+90));
+            cursor.put(DragEdit.RESIZE_N, new FingerRenderer.PolygonWithArrow(90));
+            cursor.put(DragEdit.RESIZE_S, new FingerRenderer.PolygonWithArrow(-90));
+            cursor.put(DragEdit.RESIZE_E, new FingerRenderer.PolygonWithArrow(0));
+            cursor.put(DragEdit.RESIZE_W, new FingerRenderer.PolygonWithArrow(180));
+            cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
+
+            cursor.forEach((k,v)-> {
+                hover.put(k, new RenderWhileHovering(v) {
+//                    @Override
+//                    protected boolean update(Finger f) {
+//                        return (f.touching() instanceof Windo);
+//                    }
+                });
+            });
+        }
+        @Nullable public FingerRenderer cursor() {
+            return cursor.get(this);
+        }
+
+        @Nullable
+        public RenderWhileHovering hover() {
+            return hover.get(this);
+        }
     }
 
 

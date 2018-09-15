@@ -50,16 +50,16 @@ public final class TruthFunctions {
     /* ----- Single argument functions, called in StructuralRules ----- */
 
 
-    /**
-     * {<A ==> B>} |- <--B ==> --A>
-     *
-     * @param t Truth value of the premise
-     * @return Truth value of the conclusion
-     */
-    public static Truth contraposition(Truth t, float minConf) {
-        float c = w2cSafe((1 - t.freq()) * t.conf());
-        return c >= minConf ? t(0, c) : null;
-    }
+//    /**
+//     * {<A ==> B>} |- <--B ==> --A>
+//     *
+//     * @param t Truth value of the premise
+//     * @return Truth value of the conclusion
+//     */
+//    public static Truth contraposition(Truth t, float minConf) {
+//        float c = w2cSafe((1 - t.freq()) * t.conf());
+//        return c >= minConf ? t(0, c) : null;
+//    }
 
 
     /**
@@ -81,7 +81,7 @@ public final class TruthFunctions {
     public static Truth deduction(Truth a, float bF, float bC, float minConf) {
 
         float f = and(a.freq(), bF);
-        float c = and(f, a.conf(), bC);
+        float c = and(f, confCompose(a.conf(), bC));
 
         return c >= minConf ? t(f, c) : null;
     }
@@ -96,7 +96,7 @@ public final class TruthFunctions {
      */
     @Nullable
     public static Truth analogy(Truth a, float bf, float bc, float minConf) {
-        float c = and(a.conf(), bc, bf);
+        float c = and(confCompose(a.conf(), bc), bf);
         return c >= minConf ? t(and(a.freq(), bf), c) : null;
     }
 
@@ -109,7 +109,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
     public static Truth induction(Truth a, Truth b, float minConf) {
-        float c = w2cSafe(a.conf() * b.freqTimesConf());
+        float c = w2cSafe(confCompose(a, b) * b.freq());
         return c >= minConf ? $.t(a.freq(), c) : null;
     }
 
@@ -122,7 +122,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth exemplification(Truth a, Truth b, float minConf) {
-        float c = w2cSafe(a.freqTimesConf() * b.freqTimesConf());
+        float c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));
         return c >= minConf ? t(1, c) : null;
     }
 
@@ -176,16 +176,13 @@ public final class TruthFunctions {
     c = or(and(not(f1), c1), and(f2, c2)) + and(f1, c1, not(f2), c2)
     */
 
+    public static float confCompose(Truth a, Truth b) {
+        return confCompose(a.conf(), b.conf());
+    }
 
-    static float compConf(float f1, float c1, boolean not1, float f2, float c2, boolean not2) {
-//        if (Param.STRONG_COMPOSITION) {
-//            float F1 = not1 ? (1 - f1) : f1;
-//            float F2 = not2 ? (1 - f2) : f2;
-//            return or(and(F1, c1), and(F2, c2)) + and((1 - F1), c1, (1 - F2), c2);
-//        } else {
-            //return Math.min(c1, c2);
-            return c1 * c2;
-//        }
+    public static float confCompose(float cx, float cy) {
+            return Math.min(cx, cy);
+            //return cx * cy;
     }
 
 
@@ -199,7 +196,7 @@ public final class TruthFunctions {
     @Nullable
     public static Truth intersection(Truth v1, Truth v2, float minConf) {
         float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
-        float c = compConf(f1, c1, false, f2, c2, false);
+        float c = confCompose(c1, c2);
         return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
 

@@ -56,6 +56,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     private DurService onDur;
     private Offs onClear;
+    private DurService updater;
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
@@ -90,9 +91,13 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         synchronized (this) {
             super.start(space);
             init();
+            updater = DurService.on(nar, nn->{
+               concepts.commit();
+            });
         }
 
     }
+
 
     public void init() {
         synchronized (this) {
@@ -102,7 +107,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 onClear.off();
 
             onDur = DurService.on(nar, () -> {
-                if (concepts.update()) {
+                if (concepts.commit()) {
                     updated.set(true);
                 }
 
@@ -124,6 +129,8 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             onDur = null;
             onClear.off();
             onClear = null;
+            updater.off();
+            updater = null;
             super.stop();
         }
     }

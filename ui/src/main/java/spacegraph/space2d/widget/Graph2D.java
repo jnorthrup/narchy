@@ -2,8 +2,10 @@ package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
+import jcog.data.map.CellMap;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.pool.DequePool;
 import jcog.data.pool.Pool;
@@ -135,7 +137,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Override
     protected void paintBelow(GL2 gl, SurfaceRender r) {
         cells.forEachValue(n -> {
-            if (n.showing())
+            if (n.visible())
                 n.paintEdges(gl);
         });
     }
@@ -164,7 +166,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {
 
-        if (!busy.weakCompareAndSetAcquire(false, true)) {
+        if (!busy.compareAndSet(false, true)) {
             return this;
         }
         try {
@@ -191,7 +193,13 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             if (x == null)
                 continue;
 
-            cells.compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
+            CellMap.CacheCell<X, NodeVis<X>> xxx = cells.compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
+            NodeVis<X> cv = xxx.value;
+            if (cv.parent == null) {
+                cv.start(this);
+                cv.show();
+            }
+
         }
 
         if (!wontRemain.isEmpty()) {
@@ -228,7 +236,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private void render() {
 
-        renderers.forEach(layer -> cells.forEachValue(nv -> layer.node(nv, edit)));
+        renderers.forEach(layer -> cells.forEachValue(nv -> {
+            if (nv.visible())
+                layer.node(nv, edit);
+            else
+                throw new WTF();
+        } ));
 
     }
 
@@ -542,7 +555,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         final void draw(NodeVis<X> from, GL2 gl) {
 
             NodeVis<X> t = this.to;
-            if (t == null || !t.showing())
+            if (t == null || !t.visible())
                 return;
 
             renderer.render(this, from, gl);

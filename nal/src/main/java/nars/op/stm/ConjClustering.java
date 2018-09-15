@@ -18,6 +18,7 @@ import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.truth.TruthFunctions;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -219,7 +220,7 @@ public class ConjClustering extends Causable {
                         float tc = tx.conf();
                         if (tc > confMax) confMax = tc;
 
-                        conf *= tc;
+                        conf = TruthFunctions.confCompose(conf, tc);
 
                         float tf = tx.freq();
                         freq *= tx.isNegative() ? (1f - tf) : tf;

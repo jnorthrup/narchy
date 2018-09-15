@@ -309,6 +309,12 @@ public class TextUI {
                     thread.interrupt();
                     thread = null;
                 }
+                TextGUIThread tt = tui.getGUIThread();
+                if (tt!=null) {
+                    Thread ttt = tt.getThread();
+                    if (ttt!=null)
+                        ttt.interrupt();
+                }
             }
 
         }

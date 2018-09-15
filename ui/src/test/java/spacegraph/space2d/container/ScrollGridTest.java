@@ -63,7 +63,10 @@ class ScrollGridTest {
     static class ListTest1 {
         public static void main(String[] args) {
             String[] list = {"a", "b", "c", "d", "e", "f"};
-            ScrollGrid.GridRenderer<String> builder = (x, y, n) -> new CheckBox(n);
+            ScrollGrid.GridRenderer<String> builder = (x, y, n) -> {
+                System.out.println("constructing: " + n);
+                return new CheckBox(n);
+            } ;
             SpaceGraph.window(
                     ScrollGrid.list(builder, list)
                     , 800, 800);

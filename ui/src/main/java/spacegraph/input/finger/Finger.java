@@ -6,9 +6,9 @@ import jcog.data.bit.AtomicMetalBitSet;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.math.v2;
-import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -37,7 +37,7 @@ public class Finger {
     /**
      * exclusive state which may be requested by a surface
      */
-    private final AtomicReference<Fingering> fingering = new AtomicReference<>();
+    private final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
     /**
      * dummy intermediate placeholder state
      */
@@ -57,6 +57,7 @@ public class Finger {
      * widget above which this finger currently hovers
      */
     public final AtomicReference<Widget> touching = new AtomicReference<>();
+    private boolean focused =false;
 
 
     public Finger() {
@@ -116,19 +117,12 @@ public class Finger {
 
     /** call when finger exits the window / screen, the window becomes unfingerable, etc..*/
     public void exit() {
-
-
-
-
-
-
+        focused = false;
     }
 
     /** call when finger enters the window */
     public void enter() {
-
-
-
+        focused = true;
     }
 
     /**
@@ -192,11 +186,10 @@ public class Finger {
         Fingering f0 = ff;
         Surface touchedNext;
 
-        try {
 
             
 
-            if (ff == null || ff.escapes()) {
+            if (ff == Fingering.Null || ff.escapes()) {
                 touchedNext = root.finger(this);
             } else {
                 touchedNext = touching.get(); 
@@ -204,27 +197,25 @@ public class Finger {
 
             
 
-            if (ff != null) {
-
-                if (!ff.update(this)) {
-                    ff.stop(this);
-                    ff = null;
-                }
-
-            }
 
 
-        } finally {
 
-            if (ff == null)
-                fingering.compareAndSet(f0, null);
+
 
             for (AtomicFloat r : rotation)
                 r.getAndZero();
 
-        }
 
         on(touchedNext instanceof Widget ? (Widget) touchedNext : null);
+
+        if (ff != Fingering.Null) {
+
+            if (!ff.update(this)) {
+                ff.stop(this);
+                fingering.set(Fingering.Null);
+            }
+
+        }
 
         return touchedNext;
     }
@@ -306,20 +297,33 @@ public class Finger {
         return false;
     }
 
+
+
     /**
      * acquire an exclusive fingering state
      */
-    public boolean tryFingering(Fingering f) {
+    public final boolean tryFingering(Fingering f) {
 
+        if (f != null) {
+            Fingering cf = this.fingering.get();
+            if (cf!=f && cf.defer(this)) {
+                //System.out.println(cf + " -> " + f + " try");
+                if (f.start(this)) {
+                    //System.out.println(cf + " -> " + f + " start");
+                    if (this.fingering.compareAndSet(cf, f)) {
 
-        if (f != null && fingering.compareAndSet(null, STARTING)) {
-            if (f.start(this)) {
-                fingering.set(f);
-                
-                return true;
-            } else {
-                fingering.set(null);
-                return false;
+                        //System.out.println(cf + " -> " + f + " acquire");
+                        cf.stop(this);
+
+                        @Nullable FingerRenderer r = f.renderer();
+                        if (r != null)
+                            renderer = r;
+                        return true;
+
+                    } else {
+                        f.stop(this);
+                    }
+                }
             }
         }
 
@@ -328,33 +332,13 @@ public class Finger {
     }
 
     public boolean isFingering() {
-        return fingering.get() != null;
+        return fingering.get() != Fingering.Null;
     }
 
     public v2 relativePos(Surface c) {
         return relative(pos, c);
     }
 
-
-    /** TODO make very configurable */
-    public void drawCrossHair(Surface window, GL2 gl) {
-
-        gl.glLineWidth(4f);
-
-        float ch = 175f; 
-        float cw = 175f; 
-
-        float smx = posPixel.x;
-        float smy = posPixel.y;
-
-        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.25f);
-        Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
-
-        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
-        Draw.line(gl, smx, smy - ch, smx, smy + ch);
-        Draw.line(gl, smx - cw, smy, smx + cw, smy);
-
-    }
 
     private final AtomicFloat[] rotation = new AtomicFloat[3];
 
@@ -388,8 +372,27 @@ public class Finger {
         return rotation[2].floatValue();
     }
 
+    final FingerRenderer rendererDefault = FingerRenderer.polygon1;
+
+    volatile FingerRenderer renderer = rendererDefault;
+
+    /** visual overlay representation of the Finger; ie. cursor */
+    public Surface layer() {
+        return new FingerRendererSurface();
+    }
+
 
     /** HACK marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom) */
     public interface WheelAbsorb {
+    }
+
+    private final class FingerRendererSurface extends Surface {
+        {
+            clipBounds = false;
+        }
+        @Override protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+            if (focused)
+                renderer.paint(posPixel, Finger.this, gl);
+        }
     }
 }

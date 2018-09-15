@@ -304,8 +304,8 @@ public class ScrollGrid<X> extends Bordering {
         content.layout(view,
                 (short) Math.max(0, Math.floor(x1)),
                 (short) Math.max(0, Math.floor(y1)),
-                (short) Math.min(maxW,Math.ceil(x2 + 1)),
-                (short) Math.min(maxH,Math.ceil(y2 + 1))
+                (short) Math.min(maxW,Math.ceil(x2)),
+                (short) Math.min(maxH,Math.ceil(y2))
         ); 
 
         

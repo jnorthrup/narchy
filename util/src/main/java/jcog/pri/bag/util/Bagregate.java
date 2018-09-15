@@ -11,7 +11,6 @@ import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -26,7 +25,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     public final Bag<X, PriReference<X>> bag;
     private final Iterable<X> src;
     private final NumberX scale;
-    private final AtomicBoolean busy = new AtomicBoolean();
+//    private final AtomicBoolean busy = new AtomicBoolean();
     private float forgetRate = 1f;
 
     public Bagregate(Stream<X> src, int capacity, float scale) {
@@ -42,35 +41,36 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
         };
         this.src = src;
         this.scale = new FloatRange(scale, 0f, 1f);
-
     }
 
     protected void onRemove(PriReference<X> value) {
 
     }
 
-    public boolean update() {
-        if (src==null || !busy.weakCompareAndSetAcquire(false, true))
+    public boolean commit() {
+        if (src==null /*|| !busy.compareAndSet(false, true)*/)
             return false;
 
-        try {
+//        try {
 
-            bag.commit(bag.forget(forgetRate));
+            synchronized(bag) {
+                bag.commit(bag.forget(forgetRate));
 
-            float scale = this.scale.floatValue();
+                float scale = this.scale.floatValue();
 
-            src.forEach(x -> {
-                if (include(x)) {
-                    float pri = x.pri();
-                    if (pri==pri)
-                        bag.putAsync(new PLink<>(x, pri * scale));
-                }
-            });
+                src.forEach(x -> {
+                    if (include(x)) {
+                        float pri = x.pri();
+                        if (pri == pri)
+                            bag.putAsync(new PLink<>(x, pri * scale));
+                    }
+                });
+            }
 
 
-        } finally {
-            busy.setRelease(false);
-        }
+//        } finally {
+//            busy.setRelease(false);
+//        }
         return true;
     }
 
@@ -83,13 +83,16 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 
     @Override
     public Iterator<PriReference<X>> iterator() {
-        update();
-        return bag.iterator();
+        synchronized (bag) {
+            return bag.iterator();
+        }
     }
 
     @Override
     public void forEach(Consumer<? super PriReference<X>> action) {
-        bag.forEach(action);
+        synchronized (bag) {
+            bag.forEach(action);
+        }
     }
 
     public void clear() {

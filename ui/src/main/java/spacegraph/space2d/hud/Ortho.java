@@ -56,7 +56,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private volatile float camZmax = 640000;
     private volatile float camXmin = -1, camXmax = +1;
     private volatile float camYmin = -1, camYmax = +1;
-    private final float zoomMargin = 0.25f;
+    private final float zoomMargin = 0.1f;
 
 
     Ortho() {
@@ -65,20 +65,36 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     Ortho(Surface content) {
         super();
-        this.finger = new Finger();
-
 
         this.cam = new Camera();
 
 
-        this.surface = content;
-
+        this.finger = new Finger();
         this.fingerUpdate = () -> {
             if (focused())
                 finger();
-
-
         };
+        addOverlay(this.finger.layer());
+
+        setSurface(content);
+    }
+
+    public void setSurface(Surface content) {
+        synchronized (this) {
+            Surface oldSurface = this.surface;
+            if (oldSurface != null) {
+                if (oldSurface == content) {
+                    return;//no change
+                }
+                oldSurface.stop();
+            }
+
+            this.surface = content;
+            if (surface.parent == null)
+                surface.start(this);
+        }
+
+        layout();
     }
 
 
@@ -106,8 +122,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         float scale = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
         float s = Math.max(W, H) * scale;
         this.scale.set(s, s);
+        //this.scale.set(W * scale, H * scale);
 
-        //}
         super.prePaint(dtMS);
     }
 
@@ -180,7 +196,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     public void start(JoglSpace s) {
         synchronized (this) {
+
             this.window = s;
+
+            window.window.setPointerVisible(false);
+
             s.addWindowListener(this);
             if (window.window.hasFocus())
                 mouseEntered(null);
@@ -194,8 +214,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             windowResized(null);
 
-            assert (surface.parent == null);
-            surface.start(this);
+            if (surface.parent == null)
+                surface.start(this);
             //Exe.invokeLater(() -> surface.start(this));
         }
 
@@ -283,7 +303,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     private void zoom(float x, float y, float sx, float sy, float margin) {
-        zoom(x, y, targetDepth(Math.max(sx, sy) * (1 + margin)));
+        zoom(x, y, targetDepth((float) Math.max(sx, sy) /*(Math.sqrt(sx*sx + sy*sy)*/ * (1 + margin)));
     }
 
     public final void zoom(v3 v) {
@@ -332,6 +352,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public boolean whileEachReverse(Predicate<Surface> o) {
         return whileEach(o);
     }
+
 
     @Override
     public void windowGainedFocus(WindowEvent e) {
@@ -511,9 +532,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         gl.glPopMatrix();
 
-        if (!overlays.isEmpty()) {
-            overlays.forEach(s -> s.render(gl, r));
-        }
+
+        gl.glLoadIdentity();
+
+        overlays.forEach(s -> {
+            s.render(gl, r);
+        });
+
     }
 
     @Override
@@ -549,21 +574,21 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
     }
 
-    public void set(Surface content) {
-        synchronized (this) {
-            if (this.surface == content) return;
-
-            if (this.surface != null) {
-                this.surface.stop();
-            }
-
-            this.surface = content;
-
-            this.surface.start(this);
-        }
-
-        layout();
-    }
+//    public void set(Surface content) {
+//        synchronized (this) {
+//            if (this.surface == content) return;
+//
+//            if (this.surface != null) {
+//                this.surface.stop();
+//            }
+//
+//            this.surface = content;
+//
+//            this.surface.start(this);
+//        }
+//
+//        layout();
+//    }
 
 
     protected class Camera extends AnimVector3f {

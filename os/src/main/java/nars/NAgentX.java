@@ -5,7 +5,6 @@ import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
-import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
@@ -117,8 +116,8 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        //new Revaluator.DefaultRevaluator(),
-                        new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
+                        new Revaluator.DefaultRevaluator(),
+                        //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         Util.concurrencyExcept(1), false))
 

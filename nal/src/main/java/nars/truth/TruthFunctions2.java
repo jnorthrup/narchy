@@ -1,50 +1,47 @@
 package nars.truth;
 
-import jcog.Util;
 import nars.$;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
 import static nars.$.t;
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 public enum TruthFunctions2 {
     ;
 
-    /**
-     * freq symmetric intersection
-     * to the degree the freq is the same, the evidence is additive
-     * to the degree the freq is different, the evidence is multiplicative
-     * resulting freq is weighted combination of inputs
-     */
-    public static Truth intersectionX(Truth a, Truth b, float confMin) {
-        float diff = Math.abs(a.freq() - b.freq());
-        float ac = a.conf(), bc = b.conf();
-        float conf = Util.lerp(diff, w2cSafe(c2wSafe(ac) + c2wSafe(bc)), (ac * bc));
-        float freq = ((a.freq() * ac) + (b.freq() * bc)) / (ac + bc);
-        return conf >= confMin ? $.t(freq, conf) : null;
-    }
+//    /**
+//     * freq symmetric intersection
+//     * to the degree the freq is the same, the evidence is additive
+//     * to the degree the freq is different, the evidence is multiplicative
+//     * resulting freq is weighted combination of inputs
+//     */
+//    public static Truth intersectionX(Truth a, Truth b, float confMin) {
+//        float diff = Math.abs(a.freq() - b.freq());
+//        float ac = a.conf(), bc = b.conf();
+//        float conf = Util.lerp(diff, w2cSafe(c2wSafe(ac) + c2wSafe(bc)), (ac * bc));
+//        float freq = ((a.freq() * ac) + (b.freq() * bc)) / (ac + bc);
+//        return conf >= confMin ? $.t(freq, conf) : null;
+//    }
 
-    /**
-     * freq symmetric difference
-     * to the degree the freq differs or is similar, the evidence is additive
-     * to the degree the freq is not different nor similar, the evidence is multiplicative
-     * resulting freq is weighted difference of inputs
-     */
-    public static Truth differenceX(Truth a, Truth b, float confMin) {
-        float extreme = 2f * Math.abs(0.5f - Math.abs(a.freq() - b.freq()));
-        float ac = a.conf(), bc = b.conf();
-        float conf = Util.lerp(extreme, (ac * bc), w2cSafe(c2wSafe(ac) + c2wSafe(bc)));
+//    /**
+//     * freq symmetric difference
+//     * to the degree the freq differs or is similar, the evidence is additive
+//     * to the degree the freq is not different nor similar, the evidence is multiplicative
+//     * resulting freq is weighted difference of inputs
+//     */
+//    public static Truth differenceX(Truth a, Truth b, float confMin) {
+//        float extreme = 2f * Math.abs(0.5f - Math.abs(a.freq() - b.freq()));
+//        float ac = a.conf(), bc = b.conf();
+//        float conf = Util.lerp(extreme, (ac * bc), w2cSafe(c2wSafe(ac) + c2wSafe(bc)));
+//
+//        float freq = a.freq() * (1f - b.freq());
+//        return conf >= confMin ? $.t(freq, conf) : null;
+//    }
 
-        float freq = a.freq() * (1f - b.freq());
-        return conf >= confMin ? $.t(freq, conf) : null;
-    }
-
-    public static Truth unionX(Truth a, Truth b, float confMin) {
-        Truth z = intersectionX(a.neg(), b.neg(), confMin);
-        return z != null ? z.neg() : null;
-    }
+//    public static Truth unionX(Truth a, Truth b, float confMin) {
+//        Truth z = intersectionX(a.neg(), b.neg(), confMin);
+//        return z != null ? z.neg() : null;
+//    }
 
 //    @Nullable
 //    public static Truth deduction(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
@@ -62,39 +59,40 @@ public enum TruthFunctions2 {
 
     @Nullable
     public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
-        float c = and(a.conf(), bc, bf);
+        float c = and(bf, TruthFunctions.confCompose(a.conf(), bc));
         return c >= minConf ? t(a.freq(), c) : null;
     }
-    @Nullable
-    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
-
-        float f;
-        float aF = a.freq();
-//        if (bF >= 0.5f) {
-//            f = Util.lerp(bF, 0.5f, aF);
-//        } else {
-//            f = Util.lerp(bF, 0.5f, 1- aF);
-//        }
-        f = Util.lerp(bF, 1-aF, aF);
-
-        float p = Math.abs(f - 0.5f)*2f; //polarization
-
-        float c = and(/*f,*/ /*p,*/ a.conf(), bC);
-
-        return c >= minConf ? t(f, c) : null;
-    }
-
-    /**
-     * {<S ==> M>, <P ==> M>} |- <S ==> P>
-     *
-     * @param a Truth value of the first premise
-     * @param b Truth value of the second premise
-     * @return Truth value of the conclusion, or null if either truth is analytic already
-     */
-    public static Truth induction(Truth a, Truth b, float minConf) {
-        float c = w2cSafe(a.conf() * b.freqTimesConf());
-        return c >= minConf ? $.t(a.freq(), c) : null;
-    }
+//    @Nullable
+//    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
+//
+//        float f;
+//        float aF = a.freq();
+////        if (bF >= 0.5f) {
+////            f = Util.lerp(bF, 0.5f, aF);
+////        } else {
+////            f = Util.lerp(bF, 0.5f, 1- aF);
+////        }
+//        f = Util.lerp(bF, 1-aF, aF);
+//
+//        float p = Math.abs(f - 0.5f)*2f; //polarization
+//
+//        float c = //and(/*f,*/ /*p,*/ a.conf(), bC);
+//                    TruthFunctions.confCompose(a.conf(), bC);
+//
+//        return c >= minConf ? t(f, c) : null;
+//    }
+//
+//    /**
+//     * {<S ==> M>, <P ==> M>} |- <S ==> P>
+//     *
+//     * @param a Truth value of the first premise
+//     * @param b Truth value of the second premise
+//     * @return Truth value of the conclusion, or null if either truth is analytic already
+//     */
+//    public static Truth induction(Truth a, Truth b, float minConf) {
+//        float c = w2cSafe(a.conf() * b.freqTimesConf());
+//        return c >= minConf ? $.t(a.freq(), c) : null;
+//    }
 
 //
 //    /**
@@ -130,7 +128,7 @@ public enum TruthFunctions2 {
 
         float c = and(belief.freq(),
                 //(
-                        and(goal.conf(), belief.conf())
+                        TruthFunctions.confCompose(belief, goal)
 
                 )
         ;
@@ -156,6 +154,7 @@ public enum TruthFunctions2 {
 
     @Nullable
     public static Truth analogy(Truth a, Truth b, float minConf) {
+
         return analogyNew(a, b.freq(), b.conf(), minConf);
     }
 
@@ -165,7 +164,7 @@ public enum TruthFunctions2 {
      * strong frequency and confidence the closer in frequency they are
      */
     public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
-        float c = t.conf() * b.conf();
+        float c = TruthFunctions.confCompose(t, b);
         if (c < minConf) return null;
         float dF = Math.abs(t.freq() - b.freq());
         float sim = 1f - dF;

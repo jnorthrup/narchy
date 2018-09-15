@@ -26,6 +26,7 @@ public class Concepts3D extends DynamicConceptSpace {
     private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
         this(nar, () -> nar.attn.active().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
+
     }
 
     private Concepts3D(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {

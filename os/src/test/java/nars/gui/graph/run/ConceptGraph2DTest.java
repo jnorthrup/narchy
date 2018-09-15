@@ -18,7 +18,7 @@ class ConceptGraph2DTest {
 
         new DeductiveMeshTest(n, 5, 5);
 
-        ConceptGraph2D g = new ConceptGraph2D(n);
+        ConceptGraph2D g = BagregateConceptGraph2D.get(n);
 
         SpaceGraph.window(
                 
@@ -27,7 +27,7 @@ class ConceptGraph2DTest {
                 , 1200, 800
         );
 
-        n.startFPS(8f);
+        n.startFPS(32f);
     }
 
 }
