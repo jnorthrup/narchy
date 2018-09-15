@@ -27,10 +27,6 @@ public abstract class Param {
 
     public static final boolean FILTER_SIGNAL_TABLE_TEMPORAL_TASKS = true;
 
-    /**
-     * experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS
-     */
-    public static final boolean STRONG_COMPOSITION = false;
 
 
     public static final boolean SHUFFLE_TERMUTES = true;

@@ -178,13 +178,14 @@ public final class TruthFunctions {
 
 
     static float compConf(float f1, float c1, boolean not1, float f2, float c2, boolean not2) {
-        if (Param.STRONG_COMPOSITION) {
-            float F1 = not1 ? (1 - f1) : f1;
-            float F2 = not2 ? (1 - f2) : f2;
-            return or(and(F1, c1), and(F2, c2)) + and((1 - F1), c1, (1 - F2), c2);
-        } else {
+//        if (Param.STRONG_COMPOSITION) {
+//            float F1 = not1 ? (1 - f1) : f1;
+//            float F2 = not2 ? (1 - f2) : f2;
+//            return or(and(F1, c1), and(F2, c2)) + and((1 - F1), c1, (1 - F2), c2);
+//        } else {
+            //return Math.min(c1, c2);
             return c1 * c2;
-        }
+//        }
     }
 
 

@@ -7,7 +7,6 @@ import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.DeriverBudgeting;
-import nars.truth.Truth;
 
 /** wraps another DeriverBudgeting implementation and ensures that
  * the sum of the priorities of all a premise's derivation
@@ -52,8 +51,8 @@ public class NormalizingDeriverBudgeting implements DeriverBudgeting {
     }
 
     @Override
-    public float pri(Task t, Truth derivedTruth, Derivation d) {
+    public float pri(Task t, float f, float e, Derivation d) {
         batch.get().add(t);
-        return base.pri(t, derivedTruth, d);
+        return base.pri(t, f, e, d);
     }
 }

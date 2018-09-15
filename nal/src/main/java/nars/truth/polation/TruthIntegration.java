@@ -19,15 +19,19 @@ public class TruthIntegration {
 
     public static float eviAvg(Task t, long start, long end, int dur) {
         long range = start==ETERNAL ? 1 : 1 + (end - start);
-        return eviInteg(t, start, end, dur) / range;
+        return evi(t, start, end, dur) / range;
     }
 
-    public static float eviInteg(Task t) {
-        return eviInteg(t, 0);
+    public static float evi(Task t) {
+        return evi(t, 0);
     }
 
-    public static float eviInteg(Task t, long dur) {
-        return eviInteg(t, t.start(), t.end(), dur);
+    public static float evi(Task t, long dur) {
+        return evi(t, t.start(), t.end(), dur);
+    }
+
+    public static float evi(Task t, long[] startEnd, int dur) {
+        return evi(t, startEnd[0], startEnd[1], dur);
     }
 
     /**
@@ -35,7 +39,7 @@ public class TruthIntegration {
      * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
      * if qStart==qEnd then it is a point sample
      */
-    public static float eviInteg(Task t, long qStart, long qEnd, long dur) {
+    public static float evi(Task t, long qStart, long qEnd, long dur) {
         if (qStart == ETERNAL) {
             return t.isEternal() ? t.evi() : t.eviEternalized();
         }

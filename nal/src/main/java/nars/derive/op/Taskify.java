@@ -12,6 +12,7 @@ import nars.term.control.AbstractPred;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.polation.TruthIntegration;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,7 +137,11 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
 
-        float priority = d.deriver.prioritize.pri(t, tru, d);
+        float priority =
+                t.isBeliefOrGoal() ?
+                    d.deriver.prioritize.pri(t, tru.freq(), TruthIntegration.evi(t), d) :
+                    d.deriver.prioritize.pri(t, Float.NaN, Float.NaN, d);
+
         if (priority != priority) {
             d.nar.emotion.deriveFailPrioritize.increment();
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);

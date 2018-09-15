@@ -153,7 +153,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         long futureStarts = now;
         // - perceptDur;
         return (Task x) -> (x.endsAfter(futureStarts) ? presentAndFutureBoost : 1f) *
-                TruthIntegration.eviInteg(x, start, end, perceptDur);
+                TruthIntegration.evi(x, start, end, perceptDur);
     }
 
 

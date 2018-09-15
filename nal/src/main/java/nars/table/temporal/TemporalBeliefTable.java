@@ -8,10 +8,11 @@ import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
+import nars.truth.polation.TruthIntegration;
 
 import java.util.function.Predicate;
 
-import static nars.truth.polation.TruthIntegration.eviInteg;
+import static nars.truth.polation.TruthIntegration.evi;
 
 
 /**
@@ -48,8 +49,8 @@ public interface TemporalBeliefTable extends BeliefTable {
         ((NALTask)xy).cause(Cause.merge(Param.causeCapacity.intValue(), x, y));
 
         //factor in the evidence loss (and originality?) loss to reduce priority
-        float exy = eviInteg(xy);
-        float pFactor = exy / (eviInteg(x) + eviInteg(y));
+        float exy = TruthIntegration.evi(xy);
+        float pFactor = exy / (TruthIntegration.evi(x) + TruthIntegration.evi(y));
         //assert(pFactor <= 1f);
         //float oxy = xy.originality();
         //float px = Util.unitize(exy/ eviInteg(x) ); // * (oxy * x.originality()));

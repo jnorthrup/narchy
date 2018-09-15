@@ -8,8 +8,6 @@ import nars.derive.Derivation;
 import nars.derive.DeriverBudgeting;
 import nars.truth.Truth;
 
-import static nars.truth.TruthFunctions.w2cSafe;
-
 /**
  * TODO parameterize, modularize, refactor etc
  */
@@ -32,15 +30,15 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
 
     @Override
-    public float pri(Task t, Truth derivedTruth, Derivation d) {
+    public float pri(Task t, float f, float e, Derivation d) {
         float factor = this.scale.floatValue();
 
         factor *= factorComplexity(t, d);
 
-        if (derivedTruth != null) {
+        if (f==f) {
             //belief or goal:
-            factor *= factorConfidence(derivedTruth, d);
-            factor *= factorPolarity(derivedTruth);
+            factor *= factorConfidence(e, d);
+            factor *= factorPolarity(f);
         }
 
         return Util.clamp(d.pri * factor, ScalarValue.EPSILON, 1f);
@@ -59,19 +57,17 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
         return (float) Math.pow(relGrowthCostFactor, relGrowthExponent.floatValue());
     }
 
-    float factorPolarity(Truth derivedTruth) {
-        float polarity = derivedTruth.polarity();
+    float factorPolarity(float freq) {
+        float polarity = Truth.polarity(freq);
         return Util.lerp(polarity, 1f - polarityImportance.floatValue(), 1f);
     }
 
-    float factorConfidence(Truth derivedTruth, Derivation d) {
+    float factorConfidence(float dEvi, Derivation d) {
         boolean single = d.concSingle;
         float pEvi = single ? d.taskEvi : Math.max(d.taskEvi, d.beliefEvi);
         if (pEvi > 0) {
-            float pConf = w2cSafe(pEvi);
-            float dConf = derivedTruth.conf();
 
-            float confLossFactor = 1f-Util.unitize((pConf - dConf) / pConf);
+            float confLossFactor = 1f-Util.unitize((pEvi - dEvi) / pEvi);
 
             return Util.lerp(confLossFactor, 1f-confImportance.floatValue(), 1);
         }

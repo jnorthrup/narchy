@@ -5,6 +5,7 @@ import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
+import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import nars.*;
 import nars.concept.Concept;
@@ -31,6 +32,7 @@ import nars.term.util.transform.Retemporalize;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
+import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -456,8 +458,12 @@ public class Derivation extends PreDerivation {
                         Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
 
 
-        this.taskEvi = taskTruth != null ? taskTruth.evi() : 0;
-        this.beliefEvi = beliefTruthProjectedToTask != null ? beliefTruthProjectedToTask.evi() : 0;
+        long[] t = belief!=null && taskStart!=ETERNAL && beliefStart != ETERNAL ?
+                Longerval.unionArray(taskStart, _task.end(), beliefStart, _belief.end()) :
+                ( belief != null && taskStart==ETERNAL ? new long[] { beliefStart, _belief.end() } :
+                        new long[] { taskStart, _task.end() });
+        this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task, t, 0) : 0;
+        this.beliefEvi = belief != null ? TruthIntegration.evi(_belief, t, 0) : 0;
 
 
         setTTL(ttl);

@@ -188,7 +188,7 @@ public class Answer implements Consumer<Task> {
     }
 
     public static FloatFunction<Task> temporalTaskStrength(long start, long end, int dur) {
-        return x -> w2cSafe(TruthIntegration.eviInteg(x, start, end, dur));
+        return x -> w2cSafe(TruthIntegration.evi(x, start, end, dur));
     }
 
     boolean ditherTruth = false;

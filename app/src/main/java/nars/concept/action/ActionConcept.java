@@ -73,7 +73,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
             long dt = t.minTimeTo(now);
             int dur = n.dur();
             if (dt <= dur) {
-                MetaGoal.Action.learn(t.cause(), TruthIntegration.eviInteg(t), n.causes);
+                MetaGoal.Action.learn(t.cause(), TruthIntegration.evi(t), n.causes);
             }
         }
     }

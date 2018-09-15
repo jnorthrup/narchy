@@ -27,7 +27,8 @@ public class Longerval implements LongInterval {
 		}
 	}
 
-	@Override
+
+    @Override
 	public long start() {
 		return a;
 	}
@@ -123,6 +124,12 @@ public class Longerval implements LongInterval {
 		long a = max(myA, otherA), b = min(myB, otherB);
 		return a > b ? null : new long[] { a, b };
 	}
+
+	public static long[] unionArray(long myA, long myB, long otherA, long otherB) {
+		Longerval u = union(myA, myB, otherA, otherB);
+		return new long[] { u.a, u.b };
+	}
+
 
 	/** Return the longerval with elements from this not in other;
 	 *  other must not be totally enclosed (properly contained)

@@ -21,7 +21,7 @@ public interface DeriverBudgeting {
      * @param d the derivation context
      * @return priority, or NaN to filter (cancel) this derived result
      */
-    float pri(Task t, @Nullable Truth derivedTruth, Derivation d);
+    float pri(Task t, float derivedFreq, float derivedEvi, Derivation d);
 
 
 
