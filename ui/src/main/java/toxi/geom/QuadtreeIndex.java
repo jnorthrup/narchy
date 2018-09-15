@@ -27,6 +27,8 @@
 
 package toxi.geom;
 
+import jcog.pri.ScalarValue;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Set;
@@ -40,7 +42,7 @@ import java.util.function.Consumer;
  * For further reference also see the QuadtreeDemo in the /examples folder.
  * 
  */
-public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex<V> {
+public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex<V> {
 
     private static final int LeafCapacity = 4;
     private static final float MinLeafDimension = 0.0000001f;
@@ -51,8 +53,8 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
         LEAF
     }
 
-    private final PointQuadtree parent;
-    private PointQuadtree childNW, childNE, childSW, childSE;
+    private final QuadtreeIndex parent;
+    private QuadtreeIndex nw, ne, sw, se;
 
     private Type type;
 
@@ -60,15 +62,15 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
     private final float mx;
     private final float my;
 
-    public PointQuadtree() {
+    public QuadtreeIndex() {
         this(null, 0.5f, 0.5f, 1, 1);
     }
 
-    public PointQuadtree(float x, float y, float w, float h) {
+    public QuadtreeIndex(float x, float y, float w, float h) {
         this(null, x, y, w, h);
     }
 
-    public PointQuadtree(PointQuadtree parent, float x, float y, float w, float h) {
+    public QuadtreeIndex(QuadtreeIndex parent, float x, float y, float w, float h) {
         super(x, y, w, h);
         this.parent = parent;
         this.type = Type.EMPTY;
@@ -76,7 +78,7 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
         my = y + h * 0.5f;
     }
 
-    public PointQuadtree(Rect r) {
+    public QuadtreeIndex(Rect r) {
         this(null, r.x, r.y, r.width, r.height);
     }
 
@@ -90,36 +92,36 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
                 break;
 
             case BRANCH:
-                PointQuadtree<V> leaf = null;
-                if (childNW.type != Type.EMPTY) {
-                    leaf = childNW;
+                QuadtreeIndex<V> leaf = null;
+                if (nw.type != Type.EMPTY) {
+                    leaf = nw;
                 }
-                if (childNE.type != Type.EMPTY) {
+                if (ne.type != Type.EMPTY) {
                     if (leaf != null) {
                         break;
                     }
-                    leaf = childNE;
+                    leaf = ne;
                 }
-                if (childSW.type != Type.EMPTY) {
+                if (sw.type != Type.EMPTY) {
                     if (leaf != null) {
                         break;
                     }
-                    leaf = childSW;
+                    leaf = sw;
                 }
-                if (childSE.type != Type.EMPTY) {
+                if (se.type != Type.EMPTY) {
                     if (leaf != null) {
                         break;
                     }
-                    leaf = childSE;
+                    leaf = se;
                 }
                 if (leaf == null) {
                     type = Type.EMPTY;
-                    childNW = childNE = childSW = childSE = null;
+                    nw = ne = sw = se = null;
                 } else if (leaf.type == Type.BRANCH) {
                     break;
                 } else {
                     type = Type.LEAF;
-                    childNW = childNE = childSW = childSE = null;
+                    nw = ne = sw = se = null;
                     //value = leaf.value;
                     values = leaf.values;
                 }
@@ -132,12 +134,12 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
 
     @Override
     public void clear() {
-        childNW = childNE = childSW = childSE = null;
+        nw = ne = sw = se = null;
         type = Type.EMPTY;
         values = null;
     }
 
-    public PointQuadtree findNode(V p) {
+    public QuadtreeIndex findNode(V p) {
         switch (type) {
             case EMPTY:
                 return null;
@@ -155,11 +157,11 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
 
-    private PointQuadtree quadrant(float x, float y) {
+    private QuadtreeIndex quadrant(float x, float y) {
         if (x < mx) {
-            return y < my ? childNW : childSW;
+            return y < my ? nw : sw;
         } else {
-            return y < my ? childNE : childSE;
+            return y < my ? ne : se;
         }
     }
 
@@ -205,6 +207,24 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
     @Override
+    public void bounds(RectFloat2D bounds) {
+        if (bounds.equals(x, y, width, height, ScalarValue.EPSILON))
+            return; //no change
+
+        x = bounds.x;
+        y = bounds.y;
+        width = bounds.w;
+        height = bounds.h;
+        split();
+        //            if (parent == null && stretchPoint(p, MinLeafArea)) {
+//                //resize the entire tree
+//                split();
+//                boolean added = quadrant(p.x, p.y).index(p);
+//                return added;
+
+    }
+
+    @Override
     public boolean isIndexed(V p) {
         return findNode(p) != null;
     }
@@ -222,10 +242,10 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
                     }
                 }
             } else if (type == Type.BRANCH) {
-                if (childNW!=null) childNW.itemsWithinRadius(p, radius, results);
-                if (childNE!=null) childNE.itemsWithinRadius(p, radius, results);
-                if (childSW!=null) childSW.itemsWithinRadius(p, radius, results);
-                if (childSE!=null) childSE.itemsWithinRadius(p, radius, results);
+                if (nw !=null) nw.itemsWithinRadius(p, radius, results);
+                if (ne !=null) ne.itemsWithinRadius(p, radius, results);
+                if (sw !=null) sw.itemsWithinRadius(p, radius, results);
+                if (se !=null) se.itemsWithinRadius(p, radius, results);
             }
         }
     }
@@ -253,7 +273,7 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
 //        return results;
 //    }
 
-    public void prewalk(Consumer<PointQuadtree> visitor) {
+    public void prewalk(Consumer<QuadtreeIndex> visitor) {
         switch (type) {
             case LEAF:
                 visitor.accept(this);
@@ -261,10 +281,10 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
 
             case BRANCH:
                 visitor.accept(this);
-                childNW.prewalk(visitor);
-                childNE.prewalk(visitor);
-                childSW.prewalk(visitor);
-                childSE.prewalk(visitor);
+                nw.prewalk(visitor);
+                ne.prewalk(visitor);
+                sw.prewalk(visitor);
+                se.prewalk(visitor);
                 break;
         }
     }
@@ -305,20 +325,38 @@ public class PointQuadtree<V extends Vec2D> extends Rect implements SpatialIndex
         float w2 = w * 0.5f;
         float h2 = h * 0.5f;
 
-        childNW = new PointQuadtree(this, x, y, w2, h2);
-        childNE = new PointQuadtree(this, x + w2, y, w2, h2);
-        childSW = new PointQuadtree(this, x, y + h2, w2, h2);
-        childSE = new PointQuadtree(this, x + w2, y + h2, w2, h2);
+        QuadtreeIndex<V> nw = this.nw, ne = this.ne, se = this.se, sw = this.sw;
+        this.nw = new QuadtreeIndex(this, x, y, w2, h2);
+        this.ne = new QuadtreeIndex(this, x + w2, y, w2, h2);
+        this.sw = new QuadtreeIndex(this, x, y + h2, w2, h2);
+        this.se = new QuadtreeIndex(this, x + w2, y + h2, w2, h2);
 
         if (oldPoints!=null) {
-            for (V v : oldPoints)
-                index(v);
+            oldPoints.forEach(this::index);
+            if (nw!=null) nw.forEach(this::index);
+            if (ne!=null) ne.forEach(this::index);
+            if (sw!=null) sw.forEach(this::index);
+            if (se!=null) se.forEach(this::index);
         }
     }
 
+    public void forEach(Consumer<V> v) {
+        if (values!=null)
+            values.forEach(v);
+        if (nw !=null)
+            nw.forEach(v);
+        if (ne !=null)
+            ne.forEach(v);
+        if (se !=null)
+            se.forEach(v);
+        if (sw !=null)
+            sw.forEach(v);
+    }
+
+
     @Override
     public boolean unindex(V p) {
-        PointQuadtree node = findNode(p);
+        QuadtreeIndex node = findNode(p);
         if (node != null) {
             boolean removed = node.values.remove(p);
             assert(removed);

@@ -7,7 +7,7 @@ import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.windo.WiredWall;
+import spacegraph.space2d.widget.windo.GraphWall;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.video.JoglSpace;
@@ -52,8 +52,8 @@ public enum SpaceGraph { ;
 
 
     /** creates window with new 2d physics "wall" containing the provided widgets */
-    @Deprecated public static WiredWall wall(int width, int height) {
-        WiredWall s = new WiredWall();
+    @Deprecated public static GraphWall wall(int width, int height) {
+        GraphWall s = new GraphWall();
         s.pos(-1, -1, 1, 1);
 
 

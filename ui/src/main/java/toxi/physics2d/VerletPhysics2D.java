@@ -27,6 +27,7 @@
 
 package toxi.physics2d;
 
+import jcog.WTF;
 import jcog.data.list.FastCoWList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
@@ -49,13 +50,13 @@ public class VerletPhysics2D {
 
 
     /** TODO use FastIteratingConcurrentHashMap indexed by particle ID */
-    public final List<VerletParticle2D> particles = new FastCoWList<>(VerletParticle2D[]::new);
+    public final FastCoWList<VerletParticle2D> particles = new FastCoWList<>(VerletParticle2D[]::new);
 
     public final List<VerletSpring2D> springs = new FastCoWList<>(VerletSpring2D[]::new);
 
     public final Collection<ParticleBehavior2D> behaviors = new FastCoWList<>(ParticleBehavior2D[]::new);
 
-    public final Collection<ParticleConstraint2D> constraints = new FastCoWList<>(ParticleConstraint2D[]::new);
+    public final FastCoWList<ParticleConstraint2D> constraints = new FastCoWList<>(ParticleConstraint2D[]::new);
 
     /**
      * Default iterations for verlet solver = 50
@@ -109,8 +110,11 @@ public class VerletPhysics2D {
     public VerletPhysics2D addParticle(VerletParticle2D p) {
         if (index.index(p) && particles.add(p)) {
             return this;
+        } else {
+            //return null;
+            throw new WTF();
         }
-        return null;
+
     }
 
     /**
@@ -132,10 +136,9 @@ public class VerletPhysics2D {
      */
     protected void constrain() {
         boolean hasGlobalConstraints = !constraints.isEmpty();
-        for (VerletParticle2D p : particles) {
+        particles.forEach(p->{
             if (hasGlobalConstraints) {
-                for (ParticleConstraint2D c : constraints)
-                    c.apply(p);
+                constraints.forEachWith(ParticleConstraint2D::apply, p);
             }
             if (p.bounds != null) {
                 p.constrain(p.bounds);
@@ -143,7 +146,7 @@ public class VerletPhysics2D {
             if (worldBounds != null) {
                 p.constrain(worldBounds);
             }
-        }
+        });
     }
 
     public VerletPhysics2D clear() {
@@ -293,9 +296,9 @@ public class VerletPhysics2D {
             b.configure(subDT);
 
         for (int i = ii - 1; i >= 0; i--) {
-            behave(subDT);
-            integrate();
+            behave();
             spring(subDT);
+            integrate();
             constrain();
             index();
         }
@@ -316,27 +319,21 @@ public class VerletPhysics2D {
     /**
      * Updates all particle positions
      *
-     * @param dt
      */
-    protected void behave(float dt) {
+    protected void behave() {
+        behaviors.forEach(b -> {
 
-
-        for (ParticleBehavior2D b : behaviors) {
             if (index != null && b.supportsSpatialIndex()) {
                 b.applyWithIndex(index);
             } else {
-                for (VerletParticle2D p : particles)
-                    b.apply(p);
+                particles.forEachWith((p,bb)-> b.apply(p), b);
             }
-        }
 
-
+        });
     }
 
     protected void integrate() {
-        for (VerletParticle2D p : particles) {
-            p.update(drag);
-        }
+        particles.forEach(p -> p.update(drag));
     }
 
     /**
@@ -345,10 +342,10 @@ public class VerletPhysics2D {
      * @param subDT
      */
     protected void spring(float subDT) {
-        if (!springs.isEmpty()) {
-            for (VerletSpring2D s : springs) {
-                s.update(false);
-            }
-        }
+        springs.forEach(s -> s.update(false));
+    }
+
+    public void bounds(RectFloat2D bounds) {
+        index.bounds(bounds);
     }
 }

@@ -12,7 +12,7 @@ public class LinkingWiring extends Wiring {
     }
 
     @Override
-    protected void wired(Surface start, Surface end, Wire y, WiredWall wall) {
+    protected void wired(Surface start, Surface end, Wire y, GraphWall wall) {
         PathSurface p = new PathSurface(2);
         p.set(0, start.cx(), start.cy());
         p.set(1, end.cx(), end.cy());

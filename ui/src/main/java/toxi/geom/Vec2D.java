@@ -935,7 +935,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      * @param y
      * @return itself
      */
-    public final Vec2D set(float x, float y) {
+    public Vec2D set(float x, float y) {
         this.x = x;
         this.y = y;
         return this;

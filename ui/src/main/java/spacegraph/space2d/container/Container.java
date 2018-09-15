@@ -65,7 +65,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    protected final void paint(GL2 gl, SurfaceRender r) {
+    protected void paint(GL2 gl, SurfaceRender r) {
 
         int dtMS = r.dtMS;
         if (!prePaint(r)) {

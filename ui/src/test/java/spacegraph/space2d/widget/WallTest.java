@@ -27,8 +27,8 @@ import static spacegraph.space2d.container.Gridding.VERTICAL;
 
 public class WallTest {
 
-    static WiredWall newWallWindow() {
-        WiredWall w = new WiredWall();
+    static GraphWall newWallWindow() {
+        GraphWall w = new GraphWall();
         SpaceGraph.window(
                 new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()), 1000, 900);
         return w;
@@ -107,7 +107,7 @@ public class WallTest {
 
         public static void main(String[] args) {
 
-            WiredWall p = SpaceGraph.wall(1200, 1000);
+            GraphWall p = SpaceGraph.wall(1200, 1000);
 
 //        p.W.setGravity(new v2(0, -2.8f));
 //        staticBox(p.W, -5, -8, +5, 2f, false, true, true, true);
@@ -175,7 +175,7 @@ public class WallTest {
             final FloatRange lerpRate = new FloatRange(0.01f, 0, 1f);
             final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
-            WiredWall.PhyWindow w = p.put(new Gridding(0.25f,
+            GraphWall.PhyWindow w = p.put(new Gridding(0.25f,
                             new AutoUpdateMatrixView(
                                     lerpVector.data
                             ),
@@ -198,7 +198,7 @@ public class WallTest {
             hw.add(new LabeledPane("input", new Port((float[] i) -> {
                 System.arraycopy(i, 0, in, 0, i.length);
             })));
-            WiredWall.PhyWindow qw = p.put(hw, 1, 1);
+            GraphWall.PhyWindow qw = p.put(hw, 1, 1);
 
             Loop.of(() -> {
                 lerpVector.update();

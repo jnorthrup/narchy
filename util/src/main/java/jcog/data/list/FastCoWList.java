@@ -5,6 +5,7 @@ import jcog.data.iterator.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.Procedure;
+import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -50,6 +51,8 @@ public class FastCoWList<X> extends FasterList<X> {
     public Iterator<X> iterator() {
         return ArrayIterator.get(this.copy);
     }
+
+
 
     @Override
     public final int size() {
@@ -101,11 +104,17 @@ public class FastCoWList<X> extends FasterList<X> {
     @Override
     public void forEach(Consumer c) {
         X[] copy = this.copy;
-        
-            for (X x : copy)
-                c.accept(x);
-        
+        for (X x : copy)
+            c.accept(x);
     }
+
+    @Override
+    public <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
+        X[] copy = this.copy;
+        for (X x : copy)
+            c.accept(x, y);
+    }
+
 
     @Override
     public Stream<X> stream() {

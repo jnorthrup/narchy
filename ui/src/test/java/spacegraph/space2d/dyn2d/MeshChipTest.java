@@ -11,7 +11,7 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.windo.Port;
-import spacegraph.space2d.widget.windo.WiredWall;
+import spacegraph.space2d.widget.windo.GraphWall;
 
 import java.io.IOException;
 
@@ -90,7 +90,7 @@ public class MeshChipTest {
 
     public static void main(String[] args) throws IOException {
 
-        WiredWall p = SpaceGraph.wall(800, 800);
+        GraphWall p = SpaceGraph.wall(800, 800);
         p.put(new MessageChip(), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);

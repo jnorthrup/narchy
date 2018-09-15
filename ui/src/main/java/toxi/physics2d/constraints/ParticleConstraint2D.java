@@ -34,7 +34,7 @@ import toxi.physics2d.VerletParticle2D;
  * criteria (e.g. only allowed to move along an axis or shape etc.). The
  * constraints will be applied directly after each spring update.
  */
-public interface ParticleConstraint2D {
+@FunctionalInterface public interface ParticleConstraint2D {
 
     /**
      * Applies the constraint to the passed in particle. The method is assumed

@@ -86,6 +86,10 @@ public class VerletParticle2D extends Vec2D {
         this(x, y, 1);
     }
 
+    public VerletParticle2D() {
+        this(0,0);
+    }
+
     /**
      * Creates particle at position xyz with weight w
      *
@@ -159,12 +163,12 @@ public class VerletParticle2D extends Vec2D {
      * @param c constraint instance
      * @return itself
      */
-    public VerletParticle2D addConstraint(ParticleConstraint2D c) {
+    public ParticleConstraint2D addConstraint(ParticleConstraint2D c) {
         if (constraints == null) {
             constraints = new FasterList<>(1);
         }
         constraints.add(c);
-        return this;
+        return c;
     }
 
     public VerletParticle2D addConstraints(Iterable<ParticleConstraint2D> constraints) {
@@ -214,6 +218,14 @@ public class VerletParticle2D extends Vec2D {
         next.addSelf(d);
 
         clearForce();
+    }
+
+    @Override
+    public Vec2D set(float x, float y) {
+        super.set(x, y);
+        next.set(x, y);
+        prev.set(x, y);
+        return this;
     }
 
     @Override

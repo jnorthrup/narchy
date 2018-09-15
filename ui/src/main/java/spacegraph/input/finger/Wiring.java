@@ -4,7 +4,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.shape.PathSurface;
 import spacegraph.space2d.widget.windo.Wire;
-import spacegraph.space2d.widget.windo.WiredWall;
+import spacegraph.space2d.widget.windo.GraphWall;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;
@@ -93,13 +93,13 @@ public class Wiring extends FingerDragging {
      * @param end
      * @param y
      * @param wall*/
-    protected void wired(Surface start, Surface end, Wire y, WiredWall wall) {
+    protected void wired(Surface start, Surface end, Wire y, GraphWall wall) {
 
     }
 
     protected boolean tryWire() {
         Wire x = new Wire(start, end);
-        WiredWall wall = start.parent(WiredWall.class);
+        GraphWall wall = start.parent(GraphWall.class);
         Wire y = wall.link(x);
         if (y == x) {
             start.root().debug(start, 1, () -> "WIRE: " + start + " -> " + end);

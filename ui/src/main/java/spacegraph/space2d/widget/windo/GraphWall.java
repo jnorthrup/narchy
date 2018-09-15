@@ -23,10 +23,10 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
  */
-public class WiredWall<S extends Surface> extends Wall<S> {
+public class GraphWall<S extends Surface> extends Wall<S> {
 
 
-    public WiredWall() {
+    public GraphWall() {
         super();
     }
 
@@ -74,7 +74,7 @@ public class WiredWall<S extends Surface> extends Wall<S> {
 
     @Override
     public void forEach(Consumer<Surface> each) {
-        raw.forEach(each);
+        each.accept(raw);
         super.forEach(each);
     }
 
