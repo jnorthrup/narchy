@@ -57,7 +57,7 @@ public class AxisConstraint implements ParticleConstraint2D {
      * toxi.physics.IParticleConstraint#apply(toxi.physics.VerletParticle2D)
      */
     @Override
-    public void apply(VerletParticle2D p) {
+    public void accept(VerletParticle2D p) {
         p.setComponent(axis, constraint);
     }
 

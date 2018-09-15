@@ -113,7 +113,7 @@ public class CellMap<K, V> {
 
 
 
-    public CacheCell<K, V> remove(K key) {
+    public CacheCell<K, V> remove(Object key) {
         CacheCell<K, V> entry = map.remove(key);
         if (entry != null) {
             removed(entry);
@@ -171,6 +171,15 @@ public class CellMap<K, V> {
         return v != null ? v.value : null;
     }
 
+    /** find first corresponding key to the provided value */
+    @Nullable public K firstByValue(Predicate v) {
+        for (CacheCell<K,V> c : map.valueArray()) {
+            if (v.test(c.value)) {
+                return c.key;
+            }
+        }
+        return null;
+    }
 
 
     /**

@@ -31,7 +31,7 @@ import toxi.geom.SpatialIndex;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 
-public class ConstantForceBehavior2D<V extends Vec2D> implements ParticleBehavior2D<V> {
+public class ConstantForceBehavior2D<V extends Vec2D> implements ParticleBehavior2D {
 
     protected V force;
     protected Vec2D scaledForce = new Vec2D();
@@ -42,7 +42,7 @@ public class ConstantForceBehavior2D<V extends Vec2D> implements ParticleBehavio
     }
 
     @Override
-    public void apply(Vec2D p) {
+    public void accept(VerletParticle2D p) {
         if (p instanceof VerletParticle2D)
             ((VerletParticle2D)p).addForce(scaledForce);
     }

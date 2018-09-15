@@ -59,8 +59,8 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     private Type type;
 
     private Set<V> values = null;
-    private final float mx;
-    private final float my;
+    private float mx;
+    private float my;
 
     public QuadtreeIndex() {
         this(null, 0.5f, 0.5f, 1, 1);
@@ -215,6 +215,8 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
         y = bounds.y;
         width = bounds.w;
         height = bounds.h;
+        mx = x + width * 0.5f;
+        my = y + height * 0.5f;
         split();
         //            if (parent == null && stretchPoint(p, MinLeafArea)) {
 //                //resize the entire tree
@@ -235,11 +237,12 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
         if (intersectsCircle(p, radius)) {
             if (type == Type.LEAF) {
                 if (values!=null) {
-                    for (V value : values) {
-                        if (value.distanceToSquared(p) < radius * radius) {
+                    float rsquare = radius * radius;
+                    values.forEach(value -> {
+                        if (value.distanceToSquared(p) < rsquare) {
                             results.accept(value);
                         }
-                    }
+                    });
                 }
             } else if (type == Type.BRANCH) {
                 if (nw !=null) nw.itemsWithinRadius(p, radius, results);
@@ -322,22 +325,28 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
 
         type = Type.BRANCH;
 
-        float w2 = w * 0.5f;
-        float h2 = h * 0.5f;
-
         QuadtreeIndex<V> nw = this.nw, ne = this.ne, se = this.se, sw = this.sw;
+        float h2 = h / 2;
+        float w2 = w / 2;
         this.nw = new QuadtreeIndex(this, x, y, w2, h2);
-        this.ne = new QuadtreeIndex(this, x + w2, y, w2, h2);
-        this.sw = new QuadtreeIndex(this, x, y + h2, w2, h2);
-        this.se = new QuadtreeIndex(this, x + w2, y + h2, w2, h2);
+        this.ne = new QuadtreeIndex(this, mx, y, w2, h2);
+        this.sw = new QuadtreeIndex(this, x, my, w2, h2);
+        this.se = new QuadtreeIndex(this, mx, my, w2, h2);
 
         if (oldPoints!=null) {
+//            oldPoints.forEach((p)->{
+//                if (!this.quadrant(p.x, p.y).index(p)) {
+////                    if (!parent.index(p))
+//                        throw new WTF();
+//                }
+//            });
             oldPoints.forEach(this::index);
-            if (nw!=null) nw.forEach(this::index);
-            if (ne!=null) ne.forEach(this::index);
-            if (sw!=null) sw.forEach(this::index);
-            if (se!=null) se.forEach(this::index);
         }
+
+        if (nw!=null) nw.forEach(this::index);
+        if (ne!=null) ne.forEach(this::index);
+        if (sw!=null) sw.forEach(this::index);
+        if (se!=null) se.forEach(this::index);
     }
 
     public void forEach(Consumer<V> v) {

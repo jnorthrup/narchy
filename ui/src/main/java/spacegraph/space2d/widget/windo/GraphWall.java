@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.windo;
 import jcog.TODO;
 import jcog.data.graph.*;
 import jcog.data.iterator.ArrayIterator;
+import jcog.data.list.FasterList;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
@@ -10,9 +11,14 @@ import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.shape.VerletSurface;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.util.math.v2;
+import toxi.physics2d.VerletParticle2D;
+import toxi.physics2d.VerletSpring2D;
+import toxi.physics2d.behaviors.AttractionBehavior2D;
+import toxi.physics2d.behaviors.ParticleBehavior2D;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,6 +35,10 @@ public class GraphWall<S extends Surface> extends Wall<S> {
     public GraphWall() {
         super();
     }
+    public GraphWall(RectFloat2D bounds) {
+        super();
+        this.bounds = bounds;
+    }
 
     /**
      * TODO use more efficient graph representation
@@ -39,11 +49,14 @@ public class GraphWall<S extends Surface> extends Wall<S> {
     /** for links and other supporting geometry that is self-managed */
     final MutableListContainer raw = new MutableListContainer();
 
+    protected final VerletSurface physics = new VerletSurface();
+
     private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
 
     @Override
-    protected void starting() {
+    protected final void starting() {
 
+        physics.start(this);
         raw.start(this);
 
         super.starting();
@@ -53,12 +66,14 @@ public class GraphWall<S extends Surface> extends Wall<S> {
 
     @Override
     public void doLayout(int dtMS) {
+        physics.pos(bounds);
         raw.pos(bounds);
         super.doLayout(dtMS);
     }
 
     @Override
-    protected void stopping() {
+    protected final void stopping() {
+        physics.stop();
         raw.stop();
         super.stopping();
     }
@@ -74,9 +89,11 @@ public class GraphWall<S extends Surface> extends Wall<S> {
 
     @Override
     public void forEach(Consumer<Surface> each) {
+        each.accept(physics);
         each.accept(raw);
         super.forEach(each);
     }
+
 
 //    @Override
 //    protected void paintBelow(GL2 gl, SurfaceRender r) {
@@ -274,6 +291,59 @@ public class GraphWall<S extends Surface> extends Wall<S> {
 //                    }
 //                },
 //                RectFloat2D.XYWH(pos.x, pos.y, 1, 1), false);
+    }
+
+
+    /** returns the grip window */
+    public Windo chain(Surface a, Surface b, Surface grip) {
+        VerletParticle2D ap = physics.addParticleBind(a);
+        VerletParticle2D bp = physics.addParticleBind(b);
+
+        float m = 5; //TODO dynamic based on surface area, density
+        ap.mass(m);
+        bp.mass(m);
+
+        int chainLen = 3; //should be an odd number
+        Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain = physics.addParticleChain(ap, bp,
+                chainLen, 0, 0.05f);
+
+        final List<VerletParticle2D> points = chain.getOne();
+        VerletParticle2D first = points.get(0);
+        //VerletParticle2D last = points.get(points.size()-1);
+        VerletParticle2D mid = points.get(chainLen / 2);
+
+        FasterList<ParticleBehavior2D> fields = new FasterList(1);
+
+        if (first!=mid) {
+            fields.add(physics.physics.addBehavior(
+                    new AttractionBehavior2D<>(mid, 300, -100)));
+        }
+
+        Windo gripWindow = add(grip, (g)->{ return new Windo(g) {
+                @Override
+                protected void stopping() {
+
+                    unlink(a, b);
+
+                    //destroy the chain
+                    points.clear();
+                    List<VerletSpring2D> springs = chain.getTwo();
+                    springs.forEach(physics.physics::removeSpringElements);
+                    springs.clear();
+
+                    fields.forEach(physics.physics::removeBehavior);
+                    fields.clear();
+
+                    super.stopping();
+                }
+            };
+        }).pos(RectFloat2D.XYWH(mid.x, mid.y, 50, 50));
+
+
+
+        physics.bind(gripWindow,  mid, false);
+
+        return gripWindow;
     }
 
 

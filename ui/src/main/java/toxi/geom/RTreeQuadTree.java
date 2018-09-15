@@ -1,5 +1,6 @@
 package toxi.geom;
 
+import jcog.WTF;
 import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -51,9 +52,15 @@ public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implemen
         synchronized (this) {
             if (unindex(p)) {
                 each.accept(p);
-                return index(p);
+
+                try {
+                    return index(p);
+                } catch (StackOverflowError e) {
+                    index(p); //temporary for debug
+                    throw new WTF();
+                }
+
             }
-            unindex(p);
             return false;
         }
     }

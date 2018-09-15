@@ -7,6 +7,7 @@ import jcog.Util;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.util.math.v2;
 
@@ -279,5 +280,14 @@ abstract public class Surface implements SurfaceBase {
         pos(Util.clamp(x, L, Math.max(L, bounds.right() - w())),
                     Util.clamp(y, T, Math.max(T, bounds.bottom() - h())));
         //}
+    }
+
+    /** detach from parent, if possible */
+    public boolean detach() {
+        SurfaceBase p = this.parent;
+        if (p instanceof AbstractMutableContainer) {
+            return ((AbstractMutableContainer) p).removeChild(this);
+        }
+        return false;
     }
 }

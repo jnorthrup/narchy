@@ -109,7 +109,7 @@ public class TabPane extends Splitting {
             } else {
 
                 if (created[0] != null) {
-                    content.remove(created[0]);
+                    content.removeChild(created[0]);
                     created[0] = null;
                 }
                 if (content.isEmpty()) {

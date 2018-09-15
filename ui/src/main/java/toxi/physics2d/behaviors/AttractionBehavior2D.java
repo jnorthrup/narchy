@@ -33,7 +33,7 @@ import toxi.physics2d.VerletParticle2D;
 
 import java.util.Random;
 
-public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D<V> {
+public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D {
 
     protected V attractor;
     protected float attrStrength;
@@ -58,7 +58,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
     }
 
     @Override
-    public void apply(Vec2D p) {
+    public void accept(VerletParticle2D p) {
         Vec2D delta = attractor.sub(p);
         float dist = delta.magSquared();
         if (dist < radiusSquared) {
@@ -73,8 +73,8 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
     }
 
     @Override
-    public void applyWithIndex(SpatialIndex spaceHash) {
-        spaceHash.itemsWithinRadius(attractor, radius, (p)-> spaceHash.reindex(p, pp->apply((Vec2D) pp)));
+    public void applyWithIndex(SpatialIndex<VerletParticle2D> spaceHash) {
+        spaceHash.itemsWithinRadius(attractor, radius, this::accept);
     }
 
     public void configure(float timeStep) {

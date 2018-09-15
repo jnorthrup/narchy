@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class VerletParticle2D extends Vec2D {
 
-    protected final Vec2D next;
+    public final Vec2D next;
     protected final Vec2D prev;
     protected boolean isLocked;
 
@@ -191,7 +191,7 @@ public class VerletParticle2D extends Vec2D {
     public void applyBehaviors() {
         if (behaviors != null) {
             for (ParticleBehavior2D b : behaviors) {
-                b.apply(this);
+                b.accept(this);
             }
         }
     }
@@ -199,7 +199,7 @@ public class VerletParticle2D extends Vec2D {
     public void applyConstraints() {
         if (constraints != null) {
             for (ParticleConstraint2D pc : constraints) {
-                pc.apply(this);
+                pc.accept(this);
             }
         }
     }
@@ -308,7 +308,7 @@ public class VerletParticle2D extends Vec2D {
     /**
      * @return the weight
      */
-    public final float getMass() {
+    public final float mass() {
         return mass;
     }
 
@@ -401,9 +401,13 @@ public class VerletParticle2D extends Vec2D {
         return this;
     }
 
-    public void update(float drag) {
+    public void preUpdate() {
         if (!isLocked) {
             applyBehaviors();
+        }
+    }
+    public void postUpdate(float drag) {
+        if (!isLocked) {
             applyForce(drag);
             applyConstraints();
         }
@@ -411,5 +415,12 @@ public class VerletParticle2D extends Vec2D {
 
     public boolean changed() {
         return !equalsWithTolerance(next, ScalarValue.EPSILON);
+    }
+
+    public void constrainAll(RectFloat2D bounds) {
+        if (bounds!=null) {
+            constrain(bounds);
+            super.constrain(bounds);
+        }
     }
 }

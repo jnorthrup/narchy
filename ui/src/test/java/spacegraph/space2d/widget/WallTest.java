@@ -28,7 +28,7 @@ import static spacegraph.space2d.container.Gridding.VERTICAL;
 public class WallTest {
 
     static GraphWall newWallWindow() {
-        GraphWall w = new GraphWall();
+        GraphWall w = new GraphWall(RectFloat2D.X0Y0WH(0,0,1000, 900));
         SpaceGraph.window(
                 new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()), 1000, 900);
         return w;
@@ -78,7 +78,7 @@ public class WallTest {
     public static class Box2DTest_FloatMux {
 
         public static void main(String[] args) {
-            //WiredWall s = SpaceGraph.wall(800, 800);
+
 
             Wall s = newWallWindow();
 
@@ -107,7 +107,7 @@ public class WallTest {
 
         public static void main(String[] args) {
 
-            GraphWall p = SpaceGraph.wall(1200, 1000);
+          Wall p = newWallWindow();
 
 //        p.W.setGravity(new v2(0, -2.8f));
 //        staticBox(p.W, -5, -8, +5, 2f, false, true, true, true);
@@ -175,7 +175,7 @@ public class WallTest {
             final FloatRange lerpRate = new FloatRange(0.01f, 0, 1f);
             final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
-            GraphWall.PhyWindow w = p.put(new Gridding(0.25f,
+            p.add(new Gridding(0.25f,
                             new AutoUpdateMatrixView(
                                     lerpVector.data
                             ),
@@ -189,16 +189,16 @@ public class WallTest {
                                     super.prePaint(dtMS);
                                     out(lerpVector.data);
                                 }
-                            })),
-                    0.5f, 0.5f);
+                            }))
+                    ).pos(100, 100, 200, 200);
 
-            p.put(new TogglePort(), 0.25f, 0.25f);
+            p.add(new TogglePort()).pos(200, 200, 300, 300);
 
             Gridding hw = haiQWindow(q, in);
             hw.add(new LabeledPane("input", new Port((float[] i) -> {
                 System.arraycopy(i, 0, in, 0, i.length);
             })));
-            GraphWall.PhyWindow qw = p.put(hw, 1, 1);
+            p.add(hw).pos(350, 350, 500, 500);
 
             Loop.of(() -> {
                 lerpVector.update();

@@ -10,7 +10,7 @@ import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.BitmapLabel;
 
-import java.util.Set;
+import java.util.function.Function;
 
 /**
  * a wall (virtual surface) contains zero or more windows;
@@ -18,7 +18,7 @@ import java.util.Set;
  * <p>
  * TODO move active window to top of child stack
  */
-public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
+public class Wall<S extends Surface> extends MutableMapContainer<Surface, Windo> {
 
     public Wall() {
         super();
@@ -39,11 +39,17 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
 //        }
 //    }
 
+    public final Windo add(Surface x) {
+        return add(x, (xx) -> new Windo(new MetaFrame(xx)));
+    }
+
     /** uses put() semantics */
-    public final Windo add(S x) {
+    public final Windo add(Surface x, Function<Surface,Windo> windowize) {
         Windo w = computeIfAbsent(x, (xx) -> {
-            Windo ww = new Windo(new MetaFrame(xx));
-            ww.start(this);
+            Windo ww = windowize.apply(xx);
+            if (ww!=null) {
+                ww.start(this);
+            }
             return ww;
         }).value;
         return w;
@@ -51,7 +57,7 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
 
 
     @Override
-    public Windo remove(S key) {
+    public Windo remove(Object key) {
         Windo w = super.remove(key);
         if (w!=null) {
             w.stop();
@@ -60,15 +66,13 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
         return null;
     }
 
+
     public final Windo add(S x, float w, float h) {
         Windo y = add(x);
         y.size(w, h);
         return y;
     }
 
-    public Set<S> children() {
-        return cells.map.keySet();
-    }
 
     @Override
     public void doLayout(int dtMS) {
@@ -77,7 +81,7 @@ public class Wall<S extends Surface> extends MutableMapContainer<S, Windo> {
             w.layout();
         });
     }
-    public @Nullable Windo get(S t) {
+    public @Nullable Windo get(Surface t) {
         return getValue(t);
     }
 

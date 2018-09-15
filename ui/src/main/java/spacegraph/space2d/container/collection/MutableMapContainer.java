@@ -131,8 +131,15 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     }
 
 
-    public V remove(K key) {
-        return cells.remove(key).value;
+    public V remove(Object key) {
+        CellMap.CacheCell<K, V> c = cells.remove(key);
+        return c!=null ? c.value : null;
+    }
+
+    @Override
+    public boolean removeChild(Surface s) {
+        K k = cells.firstByValue(x -> s == x);
+        return k!=null && remove(k)!=null;
     }
 
     protected boolean removeSilently(K key) {

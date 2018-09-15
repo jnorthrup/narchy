@@ -52,7 +52,7 @@ public class RectConstraint implements ParticleConstraint2D {
     }
 
     @Override
-    public void apply(VerletParticle2D p) {
+    public void accept(VerletParticle2D p) {
         if (isContainer) {
             if (!rect.containsPoint(p)) {
                 p.constrain(rect);

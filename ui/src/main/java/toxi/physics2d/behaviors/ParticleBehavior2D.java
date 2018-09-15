@@ -28,10 +28,11 @@
 package toxi.physics2d.behaviors;
 
 import toxi.geom.SpatialIndex;
-import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 
-public interface ParticleBehavior2D<V extends Vec2D> {
+import java.util.function.Consumer;
+
+@FunctionalInterface public interface ParticleBehavior2D extends Consumer<VerletParticle2D> {
 
     /**
      * Applies the constraint to the passed in particle. The method is assumed
@@ -40,11 +41,16 @@ public interface ParticleBehavior2D<V extends Vec2D> {
      * @param p
      *            particle
      */
-    void apply(Vec2D p);
 
-    void applyWithIndex(SpatialIndex<VerletParticle2D> index);
+    default void applyWithIndex(SpatialIndex<VerletParticle2D> index) {
+        throw new UnsupportedOperationException();
+    }
 
-    void configure(float timeStep);
+    default void configure(float timeStep) {
 
-    boolean supportsSpatialIndex();
+    }
+
+    default boolean supportsSpatialIndex() {
+        return false;
+    }
 }

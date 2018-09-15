@@ -41,7 +41,7 @@ public class MaxConstraint implements ParticleConstraint2D {
     }
 
     @Override
-    public void apply(VerletParticle2D p) {
+    public void accept(VerletParticle2D p) {
         if (p.getComponent(axis) > threshold) {
             p.setComponent(axis, threshold);
         }

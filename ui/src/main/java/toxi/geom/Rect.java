@@ -123,28 +123,28 @@ public class Rect implements Shape2D {
         return (py >= y || py <= y + height);
     }
 
-    public boolean stretchPoint(ReadonlyVec2D p, float margin) {
-        boolean change = false;
-        float px = p.x();
-        float x1 = x;
-        float x2 = x1 + width;
-        if (px < x1)  { x1 = px - margin; change = true; }
-        if (px > x2) { x2 = px + margin; change = true; }
-
-        float py = p.y();
-        float y1 = y;
-        float y2 = y1 + height;
-        if (py < y1)  { y1 = py - margin; change = true; }
-        if (py > y2) { y2 = py + margin; change = true; }
-
-        if (change) {
-            x = x1;
-            y = y1;
-            width = x2-x1; height = y2-y1;
-            return true;
-        }
-        return false;
-    }
+//    public boolean stretchPoint(ReadonlyVec2D p, float margin) {
+//        boolean change = false;
+//        float px = p.x();
+//        float x1 = x;
+//        float x2 = x1 + width;
+//        if (px < x1)  { x1 = px - margin; change = true; }
+//        if (px > x2) { x2 = px + margin; change = true; }
+//
+//        float py = p.y();
+//        float y1 = y;
+//        float y2 = y1 + height;
+//        if (py < y1)  { y1 = py - margin; change = true; }
+//        if (py > y2) { y2 = py + margin; change = true; }
+//
+//        if (change) {
+//            x = x1;
+//            y = y1;
+//            width = x2-x1; height = y2-y1;
+//            return true;
+//        }
+//        return false;
+//    }
 
     /**
      * Creates a copy of this rectangle
@@ -340,7 +340,7 @@ public class Rect implements Shape2D {
      * original point is not modified. Together with
      * {@link #getUnmappedPointInRect(Vec2D)} this function can be used to map a
      * point from one rectangle to another.
-     * 
+     *
      * @param p
      *            point to be mapped
      * @return mapped Vec2D

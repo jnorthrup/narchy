@@ -1,5 +1,7 @@
 package spacegraph.space2d.container;
 
+import spacegraph.space2d.Surface;
+
 public abstract class AbstractMutableContainer extends Container {
 
     @Override
@@ -13,6 +15,10 @@ public abstract class AbstractMutableContainer extends Container {
     @Override
     protected void stopping() {
         clear();
+    }
+
+    public boolean removeChild(Surface s) {
+        return false; //by default dont support external removal
     }
 
     protected abstract void clear();

@@ -44,7 +44,7 @@ public class CircularConstraint implements ParticleConstraint2D {
     }
 
     @Override
-    public void apply(VerletParticle2D p) {
+    public void accept(VerletParticle2D p) {
         if (circle.containsPoint(p)) {
             p.set(circle.add(p.sub(circle).normalizeTo(circle.getRadius())));
         }

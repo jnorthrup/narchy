@@ -50,7 +50,7 @@ public class AngularConstraint implements ParticleConstraint2D {
     }
 
     @Override
-    public void apply(VerletParticle2D p) {
+    public void accept(VerletParticle2D p) {
         Vec2D delta = p.sub(rootPos);
         float heading = MathUtils.floor(delta.heading() / theta) * theta;
         p.set(rootPos.add(Vec2D.fromTheta(heading).scaleSelf(delta.magnitude())));

@@ -29,12 +29,14 @@ package toxi.physics2d.constraints;
 
 import toxi.physics2d.VerletParticle2D;
 
+import java.util.function.Consumer;
+
 /**
  * Defines an interface used to constrain VerletParticles based on a custom
  * criteria (e.g. only allowed to move along an axis or shape etc.). The
  * constraints will be applied directly after each spring update.
  */
-@FunctionalInterface public interface ParticleConstraint2D {
+@FunctionalInterface public interface ParticleConstraint2D extends Consumer<VerletParticle2D> {
 
     /**
      * Applies the constraint to the passed in particle. The method is assumed
@@ -43,5 +45,5 @@ import toxi.physics2d.VerletParticle2D;
      * @param p
      *            particle
      */
-    void apply(VerletParticle2D p);
+
 }

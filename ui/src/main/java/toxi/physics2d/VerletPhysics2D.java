@@ -49,7 +49,9 @@ import java.util.List;
 public class VerletPhysics2D {
 
 
-    /** TODO use FastIteratingConcurrentHashMap indexed by particle ID */
+    /**
+     * TODO use FastIteratingConcurrentHashMap indexed by particle ID
+     */
     public final FastCoWList<VerletParticle2D> particles = new FastCoWList<>(VerletParticle2D[]::new);
 
     public final List<VerletSpring2D> springs = new FastCoWList<>(VerletSpring2D[]::new);
@@ -66,7 +68,7 @@ public class VerletPhysics2D {
     /**
      * Optional bounding rect to constrain particles too
      */
-    protected RectFloat2D worldBounds;
+    public RectFloat2D bounds;
 
     protected float drag;
 
@@ -92,8 +94,9 @@ public class VerletPhysics2D {
         }
     }
 
-    public final void addBehavior(ParticleBehavior2D behavior) {
+    public final ParticleBehavior2D addBehavior(ParticleBehavior2D behavior) {
         behaviors.add(behavior);
+        return behavior;
     }
 
     public void addConstraint(ParticleConstraint2D constraint) {
@@ -108,13 +111,15 @@ public class VerletPhysics2D {
      */
     @Nullable
     public VerletPhysics2D addParticle(VerletParticle2D p) {
-        if (index.index(p) && particles.add(p)) {
-            return this;
-        } else {
-            //return null;
+
+        p.constrainAll(bounds);
+
+        if (!index.index(p)) {
             throw new WTF();
         }
 
+        particles.add(p);
+        return this;
     }
 
     /**
@@ -136,15 +141,15 @@ public class VerletPhysics2D {
      */
     protected void constrain() {
         boolean hasGlobalConstraints = !constraints.isEmpty();
-        particles.forEach(p->{
+        particles.forEach(p -> {
             if (hasGlobalConstraints) {
-                constraints.forEachWith(ParticleConstraint2D::apply, p);
+                constraints.forEachWith(ParticleConstraint2D::accept, p);
             }
             if (p.bounds != null) {
                 p.constrain(p.bounds);
             }
-            if (worldBounds != null) {
-                p.constrain(worldBounds);
+            if (bounds != null) {
+                p.constrain(bounds);
             }
         });
     }
@@ -194,7 +199,6 @@ public class VerletPhysics2D {
         }
         return null;
     }
-
 
 
     public boolean removeBehavior(ParticleBehavior2D c) {
@@ -266,8 +270,8 @@ public class VerletPhysics2D {
      * @param world
      * @return itself
      */
-    public VerletPhysics2D setWorldBounds(RectFloat2D world) {
-        worldBounds = world;
+    public VerletPhysics2D setBounds(RectFloat2D world) {
+        bounds = world;
         return this;
     }
 
@@ -296,19 +300,19 @@ public class VerletPhysics2D {
             b.configure(subDT);
 
         for (int i = ii - 1; i >= 0; i--) {
-            behave();
+            preUpdate();
             spring(subDT);
-            integrate();
+            postUpdate();
             constrain();
-            index();
+            index(false /*true*/ /* TODO: if bounds changed */);
         }
         return this;
     }
 
-    private void index() {
+    private void index(boolean force) {
         if (index != null) {
             for (VerletParticle2D p : particles)
-                if (p.changed())
+                if (force || p.changed())
                     index.reindex(p, VerletParticle2D::commit);
         } else {
             for (VerletParticle2D p : particles)
@@ -318,22 +322,26 @@ public class VerletPhysics2D {
 
     /**
      * Updates all particle positions
-     *
      */
-    protected void behave() {
+    protected void preUpdate() {
+
+        //local behaviors
+        particles.forEach(VerletParticle2D::preUpdate);
+
+        //global behaviors
         behaviors.forEach(b -> {
 
             if (index != null && b.supportsSpatialIndex()) {
                 b.applyWithIndex(index);
             } else {
-                particles.forEachWith((p,bb)-> b.apply(p), b);
+                particles.forEachWith((p, bb) -> b.accept(p), b);
             }
 
         });
     }
 
-    protected void integrate() {
-        particles.forEach(p -> p.update(drag));
+    protected void postUpdate() {
+        particles.forEach(p -> p.postUpdate(drag));
     }
 
     /**
