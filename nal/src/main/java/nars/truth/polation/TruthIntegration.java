@@ -81,32 +81,40 @@ public class TruthIntegration {
 
         long[] points;
 
-        boolean mid = qStart + 1 != qEnd;
+//        boolean mid = qStart + 1 != qEnd;
 
 
         long[] qt = Longerval.intersectionArray(qStart, qEnd, tStart, tEnd);
-        if (mid || (qt != null)) {
+        if (/*mid || */(qt != null)) {
 
-            TempLongArrayList pp = new TempLongArrayList((mid ? 1 : 0) + (qt == null ? 2 : 4));
+            TempLongArrayList pp = new TempLongArrayList(/*(mid ? 1 : 0) + (qt == null ? 2 : 4)*/6);
 
             pp.add(qStart);
 
-            if (mid)
-                pp.add((qStart + qEnd) / 2L); //mid
+//            if (mid)
+//                pp.add((qStart + qEnd) / 2L); //mid
 
             if (qt != null) {
                 //inner points
                 long qta = qt[0];
                 if (qta > qStart && qta < qEnd) //quick test to avoid set add
                     pp.add(qta);
-                else
-                    pp.add((qta+((qStart + qEnd) / 2L))/2L);
+                /*else */{
+                    //pp.add((qta + ((qStart + qEnd) / 2L)) / 2L);
+                    long before = qta - Math.max(1, dur);
+                    if (before > qStart)
+                        pp.add(before); //right before qta
+                }
 
                 long qtb = qt[1];
                 if (qta != qtb && qtb > qStart && qtb < qEnd)  //quick test to avoid set add
                     pp.add(qtb);
-                else
-                    pp.add((qtb + ((qStart + qEnd) / 2L))/2L);
+                /*else*/ {
+                    //pp.add((qtb + ((qStart + qEnd) / 2L)) / 2L);
+                    long after = qtb + Math.max(1, dur);
+                    if (after < qEnd)
+                        pp.add(after); //right after qtb
+                }
             }
 
 

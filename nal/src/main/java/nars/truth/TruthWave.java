@@ -2,6 +2,7 @@ package nars.truth;
 
 import jcog.WTF;
 import nars.NAR;
+import nars.Param;
 import nars.table.BeliefTable;
 import nars.time.Tense;
 import nars.util.TimeAware;
@@ -55,6 +56,7 @@ public class TruthWave {
     public TruthWave(@NotNull BeliefTable b, @NotNull TimeAware n) {
         this(b.size());
         set(b, Long.MIN_VALUE, Long.MAX_VALUE);
+        //TODO update range
     }
 
     /**
@@ -78,8 +80,10 @@ public class TruthWave {
         //long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
         b.forEachTask(minT, maxT, x -> {
             int ss = size[0];
-            if (ss >= s) { 
-                throw new WTF("truthwave capacity exceeded");
+            if (ss >= s) {
+                if (Param.DEBUG)
+                    throw new WTF("truthwave capacity exceeded");
+                return;
             }
 
             long xs = x.start();

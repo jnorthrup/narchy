@@ -181,8 +181,8 @@ public final class TruthFunctions {
     }
 
     public static float confCompose(float cx, float cy) {
-            return Math.min(cx, cy);
-            //return cx * cy;
+            //return Math.min(cx, cy);
+            return cx * cy;
     }
 
 

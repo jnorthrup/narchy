@@ -14,16 +14,13 @@ import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.FocusingLinearTruthPolation;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2w;
@@ -127,37 +124,57 @@ public class RevisionTest {
         return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    static void print(@NotNull List<Task> l, int start, int end) {
-
-        System.out.println("INPUT");
-        for (Task t : l) {
-            System.out.println(t);
+    @Test void testAdjacentTasks() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        {
+            Task x = Revision.merge(n, t(1, 0.9f, 0, 3).apply(n),
+                    t(1, 0.9f, 3, 5).apply(n));
+            assertEquals("(b-->a). 0⋈5 %1.0;.90%", x.toStringWithoutBudget());
+        }
+        {
+            Task x = Revision.merge(n, t(1, 0.9f, 0, 2).apply(n),
+                    t(1, 0.9f, 4, 5).apply(n));
+            assertEquals("(b-->a). 0⋈5 %1.0;.86%", x.toStringWithoutBudget());
+        }
+        {
+            Task x = Revision.merge(n, t(1, 0.9f, 0, 2).apply(n),
+                    t(1, 0.9f, 100, 102).apply(n));
+            assertEquals("(b-->a). 0⋈102 %1.0;.30%", x.toStringWithoutBudget());
         }
 
-        System.out.println();
 
-        System.out.println("TRUTHPOLATION");
-        for (long d = start; d < end; d++) {
-            Truth a1 = new FocusingLinearTruthPolation(d, d, 1).add(l).truth();
-            System.out.println(d + ": " + a1);
-        }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//    static void print(@NotNull List<Task> l, int start, int end) {
+//
+//        System.out.println("INPUT");
+//        for (Task t : l) {
+//            System.out.println(t);
+//        }
+//
+//        System.out.println();
+//
+//        System.out.println("TRUTHPOLATION");
+//        for (long d = start; d < end; d++) {
+//            Truth a1 = new FocusingLinearTruthPolation(d, d, 1).add(l).truth();
+//            System.out.println(d + ": " + a1);
+//        }
+//    }
 
 
     @Test
@@ -298,8 +315,7 @@ public class RevisionTest {
 
         b.print();
         assertTrue(3 <= b.size(true));
-        assertEquals(5, b.wave().start());
-        assertEquals(11, b.wave().end());
+
 
         b.believe(0.5f, 1.0f, 0.99f, 12);
 
@@ -311,10 +327,11 @@ public class RevisionTest {
 
         b.print();
 
-        assertEquals(5, b.wave().start());
-        assertEquals(12, b.wave().end());
-
-
+//        assertEquals(5, b.wave().start());
+//        assertEquals(12, b.wave().end());
+//
+//        assertEquals(5, b.wave().start());
+//        assertEquals(11, b.wave().end());
 
     }
 
@@ -398,15 +415,15 @@ public class RevisionTest {
         b.tasklinks().print();
     }
 
-    private static void permuteChoose(Compound a, Compound b, int dur, String expected) {
+    protected static void permuteChoose(Compound a, Compound b, int dur, String expected) {
         assertEquals(expected, permuteIntermpolations(a, b, dur).toString());
     }
 
-    private static void permuteChoose(Compound a, Compound b, String expected) {
+    protected static void permuteChoose(Compound a, Compound b, String expected) {
         permuteChoose(a, b, 1, expected);
     }
 
-    private static Set<Term> permuteIntermpolations(Term a, Term b) {
+    protected static Set<Term> permuteIntermpolations(Term a, Term b) {
         return permuteIntermpolations(a, b, 1);
     }
 
@@ -704,193 +721,6 @@ public class RevisionTest {
 
 
 
-    }
-
-    @Test
-    void testIntermpolation0() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+3 (b &&+3 c))");
-        Compound b = $.$("(a &&+3 (b &&+1 c))");
-        permuteChoose(a, b, "[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]");
-    }
-
-    @Test
-    void testIntermpolation0b() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+3 (b &&+3 c))");
-        Compound b = $.$("(a &&+1 (b &&+1 c))");
-        permuteChoose(a, b, "[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+5 c), ((a &&+3 b) &&+3 c), ((a &&+2 c) &&+1 b)]");
-    }
-
-    @Test
-    void testIntermpolationOrderMismatch() throws Narsese.NarseseException {
-        Compound a = $.$("(c &&+1 (b &&+1 a))");
-        Compound b = $.$("(a &&+1 (b &&+1 c))");
-        permuteChoose(a, b, "[((a &&+1 b) &&+1 c), (b &&+1 (a&|c)), ((a&|c) &&+1 b), ((c &&+1 b) &&+1 a)]");
-    }
-
-    @Test
-    void testIntermpolationOrderPartialMismatch() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+1 (b &&+1 c))");
-        Compound b = $.$("(a &&+1 (c &&+1 b))");
-        permuteChoose(a, b, "[((a &&+1 b) &&+1 c), ((a &&+1 c) &&+1 b), (a &&+2 (b&|c)), (a &&+1 (b&|c))]");
-    }
-    @Test
-    void testIntermpolationImplSubjOppositeOrder() throws Narsese.NarseseException {
-        Compound a = $.$("((x &&+2 y) ==> z)");
-        Compound b = $.$("((y &&+2 x) ==> z)");
-        permuteChoose(a, b, "[((x&&y)==>z)]");
-    }
-    @Test
-    void testIntermpolationImplSubjOppositeOrder2() throws Narsese.NarseseException {
-        Compound a = $.$("((x &&+2 y) ==>+1 z)");
-        Compound b = $.$("((y &&+2 x) ==>+1 z)");
-        permuteChoose(a, b, "[((x&&y) ==>+1 z)]");
-    }
-    @Test
-    void testIntermpolationImplSubjImbalance() throws Narsese.NarseseException {
-        Compound a = $.$("((x &&+1 y) ==> z)");
-        Compound b = $.$("(((x &&+1 y) &&+1 x) ==> z)");
-        permuteChoose(a, b, "TODO");
-    }
-
-    @Test
-    void testIntermpolationOrderPartialMismatch2() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+1 (b &&+1 (d &&+1 c)))");
-        Compound b = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
-        String expected = "[((a &&+1 b) &&+1 (d &&+1 c)), ((a &&+1 b) &&+1 (c&|d)), ((a &&+1 b) &&+2 (c&|d)), ((a &&+1 b) &&+1 (c &&+1 d))]";
-        permuteChoose(a, b, expected);
-    }
-
-    @Test
-    void testIntermpolationOrderMixDternalPre() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+1 (b &&+1 c))");
-        Compound b = $.$("(a &&+1 (b && c))");
-        permuteChoose(a, b, "[(a &&+1 (b&&c))]");
-    }
-
-    @Test
-    void testIntermpolationOrderMixDternalPost() throws Narsese.NarseseException {
-        Term e = $$("(a && (b &&+1 c))");
-        assertEquals("((a&|b) &&+1 (a&|c))", e.toString());
-
-        Compound a = $.$("(a &&+1 (b &&+1 c))");
-        Compound b = $.$("(a && (b &&+1 c))");
-
-        permuteChoose(a, b, "[" + e + "]");
-    }
-
-    @Test
-    void testIntermpolationWrongOrderSoDternalOnlyOption() throws Narsese.NarseseException {
-        Compound a = $.$("(((right-->tetris) &&+5 (rotCW-->tetris)) &&+51 (tetris-->[happy]))");
-        Compound b = $.$("(((tetris-->[happy])&&(right-->tetris)) &&+11 (rotCW-->tetris))");
-        permuteChoose(a, b, "[(&&,(tetris-->[happy]),(right-->tetris),(rotCW-->tetris))]");
-    }
-
-    @Test
-    void testIntermpolationOrderMixDternal2() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
-        Compound b = $.$("(a &&+1 (b &&+1 (c&&d)))");
-        permuteChoose(a, b, "[(((c&&d)&|a) &&+1 b), ((a &&+1 b) &&+1 (c&&d))]");
-    }
-
-    @Test
-    void testIntermpolationOrderMixDternal2Reverse() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
-        Compound b = $.$("((a && b) &&+1 (c &&+1 d))");
-        permuteChoose(a, b, "[(((a&&b) &&+1 c) &&+1 d), (((a&&b) &&+1 c) &&+2 d), (((a&&b) &&+2 c) &&+1 d), ((a&&b) &&+2 (c&|d))]");
-    }
-
-    @Test
-    void testIntermpolationOrderPartialMismatchReverse() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+1 (b &&+1 c))");
-        Compound b = $.$("(b &&+1 (a &&+1 c))");
-        permuteChoose(a, b, "[((a&&b) &&+1 c)]");
-    }
-
-    @Test
-    void testIntermpolationOrderPartialMismatchReverse2() throws Narsese.NarseseException {
-        Compound a = $.$("(b &&+1 (a &&+1 (c &&+1 d)))");
-        Compound b = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
-        permuteChoose(a, b,
-                //"[(((a&|b) &&+1 c) &&+1 d), (((a&|b) &&+2 c) &&+1 d), ((b &&+1 a) &&+1 (c &&+1 d)), ((a &&+1 b) &&+1 (c &&+1 d))]"
-                "[(((a&&c)&|b) &&+2 ((a&&c)&|d))]"
-        );
-    }
-
-    @Test
-    void testIntermpolationConj2OrderSwap() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+1 b)");
-        Compound b = $.$("(b &&+1 a))");
-        Compound c = $.$("(b &&+2 a))");
-        permuteChoose(a, b, 1, "[(b &&+1 a), (a &&+1 b)]");
-        permuteChoose(a, b, 2, "[(a&|b)]");
-        permuteChoose(a, c, 1, "[(b &&+2 a), (a &&+1 b)]"); //not within dur
-        permuteChoose(a, c, 4, "[(a&|b)]");
-
-    }
-
-    @Test
-    void testIntermpolationImplDirectionMismatch() throws Narsese.NarseseException {
-        Compound a = $.$("(a ==>+1 b)");
-        Compound b = $.$("(a ==>-1 b))");
-        permuteChoose(a, b, "[(a==>b)]");
-    }
-
-    @Test
-    void testIntermpolationImplDirectionDternalAndTemporal() throws Narsese.NarseseException {
-        Compound a = $.$("(a ==>+1 b)");
-        Compound b = $.$("(a ==> b))");
-        permuteChoose(a, b, "[(a==>b), (a ==>+1 b)]");
-    }
-
-    @Test
-    void testIntermpolation0invalid() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+3 (b &&+3 c))");
-        Compound b = $.$("(a &&+1 b)");
-        try {
-            Set<Term> p = permuteIntermpolations(a, b);
-            fail("");
-        } catch (Error  e) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    void testIntermpolation2() throws Narsese.NarseseException {
-        Compound f = $.$("(a &&+1 b)");
-        Compound g = $.$("(a &&-1 b)");
-        permuteChoose(f, g, "[(a&&b)]");
-
-        Compound h = $.$("(a &&+1 b)");
-        Compound i = $.$("(a &| b)");
-
-        permuteChoose(h, i, "[(a&|b), (a &&+1 b)]");
-    }
-
-    @Test
-    void testIntermpolationInner() throws Narsese.NarseseException {
-        permuteChoose($.$("(x --> (a &&+1 b))"), $.$("(x --> (a &| b))"),
-                "[(x-->(a&|b)), (x-->(a &&+1 b))]");
-    }
-
-    @Test
-    void testEmbeddedIntermpolation() {
-        Term a = $$("(a, (b ==>+2 c))");
-        Term b = $$("(a, (b ==>+10 c))");
-        NAR nar = NARS.shell();
-        nar.time.dur(6);
-        {
-            Term c = Revision.intermpolate(a, b, 0.5f, nar);
-            assertEquals("(a,(b ==>+6 c))", c.toString());
-        }
-        {
-
-            assertEquals("(a,(b ==>+10 c))",
-                    Revision.intermpolate(a, b, 0f, nar).toString());
-            assertEquals("(a,(b ==>+2 c))",
-                    Revision.intermpolate(a, b, 1f, nar).toString());
-
-            
-        }
     }
 
     @Test public void testMergeTruthDilution() {

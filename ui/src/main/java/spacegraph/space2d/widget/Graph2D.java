@@ -495,6 +495,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                 public void render(EdgeVis e, NodeVis from, GL2 gl) {
 
                     NodeVis to = e.to;
+                    if (to == null)
+                        return;
+
                     float fx = from.cx(), fy = from.cy();
 
                     float tx = to.cx(), ty = to.cy();

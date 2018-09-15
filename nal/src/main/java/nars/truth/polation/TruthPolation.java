@@ -87,14 +87,14 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Task task = tc.task;
 
-            float eAvg = TruthIntegration.eviAvg(task, start, end, dur);
+            float eContrib = TruthIntegration.evi(task, start, end, dur);
 
-            if (eAvg < Param.TRUTH_MIN_EVI) {
+            if (eContrib < Param.TRUTH_MIN_EVI) {
                 tc.evi = -1;
                 return null;
             } else {
                 tc.freq = task.freq(start, end);
-                tc.evi = eAvg;
+                tc.evi = eContrib;
                 return tc;
             }
         } else {

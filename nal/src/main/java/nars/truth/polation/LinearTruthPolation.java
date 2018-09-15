@@ -10,9 +10,9 @@ import static nars.time.Tense.ETERNAL;
 
 /**
  * result truth:
- *      frequency = linear combination of frequency values weighted by evidence;
- *      evidence = evidence sum
- *
+ * frequency = linear combination of frequency values weighted by evidence;
+ * evidence = evidence sum
+ * <p>
  * this implememnt aggregates combined evidence via linear inteprolation
  */
 public class LinearTruthPolation extends TruthPolation {
@@ -20,7 +20,6 @@ public class LinearTruthPolation extends TruthPolation {
     public LinearTruthPolation(long start, long end, int dur) {
         super(start, end, dur);
     }
-
 
 
     @Override
@@ -36,55 +35,45 @@ public class LinearTruthPolation extends TruthPolation {
 
 
         int s = size();
+        if (s == 0)
+            return null;
         float eSum, f;
-        switch (s) {
-            case 0:
-                return null;
-            case 1: {
 
-                TaskComponent x = update(0);
-                if (x == null)
-                    return null;
-                eSum = x.evi;
-                if (eSum < Param.TRUTH_MIN_EVI)
-                    return null;
+        float wFreqSum = 0;
+        eSum = 0;
+        for (int i = 0; i < s; i++) {
+            TaskComponent x = update(i);
+            if (x == null)
+                continue;
 
-                f = x.freq;
-                break;
-            }
-            default: {
-                float wFreqSum = 0;
-                eSum = 0;
-                for (int i = 0; i < s; i++) {
-                    TaskComponent x = update(i);
-                    if (x == null)
-                        continue;
+            float ee = x.evi;
 
-                    float ee = x.evi;
+            eSum += ee;
 
-                    eSum += ee;
-
-                    wFreqSum += ee * x.freq;
-                }
-                if (eSum < Param.TRUTH_MIN_EVI)
-                    return null;
-
-
-                f = (wFreqSum / eSum);
-                break;
-            }
+            wFreqSum += ee * x.freq;
         }
+        if (eSum < Param.TRUTH_MIN_EVI)
+            return null;
 
+
+        f = (wFreqSum / eSum);
 
         eSum *= eviFactor;
-        if (eSum >= Param.TRUTH_MIN_EVI)
-            return PreciseTruth.byEvi(f, eSum);
+        float eAvg;
+        if (start==ETERNAL) {
+            eAvg = eSum;
+        } else {
+            long range = 1 + (end - start);
+            eAvg = eSum / range;
+        }
+        if (eAvg >= Param.TRUTH_MIN_EVI)
+            return PreciseTruth.byEvi(f, eAvg);
         else
             return null;
     }
 
     public long range() {
-        return start==ETERNAL ? 1 : (end-start)+1;
+        return start == ETERNAL ? 1 : (end - start) + 1;
     }
 
 }

@@ -56,6 +56,7 @@ public class NAL4MultistepTest extends NALTest {
     void nal4_everyday_reasoning_easier() {
         int time = 2550;
 
+        test.confTolerance(0.2f);
         test.nar.termVolumeMax.set(9);
         test.nar.freqResolution.set(0.1f);
         test.nar.confResolution.set(0.1f);
