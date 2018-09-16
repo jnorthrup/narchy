@@ -6,7 +6,7 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.windo.GraphWall;
+import spacegraph.space2d.widget.windo.GraphEdit;
 
 public class WizardFrame extends Splitting {
 
@@ -67,7 +67,7 @@ public class WizardFrame extends Splitting {
 
     private void close() {
         synchronized (this) {
-            parent(GraphWall.PhyWindow.class).remove();
+            parent(GraphEdit.PhyWindow.class).remove();
         }
 
 

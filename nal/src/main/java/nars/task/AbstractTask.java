@@ -115,6 +115,11 @@ public abstract class AbstractTask implements ITask, Priority {
         }
 
         @Override
+        public boolean equals(Object obj) {
+            return this == obj;
+        }
+
+        @Override
         public int compareTo(AbstractTask.SchedTask that) {
             if (this == that) return 0;
 

@@ -181,7 +181,7 @@ public abstract class CircularBuffer {
         return _minSize;
     }
 
-    public void clear() {
+    public CircularBuffer clear() {
         _lock.lock();
         try {
             _viewPtr = _bufEnd = _bufStart = 0;
@@ -195,6 +195,7 @@ public abstract class CircularBuffer {
             if (_threadPool != null)
                 _threadPool.submit(_notifyListener);
         }
+        return this;
     }
 
     /**

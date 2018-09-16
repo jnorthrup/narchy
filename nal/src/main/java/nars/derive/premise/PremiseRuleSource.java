@@ -1048,7 +1048,7 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
 
     }
 
-    private static class ConjSimultaneous extends TermMatch {
+    private static final class ConjSimultaneous extends TermMatch {
 
         public static final ConjSimultaneous the = new ConjSimultaneous();
 

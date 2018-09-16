@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 400;
+    private final int cycles = 700;
 
     @Override
     protected NAR nar() {
@@ -82,6 +82,17 @@ public class NAL5Test extends NALTest {
 
     }
 
+    @Test
+    void depVarUniqueness() {
+
+        test
+        .believe("f(x,#1)")
+        .believe("f(y,#1)")
+        .mustBelieve(cycles, "(f(x,#1) ==> f(y,#2))", 1.00f, 0.45f)
+        .mustNotOutput(cycles, "(f(x,#1) ==> f(y,#1))", BELIEF, 0, 1, 0, 1, (t)->true)
+        ;
+
+    }
 
     @Test
     void induction() {

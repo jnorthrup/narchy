@@ -15,9 +15,6 @@ import com.github.fge.grappa.support.Position;
 import com.github.fge.grappa.transform.ParserTransformer;
 import com.github.fge.grappa.transform.base.ParserClassNode;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Range;
-import com.google.common.util.concurrent.Futures;
 import jcog.Util;
 import nars.task.CommandTask;
 import nars.task.NALTask;
@@ -351,8 +348,7 @@ public class Narsese {
 
     }
 
-    static final class CharSequenceInputBuffer
-            implements InputBuffer {
+    static final class CharSequenceInputBuffer implements InputBuffer {
 
         final Future<LineCounter> lineCounter = null;
         private final char[] charSequence;
@@ -390,7 +386,7 @@ public class Narsese {
         @Override
         public String subSequence(final int start, final int end) {
             //return charSequence.subSequence(start, end);
-            return new String(charSequence, start, (end - start));
+            return end > start ? new String(charSequence, start, (end - start)) : "";
         }
 
         @Override
@@ -414,29 +410,32 @@ public class Narsese {
 
         @Override
         public String extractLine(final int lineNumber) {
-            Preconditions.checkArgument(lineNumber > 0, "line number is negative");
-            final LineCounter counter = Futures.getUnchecked(lineCounter);
-            final Range<Integer> range = counter.getLineRange(lineNumber);
-            final int start = range.lowerEndpoint();
-            int end = range.upperEndpoint();
-            if (charAt(end - 1) == '\n')
-                end--;
-            if (charAt(end - 1) == '\r')
-                end--;
-            return extract(start, end);
+            throw new UnsupportedOperationException();
+//            Preconditions.checkArgument(lineNumber > 0, "line number is negative");
+//            final LineCounter counter = lineCounter.get(); //Futures.getUnchecked(lineCounter);
+//            final Range<Integer> range = counter.getLineRange(lineNumber);
+//            final int start = range.lowerEndpoint();
+//            int end = range.upperEndpoint();
+//            if (charAt(end - 1) == '\n')
+//                end--;
+//            if (charAt(end - 1) == '\r')
+//                end--;
+//            return extract(start, end);
         }
 
         @SuppressWarnings("AutoUnboxing")
         @Override
         public IndexRange getLineRange(final int lineNumber) {
-            final Range<Integer> range
-                    = Futures.getUnchecked(lineCounter).getLineRange(lineNumber);
-            return new IndexRange(range.lowerEndpoint(), range.upperEndpoint());
+            throw new UnsupportedOperationException();
+//            final Range<Integer> range
+//                    = Futures.getUnchecked(lineCounter).getLineRange(lineNumber);
+//            return new IndexRange(range.lowerEndpoint(), range.upperEndpoint());
         }
 
         @Override
         public int getLineCount() {
-            return Futures.getUnchecked(lineCounter).getNrLines();
+            throw new UnsupportedOperationException();
+//            return Futures.getUnchecked(lineCounter).getNrLines();
         }
 
         @Override

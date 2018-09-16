@@ -75,7 +75,7 @@ public class Derivation extends PreDerivation {
 //                }
 //            };
 
-    public final Anon anon;
+    public final Anon.AnonWithVarShift anon;
 
 
     private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
@@ -205,12 +205,11 @@ public class Derivation extends PreDerivation {
      */
     public Derivation() {
         super(
-                VAR_PATTERN
-                //null
+                null
                 , null, Param.UnificationStackMax
         );
 
-        this.anon = new Anon(ANON_INITIAL_CAPACITY);
+        this.anon = new Anon.AnonWithVarShift(ANON_INITIAL_CAPACITY);
     }
 
     @Override
@@ -291,14 +290,12 @@ public class Derivation extends PreDerivation {
             anon.rollback(taskUniques);
 
 
-        } else
-        {
+        } else {
             anon.clear();
-            try {
+
+            anon.unshift();
             this.taskTerm = anon.put(nextTask.term());
-            } catch (RuntimeException w) {
-                return fatal(nextTask, w);
-            }
+
 
 
             this.taskUniques = anon.uniques();
@@ -354,11 +351,11 @@ public class Derivation extends PreDerivation {
 
         if (this._belief != null) {
 
-            beliefTerm = anon.put(this._beliefTerm = nextBelief.term());
+            beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
             this.belief = new SpecialTermTask(beliefTerm, nextBelief);
         } else {
 
-            this.beliefTerm = anon.put(this._beliefTerm = nextBeliefTerm);
+            this.beliefTerm = anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm);
             this.beliefStart = TIMELESS;
             this.belief = null;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;

@@ -302,7 +302,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
                     HyperIterator.NodeFilter<TaskRegion> f = new HyperIterator.NodeFilter<>(
-                            (int) Math.round(Math.log(s)/Math.log((MIN_TASKS_PER_LEAF+MAX_TASKS_PER_LEAF)/2) )
+                            (int) Math.round(Math.log(s)/Math.log((MIN_TASKS_PER_LEAF+MAX_TASKS_PER_LEAF)/2f) )
                     );
 
                     TimeRange left = new TimeRange(mustContain ? time.start() : Long.MIN_VALUE+1, mid);

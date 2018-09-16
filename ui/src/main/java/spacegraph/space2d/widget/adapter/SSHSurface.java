@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.adapter;
 import com.jcraft.jcterm.JCTermSwingFrame;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.widget.windo.GraphWall;
+import spacegraph.space2d.widget.windo.GraphEdit;
 
 import javax.swing.*;
 
@@ -18,7 +18,7 @@ public class SSHSurface extends AWTSurface {
 
     public static void main(String[] args) {
 
-        GraphWall w = SpaceGraph.wall(800, 600);
+        GraphEdit w = SpaceGraph.wall(800, 600);
         w.put(new Gridding(new SSHSurface()), 8, 6);
         w.put(new Gridding(new AWTSurface(new JColorChooser(), 200, 200)),
                 3, 3);

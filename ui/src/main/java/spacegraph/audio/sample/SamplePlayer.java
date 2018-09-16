@@ -9,17 +9,15 @@ public class SamplePlayer implements SoundProducer {
     private final SoundSample sample;
     private float pos;
     private boolean alive = true;
-    private final float rate;
 
 
-    public SamplePlayer(@NotNull SoundSample sample, float rate) {
-        this.rate = rate;
+    public SamplePlayer(SoundSample sample) {
         this.sample = sample;
     }
 
     @Override
     public float read(float[] buf, int readRate) {
-        float step = (sample.rate * rate) / readRate;
+        float step = (sample.rate ) / readRate;
 
         float[] sb = sample.buf;
 
@@ -41,7 +39,7 @@ public class SamplePlayer implements SoundProducer {
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        float step = rate / readRate;
+        float step = sample.rate / readRate;
         pos += step * samplesToSkip;
 
         if (alive && pos >= sample.buf.length) {

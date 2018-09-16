@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class SpaceLogConsole extends Gridding implements SpaceLogger {
 
     private final int MAX_LINES = 5;
-    private final TextEdit text = new TextEdit(40, MAX_LINES);
+    private final TextEdit.TextEditUI text = new TextEdit.TextEditUI(40, MAX_LINES);
     private ConsoleGUI textGUI;
 
     public SpaceLogConsole() {
@@ -34,7 +34,7 @@ public class SpaceLogConsole extends Gridding implements SpaceLogger {
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
 
-            textGUI = text.surface();
+            textGUI = new TextEdit(text);
 
             set(textGUI);
             return true;

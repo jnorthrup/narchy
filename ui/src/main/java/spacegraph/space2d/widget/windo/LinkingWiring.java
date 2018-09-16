@@ -12,7 +12,7 @@ public class LinkingWiring extends Wiring {
     }
 
     @Override
-    protected void wired(Surface start, Surface end, Wire y, GraphWall wall) {
+    protected void wired(Surface start, Surface end, Wire y, GraphEdit wall) {
 
         wall.chain(start, end, new PushButton("x").click((r)->r.parent(Windo.class).detach()));
 

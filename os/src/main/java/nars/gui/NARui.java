@@ -37,7 +37,7 @@ public class NARui {
 
 
     public static Surface inputEditor() {
-        return new TextEdit(40, 8).surface();
+        return new TextEdit(40, 8);
     }
 
     public static Surface beliefCharts(NAR nar, Object... x) {

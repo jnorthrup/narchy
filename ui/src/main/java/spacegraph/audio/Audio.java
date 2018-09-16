@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 
 
 public class Audio implements Runnable {
@@ -37,12 +38,14 @@ public class Audio implements Runnable {
     private final SourceDataLine sdl;
 
     private final int rate = 44100;
-    private final int bufferSize = rate / 200;
+    private final int bufferSize = rate / 20;
 
     private final ListenerMixer listenerMixer;
 
 
     private final ByteBuffer soundBuffer = ByteBuffer.allocate(bufferSize * 4);
+    private final ShortBuffer soundBufferShort = soundBuffer.asShortBuffer();
+
     private final float[] leftBuf, rightBuf;
     
     
@@ -177,6 +180,10 @@ public class Audio implements Runnable {
 //        play(new SamplePlayer(sample, rate), soundSource, volume, priority);
 //    }
 
+    public <S extends SoundProducer> Sound<S> play(S p) {
+	    return play(p, 1, 1, 0);
+    }
+
     public <S extends SoundProducer> Sound<S> play(S p, float volume, float priority, float balance) {
         return play(p, new DefaultSource(p, balance), volume, priority);
     }
@@ -203,26 +210,30 @@ public class Audio implements Runnable {
         
 
 
-        soundBuffer.clear();
+        soundBufferShort.clear();
 
         float gain = max16;
 
-        byte[] ba = soundBuffer.array();
+        //byte[] ba = soundBuffer.array();
 
-        int b = 0;
+
         for (int i = 0; i < bufferSize; i++) {
-            short l = ((short)Util.clamp(leftBuf[i] * gain, -max16, max16));
-            ba[b++] = (byte) (l & 0x00ff);
-            ba[b++] = (byte) (l >> 8);
-            short r = ((short)Util.clamp(rightBuf[i] * gain, -max16, max16));
-            ba[b++] = (byte) (r & 0x00ff);
-            ba[b++] = (byte) (r >> 8);
+            short l = ((short)Util.clampSafe(leftBuf[i] * gain, -max16, max16));
+            soundBufferShort.put(l);
+            //ba[b++] = (byte) (l & 0x00ff);
+            //ba[b++] = (byte) (l >> 8);
+            short r = ((short)Util.clampSafe(rightBuf[i] * gain, -max16, max16));
+            soundBufferShort.put(r);
+            //ba[b++] = (byte) (r & 0x00ff);
+            //ba[b++] = (byte) (r >> 8);
         }
 
-        sdl.write(ba, 0, bufferSize * 2 * 2);
+        int bs = bufferSize * 2 * 2;
+        byte[] ba = soundBuffer.array();
+        sdl.write(ba, 0, bs);
         if (rec != null) {
             try {
-                rec.write(ba, 0, bufferSize * 2 * 2);
+                rec.write(ba, 0, bs);
                 rec.flush();
             } catch (Exception e) {
                 e.printStackTrace();

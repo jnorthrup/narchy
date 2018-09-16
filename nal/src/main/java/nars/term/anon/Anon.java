@@ -1,12 +1,16 @@
 package nars.term.anon;
 
 import jcog.WTF;
+import nars.Op;
 import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.ByteAnonMap;
 import nars.term.util.transform.TermTransform;
+import nars.term.var.ImDep;
+import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,8 +65,9 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
 
         if (x instanceof Atomic) {
 
-            if (x instanceof AnonID)
-                return x;
+            if (x instanceof AnonID) {
+                return putAnon(x);
+            }
 
             if (x instanceof UnnormalizedVariable) {
                 return x; //HACK
@@ -73,6 +78,11 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
         } else {
             return putCompound((Compound) x);
         }
+    }
+
+    /** anon filter in which subclasses can implement variable shifting */
+    protected Term putAnon(Term x) {
+        return x;
     }
 
 
@@ -139,5 +149,59 @@ public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermT
 
 //        validate(x, y, true);
         return y;
+    }
+
+    public static class AnonWithVarShift extends Anon {
+        int indepShift = 0, depShift = 0, queryShift = 0;
+
+        public AnonWithVarShift(int cap) {
+            super(cap);
+        }
+
+        @Override
+        protected Term putAnon(Term x) {
+            if (x instanceof Variable && !(x instanceof ImDep)) {
+                NormalizedVariable v = ((NormalizedVariable) x);
+                int shift;
+                Op vv = v.op();
+                switch (vv) {
+                    case VAR_DEP: shift = depShift; break;
+                    case VAR_INDEP: shift = indepShift; break;
+                    case VAR_QUERY: shift = queryShift; break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+                if (shift!=0) {
+                    int newID = v.anonNum() + shift;
+                    assert(newID < Byte.MAX_VALUE-3); //to be safe
+                    x = v.normalize((byte) newID);
+                }
+            }
+            return super.putAnon(x);
+        }
+
+        public AnonWithVarShift unshift() {
+            indepShift = depShift = queryShift = 0;
+            return this;
+        }
+
+        public AnonWithVarShift shift(Term base) {
+            if (!base.hasVars())
+                return this;
+            else
+                return shift(0 /*base.varIndep()*/, base.varDep(), base.varQuery());
+        }
+
+        public AnonWithVarShift shift(int indep, int dep, int query) {
+            indepShift = indep;
+            depShift = dep;
+            queryShift = query;
+            return this;
+        }
+
+        public Term putShift(Term x, Term base) {
+            //TODO only shift if the variable bits overlap, but if disjoint not necessary
+            return ((x.hasVars() && base.hasVars()) ? shift(base) : this).put(x);
+        }
     }
 }

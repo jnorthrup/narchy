@@ -83,8 +83,8 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
                 float lp = (pan > 0 ? 1 : 1 + pan) * sound.amplitude;
 
                 int l = leftBuf.length;
-
-                for (int j = 0; j < l; j++) {
+                int j;
+                for (j = 0; j < l; j++) {
                     float bj = buf[j];
 
                     float lb = leftBuf[j];
@@ -95,7 +95,11 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
                     rb += bj * rp;
                     rightBuf[j] = rb;
                 }
+
+
             } else {
+
+
                 sound.skip(leftBuf.length, readRate);
             }
 

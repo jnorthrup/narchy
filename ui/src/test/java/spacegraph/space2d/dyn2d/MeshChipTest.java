@@ -11,7 +11,7 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.windo.Port;
-import spacegraph.space2d.widget.windo.GraphWall;
+import spacegraph.space2d.widget.windo.GraphEdit;
 
 import java.io.IOException;
 
@@ -90,7 +90,7 @@ public class MeshChipTest {
 
     public static void main(String[] args) throws IOException {
 
-        GraphWall p = SpaceGraph.wall(800, 800);
+        GraphEdit p = SpaceGraph.wall(800, 800);
         p.put(new MessageChip(), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);
@@ -100,7 +100,7 @@ public class MeshChipTest {
 
         final Port out = new Port();
 
-        final TextEdit t = new TextEdit(24, 3) {
+        final TextEdit.TextEditUI t = new TextEdit.TextEditUI(24, 3) {
             @Override
             protected void onKeyCtrlEnter() {
                 String t = text();
@@ -112,7 +112,7 @@ public class MeshChipTest {
         public MessageChip() {
             super();
             split(0.1f);
-            set(t.surface(), out);
+            set(new TextEdit(t), out);
         }
     }
 

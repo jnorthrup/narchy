@@ -42,12 +42,19 @@ public class Concepts3D extends DynamicConceptSpace {
 
 
         Bagregate<Activate> cpts = this.concepts;
+        /*inputbox = */
+        //nar.reset();
+        //                        try {
+        //
+        //                        } catch (Narsese.NarseseException e) {
+        //                            e.printStackTrace();
+        //                        }
         Surface inputPanel =
-                (/*inputbox = */new TextEdit() {
+                new TextEdit((/*inputbox = */new TextEdit.TextEditUI() {
                     @Override
                     protected void onKeyCtrlEnter() {
 
-                        nar.runLater(()->{
+                        nar.runLater(() -> {
 
                             //nar.reset();
                             nar.clear();
@@ -69,7 +76,7 @@ public class Concepts3D extends DynamicConceptSpace {
 //                        }
                     }
 
-                }).surface();
+                }));
         sg.add(new SubOrtho(grid(
                 inputPanel,
                 NARui.top(nar)

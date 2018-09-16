@@ -14,7 +14,7 @@ import static nars.term.atom.Bool.True;
 /** equivalent to prolog member/2:
  *      member(U,S)  |-   U is in S
  */
-public class Member extends Functor implements The, Functor.InlineFunctor {
+public final class Member extends Functor implements The, Functor.InlineFunctor {
 
     public static Functor the = new Member();
 

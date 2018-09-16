@@ -148,6 +148,7 @@ public class Memory {
                     }
                 });
             } catch (ArithmeticException f) {
+                f.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -335,7 +336,7 @@ public class Memory {
                 URI u = URI.create(s);
                 return Stream.of(u);
             } catch (IllegalArgumentException e) {
-
+                e.printStackTrace();
             }
         }
 

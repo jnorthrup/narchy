@@ -166,17 +166,22 @@ public class Bordering extends MutableListContainer {
         return this;
     }
 
+    public Bordering set(int direction, Surface next, float borderSizePct) {
+        borderSize(direction, borderSizePct);
+        return set(direction, next);
+    }
+
     @Override
-    public Bordering set(int index, Surface next) {
-        if (index >= 9)
+    public Bordering set(int direction, Surface next) {
+        if (direction >= 9)
             throw new ArrayIndexOutOfBoundsException();
 
         synchronized (this) {
-            int empties = index - (childrenCount() - 1);
+            int empties = direction - (childrenCount() - 1);
             for (int i = 0; i < empties; i++)
                 add(new EmptySurface()); 
 
-            super.set(index, next);
+            super.set(direction, next);
             return this;
         }
     }

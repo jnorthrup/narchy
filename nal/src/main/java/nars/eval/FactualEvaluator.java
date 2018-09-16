@@ -57,7 +57,7 @@ public class FactualEvaluator extends Evaluator {
     /**
      * proof node
      */
-    abstract class Node {
+    abstract static class Node {
         protected MutableSet<Term> conds = null;
 
         @Deprecated

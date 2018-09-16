@@ -11,7 +11,7 @@ import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.windo.Port;
-import spacegraph.space2d.widget.windo.GraphWall;
+import spacegraph.space2d.widget.windo.GraphEdit;
 
 import java.lang.reflect.Field;
 
@@ -54,17 +54,17 @@ public class Dyn2DSurfaceTest {
     public static class Box2DTest1_Demo {
 
         public static void main(String[] args) {
-            GraphWall s = SpaceGraph.wall(1000, 800);
+            GraphEdit s = SpaceGraph.wall(1000, 800);
             demo(s);
         }
     }
 
-    public static void demo(GraphWall s) {
-        GraphWall.PhyWindow w = s.put(WidgetTest.widgetDemo(), 100f, 100f);
+    public static void demo(GraphEdit s) {
+        GraphEdit.PhyWindow w = s.put(WidgetTest.widgetDemo(), 100f, 100f);
         w.move(50,50);
 
         w.sprout(
-                new Gridding(0.1f, 1f, new TextEdit(16, 3, "wtf").surface()),
+                new Gridding(0.1f, 1f, new TextEdit(new TextEdit.TextEditUI(16, 3, "wtf"))),
                 0.3f
         );
         /*.getOne().sprout(
@@ -146,7 +146,7 @@ public class Dyn2DSurfaceTest {
 
     public static class Box2DTest_ObjGraph {
         public static void main(String[] args) {
-            GraphWall s = SpaceGraph.wall(800, 800);
+            GraphEdit s = SpaceGraph.wall(800, 800);
 
             ObjectGraph og = new ObjectGraph(2, s) {
 
@@ -167,7 +167,7 @@ public class Dyn2DSurfaceTest {
             };
 
             og.forEachNode(n -> {
-                GraphWall.PhyWindow oo = s.put(new PushButton(n.id().getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
+                GraphEdit.PhyWindow oo = s.put(new PushButton(n.id().getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
             });
 
 
@@ -182,7 +182,7 @@ public class Dyn2DSurfaceTest {
     public static class Box2DTest_ProtoWidget {
 
         public static void main(String[] args) {
-            GraphWall s = SpaceGraph.wall(800, 800);
+            GraphEdit s = SpaceGraph.wall(800, 800);
 
             s.put(
                     new WizardFrame( new ProtoWidget() ),

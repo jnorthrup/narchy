@@ -10,7 +10,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.shape.VerletSurface;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.windo.GraphWall;
+import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.animate.Animated;
 import toxi.geom.QuadtreeIndex;
@@ -182,7 +182,7 @@ class VerletSurfaceTest {
 
     }
 
-    public static class VerletLinkTest extends GraphWall {
+    public static class VerletLinkTest extends GraphEdit {
 
 //        @Override
 //        protected void starting() {

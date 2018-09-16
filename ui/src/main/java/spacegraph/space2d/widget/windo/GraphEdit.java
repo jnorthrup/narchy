@@ -29,13 +29,16 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
  */
-public class GraphWall<S extends Surface> extends Wall<S> {
+public class GraphEdit<S extends Surface> extends Wall<S> {
 
 
-    public GraphWall() {
+    public GraphEdit() {
         super();
     }
-    public GraphWall(RectFloat2D bounds) {
+    public GraphEdit(float w, float h) {
+        this(RectFloat2D.X0Y0WH(0,0 , w, h));
+    }
+    public GraphEdit(RectFloat2D bounds) {
         super();
         this.bounds = bounds;
     }
@@ -78,10 +81,10 @@ public class GraphWall<S extends Surface> extends Wall<S> {
         super.stopping();
     }
 
-    @Override
-    public boolean tangible() {
-        return true;
-    }
+//    @Override
+//    public boolean tangible() {
+//        return true;
+//    }
 
     public final void addRaw(Surface s) {
         raw.add(s);

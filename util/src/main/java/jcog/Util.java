@@ -1419,6 +1419,10 @@ public enum Util {
         assertFinite(min);
         assertFinite(max);
         assert (min <= max);
+        return clampSafe(f, min, max);
+    }
+
+    public static float clampSafe(float f, float min, float max) {
         return Math.max(Math.min(f, max), min);
     }
 

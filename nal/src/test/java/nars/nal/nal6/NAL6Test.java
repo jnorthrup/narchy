@@ -485,7 +485,9 @@ public class NAL6Test extends NALTest {
         tester.believe("(key:#x && open(#x,{lock1}))");
         tester.believe("lock:{lock1}");
 
-        tester.mustBelieve(cycles, "(&&, key:#1, lock:#2, open(#1,#2))", 1.00f, 0.81f);
+
+        tester.mustBelieve(cycles, "(&&,open(#1,{#2}),({#2}-->lock),(#1-->key))", 1.00f, 0.81f);
+        //tester.mustBelieve(cycles, "(&&, key:#1, lock:#2, open(#1,#2))", 1.00f, 0.81f);
 
 
         tester.mustBelieve(cycles, "(lock:{$1} ==> (key:#2 && open(#2,{$1})))", 1.00f, 0.45f); //this is ok too

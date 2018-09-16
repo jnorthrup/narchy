@@ -42,8 +42,8 @@ public class MethodSurface extends Gridding {
         if (t == float.class) {
             //..
         } else if (t == String.class) {
-            TextEdit te = new TextEdit(8, 1);
-            pp.add(te.surface());
+            TextEdit.TextEditUI te = new TextEdit.TextEditUI(8, 1);
+            pp.add(new TextEdit(te));
             Object d = defaults.get(pName);
             if (d!=null) {
                 te.text(d.toString());

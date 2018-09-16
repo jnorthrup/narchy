@@ -20,7 +20,7 @@ public enum Image { ;
     public static final Functor imageInt = Functor.f2Inline("imageInt", Image::imageInt);
     public static final Functor imageExt = Functor.f2Inline("imageExt", Image::imageExt);
 
-    public static Term imageExt(Term t, Term x) {
+    static Term imageExt(Term t, Term x) {
         
         
         if (t.op()==INH) {
@@ -36,7 +36,7 @@ public enum Image { ;
         return Bool.Null;
     }
 
-    public static boolean imaged(Term p) {
+    private static boolean imaged(Term p) {
         return p.hasAny(Op.VAR_DEP) && p.OR(x -> (x == Op.ImgInt || x == Op.ImgExt));
     }
 

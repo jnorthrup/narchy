@@ -27,8 +27,8 @@ import static spacegraph.space2d.container.Gridding.VERTICAL;
 
 public class WallTest {
 
-    static GraphWall newWallWindow() {
-        GraphWall w = new GraphWall(RectFloat2D.X0Y0WH(0,0,1000, 900));
+    static GraphEdit newWallWindow() {
+        GraphEdit w = new GraphEdit(RectFloat2D.X0Y0WH(0,0,1000, 900));
         SpaceGraph.window(
                 new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()), 1000, 900);
         return w;

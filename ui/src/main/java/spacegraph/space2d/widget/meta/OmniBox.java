@@ -15,7 +15,7 @@ import spacegraph.space2d.widget.windo.Widget;
  */
 public class OmniBox extends Widget {
 
-    private final TextEdit edit;
+    private final TextEdit.TextEditUI edit;
 
 
     private final Gridding results;
@@ -71,7 +71,7 @@ public class OmniBox extends Widget {
 
 
 
-        edit = new TextEdit() {
+        edit = new TextEdit.TextEditUI() {
 
             @Override
             protected void onKeyCtrlEnter() {
@@ -91,13 +91,14 @@ public class OmniBox extends Widget {
 
             @Override
             protected void textChange(String next) {
+                super.textChange(next);
                 TerminalPosition cp = getCursorPosition();
                 cursorChange(next, cp);
             }
 
         };
 
-        content.add(edit.surface().scale(2));
+        content.add(new TextEdit(edit).scale(2));
         set(content);
 
         

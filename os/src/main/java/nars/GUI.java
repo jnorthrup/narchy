@@ -12,7 +12,7 @@ import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
-import spacegraph.space2d.widget.windo.GraphWall;
+import spacegraph.space2d.widget.windo.GraphEdit;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,7 +50,7 @@ public class GUI {
     }
 
     static void wall(NAR nar) {
-        GraphWall w = SpaceGraph.wall(800, 600);
+        GraphEdit w = SpaceGraph.wall(800, 600);
         w.frame(new ServicesTable(nar.services), 5, 4);
         w.frame(new OmniBox(new LuceneQueryModel()), 6, 1);
         w.frame(NARui.top(nar), 4, 4);

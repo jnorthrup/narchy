@@ -48,12 +48,12 @@ public class WidgetTest {
                                 new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)
                         ),
                         new XYSlider(),
-                        new DummyConsole().surface(),
+                        new TextEdit(new DummyConsole()),
                         new MetaFrame(new Sketch2DBitmap(256, 256))
                 );
     }
 
-    private static class DummyConsole extends TextEdit implements Runnable {
+    private static class DummyConsole extends TextEdit.TextEditUI implements Runnable {
 
         public DummyConsole() {
             super(15, 15);

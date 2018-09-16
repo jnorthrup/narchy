@@ -89,7 +89,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
 
     @Override
     public void forEach(Consumer<? super Termed> c) {
-        concepts.asMap().values().forEach(c::accept);
+        concepts.asMap().values().forEach(c);
     }
 
     @Override

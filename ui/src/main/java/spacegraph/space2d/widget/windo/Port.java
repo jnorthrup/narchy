@@ -242,7 +242,7 @@ public class Port extends Widget implements Wiring.Wireable {
     public boolean start(@Nullable SurfaceBase parent) {
 
         if (super.start(parent)) {
-            this.node = parent(GraphWall.class).links.addNode(this);
+            this.node = parent(GraphEdit.class).links.addNode(this);
             IntObjectProcedure<Port> u = this.updater;
             if (u !=null)
                 u.value(0, this);
@@ -253,7 +253,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
     @Override
     public boolean stop() {
-        GraphWall p = parent(GraphWall.class);
+        GraphEdit p = parent(GraphEdit.class);
         if (super.stop()) {
             if (p!=null)
                 p.links.removeNode(this);

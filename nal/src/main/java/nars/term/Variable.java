@@ -94,7 +94,7 @@ public interface Variable extends Atomic {
             return x.unify(y, u);
         } else {
             if (y instanceof Variable) {
-                return unifyVar((Variable) y, u, true);
+                return unifyVar((Variable) y, u);
             } else {
                 return u.matchType(this.op()) && u.putXY(this, y);
             }
@@ -106,12 +106,12 @@ public interface Variable extends Atomic {
      * since
      * #1 from x  is a different instance than  #1 from y
      */
-    default boolean unifyVar(Variable y, Unify u, boolean forward) {
+    default boolean unifyVar(Variable y, Unify u) {
         final Variable x = this;
-        return unifyVar(x, y, forward, u);
+        return unifyVar(x, y, u);
     }
 
-    static boolean unifyVar(Variable x, Variable y, boolean forward, Unify u) {
+    static boolean unifyVar(Variable x, Variable y, Unify u) {
 
 
         if (x == Op.ImgInt || x == Op.ImgExt || y == Op.ImgInt || y == Op.ImgExt)
@@ -123,10 +123,10 @@ public interface Variable extends Atomic {
         if (xOp == yOp) {
 
 
-            Term common = forward ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
+            Term common = x.compareTo(y) < 0 ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
 
 
-            if (u.replaceXY(x, common) && u.replaceXY(y, common)) {
+            if (u.putXY(x, common) && u.putXY(y, common)) {
 
 
                 return true;
@@ -137,7 +137,7 @@ public interface Variable extends Atomic {
 
             if (xOp.id < yOp.id) {
                 if (u.symmetric)
-                    return u.matchType(yOp) && y.unifyVar(x, u ,false);
+                    return u.matchType(yOp) && y.unifyVar(x, u );
             }
         }
 

@@ -403,7 +403,7 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-    private int filterSolutions(ArrayHashSet<Event> solutions) {
+    private static int filterSolutions(ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss > 1) {
             int occurrenceSolved = ((FasterList) solutions.list).count(t -> t instanceof Absolute);

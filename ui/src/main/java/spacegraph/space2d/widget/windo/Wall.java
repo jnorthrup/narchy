@@ -47,7 +47,7 @@ public class Wall<S extends Surface> extends MutableMapContainer<Surface, Windo>
     public final Windo add(Surface x, Function<Surface,Windo> windowize) {
         Windo w = computeIfAbsent(x, (xx) -> {
             Windo ww = windowize.apply(xx);
-            if (ww!=null) {
+            if (ww!=null && parent!=null) {
                 ww.start(this);
             }
             return ww;
