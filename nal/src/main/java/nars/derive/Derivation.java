@@ -466,9 +466,9 @@ public class Derivation extends PreDerivation {
         setTTL(ttl);
 
 
-        deriver.prioritize.premise(this);
+        deriver.budgeting.premise(this);
 
-        deriver.rules.test(this);
+        deriver.rules.run(this);
 
 
     }

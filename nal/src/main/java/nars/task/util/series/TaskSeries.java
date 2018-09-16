@@ -26,7 +26,7 @@ public interface TaskSeries<T extends Task> {
         if (size == 0)
             return null;
 
-        int MAX_TASKS_TRUTHPOLATED = Answer.TASK_LIMIT;
+        int MAX_TASKS_TRUTHPOLATED = Answer.TASK_LIMIT_DEFAULT;
 
         DynStampTruth d = new DynStampTruth(Math.min(size, MAX_TASKS_TRUTHPOLATED));
 

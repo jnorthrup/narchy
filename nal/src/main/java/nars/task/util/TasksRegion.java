@@ -1,6 +1,8 @@
 package nars.task.util;
 
+import jcog.tree.rtree.HyperRegion;
 import nars.Task;
+import nars.table.dynamic.SeriesBeliefTable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -30,6 +32,14 @@ public final class TasksRegion implements TaskRegion {
         this.freqMax = freqMax;
         this.confMin = confMin;
         this.confMax = confMax;
+    }
+
+    @Override
+    public boolean contains(HyperRegion x) {
+        if (x instanceof SeriesBeliefTable.SeriesTask) {
+            return intersects(x); //since series task can grow, be extra careful
+        }
+        return TaskRegion.super.contains(x);
     }
 
     @Override

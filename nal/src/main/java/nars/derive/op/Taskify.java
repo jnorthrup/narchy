@@ -139,8 +139,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
         float priority =
                 t.isBeliefOrGoal() ?
-                    d.deriver.prioritize.pri(t, tru.freq(), TruthIntegration.evi(t), d) :
-                    d.deriver.prioritize.pri(t, Float.NaN, Float.NaN, d);
+                    d.deriver.budgeting.pri(t, tru.freq(), TruthIntegration.evi(t), d) :
+                    d.deriver.budgeting.pri(t, Float.NaN, Float.NaN, d);
 
         if (priority != priority) {
             d.nar.emotion.deriveFailPrioritize.increment();

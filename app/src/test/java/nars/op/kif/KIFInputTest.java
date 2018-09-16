@@ -160,7 +160,7 @@ class KIFInputTest {
 
 
         Deriver.derivers(n).forEach( (d)->
-                ((DefaultDeriverBudgeting)(((MatrixDeriver)d).prioritize))
+                ((DefaultDeriverBudgeting)(((MatrixDeriver)d).budgeting))
                         .scale.set(0.2f) );
 
         n.input("$1.0 possesses(I,#everything)!");

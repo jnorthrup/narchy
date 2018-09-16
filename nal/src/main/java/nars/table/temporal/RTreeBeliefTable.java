@@ -460,7 +460,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             r.merge(existing);
             //assert(existing==input || r.forgotten.containsInstance(input));
         } else {
-            if (!r.forgotten.containsInstance(input))
+            if (!r.forgotten(input))
                 r.remember(input);
         }
 

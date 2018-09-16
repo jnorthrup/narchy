@@ -9,7 +9,6 @@ import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
 
 import java.io.PrintStream;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.pri.ScalarValue.EPSILON;
@@ -18,7 +17,7 @@ import static jcog.pri.ScalarValue.EPSILON;
  * compiled derivation rules
  * what -> can
  */
-public class PremiseDeriver implements Predicate<Derivation> {
+public class DeriverRules {
 
     public final PREDICATE<Derivation> what;
     /**
@@ -38,7 +37,7 @@ public class PremiseDeriver implements Predicate<Derivation> {
     private final DeriveAction[] could;
 
 
-    public PremiseDeriver(PREDICATE<Derivation> what, DeriveAction[] actions) {
+    public DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions) {
 
         this.what = what;
 
@@ -57,18 +56,27 @@ public class PremiseDeriver implements Predicate<Derivation> {
     }
 
     private short[] can(PremiseKey k) {
-        return k.solve(what);
+
+        Derivation derivation  = k.derivation;
+
+        k.derivation = null;
+
+        derivation.can.clear();
+
+        what.test(derivation);
+
+        return Util.toShort( derivation.can.toArray() );
     }
 
     /**
      * choice id to branch id mapping
      */
-    final boolean test(Derivation d, int branch) {
+    private final boolean test(Derivation d, int branch) {
         return could[branch].test(d);
     }
 
-    @Override
-    public boolean test(Derivation d) {
+
+    public void run(Derivation d) {
 
 
         /**
@@ -108,12 +116,13 @@ public class PremiseDeriver implements Predicate<Derivation> {
             switch (fanOut) {
                 case 1: {
                     test(d, can[0]);
-                    return d.revertLive(1);
+                    //d.revertLive(1); //not necessary
+                    break;
                 }
                 default: {
 
                     @Deprecated int before = d.now();
-                    assert (d.now() == 0);
+                    assert (before == 0);
 
                     MutableRoulette.run(maybe, d.random, wi -> 0, b -> {
 
@@ -121,10 +130,11 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
                         return d.revertLive(before, 1);
                     });
+                    break;
                 }
             }
         }
-        return true;
+
     }
 
     /**

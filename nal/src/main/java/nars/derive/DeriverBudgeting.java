@@ -1,8 +1,7 @@
 package nars.derive;
 
+import nars.NAR;
 import nars.Task;
-import nars.truth.Truth;
-import org.jetbrains.annotations.Nullable;
 
 /** stateless, storing any state information in the Derivation instance */
 public interface DeriverBudgeting {
@@ -24,5 +23,14 @@ public interface DeriverBudgeting {
     float pri(Task t, float derivedFreq, float derivedEvi, Derivation d);
 
 
+    /** allows deriver parameters to be updated.  called each duration */
+    default void update(Deriver deriver, NAR nar) {
+
+    }
+
+    /** result punctuation factor; allows weighting probabilty according to the determined derived task punctuations of each choice */
+    default float puncFactor(byte conclusion) {
+        return 1; //flat
+    }
 
 }

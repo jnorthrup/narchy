@@ -8,12 +8,13 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
+import nars.control.DurService;
 import nars.derive.budget.DefaultDeriverBudgeting;
-import nars.derive.premise.PremiseDeriver;
+import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
-import nars.derive.timing.AdHocDeriverTiming;
+import nars.derive.timing.TaskOccurenceOrPresentDeriverTiming;
 import nars.exe.Attention;
 import nars.exe.Causable;
 import nars.link.Activate;
@@ -30,8 +31,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.Op.*;
-
 /**
  * an individual deriver process: executes a particular Deriver model
  * specified by a set of premise rules.
@@ -43,7 +42,7 @@ import static nars.Op.*;
  */
 abstract public class Deriver extends Causable {
 
-    public final DeriverBudgeting prioritize =
+    public final DeriverBudgeting budgeting =
             new DefaultDeriverBudgeting();
 
     /** determines the time for beliefs to be matched during premise formation
@@ -63,7 +62,7 @@ abstract public class Deriver extends Causable {
 
     private static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
-    protected final PremiseDeriver rules;
+    protected final DeriverRules rules;
 
     /**
      * source of concepts supplied to this for this deriver
@@ -93,15 +92,16 @@ abstract public class Deriver extends Causable {
     }
 
 
-    private Deriver(Consumer<Predicate<Activate>> source, PremiseDeriver rules, NAR nar) {
+    private Deriver(Consumer<Predicate<Activate>> source, DeriverRules rules, NAR nar) {
         super(
             $.func("deriver", $.the(serial.getAndIncrement())) 
         );
         this.rules = rules;
         this.source = source;
         this.timing =
-                new AdHocDeriverTiming(nar);
+                //new AdHocDeriverTiming(nar);
                 //new TaskOccurenceDeriverTiming();
+                new TaskOccurenceOrPresentDeriverTiming(nar);
 
 
         nar.on(this);
@@ -109,6 +109,21 @@ abstract public class Deriver extends Causable {
 
     public static Stream<Deriver> derivers(NAR n) {
         return n.services().filter(Deriver.class::isInstance).map(Deriver.class::cast);
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        ons.add(DurService.on(nar, this::update));
+    }
+
+    @Override
+    protected void stopping(NAR nar) {
+        super.stopping(nar);
+    }
+
+    private void update() {
+        budgeting.update(this, nar);
     }
 
     @Override
@@ -145,17 +160,8 @@ abstract public class Deriver extends Causable {
     }
 
     /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */
-    public float puncFactor(byte conclusion) {
-
-
-        switch (conclusion) {
-            case BELIEF: return 1f;
-            case GOAL: return 1f;
-            case QUESTION: return 1f;
-            case QUEST: return 1f;
-            default:
-                throw new UnsupportedOperationException();
-        }
+    public final float puncFactor(byte conclusion) {
+        return budgeting.puncFactor(conclusion);
     }
 
 

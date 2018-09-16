@@ -10,6 +10,7 @@ import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
+import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
@@ -268,6 +269,11 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         private SeriesRemember(SeriesTask task, TaskConcept concept) {
             super(task, concept);
             remember(task);
+        }
+
+        @Override
+        public ITask next(NAR n) {
+            return commit();
         }
 
         @Override

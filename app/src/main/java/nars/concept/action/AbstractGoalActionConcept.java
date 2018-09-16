@@ -8,9 +8,11 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
+import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
@@ -61,12 +63,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Predicate<Task> withoutCuriosity = t -> !(t instanceof SeriesBeliefTable.SeriesTask);  /* filter curiosity tasks? */
 
 
-        long rad = (now - prev) / 2;
-        long s = now - rad;
-        long e = now + rad;
+        long rad = (now - prev);
+        long s = now - rad/2;
+        long e = now + rad/2;
+        int actionDur = Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
+        int limit = Answer.TASK_LIMIT_DEFAULT * 2;
 
         TruthPolation aWithCuri = Answer.
-                relevance(true, s, e, term, null, n).match(goals()).truthpolation();
+                relevance(true, limit, s, e, term, null, n).match(goals()).truthpolation(actionDur);
         Truth actionNonAuthentic;
         if (aWithCuri!=null) {
             aWithCuri = aWithCuri.filtered();
@@ -75,7 +79,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             actionNonAuthentic = null;
 
         TruthPolation aWithoutCuri = Answer.
-                relevance(true, s, e, term, withoutCuriosity, n).match(goals()).truthpolation();
+                relevance(true, limit, s, e, term, withoutCuriosity, n).match(goals()).truthpolation(actionDur);
         if (aWithoutCuri!=null) {
             //aWithoutCuri = aWithoutCuri.filtered();
             actionTruthAuthentic = aWithoutCuri.truth();
@@ -116,8 +120,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         super.add(t, n);
     }
 
-    @Nullable SeriesBeliefTable.SeriesTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        SeriesBeliefTable.SeriesTask curiosity = new SeriesBeliefTable.SeriesTask(term, GOAL, goal, pStart, pEnd,
+    @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
+        SignalTask curiosity = new SignalTask(term, GOAL, goal, n.time(), pStart, pEnd,
                 n.evidence());
 
         if (curiosity!=null) {

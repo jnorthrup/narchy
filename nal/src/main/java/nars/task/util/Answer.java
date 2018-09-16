@@ -32,7 +32,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public class Answer implements Consumer<Task> {
 
-    public final static int TASK_LIMIT =
+    public final static int TASK_LIMIT_DEFAULT =
             //Param.STAMP_CAPACITY-1;
             Param.STAMP_CAPACITY / 2;
 
@@ -80,7 +80,7 @@ public class Answer implements Consumer<Task> {
 
     @Deprecated
     public static Answer relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
-        return relevance(beliefOrQuestion, beliefOrQuestion ? TASK_LIMIT : 1, start, end, template, filter, nar);
+        return relevance(beliefOrQuestion, beliefOrQuestion ? TASK_LIMIT_DEFAULT : 1, start, end, template, filter, nar);
     }
 
     /**
@@ -288,7 +288,7 @@ public class Answer implements Consumer<Task> {
         if (d.size() <= 1)
             return root;
 
-        TruthPolation tp = truthpolation(d);
+        TruthPolation tp = truthpolation(d, nar.dur());
         @Nullable MetalLongSet stampSet = tp.filterCyclic(root, true);
         if (tp.size() == 1)
             return root;
@@ -337,18 +337,21 @@ public class Answer implements Consumer<Task> {
 
 
 
-    @Nullable
-    public TruthPolation truthpolation() {
+    @Nullable public TruthPolation truthpolation() {
+        return truthpolation(nar.dur());
+    }
+
+    @Nullable public TruthPolation truthpolation(int dur) {
         DynTruth d = dynTruth();
         if (d == null) return null;
-        return truthpolation(d);
+        return truthpolation(d, dur);
     }
 
     /**
      * this does not filter cyclic; do that manually
      */
-    private TruthPolation truthpolation(DynTruth d) {
-        TruthPolation tp = Param.truth(time.start, time.end, nar.dur());
+    private TruthPolation truthpolation(DynTruth d, int dur) {
+        TruthPolation tp = Param.truth(time.start, time.end, dur);
         tp.ensureCapacity(d.size());
         d.forEach(r -> tp.add(r.task()));
         return tp;

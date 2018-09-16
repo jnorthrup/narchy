@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ListIterator;
+
 import static jcog.WTF.WTF;
 import static nars.time.Tense.ETERNAL;
 
@@ -29,9 +31,8 @@ import static nars.time.Tense.ETERNAL;
 public class Remember extends AbstractTask {
     public Task input;
 
-    final FasterList<ITask> next = new FasterList(2);
-    final FasterList<Task> remembered = new FasterList(1);
-    public final FasterList<Task> forgotten = new FasterList(1);
+    final FasterList<ITask> remembered = new FasterList(2);
+    @Nullable FasterList<Task> forgotten = null;
     public Concept concept;
 
 
@@ -75,7 +76,7 @@ public class Remember extends AbstractTask {
     }
 
     @Override
-    public final ITask next(NAR n) {
+    public ITask next(NAR n) {
 
         validate(n);
 
@@ -88,21 +89,31 @@ public class Remember extends AbstractTask {
      * finalization and cleanup work
      */
     protected @Nullable ITask commit() {
-        if (!forgotten.isEmpty())
+        if (forgotten!=null)
             forgotten.forEach(Task::delete);
+
          if (!remembered.isEmpty()) {
 
              Term inputConceptTerm = input!=null ? concept.term() : null;
-             for (Task r : remembered) {
-                 Concept c = r == input || (inputConceptTerm!=null && r.term().concept().equals(inputConceptTerm)) ? concept
-                         : null /* determine later */;
-                next.add(new TaskLinkTask(r, c));
+             ListIterator<ITask> ll = remembered.listIterator();
+             while (ll.hasNext()) {
+                 ITask r = ll.next();
+                 if (r instanceof NALTask) {
+                     ll.remove();
+
+                     NALTask rr = (NALTask)r;
+                     Concept c = r == input || (inputConceptTerm!=null && rr.term().concept().equals(inputConceptTerm)) ? concept
+                             : null /* determine later */;
+                     ll.add(new TaskLinkTask(rr, c));
+                     ll.add(new Reaction(rr));
+                 }
              }
 
-             next.add(Reaction.emit(remembered));
-         }
+             return AbstractTask.of(remembered);
 
-        return AbstractTask.of(next);
+         } else
+             return null;
+
     }
 
     /**
@@ -184,6 +195,10 @@ public class Remember extends AbstractTask {
             //throw new TODO();
             //TODO filter next tasks with any involving that task
         }
+
+        if (forgotten==null)
+            forgotten = new FasterList(1);
+
         add(x, this.forgotten);
         if (input == x) {
             input = null; concept = null;
@@ -223,7 +238,7 @@ public class Remember extends AbstractTask {
 
     public void next(ITask n) {
         if (n != null)
-            next.add(n);
+            remembered.add(n);
     }
 
     public final void reject() {
@@ -231,7 +246,7 @@ public class Remember extends AbstractTask {
     }
 
 
-    private static boolean add(Task x, FasterList<Task> f) {
+    private static boolean add(Task x, FasterList f) {
         if (x != null) {
             if (!f.isEmpty()) {
                 if (f.containsInstance(x)) {
@@ -245,5 +260,11 @@ public class Remember extends AbstractTask {
         return false;
     }
 
+
+    public boolean forgotten(Task input) {
+        if (forgotten == null)
+            return false;
+        return forgotten.containsInstance(input);
+    }
 
 }

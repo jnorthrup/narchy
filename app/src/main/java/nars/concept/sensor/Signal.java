@@ -10,7 +10,6 @@ import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SensorBeliefTables;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -130,8 +129,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
                 SensorBeliefTables s = (SensorBeliefTables) beliefs();
-                SeriesBeliefTable.SeriesRemember x = s.add(nextTruth, start, end, this, n);
-                return x;
+                return s.add(nextTruth, start, end, this, n);
             }
         }
         return null;

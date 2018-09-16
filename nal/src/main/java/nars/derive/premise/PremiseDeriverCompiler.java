@@ -40,13 +40,13 @@ public enum PremiseDeriverCompiler {
 
 
 
-    public static PremiseDeriver the(Set<PremiseRuleProto> r) {
+    public static DeriverRules the(Set<PremiseRuleProto> r) {
         return the.apply(r);
     }
 
-    private static final Function<Set<PremiseRuleProto>,PremiseDeriver> the = Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
+    private static final Function<Set<PremiseRuleProto>, DeriverRules> the = Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
 
-    private static PremiseDeriver _the(Set<PremiseRuleProto> r) {
+    private static DeriverRules _the(Set<PremiseRuleProto> r) {
         assert (!r.isEmpty());
 
         /** indexed by local (deriver-specific) id */
@@ -92,7 +92,7 @@ public enum PremiseDeriverCompiler {
         assert (!path.isEmpty());
 
 
-        return new PremiseDeriver(
+        return new DeriverRules(
                 PremiseDeriverCompiler.compile(path, null),
                 rootBranches);
     }
@@ -102,9 +102,9 @@ public enum PremiseDeriverCompiler {
 
         TermTrie.indent(indent);
 
-        if (p instanceof PremiseDeriver) {
+        if (p instanceof DeriverRules) {
 
-            PremiseDeriver r = (PremiseDeriver) p;
+            DeriverRules r = (DeriverRules) p;
             r.print(out, indent);
 
         } else if (p instanceof UnifyTerm.NextUnifyTransform) {

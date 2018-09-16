@@ -50,11 +50,11 @@ class NARTestOptimize {
                         (NAR n, float f) -> n.activateConceptRate.set(f))
                 .var("derivationComplexityExponent", 0.5f, 4f, 0.5f,
                         (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
+                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).
                                         relGrowthExponent.set(f)))
                 .var("derivationScale", 0, 2f, 0.1f,
                         (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
+                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).
                                         scale.set(f)))
             ;
 

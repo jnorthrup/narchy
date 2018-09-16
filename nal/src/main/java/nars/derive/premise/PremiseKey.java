@@ -71,20 +71,4 @@ public class PremiseKey extends ByteKey.ByteKeyExternal {
     }
 
 
-    /** TODO this can safely return short[] results
-     * @param what*/
-    public short[] solve(PREDICATE<Derivation> what) {
-
-        Derivation derivation  = this.derivation;
-
-        this.derivation = null;
-
-        derivation.can.clear();
-
-        what.test(derivation);
-
-        return Util.toShort( derivation.can.toArray() );
-    }
-
-
 }

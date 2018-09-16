@@ -1602,7 +1602,7 @@ public enum Util {
             while (remainingNanos > 1000) {
                 if (remainingNanos < 10 * 1000) {
                     Thread.onSpinWait();
-                } else if (remainingNanos < 1000 * 1000) {
+                } else if (remainingNanos < 2 * 1000 * 1000 /* 2ms */) {
                     LockSupport.parkNanos(remainingNanos);
                 } else {
 

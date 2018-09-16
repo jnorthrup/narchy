@@ -83,7 +83,7 @@ public interface TaskTable {
     }
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return matching(start, end, Answer.TASK_LIMIT, template, filter, nar);
+        return matching(start, end, Answer.TASK_LIMIT_DEFAULT, template, filter, nar);
     }
 
     default Answer matching(long start, long end, int limit, @Nullable Term template, Predicate<Task> filter, NAR nar) {

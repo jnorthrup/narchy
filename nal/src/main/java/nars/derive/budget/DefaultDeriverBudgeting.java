@@ -3,10 +3,15 @@ package nars.derive.budget;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
+import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
+import nars.derive.Deriver;
 import nars.derive.DeriverBudgeting;
 import nars.truth.Truth;
+
+import static nars.Op.*;
+import static nars.Op.QUEST;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -74,5 +79,29 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
         throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");
         //return 1; //
+    }
+
+    /** cache of punctuation priorities */
+    transient private float beliefPri, goalPri, questionPri, questPri;
+
+    /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
+    @Override public void update(Deriver deriver, NAR nar) {
+
+        beliefPri = nar.beliefPriDefault.floatValue();
+        goalPri = nar.goalPriDefault.floatValue();
+        questionPri = nar.questionPriDefault.floatValue();
+        questPri = nar.questPriDefault.floatValue();
+    }
+
+    @Override
+    public float puncFactor(byte conclusion) {
+        switch (conclusion) {
+            case BELIEF: return beliefPri;
+            case GOAL: return goalPri;
+            case QUESTION: return questionPri;
+            case QUEST: return questPri;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 }

@@ -6,7 +6,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.derive.impl.MatrixDeriver;
 import nars.derive.op.Occurrify;
-import nars.derive.premise.PremiseDeriver;
+import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.test.TestNAR;
@@ -48,7 +48,7 @@ class DeriverTest {
 
         PremiseDeriverRuleSet src = new PremiseDeriverRuleSet(NARS.shell(), rules);
         assertNotEquals(0, src.size());
-        PremiseDeriver d = PremiseDeriverCompiler.the(src);
+        DeriverRules d = PremiseDeriverCompiler.the(src);
 
         if (debug) {
 

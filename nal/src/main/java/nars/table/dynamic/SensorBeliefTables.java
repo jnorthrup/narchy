@@ -1,10 +1,12 @@
 package nars.table.dynamic;
 
+import jcog.WTF;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
+import nars.control.proto.Remember;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.util.series.AbstractTaskSeries;
@@ -55,8 +57,21 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     SensorBeliefTables(Term term, boolean beliefOrGoal, TemporalBeliefTable t, AbstractTaskSeries s) {
-        super(t, new SeriesBeliefTable(term, beliefOrGoal, s));
+        super(new SeriesBeliefTable(term, beliefOrGoal, s), t);
         this.series = tableFirst(SeriesBeliefTable.class);
+    }
+
+    @Override
+    public void add(Remember r, NAR n) {
+
+        if (r.input instanceof SeriesBeliefTable.SeriesTask) {
+            if (Param.DEBUG)
+                throw new WTF();
+            r.input = null;
+            return;
+        }
+
+        super.add(r, n);
     }
 
     public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, NAR n) {
