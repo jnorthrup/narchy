@@ -29,6 +29,7 @@ package toxi.physics2d.behaviors;
 
 import toxi.geom.SpatialIndex;
 import toxi.physics2d.VerletParticle2D;
+import toxi.physics2d.VerletPhysics2D;
 
 import java.util.function.Consumer;
 
@@ -53,4 +54,14 @@ import java.util.function.Consumer;
     default boolean supportsSpatialIndex() {
         return false;
     }
+
+    default void applyGlobal(VerletPhysics2D p) {
+        if (p != null && supportsSpatialIndex()) {
+            applyWithIndex(p.index);
+        } else {
+            p.particles.forEach(this::accept);
+        }
+    }
+
+
 }

@@ -194,13 +194,15 @@ class VerletSurfaceTest {
             physics.pos(bounds);
 //            physics.physics.bounds(bounds);
 
+
             Surface a = add(new PushButton("x")).pos(100, 100, 200, 200);
             Surface b = add(new PushButton("y")).pos(300, 300, 400, 400);
 
-            chain(a, b, new PushButton("xy").click((r)->r.parent(Windo.class).detach()));
+            cable(a, b, new PushButton("xy").click((r)->r.parent(Windo.class).detach()));
 
 
         }
+
 
         public static void main(String[] args) {
 

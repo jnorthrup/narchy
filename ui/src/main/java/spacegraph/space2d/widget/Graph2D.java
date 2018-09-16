@@ -364,7 +364,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             hide();
             this.mover = null;
             removeOuts(edgePool);
-            clear();
+//            clear();
             this.id = null;
             this.showing = false;
         }

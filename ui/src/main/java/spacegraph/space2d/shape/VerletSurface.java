@@ -6,11 +6,13 @@ import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.Draw;
 import toxi.geom.QuadtreeIndex;
+import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletPhysics2D;
 import toxi.physics2d.VerletSpring2D;
@@ -31,15 +33,17 @@ public class VerletSurface extends Surface implements Animated {
 
     private boolean animateWhenInvisible = false;
 
-    /** constrained to the surface's rectangular bounds */
+    /**
+     * constrained to the surface's rectangular bounds
+     */
     private boolean bounded = true;
 
     public VerletSurface(float w, float h) {
-        this(RectFloat2D.X0Y0WH(0,0 , w, h));
+        this(RectFloat2D.X0Y0WH(0, 0, w, h));
     }
 
     public VerletSurface() {
-        this(1,1);
+        this(1, 1);
     }
 
     public VerletSurface(RectFloat2D bounds) {
@@ -52,7 +56,7 @@ public class VerletSurface extends Surface implements Animated {
         physics.setDrag(0.05f);
 
         physics.setIndex(
-                new QuadtreeIndex(bounds.x-1, bounds.y-1, bounds.w+1, bounds.h+1)
+                new QuadtreeIndex(bounds.x - 1, bounds.y - 1, bounds.w + 1, bounds.h + 1)
                 //new RTreeQuadTree()
         );
 
@@ -89,9 +93,65 @@ public class VerletSurface extends Surface implements Animated {
         VerletSurface.render(physics, gl);
     }
 
-    public VerletParticle2D addParticleBind(Surface a) {
+    public enum VerletSurfaceBinding {
+
+        Center {
+            @Override
+            Vec2D targetVerlet(VerletParticle2D particle, Surface s) {
+                return new Vec2D(s.cx(), s.cy());
+            }
+
+            @Override
+            public Vec2D targetSurface(VerletParticle2D p, Surface ss) {
+                return new Vec2D(p.x, p.y );
+            }
+        },
+        NearestSurfaceEdge {
+            @Override
+            Vec2D targetVerlet(VerletParticle2D p, Surface ss) {
+                float px = p.x;
+                float L = ss.left();
+                float distLeft = Math.abs(px - L);
+                float R = ss.right();
+                float distRight = Math.abs(px - R);
+                float distLR = Math.min(distLeft, distRight);
+                float py = p.y;
+                float T = ss.top();
+                float distTop = Math.abs(py - T);
+                float B = ss.bottom();
+                float distBottom = Math.abs(py - B);
+                float distTB = Math.min(distTop, distBottom);
+
+                if (distLR < distTB) {
+                    //along either left or right
+                    return new Vec2D((distLeft < distRight) ? L : R, Util.clamp(py, T, B));
+                } else {
+                    //along either top or bottom
+                    return new Vec2D(Util.clamp(px, L, R), (distTop < distBottom) ? T : B);
+                }
+//
+//                float x = px < ss.cx() ? ss.left() : ss.right();
+//                float y = py < ss.cy() ? ss.top() : ss.bottom();
+//                return new Vec2D(x, y);
+            }
+
+            @Override
+            public Vec2D targetSurface(VerletParticle2D p, Surface ss) {
+                //unsupported
+                return null;
+            }
+        };
+
+        abstract Vec2D targetVerlet(VerletParticle2D particle, Surface s);
+
+        @Nullable
+        abstract public Vec2D targetSurface(VerletParticle2D p, Surface ss);
+    }
+
+
+    public VerletParticle2D addParticleBind(Surface a, VerletSurfaceBinding b) {
         VerletParticle2D ap = new VerletParticle2D(a.cx(), a.cy());
-        bind(a, ap, true);
+        bind(a, ap, true, b);
 
         physics.addParticle(ap);
         return ap;
@@ -99,42 +159,77 @@ public class VerletSurface extends Surface implements Animated {
 
     @Override
     public <S extends Surface> S pos(RectFloat2D next) {
-        if (physics!=null)
+        if (physics != null)
             physics.bounds(next);
         return super.pos(next);
     }
 
-    public ParticleConstraint2D bind(Surface a, VerletParticle2D ap, boolean surfaceMaster) {
+    public ParticleConstraint2D bind(Surface s, VerletParticle2D v, boolean surfaceOverrides, VerletSurfaceBinding b) {
 
-        WeakReference<Surface> aa = new WeakReference<>(a);
+        WeakReference<Surface> wrs = new WeakReference<>(s);
 
 
+        //if (!surfaceOverrides) {
+            v.addBehavior((vv) -> {
+                Surface ss = wrs.get();
 
-        if (!surfaceMaster) {
-            //pre
-            ap.addBehavior(p->{
-                Surface aaa = aa.get();
-                p.next.set(aaa.cx(), aaa.cy());
-                p.constrainAll(physics.bounds);
+                Vec2D pNext = b.targetVerlet(vv, ss);
+                if (pNext != null) {
+                    //p.next.set(pNext);
+                    float speed = 0.25f;
+                    //System.out.println(vv.id + " " + vv.x + "," + vv.y);
+                    vv.addForce(pNext.sub(vv).scaleSelf(speed));
+//                    vv.set(pNext);
+//                    vv.prev.set(pNext);
+                    //vv.next.set(pNext);
+                }
             });
-        } else {
-            ap.set(a.cx(), a.cy());
-            ap.constrainAll(physics.bounds);
-        }
+        //}
 
-        //post
-        return ap.addConstraint(p -> {
-            Surface aaa = aa.get();
-            if (aaa == null) {
-                physics.removeParticle(p);
+        v.set(b.targetVerlet(v, s));
+        v.constrainAll(physics.bounds);
+        v.next.set(v);
+        v.prev.set(v);
+
+
+
+        //pre
+        v.addConstraint(vv -> {
+            Surface ss = wrs.get();
+//                vv.next.set(b.targetVerlet(vv, ss));
+//                vv.constrainAll(physics.bounds);
+
+            if (!surfaceOverrides) {
+                if (ss == null) {
+                    physics.removeParticle(vv);
+                    return;
+                }
+
+                Vec2D sNext = b.targetSurface(vv, ss);
+                if (sNext != null) {
+                    //ss.pos(Util.lerp(0.5f, sNext.x, ss.x()))
+                    ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
+                    //ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.5f));
+                }
             } else {
-                if (surfaceMaster) {
-                    p.set(aaa.cx(), aaa.cy());
-                    //p.constrain(physics.bounds);
-                } else
-                    aaa.pos(p.x - aaa.w()/2, p.y - aaa.h()/2);
+
+//                Vec2D pNext = b.targetVerlet(vv, ss);
+//                if (pNext != null) {
+//                    //p.next.set(pNext);
+//                    //float speed = 0.05f;
+////                        System.out.println(vv.id + " " + vv.x + "," + vv.y);
+//                    //vv.addForce(pNext.sub(vv).normalize().scaleSelf(speed));
+////                    vv.clearForce();
+////                    vv.clearVelocity();
+//                    vv.next.set(pNext);
+//                    vv.prev.set(pNext);
+//                    vv.set(pNext);
+//
+//                }
             }
         });
+
+        return null;
     }
 
     public final Pair<List<VerletParticle2D>, List<VerletSpring2D>> addParticleChain(VerletParticle2D x, VerletParticle2D y, int num, float strength) {
@@ -142,19 +237,19 @@ public class VerletSurface extends Surface implements Animated {
     }
 
     public Pair<List<VerletParticle2D>, List<VerletSpring2D>> addParticleChain(VerletParticle2D a, VerletParticle2D b, int num, float chainLength, float strength) {
-        assert(num > 0);
-        assert(a!=b);
+        assert (num > 0);
+        assert (a != b);
 
         if (chainLength != chainLength) {
             //auto
             chainLength = a.distanceTo(b);
         }
-        float linkLength = chainLength/(num+1);
+        float linkLength = chainLength / (num + 1);
         VerletParticle2D prev = a;
         FasterList pp = new FasterList(num);
-        FasterList ss = new FasterList(num+1);
+        FasterList ss = new FasterList(num + 1);
         for (int i = 0; i < num; i++) {
-            float p = ((float) i+1) / (num + 1);
+            float p = ((float) i + 1) / (num + 1);
             VerletParticle2D next =
                     new VerletParticle2D(
                             Util.lerp(p, a.x, b.x),
@@ -174,10 +269,12 @@ public class VerletSurface extends Surface implements Animated {
             physics.addSpring(s);
         }
 
-        return pair(pp,ss);
+        return pair(pp, ss);
     }
 
-    /** basic renderer */
+    /**
+     * basic renderer
+     */
     public static void render(VerletPhysics2D physics, GL2 gl) {
         for (VerletParticle2D p : physics.particles) {
             float t = 2 * p.mass();

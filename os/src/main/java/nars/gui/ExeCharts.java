@@ -149,7 +149,7 @@ public class ExeCharts {
             //.layout(fd)
             .update(new TreeMap2D<>())
             .build((node)->{
-                node.add(new Scale(new CausableWidget(node.id), 0.9f));
+                node.set(new Scale(new CausableWidget(node.id), 0.9f));
             });
 
 

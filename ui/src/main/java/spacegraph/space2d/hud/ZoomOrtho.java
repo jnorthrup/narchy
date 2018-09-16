@@ -85,7 +85,7 @@ public class ZoomOrtho extends Ortho {
 
     public ZoomOrtho(Surface content) {
         super();
-        hud.add(content);
+        hud.set(content);
     }
 
     @Override

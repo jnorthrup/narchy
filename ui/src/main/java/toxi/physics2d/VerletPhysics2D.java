@@ -38,7 +38,6 @@ import toxi.physics2d.behaviors.GravityBehavior2D;
 import toxi.physics2d.behaviors.ParticleBehavior2D;
 import toxi.physics2d.constraints.ParticleConstraint2D;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -56,7 +55,7 @@ public class VerletPhysics2D {
 
     public final List<VerletSpring2D> springs = new FastCoWList<>(VerletSpring2D[]::new);
 
-    public final Collection<ParticleBehavior2D> behaviors = new FastCoWList<>(ParticleBehavior2D[]::new);
+    public final FastCoWList<ParticleBehavior2D> behaviors = new FastCoWList<>(ParticleBehavior2D[]::new);
 
     public final FastCoWList<ParticleConstraint2D> constraints = new FastCoWList<>(ParticleConstraint2D[]::new);
 
@@ -72,7 +71,7 @@ public class VerletPhysics2D {
 
     protected float drag;
 
-    protected SpatialIndex<VerletParticle2D> index;
+    public SpatialIndex<VerletParticle2D> index;
 
     private final float maxTimeStep = 1f;
     private final float minTimeStep = 0.01f; //in seconds
@@ -326,18 +325,10 @@ public class VerletPhysics2D {
     protected void preUpdate() {
 
         //local behaviors
-        particles.forEach(VerletParticle2D::preUpdate);
+        particles.forEachWith(VerletParticle2D::preUpdate, this);
 
         //global behaviors
-        behaviors.forEach(b -> {
-
-            if (index != null && b.supportsSpatialIndex()) {
-                b.applyWithIndex(index);
-            } else {
-                particles.forEachWith((p, bb) -> b.accept(p), b);
-            }
-
-        });
+        behaviors.forEachWith(ParticleBehavior2D::applyGlobal, this);
     }
 
     protected void postUpdate() {
@@ -355,5 +346,6 @@ public class VerletPhysics2D {
 
     public void bounds(RectFloat2D bounds) {
         index.bounds(bounds);
+        this.bounds = bounds;
     }
 }

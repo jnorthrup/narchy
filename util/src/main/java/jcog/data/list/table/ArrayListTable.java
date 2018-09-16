@@ -13,7 +13,7 @@ abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements
 
 
 
-    protected int capacity;
+    protected volatile int capacity;
 
     public ArrayListTable(Map<K, V> map) {
         super(map);

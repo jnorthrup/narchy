@@ -38,6 +38,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
 
     @Override
     protected void starting() {
+        super.starting();
         animate = root().animate(this);
         waiting = minUpdatePeriod.asFloat();
     }

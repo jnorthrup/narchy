@@ -6,6 +6,8 @@ import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.point.Float2D;
 
+import static jcog.Util.lerp;
+
 
 public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D> {
 
@@ -295,4 +297,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         return w * h;
     }
 
+    public RectFloat2D posLerp(float x, float y, float p) {
+        return RectFloat2D.XYWH(lerp(p, cx(), x),lerp(p, cy(), y) ,w , h);
+    }
 }

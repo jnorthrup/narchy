@@ -91,15 +91,21 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * returns whether the capacity has changed
      */
     @Override
-    public final void setCapacity(int newCapacity) {
-        if (newCapacity != this.capacity) {
-            this.capacity = newCapacity;
+    public final void setCapacity(int nextCapacity) {
 
-            commit(null);
+        //TODO use atomic field setter
+        if (nextCapacity != this.capacity) {
+            synchronized (this) {
+                if (nextCapacity != this.capacity) {
 
+                    this.capacity = nextCapacity;
+
+                    if (this.capacity > nextCapacity)
+                        commit(null);
+                }
+            }
 
         }
-
     }
 
     /**
@@ -125,15 +131,16 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
     private boolean tryInsertFull(Y toAdd, float toAddPri, @Nullable Consumer<Y> update, boolean commit, final FasterList<Y> trash) {
 
-        int s = clean(true, trash, update, commit /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/);
+        int s = cleanIfFull() ? clean(trash, update, commit /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/) : size();
 
         int c = capacity();
 
-        if (s < c) {
+        if (s + 1 < c) {
+
+            //space cleared for the new item
 
             int i = items.add(toAdd, this);
             assert (i >= 0);
-            MASS.add(this, toAddPri);
             return true;
 
         } else {
@@ -141,13 +148,9 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             if (toAddPri > priMin()) {
 
                 Y removed = items.removeLast();
-                float massDelta = -removed.priElseZero();
 
                 int i = items.add(toAdd, this);
                 assert (i >= 0);
-                massDelta += toAddPri;
-
-                MASS.add(this, massDelta);
 
                 trash.add(removed);
 
@@ -155,6 +158,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             }
         }
 
+        return false;
+    }
+
+    /** allows an implementation to remove items which may have been deleted (by anything) since commit checked for them */
+    protected boolean cleanIfFull() {
         return false;
     }
 
@@ -167,7 +175,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         return key.priCommit();
     }
 
-    private int clean(@Deprecated boolean toAdd, List<Y> trash, @Nullable Consumer<Y> update, boolean commit) {
+    private int clean(List<Y> trash, @Nullable Consumer<Y> update, boolean commit) {
 
         float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
 
@@ -178,7 +186,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         float above = Float.POSITIVE_INFINITY;
         int mustSort = -1;
         int s = size();
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < s; ) {
             Y x = (Y) l[i];
             assert x != null;
             float p = commit ? priUpdate(x) : pri(x);
@@ -194,22 +202,23 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     mustSort = i;
 
                 above = p;
+                i++;
             } else {
                 trash.add(x);
                 items2.removeFast(i);
                 s--;
+                //dont increment i
             }
         }
 
 
-        final int c = capacity;
-        if (s > c) {
-            while (s > 0 && s - c + (toAdd ? 1 : 0) > 0) {
-                Y w1 = this.items.removeLast();
-                mass -= w1.priElseZero();
-                trash.add(w1);
-                s--;
-            }
+        int c = capacity;
+
+        while (s > c) {
+            Y w1 = this.items.removeLast();
+            trash.add(w1);
+            mass -= w1.priElseZero();
+            s--;
         }
 
         ArrayBag.MASS.set(this, mass);
@@ -383,12 +392,12 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 int i = items.add(incoming, -p, this);
 
                 assert i >= 0;
-                MASS.add(this, p);
                 inserted = true;
                 trash = null;
             }
 
             if (inserted) {
+                MASS.add(this, p);
                 map.put(key, incoming);
             }
 
@@ -512,7 +521,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             @Nullable FasterList<Y> trash = new FasterList(Math.max(s / 8, 4));
             synchronized (items) {
 
-                clean(false, trash, update, true);
+                clean(trash, update, true);
 
                 trash.forEach(this::mapRemove);
             }
@@ -524,7 +533,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         return this;
     }
 
-    protected void removed(Y y) {
+    private void removed(Y y) {
+        MASS.add(this, -priElse(y, 0));
         onRemove(y);
         y.delete();
     }
@@ -532,6 +542,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public final void clear() {
         clear(this::removed);
+        MASS.zero(this);
+        depressurize();
     }
 
     public final void clear(Consumer<? super Y> each) {
@@ -619,13 +631,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public float priMax() {
         Y x = items.first();
-        return x != null ? pri(x) : 0;
+        return x != null ? priElse(x,-1) : 0;
     }
 
     @Override
     public float priMin() {
         Y x = items.last();
-        return x != null ? pri(x) : 0;
+        return x != null ? priElse(x,-1) : 0;
     }
 
 static final class SortedPLinks extends SortedArray {

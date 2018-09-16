@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.MutableUnitContainer;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.util.math.v2;
@@ -17,7 +17,7 @@ import static spacegraph.space2d.widget.windo.Windo.DragEdit.MOVE;
 /**
  * draggable panel
  */
-public class Windo extends Stacking {
+public class Windo extends MutableUnitContainer {
 
     private final static float resizeBorder = 0.1f;
     public FingerDragging dragMode = null;
@@ -30,7 +30,7 @@ public class Windo extends Stacking {
     }
 
     public Windo(Surface content) {
-        set(content);
+        super(content);
     }
 
     @Override

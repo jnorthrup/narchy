@@ -19,10 +19,10 @@ public class PriArrayBag<X extends Priority> extends ArrayBag<X,X> {
         super(mergeFunction, map);
     }
 
-    @Override
-    protected void removed(X x) {
-        //dont affect the result
-    }
+//    @Override
+//    protected void removed(X x) {
+//        //dont affect the result
+//    }
 
     @Nullable
     @Override public X key(X k) {

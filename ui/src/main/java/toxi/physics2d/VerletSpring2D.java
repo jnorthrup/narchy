@@ -86,7 +86,7 @@ public class VerletSpring2D {
             float str) {
         this.a = a;
         this.b = b;
-        restLength = len;
+        setRestLength(len);
         strength = str;
     }
 
@@ -143,16 +143,18 @@ public class VerletSpring2D {
         Vec2D delta = b.sub(a);
         // add minute offset to avoid div-by-zero errors
         float dist = delta.magnitude() + EPS;
+        float aInvMass = 1/a.mass;
+        float bInvMass = 1/b.mass;
         float normDistStrength = (dist - restLength)
-                / (dist * (a.invMass + b.invMass)) * strength;
+                / (dist * (aInvMass + bInvMass)) * strength;
         if (!a.isLocked && !isALocked) {
-            a.next.addSelf(delta.scale(normDistStrength * a.invMass));
+            a.next.addSelf(delta.scale(normDistStrength * aInvMass));
             if (applyConstraints) {
                 a.applyConstraints();
             }
         }
         if (!b.isLocked && !isBLocked) {
-            b.next.addSelf(delta.scale(-normDistStrength * b.invMass));
+            b.next.addSelf(delta.scale(-normDistStrength * bInvMass));
             if (applyConstraints) {
                 b.applyConstraints();
             }

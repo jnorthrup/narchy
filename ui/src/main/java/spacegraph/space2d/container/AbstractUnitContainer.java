@@ -1,7 +1,6 @@
 package spacegraph.space2d.container;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -10,14 +9,11 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
 
     public abstract S the();
 
+
     @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
-            the().start(this);
-            layout();
-            return true;
-        }
-        return false;
+    protected void starting() {
+        the().start(this);
+        layout();
     }
 
     /** default behavior: inherit bounds directly */
@@ -46,4 +42,5 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
     public final boolean whileEachReverse(Predicate<Surface> o) {
         return whileEach(o);
     }
+
 }

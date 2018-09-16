@@ -19,8 +19,8 @@ public class SSHSurface extends AWTSurface {
     public static void main(String[] args) {
 
         GraphEdit w = SpaceGraph.wall(800, 600);
-        w.put(new Gridding(new SSHSurface()), 8, 6);
-        w.put(new Gridding(new AWTSurface(new JColorChooser(), 200, 200)),
+        w.add(new Gridding(new SSHSurface()), 800, 600);
+        w.add(new Gridding(new AWTSurface(new JColorChooser(), 200, 200)),
                 3, 3);
 
     }

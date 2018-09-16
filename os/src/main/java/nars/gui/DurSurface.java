@@ -4,7 +4,6 @@ import nars.NAR;
 import nars.control.DurService;
 import nars.util.TimeAware;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.UnitContainer;
 
 import java.util.function.Consumer;
@@ -31,36 +30,21 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
         }
     }
 
+
+
     @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
-
-            starting();
-
-            assert(on == null);
-            on = DurService.on(nar, this::updateIfShowing);
-
-            return true;
-        }
-        return false;
-    }
-
     protected void starting() {
+        super.starting();
 
-    }
-    protected void stopping() {
-
+        assert(on == null);
+        on = DurService.on(nar, this::updateIfShowing);
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            stopping();
-            on.off();
-            on = null;
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        on.off();
+        on = null;
+        super.stopping();
     }
 
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {
