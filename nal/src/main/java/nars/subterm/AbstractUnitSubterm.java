@@ -54,12 +54,12 @@ abstract class AbstractUnitSubterm implements Subterms {
 
     @Override
     public final int volume() {
-        return sub().volume();
+        return 1 + sub().volume();
     }
 
     @Override
     public final int complexity() {
-        return sub().complexity();
+        return 1 + sub().complexity();
     }
 
     @Override

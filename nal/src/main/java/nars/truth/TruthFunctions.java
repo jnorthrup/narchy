@@ -148,7 +148,7 @@ public final class TruthFunctions {
 
 
         float f0 = or(f1, f2);
-        float c = w2cSafe(and(f0, a.conf(), b.conf()));
+        float c = w2cSafe(and(f0, TruthFunctions.confCompose(a, b)));
         if (c >= minConf) {
             float f = (Util.equals(f0, 0, Param.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
             return t(f, c);
@@ -195,8 +195,8 @@ public final class TruthFunctions {
      */
     @Nullable
     public static Truth intersection(Truth v1, Truth v2, float minConf) {
-        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
-        float c = confCompose(c1, c2);
+        float f1 = v1.freq(), f2 = v2.freq();
+        float c = confCompose(v1, v2);
         return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
 
@@ -239,7 +239,7 @@ public final class TruthFunctions {
      */
     @Nullable
     public static Truth decompose(Truth X, Truth Y, boolean x, boolean y, boolean z, float minConf) {
-        float cxy = and(X.conf(), Y.conf());
+        float cxy = confCompose(X,Y);
         if (cxy < minConf) return null;
         float fx = X.freq(), fy = Y.freq();
         float fxy = and(x ? fx : 1 - fx, y ? fy : 1 - fy);

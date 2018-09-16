@@ -4,12 +4,15 @@ import com.google.common.collect.ImmutableSortedSet;
 import org.eclipse.collections.impl.factory.Iterables;
 import org.pircbotx.Channel;
 import org.pircbotx.Configuration;
+import org.pircbotx.InputParser;
 import org.pircbotx.PircBotX;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.OutputEvent;
 import org.pircbotx.output.OutputIRC;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Generic IRC Bot interface via PircBotX
@@ -50,7 +53,17 @@ public class IRC extends ListenerAdapter {
 
         cb.addListener(this);
 
-        this.irc = new PircBotX(cb.buildConfiguration());
+        this.irc = new PircBotX(cb.buildConfiguration()) {
+            @Override
+            protected void sendRawLineToServer(String line) throws IOException {
+                if (line.length() > configuration.getMaxLineLength() - 2) line = line.substring(0, configuration.getMaxLineLength() - 2);
+                outputWriter.write(line + "\r\n");
+                outputWriter.flush();
+                List<String> lineParts = InputParser.tokenizeLine(line);
+                getConfiguration().getListenerManager().onEvent(new OutputEvent(this, line, lineParts));
+            }
+
+        };
 
     }
 

@@ -803,6 +803,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         String[] previous = {null};
 
+        eventTask.on( (v) -> {
+
+//            if (includeValue != null && !includeValue.test(v))
+//                return;
+
+            try {
+                outputEvent(out, previous[0], "task", v);
+            } catch (IOException e) {
+                logger.error("outputEvent: {}", e.toString());
+            }
+            previous[0] = "task";
+        });
         Topic.all(this, (k, v) -> {
 
             if (includeValue != null && !includeValue.test(v))

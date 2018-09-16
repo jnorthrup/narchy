@@ -55,7 +55,7 @@ class TermListTest {
         assertEquals(immutable.hashCode(), mutable.hashCode());
         assertEquals(immutable.hashCodeSubterms(), mutable.hashCodeSubterms());
         assertEquals(immutable.subs(), mutable.subs());
-        assertEquals(immutable.volume(), mutable.volume());
+        assertEquals(immutable.volume(), mutable.volume(), ()->immutable + " " + immutable.volume() + " " + mutable + " " + mutable.volume());
         assertEquals(immutable.complexity(), mutable.complexity());
         assertEquals(immutable.structure(), mutable.structure());
 

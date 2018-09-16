@@ -17,6 +17,7 @@ abstract public class AbstractSensor extends NARService implements Sensor {
 
     private FloatRange pri, res;
 
+
     public AbstractSensor(NAR nar) {
         this(null, nar);
     }

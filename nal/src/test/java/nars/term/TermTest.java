@@ -348,6 +348,11 @@ public class TermTest {
 
     }
 
+    @Test void testNormalizedConceptTerm() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        assertEquals("(#1-->x)", n.conceptualize("(#2 --> x)").term().toString());
+        assertEquals("((#1-->x),y)", n.conceptualize("((#2 --> x),y)").term().toString());
+    }
 
     @Test
     void invalidTermIndep() {

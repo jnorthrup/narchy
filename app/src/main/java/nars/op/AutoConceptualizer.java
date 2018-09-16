@@ -2,11 +2,15 @@ package nars.op;
 
 import com.google.common.collect.Iterables;
 import jcog.learn.Autoencoder;
+import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.DurService;
+import nars.control.channel.CauseChannel;
 import nars.table.BeliefTable;
+import nars.task.ITask;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -28,9 +32,9 @@ public class AutoConceptualizer extends AbstractSensor {
 
     private final List<? extends Concept> in;
 
-    private final DurService on;
     private final boolean beliefOrGoal;
     private final float[] x;
+    private final CauseChannel<ITask> out;
     float learningRate = 0.05f;
     float noiseLevel = 0.0002f;
 
@@ -40,8 +44,16 @@ public class AutoConceptualizer extends AbstractSensor {
         this.beliefOrGoal = beliefOrGoal;
         this.ae = new Autoencoder(in.size(), features, n.random());
         this.x = new float[in.size()];
-        this.on = DurService.on(n, this::update);
+        this.out = n.newChannel(this);
     }
+
+    @Override
+    protected void starting(NAR nar) {
+        ons.add(
+            DurService.on(nar, this::update)
+        );
+    }
+
 
     @Override
     public Iterable<Termed> components() {
@@ -54,6 +66,9 @@ public class AutoConceptualizer extends AbstractSensor {
     }
 
     protected void update(NAR n) {
+        if (in == null)
+            return;
+
         long now = n.time();
         float[] x = this.x;
         int inputs = in.size();
@@ -98,7 +113,7 @@ public class AutoConceptualizer extends AbstractSensor {
     }
 
     protected void onFeature(Term feature) {
-
+        out.input(new SignalTask(feature, BELIEF, $.t(1f, 0.9f), nar.time(), nar.time() - nar.dur()/2, nar.time() + nar.dur()/2, nar.evidence()));
     }
 
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {
@@ -116,13 +131,15 @@ public class AutoConceptualizer extends AbstractSensor {
         ArrayUtils.sort(order, (i) -> Math.abs(finalMean - a[i]));
 
         Set<Term> x = new UnifiedSet(maxArity);
-        for (int i = 0; i < maxArity; i++) {
+        int j = 0;
+        for (int i = 0; i < order.length && j < maxArity; i++) {
             int oi = order[i];
             float aa = a[oi];
             if (Math.abs(aa - 0.5f) < threshold)
                 break; 
 
             x.add(in.get(oi).term().negIf(aa < finalMean));
+            j++;
         }
 
         if (x.isEmpty())

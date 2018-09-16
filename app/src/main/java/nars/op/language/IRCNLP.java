@@ -1,21 +1,28 @@
 
 package nars.op.language;
 
-import nars.$;
-import nars.NAR;
-import nars.Param;
-import nars.Task;
+import jcog.Util;
+import nars.*;
 import nars.bag.leak.TaskLeak;
+import nars.exe.MultiExec;
+import nars.exe.Revaluator;
 import nars.op.language.util.IRC;
 import nars.term.Term;
+import nars.time.clock.RealTime;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
+import static nars.Op.*;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * http:
@@ -35,20 +42,18 @@ import org.slf4j.LoggerFactory;
 public class IRCNLP extends IRC {
     private static final Logger logger = LoggerFactory.getLogger(IRCNLP.class);
 
-    
+
     private final NAR nar;
-    
 
-    private final boolean hearTwenglish = true;
 
-    
+//    private final boolean hearTwenglish = true;
+
+
     private final String[] channels;
     private final MyLeakOut outleak;
     final Vocalization speech;
 
     boolean trace;
-
-
 
 
     public IRCNLP(NAR nar, String nick, String server, String... channels) {
@@ -57,22 +62,6 @@ public class IRCNLP extends IRC {
         this.nar = nar;
         this.channels = channels;
         this.speech = new Vocalization(nar, 2f, this::send);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         outleak = new MyLeakOut(nar, channels);
@@ -88,31 +77,6 @@ public class IRCNLP extends IRC {
 
  $0.9$ (($x,"the") <-> ($x,"a")).
          */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -144,9 +108,9 @@ public class IRCNLP extends IRC {
                     if (Param.DEBUG && !next.isCommand())
                         logger.info("{}\n{}", next, next.proof());
                 } else {
-                    
+
                 }
-                return cmd ? 0 : 1; 
+                return cmd ? 0 : 1;
             }
             return 0;
         }
@@ -163,54 +127,6 @@ public class IRCNLP extends IRC {
         this.trace = trace;
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     void hear(String text, String src) {
 
@@ -218,13 +134,12 @@ public class IRCNLP extends IRC {
             return new NARHear(nar, NARHear.tokenize(t.toLowerCase()), src, 200);
 
 
-
         });
     }
 
     @Override
     public void onPrivateMessage(PrivateMessageEvent event) {
-        
+
     }
 
     @Override
@@ -234,12 +149,12 @@ public class IRCNLP extends IRC {
             MessageEvent pevent = (MessageEvent) event;
 
             if (pevent.getUser().equals(irc.getUserBot())) {
-                return; 
+                return;
             }
 
             String msg = pevent.getMessage().trim();
 
-            String src = pevent.getUser().getNick(); 
+            String src = pevent.getUser().getNick();
             String channel = pevent.getChannel().getName();
 
             try {
@@ -251,33 +166,35 @@ public class IRCNLP extends IRC {
             }
 
 
-            
-            
         }
 
 
     }
 
 
-//    public static void main(String[] args) {
-//
-//
-//        float durFPS = 20f;
-//        NAR n = NARS.realtime(durFPS).get();
-//
-//        n.activateConceptRate.set(0.2f);
-//        n.forgetRate.set(1f);
-//
-//        n.freqResolution.set(0.2f);
-//        n.confResolution.set(0.05f);
-//
-//        n.termVolumeMax.set(48);
-//
-//        /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
-//            new RealTime.DS(true),
-//            new TaskExecutor(256, 0.25f));*/
-//
-//
+    public static void main(String[] args) throws IOException, IrcException {
+
+
+        float durFPS = 1f;
+        //NAR n = NARS.realtime(durFPS).get();
+        //new MatrixDeriver(Derivers.nal(n, 0, 8), n);
+        NAR n = new NARS.DefaultNAR(8, true)
+                .exe(new MultiExec.WorkerExec(new Revaluator.DefaultRevaluator(0.5f),2))
+                .time(new RealTime.MS(false).durFPS(durFPS)).get();
+
+        n.activateConceptRate.set(0.5f);
+        n.forgetRate.set(0.5f);
+
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.05f);
+
+        n.termVolumeMax.set(32);
+
+        /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
+            new RealTime.DS(true),
+            new TaskExecutor(256, 0.25f));*/
+
+
 //        new Thread(() -> {
 //            try {
 //                new TextUI(n, 1024);
@@ -285,54 +202,71 @@ public class IRCNLP extends IRC {
 //                e.printStackTrace();
 //            }
 //        }).start();
-//
-//
-//        IRCNLP bot = new IRCNLP(n,
-//
-//                "nar" + Math.round(64 * 1024 * Math.random()),
-//                "irc.freenode.net",
-//                "#123xyz"
-//
-//        );
-//
-//
-//        Term HEAR = $.the("hear");
-//
-//
-//        n.onTask(t -> {
-//
-//
-//            Term tt = t.term();
-//            long start = t.start();
-//            if (start != ETERNAL) {
-//                if (t.isBeliefOrGoal() /* BOTH */) {
-//                    long now = n.time();
-//                    int dur = n.dur();
-//                    if (start >= now - dur) {
-//                        if (tt.op() == INH && HEAR.equals(tt.sub(1))) {
-//                            if (tt.subIs(0, PROD) && tt.sub(0).subIs(0, Op.ATOM)) {
-//                                bot.speak(tt.sub(0).sub(0), start, t.truth());
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//
-//
-//        NARHear.readURL(n);
-//        n.logPriMin(System.out, 0.9f);
-//
-//        n.start();
-//
-//        try {
-//            bot.start();
-//        } catch (IOException | IrcException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
+
+
+        IRCNLP bot = new IRCNLP(n,
+
+                "nar" + Math.round(64 * 1024 * Math.random()),
+                "irc.freenode.net",
+                "#nars"
+
+        );
+        new Thread(()-> {
+            try {
+                bot.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IrcException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+
+
+        Term HEAR = $.the("hear");
+
+
+        n.onTask(t -> {
+
+
+            Term tt = t.term();
+            long taskTime = t.mid();
+            if (taskTime != ETERNAL) {
+                if (t.isGoal() && t.isPositive()) { //t.isBeliefOrGoal() /* BOTH */) {
+                    long now = n.time();
+                    int dur = n.dur();
+                    if (taskTime >= now - dur) {
+                        if (tt.op() == INH && HEAR.equals(tt.sub(1))) {
+                            if (tt.subIs(0, PROD) && tt.sub(0).subIs(0, Op.ATOM)) {
+                                bot.speak(tt.sub(0).sub(0), taskTime, t.truth());
+                            }
+                        }
+                    }
+                }
+            }
+        }, GOAL);
+
+
+        n.synch();
+
+        //NARHear.readURL(n);
+        //NARHear.readURL(n, "http://w3c.org");
+
+        n.logPriMin(System.out, 0.9f);
+
+
+
+
+        //n.startFPS(50f);
+
+        while (true) {
+          n.run(1000);
+          Util.sleepMS(10);
+        }
+
+
+        //Thread.currentThread().setDaemon(true);
+    }
 
 
     private void speak(Term word, long when, @Nullable Truth truth) {
@@ -352,7 +286,7 @@ public class IRCNLP extends IRC {
             if (!punctuation)
                 s += " ";
             if ((!s.isEmpty() && punctuation) || this.s.length() > minSendLength) {
-                
+
                 r = IRCNLP.this.send(channels, this.s.trim());
                 this.s = "";
             }
@@ -361,7 +295,7 @@ public class IRCNLP extends IRC {
 
         if (r != null) {
             r.run();
-            
+
         }
 
         return 1;

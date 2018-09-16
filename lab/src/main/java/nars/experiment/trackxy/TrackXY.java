@@ -165,7 +165,13 @@ public class TrackXY extends NAgentX {
                     1, 8
 //                    //,"curiosity.nal"
                     , "motivation.nal"
-                ));
+                )) {
+//                    @Override
+//                    public float puncFactor(byte conclusion) {
+//                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
+//                    }
+                };
+
 
                 ((MatrixDeriver) d).conceptsPerIteration.set(8);
 

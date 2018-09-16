@@ -36,12 +36,10 @@ public class AutoConceptualizerTest {
 
 
 
+        n.log();
         for (int i =0; i< 155; i++) {
             c.input();
-//            c.print(System.out);
             n.run(1);
-
-            System.out.println();
         }
 
 

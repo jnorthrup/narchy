@@ -33,15 +33,16 @@ public class Vocalization extends NARService {
     private final float expectationThreshold = 0.5f;
 
     public Vocalization(NAR nar, float durationsPerWord, Consumer<Term> speak) {
-        super(nar);
+        super();
         this.durationsPerWord = durationsPerWord;
         this.speak = speak;
         this.energy = 0;
+        nar.on(this);
     }
 
     @Override
     protected void starting(NAR nar) {
-        nar.runLater(()->{
+        //nar.runLater(()->{
             ons.add( DurService.on(nar, ()->{
                 energy = Math.min(1f, energy + 1f/(this.durationsPerWord));
                 if (energy >= 1f) {
@@ -49,7 +50,7 @@ public class Vocalization extends NARService {
                     next();
                 }
             }));
-        });
+        //});
     }
 
     public void speak(@Nullable Term word, long when, @Nullable Truth truth) {

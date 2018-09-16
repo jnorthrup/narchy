@@ -10,21 +10,20 @@ import nars.Narsese;
 import nars.Task;
 import nars.concept.Operator;
 import nars.op.language.util.Twenglish;
-import nars.task.signal.Truthlet;
-import nars.task.signal.TruthletTask;
+import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.TimeAware;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.function.Function;
 
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.c2w;
 
 
 /** sequential hearing and reading input abilities */
@@ -99,14 +98,14 @@ public class NARHear extends Loop {
         
         if (wordDelayMS > 0) {
             setPeriodMS(wordDelayMS);
-        } else {
+        }
             
             Term prev = null;
             for (Term x : msg) {
                 hear(prev, x);
                 prev = x;
             }
-        }
+
     }
 
     protected void onReset(TimeAware n) {
@@ -144,14 +143,16 @@ public class NARHear extends Loop {
 
         long now = nar.time();
         nar.input(
-            new TruthletTask(
-                term, 
-                BELIEF,
-                Truthlet.impulse(
-                        now, now+1 /* TODO use realtime to translate wordDelayMS to cycles */, 1f, 0f,
-                        c2w(nar.confDefault(BELIEF)*confFactor)
-                ),
-                nar)
+                new NALTask(term, BELIEF, $.t(1, (nar.confDefault(BELIEF)*confFactor)),
+                        now, now, now + nar.dur(), nar.evidence())
+//            new TruthletTask(
+//                term,
+//                BELIEF,
+//                Truthlet.impulse(
+//                        now, now+1 /* TODO use realtime to translate wordDelayMS to cycles */, 1f, 0f,
+//                        c2w(nar.confDefault(BELIEF)*confFactor)
+//                ),
+//                nar)
                 .priSet(nar.priDefault(BELIEF) * priorityFactor)
         );
     }
@@ -163,30 +164,29 @@ public class NARHear extends Loop {
             try {
 
 
-
-
-                String url = $.unquote(args[0]);
-                
-                
-                
-
-
-                String html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
-
-                html = StringEscapeUtils.unescapeHtml4(html);
-                String strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
-
-                
-
-                NARHear.hear(n, strippedText, url, 250, 0.1f);
-
-                return Operator.log(n.time(), "Reading " + url + ":" + strippedText.length() + " characters");
+                return readURL(n, $.unquote(args[0]));
 
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
         });
+    }
+
+    @NotNull
+    public static Task readURL(NAR n, String url) throws IOException {
+
+
+
+        String html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
+
+        html = StringEscapeUtils.unescapeHtml4(html);
+        String strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
+
+
+        NARHear.hear(n, strippedText, url, 250, 0.1f);
+
+        return Operator.log(n.time(), "Reading " + url + ":" + strippedText.length() + " characters");
     }
 
     public static void hear(NAR nar, String t, String source) {
