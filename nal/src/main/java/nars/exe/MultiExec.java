@@ -25,10 +25,13 @@ import java.util.function.Consumer;
 abstract public class MultiExec extends UniExec {
 
 
-    public static final float inputQueueSizeSafetyThreshold = 0.1f;
+    public static final float inputQueueSizeSafetyThreshold = 0.5f;
     private final Revaluator revaluator;
 
     protected volatile long idleTimePerCycle;
+
+    /** global sleep nap period */
+    private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
 
     public MultiExec(Revaluator revaluator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -77,13 +80,19 @@ abstract public class MultiExec extends UniExec {
         revaluator.update(nar);
 
         if (nar.time instanceof RealTime) {
-            double throttle = nar.loop.throttle.floatValue();
-            double cycleNS = ((RealTime) nar.time).cycleSeconds() * 1.0E9;
+            double cycleNS = nar.loop.periodNS();
+            if(cycleNS < 0) {
+                //paused
+                idleTimePerCycle = NapTime;
+                cpu.cycleTimeNS.set(0);
+            } else {
+                double throttle = nar.loop.throttle.floatValue();
 
-            //TODO better idle calculation in each thread / worker
-            idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
+                //TODO better idle calculation in each thread / worker
+                idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
 
-            cpu.cycleTimeNS.set(Math.max(1, Math.round(cycleNS * throttle)));
+                cpu.cycleTimeNS.set(Math.max(1, Math.round(cycleNS * throttle)));
+            }
 
         } else
             throw new TODO();
@@ -323,7 +332,7 @@ abstract public class MultiExec extends UniExec {
 
             private boolean alive = true;
 
-            final Random rng = new XoRoShiRo128PlusRandom(System.nanoTime());
+            final Random rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + System.nanoTime());
 
             @Override
             public void run() {
@@ -345,8 +354,14 @@ abstract public class MultiExec extends UniExec {
             private long work() {
                 long workStart = System.nanoTime();
 
-                int batchSize = (int) Math.ceil((((float) in.capacity()) / Math.max(1, (concurrency() - 1))));
                 do {
+                    int available = in.size(); //in.capacity();
+                    int batchSize =
+                            Util.lerp(nar.loop.throttle.floatValue(),
+                                    available, /* all of it if low throttle. this allows other threads to remains asleep while one awake thread takes care of it all */
+                                    (int) Math.ceil((((float) available) / Math.max(1, (concurrency() - 1))))
+                            );
+
                     int drained = in.remove(schedule, batchSize);
                     if (drained > 0) {
                         execute(schedule, 1);
@@ -402,11 +417,12 @@ abstract public class MultiExec extends UniExec {
             }
 
             public void sleep() {
-                if (idleTimePerCycle > 0) {
+                long i = WorkerExec.this.idleTimePerCycle;
+                if (i > 0) {
 
-                    Util.sleepNSwhile(idleTimePerCycle, 2 * 1000 * 1000 /* 2 ms interval */, () ->
+                    Util.sleepNSwhile(i, NapTime, () ->
                             //in.size() > 0 || !alive
-                            true
+                            queueSafe()
                     );
                 }
             }
@@ -425,7 +441,7 @@ abstract public class MultiExec extends UniExec {
 
 
         private boolean queueSafe() {
-            return in.availablePct(inputQueueCapacityPerThread) > inputQueueSizeSafetyThreshold;
+            return in.availablePct(inputQueueCapacityPerThread) >= inputQueueSizeSafetyThreshold;
         }
     }
 

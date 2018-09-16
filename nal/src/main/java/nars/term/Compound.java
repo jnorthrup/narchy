@@ -119,8 +119,8 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    default Term the() {
-        return this instanceof The && subterms().these() ? this : null;
+    default boolean the() {
+        return this instanceof The && subterms().these();
     }
 
     @Override

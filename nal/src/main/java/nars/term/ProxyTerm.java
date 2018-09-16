@@ -24,8 +24,8 @@ public class ProxyTerm implements Compound {
     }
 
     @Override
-    public final Term the() {
-        return null;
+    public final boolean the() {
+        return false;
     }
 
     @Override

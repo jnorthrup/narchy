@@ -105,11 +105,10 @@ public abstract class ConceptIndex implements Iterable<Termed> {
                 return null;
         }
 
-        Term xxx = xx.the();
-        if (xxx == null)
+        if (!xx.the())
             throw new WTF(_x + " not immutable");
 
-        return (Concept) get(xxx, createIfMissing);
+        return (Concept) get(xx, createIfMissing);
     }
 
     /**

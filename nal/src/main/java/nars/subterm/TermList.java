@@ -40,6 +40,10 @@ public class TermList extends FasterList<Term> implements Subterms {
 
 
 
+    @Override
+    public final boolean these() {
+        return false;
+    }
 
 
 

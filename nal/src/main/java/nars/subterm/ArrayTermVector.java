@@ -25,7 +25,6 @@ public class ArrayTermVector extends TermVector {
         super(terms);
         this.terms = terms;
         testIfInitiallyNormalized();
-
     }
 
 

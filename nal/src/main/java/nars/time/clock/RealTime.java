@@ -137,7 +137,7 @@ public abstract class RealTime extends Time {
         return (float) unitsToSeconds(dur());
     }
 
-    public double cycleSeconds() {
+    public double secondsPerUnit() {
         return (float) unitsToSeconds(1);
     }
 

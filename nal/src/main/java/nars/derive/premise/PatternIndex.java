@@ -24,8 +24,8 @@ import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
@@ -41,7 +41,7 @@ public class PatternIndex extends MapConceptIndex {
 
 
     public PatternIndex() {
-        super(new HashMap<>(1024));
+        super(new ConcurrentHashMap<>(1024));
     }
 
     public PatternIndex(NAR nar) {
@@ -180,20 +180,20 @@ public class PatternIndex extends MapConceptIndex {
         }
 
         @Override
-        public Term the() {
-            return null; //super.the();
+        public final boolean the() {
+            return false;
         }
 
         public abstract static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 
             final Ellipsis ellipsis;
-            private final int subtermStructure;
+//            private final int subtermStructure;
 
 
             PremisePatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
                 super(seed, dt, subterms);
 
-                this.subtermStructure = subterms.structure();
+//                this.subtermStructure = subterms.structure();
                 this.ellipsis = ellipsis;
 
             }

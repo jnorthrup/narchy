@@ -24,17 +24,12 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
     public NAR nar;
 
     public PremiseDeriverRuleSet(NAR nar, String... rules) {
-        this(new PatternIndex(nar), rules);
+        this(nar, PremiseRuleSource.parse(rules));
     }
 
-    public PremiseDeriverRuleSet(PatternIndex index, String... rules) {
-        this(index, PremiseRuleSource.parse(rules));
-    }
-
-    private PremiseDeriverRuleSet(PatternIndex patterns, Stream<PremiseRuleSource> parsed) {
-        assert (patterns.nar != null);
-        this.nar = patterns.nar;
-        parsed.distinct().map(x -> x.apply(patterns)).forEach(super::add);
+    private PremiseDeriverRuleSet(NAR nar, Stream<PremiseRuleSource> parsed) {
+        this.nar = nar;
+        parsed.distinct().map(x -> new PremiseRuleProto(x, nar)).forEach(super::add);
     }
 
     private final static Function<String, Collection<PremiseRuleSource>> ruleCache = Memoizers.the.memoize(
@@ -60,7 +55,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
 
     public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
         return new PremiseDeriverRuleSet(
-                new PatternIndex(nar),
+                nar,
                 filename.stream().flatMap(n -> PremiseDeriverRuleSet.ruleCache.apply(n).stream()));
     }
 

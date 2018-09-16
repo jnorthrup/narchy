@@ -9,7 +9,7 @@ dependencies {
     compile(group: 'org.pircbotx', name: 'pircbotx', version: '2.1') {
         exclude(group: 'org.slf4j')
         //exclude(module: 'commons-lang3') //grr..
-//        exclude(group: 'com.google.guava')
+        exclude(group: 'com.google.guava')
     }
 
     compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'

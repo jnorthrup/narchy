@@ -2,6 +2,7 @@ package nars.derive.premise;
 
 import jcog.data.list.FasterList;
 import nars.$;
+import nars.NAR;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.op.Taskify;
@@ -32,11 +33,12 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
     public final Pair<PREDICATE<Derivation>[], DeriveAction> rule;
 
-    public PremiseRuleProto(PremiseRuleSource raw, PatternIndex index) {
-        super(raw, index);
+    public PremiseRuleProto(PremiseRuleSource raw, NAR nar) {
+        super(raw);
 
 
-        Taskify taskify = new Taskify(index.nar.newCause(s -> new RuleCause(this, s)));
+        RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
+        Taskify taskify = new Taskify(cause);
 
         PREDICATE<Derivation> conc = AND.the(
                 this.termify,
@@ -72,7 +74,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
             postpost[k++] = p;
 
         this.rule = pair(PRE,
-                DeriveAction.action((AND) AND.the(postpost)));
+                DeriveAction.action(cause, (AND) AND.the(postpost)));
     }
 
 

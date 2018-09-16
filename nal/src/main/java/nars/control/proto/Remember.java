@@ -29,9 +29,9 @@ import static nars.time.Tense.ETERNAL;
 public class Remember extends AbstractTask {
     public Task input;
 
-    final FasterList<ITask> next = new FasterList(0);
-    final FasterList<Task> remembered = new FasterList(0);
-    public final FasterList<Task> forgotten = new FasterList(0);
+    final FasterList<ITask> next = new FasterList(2);
+    final FasterList<Task> remembered = new FasterList(1);
+    public final FasterList<Task> forgotten = new FasterList(1);
     public Concept concept;
 
 

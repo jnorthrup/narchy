@@ -42,8 +42,8 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public Term the() {
-        return this instanceof The && sub().the()!=null ? this : null;
+    public boolean the() {
+        return this instanceof The && sub().the();
     }
 
     @Override

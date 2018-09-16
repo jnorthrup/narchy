@@ -59,8 +59,8 @@ public final class EllipsisMatch extends LightCompound {
 
 
     @Override
-    public Term the() {
-        return null;
+    public boolean the() {
+        return false;
     }
 
     /** the ellipsis itself contributes no op */

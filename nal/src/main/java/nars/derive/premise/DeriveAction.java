@@ -3,9 +3,7 @@ package nars.derive.premise;
 import jcog.pri.ScalarValue;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.op.Taskify;
 import nars.derive.op.Truthify;
-import nars.derive.op.UnifyTerm;
 import nars.term.control.AND;
 
 final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<Derivation>*/ {
@@ -19,12 +17,12 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
         this.truth = t;
     }
 
-    static DeriveAction action(AND<Derivation> POST) {
+    static DeriveAction action(PremiseRuleProto.RuleCause cause, AND<Derivation> POST) {
 
-        PremiseRuleProto.RuleCause cause = ((Taskify) AND.last(
-                ((UnifyTerm.NextUnifyTransform)
-                AND.last(POST)
-        ).eachMatch)).channel;
+//        PremiseRuleProto.RuleCause cause = ((Taskify) AND.last(
+//                ((UnifyTerm.NextUnifyTransform)
+//                AND.last(POST)
+//        ).eachMatch)).channel;
 
         Truthify t = (Truthify) AND.first(POST, x -> x instanceof Truthify);
         if (t == null)

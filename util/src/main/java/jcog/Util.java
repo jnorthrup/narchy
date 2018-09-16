@@ -59,6 +59,7 @@ import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
@@ -67,6 +68,7 @@ import java.util.stream.Stream;
 import static java.lang.Math.pow;
 import static java.lang.Thread.onSpinWait;
 import static java.util.Arrays.stream;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -1588,35 +1590,71 @@ public enum Util {
     }
 
 
-    public static void sleepNS(long periodNS) {
-        if (periodNS > 1_000_000_000 / 1000 / 2  /*0.5ms */) {
-            LockSupport.parkNanos(periodNS);
-            return;
-        }
-
-        final long thresholdNS = 1000; /** 1uS = 0.001ms */
-        if (periodNS <= thresholdNS)
-            return;
-
-        long end = System.nanoTime() + periodNS;
-        //long remainNS = end - System.nanoTime();
-        int pauses = 0;
-        long now;
-        while ((now = System.nanoTime()) < end) {
-            Util.pauseNextCountDown(end - now);
-            //while (remainNS > thresholdNS) {
-
-//            if (remainNS <= 500000 /** 100uS = 0.5ms */) {
-//                Thread.yield();
-//            } else {
-//                Thread.onSpinWait();
-//            }
-            //Util.pauseNextIterative(pauses++);
-
-            //remainNS = end - System.nanoTime();
-        }
-
+    /** modified from guava: */
+    public static void sleep(long sleepFor, TimeUnit unit) {
+        sleepNS(unit.toNanos(sleepFor));
     }
+
+    public static void sleepNS(long remainingNanos) {
+        //try {
+
+            long end = System.nanoTime() + remainingNanos;
+            while (remainingNanos > 1000) {
+                if (remainingNanos < 10 * 1000) {
+                    Thread.onSpinWait();
+                } else if (remainingNanos < 1000 * 1000) {
+                    LockSupport.parkNanos(remainingNanos);
+                } else {
+
+                    try {
+                        // TimeUnit.sleep() treats negative timeouts just like zero.
+                        NANOSECONDS.sleep(remainingNanos);
+                    } catch (InterruptedException e) {
+                        //interrupted = true;
+                        //throw new RuntimeException(e);
+                        break;
+                    }
+                }
+
+                remainingNanos = end - System.nanoTime();
+            }
+//        } finally {
+//            if (interrupted) {
+//                Thread.currentThread().interrupt();
+//            }
+//        }
+    }
+
+//    public static void sleepNS(long periodNS) {
+//        if (periodNS > 1_000_000_000 / 1000 / 2  /*0.5ms */) {
+//            LockSupport.parkNanos(periodNS);
+//            return;
+//        }
+//
+//        final long thresholdNS = 1000; /** 1uS = 0.001ms */
+//        if (periodNS <= thresholdNS)
+//            return;
+//
+//        long end = System.nanoTime() + periodNS;
+//        //long remainNS = end - System.nanoTime();
+//        int pauses = 0;
+//        long now;
+//        while ((now = System.nanoTime()) < end) {
+//            Util.pauseNextCountDown(end - now);
+//            //while (remainNS > thresholdNS) {
+//
+////            if (remainNS <= 500000 /** 100uS = 0.5ms */) {
+////                Thread.yield();
+////            } else {
+////                Thread.onSpinWait();
+////            }
+//            //Util.pauseNextIterative(pauses++);
+//
+//            //remainNS = end - System.nanoTime();
+//        }
+//
+//
+//    }
 
 
     public static void sleepNSwhile(long periodNS, long napTimeNS, BooleanSupplier keepSleeping) {

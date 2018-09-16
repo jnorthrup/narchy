@@ -1,5 +1,6 @@
 package nars.subterm;
 
+import jcog.Util;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.subterm.util.TermMetadata;
@@ -17,13 +18,22 @@ import static nars.Op.NEG;
 public abstract class TermVector extends TermMetadata implements Subterms, The {
 
     private transient boolean normalized;
+    final boolean the;
 
+    /** called by AnonVector */
     protected TermVector(SubtermMetadataCollector s) {
         super(s);
+        the = true;
     }
 
     protected TermVector(Term... terms) {
         super(terms);
+        the = Util.and(terms, Term::the);
+    }
+
+    @Override
+    public final boolean these() {
+        return the;
     }
 
     protected void testIfInitiallyNormalized() {

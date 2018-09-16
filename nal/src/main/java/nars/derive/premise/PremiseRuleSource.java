@@ -45,7 +45,6 @@ import java.util.stream.Stream;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
-import static nars.derive.Derivation.Task;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.unify.op.TaskPunctuation.Belief;
@@ -55,7 +54,7 @@ import static nars.unify.op.TaskPunctuation.Goal;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseRuleSource extends ProxyTerm implements Function<PatternIndex, PremiseRuleProto> {
+public class PremiseRuleSource extends ProxyTerm  {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
     private final String source;
@@ -572,8 +571,8 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
         return mc;
     }
 
-    protected PremiseRuleSource(PremiseRuleSource raw, PatternIndex index) {
-        super((index.rule(raw.ref)));
+    protected PremiseRuleSource(PremiseRuleSource raw) {
+        super((/*index.rule*/(raw.ref)));
 
         this.termify = raw.termify;
         this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
@@ -647,11 +646,6 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
             //subterm
             pre.add(new TermMatchPred.Subterm(path, m, isOrIsnt, TaskOrBelief(taskOrBelief)));
         }
-    }
-
-    @Override
-    public PremiseRuleProto apply(PatternIndex i) {
-        return new PremiseRuleProto(this, i);
     }
 
 
@@ -772,23 +766,23 @@ public class PremiseRuleSource extends ProxyTerm implements Function<PatternInde
         return b == null ? Op.EmptyProduct : $.p(b);
     }
 
-    static class MatchFilter extends AbstractPred<Derivation> {
-
-        private static final Atom MATCH_FILTER = (Atom) Atomic.the(MatchFilter.class.getSimpleName());
-        private final Term pattern;
-        private final boolean isTaskOrBelief;
-
-        protected MatchFilter(Term pattern, boolean isTaskOrBelief) {
-            super($.func(MATCH_FILTER, pattern, isTaskOrBelief ? Task : Belief));
-            this.isTaskOrBelief = isTaskOrBelief;
-            this.pattern = pattern;
-        }
-
-        @Override
-        public boolean test(Derivation derivation) {
-            return false;
-        }
-    }
+//    static class MatchFilter extends AbstractPred<Derivation> {
+//
+//        private static final Atom MATCH_FILTER = (Atom) Atomic.the(MatchFilter.class.getSimpleName());
+//        private final Term pattern;
+//        private final boolean isTaskOrBelief;
+//
+//        protected MatchFilter(Term pattern, boolean isTaskOrBelief) {
+//            super($.func(MATCH_FILTER, pattern, isTaskOrBelief ? Task : Belief));
+//            this.isTaskOrBelief = isTaskOrBelief;
+//            this.pattern = pattern;
+//        }
+//
+//        @Override
+//        public boolean test(Derivation derivation) {
+//            return false;
+//        }
+//    }
 
     static class UnifyPreFilter extends AbstractPred<Derivation> {
 

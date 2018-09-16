@@ -2,7 +2,6 @@ package nars.term.compound;
 
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Term;
 
 import static nars.time.Tense.DTERNAL;
 
@@ -21,9 +20,10 @@ public interface AbstractLightCompound extends Compound {
     Subterms subterms();
 
     @Override
-    default Term the() {
+    default boolean the() {
         //throw new TODO();
-        return op().the(dt(), arrayShared());
+        //return op().the(dt(), arrayShared());
+        return false;
     }
 
     @Override

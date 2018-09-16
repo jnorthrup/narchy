@@ -80,9 +80,10 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
 //    }
 
     @Override
-    public Term the() {
+    public boolean the() {
         //throw new TODO();
-        return op().the(dt(), arrayShared());
+        //return op().the(dt(), arrayShared());
+        return false;
     }
 
     @Override

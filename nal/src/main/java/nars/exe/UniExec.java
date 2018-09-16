@@ -27,8 +27,10 @@ public class UniExec extends AbstractExec {
 
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 
-    protected static final int inputQueueCapacityPerThread = 4096;
+    protected static final int inputQueueCapacityPerThread = 2048;
     final MetalConcurrentQueue in;
+
+    static float timeSliceMomentum = 0.9f;
 
 
     final Sharing sharing = new Sharing();
@@ -47,7 +49,7 @@ public class UniExec extends AbstractExec {
     /**
      * increasing the rate closer to 1 reduces the dynamic range of the temporal allocation
      */
-    public final FloatRange explorationRate = FloatRange.unit(0.01f);
+    public final FloatRange explorationRate = FloatRange.unit(0.001f);
 
     public final class InstrumentedCausable extends InstrumentedWork {
 
@@ -199,7 +201,8 @@ public class UniExec extends AbstractExec {
 //                                    if (v == v) {
                                         s.pri(
                                                 //((float)v)
-                                                (float) (v / valueRateSum[0])
+                                                (float) (v / valueRateSum[0]),
+                                                1-timeSliceMomentum
                                         );
 //                                    } else {
 //                                        s.pri(explorationRate);

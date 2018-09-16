@@ -216,7 +216,8 @@ abstract public class Loop implements Runnable {
     }
 
     public long periodNS() {
-        return periodMS.getOpaque() * 1000000L;
+        int m = periodMS.getOpaque();
+        return m >= 0  ? m * 1000000L : -1;
     }
 
 }

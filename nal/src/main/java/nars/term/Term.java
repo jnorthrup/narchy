@@ -693,13 +693,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         s.hash = Util.hashCombine(s.hash, hashCode());
     }
 
-    @Nullable default Term the() {
-        if (this instanceof The)
-            return this;
-        else {
-            return null;
-            //throw new RuntimeException(getClass() + " does not support the()");
-        }
+    default boolean the() {
+        return this instanceof The;
     }
 
     default boolean equalsNeg(Term t) {

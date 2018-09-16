@@ -181,19 +181,26 @@ public class FasterList<X> extends FastList<X> {
     @Override
     public int indexOf(/*@NotNull*/ Object object) {
 
+        if (object == null)
+            return indexOfInstance(null);
 
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            if (object == null) {
-                for (int i = 0; i < s; i++)
-                    if (items[i] == null)
-                        return i;
-            } else {
-                for (int i = 0; i < s; i++)
-                    if (object.equals(items[i]))
-                        return i;
-            }
+            for (int i = 0; i < s; i++)
+                if (object.equals(items[i]))
+                    return i;
+        }
+        return -1;
+    }
+
+    public int indexOfInstance(/*@NotNull*/ Object x) {
+        int s = size;
+        if (s > 0) {
+            X[] items = this.items;
+            for (int i = 0; i < s; i++)
+                if (items[i] == x)
+                    return i;
         }
         return -1;
     }
@@ -432,8 +439,8 @@ public class FasterList<X> extends FastList<X> {
 
     public void ensureExtraCapacity(int num) {
         X[] ii = this.items;
-        int s = 0, l = ii.length;
-        if (l == 0 || (l < ((s = this.size) + num))) {
+        int s = this.size, l = ii.length;
+        if (l == 0 || (items.length < (s + num))) {
             this.items = (X[]) (
                     (l == 0) ?
                             newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
@@ -678,6 +685,15 @@ public class FasterList<X> extends FastList<X> {
 
     public boolean removeInstance(X x) {
         return removeIf(y -> x == y);
+    }
+
+    public boolean removeFirstInstance(X x) {
+        int i = indexOfInstance(x);
+        if (i != -1) {
+            removeFast(i);
+            return true;
+        }
+        return false;
     }
 
     public List<Iterable<X>> chunkView(int chunkSize) {

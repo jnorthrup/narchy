@@ -1,10 +1,7 @@
 package nars.term.util.transform;
 
 import jcog.random.XorShift128PlusRandom;
-import nars.$;
-import nars.Narsese;
-import nars.Op;
-import nars.Param;
+import nars.*;
 import nars.derive.premise.PatternIndex;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.premise.PremiseRuleSource;
@@ -342,7 +339,7 @@ public class EllipsisTest {
         assertTrue(_x instanceof PremiseRuleSource, _x.toString());
         PremiseRuleSource x = (PremiseRuleSource) _x;
         
-        x = new PremiseRuleProto(x, new PatternIndex());
+        x = new PremiseRuleProto(x, NARS.shell());
         
 
         assertEquals(

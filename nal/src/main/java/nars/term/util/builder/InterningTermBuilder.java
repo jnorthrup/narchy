@@ -42,7 +42,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         for (int i = 0; i < Op.ops.length; i++) {
             Op o = Op.ops[i];
-            if (o.atomic || o ==NEG) continue;
+            if (o.atomic || o == NEG) continue;
 
             int s = cacheSizePerOp;
             if (o == PROD)
@@ -52,11 +52,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             HijackTermCache c;
             if (o == CONJ) {
-                 c = newOpCache("conj", j -> super.conj(false, j.dt, j.rawSubs.get()), cacheSizePerOp);
+                c = newOpCache("conj", j -> super.conj(false, j.dt, j.rawSubs.get()), cacheSizePerOp);
             } else if (o.statement) {
-                 c = statements;
+                c = statements;
             } else {
-                 c = newOpCache(o.str, this::compoundInterned, s);
+                c = newOpCache(o.str, this::compoundInterned, s);
             }
             terms[i] = c;
         }
@@ -65,7 +65,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         root = newOpCache("root", j -> super.root((Compound) j.sub0()), cacheSizePerOp);
 
-        normalize = newOpCache("normalize", j -> super.normalize((Compound) j.sub0(), (byte)0), cacheSizePerOp);
+        normalize = newOpCache("normalize", j -> super.normalize((Compound) j.sub0(), (byte) 0), cacheSizePerOp);
 
     }
 
@@ -80,7 +80,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return terms[x.op].apply(x);
     }
 
-    @Nullable private Term get(Term x, DynBytes tmp) {
+    @Nullable
+    private Term get(Term x, DynBytes tmp) {
         Op xo = x.op();
         boolean negate = xo == NEG;
         if (negate) {
@@ -91,7 +92,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             HijackTermCache c = terms[xo.id];
             Term y = c.apply(InternedCompound.get(x, tmp));
             //Term y = c.getIfPresent(InternedCompound.get(x, tmp));
-            if (y!=null)
+            if (y != null)
                 return y.negIf(negate);
         }
         return null;
@@ -157,6 +158,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             resolve(t);
         return super.theCompound(o, dt, t, key);
     }
+
     public Subterms theSubterms(Term... t) {
         if (deep)
             resolve(t);
@@ -173,7 +175,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
         DynBytes tmp = null;
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term x = t[i];
-            if (x instanceof Atomic || !internableSub(x))
+            if (x instanceof Atomic)
+                continue;
+            if (!internableSub(x))
                 continue;
 
             if (tmp == null)
@@ -181,7 +185,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             Term y = get(x, tmp);
 
-            if (y!=null)
+            if (y != null)
                 t[i] = y;
         }
     }
@@ -211,7 +215,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private static boolean internableSub(Term x) {
-        return x.the() != null;
+        return x.the();
     }
 
     @Override
@@ -221,9 +225,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //            throw new WTF();
 
         if (varOffset == 0) {
-            Term xx = x.the();
-            if (xx != null)
-                return normalize.apply(InternedCompound.get(PROD, xx)); //new LighterCompound(PROD, x, NORMALIZE)));
+            if (x.the())
+                return normalize.apply(InternedCompound.get(PROD, x)); //new LighterCompound(PROD, x, NORMALIZE)));
         }
 
         return super.normalize(x, varOffset);
@@ -233,56 +236,51 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Term concept(Compound x) {
-        Term xx = x.the();
-        if (xx == null)
+        if (!x.the())
             return super.concept(x);
-        return concept.apply(InternedCompound.get(PROD, xx));
+        return concept.apply(InternedCompound.get(PROD, x));
     }
 
     @Override
     public Term root(Compound x) {
-        Term xx = x.the();
-        if (xx == null)
+        if (!x.the())
             return super.root(x);
-        if (xx.volume() < 2)
+        if (x.volume() < 2)
             throw new WTF();
-        return root.apply(InternedCompound.get(PROD, xx));
+        return root.apply(InternedCompound.get(PROD, x));
     }
-//    private Term _root(InternedCompound i) {
+
+    //    private Term _root(InternedCompound i) {
 //        return ;
 //    }
     @Override
     public Term statement(Op op, int dt, Term subject, Term predicate) {
 
 
-        Term s = subject.the();
-        if (s!=null) {
-            Term p = predicate.the();
-            if (p!=null) {
+        if (subject.the() && predicate.the()) {
 
-                boolean negate = false;
+            boolean negate = false;
 
-                //quick preparations to reduce # of unique entries
-                switch (op) {
-                    case SIM:
-                        //pre-sort by swapping to avoid saving redundant mappings
-                        if (subject.compareTo(predicate)>0) {
-                            Term x = predicate;
-                            predicate = subject;
-                            subject = x;
-                        }
-                        break;
-                    case IMPL:
-                        negate = (predicate.op()==NEG);
-                        if (negate)
-                            predicate = predicate.unneg();
-                        break;
-                }
-
-                return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
-
-                //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
+            //quick preparations to reduce # of unique entries
+            switch (op) {
+                case SIM:
+                    //pre-sort by swapping to avoid saving redundant mappings
+                    if (subject.compareTo(predicate) > 0) {
+                        Term x = predicate;
+                        predicate = subject;
+                        subject = x;
+                    }
+                    break;
+                case IMPL:
+                    negate = (predicate.op() == NEG);
+                    if (negate)
+                        predicate = predicate.unneg();
+                    break;
             }
+
+            return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+
+            //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
         }
         return super.statement(op, dt, subject, predicate);
     }
@@ -302,7 +300,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
         else
             return super.conj(false, dt, u);
     }
-
 
 
 }

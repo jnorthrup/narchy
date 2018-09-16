@@ -61,11 +61,6 @@ public class AnonVector extends TermVector implements FullyInternable {
         testIfInitiallyNormalized();
     }
 
-    @Override
-    public boolean these() {
-        return true;
-    }
-
 
 //        @Override
 //    public @Nullable Subterms transformSubs(TermTransform f) {
