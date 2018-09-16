@@ -47,7 +47,7 @@ public class UniExec extends AbstractExec {
     /**
      * increasing the rate closer to 1 reduces the dynamic range of the temporal allocation
      */
-    public final FloatRange explorationRate = FloatRange.unit(0.1f);
+    public final FloatRange explorationRate = FloatRange.unit(0.01f);
 
     public final class InstrumentedCausable extends InstrumentedWork {
 

@@ -620,7 +620,7 @@ public class FasterList<X> extends FastList<X> {
     public boolean clearIfChanged() {
         int s = size;
         if (s > 0) {
-            Arrays.fill(this.items, 0, size, null);
+            Arrays.fill(this.items, 0, s, null);
             this.size = 0;
             return true;
         }

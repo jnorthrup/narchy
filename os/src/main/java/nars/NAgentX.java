@@ -296,18 +296,18 @@ abstract public class NAgentX extends NAgent {
 
 
         n.confMin.set(0.01f);
-        n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(30);
+        //n.freqResolution.set(0.03f);
+        n.termVolumeMax.set(36);
 
         n.forgetRate.set(0.9f);
         n.activateConceptRate.set(0.1f);
-        n.activateLinkRate.set(1f);
+        n.activateLinkRate.set(0.1f);
 
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-        float basePri = 0.05f;
+        float basePri = 0.5f;
         n.beliefPriDefault.set(basePri);
         n.goalPriDefault.set(basePri);
         n.questionPriDefault.set(basePri);

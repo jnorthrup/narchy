@@ -94,7 +94,7 @@ public class Derivation extends PreDerivation {
             }
             if (compared == null)
                 return Bool.Null;
-            return compared.isNegative() ? subterm.neg() : subterm;
+            return compared.isPositive() ? subterm : subterm.neg();
         }
     };
     public NAR nar;
@@ -181,7 +181,7 @@ public class Derivation extends PreDerivation {
     /**
      * precise time that the task and belief truth are sampled
      */
-    public transient long taskStart, beliefStart; //TODO taskEnd, beliefEnd
+    public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
     public transient boolean taskBeliefTimeIntersects;
     private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;
@@ -281,7 +281,7 @@ public class Derivation extends PreDerivation {
      * <p>
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
-    public boolean reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
+    public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
 
         if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
@@ -305,15 +305,13 @@ public class Derivation extends PreDerivation {
 
 
         if (this._task == null || !Arrays.equals(this._task.stamp(), nextTask.stamp())) {
-            this.taskStamp = Stamp.toSet(nextTask);
+            this.taskStamp = null; //force (re-)compute in post-derivation stage
         }
         if (this._task == null || this._task != nextTask) {
             this.task = new SpecialTermTask(taskTerm, nextTask);
         }
 
-        long taskStart = nextTask.start();
 
-        assert (taskStart != TIMELESS);
 
 
         this._task = nextTask;
@@ -326,12 +324,15 @@ public class Derivation extends PreDerivation {
             this.taskTruth = null;
         }
 
+        long taskStart = nextTask.start();
         this.taskStart = taskStart;
+        this.taskEnd = _task.end();
 
         long taskEnd = nextTask.end();
         if (nextBelief != null) {
             this.beliefTruthRaw = nextBelief.truth();
             this.beliefStart = nextBelief.start();
+            this.beliefEnd = nextBelief.end();
 
             this.beliefTruthProjectedToTask = nextBelief.truth(taskStart, taskEnd, dur);
 
@@ -355,9 +356,14 @@ public class Derivation extends PreDerivation {
             this.belief = new SpecialTermTask(beliefTerm, nextBelief);
         } else {
 
-            this.beliefTerm = anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm);
-            this.beliefStart = TIMELESS;
+            boolean shiftBeliefTerm = !(nextBeliefTerm instanceof Variable);
+            this.beliefTerm =
+                    shiftBeliefTerm ?
+                        anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
+                        anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the term may be structural
+
             this.belief = null;
+            this.beliefStart = this.beliefEnd = TIMELESS;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
         }
 
@@ -365,10 +371,6 @@ public class Derivation extends PreDerivation {
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
         assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
 
-
-
-
-        return true;
     }
 
     public static boolean fatal(RuntimeException w) {
@@ -390,15 +392,12 @@ public class Derivation extends PreDerivation {
      */
     public void derive(int ttl) {
 
+        reset();
+
         this.taskBeliefTimeIntersects =
                 this.belief == null
                         ||
-                        this.belief.intersects(taskStart, task.end());
-
-
-        this.termutes.clear();
-
-        reset();
+                        this.belief.intersects(taskStart, taskEnd);
 
         this.forEachMatch = null;
         this.concTruth = null;
@@ -413,6 +412,7 @@ public class Derivation extends PreDerivation {
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 
+        this.taskStamp = Stamp.toSet(_task);
 
         this.overlapSingle = _task.isCyclic();
 
@@ -456,9 +456,9 @@ public class Derivation extends PreDerivation {
 
 
         long[] t = belief!=null && taskStart!=ETERNAL && beliefStart != ETERNAL ?
-                Longerval.unionArray(taskStart, _task.end(), beliefStart, _belief.end()) :
-                ( belief != null && taskStart==ETERNAL ? new long[] { beliefStart, _belief.end() } :
-                        new long[] { taskStart, _task.end() });
+                Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd ) :
+                ( belief != null && taskStart==ETERNAL ? new long[] { beliefStart, beliefEnd } :
+                        new long[] { taskStart, taskEnd });
         this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task, t, 0) : 0;
         this.beliefEvi = belief != null ? TruthIntegration.evi(_belief, t, 0) : 0;
 
@@ -546,7 +546,7 @@ public class Derivation extends PreDerivation {
     @Nullable
     public long[] evidenceSingle() {
         if (evidenceSingle == null) {
-            evidenceSingle = task.stamp();
+            evidenceSingle = _task.stamp();
         }
         return evidenceSingle;
     }
@@ -555,19 +555,19 @@ public class Derivation extends PreDerivation {
     public long[] evidenceDouble() {
         if (evidenceDouble == null) {
             float te, be, tb;
-            if (task.isBeliefOrGoal()) {
+            if (taskPunc == BELIEF || taskPunc == GOAL) {
 
                 te = taskTruth.evi();
                 be = beliefTruthRaw != null ? beliefTruthRaw.evi() : 0;
                 tb = te / (te + be);
             } else {
 
-                te = task.priElseZero();
-                be = belief.priElseZero();
+                te = _task.priElseZero();
+                be = _belief.priElseZero();
                 tb = te + be;
                 tb = tb < ScalarValue.EPSILON ? 0.5f : te / tb;
             }
-            return evidenceDouble = Stamp.zip(task.stamp(), belief.stamp(), tb);
+            return evidenceDouble = Stamp.zip(_task.stamp(), _belief.stamp(), tb);
         } else {
             return evidenceDouble;
         }

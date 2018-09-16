@@ -111,6 +111,11 @@ public abstract class Unify extends Versioning implements Subst {
     protected abstract void tryMatch();
 
 
+    @Override
+    public void reset() {
+        super.reset();
+        this.termutes.clear();
+    }
 
     public final boolean tryMutate(Termutator[] chain, int next) {
 

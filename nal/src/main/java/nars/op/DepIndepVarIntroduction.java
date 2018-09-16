@@ -73,8 +73,9 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     @Override protected Term choose(Term[] x, Random rng) {
         IntToFloatFunction curve =
-                n -> Util.sqr(1f / (x[n].volume()));
-                //n -> 1f / (x[n].volume());
+                n -> 1f / Util.cube(x[n].volume());
+                //n -> 1f / Util.sqr(x[n].volume());
+                //n -> 1f / x[n].volume();
         return x[Roulette.selectRoulette(x.length, curve, rng)];
     }
 

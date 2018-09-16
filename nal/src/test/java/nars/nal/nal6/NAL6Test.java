@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 600;
+    private static final int cycles = 500;
 
     @BeforeEach
     void setup() {
@@ -26,8 +26,9 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(20);
-        n.confMin.set(0.2f);
+        n.termVolumeMax.set(18);
+//        n.freqResolution.set(0.1f);
+        n.confMin.set(0.3f);
         return n;
     }
 
@@ -224,8 +225,8 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(bird --> swan)", 0.90f, 0.9f);
-        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.90f,
+        tester.believe("(bird --> swan)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
                 0.81f);
 
     }
@@ -235,8 +236,8 @@ public class NAL6Test extends NALTest {
         //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
         TestNAR tester = test;
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(swimmer --> swan)", 0.90f, 0.9f);
-        tester.mustBelieve(cycles, "(bird --> swan)", 0.90f,
+        tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "(bird --> swan)", 0.80f,
                 0.81f);
 
     }
@@ -335,8 +336,8 @@ public class NAL6Test extends NALTest {
 
 
         TestNAR tester = test;
-        tester.believe("<<$x --> lock> ==> (<#y --> key> && open(#y,$x))>");
-        tester.believe("({lock1} --> lock)");
+        tester.believe("(lock:$x ==> (key:#y && open(#y,$x)))");
+        tester.believe("lock:{lock1}");
         tester.mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))", 1.00f, 0.81f);
 
     }
@@ -591,9 +592,9 @@ public class NAL6Test extends NALTest {
     void abductionBeliefWeakPositiveButNotNegative() {
 
         test
-                .believe("(a==>b)", 0.55f, 0.90f)
-                .believe("b", 0.55f, 0.90f)
-                .mustBelieve(cycles, "a", 0.55f, 0.31f);
+                .believe("(a==>b)", 0.6f, 0.90f)
+                .believe("b", 0.6f, 0.90f)
+                .mustBelieve(cycles, "a", 0.6f, 0.31f);
     }
 
     @Test
@@ -931,9 +932,16 @@ public class NAL6Test extends NALTest {
     void testRawProductDifference() {
         test
                 .believe("(x,0)", 1f, 0.9f)
+                .believe("(x,1)", 0.6f, 0.9f)
+                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.81f, ETERNAL)
+                .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.81f, ETERNAL);
+    }
+    @Test
+    void testRawProductDifference2() {
+        test
+                .believe("(x,0)", 1f, 0.9f)
                 .believe("(x,1)", 0.5f, 0.9f)
                 .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.81f, ETERNAL)
                 .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.81f, ETERNAL);
     }
-
 }

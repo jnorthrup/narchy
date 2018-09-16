@@ -1,6 +1,5 @@
 package nars.derive.impl;
 
-import com.netflix.servo.monitor.Counter;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
@@ -103,30 +102,7 @@ public class MatrixDeriver extends Deriver {
 
             for (Premise p : premises) {
 
-                Counter counter;
-                if (p.match(d, matchTTL)) {
-
-                    if (rules.derivable(d)) {
-
-                        d.derive(deriveTTL);
-
-                        premiseFired(p, d);
-                        counter = n.emotion.premiseFire;
-
-                    } else {
-                        premiseUnderivable(p, d);
-                        counter = n.emotion.premiseUnderivable;
-                    }
-
-                } else {
-                    premiseUnmatched(p);
-                    counter = n.emotion.premiseFailMatch;
-                }
-
-                counter.increment();
-
-//                if ((++tried[0] % burst) == 0 && !kontinue.getAsBoolean())
-//                    return;
+                p.derive(d, matchTTL, deriveTTL);
 
             }
             premises.clear();

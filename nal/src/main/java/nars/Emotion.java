@@ -40,7 +40,7 @@ public class Emotion implements Meter {
     public final Counter taskFire = new FastCounter("task fire");
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
     public final Counter premiseFire = new FastCounter("premise fire");
-    public final Counter premiseFailMatch = new FastCounter("premise fail");
+
 
     /**
      * indicates lack of novelty in premise selection

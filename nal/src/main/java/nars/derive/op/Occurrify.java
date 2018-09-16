@@ -210,11 +210,11 @@ public class Occurrify extends TimeGraph {
         Termed bb = !single ? belief : d.beliefTerm;
         Term beliefTerm = bb.term();
 
-        long taskStart = d.taskStart, taskEnd = d.task.end();
-        long beliefStart = single ? TIMELESS : d.beliefStart, beliefEnd = single ? TIMELESS : d.belief.end();
+        long taskStart = d.taskStart, taskEnd = d.taskEnd;
+        long beliefStart = single ? TIMELESS : d.beliefStart, beliefEnd = single ? TIMELESS : d.beliefEnd;
 
 
-        autoNegNext.clear();
+
 
         if (task.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
 
@@ -319,6 +319,7 @@ public class Occurrify extends TimeGraph {
         if (!single && (!pp.isEmpty() || !nn.isEmpty()))
             beliefTerm.recurseTerms(provide);
 
+        autoNegNext.clear();
         pp.symmetricDifferenceInto(nn, autoNegNext);
 
         pp.clear();
@@ -472,7 +473,7 @@ public class Occurrify extends TimeGraph {
      * eternal check: conditions under which an eternal result might be valid
      */
     boolean validEternal() {
-        return d.task.isEternal() || (d.belief != null && d.belief.isEternal());
+        return d.taskStart==ETERNAL || (d.belief != null && d.beliefStart==ETERNAL);
     }
 
 
@@ -513,14 +514,14 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 assert (d.taskTerm.op() == CONJ);
 
-                if (!d.task.isEternal()) {
+                if (d.taskStart!=ETERNAL) {
                     int r = d.taskTerm.eventRange();
-                    long[] o = new long[]{d.task.start(), r + d.task.end()};
+                    long[] o = new long[]{d.taskStart, r + d.taskEnd};
 
 
                     if (r > 0 && d.concTruth != null) {
                         //decrease evidence by proportion of time expanded
-                        float ratio = (float) (((double) d.task.range()) / (1 + o[1] - o[0]));
+                        float ratio = (float) (((double) d._task.range()) / (1 + o[1] - o[0]));
                         if (!d.concTruthEviMul(ratio, false))
                             return null;
                     }
@@ -572,7 +573,7 @@ public class Occurrify extends TimeGraph {
 //                        return new long[]{ ts, T.end()};
 //
 
-                        long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                        long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd );
                         return i;
                     }
 
@@ -743,17 +744,16 @@ public class Occurrify extends TimeGraph {
                     return solveOccDT(d, x, d.occ.reset(x, false));
                 }
 
-                long tTime = d.taskStart;
-                long bTime = d.beliefStart;
+                long tTime = d.taskStart, bTime = d.beliefStart;
 
                 if (tTime == ETERNAL && bTime == ETERNAL) {
                     return pair(x.dt(DTERNAL), new long[]{ETERNAL, ETERNAL});
                 }
                 if (tTime == ETERNAL) {
-                    return pair(x.dt(0), new long[]{bTime, d.belief.end()});
+                    return pair(x.dt(0), new long[]{bTime, d.beliefEnd });
                 }
                 if (bTime == ETERNAL) {
-                    return pair(x.dt(0), new long[]{tTime, d.task.end()});
+                    return pair(x.dt(0), new long[]{tTime, d.taskEnd });
                 }
 
 
@@ -788,7 +788,7 @@ public class Occurrify extends TimeGraph {
                 else
                     y = Conj.the(bb, 0, tt, Tense.dither(tTime - bTime, d.nar));
 
-                long range = Math.max(Math.min(d.task.range(), d.belief.range()) - 1, 0);
+                long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);
 
 
                 return pair(y, new long[]{earlyStart, earlyStart + range});
@@ -823,12 +823,12 @@ public class Occurrify extends TimeGraph {
             @Override
             long[] occurrence(Derivation d) {
                 if (d.concSingle || (d.belief == null || d.beliefStart == ETERNAL)) {
-                    return new long[]{d.taskStart, d.task.end()};
+                    return new long[]{d.taskStart, d.taskEnd};
                 } else if (d.taskStart == ETERNAL && d.belief != null) {
-                    return new long[]{d.beliefStart, d.belief.end()};
+                    return new long[]{d.beliefStart, d.beliefEnd};
                 } else {
 
-                    long[] i = Longerval.intersectionArray(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                    long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
                     if (i == null) {
                         //if (Param.DEBUG)
                         //assert(false == intersectFilter.test(d));
@@ -859,7 +859,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+                Longerval i = Longerval.union(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
                 return new long[]{i.a, i.b};
             }
 
@@ -920,7 +920,7 @@ public class Occurrify extends TimeGraph {
 
 
             if (o[0] == ETERNAL) {
-                if (d.task.isEternal() && (d.belief == null || d.belief.isEternal()))
+                if (d.taskStart==ETERNAL && (d.belief == null || d.beliefStart==ETERNAL))
                     return true; //both task and belief are eternal; keep eternal
 
                 long NOW = d.time;
@@ -1135,7 +1135,7 @@ public class Occurrify extends TimeGraph {
 
             int offset = offsets[(offsets.length > 1) ? d.nar.random().nextInt(offsets.length) : 0];
             assert (offset != DTERNAL && offset != XTERNAL);
-            w = new long[]{d.taskStart + offset, d.task.end() + offset};
+            w = new long[]{d.taskStart + offset, d.taskEnd + offset};
         }
         return pair(x, w);
     }
@@ -1146,13 +1146,14 @@ public class Occurrify extends TimeGraph {
     }
 
     private static long[] occIntersect(Derivation d, OccIntersect mode) {
-        if (d.belief == null || d.belief.isEternal())
-            return occ(d.task);
-        else if (d.task.isEternal())
-            return occ(d.belief);
+        long beliefStart = d.beliefStart;
+        if (d.belief == null || d.beliefStart==ETERNAL)
+            return occ(d._task);
+        else if (d.taskStart==ETERNAL)
+            return occ(d._belief);
         else {
-            long taskStart = d.task.start();
-            long beliefStart = d.belief.start();
+            long taskStart = d.taskStart;
+
 
             long start;
             switch (mode) {
@@ -1160,10 +1161,10 @@ public class Occurrify extends TimeGraph {
                     start = Math.min(taskStart, beliefStart);
                     break;
                 case Task:
-                    start = d.task.start();
+                    start = taskStart;
                     break;
                 case Belief:
-                    start = d.belief.start();
+                    start = beliefStart;
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -1172,7 +1173,7 @@ public class Occurrify extends TimeGraph {
             //minimum range = intersection
             return new long[]{
                     start,
-                    start + Math.min(d.task.end() - taskStart, d.belief.end() - beliefStart)
+                    start + Math.min(d.taskEnd - taskStart, d.beliefEnd - beliefStart)
             };
         }
     }

@@ -4,12 +4,10 @@
  */
 package nars.derive;
 
+import com.netflix.servo.monitor.Counter;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
@@ -72,7 +70,7 @@ public class Premise {
      */
     final static int var =
             Op.VAR_QUERY.bit;
-            //Op.Variable; //all
+    //Op.Variable; //all
 
 
     /**
@@ -92,13 +90,10 @@ public class Premise {
      *
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
-    public boolean match(Derivation d, int matchTTL) {
+    private Task match(Derivation d, int matchTTL) {
 
-        if (task.isDeleted())
-            return false;
 
         Term taskTerm = task.term();
-
 
         boolean beliefConceptCanAnswerTaskConcept = false;
         boolean beliefTransformed = false;
@@ -145,11 +140,10 @@ public class Premise {
         }
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, beliefTransformed);
-//        if (belief!=null) {
-//            System.out.println(beliefTerm + " -> " + belief);
-//        }
 
-        return d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
+        d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
+
+        return belief;
     }
 
     @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
@@ -157,11 +151,11 @@ public class Premise {
         NAR n = d.nar;
 
         Concept beliefConcept = beliefTerm.op().conceptualizable ?
-                    n.concept(beliefTerm)
-                    //n.conceptualize(beliefTerm)
-                    //n.conceptualizeDynamic(beliefTerm)
-                    :
-                    null;
+                n.concept(beliefTerm)
+                //n.conceptualize(beliefTerm)
+                //n.conceptualizeDynamic(beliefTerm)
+                :
+                null;
 
         if (beliefConcept == null)
             return null;
@@ -191,7 +185,7 @@ public class Premise {
         if (belief == null)
             belief = tryMatch(beliefTerm, beliefTable, d);
 
-        if (unifiedBelief && belief!=null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
+        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
             linkVariable(unifiedBelief, d.nar, beliefConcept);
         }
 
@@ -313,4 +307,30 @@ public class Premise {
     }
 
 
+    public final void derive(Derivation d, int matchTTL, int deriveTTL) {
+
+        if (task.isDeleted())
+            return;
+
+        Counter result;
+
+        Emotion e = d.nar.emotion;
+
+        match(d, matchTTL);
+
+        if (d.deriver.rules.derivable(d)) {
+
+            d.derive(deriveTTL);
+
+            result = e.premiseFire; //premiseFired(p, d);
+
+        } else {
+            result = e.premiseUnderivable; //premiseUnderivable(p, d);
+        }
+
+
+        result.increment();
+
+
+    }
 }

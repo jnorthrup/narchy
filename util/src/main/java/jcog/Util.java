@@ -1468,20 +1468,27 @@ public enum Util {
         return x;
     }
 
-    public static double sqr(long l) {
-        return l * l;
+    public static double sqr(long x) {
+        return x * x;
     }
 
-    public static int sqr(int l) {
-        return l * l;
+    public static int sqr(int x) {
+        return x * x;
+    }
+    public static int cube(int x) {
+        return x * x * x;
     }
 
-    public static float sqr(float f) {
-        return f * f;
+    public static float sqr(float x) {
+        return x * x;
     }
 
-    public static double sqr(double f) {
-        return f * f;
+    public static float cube(float x) {
+        return x * x * x;
+    }
+
+    public static double sqr(double x) {
+        return x * x;
     }
 
     public static String uuid128() {

@@ -46,8 +46,8 @@ public abstract class Param {
     @Deprecated public static final int TermLinkFanoutMax =
            //16;
             //10;
-            8;
-            //6;
+            //8;
+            6;
             //2;
             //4;
 

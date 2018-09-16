@@ -8,7 +8,7 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.tuple.Pair;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -105,9 +105,9 @@ public final class Termify extends AbstractPred<Derivation> {
                 if (start != ETERNAL) {
                     if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
 
-                        long taskEvidenceRange = ((d.taskStart==ETERNAL || d.task.isQuestionOrQuest()) ? 0 : d.task.range());
+                        long taskEvidenceRange = ((d.taskStart==ETERNAL || (d.taskPunc==QUESTION || d.taskPunc==QUEST)) ? 0 : d._task.range());
                         long beliefEviRange = ((!d.concSingle && d.belief != null && d.beliefStart!=ETERNAL) ? d.belief.range() : 0);
-                        long commonRange = d.belief != null ? Longerval.intersectLength(d.taskStart, d.task.end(), d.beliefStart, d.belief.end()) : 0;
+                        long commonRange = d.belief != null ? Longerval.intersectLength(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd) : 0;
 
                         long inputRange = taskEvidenceRange + beliefEviRange - (commonRange/2);
                         assert(inputRange > 0);
