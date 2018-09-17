@@ -102,8 +102,8 @@ abstract class AEdge {
             U.scaled(k);
             return p1.add(U);
         } else {
-            double dist1 = (double) p1.distanceSq(point);
-            double dist2 = (double) p2.distanceSq(point);
+            double dist1 = p1.distanceSq(point);
+            double dist2 = p2.distanceSq(point);
             return dist1 < dist2 ? p1 : p2;
         }
     }

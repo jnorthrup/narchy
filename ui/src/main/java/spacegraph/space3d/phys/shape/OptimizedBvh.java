@@ -632,7 +632,7 @@ public class OptimizedBvh implements Serializable {
 			center.scale(0.5f);
 			means.add(center);
 		}
-		means.scale(1f / (float) numIndices);
+		means.scale(1f / numIndices);
 
 		splitValue = VectorUtil.coord(means, splitAxis);
 
@@ -686,7 +686,7 @@ public class OptimizedBvh implements Serializable {
 			center.scale(0.5f);
 			means.add(center);
 		}
-		means.scale(1f / (float) numIndices);
+		means.scale(1f / numIndices);
 
 		v3 diff2 = new v3();
 		for (i = startIndex; i < endIndex; i++) {
@@ -1038,7 +1038,7 @@ public class OptimizedBvh implements Serializable {
 		int out1 = (int)(v.y + 0.5f) & 0xFFFF;
 		int out2 = (int)(v.z + 0.5f) & 0xFFFF;
 
-		return ((long)out0) | (((long)out1) << 16) | (((long)out2) << 32);
+		return out0 | (((long)out1) << 16) | (((long)out2) << 32);
 	}
 	
 	private void unQuantize(v3 vecOut, long vecIn) {
@@ -1046,9 +1046,9 @@ public class OptimizedBvh implements Serializable {
 		int vecIn1 = (int)((vecIn & 0x0000FFFF0000L) >>> 16);
 		int vecIn2 = (int)((vecIn & 0xFFFF00000000L) >>> 32);
 
-		vecOut.x = (float)vecIn0 / (bvhQuantization.x);
-		vecOut.y = (float)vecIn1 / (bvhQuantization.y);
-		vecOut.z = (float)vecIn2 / (bvhQuantization.z);
+		vecOut.x = vecIn0 / (bvhQuantization.x);
+		vecOut.y = vecIn1 / (bvhQuantization.y);
+		vecOut.z = vecIn2 / (bvhQuantization.z);
 
 		vecOut.add(bvhAabbMin);
 	}

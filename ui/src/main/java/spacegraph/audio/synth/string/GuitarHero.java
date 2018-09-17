@@ -157,7 +157,7 @@ public class GuitarHero extends JPanel implements KeyListener {
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         f.pack();
         f.setVisible(true);
-        f.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+        f.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.<AWTKeyStroke>emptySet());
 
         double[] asymmetric_5limit = {1, (float)16/15, (float)9/8, (float)6/5, (float)5/4, (float)4/3, (float)45/32, (float)3/2, (float)8/5, (float)5/3, (float)9/5, (float)15/8};
         double[] symmetric_5limit = {1, (float)16/15, (float)9/8, (float)6/5, (float)5/4, (float)4/3, (float)45/32, (float)3/2, (float)8/5, (float)5/3, (float)16/9, (float)15/8};

@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class SquareHarmonicsString extends KarplusStrongString {
 
-    Map<Integer, Double> harmonics = new HashMap<Integer, Double>();
+    Map<Integer, Double> harmonics = new HashMap<>();
 
     public SquareHarmonicsString (double frequency) {
         super(frequency, .996);
@@ -35,9 +35,9 @@ public class SquareHarmonicsString extends KarplusStrongString {
     private double getSample(int index) {
         double position = index / buffer.capacity();
         double sample = 0;
-        for (Integer harmonic : harmonics.keySet()) {
-            int lowHigh = lowHigh(harmonic, index);
-            double factor = harmonics.get(harmonic);
+        for (Map.Entry<Integer, Double> integerDoubleEntry : harmonics.entrySet()) {
+            int lowHigh = lowHigh(integerDoubleEntry.getKey(), index);
+            double factor = integerDoubleEntry.getValue();
             if (lowHigh == 0) {
                 sample -= factor;
             } else {

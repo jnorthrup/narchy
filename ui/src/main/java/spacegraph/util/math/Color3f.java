@@ -108,9 +108,9 @@ public class Color3f extends Tuple3f {
      * @since vecmath 1.2
      */
     public Color3f(Color color) {
-	super((float)color.getRed() / 255.0f,
-	      (float)color.getGreen() / 255.0f,
-	      (float)color.getBlue() / 255.0f);
+	super(color.getRed() / 255.0f,
+	      color.getGreen() / 255.0f,
+	      color.getBlue() / 255.0f);
     }
 
 
@@ -133,9 +133,9 @@ public class Color3f extends Tuple3f {
      * @since vecmath 1.2
      */
     public final void set(Color color) {
-	x = (float)color.getRed() / 255.0f;
-	y = (float)color.getGreen() / 255.0f;
-	z = (float)color.getBlue() / 255.0f;
+	x = color.getRed() / 255.0f;
+	y = color.getGreen() / 255.0f;
+	z = color.getBlue() / 255.0f;
     }
 
 

@@ -16,8 +16,8 @@ public class HyperIteratorTest {
         for (int i = 0; i < rects.length; i++)
             r.add(rects[i]);
 
-        HyperIterator<RectDouble2D> rr = r.iterate(new RectDouble2D(260.0,21.0,584.0,344.0),
-                Space.BoundsMatch.CONTAINS);
+        HyperIterator<RectDouble2D> rr = new HyperIterator(r.model, r.root(), new RectDouble2D(260.0,21.0,584.0,344.0),
+                Space.BoundsMatch.CONTAINS, null);
         int count = 0;
         while (rr.hasNext()) {
             RectDouble2D x = rr.next();

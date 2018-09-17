@@ -5,24 +5,24 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 /** atomic metal */
 public class AtomicMetalBitSet extends MetalBitSet {
 
-    static final AtomicIntegerFieldUpdater<AtomicMetalBitSet> _x = AtomicIntegerFieldUpdater.newUpdater(AtomicMetalBitSet.class, "x");
+    static final AtomicIntegerFieldUpdater<AtomicMetalBitSet> X = AtomicIntegerFieldUpdater.newUpdater(AtomicMetalBitSet.class, "x");
 
     private volatile int x;
 
     @Override
     public void setAll() {
-        x = 0xffffffff;
+        setDirect(0xffffffff);
     }
 
     @Override
     public boolean get(int i) {
-        return (x & (1 << i)) != 0;
+        return (X.get(this) & (1 << i)) != 0;
     }
 
     public boolean compareAndSet(int i, boolean expect, boolean set) {
         int mask = 1 << i;
         final boolean[] got = {false};
-        _x.updateAndGet(this, v->{
+        X.updateAndGet(this, v->{
             if (((v & mask) != 0)==expect) {
                 
                 got[0] = true;
@@ -38,46 +38,49 @@ public class AtomicMetalBitSet extends MetalBitSet {
     @Override
     public void set(int i) {
         int mask = 1<<i;
-        _x.getAndUpdate(this, v-> v|(mask) );
+        X.getAndUpdate(this, v-> v|(mask) );
     }
 
     public boolean getAndSet(int i) {
         int mask = 1<<i;
-        return (_x.getAndUpdate(this, v-> v|(mask) ) & mask) > 0;
+        return (X.getAndUpdate(this, v-> v|(mask) ) & mask) > 0;
     }
 
     @Override
     public void clear(int i) {
         int antimask = ~(1<<i);
-        _x.getAndUpdate(this, v-> v&(antimask) );
+        X.getAndUpdate(this, v-> v&(antimask) );
     }
 
     public boolean getAndClear(int i) {
         int mask = (1<<i);
         int antimask = ~mask;
-        return (_x.getAndUpdate(this, v-> v&(antimask) ) & mask) > 0;
+        return (X.getAndUpdate(this, v-> v&(antimask) ) & mask) > 0;
     }
 
     @Override
     public void clearAll() {
-        x = 0;
+         setDirect(0);
     }
 
     @Override
     public int cardinality() {
-        return Integer.bitCount(x);
+        return Integer.bitCount(X.get(this));
     }
 
     public void copyFrom(AtomicMetalBitSet copyFrom) {
-        setDirect(copyFrom.x);
+        setDirect(copyFrom.getDirect());
     }
 
     public void setDirect(int bitmask) {
-        _x.set(this, bitmask);
+        X.set(this, bitmask);
+    }
+    public int getDirect() {
+        return X.get(this);
     }
 
     public String toBitString() {
-        return Integer.toBinaryString(x);
+        return Integer.toBinaryString(getDirect());
     }
 
     public boolean getAndSet(short b, boolean pressed) {

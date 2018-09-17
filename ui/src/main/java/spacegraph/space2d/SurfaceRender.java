@@ -16,6 +16,8 @@ public class SurfaceRender {
     public final int dtMS;
     private float scaleX, scaleY;
     private float x1, x2, y1, y2;
+    private float pixelScaleX;
+    private float pixelScaleY;
 
     public SurfaceRender(float pw, float ph, int dtMS) {
         this.pw = pw;
@@ -60,25 +62,42 @@ public class SurfaceRender {
         this.x2 = cx + sxh;
         this.y1 = cy - syh;
         this.y2 = cy + syh;
+        this.pixelScaleX = pw/(x2-x1);
+        this.pixelScaleY = ph/(y2-y1);
         return this;
     }
 
 
-    public boolean visible(RectFloat2D r) {
+    public final boolean visible(RectFloat2D r) {
+//        if (r.w < pixelScaleX)
+//            return false;
+//        if (r.h < pixelScaleY)
+//            return false;
         if (r.right() < x1 || r.left() > x2)
             return false;
-        return !(r.bottom() < y1) && !(r.top() > y2);
+        if (r.bottom() < y1 || r.top() > y2)
+            return false;
+        return true;
     }
 
     public v2 visP(RectFloat2D bounds) {
-        float pctX = bounds.w / (x2-x1) * pw;
-        float pctY = bounds.h / (y2-y1) * ph;
+        float pctX = bounds.w * scaleX;
+        float pctY = bounds.h * scaleY;
         return new v2(pctX, pctY);
     }
 
+    public float visPMin(RectFloat2D bounds) {
+        return Math.min(bounds.w * scaleX, bounds.h * scaleY);
+    }
 
 
+    public final boolean visP(RectFloat2D bounds, int minPixelsToBeVisible) {
 
+        if (bounds.w * scaleX < minPixelsToBeVisible)
+            return false;
+        if (bounds.h * scaleY < minPixelsToBeVisible)
+            return false;
 
-
+        return true;
+    }
 }

@@ -1929,14 +1929,14 @@ public class Bitmap {
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
                                 
-                                pixel[line + x] = (byte) 0x00;
+                                pixel[line + x] = 0x00;
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
                             
-                            pixel[line + x] = (byte) 0x00;
+                            pixel[line + x] = 0x00;
                             count--;
                             x++;
                         }

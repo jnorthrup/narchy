@@ -45,11 +45,7 @@ public class BitmapLabel extends BitmapTextGrid {
 
     @Override
     protected boolean prePaint(SurfaceRender r) {
-        float p = r.visP(bounds).minDimension();
-        if (p < minPixelsToBeVisible) {
-            return false;
-        }
-        return true;
+        return r.visP(bounds, minPixelsToBeVisible);
     }
 
     @Override

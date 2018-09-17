@@ -134,7 +134,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
         gl.glColor4f(1f, 0.7f, 0f, 0.4f + p * 0.4f);
 
         Draw.rect(gl,
-                (float) (curx) + m / 2f,
+                (curx) + m / 2f,
                 (rows - 1 - cury),
                 1 - m, (1 - m)
                 , -dz

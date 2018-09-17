@@ -65,7 +65,7 @@ class BvhTree {
 			VectorUtil.mul(diff2, diff2, diff2);
 			variance.add(diff2);
 		}
-		variance.scale(1f / (float)(numIndices - 1));
+		variance.scale(1f / (numIndices - 1));
 
 		return VectorUtil.maxAxis(variance);
 	}

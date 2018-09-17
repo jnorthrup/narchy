@@ -1112,17 +1112,17 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         
 
         
-        temp[0] = (double) m1.m00;
-        temp[1] = (double) m1.m01;
-        temp[2] = (double) m1.m02;
+        temp[0] = m1.m00;
+        temp[1] = m1.m01;
+        temp[2] = m1.m02;
 
-        temp[3] = (double) m1.m10;
-        temp[4] = (double) m1.m11;
-        temp[5] = (double) m1.m12;
+        temp[3] = m1.m10;
+        temp[4] = m1.m11;
+        temp[5] = m1.m12;
 
-        temp[6] = (double) m1.m20;
-        temp[7] = (double) m1.m21;
-        temp[8] = (double) m1.m22;
+        temp[6] = m1.m20;
+        temp[7] = m1.m21;
+        temp[8] = m1.m22;
 
 
         
@@ -1412,8 +1412,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     public final void rotX(float angle) {
         float cosAngle;
 
-        float sinAngle = (float) Math.sin((double) angle);
-        cosAngle = (float) Math.cos((double) angle);
+        float sinAngle = (float) Math.sin(angle);
+        cosAngle = (float) Math.cos(angle);
 
         this.m00 = 1.0f;
         this.m01 = 0.0f;
@@ -1437,8 +1437,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     public final void rotY(float angle) {
         float cosAngle;
 
-        float sinAngle = (float) Math.sin((double) angle);
-        cosAngle = (float) Math.cos((double) angle);
+        float sinAngle = (float) Math.sin(angle);
+        cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = 0.0f;
@@ -1462,8 +1462,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     public final void rotZ(float angle) {
         float cosAngle;
 
-        float sinAngle = (float) Math.sin((double) angle);
-        cosAngle = (float) Math.cos((double) angle);
+        float sinAngle = (float) Math.sin(angle);
+        cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = -sinAngle;

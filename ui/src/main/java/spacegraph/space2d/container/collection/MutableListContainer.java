@@ -1,7 +1,6 @@
 package spacegraph.space2d.container.collection;
 
 import com.google.common.collect.Sets;
-
 import jcog.data.list.FastCoWList;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;

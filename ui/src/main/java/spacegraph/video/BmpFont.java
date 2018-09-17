@@ -85,8 +85,8 @@ public class BmpFont {
         gl.glBindTexture(GL2.GL_TEXTURE_2D, textures[0]);  
         for (int loop = 0; loop < 256; loop++)      
         {
-            cx = (float) (loop % 16) / 16.0f;  
-            cy = (float) (loop / 16) / 16.0f;  
+            cx = (loop % 16) / 16.0f;
+            cy = (loop / 16) / 16.0f;
 
             gl.glNewList(base + loop, GL2.GL_COMPILE);  
             gl.glBegin(GL2.GL_QUADS);      

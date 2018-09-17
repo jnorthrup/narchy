@@ -24,13 +24,26 @@ public class Finger {
 
 
     private final static int MAX_BUTTONS = 5;
-    /**
-     * TODO scale this to pixel coordinates, this spatial coordinate is tricky and resolution dependent anyway
-     */
-    private final static float DRAG_THRESHOLD = 3f;
+
+    private final static float DRAG_THRESHOLD_PIXELS = 3f;
+
     public final v2 pos = new v2(), posPixel = new v2(), posScreen = new v2();
-    private final v2[] hitOnDown = new v2[MAX_BUTTONS];
-    public final v2[] hitOnDownGlobal = new v2[MAX_BUTTONS];
+
+
+    /**
+     * last local and global positions on press (downstroke).
+     * TODO is it helpful to also track upstroke position?
+     */
+    private final v2[] pressPos = new v2[MAX_BUTTONS];
+    protected final v2[] pressPosPixel = new v2[MAX_BUTTONS];
+
+    {
+        for (int i = 0; i < MAX_BUTTONS; i++) {
+            pressPos[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+            pressPosPixel[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        }
+    }
+
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
 
@@ -38,26 +51,12 @@ public class Finger {
      * exclusive state which may be requested by a surface
      */
     private final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
-    /**
-     * dummy intermediate placeholder state
-     */
-    private final Fingering STARTING = new Fingering() {
 
-        @Override
-        public boolean start(Finger f) {
-            return false;
-        }
-
-        @Override
-        public boolean update(Finger f) {
-            return true;
-        }
-    };
     /**
      * widget above which this finger currently hovers
      */
     public final AtomicReference<Widget> touching = new AtomicReference<>();
-    private boolean focused =false;
+    private boolean focused = false;
 
 
     public Finger() {
@@ -69,7 +68,7 @@ public class Finger {
     }
 
     private static Predicate<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
-        return clicked(button, (f) -> clicked.run(), armed, hover, becameIdle );
+        return clicked(button, (f) -> clicked.run(), armed, hover, becameIdle);
     }
 
     public static Predicate<Finger> clicked(int button, Consumer<Finger> clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
@@ -115,12 +114,16 @@ public class Finger {
         return y;
     }
 
-    /** call when finger exits the window / screen, the window becomes unfingerable, etc..*/
+    /**
+     * call when finger exits the window / screen, the window becomes unfingerable, etc..
+     */
     public void exit() {
         focused = false;
     }
 
-    /** call when finger enters the window */
+    /**
+     * call when finger enters the window
+     */
     public void enter() {
         focused = true;
     }
@@ -131,26 +134,31 @@ public class Finger {
      */
     public void update() {
 
+        for (int b = 0; b < MAX_BUTTONS; b++) {
+            boolean wasPressed = wasPressed(b);
+            boolean pressed = pressing(b);
+            if (!wasPressed && pressed) {
+                pressPos[b].set(pos);
+                pressPosPixel[b].set(posPixel);
+            } //else if (wasPressed && !pressed) {
+                //hitOnDown[b].set(Float.NaN, Float.NaN);
+                //hitOnDownGlobal[b].set(Float.NaN, Float.NaN);
+            //}
+        }
+
+
         Widget t = this.touching.get();
         if (t != null) {
             t.onFinger(this);
         }
 
-        for (int b = 0;  b< MAX_BUTTONS; b++) {
-            boolean wasPressed = wasPressed(b);
-            boolean pressed = pressing(b);
-            if (!wasPressed && pressed) {
-                hitOnDown[b] = new v2(pos);
-                hitOnDownGlobal[b] = new v2(posPixel);
-            } else if (wasPressed && !pressed) {
-                hitOnDownGlobal[b] = hitOnDown[b] = null; 
-            }
-        }
+        commitButtons();
 
 
-        
+    }
+
+    public void commitButtons() {
         prevButtonDown.copyFrom(buttonDown);
-
     }
 
     public String buttonSummary() {
@@ -166,13 +174,12 @@ public class Finger {
     public void update(short[] nextButtonDown) {
 
 
-        
         for (short b : nextButtonDown) {
 
             boolean pressed = (b > 0);
 
-            if (!pressed) b = (short) -b; 
-            b--; 
+            if (!pressed) b = (short) -b;
+            b--;
 
             buttonDown.set(b, pressed);
 
@@ -183,27 +190,19 @@ public class Finger {
     public Surface on(Surface root) {
 
         Fingering ff = this.fingering.get();
-        Fingering f0 = ff;
+//        Fingering f0 = ff;
         Surface touchedNext;
 
 
-            
-
-            if (ff == Fingering.Null || ff.escapes()) {
-                touchedNext = root.finger(this);
-            } else {
-                touchedNext = touching.get(); 
-            }
-
-            
+        if (ff == Fingering.Null || ff.escapes()) {
+            touchedNext = root.finger(this);
+        } else {
+            touchedNext = touching.get();
+        }
 
 
-
-
-
-
-            for (AtomicFloat r : rotation)
-                r.getAndZero();
+        for (AtomicFloat r : rotation)
+            r.getAndZero();
 
 
         on(touchedNext instanceof Widget ? (Widget) touchedNext : null);
@@ -221,7 +220,8 @@ public class Finger {
     }
 
     private boolean dragging(int button) {
-        return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posPixel) > DRAG_THRESHOLD * DRAG_THRESHOLD);
+        v2 g = pressPosPixel[button];
+        return (g.distanceSq(posPixel) > DRAG_THRESHOLD_PIXELS * DRAG_THRESHOLD_PIXELS);
     }
 
     private void on(@Nullable Widget touchNext) {
@@ -235,12 +235,14 @@ public class Finger {
             touchPrev.onFinger(null);
         }
 
-        if (touchNext!=null) {
+        if (touchNext != null) {
             touchNext.onFinger(this);
         }
     }
 
-    /** allows a fingered object to push the finger off it */
+    /**
+     * allows a fingered object to push the finger off it
+     */
     public boolean off(Object fingered) {
         Widget t = this.touching.get();
         if (t != null && t == fingered) {
@@ -258,9 +260,6 @@ public class Finger {
         return buttonDown.get(button);
     }
 
-    public boolean pressedNow(int button) {
-        return pressing(button) && !wasPressed(button);
-    }
 
     private boolean wasPressed(int button) {
         return prevButtonDown.get(button);
@@ -270,33 +269,36 @@ public class Finger {
         return !wasPressed(button);
     }
 
-    private boolean releasedNow(int button) {
+    public boolean releasedNow(int button) {
         return !pressing(button) && wasPressed(button);
     }
 
-    public boolean releasedNow(int i, Surface c) {
-        return releasedNow(i) && (c != null && hitOnDown[i] != null && Finger.relative(hitOnDown[i], c).inUnit());
+    public boolean pressedNow(int button) {
+        return pressing(button) && !wasPressed(button);
+    }
+
+
+    public boolean releasedNow(int button, Surface c) {
+        return releasedNow(button) && Finger.relative(pressPos[button], c).inUnit();
     }
 
     /**
      * additionally tests for no dragging while pressed
      */
     private boolean clickedNow(int button) {
-        boolean clicked = releasedNow(button);
-        boolean notDragging = !dragging(button);
-        
-        return clicked && notDragging;
+        return releasedNow(button) && !dragging(button);
     }
 
     public boolean clickedNow(int i, Surface c) {
+
+//        System.out.println(pressing(i) + "<-" + wasPressed(i));
+
         if (clickedNow(i)) {
-            v2 where = hitOnDown[i];
-            if (where != null)
-                return Finger.relative(where, c).inUnit();
+            v2 where = pressPos[i];
+            return Finger.relative(where, c).inUnit();
         }
         return false;
     }
-
 
 
     /**
@@ -304,9 +306,10 @@ public class Finger {
      */
     public final boolean tryFingering(Fingering f) {
 
-        /*if (f != null) */{
+        /*if (f != null) */
+        {
             Fingering cf = this.fingering.get();
-            if (cf!=f && cf.defer(this)) {
+            if (cf != f && cf.defer(this)) {
                 //System.out.println(cf + " -> " + f + " try");
                 if (f.start(this)) {
                     //System.out.println(cf + " -> " + f + " start");
@@ -347,11 +350,12 @@ public class Finger {
         rotation[1] = new AtomicFloat();
         rotation[2] = new AtomicFloat();
     }
+
     public void rotationAdd(float[] next) {
         for (int i = 0; i < next.length; i++) {
             float r = next[i];
-            if (r!=0)
-                this.rotation[i].add(r);
+            if (r != 0)
+                this.rotation[i].set(r); //add(r);
         }
     }
 
@@ -376,13 +380,17 @@ public class Finger {
 
     volatile FingerRenderer renderer = rendererDefault;
 
-    /** visual overlay representation of the Finger; ie. cursor */
+    /**
+     * visual overlay representation of the Finger; ie. cursor
+     */
     public Surface layer() {
         return new FingerRendererSurface();
     }
 
 
-    /** HACK marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom) */
+    /**
+     * HACK marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom)
+     */
     public interface WheelAbsorb {
     }
 
@@ -390,9 +398,27 @@ public class Finger {
         {
             clipBounds = false;
         }
-        @Override protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+
+        @Override
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             if (focused)
                 renderer.paint(posPixel, Finger.this, gl);
         }
     }
+
+// /**
+//     * dummy intermediate placeholder state
+//     */
+//    private final Fingering STARTING = new Fingering() {
+//
+//        @Override
+//        public boolean start(Finger f) {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean update(Finger f) {
+//            return true;
+//        }
+//    };
 }

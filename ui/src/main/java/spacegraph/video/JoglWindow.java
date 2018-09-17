@@ -23,12 +23,6 @@ import java.util.function.Consumer;
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
-    /**
-     * JOGL default is 10ms; we dont need/want it that often
-     */
-    private static final long syncConstructionDelay = 10;
-
-
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
     final Topic<JoglWindow> onUpdate = new ListTopic<>();
     private final Logger logger;
@@ -39,7 +33,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     private final InstrumentedLoop updater;
     private final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
-    public float renderFPS = 32f;
     public volatile GLWindow window;
     public GL2 gl;
     /**
@@ -47,7 +40,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     public float dtS = 0;
     public final Topic<JoglWindow> eventClosed = new ListTopic<>();
+
     private float updateFPS = 32f;
+    public float renderFPS = 32f;
+
+    /** reduction throttle for update loop when unfoused */
+    private float updateFPSUnfocusedMultiplier = 0.25f;
+
     /**
      * render loop
      */
@@ -230,7 +229,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowRepaint(WindowUpdateEvent windowUpdateEvent) {
-
+        //if (!updater.isRunning()) {
+            updater.setFPS(window.hasFocus() ? updateFPS : updateFPS * updateFPSUnfocusedMultiplier);
+            renderer.loop.setFPS(renderFPS);
+        //}
     }
 
     /**
@@ -241,13 +243,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     abstract protected void render(int dtMS);
 
     private boolean next() {
+        //System.out.println(window + " " +window.isVisible());
         if (window.isVisible()) {
             long cycleTimeNS = updater.cycleTimeNS;
             this.dtMS = cycleTimeNS / 1_000_000;
             this.dtS = cycleTimeNS / 1E9f;
             onUpdate.emit(this);
+            return true;
+        } else {
+            renderer.stop();
+            return false; //will be re-triggered when visible again
         }
-        return true;
     }
 
     /**
@@ -263,6 +269,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
         if (renderDTMS > Integer.MAX_VALUE) renderDTMS = Integer.MAX_VALUE;
         this.lastRenderMS = nowMS;
+
+//        System.out.println(window.getStateMaskString());
 
         render((int) renderDTMS);
 
@@ -385,7 +393,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         init(gl);
 
 
-        updater.setFPS(updateFPS);
+        //updater.setFPS(updateFPS);
 
     }
 
@@ -394,10 +402,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         logger.info("fps render={} update={}", render, update);
         renderFPS = render;
         updateFPS = update;
-        if (updater.isRunning()) {
-            renderer.loop.setFPS(renderFPS);
-            updater.setFPS(updateFPS);
-        }
+//        if (updater.isRunning()) {
+//            renderer.loop.setFPS(renderFPS);
+//            updater.setFPS(updateFPS);
+//        }
 
     }
 
@@ -504,8 +512,7 @@ class GameAnimatorControl extends AnimatorBase {
         };
 
 
-        loop.setFPS(renderFPS);
-
+        loop.setFPS(1);  //HACK initially trigger slowly
 
     }
 

@@ -16,7 +16,7 @@ public class DoubleClicking {
     private v2 doubleClickSpot = null;
 
     /** in milliseconds */
-    private final long maxDoubleClickTime = 350;
+    private final long maxDoubleClickTimeNS = 350 * 1000 * 1000;
 
     /** in milliseconds */
     private long doubleClickTime = Long.MIN_VALUE;
@@ -30,26 +30,54 @@ public class DoubleClicking {
 
 
     public boolean update(Finger finger) {
-        if (finger!=null && finger.pressedNow(button))  {
-            
-            v2 downHit = finger.hitOnDownGlobal[button];
-            if (downHit!=null && doubleClickSpot!=null && doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD) &&
-                    System.currentTimeMillis() - doubleClickTime < maxDoubleClickTime) {
-                
-                if (count++ == 2) {
-                    doubleClickSpot = null;
-                    doubleClickTime = Long.MIN_VALUE;
-                    count = 0;
-                    onDoubleClick.accept(finger.pos);
-                    return true;
-                }
+        if (!_update(finger)) {
+            if (count > 0)
+                reset();
+            return false;
+        }
+        return true;
+    }
+
+    public void reset() {
+        doubleClickSpot = null;
+        doubleClickTime = Long.MIN_VALUE;
+        count = 0;
+    }
+
+    private boolean _update(Finger finger) {
+        //        if (finger!=null)
+//            System.out.println(finger.buttonSummary());
+
+
+        if (finger == null || !finger.releasedNow(button))
+            return count > 0; //could be in-between presses
+
+        count++;
+
+        v2 downHit = finger.pressPosPixel[button].clone();
+
+        if (count == 2) {
+
+            if (doubleClickSpot!=null) {
+                if (System.nanoTime() - doubleClickTime > maxDoubleClickTimeNS)
+                    return false; //too long
             }
 
-            doubleClickSpot = finger.hitOnDownGlobal[button];
-            doubleClickTime = System.currentTimeMillis();
+            if (doubleClickSpot!=null && !doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD))
+                return false; //not on same point
+
+
+            reset();
+            onDoubleClick.accept(finger.pos);
+            return true;
+
+        } else if (count == 1) {
+            doubleClickSpot = downHit;
+            doubleClickTime = System.nanoTime();
         }
 
-        return false;
+        return true; //continues
+
     }
 
 }

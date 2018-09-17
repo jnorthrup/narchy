@@ -161,8 +161,8 @@ public abstract class Input {
         try {
             String debugString = "Sending keypresses: ";
             for (int i = 0; i < pressSequence.length(); i += 2) {
-                int scancode = (int) pressSequence.charAt(i);
-                int action = (int) pressSequence.charAt(i + 1);
+                int scancode = pressSequence.charAt(i);
+                int action = pressSequence.charAt(i + 1);
                 int flags = 0;
 
                 switch (action) {

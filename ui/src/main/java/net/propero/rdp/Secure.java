@@ -202,7 +202,7 @@ public class Secure {
      */
     private static void make40bit(byte[] key) {
         key[0] = (byte) 0xd1;
-        key[1] = (byte) 0x26;
+        key[1] = 0x26;
         key[2] = (byte) 0x9e;
     }
 

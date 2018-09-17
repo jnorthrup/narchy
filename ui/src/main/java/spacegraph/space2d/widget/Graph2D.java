@@ -449,8 +449,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         public volatile boolean invalid;
 
-        volatile float r, g, b, a;
-        volatile public float weight;
+        float r, g, b, a;
+        public float weight;
         volatile public EdgeVisRenderer renderer;
 
         public EdgeVis() {

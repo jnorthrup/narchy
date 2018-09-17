@@ -54,11 +54,6 @@ public class Widget extends MutableListContainer {
         content(content);
 
 
-
-
-
-
-
     }
 
     @Override
@@ -66,7 +61,7 @@ public class Widget extends MutableListContainer {
         if (super.prePaint(r)) {
 
             int dtMS = r.dtMS;
-            
+
             if (dtMS > 0) {
                 if (touchedBy != null) {
                     temperature = Math.min(1f, temperature + dtMS / 100f);
@@ -97,23 +92,21 @@ public class Widget extends MutableListContainer {
 
             float t = this.temperature;
             if (t >= 0) {
-                
-                
-                
+
 
                 r += t / 4f;
                 g += t / 4f;
                 b += t / 4f;
             } else {
-                
+
                 b += -t / 2f;
                 g += -t / 4f;
             }
 
             Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
         }
-        
-        
+
+
     }
 
     @Override
@@ -125,7 +118,7 @@ public class Widget extends MutableListContainer {
     protected void paintAbove(GL2 gl, SurfaceRender r) {
         if (touchedBy != null) {
             Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
-            
+
             gl.glLineWidth(6 + dz * 6);
             Draw.rectStroke(gl, x(), y(), w(), h());
         }
@@ -140,14 +133,6 @@ public class Widget extends MutableListContainer {
     }
 
 
-
-
-
-
-
-
-
-
     @Override
     public boolean tangible() {
         return true;
@@ -158,28 +143,11 @@ public class Widget extends MutableListContainer {
         touchedBy = finger;
         if (finger != null) {
 
-            if (finger.clickedNow(1, this)) { 
-
-
-
-
-
-            } else if (finger.releasedNow(2 /*right button*/, this)) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//            if (finger.clickedNow(1, this)) {
+//
+//
+//            }
+            if (finger.releasedNow(2 /*right button*/, this)) {
 
 
                 /** auto-zoom */
@@ -188,9 +156,6 @@ public class Widget extends MutableListContainer {
 
 
                     r.zoom(this);
-
-
-
 
 
                 }
@@ -203,13 +168,13 @@ public class Widget extends MutableListContainer {
     @Override
     protected void doLayout(int dtMS) {
         RectFloat2D r = bounds;
-        float b; 
+        float b;
         if (r.w >= r.h) {
             b = border * r.h;
         } else {
             b = border * r.w;
         }
-        b*=2;
+        b *= 2;
         RectFloat2D rr = r.size(r.w - b, r.h - b);
         forEach(c -> c.pos(rr));
     }

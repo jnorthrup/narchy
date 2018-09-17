@@ -112,10 +112,10 @@ public class Color4f extends Tuple4f {
      * @since vecmath 1.2
      */
     public Color4f(Color color) {
-	super((float)color.getRed() / 255.0f,
-	      (float)color.getGreen() / 255.0f,
-	      (float)color.getBlue() / 255.0f,
-	      (float)color.getAlpha() / 255.0f);
+	super(color.getRed() / 255.0f,
+	      color.getGreen() / 255.0f,
+	      color.getBlue() / 255.0f,
+	      color.getAlpha() / 255.0f);
     }
 
 
@@ -138,10 +138,10 @@ public class Color4f extends Tuple4f {
      * @since vecmath 1.2
      */
     public final void set(Color color) {
-	x = (float)color.getRed() / 255.0f;
-	y = (float)color.getGreen() / 255.0f;
-	z = (float)color.getBlue() / 255.0f;
-	w = (float)color.getAlpha() / 255.0f;
+	x = color.getRed() / 255.0f;
+	y = color.getGreen() / 255.0f;
+	z = color.getBlue() / 255.0f;
+	w = color.getAlpha() / 255.0f;
     }
 
 

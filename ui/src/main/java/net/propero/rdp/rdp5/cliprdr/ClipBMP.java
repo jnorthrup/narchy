@@ -149,36 +149,31 @@ public class ClipBMP extends Component {
             
             
 
-            int nwidth = (((int) bi[7] & 0xff) << 24)
-                    | (((int) bi[6] & 0xff) << 16)
-                    | (((int) bi[5] & 0xff) << 8) | (int) bi[4] & 0xff;
+            int nwidth = ((bi[7] & 0xff) << 24)
+                    | ((bi[6] & 0xff) << 16)
+                    | ((bi[5] & 0xff) << 8) | bi[4] & 0xff;
             
 
-            int nheight = (((int) bi[11] & 0xff) << 24)
-                    | (((int) bi[10] & 0xff) << 16)
-                    | (((int) bi[9] & 0xff) << 8) | (int) bi[8] & 0xff;
-            
-
-            
-            
-
-            int nbitcount = (((int) bi[15] & 0xff) << 8) | (int) bi[14] & 0xff;
+            int nheight = ((bi[11] & 0xff) << 24)
+                    | ((bi[10] & 0xff) << 16)
+                    | ((bi[9] & 0xff) << 8) | bi[8] & 0xff;
             
 
             
             
-            
-            
-            
 
-            int nsizeimage = (((int) bi[23] & 0xff) << 24)
-                    | (((int) bi[22] & 0xff) << 16)
-                    | (((int) bi[21] & 0xff) << 8) | (int) bi[20] & 0xff;
+            int nbitcount = ((bi[15] & 0xff) << 8) | bi[14] & 0xff;
             
 
             
             
             
+            
+            
+
+            int nsizeimage = ((bi[23] & 0xff) << 24)
+                    | ((bi[22] & 0xff) << 16)
+                    | ((bi[21] & 0xff) << 8) | bi[20] & 0xff;
             
 
             
@@ -186,9 +181,14 @@ public class ClipBMP extends Component {
             
             
 
-            int nclrused = (((int) bi[35] & 0xff) << 24)
-                    | (((int) bi[34] & 0xff) << 16)
-                    | (((int) bi[33] & 0xff) << 8) | (int) bi[32] & 0xff;
+            
+            
+            
+            
+
+            int nclrused = ((bi[35] & 0xff) << 24)
+                    | ((bi[34] & 0xff) << 16)
+                    | ((bi[33] & 0xff) << 8) | bi[32] & 0xff;
             
 
             
@@ -208,9 +208,9 @@ public class ClipBMP extends Component {
                     for (int j = 0; j < nheight; j++) {
                         for (int i = 0; i < nwidth; i++) {
                             ndata[nwidth * (nheight - j - 1) + i] = (255 & 0xff) << 24
-                                    | (((int) brgb[nindex + 2] & 0xff) << 16)
-                                    | (((int) brgb[nindex + 1] & 0xff) << 8)
-                                    | (int) brgb[nindex] & 0xff;
+                                    | ((brgb[nindex + 2] & 0xff) << 16)
+                                    | ((brgb[nindex + 1] & 0xff) << 8)
+                                    | brgb[nindex] & 0xff;
                             
                             
                             
@@ -253,9 +253,9 @@ public class ClipBMP extends Component {
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
                         npalette[n] = (255 & 0xff) << 24
-                                | (((int) bpalette[nindex8 + 2] & 0xff) << 16)
-                                | (((int) bpalette[nindex8 + 1] & 0xff) << 8)
-                                | (int) bpalette[nindex8] & 0xff;
+                                | ((bpalette[nindex8 + 2] & 0xff) << 16)
+                                | ((bpalette[nindex8 + 1] & 0xff) << 8)
+                                | bpalette[nindex8] & 0xff;
                         
                         
                         
@@ -277,8 +277,8 @@ public class ClipBMP extends Component {
                     nindex8 = 0;
                     for (int j8 = 0; j8 < nheight; j8++) {
                         for (int i8 = 0; i8 < nwidth; i8++) {
-                            ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[((int) bdata[nindex8] & 0xff)]
-                                    | npalette[((int) bdata[nindex8 + 1] & 0xff)] << 8;
+                            ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[(bdata[nindex8] & 0xff)]
+                                    | npalette[(bdata[nindex8 + 1] & 0xff)] << 8;
                             nindex8 += 2;
                         }
                         nindex8 += npad8;
@@ -317,9 +317,9 @@ public class ClipBMP extends Component {
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
                         npalette[n] = (255 & 0xff) << 24
-                                | (((int) bpalette[nindex8 + 2] & 0xff) << 16)
-                                | (((int) bpalette[nindex8 + 1] & 0xff) << 8)
-                                | (int) bpalette[nindex8] & 0xff;
+                                | ((bpalette[nindex8 + 2] & 0xff) << 16)
+                                | ((bpalette[nindex8 + 1] & 0xff) << 8)
+                                | bpalette[nindex8] & 0xff;
                         
                         
                         
@@ -341,7 +341,7 @@ public class ClipBMP extends Component {
                     nindex8 = 0;
                     for (int j8 = 0; j8 < nheight; j8++) {
                         for (int i8 = 0; i8 < nwidth; i8++) {
-                            ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[((int) bdata[nindex8] & 0xff)];
+                            ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[(bdata[nindex8] & 0xff)];
                             nindex8++;
                         }
                         nindex8 += npad8;
@@ -380,9 +380,9 @@ public class ClipBMP extends Component {
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
                         npalette[n] = (255 & 0xff) << 24
-                                | (((int) bpalette[nindex8 + 2] & 0xff) << 16)
-                                | (((int) bpalette[nindex8 + 1] & 0xff) << 8)
-                                | (int) bpalette[nindex8] & 0xff;
+                                | ((bpalette[nindex8 + 2] & 0xff) << 16)
+                                | ((bpalette[nindex8 + 1] & 0xff) << 8)
+                                | bpalette[nindex8] & 0xff;
                         nindex8 += 4;
                     }
 

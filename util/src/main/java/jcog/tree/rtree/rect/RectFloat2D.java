@@ -300,4 +300,8 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     public RectFloat2D posLerp(float x, float y, float p) {
         return RectFloat2D.XYWH(lerp(p, cx(), x),lerp(p, cy(), y) ,w , h);
     }
+
+    public boolean nonZero(float epsilon) {
+        return w > epsilon && h > epsilon;
+    }
 }

@@ -434,8 +434,8 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      */
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(x);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(y);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(x);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(y);
         return (int) (bits ^ (bits >> 32));
     }
 

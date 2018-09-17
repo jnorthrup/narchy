@@ -1476,8 +1476,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             float ay = a1.y * mag;
             float az = a1.z * mag;
 
-            float sinTheta = (float) Math.sin((double) a1.angle);
-            float cosTheta = (float) Math.cos((double) a1.angle);
+            float sinTheta = (float) Math.sin(a1.angle);
+            float cosTheta = (float) Math.cos(a1.angle);
             float t = 1.0f - cosTheta;
 
             m00 = t * ax * ax + cosTheta;
@@ -2324,8 +2324,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     public final void rotX(float angle) {
         float cosAngle;
 
-        float sinAngle = (float) Math.sin((double) angle);
-        cosAngle = (float) Math.cos((double) angle);
+        float sinAngle = (float) Math.sin(angle);
+        cosAngle = (float) Math.cos(angle);
 
         this.m00 = 1.0f;
         this.m01 = 0.0f;
@@ -2357,8 +2357,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     public final void rotY(float angle) {
         float cosAngle;
 
-        float sinAngle = (float) Math.sin((double) angle);
-        cosAngle = (float) Math.cos((double) angle);
+        float sinAngle = (float) Math.sin(angle);
+        cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = 0.0f;
@@ -2390,8 +2390,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     public final void rotZ(float angle) {
         float cosAngle;
 
-        float sinAngle = (float) Math.sin((double) angle);
-        cosAngle = (float) Math.cos((double) angle);
+        float sinAngle = (float) Math.sin(angle);
+        cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = -sinAngle;
@@ -2925,22 +2925,22 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      */
     public int hashCode() {
         long bits = 1L;
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m00);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m01);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m02);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m03);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m10);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m11);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m12);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m13);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m20);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m21);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m22);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m23);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m30);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m31);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m32);
-        bits = 31L * bits + (long) VecMathUtil.floatToIntBits(m33);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m00);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m01);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m02);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m03);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m10);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m11);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m12);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m13);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m20);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m21);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m22);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m23);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m30);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m31);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m32);
+        bits = 31L * bits + VecMathUtil.floatToIntBits(m33);
         return (int) (bits ^ (bits >> 32));
     }
 

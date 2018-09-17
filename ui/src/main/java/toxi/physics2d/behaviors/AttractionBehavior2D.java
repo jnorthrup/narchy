@@ -62,7 +62,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
         Vec2D delta = attractor.sub(p);
         float dist = delta.magSquared();
         if (dist < radiusSquared) {
-            move((VerletParticle2D) p, delta, dist);
+            move(p, delta, dist);
         }
     }
 

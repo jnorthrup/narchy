@@ -51,7 +51,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private final Runnable fingerUpdate;
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
     Surface surface;
-    public JoglSpace window;
+    protected JoglSpace window;
     private final float camZmin = 5;
     private volatile float camZmax = 640000;
     private volatile float camXmin = -1, camXmax = +1;
@@ -303,7 +303,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     private void zoom(float x, float y, float sx, float sy, float margin) {
-        zoom(x, y, targetDepth((float) Math.max(sx, sy) /*(Math.sqrt(sx*sx + sy*sy)*/ * (1 + margin)));
+        zoom(x, y, targetDepth(Math.max(sx, sy) /*(Math.sqrt(sx*sx + sy*sy)*/ * (1 + margin)));
     }
 
     public final void zoom(v3 v) {
@@ -485,6 +485,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
 
         if (buttonsDown != null) {
+
             finger.update(buttonsDown);
         }
 
@@ -507,9 +508,12 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         //assert (focused());
 
+        Surface r = finger.on(surface);
+
         finger.update();
 
-        return finger.on(surface);
+        return r;
+
     }
 
 

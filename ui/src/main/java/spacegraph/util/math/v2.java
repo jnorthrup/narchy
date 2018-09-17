@@ -178,4 +178,8 @@ public class v2 extends Tuple2f {
     public boolean equalsZero() {
         return Util.equals(x, 0, ScalarValue.EPSILON) && Util.equals(y, 0, ScalarValue.EPSILON);
     }
+
+    public boolean isNaN() {
+        return (x!=x) || (y!=y);
+    }
 }

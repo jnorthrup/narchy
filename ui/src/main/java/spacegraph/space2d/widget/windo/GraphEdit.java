@@ -9,6 +9,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.shape.VerletSurface;
 import spacegraph.space2d.widget.meta.MetaFrame;
+import spacegraph.space2d.widget.meta.ProtoWidget;
+import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.util.math.v2;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletSpring2D;
@@ -30,7 +32,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
     public GraphEdit(RectFloat2D bounds) {
         super();
-        this.bounds = bounds;
+        pos(bounds);
     }
 
     /**
@@ -40,7 +42,12 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
 
     /** for links and other supporting geometry that is self-managed */
-    final MutableListContainer raw = new MutableListContainer();
+    final MutableListContainer raw = new MutableListContainer(); /* {
+        @Override
+        protected boolean tangible() {
+            return true;
+        }
+    };*/
 
     protected final VerletSurface physics = new VerletSurface();
 
@@ -79,6 +86,17 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     public final void addRaw(Surface s) {
         raw.add(s);
     }
+
+
+//    @Override
+//    public boolean whileEach(Predicate<Surface> o) {
+//        return super.whileEach(o);
+//    }
+//
+//    @Override
+//    public boolean whileEachReverse(Predicate<Surface> o) {
+//        return super.whileEachReverse(o);
+//    }
 
     @Override
     public void forEach(Consumer<Surface> each) {
@@ -249,6 +267,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         return n != null ? n.edges(true, true) : List.of();
     }
 
+
     @Override
     public Surface finger(Finger finger) {
 
@@ -256,8 +275,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //        if (s != null && s != this && !(s instanceof PhyWindow))
 //            return s;
 
-        if (doubleClicking.update(finger))
-            return this;
+        doubleClicking.update(finger);
+
 
 //        if (finger.tryFingering(jointDrag))
 //            return this;
@@ -268,22 +287,23 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     protected void doubleClick(v2 pos) {
-//        put(
-//                new WizardFrame(new ProtoWidget()) {
-//                    @Override
-//                    protected void become(Surface next) {
-//                        super.become(next);
-//
-//                        PhyWindow pp = parent(PhyWindow.class);
+        float h = 100;
+        float w = 100;
+        add(
+                new WizardFrame(new ProtoWidget()) {
+                    @Override
+                    protected void become(Surface next) {
+                        super.become(next);
+
+                        //GraphEdit pp = parent(GraphEdit.class);
 //                        if (next instanceof ProtoWidget) {
 //                            pp.setCollidable(false);
 //                        } else {
 //                            pp.setCollidable(true);
 //                        }
-//
-//                    }
-//                },
-//                RectFloat2D.XYWH(pos.x, pos.y, 1, 1), false);
+
+                    }
+                }).pos(RectFloat2D.XYWH(pos.x, pos.y, w, h));
     }
 
     public void removeRaw(Surface x) {

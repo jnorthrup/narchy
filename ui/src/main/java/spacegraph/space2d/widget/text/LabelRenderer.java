@@ -22,17 +22,12 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
     /**
      * hershey vector font renderer
      */
-    LabelRenderer Hershey = new LabelRenderer() {
-        @Override
-        public void accept(VectorLabel label, GL2 gl2) {
-            Draw.bounds(label.bounds, gl2, (gl) -> {
-                label.textColor.apply(gl);
-                gl.glLineWidth(label.textThickness);
+    LabelRenderer Hershey = (label, gl2) -> Draw.bounds(label.bounds, gl2, (gl) -> {
+        label.textColor.apply(gl);
+        gl.glLineWidth(label.textThickness);
 
-                Draw.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, 0, label.textY, 0, Draw.TextAlignment.Left);
-            });
-        }
-    };
+        Draw.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, 0, label.textY, 0, Draw.TextAlignment.Left);
+    });
 
 
 //    /** TODO not ready */

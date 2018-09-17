@@ -104,7 +104,7 @@ public class GImpactMeshShape extends GImpactShape {
 		inertia.set(0f, 0f, 0f);
 
 		int i = getMeshPartCount();
-		float partmass = mass / (float) i;
+		float partmass = mass / i;
 
 		v3 partinertia = new v3();
 
@@ -326,7 +326,7 @@ public class GImpactMeshShape extends GImpactShape {
             inertia.set(0f, 0f, 0f);
 
             int i = getVertexCount();
-            float pointmass = mass / (float)i;
+            float pointmass = mass / i;
 
             v3 pointintertia = new v3();
 

@@ -18,7 +18,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * an iterator/cursor that traverses a the tree along a mutable trajectory (ex: per-dimension range conditions)
  * with ability for traversing results (sorted approximately or perfectly) along specified gradients, if provided
  */
-public class HyperIterator<X> {
+@Deprecated public class HyperIterator<X> {
 
     //string of -1, 0, +1 for each dimension, indicating direction
     @Nullable

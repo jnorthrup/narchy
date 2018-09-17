@@ -46,7 +46,7 @@ import spacegraph.util.math.Color4f;
         r = (byte) (127 * color.x);
         g = (byte) (127 * color.y);
         b = (byte) (127 * color.z);
-        a = (byte) 127;
+        a = 127;
     }
 
     public void set(ParticleColor color) {

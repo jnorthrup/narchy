@@ -483,7 +483,7 @@ public class Orders {
 
         if (delta) {
             change = (byte) data.get8();
-            coordinate += (int) change;
+            coordinate += change;
             return coordinate;
         } else {
             coordinate = data.getLittleEndian16();

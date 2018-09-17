@@ -244,7 +244,7 @@ class BayazitDecomposer {
 		float b2 = q1.x - q2.x;
 		float c2 = a2 * q1.x + b2 * q1.y;
 		float det = a1 * b2 - a2 * b1;
-		if (!Util.equals(det, (float) 0, Epsilon)) {
+		if (!Util.equals(det, 0, Epsilon)) {
 			
 			i.x = (b2 * c1 - b1 * c2) / det;
 			i.y = (a1 * c2 - a2 * c1) / det;

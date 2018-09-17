@@ -187,7 +187,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
     private double radius() {
         double ln = Float.NEGATIVE_INFINITY;
         for (int i = 0; i < count; ++i) {
-            ln = Math.max((double) get(i).distanceSq(cycleGet(i + 1)), ln);
+            ln = Math.max(get(i).distanceSq(cycleGet(i + 1)), ln);
         }
         return Math.sqrt(ln);
     }

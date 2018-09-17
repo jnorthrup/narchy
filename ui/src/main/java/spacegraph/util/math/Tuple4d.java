@@ -461,7 +461,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @deprecated Use clamp(double,double,Tuple4d) instead
      */
     public final void clamp(float min, float max, Tuple4d t) {
-        clamp((double) min, (double) max, t);
+        clamp((double) min, max, t);
     }
 
 
@@ -582,7 +582,7 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
      * @deprecated Use clamp(double,double) instead
      */
     public final void clamp(float min, float max) {
-        clamp((double) min, (double) max);
+        clamp((double) min, max);
     }
 
 

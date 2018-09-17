@@ -18,7 +18,7 @@ public abstract class KarplusStrongString {
 
 
     public KarplusStrongString(double frequency) {
-        buffer = new ArrayRingBuffer<Double>((int) Math.round(SR / frequency));
+        buffer = new ArrayRingBuffer<>((int) Math.round(SR / frequency));
         for (int i = 0; i < buffer.capacity(); i++) {
             buffer.enqueue(0.0);
         }
@@ -43,7 +43,7 @@ public abstract class KarplusStrongString {
             actual_buffer = (int) Math.floor((SR / frequency) - .2);
             delay = ideal_buffer - actual_buffer;
         }
-        buffer = new ArrayRingBuffer<Double>(actual_buffer);
+        buffer = new ArrayRingBuffer<>(actual_buffer);
         for (int i = 0; i < buffer.capacity(); i++) {
             buffer.enqueue(0.0);
         }

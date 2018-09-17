@@ -475,18 +475,18 @@ class Sftp implements Runnable {
             
             
             
-            percent = (int) (((((float) this.count) / ((float) max))) * 100.0);
+            percent = (int) (((((float) this.count) / max)) * 100.0);
             status();
             return true;
         }
 
         public void end() {
             
-            percent = (int) (((((float) count) / ((float) max))) * 100.0);
+            percent = (int) (((((float) count) / max)) * 100.0);
             status();
             try {
-                out.write((byte) 0x0d);
-                out.write((byte) 0x0a);
+                out.write(0x0d);
+                out.write(0x0a);
                 out.flush();
             } catch (Exception e) {
             }
@@ -494,9 +494,9 @@ class Sftp implements Runnable {
 
         private void status() {
             try {
-                out.write((byte) 0x0d);
+                out.write(0x0d);
 
-                out.write((byte) 0x1b);
+                out.write(0x1b);
                 out.write((byte) '[');
                 out.write((byte) 'K');
 

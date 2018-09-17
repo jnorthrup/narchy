@@ -76,7 +76,7 @@ public class VectorLabel extends EmptyContainer {
 
     @Override
     protected boolean prePaint(SurfaceRender r) {
-        float p = r.visP(bounds).minDimension();
+        float p = r.visPMin(bounds);
         if (p < 7) {
             return false;
         }

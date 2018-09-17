@@ -217,13 +217,13 @@ public class RagDoll  {
 
         transform.setIdentity();
         transform.set(-0.7f * scale_ragdoll, 1.45f * scale_ragdoll, 0f);
-        MatrixUtil.setEulerZYX(transform.basis, (float) 0, 0, ExtraGlobals.SIMD_HALF_PI);
+        MatrixUtil.setEulerZYX(transform.basis, 0, 0, ExtraGlobals.SIMD_HALF_PI);
         tmpTrans.mul(offset, transform);
         bodies[BodyPart.BODYPART_LEFT_LOWER_ARM.ordinal()] = localCreateRigidBody(1f, tmpTrans, shapes[BodyPart.BODYPART_LEFT_LOWER_ARM.ordinal()]);
 
         transform.setIdentity();
         transform.set(0.35f * scale_ragdoll, 1.45f * scale_ragdoll, 0f);
-        MatrixUtil.setEulerZYX(transform.basis, (float) 0, 0, -ExtraGlobals.SIMD_HALF_PI);
+        MatrixUtil.setEulerZYX(transform.basis, 0, 0, -ExtraGlobals.SIMD_HALF_PI);
         tmpTrans.mul(offset, transform);
         bodies[BodyPart.BODYPART_RIGHT_UPPER_ARM.ordinal()] = localCreateRigidBody(1f, tmpTrans, shapes[BodyPart.BODYPART_RIGHT_UPPER_ARM.ordinal()]);
 
@@ -271,7 +271,7 @@ public class RagDoll  {
 
         localA.set(-0.2f * scale_ragdoll, 0.15f * scale_ragdoll, 0f);
 
-        MatrixUtil.setEulerZYX(localB.basis, ExtraGlobals.SIMD_HALF_PI, (float) 0, -ExtraGlobals.SIMD_HALF_PI);
+        MatrixUtil.setEulerZYX(localB.basis, ExtraGlobals.SIMD_HALF_PI, 0, -ExtraGlobals.SIMD_HALF_PI);
         localB.set(0f, -0.18f * scale_ragdoll, 0f);
 
         joint6DOF = new Generic6DofConstraint(bodies[BodyPart.BODYPART_SPINE.ordinal()], bodies[BodyPart.BODYPART_LEFT_UPPER_ARM.ordinal()], localA, localB, useLinearReferenceFrameA);
@@ -351,9 +351,9 @@ public class RagDoll  {
         localA.setIdentity();
         localB.setIdentity();
 
-        MatrixUtil.setEulerZYX(localA.basis, (float) 0, ExtraGlobals.SIMD_HALF_PI, 0);
+        MatrixUtil.setEulerZYX(localA.basis, 0, ExtraGlobals.SIMD_HALF_PI, 0);
         localA.set(0f, 0.15f * scale_ragdoll, 0f);
-        MatrixUtil.setEulerZYX(localB.basis, (float) 0, ExtraGlobals.SIMD_HALF_PI, 0);
+        MatrixUtil.setEulerZYX(localB.basis, 0, ExtraGlobals.SIMD_HALF_PI, 0);
         localB.set(0f, -0.15f * scale_ragdoll, 0f);
         joint6DOF = new Generic6DofConstraint(bodies[BodyPart.BODYPART_PELVIS.ordinal()], bodies[BodyPart.BODYPART_SPINE.ordinal()], localA, localB, useLinearReferenceFrameA);
 

@@ -44,7 +44,7 @@ public class ConstantForceBehavior2D<V extends Vec2D> implements ParticleBehavio
     @Override
     public void accept(VerletParticle2D p) {
         if (p instanceof VerletParticle2D)
-            ((VerletParticle2D)p).addForce(scaledForce);
+            p.addForce(scaledForce);
     }
 
     /**

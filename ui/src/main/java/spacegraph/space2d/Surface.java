@@ -92,12 +92,16 @@ abstract public class Surface implements SurfaceBase {
     abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
     public <S extends Surface> S pos(RectFloat2D next) {
-        bounds = next;
+        BOUNDS.set(this, next);
+//        if (bounds.area() < ScalarValue.EPSILON)
+//            throw new WTF();
         return (S) this;
     }
 
     protected final boolean posChanged(RectFloat2D next) {
         RectFloat2D last = BOUNDS.getAndSet(this, next);
+//        if (bounds.area() < ScalarValue.EPSILON)
+//            throw new WTF();
         return !last.equals(next, Spatialization.EPSILONf);
     }
 
@@ -249,7 +253,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public boolean visible() {
-        return parent!=null && visible && bounds.area() > 0;
+        return parent!=null && visible;
     }
 
     public float radius() {
