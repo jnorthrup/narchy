@@ -286,6 +286,10 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //                RectFloat2D.XYWH(pos.x, pos.y, 1, 1), false);
     }
 
+    public void removeRaw(Surface x) {
+        raw.removeChild(x);
+    }
+
 
     static class Cable {
         final Surface a, b;

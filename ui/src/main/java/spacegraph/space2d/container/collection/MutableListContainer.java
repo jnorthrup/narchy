@@ -93,12 +93,18 @@ public class MutableListContainer extends AbstractMutableContainer {
         synchronized (this) {
             for (Surface x : s) {
                 if (x != null) {
-
-                    x.start(this);
                     children.add(x);
                 }
             }
             //children.commit();
+
+            if (parent!=null) {
+                for (Surface x : s) {
+                    if (x != null) {
+                        x.start(this);
+                    }
+                }
+            } //else: wait until attached
         }
 
         layout();

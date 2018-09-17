@@ -249,7 +249,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public boolean visible() {
-        return parent!=null && visible;
+        return parent!=null && visible && bounds.area() > 0;
     }
 
     public float radius() {

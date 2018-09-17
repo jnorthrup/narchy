@@ -536,7 +536,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         gl.glLoadIdentity();
 
         overlays.forEach(s -> {
+            gl.glPushMatrix();
+            gl.glLoadIdentity();
             s.render(gl, r);
+            gl.glPopMatrix();
         });
 
     }

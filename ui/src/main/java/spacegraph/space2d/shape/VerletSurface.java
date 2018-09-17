@@ -52,7 +52,7 @@ public class VerletSurface extends Surface implements Animated {
 
         pos(bounds);
 
-        physics = new VerletPhysics2D(null, 1, 0);
+        physics = new VerletPhysics2D(null, 2, 0);
         physics.setDrag(0.05f);
 
         physics.setIndex(
@@ -208,8 +208,8 @@ public class VerletSurface extends Surface implements Animated {
                 Vec2D sNext = b.targetSurface(vv, ss);
                 if (sNext != null) {
                     //ss.pos(Util.lerp(0.5f, sNext.x, ss.x()))
-                    ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
-                    //ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.5f));
+                    //ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
+                    ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.5f));
                 }
 //            } else {
 

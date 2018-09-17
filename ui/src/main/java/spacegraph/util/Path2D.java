@@ -1,6 +1,8 @@
 package spacegraph.util;
 
 import com.jogamp.opengl.GL2;
+import jcog.Util;
+import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
@@ -23,13 +25,15 @@ public class Path2D extends FloatArrayList {
     }
 
     public Path2D(int capacity) {
-        super(capacity*2);
+        super(capacity * 2);
     }
 
-    /** points are preallocated, useful for direct array access */
+    /**
+     * points are preallocated, useful for direct array access
+     */
     public Path2D(int capacity, int size) {
         this(capacity);
-        this.size = size*2;
+        this.size = size * 2;
     }
 
     public void add(float x, float y) {
@@ -40,54 +44,38 @@ public class Path2D extends FloatArrayList {
         addAll(p.x, p.y);
     }
 
-    
 
     /**
      * adds the point if the total size is below the maxPoints limit,
      * otherwise it simplifies the current set of points and sets the
      * end point to the specified value
      */
-    public synchronized void add(Tuple2f p, int maxPoints) {
+    public boolean add(Tuple2f p, int maxPoints) {
+
         assert (maxPoints > 3);
 
-
+        synchronized (this) {
+            int s = this.size;
+            if (s > 0) {
+                //quick test for equality with last point
+                if (Util.equals(items[s-2], p.x, ScalarValue.EPSILON) && Util.equals(items[s-1], p.y, ScalarValue.EPSILON))
+                    return false;
+            }
 
             add(p);
+
             if (points() > maxPoints)
                 collinearSimplifyNext();
-            
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return true;
+        }
     }
 
     private void collinearSimplifyNext() {
         int n = points();
         int worst = -1;
         float minC = Float.POSITIVE_INFINITY;
-        for (int i = 1; i < n-1; i++) {
+        for (int i = 1; i < n - 1; i++) {
             int prevId = i - 1;
             if (prevId < 0) prevId = n - 1;
             int nextId = i + 1;
@@ -106,13 +94,14 @@ public class Path2D extends FloatArrayList {
                 }
             }
         }
-        assert(worst!=-1);
-        removeAtIndex(worst*2); removeAtIndex(worst*2);
+        assert (worst != -1);
+        removeAtIndex(worst * 2);
+        removeAtIndex(worst * 2);
     }
 
     void collinearSimplify(float collinearityTolerance, int maxPoints) {
-        
-        assert(maxPoints >= 3);
+
+        assert (maxPoints >= 3);
 
         int n = points();
         for (int i = 0; n > maxPoints && i < n; ) {
@@ -125,8 +114,9 @@ public class Path2D extends FloatArrayList {
             v2 current = point(i);
             v2 next = point(nextId);
 
-            if (i > 0 && i < n-1 && collinear(prev, current, next, collinearityTolerance)) {
-                removeAtIndex(i*2); removeAtIndex(i*2);
+            if (i > 0 && i < n - 1 && collinear(prev, current, next, collinearityTolerance)) {
+                removeAtIndex(i * 2);
+                removeAtIndex(i * 2);
                 n--;
             } else {
                 i++;
@@ -149,13 +139,13 @@ public class Path2D extends FloatArrayList {
 
 
     public v2 start() {
-        
+
         return point(0);
     }
 
     private v2 point(int i) {
         float[] ii = items;
-        return new v2(ii[i*2], ii[i*2+1]);
+        return new v2(ii[i * 2], ii[i * 2 + 1]);
     }
 
     public v2 end() {
@@ -176,10 +166,6 @@ public class Path2D extends FloatArrayList {
     public void vertex2f(GL2 gl) {
         forEach(gl::glVertex2f);
     }
-
-
-
-
 
 
     public int points() {

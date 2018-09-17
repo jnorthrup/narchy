@@ -7,7 +7,6 @@ import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Wiring;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.video.Draw;
 
 import javax.annotation.Nullable;
@@ -239,16 +238,14 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     @Override
-    public boolean start(@Nullable SurfaceBase parent) {
+    protected void starting() {
+        super.starting();
 
-        if (super.start(parent)) {
-            this.node = parent(GraphEdit.class).links.addNode(this);
-            IntObjectProcedure<Port> u = this.updater;
-            if (u !=null)
-                u.value(0, this);
-            return true;
-        }
-        return false;
+        this.node = parent(GraphEdit.class).links.addNode(this);
+        IntObjectProcedure<Port> u = this.updater;
+        if (u !=null)
+            u.value(0, this);
+
     }
 
     @Override
@@ -262,6 +259,8 @@ public class Port extends Widget implements Wiring.Wireable {
         }
         return false;
     }
+
+
     /** TODO Supplier-called version of this */
     private void out(Port sender, Object x) {
         

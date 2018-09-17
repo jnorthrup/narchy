@@ -6,15 +6,18 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.Path2D;
+import spacegraph.util.math.v2;
 
-/** rendered using GL LINE_STRIP / lineWidth */
+/**
+ * rendered using GL LINE_STRIP / lineWidth
+ */
 public class PathSurface extends Surface {
 
     private final Path2D path;
 
     float lineWidth = 8;
     float r = 0.5f, g = 0.5f, b = 0.5f, a = 1f;
-    private boolean invalid = true;
+    public boolean invalid = true;
 
     public PathSurface(Path2D path) {
         this.path = path;
@@ -25,11 +28,11 @@ public class PathSurface extends Surface {
     }
 
     public void set(int point, float x, float y) {
-        int n = point*2;
+        int n = point * 2;
         float[] p = path.array();
         //TODO test if the value actually changed
         p[n++] = x;
-        p[n]   = y;
+        p[n] = y;
         invalid = true;
     }
 
@@ -38,7 +41,7 @@ public class PathSurface extends Surface {
         if (invalid) {
             //update bounds
             RectFloat2D newBounds = path.bounds();
-            System.out.println(path + " " + newBounds);
+            //System.out.println(path + " " + newBounds);
             pos(newBounds);
             invalid = false;
         }
@@ -47,6 +50,7 @@ public class PathSurface extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        //System.out.println(path);
         if (path.points() > 1) {
             gl.glLineWidth(lineWidth);
             gl.glColor4f(r, g, b, a);
@@ -56,4 +60,11 @@ public class PathSurface extends Surface {
         }
     }
 
+    public boolean add(v2 pos, int pointLimit) {
+        if (path.add(pos, pointLimit)) {
+            invalid = true;
+            return true;
+        }
+        return false;
+    }
 }
