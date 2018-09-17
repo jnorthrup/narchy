@@ -36,7 +36,7 @@ public abstract class Param {
      * size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
      * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
      */
-    public static final int DerivedTaskBagCapacity = 1024;
+    public static final int DerivedTaskBagCapacity = 2048;
 
 
     /** max percent of capacity allowed input */
@@ -109,6 +109,8 @@ public abstract class Param {
 //     */
 //    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
+
+    public static boolean STRONG_COMPOSITION = false;
 
     /**
      * default bag forget rate

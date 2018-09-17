@@ -22,7 +22,7 @@ import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.Factorize;
 import nars.op.Introduction;
@@ -101,6 +101,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
+        Param.STRONG_COMPOSITION = true;
 
 
         RealTime clock =
@@ -119,7 +120,7 @@ abstract public class NAgentX extends NAgent {
                         new Revaluator.DefaultRevaluator(),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
-                        Util.concurrencyExcept(1), false))
+                        Util.concurrencyExcept(2), false))
 
 //                .exe(MixMultiExec.get(
 //                            1024,
@@ -141,8 +142,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        //new HijackConceptIndex(128 * 1024, 4)
+                        //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(128 * 1024, 4)
 
 
                 )

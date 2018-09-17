@@ -2,6 +2,7 @@ package jcog.pri;
 
 import jcog.WTF;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
+import jcog.math.FloatSupplier;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
@@ -36,6 +37,9 @@ public interface ScalarValue {
     float pri();
 
 
+    default float pri(FloatSupplier update) {
+        return pri(update.asFloat());
+    }
     default float pri(FloatToFloatFunction update) {
         return pri(update.valueOf(pri()));
     }
@@ -217,6 +221,11 @@ public interface ScalarValue {
         @Override public float pri(float p) {
             INT.set(this, floatToIntBits(v(p)));
             return p;
+        }
+
+        /** update */
+        @Override public final float pri(FloatSupplier update) {
+            return FLOAT.updateAndGet(this, update);
         }
 
         /** update */

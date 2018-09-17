@@ -1,6 +1,7 @@
 package jcog.pri.op;
 
 import jcog.Util;
+import jcog.math.FloatSupplier;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 
@@ -126,7 +127,8 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
     /**
      * avg priority
      */
-    PriMerge replace = (tgt, src) -> src.priElse(tgt.priElseZero());
+    PriMerge replace = (tgt, src) -> tgt.pri((FloatSupplier)()-> src.pri());
+
 
 
 }

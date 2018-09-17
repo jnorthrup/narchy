@@ -1,5 +1,6 @@
 package jcog.tree.rtree;
 
+import jcog.data.pool.DequePool;
 import jcog.sort.CachedTopN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -7,24 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.NoSuchElementException;
 
 /**
- * TODO Hyperdimensional Iterator
- * an iterator/cursor that traverses a the tree along a mutable trajectory (ex: per-dimension range conditions)
- * with ability for traversing results (sorted approximately or perfectly) along specified gradients, if provided
+ * BFS that descends through RTree visiting nodes and leaves in an order determined
+ * by a score function that ranks the next nodes to either provide via an Iterator<X>-like interface
+ * or to expand the ranked buffer to find more results.
  */
 public class HyperIterator2<X> {
 
-
-    final HyperRegion target;
-
-
-    @Nullable Node<X> start;
-
-    private final Spatialization<X> model;
-
-    /**
-     * current node
-     */
-    Node<X> at;
 
     /**
      * next available item
@@ -41,14 +30,31 @@ public class HyperIterator2<X> {
     final CachedTopN plan;
 
 
+    final static ThreadLocal<DequePool<CachedTopN>> pool =
+            //HEAP
+            //() -> new CachedFloatRank<>(64);
 
-    public HyperIterator2(Spatialization model, Node<X> start, HyperRegion<X> target, FloatFunction<HyperRegion> rank) {
-        this.model = model;
-        this.start = this.at = start;
-        this.target = target;
-        this.plan = new CachedTopN(32, r -> rank.floatValueOf(
-                        r instanceof Node? ((Node)r).bounds() : model.bounds(r)
-                    ));
+            ThreadLocal.withInitial(()->
+                    new DequePool() {
+                        @Override
+                        public CachedTopN create() {
+                            return new CachedTopN(32, (x)->0);
+                        }
+                    }
+            );
+
+    public HyperIterator2(Spatialization model, Node<X> start, FloatFunction<HyperRegion> rank) {
+//        this.model = model;
+
+//        this.target = target;
+
+        FloatFunction rr = r -> rank.floatValueOf(
+                r instanceof Node? ((Node)r).bounds() : model.bounds(r)
+        );
+        this.plan = /*new CachedTopN(32, rank);*/
+                    pool.get().get().clear(rr);
+
+        plan.accept(start);
     }
 
 
@@ -58,12 +64,6 @@ public class HyperIterator2<X> {
      */
     @Nullable
     private X find() {
-        if (start!=null) {
-            expand(start);
-            start = null;
-            if (plan.isEmpty())
-                return null;
-        }
 
         Object z;
         while ((z = plan.pop())!=null) {
@@ -95,24 +95,23 @@ public class HyperIterator2<X> {
         at.forEachLocal(itemOrNode -> {
             if (itemOrNode instanceof Node) {
                 Node node = (Node) itemOrNode;
-                {
 
-                    //inline 1-arity branches for optimization
-                    while (node.size() == 1) {
-                        Object first = node.get(0);
-                        if (first instanceof Node)
-                            node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
-                        else {
-                            if (notNodeFiltering || nodeFilter.tryVisit(node)) {
-                                plan.accept(first);
-                            }
-                            return;
-                        }
-                    }
+//                //inline 1-arity branches for optimization
+//                while (node.size() == 1) {
+//                    Object first = node.get(0);
+//                    if (first instanceof Node)
+//                        node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
+//                    else {
+//                        if (notNodeFiltering || nodeFilter.tryVisit(node)) {
+//                            plan.accept(first);
+//                        }
+//                        return;
+//                    }
+//                }
 
-                    if (notNodeFiltering || nodeFilter.tryVisit(node))
-                        plan.accept(node);
-                }
+                if (notNodeFiltering || nodeFilter.tryVisit(node))
+                    plan.accept(node);
+
             } else {
                 plan.accept(itemOrNode);
             }

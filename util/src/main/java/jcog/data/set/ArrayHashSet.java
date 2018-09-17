@@ -240,7 +240,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
         if (!list.isEmpty()) {
             list.clear();
-            set = emptySet();
+            //set = emptySet();
+            set.clear();
         }
 
     }

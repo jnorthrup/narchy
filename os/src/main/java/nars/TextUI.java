@@ -490,7 +490,12 @@ public class TextUI {
                 this.autoupdate = autoupdate;
                 visible.set(capacity);
 
-                bag = new PLinkArrayBag<>(PriMerge.replace, capacity * 2);
+                bag = new PLinkArrayBag<>(PriMerge.replace, capacity * 2) {
+                    @Override
+                    protected boolean cleanIfFull() {
+                        return true;
+                    }
+                };
                 
 
 

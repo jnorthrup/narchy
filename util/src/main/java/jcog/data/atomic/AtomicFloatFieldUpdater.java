@@ -1,5 +1,6 @@
 package jcog.data.atomic;
 
+import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -57,6 +58,10 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     public float updateIntAndGet(X x, FloatToIntFunction f) {
         return updateGet(x, v -> f.valueOf(intBitsToFloat(v)));
+    }
+
+    public float updateAndGet(X x, FloatSupplier f) {
+        return updateGet(x, v -> floatToIntBits(f.asFloat()));
     }
 
     public float updateAndGet(X x, FloatToFloatFunction f) {

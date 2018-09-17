@@ -60,7 +60,10 @@ abstract public class Exec implements Executor {
         try {
             t.run(nar);
         } catch (Throwable e) {
-            logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
+            logger.error("{} {}", t,
+                    e
+                    //Param.DEBUG ? e : e.getMessage()
+            );
         }
     }
 

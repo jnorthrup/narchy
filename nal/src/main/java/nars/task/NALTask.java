@@ -101,7 +101,8 @@ public class NALTask extends UnitPri implements Task {
     public Task priCauseMerge(Task incoming) {
         if (incoming == this) return this;
 
-        (incoming.isInput() ? PriMerge.replace : Param.taskEquivalentMerge).merge(this, incoming);
+        /*(incoming.isInput() ? PriMerge.replace : Param.taskEquivalentMerge).*/
+            PriMerge.max.merge(this, incoming);
 
         return causeMerge(incoming.cause());
     }

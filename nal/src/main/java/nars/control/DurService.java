@@ -111,48 +111,50 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
         //System.out.println(this + " " + lastStarted + ".." + lastFinished);
 
-        if (!busy.weakCompareAndSetAcquire(false, true))
+        if (!busy.compareAndSet(false, true))
             return;
-
-
-        long durCycles = durCycles();
-
-        long atStart = nar.time();
-
-        long lastStarted = this.lastStarted;
-
-        this.lastStarted = atStart;
-
-        long delta = atStart - lastStarted;
-
-        //assert(delta >= durCycles): delta + " delta, " + durCycles + " durCycles";
-        //System.out.println(this + "\t" + delta + " delta, " + durCycles + " durCycles");
-
 
         try {
 
+            long atStart = nar.time();
 
-            run(nar, delta);
+            long lastStarted = this.lastStarted;
 
-        } catch (Throwable e) {
-            logger.error("{} {}", this, e);
-        } finally {
+            this.lastStarted = atStart;
+
+            long delta = atStart - lastStarted;
+
+            //assert(delta >= durCycles): delta + " delta, " + durCycles + " durCycles";
+            //System.out.println(this + "\t" + delta + " delta, " + durCycles + " durCycles");
+
+            {
+                run(nar, delta);
+            }
+
+
             //long lastFinished = this.lastFinished;
-            long atEnd = nar.time();
             //this.lastFinished = atEnd;
 
             if (!isOff()) {
+                long atEnd = nar.time();
 
                 long next = Math.max(
                         atEnd + 1 /* next cycle */,
-                        atStart + durCycles);
+                        atStart + durCycles());
 
                 //System.out.println(this + "\tnext=" + next);
 
                 nar.runAt(next, this);
 
             }
-            busy.setRelease(false);
+
+        } catch (Throwable e) {
+
+            logger.error("{} {}", this, e);
+
+        } finally {
+
+            busy.set(false);
         }
     }
 

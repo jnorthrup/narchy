@@ -181,8 +181,13 @@ public final class TruthFunctions {
     }
 
     public static float confCompose(float cx, float cy) {
-            //return Math.min(cx, cy);
+        if (Param.STRONG_COMPOSITION) {
+            //convinced
+            return Math.min(cx, cy);
+        } else {
+            //classic
             return cx * cy;
+        }
     }
 
 

@@ -99,10 +99,10 @@
 
     //If after S M happens, and after M then P happens, so S then P happens
     (S ==> M), (M ==> P)   |- (S ==> P), (Belief:Deduction)
-     (M ==> P), (S ==> M)  |- (S ==> P), (Belief:DeductionReverse)
+     (M ==> P), (S ==> M)  |- (S ==> P), (Belief:DeductionX)
       //if after S --M happens, and after --M then P happens, so S then P happens
       (S ==> M), (--M ==> P)  |- (S ==> P), (Belief:DeductionN)
-       (--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionReversePN)
+       (--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
         (S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
             //(S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)

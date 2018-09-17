@@ -15,7 +15,7 @@ import java.util.function.IntFunction;
  */
 public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
 
-    private final FloatFunction<X> rank;
+    private FloatFunction<X> rank;
 
     public CachedTopN(int limit, FloatFunction<X> rank) {
         this(new NLink[limit], rank);
@@ -23,7 +23,18 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
 
     public CachedTopN(NLink<X>[] target, FloatFunction<X> rank) {
         super(new TopN<>(target, FloatRank.the(ScalarValue.AtomicScalarValue::pri)));
+        rank(rank);
+    }
+
+    public CachedTopN<X> clear(FloatFunction<X> rank) {
+        clear();
+        return rank(rank);
+    }
+
+    public CachedTopN<X> rank(FloatFunction<X> rank) {
+        //assert(isEmpty());
         this.rank = rank;
+        return this;
     }
 
     /** implementations can filter unique inputs before ranking them here */

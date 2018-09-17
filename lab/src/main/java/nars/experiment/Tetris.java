@@ -52,8 +52,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
      */
     public Tetris(NAR n, int width, int height, int timePerFall) {
         super("tetris",
-                FrameTrigger.fps(10f),
-                //FrameTrigger.durs(1),
+                //FrameTrigger.fps(30f),
+                FrameTrigger.durs(1),
                 n);
 
         state = new TetrisState(width, height, timePerFall) {

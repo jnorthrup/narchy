@@ -27,10 +27,10 @@ public class UniExec extends AbstractExec {
 
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 
-    protected static final int inputQueueCapacityPerThread = 2048;
+    protected static final int inputQueueCapacityPerThread = 512;
     final MetalConcurrentQueue in;
 
-    static float timeSliceMomentum = 0.9f;
+    static float timeSliceMomentum = 0.5f;
 
 
     final Sharing sharing = new Sharing();

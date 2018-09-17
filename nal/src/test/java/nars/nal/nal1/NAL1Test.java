@@ -44,21 +44,11 @@ public class NAL1Test extends NALTest {
 
     @Test
     void abduction()  {
-
-
-        
-
-
-
-
-
         test
                 .believe("<sport --> competition>", 1f, 0.9f)
                 .believe("<chess --> competition>", 0.90f, 0.9f)
                 .mustBelieve(cycles, "<chess --> sport>", 0.9f, 0.45f)
                 .mustBelieve(cycles, "<sport --> chess>", 1f, 0.42f);
-
-                
     }
 
     @Test

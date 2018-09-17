@@ -14,8 +14,8 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)     |- (A --> C), (Belief:Deduction, Goal:DesireWeak)
-     (B --> C), (A --> B), neqRCom(A,C)    |- (A --> C), (Belief:DeductionReverse)
+    (A --> B), (B --> C), neqRCom(A,C)     |- (A --> C), (Belief:Deduction, Goal:Desire)
+      (B --> C), (A --> B), neqRCom(A,C)    |- (A --> C), (Belief:DeductionX, Goal:Desire)
 
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)
         (B --> C), (A --> B), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)

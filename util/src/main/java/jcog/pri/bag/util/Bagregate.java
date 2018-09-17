@@ -27,14 +27,14 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     private final Iterable<X> src;
     private final NumberX scale;
 //    private final AtomicBoolean busy = new AtomicBoolean();
-    private float forgetRate = 1f;
+
 
     public Bagregate(Stream<X> src, int capacity, float scale) {
         this(src::iterator, capacity, scale);
     }
 
     public Bagregate(Iterable<X> src, int capacity, float scale) {
-        this.bag = new PLinkArrayBag(PriMerge.plus /*PriMerge.replace*/, capacity) {
+        this.bag = new PLinkArrayBag(PriMerge.avg /*PriMerge.replace*/, capacity) {
             @Override
             public void onRemove(Object value) {
                 Bagregate.this.onRemove((PriReference<X>) value);
@@ -55,15 +55,14 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 //        try {
 
 
-                bag.commit(bag.forget(forgetRate));
+                bag.commit();
 
                 float scale = this.scale.floatValue();
 
                 src.forEach(x -> {
                     if (include(x)) {
-                        float pri = x.pri();
-                        if (pri == pri)
-                            bag.putAsync(new PLink<>(x, pri * scale));
+                        float pri = x.priElseZero();
+                        bag.putAsync(new PLink<>(x, pri * scale));
                     }
                 });
 

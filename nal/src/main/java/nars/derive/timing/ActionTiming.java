@@ -12,7 +12,7 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
     private final NAR nar;
     public final FloatRange horizonDurs = new FloatRange(3, 0, 32);
-    public final FloatRange widthDurs = new FloatRange(1, 0, 8);
+    public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
     public ActionTiming(NAR n) {
         this.nar = n;

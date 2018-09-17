@@ -206,7 +206,7 @@ public interface LongInterval {
      *  returned time distance is zero, regardless of how far it may extend before or after it */
     default long minTimeTo(long a, long b) {
 
-        assert (b >= a): a + " > " + b;
+        //assert (b >= a): a + " > " + b;
 
         if (a == ETERNAL) {
             

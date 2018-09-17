@@ -11,7 +11,7 @@ import static nars.time.Tense.XTERNAL;
 public class HijackTermCache/*<I extends InternedCompound>*/ extends ByteHijackMemoize<InternedCompound, Term> {
 
     public HijackTermCache(Function<InternedCompound,Term> f, int capacity, int reprobes) {
-        super(f, capacity, reprobes);
+        super(f, capacity, reprobes, false);
     }
 
 

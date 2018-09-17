@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 abstract public class MultiExec extends UniExec {
 
 
-    public static final float inputQueueSizeSafetyThreshold = 0.5f;
+    public static final float inputQueueSizeSafetyThreshold = 0.2f;
     private final Revaluator revaluator;
 
     protected volatile long idleTimePerCycle;
@@ -359,7 +359,7 @@ abstract public class MultiExec extends UniExec {
                     int batchSize =
                             Util.lerp(nar.loop.throttle.floatValue(),
                                     available, /* all of it if low throttle. this allows other threads to remains asleep while one awake thread takes care of it all */
-                                    (int) Math.ceil((((float) available) / Math.max(1, (concurrency() - 1))))
+                                    (int) Math.ceil((((float) available) / Math.max(1, (concurrency()/2))))
                             );
 
                     int drained = in.remove(schedule, batchSize);

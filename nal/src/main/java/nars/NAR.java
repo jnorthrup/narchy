@@ -968,9 +968,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * schedule a task to be executed no sooner than a given NAR time
      */
     public final void runAt(long whenOrAfter, Runnable then) {
-        if (whenOrAfter <= time())
-            run(then);
-        else
+//        if (whenOrAfter <= time())
+//            run(then);
+//        else
             time.runAt(whenOrAfter, then);
     }
 
@@ -978,9 +978,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * schedule a task to be executed no sooner than a given NAR time
      */
     public final void runAt(long whenOrAfter, Consumer<NAR> then) {
-        if (whenOrAfter <= time())
-            run(then);
-        else
+//        if (whenOrAfter <= time())
+//            run(then);
+//        else
             time.runAt(whenOrAfter, then);
     }
 
@@ -1091,7 +1091,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * if this is an Iterable<Task> , it can be more efficient to use the inputTasks method to bypass certain non-NALTask conditions
      */
     public void input(Iterable<? extends ITask> tasks) {
-        if (tasks == null) return;
+        //if (tasks == null) return;
         exe.execute(tasks);
     }
 

@@ -282,12 +282,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 return;
             }
 
-            FloatFunction timeDist = TimeConfRange.distanceFunction(tableDur(), time);
+            FloatFunction timeDist = TimeConfRange.distanceFunction(0 /* tableDur() */, time);
 
 //            if (s <= MIN_TASKS_PER_LEAF*2 || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
                 //single iterator
                 read((tree)-> {
-                    HyperIterator2<TaskRegion> ii = new HyperIterator2(tree.model, tree.root(), time, timeDist);
+                    HyperIterator2<TaskRegion> ii = new HyperIterator2(tree.model, tree.root(), timeDist);
 
                     while (ii.hasNext() && each.test(ii.next())) {
                     }

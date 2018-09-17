@@ -1,6 +1,8 @@
 package nars.task.util;
 
+import jcog.data.list.FasterList;
 import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.ArrayBag;
 import nars.NAR;
 import nars.Task;
 import nars.task.AbstractTask;
@@ -30,18 +32,27 @@ public class TaskBagDrainer extends AbstractTask {
     @Override
     public ITask next(NAR nar) {
 
-        if (singleton && !busy.weakCompareAndSetAcquire(false,true))
+        if (singleton && !busy.compareAndSet(false,true))
             return null; //an operation is in-progress
 
         try {
 
             int n = rateControl.apply(bag.size(), bag.capacity());
             if (n > 0) {
-                bag.pop(null, n, nar::input);
+                if (bag instanceof ArrayBag) {
+                    FasterList<ITask> batch = new FasterList(n);
+                    ((ArrayBag) bag).popBatch(n, batch);
+                    if (!batch.isEmpty()) {
+                        //nar.input(batch);
+                        batch.forEachWith(ITask::run, nar);
+                    }
+                } else {
+                    bag.pop(null, n, nar::input); //per item.. may be slow
+                }
             }
 
         } finally {
-            busy.setRelease(false);
+            busy.set(false);
         }
 
         return null;

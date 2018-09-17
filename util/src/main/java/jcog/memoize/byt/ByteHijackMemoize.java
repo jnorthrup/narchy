@@ -8,8 +8,8 @@ import java.util.function.Function;
 
 public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
 
-    public ByteHijackMemoize(Function<X, Y> f, int capacity, int reprobes) {
-        super(f, capacity, reprobes);
+    public ByteHijackMemoize(Function<X, Y> f, int capacity, int reprobes, boolean soft) {
+        super(f, capacity, reprobes, soft);
     }
 
     @Override

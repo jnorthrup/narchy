@@ -12,20 +12,28 @@ import java.util.Map;
 public interface TruthFunc {
 
     static void permuteTruth(TruthFunc[] values, Map<Term, TruthFunc> table) {
-        for (TruthFunc tm : values) {
-            table.put(Atomic.the(tm.toString()), tm);
+        for (TruthFunc t : values) {
 
-            table.put(Atomic.the(tm + "PP"), tm); //alias
+            table.put(Atomic.the(t + ""), t);
+            table.put(Atomic.the(t + "PP"), t); //alias
 
-            NegatedTaskTruth np = new NegatedTaskTruth(tm);
-            table.put(Atomic.the(tm + "NP"), np);
-                /*@Deprecated*/ table.put(Atomic.the(tm.toString() + 'N'), np);
-            table.put(Atomic.the(tm + "PN"), new NegatedBeliefTruth(tm));
-            table.put(Atomic.the(tm + "NN"), new NegatedTruths(tm));
-            //table.put(Atomic.the(tm + "NX"), new NegatedTaskTruth(new SwappedTruth(tm)));
-            table.put(Atomic.the(tm + "Depolarized"), new DepolarizedTruth(tm));
+            SwappedTruth swapped = new SwappedTruth(t);
+            NegatedTaskTruth negatedTask = new NegatedTaskTruth(t);
 
-            //table.put(Atomic.the(tm.toString() + 'X'), new SwappedTruth(tm));
+            table.put(Atomic.the(t + "X"), swapped);
+
+            table.put(Atomic.the(t + "NP"), negatedTask);
+            table.put(Atomic.the(t.toString() + 'N'), negatedTask); //@Deprecated, prefer NP variant
+
+            table.put(Atomic.the(t + "PN"), new NegatedBeliefTruth(t));
+            table.put(Atomic.the(t + "PNX"), new NegatedBeliefTruth(swapped)); //HACK
+
+            table.put(Atomic.the(t + "NN"), new NegatedTruths(t));
+            table.put(Atomic.the(t + "NX"), new NegatedTaskTruth(swapped));
+
+            table.put(Atomic.the(t + "Depolarized"), new DepolarizedTruth(t));
+
+
 
         }
     }
@@ -67,26 +75,28 @@ public interface TruthFunc {
         }
 
     }
-//    final class SwappedTruth extends ProxyTruthFunc {
-//
-//        public SwappedTruth(TruthFunc o) {
-//            super(o);
-//        }
-//
-//        @Override
-//        public
-//        @Nullable
-//        Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m, float minConf) {
-//            return o.apply(belief, task, m, minConf);
-//        }
-//
-//
-//        @Override
-//        public String toString() {
-//            return o.toString() + 'X';
-//        }
-//
-//    }
+
+    /** swaps the task truth and belief truth */
+    final class SwappedTruth extends ProxyTruthFunc {
+
+        public SwappedTruth(TruthFunc o) {
+            super(o);
+        }
+
+        @Override
+        public
+        @Nullable
+        Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m, float minConf) {
+            return o.apply(belief, task, m, minConf);
+        }
+
+
+        @Override
+        public String toString() {
+            return o.toString() + 'X';
+        }
+
+    }
 
     /** ____N , although more accurately it would be called: 'NP' */
     final class NegatedTaskTruth extends ProxyTruthFunc {

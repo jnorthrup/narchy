@@ -16,6 +16,7 @@ import jcog.sort.SortedArray;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -101,7 +102,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
                     this.capacity = nextCapacity;
 
-                    if (this.capacity > nextCapacity)
+                    if (size() > nextCapacity)
                         commit(null);
                 }
             }
@@ -178,7 +179,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     private int clean(List<Y> trash, @Nullable Consumer<Y> update, boolean commit) {
 
-        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
+//        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
 
 
         SortedArray items2 = this.items;
@@ -196,8 +197,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 p = pri(x);
             }
             if (p == p) {
-                min = Math.min(min, p);
-                max = Math.max(max, p);
+//                min = Math.min(min, p);
+//                max = Math.max(max, p);
                 mass += p;
                 if (p - above >= ScalarValue.EPSILON)
                     mustSort = i;
@@ -212,20 +213,20 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             }
         }
 
+        ArrayBag.MASS.set(this, mass);
+
 
         int c = capacity;
 
         while (s > c) {
-            Y w1 = this.items.removeLast();
-            trash.add(w1);
-            mass -= w1.priElseZero();
+            trash.add(this.items.removeLast());
             s--;
         }
 
-        ArrayBag.MASS.set(this, mass);
+
 
         if (mustSort != -1)
-            sort(0, mustSort);
+            sort(0, Math.min(s, mustSort));
 
         return s;
     }
@@ -479,11 +480,17 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         float priBefore = existing.priCommit();
         Y result;
         float delta;
-            float oo = merge(existing, incoming);
-            delta = existing.priElseZero() - priBefore;
-            if (overflow != null)
-                overflow.add(oo);
-            result = existing;
+
+        float oo = merge(existing, incoming);
+        float priAfter = existing.pri();
+        if (priAfter!=priAfter) {
+            throw new WTF("incoming deleted existing"); //just for detection but maybe helpful in some merge fucntions
+        }
+
+        delta = existing.priElseZero() - priBefore;
+        if (overflow != null)
+            overflow.add(oo);
+        result = existing;
 
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
@@ -509,10 +516,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     public Bag<X, Y> commit(Consumer<Y> update) {
 
 
-        int s = size();
+
         /*if ((update != null && s > 0) || (update == null && s > capacity))*/
         {
-            @Nullable FasterList<Y> trash = new FasterList(Math.max(s / 8, 4));
+            @Nullable FasterList<Y> trash = new FasterList(4);
             synchronized (items) {
 
                 clean(trash, update, true);
@@ -550,26 +557,15 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * @param n # to remove, if -1 then all are removed
      */
     public final void clear(int n, Consumer<? super Y> each) {
-        List<Y> trash;
 
-        synchronized (items) {
+        assert(n!=0);
 
-            int s = size();
-            if (s > 0) {
-                int toRemove = n == -1 ? s : Math.min(s, n);
-                trash = new FasterList<>(toRemove);
+        Collection<Y> popped = new FasterList<>(n > 0 ? Math.min(n, size()) : size());
 
-                items.removeRange(0, toRemove, x -> trash.add(mapRemove(x)));
+        popBatch(n, popped);
 
-            } else {
-                trash = null;
-            }
-        }
-
-        depressurize();
-
-        if (trash != null)
-            trash.forEach(each);
+        if (popped != null)
+            popped.forEach(each::accept);
 
     }
 
@@ -582,6 +578,25 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         } else {
             return Bag.super.pop(rng, max, each);
         }
+    }
+
+
+    public Sampler<Y> popBatch(int n, Collection<Y> popped) {
+
+        popped.clear();
+        synchronized (items) {
+
+            int s = size();
+            if (s > 0) {
+
+                int toRemove = n == -1 ? s : Math.min(s, n);
+
+                items.removeRange(0, toRemove, (e) -> popped.add(mapRemove(e)));
+
+            }
+        }
+
+        return this;
     }
 
     @Override
@@ -600,13 +615,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int s = size();
         if (s > 0) {
-            synchronized (items) {
+            //synchronized (items) {
                 s = size();
                 Object[] x = items.array();
                 for (int i = 0; i < s; i++) {
                     Object a = x[i];
                     if (a == null)
-                        throw new WTF();
+                        continue; //throw new WTF();
 
                     Y b = (Y) a;
                     float p = pri(b);
@@ -616,7 +631,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                         //TODO trash.add(key(b));
                     }
                 }
-            }
+            //}
         }
 
 
