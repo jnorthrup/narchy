@@ -304,7 +304,7 @@ public class Finger {
      */
     public final boolean tryFingering(Fingering f) {
 
-        if (f != null) {
+        /*if (f != null) */{
             Fingering cf = this.fingering.get();
             if (cf!=f && cf.defer(this)) {
                 //System.out.println(cf + " -> " + f + " try");

@@ -2,13 +2,13 @@ package spacegraph.space2d.container;
 
 import jcog.TODO;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.container.collection.MutableArrayContainer;
 
 /* 9-element subdivision
 
 
  */
-public class Bordering extends MutableListContainer {
+public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
     public final static int C = 0;
     public final static int N = 1;
     public final static int S = 2;
@@ -30,12 +30,16 @@ public class Bordering extends MutableListContainer {
     private boolean autocollapse = true;
 
     public Bordering() {
-        super();
+        super(SE+1);
     }
 
-    public Bordering(Surface center) {
+    public Bordering(S center) {
         this();
         set(center);
+    }
+
+    public void set(S center) {
+        set(0, center);
     }
 
     /**
@@ -88,20 +92,20 @@ public class Bordering extends MutableListContainer {
             h2 = H / 2;
         }
 
-        Surface[] children = children();
+
 
 
         float borderWest, borderEast, borderNorth, borderSouth;
-        int l = children.length;
-        borderWest = autocollapse && !(l > Bordering.W && children[Bordering.W] != null) ? 0 : this.borderWest;
-        borderEast = autocollapse && !(l > Bordering.E && children[Bordering.E] != null) ? 0 : this.borderEast;
-        borderNorth = autocollapse && !(l > Bordering.N && children[Bordering.N] != null) ? 0 : this.borderNorth;
-        borderSouth = autocollapse && !(l > Bordering.S && children[Bordering.S] != null) ? 0 : this.borderSouth;
+        int l = length;
+        borderWest = autocollapse && !(l > Bordering.W && children.getOpaque(Bordering.W) != null) ? 0 : this.borderWest;
+        borderEast = autocollapse && !(l > Bordering.E && children.getOpaque(Bordering.E) != null) ? 0 : this.borderEast;
+        borderNorth = autocollapse && !(l > Bordering.N && children.getOpaque(Bordering.N) != null) ? 0 : this.borderNorth;
+        borderSouth = autocollapse && !(l > Bordering.S && children.getOpaque(Bordering.S) != null) ? 0 : this.borderSouth;
 
         for (int i = 0, childrenLength = l; i < childrenLength; i++) {
-            Surface c = children[i];
+            S c = children.getOpaque(i);
 
-            if (c == null || c instanceof EmptySurface)
+            if (c == null)
                 continue;
 
             float x1, y1, x2, y2;
@@ -161,60 +165,55 @@ public class Bordering extends MutableListContainer {
     /**
      * replace center content
      */
-    public Bordering center(Surface next) {
+    public Bordering center(S next) {
         set(C, next);
         return this;
     }
 
-    public Bordering set(int direction, Surface next, float borderSizePct) {
+    public Bordering set(int direction, S next, float borderSizePct) {
         borderSize(direction, borderSizePct);
         return set(direction, next);
     }
 
-    @Override
-    public Bordering set(int direction, Surface next) {
+    public Bordering set(int direction, S next) {
         if (direction >= 9)
             throw new ArrayIndexOutOfBoundsException();
 
         synchronized (this) {
-            int empties = direction - (childrenCount() - 1);
-            for (int i = 0; i < empties; i++)
-                add(new EmptySurface()); 
-
-            super.set(direction, next);
+            children.set(direction, next);
             return this;
         }
     }
 
-    public Bordering north(Surface x) {
+    public Bordering north(S x) {
         return set(Bordering.N, x);
     }
 
-    public Bordering south(Surface x) {
+    public Bordering south(S x) {
         return set(Bordering.S, x);
     }
 
-    public Bordering east(Surface x) {
+    public Bordering east(S x) {
         return set(Bordering.E, x);
     }
 
-    public Bordering west(Surface x) {
+    public Bordering west(S x) {
         return set(Bordering.W, x);
     }
 
-    public Bordering northwest(Surface x) {
+    public Bordering northwest(S x) {
         return set(Bordering.NW, x);
     }
 
-    public Bordering northeast(Surface x) {
+    public Bordering northeast(S x) {
         return set(Bordering.NE, x);
     }
 
-    public Bordering southwest(Surface x) {
+    public Bordering southwest(S x) {
         return set(Bordering.SW, x);
     }
 
-    public Bordering southeast(Surface x) {
+    public Bordering southeast(S x) {
         return set(Bordering.SE, x);
     }
 }

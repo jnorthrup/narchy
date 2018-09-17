@@ -176,16 +176,16 @@ public class RTree<T> implements Space<T> {
     }
 
 
-    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode) {
-        return iterate(bounds, mode, null);
-    }
-
-    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode, byte[] gradient) {
-        if (isEmpty())
-            return HyperIterator.Empty;
-        else
-            return new HyperIterator(model, root, bounds, mode, gradient);
-    }
+//    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode) {
+//        return iterate(bounds, mode, null);
+//    }
+//
+//    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode, byte[] gradient) {
+//        if (isEmpty())
+//            return HyperIterator.Empty;
+//        else
+//            return new HyperIterator(model, root, bounds, mode, gradient);
+//    }
 
 
     @Override

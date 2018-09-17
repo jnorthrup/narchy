@@ -15,8 +15,6 @@ import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
 import nars.truth.polation.TruthIntegration;
-import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +24,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.WTF.WTF;
-import static jcog.math.LongInterval.ETERNAL;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -285,77 +282,75 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 return;
             }
 
-            DoubleFunction timeDist = TimeConfRange.distanceFunction(time);
+            FloatFunction timeDist = TimeConfRange.distanceFunction(tableDur(), time);
 
-            if (s <= MIN_TASKS_PER_LEAF*2 || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
+//            if (s <= MIN_TASKS_PER_LEAF*2 || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
                 //single iterator
                 read((tree)-> {
-                    HyperIterator<TaskRegion> ii = tree.iterate(time, BoundsMatch.ANY);
-                    ii.setDistanceFunction(timeDist);
+                    HyperIterator2<TaskRegion> ii = new HyperIterator2(tree.model, tree.root(), time, timeDist);
+
                     while (ii.hasNext() && each.test(ii.next())) {
                     }
                 });
-            } else {
-
-                read((tree) -> {
-                    long mid = time.mid();
-
-
-                    HyperIterator.NodeFilter<TaskRegion> f = new HyperIterator.NodeFilter<>(
-                            (int) Math.round(Math.log(s)/Math.log((MIN_TASKS_PER_LEAF+MAX_TASKS_PER_LEAF)/2f) )
-                    );
-
-                    TimeRange left = new TimeRange(mustContain ? time.start() : Long.MIN_VALUE+1, mid);
-
-                    TimeRange right = new TimeRange(mid + 1,
-                            mustContain ? time.end() : Long.MAX_VALUE-1);
-
-                    HyperIterator<TaskRegion> L = tree.iterate(left, BoundsMatch.ANY);
-                    HyperIterator<TaskRegion> R = tree.iterate(right, BoundsMatch.ANY);
-
-                    L.setNodeFilter(f);
-                    R.setNodeFilter(f);
-
-                    L.setDistanceFunction(timeDist);
-                    R.setDistanceFunction(timeDist);
-
-                    //must allow intersect for first stage match because the iterators may cut the item in half but it will still be a contained from the total bounds
-                    HyperIterator[] ii;
-                    ii = new HyperIterator[]{L, R};
-
-                    boolean swap = m.nar.random().nextBoolean();
-                    if (swap)
-                        ArrayUtils.swap(ii, 0, 1);
-
-                    int active;
-                    all:
-                    do {
-
-                        active = ii.length;
-                        for (int i = 0, iiLength = ii.length; i < iiLength; i++) {
-                            HyperIterator<TaskRegion> h = ii[i];
-
-                            if (h == null) {
-                                active--;
-                                continue;
-                            }
-
-                            if (h.hasNext()) {
-                                TaskRegion next = h.next();
-                                if (!mustContain || time.contains(next))
-                                    if (!each.test(next))
-                                        break all; //done
-                            } else {
-                                ii[i] = null; //finished
-                                active--;
-                            }
-                        }
-
-                    } while (active > 0);
-
-                });
-
-            }
+//            } else {
+//
+//                read((tree) -> {
+//                    long mid = time.mid();
+//
+//
+//                    NodeFilter<TaskRegion> f = new NodeFilter<>(
+//                            (int) Math.round(Math.log(s)/Math.log((MIN_TASKS_PER_LEAF+MAX_TASKS_PER_LEAF)/2f) )
+//                    );
+//
+//                    TimeRange left = new TimeRange(mustContain ? time.start() : Long.MIN_VALUE+1, mid);
+//
+//                    TimeRange right = new TimeRange(mid + 1,
+//                            mustContain ? time.end() : Long.MAX_VALUE-1);
+//
+//                    Node<TaskRegion> root = tree.root();
+//                    HyperIterator2<TaskRegion> L = new HyperIterator2(tree.model, root, left, timeDist);
+//                    HyperIterator2<TaskRegion> R = new HyperIterator2(tree.model, root, right, timeDist);
+//
+//                    L.setNodeFilter(f);
+//                    R.setNodeFilter(f);
+//
+//                    //must allow intersect for first stage match because the iterators may cut the item in half but it will still be a contained from the total bounds
+//                    HyperIterator2[] ii;
+//                    ii = new HyperIterator2[]{L, R};
+//
+//                    boolean swap = m.nar.random().nextBoolean();
+//                    if (swap)
+//                        ArrayUtils.swap(ii, 0, 1);
+//
+//                    int active;
+//                    all:
+//                    do {
+//
+//                        active = ii.length;
+//                        for (int i = 0, iiLength = ii.length; i < iiLength; i++) {
+//                            HyperIterator2<TaskRegion> h = ii[i];
+//
+//                            if (h == null) {
+//                                active--;
+//                                continue;
+//                            }
+//
+//                            if (h.hasNext()) {
+//                                TaskRegion next = h.next();
+//                                if (!mustContain || time.contains(next))
+//                                    if (!each.test(next))
+//                                        break all; //done
+//                            } else {
+//                                ii[i] = null; //finished
+//                                active--;
+//                            }
+//                        }
+//
+//                    } while (active > 0);
+//
+//                });
+//
+//            }
         }
 //        ExpandingScan tt = new ExpandingScan(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
 //                m,//task(m.value()),

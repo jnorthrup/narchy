@@ -2,7 +2,6 @@ package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.map.CellMap;
@@ -20,7 +19,6 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.video.Draw;
 
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -171,7 +169,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
         try {
 
-            updateNodes(nodes.iterator(), addOrReplace);
+            updateNodes(nodes, addOrReplace);
 
             render();
 
@@ -183,15 +181,15 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
 
-    private void updateNodes(Iterator<X> nodes, boolean addOrReplace) {
+    private void updateNodes(Iterable<X> nodes, boolean addOrReplace) {
         if (!addOrReplace) {
             cells.map.forEach((k, v) -> wontRemain.add(k));
         }
 
-        while (nodes.hasNext()) {
-            X x = nodes.next();
+
+        nodes.forEach(x -> {
             if (x == null)
-                continue;
+                return;
 
             CellMap.CacheCell<X, NodeVis<X>> xxx = cells.compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
             NodeVis<X> cv = xxx.value;
@@ -199,8 +197,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                 cv.start(this);
                 cv.show();
             }
-
-        }
+        });
 
         if (!wontRemain.isEmpty()) {
             cells.removeAll(wontRemain);
@@ -239,8 +236,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         renderers.forEach(layer -> cells.forEachValue(nv -> {
             if (nv.visible())
                 layer.node(nv, edit);
-            else
-                throw new WTF();
+//            else
+//                throw new WTF();
         } ));
 
     }

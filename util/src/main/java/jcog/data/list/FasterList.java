@@ -214,7 +214,7 @@ public class FasterList<X> extends FastList<X> {
      * early
      * *
      */
-    public final X[] array() {
+    public X[] array() {
         return items;
     }
 
@@ -579,7 +579,7 @@ public class FasterList<X> extends FastList<X> {
             return fillArray(ii.apply(size), false);
     }
 
-    public X[] toArrayCopy(@Nullable X[] target, IntFunction<X[]> ii) {
+    protected X[] toArrayCopy(@Nullable X[] target, IntFunction<X[]> ii) {
         int s = size;
         if (s != target.length) {
             target = ii.apply(s);

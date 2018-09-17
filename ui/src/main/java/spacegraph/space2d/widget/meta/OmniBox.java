@@ -38,7 +38,7 @@ public class OmniBox extends Widget {
 
         results = new Gridding() {
             @Override
-            public void add(Surface s) {
+            public void add(Surface... s) {
                 synchronized (content) {
                     int sizeBefore = size();
 

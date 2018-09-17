@@ -300,6 +300,10 @@ public class Leaf<X> extends AbstractNode<X> {
         }
     }
 
+    @Override
+    public final void forEachLocal(Consumer c) {
+        forEach(c);
+    }
 
     @Override
     public void collectStats(Stats stats, int depth) {

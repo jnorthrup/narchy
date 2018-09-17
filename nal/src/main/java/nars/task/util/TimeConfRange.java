@@ -1,7 +1,9 @@
 package nars.task.util;
 
+import jcog.Util;
 import jcog.tree.rtree.HyperRegion;
-import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
+import nars.time.Tense;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 public class TimeConfRange extends TimeRange {
 
@@ -28,12 +30,15 @@ public class TimeConfRange extends TimeRange {
     }
 
     /** sorts nearest to the end of a list */
-    public static DoubleFunction distanceFunction(TimeRange a) {
-        DoubleFunction<TaskRegion> d =
-                a.start!=a.end ?
-                    b -> -(b.maxTimeTo(a.start) + b.maxTimeTo(a.end))
-                        :
-                    b -> -b.midTimeTo(a.start);
-        return d;
+    public static FloatFunction<TaskRegion> distanceFunction(long tableDur, TimeRange a) {
+
+        if (a.start == Tense.ETERNAL) {
+            return b -> b.confMax();
+        } else if (a.start != a.end) {
+            return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
+        } else {
+            return b -> -b.minTimeTo(a.start) -b.range()/tableDur;
+        }
+
     }
 }

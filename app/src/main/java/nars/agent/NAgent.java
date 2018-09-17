@@ -446,7 +446,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected void act(long prev, long now, long next) {
-        ActionConcept[] aaa = actions.copy;
+        ActionConcept[] aaa = actions.array();
 //        ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
 //        ArrayUtils.shuffle(aaa, random());
 

@@ -54,8 +54,8 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     @Override
     public void forEach(Consumer<Surface> each) {
         cells.forEachCell(e -> {
-            if (e == null)
-                throw new NullPointerException();
+//            if (e == null)
+//                throw new NullPointerException();
 
             Surface s = ((SurfaceCacheCell) e).surface;
             if (s != null)

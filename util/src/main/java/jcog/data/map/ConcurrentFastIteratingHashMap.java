@@ -1,11 +1,12 @@
 package jcog.data.map;
 
 import jcog.data.iterator.ArrayIterator;
+import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
-import jcog.util.FlipArray;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
 
 public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
@@ -20,7 +21,9 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     static final int extraThreshold = 16;
 
     /** double buffer live copy */
-    private volatile FlipArray<Y> list;
+    //private volatile Y[] list;
+    private final FastCoWList<Y> list;
+    private AtomicBoolean invalid = new AtomicBoolean(false);
 
 //    /** double buffer backup copy */
 //    final AtomicReference<T[]> lists = new AtomicReference<>();
@@ -29,7 +32,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     public ConcurrentFastIteratingHashMap(Y[] emptyArray) {
         this.emptyArray = emptyArray;
-        this.list = new FlipArray<>(emptyArray, emptyArray);
+        this.list = new FastCoWList<>((x)->Arrays.copyOf(emptyArray, x));
         //lists.set(this.list = this.emptyArray = emptyArray);
     }
 
@@ -133,7 +136,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
 
     public final void invalidate() {
-        list.invalidate();
+        invalid.set(true);
     }
 
     public boolean whileEachValue(Predicate<? super Y> action) {
@@ -192,53 +195,53 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
 
     public final Y[] valueArray() {
-        return list.readValid(true, this::_valueArray);
-    }
-
-    private Y[] _valueArray(Y[] prev) {
-        Y[] next;
-        if (map instanceof ConcurrentOpenHashMap) { //HACK @Deprecated
-            next = ((ConcurrentOpenHashMap<?, Y>) map).values(prev, i -> Arrays.copyOf(emptyArray, i));
-        } else {
-            int s = map.size();
-            if (s== 0)
-                return emptyArray;
-
-
-            if (s > prev.length || (prev.length - extraThreshold > s)) {
-                next = Arrays.copyOf(emptyArray, s);
-            } else {
-                next = prev;
-            }
-
-            final int[] j = {0};
-            ((ConcurrentHashMap<X,Y>)map).forEachValue(1, x->{
-                assert(x!=null);
-                //if (x!=null) {
-                    int jj = j[0];
-                    if (jj < next.length) {
-                        next[jj] = x;
-                        j[0]++;
-                    }
-                //}
-            });
-
-            if (j[0] < next.length-1)
-                Arrays.fill(next, j[0], next.length, null);
-
-            //next = map.values().toArray(prev);
+        //return list.readValid(true, this::_valueArray);
+        if (invalid.compareAndSet(true,false)) {
+            list.set(map.values());
         }
-        return next;
+        return list.array();
     }
+
+//    private Y[] _valueArray(Y[] prev) {
+//        Y[] next;
+//        if (map instanceof ConcurrentOpenHashMap) { //HACK @Deprecated
+//            next = ((ConcurrentOpenHashMap<?, Y>) map).values(prev, i -> Arrays.copyOf(emptyArray, i));
+//        } else {
+//            int s = map.size();
+//            if (s== 0)
+//                return emptyArray;
+//
+//
+//            if (s > prev.length || (prev.length - extraThreshold > s)) {
+//                next = Arrays.copyOf(emptyArray, s);
+//            } else {
+//                next = prev;
+//            }
+//
+//            final int[] j = {0};
+//            ((ConcurrentHashMap<X,Y>)map).forEachValue(1, x->{
+//                assert(x!=null);
+//                //if (x!=null) {
+//                    int jj = j[0];
+//                    if (jj < next.length) {
+//                        next[jj] = x;
+//                        j[0]++;
+//                    }
+//                //}
+//            });
+//
+//            if (j[0] < next.length-1)
+//                Arrays.fill(next, j[0], next.length, null);
+//
+//            //next = map.values().toArray(prev);
+//        }
+//        return next;
+//    }
 
 
     @Override
     public Y put(X key, Y value) {
-        Y prev;
-        if (value == null)
-            prev = map.remove(key);
-        else
-            prev = map.put(key, value);
+        Y prev = value == null ? map.remove(key) : map.put(key, value);
         if (prev!=value)
             invalidate();
         return prev;

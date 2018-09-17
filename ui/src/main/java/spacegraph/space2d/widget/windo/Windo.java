@@ -22,7 +22,6 @@ public class Windo extends MutableUnitContainer {
     private final static float resizeBorder = 0.1f;
     public FingerDragging dragMode = null;
     public DragEdit potentialDragMode = null;
-    private boolean hover;
 
 
     protected Windo() {
@@ -58,14 +57,12 @@ public class Windo extends MutableUnitContainer {
         if (other != null && other != this) {
             this.dragMode = null;
             this.potentialDragMode = null;
-            this.hover = false;
             return other;
         } else if (finger == null || !fingeringBounds(finger)) {
 
 
             this.dragMode = null;
             this.potentialDragMode = null;
-            this.hover = false;
             return null;
         } else {
 
@@ -74,7 +71,6 @@ public class Windo extends MutableUnitContainer {
 
             v2 hitPoint = windowHitPointRel(finger);
 
-            this.hover = true;
 
 
             {
@@ -182,11 +178,12 @@ public class Windo extends MutableUnitContainer {
         return new FingerSurfaceMove(this);
     }
 
+    /** alllows filtering of certain finger modes */
     boolean fingerable(DragEdit d) {
         return true;
     }
 
-    protected boolean opaque() {
+    @Deprecated protected boolean opaque() {
         return true;
     }
 

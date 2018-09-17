@@ -304,8 +304,20 @@ public class Branch<X> extends AbstractNode<X> {
             Node<X>[] cc = this.data;
             for (int i = 0; i < s; i++) {
                 Node<X> x = cc[i];
-                if (x != null)
+                //if (x != null)
                     x.forEach(consumer);
+            }
+        }
+    }
+
+    @Override
+    public final void forEachLocal(Consumer c) {
+        short s = this.size;
+        if (s > 0) {
+            Node<X>[] cc = this.data;
+            for (int i = 0; i < s; i++) {
+                Node<X> x = cc[i];
+                c.accept(x);
             }
         }
     }

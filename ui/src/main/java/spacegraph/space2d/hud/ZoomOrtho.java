@@ -122,11 +122,11 @@ public class ZoomOrtho extends Ortho {
             debug(this, 1f, () -> "touch(" + touchNext + ')');
         }
 
-        //if (touchNext == null) {
+        if (touchNext == null) {
             if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {
-
+                return this;
             }
-        //}
+        }
 
         return touchNext;
     }
@@ -171,11 +171,11 @@ public class ZoomOrtho extends Ortho {
             return null;
         }
 
+
         @Override
-        public boolean opaque() {
+        protected boolean opaque() {
             return false;
         }
-
 
         @Override
         protected void postpaint(GL2 gl) {

@@ -227,5 +227,51 @@ public class WallTest {
         }
 
     }
+//    public static class Box2DTest_ObjGraph {
+//        public static void main(String[] args) {
+//            GraphEdit s = SpaceGraph.wall(800, 800);
+//
+//            ObjectGraph og = new ObjectGraph(2, s) {
+//
+//                @Override
+//                public boolean includeValue(Object v) {
+//                    return true;
+//                }
+//
+//                @Override
+//                public boolean includeClass(Class<?> c) {
+//                    return true;
+//                }
+//
+//                @Override
+//                public boolean includeField(Field f) {
+//                    return true;
+//                }
+//            };
+//
+//            og.forEachNode(n -> {
+//                GraphEdit.PhyWindow oo = s.put(new PushButton(n.id().getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
+//            });
+//
+//
+//
+//
+//
+//
+//        }
+//    }
+//
+//
+//    public static class Box2DTest_ProtoWidget {
+//
+//        public static void main(String[] args) {
+//            GraphEdit s = SpaceGraph.wall(800, 800);
+//
+//            s.put(
+//                    new WizardFrame( new ProtoWidget() ),
+//                    1, 1);
+//
+//        }
+//    }
 
 }

@@ -8,6 +8,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.shape.VerletSurface;
+import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.util.math.v2;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletSpring2D;
@@ -304,16 +305,16 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     /** returns the grip window */
     public Cable cable(Surface a, Surface b, Surface grip) {
-        VerletParticle2D ap = physics.addParticleBind(a, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
-        VerletParticle2D bp = physics.addParticleBind(b, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
+        VerletParticle2D ap = physics.addParticleBind(a, VerletSurface.VerletSurfaceBinding.Center);
+        VerletParticle2D bp = physics.addParticleBind(b, VerletSurface.VerletSurfaceBinding.Center);
 
-        float m = 1; //TODO dynamic based on surface area, density
+        float m = 8; //TODO dynamic based on surface area, density
         ap.mass(m);
         bp.mass(m);
 
         int chainLen = 5; //should be an odd number
         Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain = physics.addParticleChain(ap, bp,
-                chainLen, 10f /* some minimal # */, 0.1f);
+                chainLen, 10f /* some minimal # */, 0.05f);
 
         final List<VerletParticle2D> points = chain.getOne();
         VerletParticle2D first = points.get(0);
@@ -325,7 +326,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //            mid.addBehaviorGlobal(new AttractionBehavior2D<>(mid, 300, -1));
 //        }
 
-        Windo gripWindow = add(grip, (g)->{ return new Windo(g) {
+        Windo gripWindow = add(grip, (g)->{ return new Windo(new MetaFrame(g)) {
                 @Override
                 protected void stopping() {
 
@@ -340,7 +341,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
                     super.stopping();
                 }
             };
-        }).pos(RectFloat2D.XYWH(mid.x, mid.y, 50, 50));
+        }).pos(RectFloat2D.XYWH(mid.x, mid.y, 20, 20));
 
         physics.bind(gripWindow,  mid, false, VerletSurface.VerletSurfaceBinding.Center);
 

@@ -53,6 +53,10 @@ public interface Node<X> extends Nodelike<X> {
         return streamLocal().iterator();
     }
 
+    default void forEachLocal(Consumer c) {
+        iterateLocal().forEachRemaining(c);
+    }
+
     /** iterate nodes only */
     default java.util.Iterator<Node<X>> iterateNodes() {
         return streamNodes().iterator();

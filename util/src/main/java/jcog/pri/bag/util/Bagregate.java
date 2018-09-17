@@ -1,6 +1,6 @@
 package jcog.pri.bag.util;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
@@ -11,6 +11,7 @@ import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -53,7 +54,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 
 //        try {
 
-            synchronized(bag) {
+
                 bag.commit(bag.forget(forgetRate));
 
                 float scale = this.scale.floatValue();
@@ -65,7 +66,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
                             bag.putAsync(new PLink<>(x, pri * scale));
                     }
                 });
-            }
+
 
 
 //        } finally {
@@ -82,17 +83,13 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     }
 
     @Override
-    public Iterator<PriReference<X>> iterator() {
-        synchronized (bag) {
+    public final Iterator<PriReference<X>> iterator() {
             return bag.iterator();
-        }
     }
 
     @Override
-    public void forEach(Consumer<? super PriReference<X>> action) {
-        synchronized (bag) {
+    public final void forEach(Consumer<? super PriReference<X>> action) {
             bag.forEach(action);
-        }
     }
 
     public void clear() {
@@ -102,7 +99,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 
     /** compose */
     public <Y> Iterable<Y> iterable(Function<X, Y> f) {
-        return ()-> Iterators.transform(this.iterator(), (b)->f.apply(b.get()));
+        return Iterables.transform(Iterables.filter(bag, Objects::nonNull) /* HACK */, (b)->f.apply(b.get()));
     }
 
 

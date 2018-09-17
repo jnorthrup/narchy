@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -25,8 +26,8 @@ public class FastCoWList<X> extends FasterList<X> {
 
     private final IntFunction<X[]> arrayBuilder;
 
-    @Nullable
-    public volatile X[] copy;
+    
+    public final AtomicReference<X[]> copy = new AtomicReference(null);
 
 
     public FastCoWList(IntFunction<X[]> arrayBuilder) {
@@ -35,7 +36,7 @@ public class FastCoWList<X> extends FasterList<X> {
 
     public FastCoWList(int capacity, IntFunction<X[]> arrayBuilder) {
         super(0, arrayBuilder.apply(capacity));
-        this.copy = (this.arrayBuilder = arrayBuilder).apply(0);
+        this.copy.set( (this.arrayBuilder = arrayBuilder).apply(0) );
     }
 
     @Override
@@ -43,21 +44,23 @@ public class FastCoWList<X> extends FasterList<X> {
         return arrayBuilder.apply(newCapacity);
     }
 
-    protected void commit() {
-        this.copy = toArrayCopy(copy, arrayBuilder);
+    public void commit() {
+        //this.copy = //toArrayCopy(copy, arrayBuilder);
+        copy.updateAndGet((mayStillBeInUseDontTouch)->fillArray(arrayBuilder.apply(super.size()), false));
     }
 
     @Override
     public Iterator<X> iterator() {
-        return ArrayIterator.get(this.copy);
+        return ArrayIterator.get(array());
     }
 
 
 
     @Override
     public final int size() {
-        X[] x = this.copy;
-        return (this.size = (x != null ? x.length : 0));
+        X[] x = this.array();
+        //return (this.size = (x != null ? x.length : 0));
+        return x.length;
     }
 
     @Override
@@ -103,32 +106,34 @@ public class FastCoWList<X> extends FasterList<X> {
 
     @Override
     public void forEach(Consumer c) {
-        X[] copy = this.copy;
-        for (X x : copy)
+        for (X x : array())
             c.accept(x);
     }
 
     @Override
     public <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
-        X[] copy = this.copy;
-        for (X x : copy)
+        for (X x : array())
             c.accept(x, y);
     }
 
 
     @Override
     public Stream<X> stream() {
-        return ArrayIterator.stream(copy);
+        return ArrayIterator.stream(array());
     }
 
     @Override
     public void reverseForEach(Procedure c) {
-        X[] copy = this.copy;
+        X[] copy = array();
         if (copy != null) {
             for (int i = copy.length-1; i >= 0; i--) {
                 c.accept(copy[i]);
             }
         }
+    }
+
+    public X[] array() {
+        return this.copy.get();
     }
 
     @Override
@@ -142,10 +147,10 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
-    protected boolean addDirect(X o) {
+    public boolean addDirect(X o) {
         return super.add(o);
     }
-    protected boolean removeDirect(Object o) {
+    public boolean removeDirect(Object o) {
         return super.remove(o);
     }
 
@@ -162,7 +167,7 @@ public class FastCoWList<X> extends FasterList<X> {
 
     @Override
     public boolean contains(Object object) {
-        return ArrayUtils.indexOf(copy, object)!=-1;
+        return ArrayUtils.indexOf(array(), object)!=-1;
     }
 
     @Override
@@ -186,13 +191,30 @@ public class FastCoWList<X> extends FasterList<X> {
         throw new TODO();
     }
 
+    @Override
+    public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
+        if (super.removeIf(predicate)) {
+            commit();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeFirstInstance(X x) {
+        if (super.removeFirstInstance(x)) {
+            commit();
+            return true;
+        }
+        return false;
+    }
 
     @Override public final X get(int index) {
-        return copy[index];
+        X[] c = array();
+        return c.length > index ? c[index] : null;
     }
 
     public float[] map(FloatFunction<X> f, float[] target) {
-        X[] c = this.copy;
+        X[] c = this.array();
         if (c == null)
             return ArrayUtils.EMPTY_FLOAT_ARRAY;
         int n = c.length;
@@ -209,27 +231,28 @@ public class FastCoWList<X> extends FasterList<X> {
      * directly set
      */
     public void set(X[] newValues) {
-        if (newValues.length == 0) {
-            clear();
-            return;
-        }
+
 
         synchronized (this) {
-            items = newValues;
-            size = newValues.length;
-            commit();
+            if (newValues.length == 0) {
+                clear();
+            } else {
+                items = newValues;
+                size = newValues.length;
+                commit();
+            }
         }
     }
 
     public boolean whileEach(Predicate<X> o) {
-        for (X x : copy) {
+        for (X x : array()) {
             if (x!=null && !o.test(x))
                 return false;
         }
         return true;
     }
     public boolean whileEachReverse(Predicate<X> o) {
-        @Nullable X[] copy = this.copy;
+        @Nullable X[] copy = this.array();
         for (int i = copy.length - 1; i >= 0; i--) {
             X x = copy[i];
             if (x!=null && !o.test(x))

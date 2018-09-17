@@ -239,7 +239,9 @@ public class VerletPhysics2D {
      */
     public boolean removeSpringElements(VerletSpring2D s) {
         if (removeSpring(s)) {
-            return (removeParticle(s.a) && removeParticle(s.b));
+            removeParticle(s.a);
+            removeParticle(s.b);
+            return true;
         }
         return false;
     }

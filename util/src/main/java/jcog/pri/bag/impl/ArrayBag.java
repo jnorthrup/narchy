@@ -1,6 +1,7 @@
 package jcog.pri.bag.impl;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.list.FasterList;
@@ -478,18 +479,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         float priBefore = existing.priCommit();
         Y result;
         float delta;
-        if (priBefore != priBefore) {
-
-            items.array()[posBefore] = incoming;
-            result = incoming;
-            delta = incoming.priElseZero();
-        } else {
             float oo = merge(existing, incoming);
             delta = existing.priElseZero() - priBefore;
             if (overflow != null)
                 overflow.add(oo);
             result = existing;
-        }
 
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
@@ -503,7 +497,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         return result;
     }
 
-    protected float merge(Y existing, Y incoming) {
+    private float merge(Y existing, Y incoming) {
         return mergeFunction.merge(existing, incoming);
     }
 
@@ -606,14 +600,20 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int s = size();
         if (s > 0) {
-            Object[] x = items.array();
-            for (int i = 0; i < Math.min(x.length, s); i++) {
-                Object a = x[i];
-                if (a != null) {
+            synchronized (items) {
+                s = size();
+                Object[] x = items.array();
+                for (int i = 0; i < s; i++) {
+                    Object a = x[i];
+                    if (a == null)
+                        throw new WTF();
+
                     Y b = (Y) a;
                     float p = pri(b);
                     if (p == p) {
                         action.accept(b);
+                    } else {
+                        //TODO trash.add(key(b));
                     }
                 }
             }

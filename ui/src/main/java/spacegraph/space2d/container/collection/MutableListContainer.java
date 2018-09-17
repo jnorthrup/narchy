@@ -1,9 +1,8 @@
 package spacegraph.space2d.container.collection;
 
 import com.google.common.collect.Sets;
-import jcog.data.list.BufferedCoWList;
+
 import jcog.data.list.FastCoWList;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.AbstractMutableContainer;
@@ -23,27 +22,18 @@ public class MutableListContainer extends AbstractMutableContainer {
     private final FastCoWList<Surface> children;
 
     public MutableListContainer(Surface... children) {
-        this(false, children);
-    }
-
-    protected MutableListContainer(boolean buffered, Surface... children) {
-        this(buffered ? new BufferedCoWList(children.length + 1, NEW_SURFACE_ARRAY)
-                        :
-                        new FastCoWList(children.length + 1, NEW_SURFACE_ARRAY),
-                children
-        );
+        this(new FastCoWList(NEW_SURFACE_ARRAY), children);
     }
 
     private MutableListContainer(FastCoWList<Surface> childrenModel, Surface... children) {
         super();
-
         this.children = childrenModel;
         if (children.length > 0)
             set(children);
     }
 
     public Surface[] children() {
-        return children.copy;
+        return children.array();
     }
 
     @Override
@@ -53,17 +43,17 @@ public class MutableListContainer extends AbstractMutableContainer {
 
 
     protected Surface get(int index) {
-        return children.copy[index];
+        return children.get(index);
     }
 
-    @Nullable
-    public Surface getSafe(int index) {
-        @Nullable Surface[] c = children.copy;
-        if (index >= 0 && index < c.length)
-            return c[index];
-        else
-            return null;
-    }
+//    @Nullable
+//    public Surface getSafe(int index) {
+//        @Nullable Surface[] c = children.copy;
+//        if (index >= 0 && index < c.length)
+//            return c[index];
+//        else
+//            return null;
+//    }
 
     /**
      * returns the existing value that was replaced
@@ -92,39 +82,35 @@ public class MutableListContainer extends AbstractMutableContainer {
     }
 
 
-    public void addAll(Surface... s) {
+    public final void addAll(Surface... s) {
+        add(s);
+    }
+
+    public void add(Surface... s) {
+
         if (s.length == 0) return;
 
-        for (Surface x : s)
-            _add(x);
-
-        if (!(children instanceof BufferedCoWList))
-            layout();
-    }
-
-    public void add(Surface s) {
-        _add(s);
-
-        if (!(children instanceof BufferedCoWList))
-            layout();
-    }
-
-    private void _add(Surface s) {
         synchronized (this) {
-            SurfaceBase p = this.parent;
-            if (p != null) {
-                s.start(this);
+            for (Surface x : s) {
+                if (x != null) {
+
+                    x.start(this);
+                    children.add(x);
+                }
             }
+            //children.commit();
         }
-        children.add(s);
+
+        layout();
+
     }
 
     public boolean removeChild(Surface s) {
-        boolean removed = children.remove(s);
+        boolean removed = children.removeFirstInstance(s);
         if (removed) {
             if (s.stop()) {
-                if (!(children instanceof BufferedCoWList))
-                    layout();
+//                if (!(children instanceof BufferedCoWList))
+                layout();
                 return true;
             }
         }
@@ -158,7 +144,7 @@ public class MutableListContainer extends AbstractMutableContainer {
                     );
                     if (unchanged.isEmpty()) unchanged = null;
 
-                    for (Surface existing : children.copy) {
+                    for (Surface existing : children.array()) {
                         if (unchanged == null || !unchanged.contains(existing))
                             removeChild(existing);
                     }

@@ -8,10 +8,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.block.factory.Functions;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import static jcog.tree.rtree.Space.BoundsMatch.ANY;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -133,7 +130,7 @@ public class HyperIterator<X> {
 
         boolean notNodeFiltering = (nodeFilter==null || plan==null ); //dont filter root node (traversed while plan is null)
 
-        at.iterateLocal().forEachRemaining(itemOrNode -> {
+        at.forEachLocal(itemOrNode -> {
             if (itemOrNode instanceof Node) {
                 Node node = (Node) itemOrNode;
                 HyperRegion nodeBounds = node.bounds();
@@ -231,26 +228,6 @@ public class HyperIterator<X> {
 
     public void setDistanceFunction(DoubleFunction h) {
         this.distanceComparator = Functions.toDoubleComparator((Pair<Object,HyperRegion> b) -> h.applyAsDouble(b.getTwo()));
-    }
-
-    /**
-     * allows one or more iterators to filter duplicate node visits
-     * TODO improve */
-    public static final class NodeFilter<X> {
-
-        private Set<Node<X>> already;
-        private final int capacity;
-
-        public NodeFilter(int capacity){
-            this.capacity = capacity;
-        }
-
-        public boolean tryVisit(Node n) {
-            if (already==null)
-                this.already = Collections.newSetFromMap(new IdentityHashMap<Node<X>, Boolean>(capacity));
-
-            return already.add(n);
-        }
     }
 
 }

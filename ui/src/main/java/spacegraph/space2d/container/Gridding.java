@@ -53,7 +53,7 @@ public class Gridding extends MutableListContainer {
     }
 
     private Gridding(float aspect) {
-        super(false);
+        super();
         this.gridAspect = (aspect);
     }
 

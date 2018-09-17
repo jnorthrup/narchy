@@ -83,25 +83,29 @@ public class TabPane extends Splitting {
     }
 
     void toggle(Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
+        Surface cx;
+        if (onOrOff) {
+            try {
+                cx = creator.get();
+            } catch (Throwable t) {
+                String msg = t.getMessage();
+                if (msg == null)
+                    msg = t.toString();
+                cx = new VectorLabel(msg);
+            }
+            cx = wrapper.apply(cx);
+        } else {
+            cx = null;
+        }
         synchronized(TabPane.this) {
 
             if (onOrOff) {
-                Surface cx;
-                try {
-                    cx = creator.get();
-                } catch (Throwable t) {
-                    String msg = t.getMessage();
-                    if (msg == null)
-                        msg = t.toString();
-                    cx = new VectorLabel(msg);
-                }
-
 
                 if (inside) {
-                    content.add(created[0] = wrapper.apply(cx));
+                    content.add(created[0] = cx);
                     split();
                 } else {
-                    window(created[0] = wrapper.apply(cx), 800, 800);
+                    window(created[0] = cx, 800, 800);
                 }
 
 

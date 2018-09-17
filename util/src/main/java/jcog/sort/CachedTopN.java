@@ -4,6 +4,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.pri.NLink;
 import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -81,6 +82,13 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
     public void removePercentage(float below, boolean ofExistingOrCapacity) {
         ((TopN)list).removePercentage(below,ofExistingOrCapacity);
     }
+
+    @Nullable
+    public X pop() {
+        NLink<X> n = ((TopN<NLink<X>>) list).pop();
+        return n != null ? n.get() : null;
+    }
+
 
 //    public Set<X> removePercentageToSet(float below) {
 //        assert(below >= 0 && below <= 1.0f);

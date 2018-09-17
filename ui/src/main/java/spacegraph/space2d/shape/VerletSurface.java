@@ -52,7 +52,7 @@ public class VerletSurface extends Surface implements Animated {
 
         pos(bounds);
 
-        physics = new VerletPhysics2D(null, 2, 0);
+        physics = new VerletPhysics2D(null, 1, 0);
         physics.setDrag(0.05f);
 
         physics.setIndex(
@@ -168,6 +168,7 @@ public class VerletSurface extends Surface implements Animated {
 
         WeakReference<Surface> wrs = new WeakReference<>(s);
 
+        float speed = 0.5f;
 
         //if (!surfaceOverrides) {
             v.addBehavior((vv) -> {
@@ -176,7 +177,6 @@ public class VerletSurface extends Surface implements Animated {
                 Vec2D pNext = b.targetVerlet(vv, ss);
                 if (pNext != null) {
                     //p.next.set(pNext);
-                    float speed = 0.25f;
                     //System.out.println(vv.id + " " + vv.x + "," + vv.y);
                     vv.addForce(pNext.sub(vv).scaleSelf(speed));
 //                    vv.set(pNext);
@@ -192,6 +192,7 @@ public class VerletSurface extends Surface implements Animated {
         v.prev.set(v);
 
 
+        if (!surfaceOverrides) {
 
         //pre
         v.addConstraint(vv -> {
@@ -199,7 +200,6 @@ public class VerletSurface extends Surface implements Animated {
 //                vv.next.set(b.targetVerlet(vv, ss));
 //                vv.constrainAll(physics.bounds);
 
-            if (!surfaceOverrides) {
                 if (ss == null) {
                     physics.removeParticle(vv);
                     return;
@@ -211,7 +211,7 @@ public class VerletSurface extends Surface implements Animated {
                     ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
                     //ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.5f));
                 }
-            } else {
+//            } else {
 
 //                Vec2D pNext = b.targetVerlet(vv, ss);
 //                if (pNext != null) {
@@ -226,9 +226,8 @@ public class VerletSurface extends Surface implements Animated {
 //                    vv.set(pNext);
 //
 //                }
-            }
-        });
-
+            });
+        }
         return null;
     }
 
