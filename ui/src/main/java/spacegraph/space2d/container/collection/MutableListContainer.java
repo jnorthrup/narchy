@@ -144,12 +144,13 @@ public class MutableListContainer extends AbstractMutableContainer {
                 } else {
 
 
+                    Surface[] cc = children.array();
                     Sets.SetView unchanged = Sets.intersection(
-                            Set.of(children.copy), Set.of(next)
+                            Set.of(cc), Set.of(next)
                     );
                     if (unchanged.isEmpty()) unchanged = null;
 
-                    for (Surface existing : children.array()) {
+                    for (Surface existing : cc) {
                         if (unchanged == null || !unchanged.contains(existing))
                             removeChild(existing);
                     }

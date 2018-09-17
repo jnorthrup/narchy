@@ -98,7 +98,7 @@ public class FZero extends NAgentX {
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.25f);
+                initBipolarRotateDirect(false, 0.85f);
 
         window(new Gridding(
                 //new CameraSensorView(c, this).withControls(),
@@ -319,19 +319,19 @@ public class FZero extends NAgentX {
 
     public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {
 
-        final float[] heading = {0};
-        final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.4f);
+        //final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.4f);
+        final FloatAveraged lp = new FloatAveraged(0.6f);
 
+        float inputThresh = 0.1f;
         float curve = //curve exponent
                 //1;
                 3;
 
         FloatToFloatFunction d = (dHeading) -> {
 
-            heading[0] += Math.pow((dHeading), curve) * rotFactor; //bipolar
+            dHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
 
-            //fz.playerAngle = rotFilter.out(fz.playerAngle, heading[0]);
-            fz.playerAngle = (heading[0]);
+            fz.playerAngle += Math.pow((dHeading), curve) * rotFactor; //bipolar
 
             return dHeading;
         };
@@ -343,7 +343,10 @@ public class FZero extends NAgentX {
                 //)
                 , fair, d);
 
+        A.resolution(0.1f);
+
         return A;
+
 
 
         //actionUnipolar($.the("heading"), d);
@@ -367,7 +370,10 @@ public class FZero extends NAgentX {
         final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
         return actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> 0.5f, (a0) -> {
-            float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
+            float a =
+                //_a[0] = (float) fwdFilter.out(_a[0], a0);
+                a0;
+
             if (a >= 0.5f) {
                 float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);
                 fz.vehicleMetrics[0][6] = thrust;

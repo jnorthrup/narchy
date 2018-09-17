@@ -18,7 +18,7 @@ public class WizardFrame extends Splitting {
         super();
         split(0.9f);
 
-        set(new Gridding(
+        T(new Gridding(
             
             this.backButton = new PushButton("<-", this::pop),
 
@@ -27,16 +27,21 @@ public class WizardFrame extends Splitting {
             
             new PushButton("X", this::close)
 
-        ), next);
+        ));
+        B(next);
 
         backButton.hide();
     }
 
-
     @Override
-    public void replace(Surface existingChild, Surface nextChild) {
+    public Surface put(int index, Surface x) {
+        Surface y = super.put(index, x);
+        if (y!=x && y!=null && x!=null)
+            replaced(x, y);
+        return y;
+    }
 
-        assert(existingChild!=nextChild);
+    protected void replaced(Surface existingChild, Surface nextChild) {
 
         synchronized (this) {
             if (get(1) == existingChild) {
@@ -52,7 +57,7 @@ public class WizardFrame extends Splitting {
     }
 
     protected void become(Surface next) {
-        set(1, next);
+        B(next);
     }
 
     private void pop() {

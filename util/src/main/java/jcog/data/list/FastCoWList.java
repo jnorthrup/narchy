@@ -46,7 +46,7 @@ public class FastCoWList<X> extends FasterList<X> {
 
     public void commit() {
         //this.copy = //toArrayCopy(copy, arrayBuilder);
-        copy.updateAndGet((mayStillBeInUseDontTouch)->fillArray(arrayBuilder.apply(super.size()), false));
+        copy.set(null);
     }
 
     @Override
@@ -133,7 +133,12 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     public X[] array() {
-        return this.copy.get();
+        return copy.updateAndGet((current)->{
+            if (current == null)
+                return fillArray(arrayBuilder.apply(super.size()), false);
+            else
+                return current;
+        });
     }
 
     @Override
@@ -147,10 +152,10 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
-    public boolean addDirect(X o) {
+    private boolean addDirect(X o) {
         return super.add(o);
     }
-    public boolean removeDirect(Object o) {
+    private boolean removeDirect(Object o) {
         return super.remove(o);
     }
 

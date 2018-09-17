@@ -19,55 +19,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AIMATests {
 
-
-    private static void assertBelief(NAR n, boolean expcted, String x, int time) {
-
-        final int metricPeriod = time / 4;
-
-        PairedStatsAccumulator timeVsConf = new PairedStatsAccumulator();
-
-
-        List<Float> evis = new FasterList();
-        for (int i = 0; i < time; i += metricPeriod) {
-            n.run(metricPeriod);
-
-            float symConf = 0;
-
-            Task y = n.belief($.the(x), i);
-            if (y == null)
-                continue;
-
-            symConf = y.conf();
-            assertTrue(y.isPositive() == expcted && y.polarity() > 0.5f);
-
-            evis.add(c2wSafe(symConf, 1));
-            timeVsConf.add(i, symConf);
-        }
-
-
-        assertTrue(!evis.isEmpty());
-
-
-        for (char c : "ABLMPQ".toCharArray()) {
-            Term t = $.the(String.valueOf(c));
-            Task cc = n.belief(t);
-            System.out.println(cc);
-        }
-        System.out.println(timeVsConf.yStats());
-        System.out.println(
-                SparkLine.renderFloats(evis, 8)
-        );
-    }
+    final NAR n = NARS.tmp(6);
 
     @ParameterizedTest
-    @ValueSource(doubles = {0.01, /*0.02,*/ 0.05, 0.1, /*0.2,*/ 0.25, 0.5})
+    @ValueSource(doubles = {0.01, 0.05, 0.1, 0.25, 0.5})
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
 
         n.termVolumeMax.set(9);
         n.freqResolution.set((float) truthRes);
-        n.confMin.set(0.02f);
-        n.confResolution.set(0.02f);
+        n.confMin.set(0.05f);
+        n.confResolution.set(0.1f);
 
         n.believe("(P ==> Q)",
                 "((L && M) ==> P)",
@@ -77,13 +38,12 @@ class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", 5500);
+        assertBelief(n, true, "Q", 500);
 
     }
 
     @Test
     void testWeaponsDomain() throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
 
         n.freqResolution.set(0.2f);
         n.confResolution.set(0.05f);
@@ -131,6 +91,45 @@ class AIMATests {
         Task y = n.belief($.$("Criminal(West)"));
         assertNotNull(y);
 
+    }
+
+    private static void assertBelief(NAR n, boolean expcted, String x, int time) {
+
+        final int metricPeriod = time / 4;
+
+        PairedStatsAccumulator timeVsConf = new PairedStatsAccumulator();
+
+
+        List<Float> evis = new FasterList();
+        for (int i = 0; i < time; i += metricPeriod) {
+            n.run(metricPeriod);
+
+            float symConf = 0;
+
+            Task y = n.belief($.the(x), i);
+            if (y == null)
+                continue;
+
+            symConf = y.conf();
+            assertTrue(y.isPositive() == expcted && y.polarity() > 0.5f);
+
+            evis.add(c2wSafe(symConf, 1));
+            timeVsConf.add(i, symConf);
+        }
+
+
+        assertTrue(!evis.isEmpty());
+
+
+        for (char c : "ABLMPQ".toCharArray()) {
+            Term t = $.the(String.valueOf(c));
+            Task cc = n.belief(t);
+            System.out.println(cc);
+        }
+        System.out.println(timeVsConf.yStats());
+        System.out.println(
+                SparkLine.renderFloats(evis, 8)
+        );
     }
 
 

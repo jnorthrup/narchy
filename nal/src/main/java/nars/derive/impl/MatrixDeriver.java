@@ -31,7 +31,7 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(4, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count

@@ -4,9 +4,9 @@
 //      https://cogsci.indiana.edu/
 
   X, (X <-> Y)                        |- Y, (Belief:Analogy, Goal:Desire)
-    X, (X <-> Y)                         |-  Y, (Goal:DesireWeakPN)
+    X, (X <-> Y)                         |-  --Y, (Goal:DesireWeakPN)
   X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN)
-    X, (--X <-> Y)                       |-  Y, (Goal:DesireWeakNN)
+    X, (--X <-> Y)                       |-  --Y, (Goal:DesireWeakNN)
 
     X, (  X --> Y)                        |- Y, (Goal:DesireWeak)
     X, (--X --> Y)                     |- Y, (Goal:DesireWeakN)

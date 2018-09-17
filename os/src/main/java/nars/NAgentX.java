@@ -298,9 +298,9 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(32);
 
-        n.forgetRate.set(0.9f);
+        n.forgetRate.set(0.8f);
         n.activateConceptRate.set(0.1f);
         n.activateLinkRate.set(0.1f);
 
@@ -308,10 +308,10 @@ abstract public class NAgentX extends NAgent {
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-        n.beliefPriDefault.set(0.25f);
-        n.goalPriDefault.set(0.9f);
-        n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.2f);
+        n.beliefPriDefault.set(0.5f);
+        n.goalPriDefault.set(1f);
+        n.questionPriDefault.set(0.2f);
+        n.questPriDefault.set(0.3f);
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

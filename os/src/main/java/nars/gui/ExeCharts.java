@@ -119,7 +119,7 @@ public class ExeCharts {
         CausableWidget(UniExec.InstrumentedCausable c) {
             this.c = c;
             label =new VectorLabel(c.c.can.id);
-            add(label);
+            set(label);
 
         }
 

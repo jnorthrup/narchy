@@ -98,13 +98,13 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 
         float borderWest, borderEast, borderNorth, borderSouth;
         int l = length;
-        borderWest = autocollapse && !(l > Bordering.W && children.getOpaque(Bordering.W) != null) ? 0 : this.borderWest;
-        borderEast = autocollapse && !(l > Bordering.E && children.getOpaque(Bordering.E) != null) ? 0 : this.borderEast;
-        borderNorth = autocollapse && !(l > Bordering.N && children.getOpaque(Bordering.N) != null) ? 0 : this.borderNorth;
-        borderSouth = autocollapse && !(l > Bordering.S && children.getOpaque(Bordering.S) != null) ? 0 : this.borderSouth;
+        borderWest = autocollapse && !(l > Bordering.W && get(Bordering.W) != null) ? 0 : this.borderWest;
+        borderEast = autocollapse && !(l > Bordering.E && get(Bordering.E) != null) ? 0 : this.borderEast;
+        borderNorth = autocollapse && !(l > Bordering.N && get(Bordering.N) != null) ? 0 : this.borderNorth;
+        borderSouth = autocollapse && !(l > Bordering.S && get(Bordering.S) != null) ? 0 : this.borderSouth;
 
         for (int i = 0, childrenLength = l; i < childrenLength; i++) {
-            S c = children.getOpaque(i);
+            S c = get(i);
 
             if (c == null)
                 continue;
@@ -168,6 +168,8 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 
     }
 
+
+
     /**
      * replace center content
      */
@@ -185,10 +187,8 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         if (direction >= 9)
             throw new ArrayIndexOutOfBoundsException();
 
-        synchronized (this) {
-            children.set(direction, next);
-            return this;
-        }
+        super.put(direction, next);
+        return this;
     }
 
     public Bordering north(S x) {

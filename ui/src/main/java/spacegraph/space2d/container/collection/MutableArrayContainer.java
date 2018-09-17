@@ -7,19 +7,55 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/** TODO support resizing */
 public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer {
-    protected final AtomicReferenceArray<S> children;
+
+    private final AtomicReferenceArray<S> children;
     public final int length;
 
     public MutableArrayContainer(int size) {
         this.children = new AtomicReferenceArray(size);
         this.length = size;
     }
+    public MutableArrayContainer(S... items) {
+        this(items.length);
+        for (int i = 0, itemsLength = items.length; i < itemsLength; i++) {
+            S s = items[i];
+            put(i, s);
+        }
+    }
+
+    public S get(int s) {
+        return children.getOpaque(s);
+    }
+
+    /** returns the removed element */
+    public S put(int index, S s) {
+        S r = children.getAndSet(index, s);
+        if (r != s) {
+            if (r != null) {
+                r.stop();
+            }
+
+            if (s!=null) {
+                assert (s.parent == null);
+
+                synchronized (this) {
+                    if (parent != null) {
+                        s.start(this);
+                    }
+                }
+            }
+        }
+
+
+        return r;
+    }
 
     @Override
     protected void clear() {
         for (int i= 0; i < length; i++)
-            children.set(i, null);
+            put(i, null);
     }
 
 

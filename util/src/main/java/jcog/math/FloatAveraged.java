@@ -31,13 +31,15 @@ public class FloatAveraged implements FloatToFloatFunction {
 
         synchronized (this) {
             if (x != x)
-                x = this.prev; 
+                return this.prev;
 
-            if (x!=x)
-                return Float.NaN;
-
-            float alpha = this.alpha.get();
-            float next = (alpha) * x + (1f - alpha) * prev;
+            float p = prev, next;
+            if (p == p) {
+                float alpha = this.alpha.get();
+                next = (alpha) * x + (1f - alpha) * p;
+            } else {
+                next = x;
+            }
             this.prev = next;
             return lowOrHighPass ? next : x - next;
         }

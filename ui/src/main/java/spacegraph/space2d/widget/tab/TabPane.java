@@ -44,7 +44,8 @@ public class TabPane extends Splitting {
 
         tabs = new Gridding();
 
-        set(tabs, content);
+        T(tabs);
+        B(content);
 
 
     }
@@ -128,7 +129,7 @@ public class TabPane extends Splitting {
     public TabPane setContent(MutableListContainer next) {
         synchronized (this) {
             content = next;
-            set(1, new Clipped(next));
+            B(new Clipped(next));
             next.addAll(content.children());
             return this;
         }

@@ -115,7 +115,10 @@ public class BiPolarAction extends AbstractSensor {
             float yp, yn;
 //            yp = 0.5f + y / 2f;
 //            yn = 1f - yp;
-            if (y >= 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; } //only one side gets feedback
+
+            //only one side gets feedback:
+            float thresh = nar.freqResolution.floatValue();
+            if (Math.abs(y) <= thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {
 //                float zeroThresh = ScalarValue.EPSILON;

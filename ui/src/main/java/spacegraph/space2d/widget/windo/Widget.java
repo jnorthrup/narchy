@@ -8,13 +8,13 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.container.MutableUnitContainer;
 import spacegraph.video.Draw;
 
 /**
  * Base class for GUI widgets, similarly designed to JComponent
  */
-public class Widget extends MutableListContainer {
+public class Widget extends MutableUnitContainer<Surface> {
 
 
     private static final float border = 0.05f;

@@ -127,14 +127,15 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
                 n.activateConceptRate.set(0.1f);
+                n.activateLinkRate.set(0.1f);
 
                 //nar.forgetRate.set(0.5f);
 
 
                 n.beliefPriDefault.set(0.5f);
                 n.goalPriDefault.set(0.5f);
-                n.questionPriDefault.set(0.05f);
-                n.questPriDefault.set(0.05f);
+                n.questionPriDefault.set(0.25f);
+                n.questPriDefault.set(0.25f);
 
 //                n.emotion.want(MetaGoal.Perceive, -0.01f);
 //                n.emotion.want(MetaGoal.Believe, 0.1f);
@@ -188,9 +189,9 @@ public class NARS {
                         ),
                         //beliefs tmp
                         curve(Concept::volume,
-                                1, 32,
-                                16, 24,
-                                32, 8
+                                1, 64,
+                                16, 32,
+                                32, 16
                         ),
                         //goals ete
                         curve(Concept::volume,
@@ -200,9 +201,9 @@ public class NARS {
                         ),
                         //goals tmp
                         curve(Concept::volume,
-                                1, 32,
-                                16, 24,
-                                32, 8
+                                1, 64,
+                                16, 32,
+                                32, 16
                         ),
                         //questions
                         curve(Concept::volume,

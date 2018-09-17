@@ -68,7 +68,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
 
         super.value(t, n);
 
-        if (t.isGoal()) {
+        if (t.isGoal() && !(t instanceof AbstractGoalActionConcept.CuriosityTask)) {
             long now = n.time();
             long dt = t.minTimeTo(now);
             int dur = n.dur();

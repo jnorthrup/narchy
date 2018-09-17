@@ -1,6 +1,7 @@
 package nars.concept.action;
 
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
@@ -60,7 +61,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
-        Predicate<Task> withoutCuriosity = t -> !(t instanceof SeriesBeliefTable.SeriesTask);  /* filter curiosity tasks? */
+        Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask);  /* filter curiosity tasks? */
 
 
         long rad = (now - prev);
@@ -121,8 +122,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        SignalTask curiosity = new SignalTask(term, GOAL, goal, n.time(), pStart, pEnd,
-                n.evidence());
+        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
 
         if (curiosity!=null) {
             curiosity.pri(n.priDefault(GOAL));
@@ -148,6 +148,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
     public void curiosity(float curiRate, float curiConf) {
         this.curiosityRate = curiRate;
         this.curiConf = curiConf;
+    }
+
+    public static class CuriosityTask extends SignalTask {
+        public CuriosityTask(Term term, Truth goal, NAR n, long pStart, long pEnd) {
+            super(term, Op.GOAL, goal, n.time(), pStart, pEnd, n.evidence());
+        }
     }
 
 }
