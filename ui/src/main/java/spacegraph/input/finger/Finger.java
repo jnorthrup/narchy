@@ -83,7 +83,11 @@ public class Finger {
             Surface what;
             if (finger != null && (what = finger.touching()) != null) {
                 if ((clicked != null) && finger.clickedNow(button, what)) {
+
+
+
                     clicked.accept(finger);
+
                     return true;
                 } else if ((armed != null) && finger.pressing(button)) {
                     armed.run();
@@ -134,32 +138,26 @@ public class Finger {
      */
     public void update() {
 
-        for (int b = 0; b < MAX_BUTTONS; b++) {
-            boolean wasPressed = wasPressed(b);
-            boolean pressed = pressing(b);
-            if (!wasPressed && pressed) {
-                pressPos[b].set(pos);
-                pressPosPixel[b].set(posPixel);
-            } //else if (wasPressed && !pressed) {
-                //hitOnDown[b].set(Float.NaN, Float.NaN);
-                //hitOnDownGlobal[b].set(Float.NaN, Float.NaN);
-            //}
-        }
-
 
         Widget t = this.touching.get();
         if (t != null) {
             t.onFinger(this);
         }
 
-        commitButtons();
 
 
     }
 
-    public void commitButtons() {
+    /** commit all buttons */
+    private void commitButtons() {
         prevButtonDown.copyFrom(buttonDown);
     }
+
+    /** commit one button */
+    private void commitButton(int button) {
+        prevButtonDown.set(button, buttonDown.get(button));
+    }
+
 
     public String buttonSummary() {
         return prevButtonDown.toBitString() + " -> " + buttonDown.toBitString();
@@ -173,6 +171,7 @@ public class Finger {
      */
     public void update(short[] nextButtonDown) {
 
+        commitButtons();
 
         for (short b : nextButtonDown) {
 
@@ -183,8 +182,13 @@ public class Finger {
 
             buttonDown.set(b, pressed);
 
+            if (pressed && !wasPressed(b)) {
+                pressPos[b].set(pos);
+                pressPosPixel[b].set(posPixel);
+            }
         }
 
+        //System.out.println(buttonSummary());
     }
 
     public Surface on(Surface root) {
@@ -285,18 +289,22 @@ public class Finger {
     /**
      * additionally tests for no dragging while pressed
      */
-    private boolean clickedNow(int button) {
+    public boolean clickedNow(int button) {
         return releasedNow(button) && !dragging(button);
     }
 
-    public boolean clickedNow(int i, Surface c) {
+    public boolean clickedNow(int button, Surface c) {
 
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
-        if (clickedNow(i)) {
-            v2 where = pressPos[i];
-            return Finger.relative(where, c).inUnit();
+        if (clickedNow(button)) {
+            v2 where = pressPos[button];
+            if (Finger.relative(where, c).inUnit()) {
+                commitButton(button); //absorb the event
+                return true;
+            }
         }
+
         return false;
     }
 

@@ -26,12 +26,15 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     public GraphEdit() {
         super();
+        doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     }
+
     public GraphEdit(float w, float h) {
+
         this(RectFloat2D.X0Y0WH(0,0 , w, h));
     }
     public GraphEdit(RectFloat2D bounds) {
-        super();
+        this();
         pos(bounds);
     }
 
@@ -51,7 +54,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     protected final VerletSurface physics = new VerletSurface();
 
-    private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
+    private final DoubleClicking doubleClicking;
 
     @Override
     protected final void starting() {
@@ -97,6 +100,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //    public boolean whileEachReverse(Predicate<Surface> o) {
 //        return super.whileEachReverse(o);
 //    }
+
 
     @Override
     public void forEach(Consumer<Surface> each) {
@@ -275,7 +279,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //        if (s != null && s != this && !(s instanceof PhyWindow))
 //            return s;
 
-        doubleClicking.update(finger);
+        if (s==null || s == raw)
+            doubleClicking.update(finger);
 
 
 //        if (finger.tryFingering(jointDrag))

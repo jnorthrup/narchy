@@ -34,7 +34,7 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
     }
 
     public Bagregate(Iterable<? extends PriReference<X>> src, int capacity, float scale) {
-        this.bag = new PLinkArrayBag<>(PriMerge.avg /*PriMerge.replace*/, capacity) {
+        this.bag = new PLinkArrayBag<>(PriMerge.plus /*PriMerge.avg */ /*PriMerge.replace*/, capacity) {
             @Override
             public void onRemove(PriReference<X> value) {
                 Bagregate.this.onRemove(value);
@@ -55,7 +55,6 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 //        try {
 
 
-        synchronized (bag) {
             bag.commit();
 
             float scale = this.scale.floatValue();
@@ -63,11 +62,12 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
             src.forEach(x -> {
                 X xx = x.get();
                 if (include(xx)) {
-                    float pri = x.priElseZero();
-                    bag.putAsync(new PLink<>(xx, pri * scale));
+                    float pri = x.pri();
+                    if (pri==pri)
+                        bag.putAsync(new PLink<>(xx, pri * scale));
                 }
             });
-        }
+
 
 
 //        } finally {

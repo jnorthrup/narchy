@@ -19,9 +19,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
             super.set(value);
 
             if (bag!=null) {
-                synchronized (bag.bag) {
-                    bag.bag.setCapacity(value);
-                }
+                bag.bag.setCapacity(value);
             }
 
         }
@@ -29,7 +27,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
 
     public static nars.gui.graph.run.BagregateConceptGraph2D get(NAR n) {
         Bagregate<Concept> b = new Bagregate(() -> n.conceptsActive().iterator(),
-                256, 1f);
+                256, 0.1f);
 
         return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
             private DurService updater;

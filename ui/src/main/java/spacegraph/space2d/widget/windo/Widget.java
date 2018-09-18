@@ -147,7 +147,7 @@ public class Widget extends MutableUnitContainer<Surface> {
 //
 //
 //            }
-            if (finger.releasedNow(2 /*right button*/, this)) {
+            if (finger.clickedNow(2 /*right button*/, this)) {
 
 
                 /** auto-zoom */

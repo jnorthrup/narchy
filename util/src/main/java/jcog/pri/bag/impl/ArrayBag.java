@@ -375,12 +375,12 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         //HACK special case for saving a lot of unnecessary work when merge=Max
         //TODO may also work with average and replace merges
         //TODO this can only work if the bag is sorted
-//        if (this.mergeFunction == PriMerge.max && isFull()) {
-//            if (p < priMin()) {
-//                return null; //fast drop the novel task due to insufficient priority
-//                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
-//            }
-//        }
+        if (this.mergeFunction == PriMerge.max && fastMergeMaxReject() && isFull()) {
+            if (p < priMin()) {
+                return null; //fast drop the novel task due to insufficient priority
+                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
+            }
+        }
 
         X key = key(incoming);
 
@@ -483,6 +483,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             return incoming;
         }
 
+    }
+
+    protected boolean fastMergeMaxReject() {
+        return false;
     }
 
     protected Y getExisting(X key) {
