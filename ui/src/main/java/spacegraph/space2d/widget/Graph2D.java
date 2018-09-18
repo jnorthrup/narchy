@@ -188,9 +188,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
         nodes.forEach(x -> {
-            if (x == null)
-                return;
-
             CellMap.CacheCell<X, NodeVis<X>> xxx = cells.compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
             NodeVis<X> cv = xxx.value;
             if (cv.parent == null) {

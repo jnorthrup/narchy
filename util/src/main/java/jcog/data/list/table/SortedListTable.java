@@ -42,13 +42,13 @@ abstract public class SortedListTable<X, Y> extends ArrayListTable<X, Y> impleme
     }
 
     @Override
-    public int size() {
+    public final int size() {
         return items.size();
     }
 
     @Override
-    protected final void removeItem(Y removed) {
-        items.remove(removed, this);
+    protected final boolean removeItem(Y removed) {
+        return items.remove(removed, this);
     }
 
 

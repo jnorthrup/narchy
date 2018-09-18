@@ -21,7 +21,7 @@ import static nars.time.Tense.ETERNAL;
  */
 class NAL8EternalMixTest extends NALTest {
 
-    public static final LongPredicate WHEN_REALIZED = t -> t > 0;
+    public static final LongPredicate WHEN_REALIZED = t -> t >= 0;
     private final int cycles = 500;
 
     @BeforeEach
@@ -350,7 +350,7 @@ class NAL8EternalMixTest extends NALTest {
     void temporal_goal_detachment_1() {
 
         test
-                .input("hold. :|:")
+                .input("hold. |")
                 .input("( hold &&+5 (at &&+5 open) )!")
                 .mustGoal(cycles, "(at &&+5 open)", 1.0f, 0.5f, 5)
         //.mustNotOutput(cycles, "(at &&+5 open)", GOAL, (t)->t!=5 && t!=ETERNAL);
@@ -516,27 +516,74 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .goal("R")
-                .input("((--,a:b) ==>+0 R). :|:")
+                .input("((--,a:b) =|> R). |")
                 .mustGoal(cycles, "a:b", 0.0f, 0.43f, WHEN_REALIZED);
     }
 
     @Test
-    void testNegatedImplicationP() {
+    void testInductionAntigoalNP() {
 
         test
 
-                .input("R! :|:")
-                .input("((S) ==>+0 --R).")
-                .mustGoal(cycles, "(S)", 0.0f, 0.81f, WHEN_REALIZED);
+                .input("--S! |")
+                .input("(S =|> R).")
+                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
+    }
+    @Test
+    void testInductionAntigoalNN() {
+
+        test
+
+                .input("--S! |")
+                .input("--(S =|> R).")
+                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
+    }
+    @Test
+    void testInductionAntigoalP() {
+
+        test
+
+                .input("S! |")
+                .input("(--S =|> R).")
+                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
+    }
+    @Test
+    void testInductionAntigoalPN() {
+
+        test
+
+                .input("S! |")
+                .input("--(--S =|> R).")
+                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
     }
 
     @Test
-    void testNegatedImplicationTerm2() {
+    void testDeductionAntigoalPos() {
 
         test
-                .input("R! :|:")
-                .input("((--,a:b) ==>+0 R).")
-                .mustGoal(cycles, "a:b", 0.0f, 0.81f, WHEN_REALIZED);
+
+                .input("R! |")
+                .input("(S =|> --R).")
+                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
+    }
+
+    @Test
+    void testDeductionAntigoalNeg() {
+
+        test
+
+                .input("--R! |")
+                .input("(S =|> R).")
+                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
+    }
+
+    @Test
+    void testImplicationTerm2() {
+
+        test
+                .input("R! |")
+                .input("(--S =|> R).")
+                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
 
     }
 

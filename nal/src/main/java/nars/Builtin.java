@@ -479,24 +479,24 @@ public class Builtin {
                 return x;
             }
         });
-        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfEarliestFiltered") {
-            @Override
-            protected Term apply(Term conj, Term event) {
-                Term x = Conj.conjDrop(conj, event, true, true);
-                if (conj.equals(x))
-                    return Bool.Null;
-                return x;
-            }
-        });
-        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatestFiltered") {
-            @Override
-            protected Term apply(Term conj, Term event) {
-                Term x = Conj.conjDrop(conj, event, false, true);
-                if (conj.equals(x))
-                    return Bool.Null;
-                return x;
-            }
-        });
+//        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfEarliestFiltered") {
+//            @Override
+//            protected Term apply(Term conj, Term event) {
+//                Term x = Conj.conjDrop(conj, event, true, true);
+//                if (conj.equals(x))
+//                    return Bool.Null;
+//                return x;
+//            }
+//        });
+//        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatestFiltered") {
+//            @Override
+//            protected Term apply(Term conj, Term event) {
+//                Term x = Conj.conjDrop(conj, event, false, true);
+//                if (conj.equals(x))
+//                    return Bool.Null;
+//                return x;
+//            }
+//        });
 
         nar.on(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
         nar.on(Functor.f1Concept("goalTruth", nar, (c, n) -> $.quote(n.goal(c, n.time()))));

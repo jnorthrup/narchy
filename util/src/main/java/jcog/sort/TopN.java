@@ -30,6 +30,10 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         this.min = NEGATIVE_INFINITY;
     }
 
+    @Override protected boolean exhaustiveFind() {
+        return false;
+    }
+
     public final float rank(X x) {
         return rank.rank(x, min);
     }
@@ -52,7 +56,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     @Override
     public final int add(X element, float elementRank, FloatFunction<X> cmp) {
 
-        if (size == capacity() && elementRank >= minValueIfFull()) {
+        if (size == capacity() && elementRank >= min) {
             return -1;
         }
 
@@ -60,9 +64,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         return super.add(element, elementRank, cmp);
     }
 
-    protected void rejectOnEntry(X e) {
-
-    }
 
     @Override
     public final boolean add(X e) {
@@ -71,7 +72,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
             commit();
             return true;
         }
-        rejectOnEntry(e);
         return false;
     }
 
@@ -81,10 +81,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         return false;
     }
 
-    @Override
-    protected X[] newArray(int s) {
-        throw new UnsupportedOperationException();
-    }
+
 
     @Override
     public final void accept(X e) {
@@ -93,7 +90,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
     }
 
     private void commit() {
-        min = minValueIfFull();
+        min = _minValueIfFull();
     }
 
     public X pop() {
@@ -143,7 +140,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         return f != null ? rank(f) : Float.NaN;
     }
 
-    public float minValueIfFull() {
+    private float _minValueIfFull() {
         return size() == capacity() ? minValue() : NEGATIVE_INFINITY;
     }
 
@@ -192,4 +189,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         }
     }
 
+    public final float minValueIfFull() {
+        return min;
+    }
 }

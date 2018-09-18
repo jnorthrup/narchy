@@ -51,10 +51,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * render loop
      */
     private GameAnimatorControl renderer;
-    /**
-     * update time since last cycle (ms)
-     */
-    protected long dtMS = 0;
+
     private long lastRenderMS = System.currentTimeMillis();
     private volatile int nx, ny, nw, nh;
 
@@ -230,7 +227,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public void windowRepaint(WindowUpdateEvent windowUpdateEvent) {
         //if (!updater.isRunning()) {
-            updater.setFPS(window.hasFocus() ? updateFPS : updateFPS * updateFPSUnfocusedMultiplier);
+            updater.setFPS(updateFPS /* window.hasFocus() ? updateFPS : updateFPS * updateFPSUnfocusedMultiplier */ );
             renderer.loop.setFPS(renderFPS);
         //}
     }
@@ -246,8 +243,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //System.out.println(window + " " +window.isVisible());
         if (window.isVisible()) {
             long cycleTimeNS = updater.cycleTimeNS;
-            this.dtMS = cycleTimeNS / 1_000_000;
-            this.dtS = cycleTimeNS / 1E9f;
+            this.dtS = (float)(cycleTimeNS / 1.0E9);
             onUpdate.emit(this);
             return true;
         } else {
@@ -256,12 +252,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
     }
 
-    /**
-     * dt in milliseconds since last update
-     */
-    public long dtMS() {
-        return dtMS;
-    }
 
     @Override
     public final void display(GLAutoDrawable drawable) {

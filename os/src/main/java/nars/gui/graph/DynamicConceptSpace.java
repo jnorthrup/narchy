@@ -15,7 +15,6 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.gui.ConceptSurface;
-import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
@@ -40,7 +39,7 @@ import static nars.gui.graph.DynamicConceptSpace.ColorNode.Hash;
 public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     public final NAR nar;
-    protected final Bagregate<Activate> concepts;
+    protected final Bagregate<Concept> concepts;
 
     private final Flip<List<ConceptWidget>> next = new Flip(FasterList::new);
     final float bagUpdateRate = 0.25f;
@@ -58,7 +57,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     private Offs onClear;
     private DurService updater;
 
-    public DynamicConceptSpace(NAR nar, @Nullable Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
+    public DynamicConceptSpace(NAR nar, @Nullable Iterable<? extends PriReference<Concept>> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
 
         this.spaceID = DynamicConceptSpace.class + "." + (serial++);
@@ -69,12 +68,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         if (concepts == null)
             concepts = (Iterable) this;
 
-        this.concepts = new Bagregate<>(concepts, maxNodes, bagUpdateRate) {
+        this.concepts = new Bagregate<Concept>(concepts, maxNodes, bagUpdateRate) {
 
             @Override
-            public void onRemove(PriReference<Activate> value) {
+            public void onRemove(PriReference<Concept> value) {
                 
-                ConceptWidget cw = value.get().id.meta(spaceID);
+                ConceptWidget cw = value.get().meta(spaceID);
                 if (cw != null) {
                     cw.deactivate();
                 }
@@ -147,7 +146,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
                 concepts.forEach((clink) -> {
                     
-                    Concept cc = clink.get().id;
+                    Concept cc = clink.get();
                     ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc) {
                         @Override
                         protected void onClicked(PushButton b) {

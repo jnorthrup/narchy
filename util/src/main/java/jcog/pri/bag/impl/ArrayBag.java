@@ -13,17 +13,17 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
+import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
 /**
@@ -53,7 +53,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     protected ArrayBag(@Deprecated int cap, PriMerge mergeFunction, Map<X, Y> map) {
-        super(new SortedPLinks(), map);
+        super(new SortedArray(), map);
         this.mergeFunction = mergeFunction;
         setCapacity(cap);
 
@@ -97,7 +97,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         //TODO use atomic field setter
         if (nextCapacity != this.capacity) {
-            synchronized (this) {
+            synchronized (items) {
                 if (nextCapacity != this.capacity) {
 
                     this.capacity = nextCapacity;
@@ -137,7 +137,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int c = capacity();
 
-        if (s + 1 < c) {
+        if (s + 1 <= c) {
 
             //space cleared for the new item
 
@@ -163,7 +163,9 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         return false;
     }
 
-    /** allows an implementation to remove items which may have been deleted (by anything) since commit checked for them */
+    /**
+     * allows an implementation to remove items which may have been deleted (by anything) since commit checked for them
+     */
     protected boolean cleanIfFull() {
         return false;
     }
@@ -189,12 +191,12 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         int mustSort = -1;
         int s = size();
         for (int i = 0; i < s; ) {
-            Y x = (Y) l[i];
-            assert x != null;
-            float p = commit ? priUpdate(x) : pri(x);
+            Y y = (Y) l[i];
+            assert y != null;
+            float p = commit ? priUpdate(y) : pri(y);
             if (update != null && p == p) {
-                update.accept(x);
-                p = pri(x);
+                update.accept(y);
+                p = pri(y);
             }
             if (p == p) {
 //                min = Math.min(min, p);
@@ -206,7 +208,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 above = p;
                 i++;
             } else {
-                trash.add(x);
+                trash.add(y);
                 items2.removeFast(i);
                 s--;
                 //dont increment i
@@ -222,7 +224,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             trash.add(this.items.removeLast());
             s--;
         }
-
 
 
         if (mustSort != -1)
@@ -260,13 +261,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     Y y = (Y) x;
                     float yp = priUpdate(y);
                     if (yp != yp) {
-                        remove(key(y)); //deleted, remove
+                        remove(y, i); //deleted, remove
                     } else {
 
                         SampleReaction next = each.apply(y);
 
                         if (next.remove)
-                            remove(key(y));
+                            remove(y, i);
 
                         if (next.stop)
                             return;
@@ -338,6 +339,25 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         return removed;
     }
 
+    @Nullable
+    private void remove(Y y, int suspectedPosition) {
+        boolean removed;
+        synchronized (items) {
+            if (items.get(suspectedPosition) == y) {
+                items.remove(suspectedPosition);
+                mapRemove(y);
+                removed = true;
+            } else {
+                removed = false;
+            }
+        }
+        if (removed) {
+            removed(y); //outside of synch, call removed
+        } else {
+            remove(key(y)); //wasnt found with provided index, use standard method by key
+        }
+    }
+
     @Override
     public Y put(final Y incoming, final NumberX overflow) {
 
@@ -354,12 +374,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         //HACK special case for saving a lot of unnecessary work when merge=Max
         //TODO may also work with average and replace merges
-        if (this.mergeFunction == PriMerge.max && isFull()) {
-            if (p < priMin()) {
-                return null; //fast drop the novel task due to insufficient priority
-                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
-            }
-        }
+        //TODO this can only work if the bag is sorted
+//        if (this.mergeFunction == PriMerge.max && isFull()) {
+//            if (p < priMin()) {
+//                return null; //fast drop the novel task due to insufficient priority
+//                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
+//            }
+//        }
 
         X key = key(incoming);
 
@@ -392,8 +413,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
             } else {
                 int i = items.add(incoming, -p, this);
-
                 assert i >= 0;
+
                 inserted = true;
                 trash = null;
             }
@@ -438,6 +459,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 trash.forEach(this::mapRemove);
             else
                 trash = null;
+
+            //assert(map.size()==items.size());
         }
 
 
@@ -474,6 +497,16 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int posBefore = items.indexOf(existing, this);
         if (posBefore == -1) {
+//            //try harder: compare by keys, even if the value refuse to respond true to equals()
+//            X ki = key(incoming);
+//            int s = size();
+//            for (int i = 0; i < s; i++) {
+//                if (ki.equals(key(items.get(i)))) {
+//                    posBefore = i;
+//                    break;
+//                }
+//            }
+//            if (posBefore == -1)
             throw new RuntimeException("Bag Map and List became unsynchronized: " + existing + " not found");
         }
 
@@ -483,13 +516,14 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         float oo = merge(existing, incoming);
         float priAfter = existing.pri();
-        if (priAfter!=priAfter) {
+        if (priAfter != priAfter) {
             throw new WTF("incoming deleted existing"); //just for detection but maybe helpful in some merge fucntions
         }
 
         delta = existing.priElseZero() - priBefore;
         if (overflow != null)
             overflow.add(oo);
+
         result = existing;
 
 
@@ -509,7 +543,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     private Y mapRemove(Y x) {
-        return map.remove(key(x));
+        Y removed = map.remove(key(x));
+        if (removed == null)
+            throw new WTF();
+        return removed;
     }
 
     @Override
@@ -558,7 +595,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
     public final void clear(int n, Consumer<? super Y> each) {
 
-        assert(n!=0);
+        assert (n != 0);
 
         Collection<Y> popped = new FasterList<>(n > 0 ? Math.min(n, size()) : size());
 
@@ -614,24 +651,32 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
 
         int s = size();
-        if (s > 0) {
-            //synchronized (items) {
-                s = size();
-                Object[] x = items.array();
-                for (int i = 0; i < s; i++) {
-                    Object a = x[i];
-                    if (a == null)
-                        continue; //throw new WTF();
+        if (s <= 0)
+            return;
 
-                    Y b = (Y) a;
-                    float p = pri(b);
-                    if (p == p) {
-                        action.accept(b);
-                    } else {
-                        //TODO trash.add(key(b));
-                    }
-                }
-            //}
+        //synchronized (items) {
+        s = size();
+        Object[] yy = items.array();
+        List<ObjectIntPair<Y>> removals = null;
+        for (int i = 0; i < s; i++) {
+            Object y0 = yy[i];
+            if (y0 == null)
+                continue; //throw new WTF();
+
+            Y y = (Y) y0;
+            float p = pri(y);
+            if (p == p) {
+                action.accept(y);
+            } else {
+                if (removals==null)
+                    removals = new LinkedList();
+                removals.add(pair(y, i));
+            }
+        }
+        if (removals!=null) {
+            for (ObjectIntPair<Y> r : removals) {
+                remove(r.getOne(), r.getTwo());
+            }
         }
 
 
@@ -646,21 +691,31 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public float priMax() {
         Y x = items.first();
-        return x != null ? priElse(x,-1) : 0;
+        return x != null ? priElse(x, -1) : 0;
     }
 
     @Override
     public float priMin() {
         Y x = items.last();
-        return x != null ? priElse(x,-1) : 0;
+        return x != null ? priElse(x, -1) : 0;
     }
 
-static final class SortedPLinks extends SortedArray {
-    @Override
-    protected Object[] newArray(int s) {
-        return new Object[s == 0 ? 2 : s + Math.max(1, s / 2)];
-    }
-}
+//    private static final class SortedPLinks extends SortedArray {
+////        @Override
+////        protected Object[] newArray(int s) {
+////            return new Object[s == 0 ? 2 : s + Math.max(1, s / 2)];
+////        }
+//
+////        @Override
+////        protected int grow(int oldSize) {
+////            return super.grow(oldSize);
+////        }
+//
+//        @Override
+//        protected boolean grows() {
+//            return false;
+//        }
+//    }
 
 
 }

@@ -38,7 +38,7 @@ class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", 500);
+        assertBelief(n, true, "Q", 1500);
 
     }
 

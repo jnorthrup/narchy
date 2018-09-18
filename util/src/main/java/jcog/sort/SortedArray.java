@@ -53,7 +53,7 @@ import static jcog.Util.ITEM;
  * <p>
  * TODO extend FasterList as a base
  */
-public abstract class SortedArray<X> extends AbstractList<X> {
+public class SortedArray<X> extends AbstractList<X> {
 
     public static final int BINARY_SEARCH_THRESHOLD = 8;
     private static final float GROWTH_RATE = 1.5f;
@@ -68,7 +68,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     public SortedArray() {
     }
 
-    private static int grow(int oldSize) {
+    protected int grow(int oldSize) {
         return 1 + (int) Math.ceil(oldSize * GROWTH_RATE);
 
     }
@@ -333,14 +333,20 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     @Override
     public void clear() {
-        Arrays.fill(items, 0, size, null);
-        this.size = 0;
+        Arrays.fill(items, 0, SIZE.getAndSet(this, 0), null);
     }
 
 
     public final int add(final X element, FloatFunction<X> cmp) {
         float elementRank = cmp.floatValueOf(element);
-        return (elementRank == elementRank) ? add(element, cmp, elementRank) : -1;
+        int i = (elementRank == elementRank) ? add(element, cmp, elementRank) : -1;
+        if (i < 0)
+            rejectOnEntry(element);
+        return i;
+    }
+
+    protected void rejectOnEntry(X e) {
+
     }
 
     private int add(X element, FloatFunction<X> cmp, float elementRank) {
@@ -357,7 +363,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     private int addBinary(X element, float elementRank, FloatFunction<X> cmp, int size) {
 
-        final int index = this.findInsertionIndex(elementRank, 0, size - 1, new int[1], cmp);
+        final int index = this.findInsertionIndex(elementRank, 0, size, new int[1], cmp);
 
         return insert(element, index, elementRank, cmp, size);
     }
@@ -410,9 +416,11 @@ public abstract class SortedArray<X> extends AbstractList<X> {
     }
 
     protected Object[] resize(int newLen) {
-        X[] newList = newArray(newLen);
-        System.arraycopy(items, 0, newList, 0, size);
-        return this.items = newList;
+        assert(newLen >= size);
+        return this.items = copyOfArray(items, newLen);
+//        X[] newList = newArray(newLen);
+//        System.arraycopy(items, 0, newList, 0, size);
+//        return this.items = newList;
     }
 
     private int addInternal(int index, X e) {
@@ -421,7 +429,8 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
         int s = this.size;
         if (index > -1 && index < s) {
-            this.addAtIndex(index, e);
+            if (!this.addAtIndex(index, e))
+                return -1;
             return index;
         } else if (index == s) {
             return this.addEnd(e);
@@ -431,42 +440,38 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     }
 
-    private void addAtIndex(int index, X element) {
+    private boolean addAtIndex(int index, X element) {
         int oldSize = this.size;
         X[] list = this.items;
         if (list.length == oldSize) {
-            if (grows()) {
-
-                SIZE.getAndIncrement(this);
-                X[] newItems = newArray(grow(oldSize));
-                if (index > 0) {
-                    System.arraycopy(list, 0, newItems, 0, index);
-                }
-                System.arraycopy(list, index, newItems, index + 1, oldSize - index);
-                this.items = list = newItems;
-            } else {
+            if (!grows()) {
                 rejectExisting(list[index]);
             }
 
-        } else {
-            SIZE.getAndIncrement(this);
-            System.arraycopy(list, index, list, index + 1, oldSize - index);
+            int newCapacity = grow(oldSize);  assert(newCapacity > list.length);
+            this.items = list = copyOfArray(list, newCapacity);
         }
+
+        SIZE.getAndIncrement(this);
+        System.arraycopy(list, index, list, index + 1, oldSize - index);
         list[index] = element;
+        return true;
     }
 
 
     /**
      * called when the lowest value has been kicked out of the list by a higher ranking insertion
      */
-    private void rejectExisting(X e) {
+    protected void rejectExisting(X e) {
 
     }
 
     /**
      * generally, uses grow(oldSize) (not oldSize directly!) to get the final constructed array length
      */
-    abstract protected X[] newArray(int s);
+    protected X[] copyOfArray(Object[] list, int s) {
+        return Arrays.copyOf(items, s);
+    }
 
     @Nullable
     public X removeFirst() {
@@ -512,7 +517,7 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         }
 
         if (reinsert) {
-            int next = this.findInsertionIndex(cur, 0, s - 1, new int[1], cmp);
+            int next = this.findInsertionIndex(cur, 0, s, new int[1], cmp);
             if (next == index - 1) {
 
                 swap(l, index, index - 1);
@@ -562,10 +567,18 @@ public abstract class SortedArray<X> extends AbstractList<X> {
             }
 
 
+        } else {
+            if (!exhaustiveFind())
+                return -1;
         }
 
         return indexOfInternal(element);
 
+    }
+
+    /** needs to be true if the rank of items is known to be stable.  then binary indexOf lookup does not need to perform an exhaustive search if not found by rank */
+    protected boolean exhaustiveFind() {
+        return true;
     }
 
 
@@ -722,12 +735,12 @@ public abstract class SortedArray<X> extends AbstractList<X> {
 
     public Stream<X> stream() {
         //return ArrayIterator.stream(items, size());
-        return IntStream.range(0, size()).mapToObj(i -> (X) ITEM.getOpaque(items, i));
+        int s = size();
+        return s > 0 ? IntStream.range(0, s).mapToObj(i -> (X) ITEM.getOpaque(items, i)) : Stream.empty();
     }
 
     @Override
     public Iterator<X> iterator() {
-        //return ArrayIterator.get(items, size());
         return new ArrayIterator.AtomicArrayIterator(items, size());
     }
 

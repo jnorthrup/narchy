@@ -26,11 +26,11 @@ public interface TaskSeries<T extends Task> {
         if (size == 0)
             return null;
 
-        int MAX_TASKS_TRUTHPOLATED = Answer.TASK_LIMIT_DEFAULT;
+        int limit = Answer.TASK_LIMIT_DEFAULT;
 
-        DynStampTruth d = new DynStampTruth(Math.min(size, MAX_TASKS_TRUTHPOLATED));
+        DynStampTruth d = new DynStampTruth(Math.min(size, limit));
 
-        TopN<Task> inner = new TopN<>(new Task[Math.min(size(), MAX_TASKS_TRUTHPOLATED)],
+        TopN<Task> inner = new TopN<>(new Task[Math.min(size(), limit)],
                 (t, min) -> -t.minTimeTo(start, end) //assuming they are all the same evidence
                 //TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
         );

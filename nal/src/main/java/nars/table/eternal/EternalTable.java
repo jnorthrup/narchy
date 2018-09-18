@@ -1,7 +1,6 @@
 package nars.table.eternal;
 
 import jcog.Util;
-import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.pri.Priority;
 import jcog.sort.SortedArray;
@@ -54,32 +53,26 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
     }
 
-    public Task select(@Nullable Predicate<? super Task> selector) {
-        if (selector == null)
-            return first();
 
-        Task[] a = toArray();
-        for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
-            Task x = a[i];
-            if (x == null)
-                break;
-            if (selector.test(x))
-                return x;
-        }
-        return null;
-    }
 
     @Override
     public Stream<? extends Task> streamTasks() {
 
 
-        Object[] list = this.items;
-        int size = Math.min(list.length, this.size);
-        if (size == 0)
-            return Stream.empty();
-        else {
-            return ArrayIterator.streamNonNull((Task[]) list, size);
-        }
+//        Object[] list = this.items;
+//        int size = Math.min(list.length, this.size);
+//        if (size == 0)
+//            return Stream.empty();
+//        else {
+//            return ArrayIterator.streamNonNull((Task[]) list, size);
+//        }
+        return super.stream();
+    }
+
+    @Override protected final Task[] copyOfArray(Object[] x, int s) {
+        Task[] y = new Task[s];
+        System.arraycopy(x, 0, y, 0, Math.min(y.length, x.length));
+        return y;
     }
 
     @Override
@@ -87,10 +80,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         forEach(t);
     }
 
-    @Override
-    protected Task[] newArray(int s) {
-        return new Task[s];
-    }
 
     public void setCapacity(int c) {
         assert( c>= 0);
@@ -100,21 +89,23 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             List<Task> trash = null;
             synchronized (this) {
+                if (wasCapacity != c) {
 
-                wasCapacity = capacity();
+                    wasCapacity = capacity();
 
-                int s = size;
-                if (s > 0 && (s > c)) {
+                    int s = size;
+                    if (s > 0 && (s > c)) {
 
 
-                    trash = new FasterList(s - c);
-                    while (c < s--) {
-                        trash.add(removeLast());
+                        trash = new FasterList(s - c);
+                        while (c < s--) {
+                            trash.add(removeLast());
+                        }
                     }
-                }
 
-                if (wasCapacity != c)
-                    resize(c);
+                    if (wasCapacity != c)
+                        resize(c);
+                }
             }
 
 
@@ -137,7 +128,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             return Task.EmptyArray;
         else {
             Task[] list = this.items;
-            return Arrays.copyOf(list, Math.min(s, list.length), Task[].class);
+            return Arrays.copyOf(list, Math.min(s, list.length));
 
         }
 
@@ -199,17 +190,28 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             return false;
 
         synchronized (this) {
-            x.delete();
 
             int index = indexOf(x, this);
-            if (index == -1)
+            if (index != -1) {
+                Task removed = remove(index);
+                assert(removed!=null);
+                //assert(removed.equals(x));
+                x.delete();
+                return true;
+            } else {
                 return false;
+            }
 
-            int findAgainToBeSure = indexOf(x, this);
-            return (findAgainToBeSure != -1) && remove(findAgainToBeSure) != null;
+//            int findAgainToBeSure = indexOf(x, this);
+//            return (findAgainToBeSure != -1) && remove(findAgainToBeSure) != null;
         }
 
 
+    }
+
+    @Override
+    protected boolean exhaustiveFind() {
+        return false;
     }
 
     @Override

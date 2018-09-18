@@ -33,15 +33,8 @@ public class WizardFrame extends Splitting {
         backButton.hide();
     }
 
-    @Override
-    public Surface put(int index, Surface x) {
-        Surface y = super.put(index, x);
-        if (y!=x && y!=null && x!=null)
-            replaced(x, y);
-        return y;
-    }
 
-    protected void replaced(Surface existingChild, Surface nextChild) {
+    public void replace(Surface existingChild, Surface nextChild) {
 
         synchronized (this) {
             if (get(1) == existingChild) {
@@ -49,8 +42,6 @@ public class WizardFrame extends Splitting {
                     backButton.show();
                 stack.add(existingChild);
                 become(nextChild);
-            } else {
-                throw new UnsupportedOperationException();
             }
 
         }

@@ -447,10 +447,7 @@ public class Impiler {
             return false;
         }
 
-        @Override
-        protected ImplEdge[] newArray(int s) {
-            return new ImplEdge[s];
-        }
+
     }
 
     static class ImplEdge extends HashCachedPair<Term, Term> {

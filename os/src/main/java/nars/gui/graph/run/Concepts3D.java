@@ -1,14 +1,15 @@
 package nars.gui.graph.run;
 
+import jcog.pri.PriReference;
 import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.concept.Concept;
 import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
 import nars.gui.NARui;
 import nars.gui.graph.DynamicConceptSpace;
-import nars.link.Activate;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.console.ConsoleGUI;
@@ -24,12 +25,12 @@ public class Concepts3D extends DynamicConceptSpace {
 //    private final TextEdit inputbox;
 
     private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
-        this(nar, () -> nar.attn.active().iterator(),
+        this(nar, nar.attn.active,
                 visibleNodes, maxEdgesPerNodeMax);
 
     }
 
-    private Concepts3D(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
+    private Concepts3D(NAR nar, Iterable<? extends PriReference<Concept>> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
         SpaceGraphPhys3D sg = show(1400, 1000, false);
@@ -41,7 +42,7 @@ public class Concepts3D extends DynamicConceptSpace {
         )).posWindow(0.5f, 0.1f, 1f, 0.2f));
 
 
-        Bagregate<Activate> cpts = this.concepts;
+        Bagregate<Concept> cpts = this.concepts;
         /*inputbox = */
         //nar.reset();
         //                        try {

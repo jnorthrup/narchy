@@ -103,7 +103,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
         onUpdate((dt) -> {
-            update(dtMS);
+            update(Math.round(dtS*1000.0));
             return true;
         });
     }

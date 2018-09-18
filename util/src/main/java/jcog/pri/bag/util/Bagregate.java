@@ -5,7 +5,6 @@ import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
-import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
@@ -14,6 +13,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -21,23 +21,23 @@ import java.util.stream.Stream;
  * resulting in containing effectively the integrated / moving average values of the input bag
  * TODO make a PLink version of ArrayBag since quality is not used here
  */
-public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X>> {
+public class Bagregate<X> implements Iterable<PriReference<X>> {
 
-    public final Bag<X, PriReference<X>> bag;
-    private final Iterable<X> src;
+    public final Bag<?, PriReference<X>> bag;
+    private final Iterable<? extends PriReference<X>> src;
     private final NumberX scale;
 //    private final AtomicBoolean busy = new AtomicBoolean();
 
 
-    public Bagregate(Stream<X> src, int capacity, float scale) {
+    public Bagregate(Stream<PriReference<X>> src, int capacity, float scale) {
         this(src::iterator, capacity, scale);
     }
 
-    public Bagregate(Iterable<X> src, int capacity, float scale) {
-        this.bag = new PLinkArrayBag(PriMerge.avg /*PriMerge.replace*/, capacity) {
+    public Bagregate(Iterable<? extends PriReference<X>> src, int capacity, float scale) {
+        this.bag = new PLinkArrayBag<>(PriMerge.avg /*PriMerge.replace*/, capacity) {
             @Override
-            public void onRemove(Object value) {
-                Bagregate.this.onRemove((PriReference<X>) value);
+            public void onRemove(PriReference<X> value) {
+                Bagregate.this.onRemove(value);
             }
         };
         this.src = src;
@@ -55,17 +55,19 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 //        try {
 
 
-                bag.commit();
+        synchronized (bag) {
+            bag.commit();
 
-                float scale = this.scale.floatValue();
+            float scale = this.scale.floatValue();
 
-                src.forEach(x -> {
-                    if (include(x)) {
-                        float pri = x.priElseZero();
-                        bag.putAsync(new PLink<>(x, pri * scale));
-                    }
-                });
-
+            src.forEach(x -> {
+                X xx = x.get();
+                if (include(xx)) {
+                    float pri = x.priElseZero();
+                    bag.putAsync(new PLink<>(xx, pri * scale));
+                }
+            });
+        }
 
 
 //        } finally {
@@ -95,6 +97,11 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
         bag.clear();
     }
 
+
+    /** compose */
+    public Iterable<X> iterable() {
+        return Iterables.transform(Iterables.filter(bag, Objects::nonNull) /* HACK */, Supplier::get);
+    }
 
     /** compose */
     public <Y> Iterable<Y> iterable(Function<X, Y> f) {

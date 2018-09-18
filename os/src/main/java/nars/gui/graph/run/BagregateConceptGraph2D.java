@@ -3,14 +3,14 @@ package nars.gui.graph.run;
 import jcog.math.IntRange;
 import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
+import nars.concept.Concept;
 import nars.control.DurService;
-import nars.link.Activate;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
 public class BagregateConceptGraph2D extends ConceptGraph2D {
 
-    private final Bagregate<Activate> bag;
+    private final Bagregate<Concept> bag;
 
     public final IntRange maxNodes = new IntRange(256, 1, 512) {
         @Override
@@ -28,7 +28,8 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     };
 
     public static nars.gui.graph.run.BagregateConceptGraph2D get(NAR n) {
-        Bagregate<Activate> b = new Bagregate(() -> n.conceptsActive().iterator(), 256, 1f);
+        Bagregate<Concept> b = new Bagregate(() -> n.conceptsActive().iterator(),
+                256, 1f);
 
         return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
             private DurService updater;
@@ -51,8 +52,8 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
         };
     }
 
-    private BagregateConceptGraph2D(Bagregate<Activate> bag, NAR n) {
-        super(bag.iterable(activate -> activate.id), n);
+    private BagregateConceptGraph2D(Bagregate<Concept> bag, NAR n) {
+        super(bag.iterable(), n);
         this.bag = bag;
     }
 

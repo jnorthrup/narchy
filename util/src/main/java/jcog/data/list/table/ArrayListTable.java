@@ -1,22 +1,27 @@
 package jcog.data.list.table;
 
-import jcog.data.map.CollectorMap;
+import jcog.WTF;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
  * Items are available by an integer index
  */
-abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements Table<K, V> {
+abstract public class ArrayListTable<K, V> implements Table<K, V> {
 
 
+    public final Map<K, V> map;
 
     protected volatile int capacity;
 
     public ArrayListTable(Map<K, V> map) {
-        super(map);
+        this.map = map;
     }
 
     abstract public V get(int i);
@@ -34,9 +39,8 @@ abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements
     abstract public Iterator<V> iterator();
 
 
-    @Override
     public void clear() {
-        super.clear();
+        map.clear();
         listClear();
     }
 
@@ -80,4 +84,42 @@ abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements
     }
 
 
+    abstract public K key(V v);
+
+    /**
+     * implementation for removing the value to another collecton (called internally)
+     */
+    protected abstract boolean removeItem(V e);
+
+    public final void forEach(BiConsumer<K, V> each) {
+        map.forEach(each);
+    }
+
+    public V remove(/*@NotNull*/ K x) {
+        V removed = map.remove(x);
+        if (removed != null) {
+            boolean removedFromList = removeItem(removed);
+            if (!removedFromList)
+                throw new WTF();
+        }
+        return removed;
+    }
+
+    public final V get(Object key) {
+        return map.get(key);
+    }
+
+    public boolean containsKey(K name) {
+        return map.containsKey(name);
+    }
+
+    @NotNull
+    public Set<K> keySet() {
+        return map.keySet();
+    }
+
+    @NotNull
+    public Collection<V> values() {
+        return map.values();
+    }
 }

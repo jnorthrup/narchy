@@ -13,10 +13,14 @@
     A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Deduction, Goal:Induction, Time:TaskPlusBeliefDT)
      B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
 
-
     A, (A ==> C), --is(A,"#"),--is(C,"#") |- --C, (Belief:DeductionPN, Goal:InductionPN, Time:TaskPlusBeliefDT)
      B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B,strict), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
 
+        //antigoal:
+        B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B,strict), (Goal:InductionN, Time:TaskPlusBeliefDT)
+        B, (A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Goal:InductionNN, Time:TaskPlusBeliefDT)
+        B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B,strict), (Goal:Induction, Time:TaskPlusBeliefDT)
+        B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Goal:InductionPN, Time:TaskPlusBeliefDT)
         //B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
           //B, (A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
           //B, (A ==> C), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskPlusBeliefDT)
@@ -32,6 +36,10 @@
 
     B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
     B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
+
+        //antigoal:
+        B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B), (Goal:DeductionN, Time:TaskMinusBeliefDT)
+        B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --subIfUnifiesAny(C,A,B), (Goal:DeductionPN, Time:TaskMinusBeliefDT)
 
         //B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((C ==> A),A,B,strict), (Punctuation:Question, Time:TaskMinusBeliefDT)
           //B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskMinusBeliefDT)
@@ -404,11 +412,10 @@
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
 
-    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction)
-     //C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Desire)
-            //conjDropIfEarliestFiltered
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN)
-     //C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:DesirePN)
+    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction,Goal:Desire)
+
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DesirePN)
+
         //conjDropIfEarliestFiltered
 
 
@@ -435,10 +442,10 @@
         Y, (&&,--X,A..+), task("@")     |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Quest)
 
 //Anonymous Deduction and Abduction
-    (#1 ==> X), X         |- X, (Belief:StructuralReduction)
-    ((--,#1) ==> X), X    |- X, (Belief:StructuralReduction)
-    (X ==> #1), X         |- X,   (Belief:StructuralAbduction)
-    ((--,X) ==> #1), X    |- --X, (Belief:StructuralAbduction)
+    (V ==> X), X, is(V,"#")         |- X, (Belief:StructuralReduction)
+    ((--,V) ==> X), X, is(V,"#")    |- X, (Belief:StructuralReduction)
+    (X ==> V), X, is(V,"#")         |- X,   (Belief:StructuralAbduction)
+    ((--,X) ==> V), X, is(V,"#")    |- --X, (Belief:StructuralAbduction)
 
 
 

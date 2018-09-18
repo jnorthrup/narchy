@@ -214,7 +214,7 @@ class TermLinkTest {
     @Test
     void testImplicateInhSet() {
         testTemplates("(($1-->[melted])=|>($1-->[pliable]))",
-                "[($1-->[pliable]), ($1-->[melted]), [pliable], [melted], $1]");
+                "[($1-->[melted]), ($1-->[pliable]), [melted], [pliable], $1]");
     }
     @Test
     void testImageExt() {

@@ -62,6 +62,8 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
         return true;
     }
 
+
+
     public void forEachItem(Consumer<? super X> target) {
         forEach(x -> target.accept(x.id));
     }
