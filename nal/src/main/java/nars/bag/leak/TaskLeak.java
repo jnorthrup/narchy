@@ -104,7 +104,11 @@ public abstract class TaskLeak extends Causable {
             });
         }
 
+//        if (bag.isEmpty())
+//            sleepRemainderOfCycle();
     }
+
+
 
     public final void accept(Task t) {
         if (filter(t)) {

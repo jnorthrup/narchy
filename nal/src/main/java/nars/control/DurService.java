@@ -108,45 +108,25 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     @Override
     public final void accept(NAR nar) {
 
-
-        //System.out.println(this + " " + lastStarted + ".." + lastFinished);
-
         if (!busy.compareAndSet(false, true))
             return;
 
         try {
 
-            long atStart = nar.time();
-
             long lastStarted = this.lastStarted;
+
+            long atStart = nar.time();
 
             this.lastStarted = atStart;
 
             long delta = atStart - lastStarted;
 
-            //assert(delta >= durCycles): delta + " delta, " + durCycles + " durCycles";
-            //System.out.println(this + "\t" + delta + " delta, " + durCycles + " durCycles");
-
             {
                 run(nar, delta);
             }
 
-
-            //long lastFinished = this.lastFinished;
-            //this.lastFinished = atEnd;
-
-            if (!isOff()) {
-                long atEnd = nar.time();
-
-                long next = Math.max(
-                        atEnd + 1 /* next cycle */,
-                        atStart + durCycles());
-
-                //System.out.println(this + "\tnext=" + next);
-
-                nar.runAt(next, this);
-
-            }
+            if (!isOff())
+                scheduleNext( atStart );
 
         } catch (Throwable e) {
 
@@ -156,6 +136,20 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
             busy.set(false);
         }
+    }
+
+    private void scheduleNext(long atStart) {
+
+            long atEnd = nar.time();
+
+            long next = Math.max(
+                    atEnd + 1 /* next cycle */,
+                    atStart + durCycles());
+
+            //System.out.println(this + "\tnext=" + next);
+
+            nar.runAt(next, this);
+
     }
 
     public long durCycles() {

@@ -301,15 +301,15 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(32);
 
         n.forgetRate.set(0.8f);
-        n.activateConceptRate.set(0.1f);
-        n.activateLinkRate.set(0.1f);
+        n.activateConceptRate.set(0.01f);
+        n.activateLinkRate.set(0.01f);
 
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
         n.beliefPriDefault.set(0.5f);
-        n.goalPriDefault.set(1f);
+        n.goalPriDefault.set(0.75f);
         n.questionPriDefault.set(0.2f);
         n.questPriDefault.set(0.3f);
 

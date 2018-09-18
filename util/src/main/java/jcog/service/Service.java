@@ -15,8 +15,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
     }
 
     public boolean isOff() {
-        Services.ServiceState s = getOpaque();
-        return s == Services.ServiceState.Off;
+        return getOpaque() == Services.ServiceState.Off;
     }
 
     protected Service() {

@@ -171,7 +171,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     protected class Bitmap2DReader extends Causable {
 
         private int lastPixel;
-        private long lastUpdate;
+        private long lastUpdate, lastFrameStart;
 
 
         final BufferedCauseChannel<ITask> in;
@@ -180,10 +180,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         float conf = Float.NaN;
 
         FloatFloatToObjectFunction<Truth> mode;
+        private volatile int pixelsSinceLastStart = 0;
 
         public Bitmap2DReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
             super();
-            lastUpdate = nar.time();
+            lastFrameStart = lastUpdate = nar.time();
 
 
             int maxPendingHistory = 8;
@@ -206,7 +207,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
 
 
-            int dur = nar.dur();
 
             int totalPixels = area;
 
@@ -216,6 +216,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
             long now = nar.time();
             Bitmap2DConcepts.this.update();
+
+            long sinceLastFrameStart = now - lastFrameStart;
             this.lastUpdate = now;
 
             priPixel.set(priPixel(pri.floatValue()));
@@ -234,6 +236,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             int start = this.lastPixel;
             int end = (start + totalPixels);
             Stream<ITask> s;
+            int dur = nar.dur();
 
             if (end > totalPixels) {
                 s = Stream.concat(
@@ -247,6 +250,19 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             //TODO stop using Stream<> its not necessary here
             int generatedTasks = in.size();
             int pixelsRead = (int) in.input(s.takeWhile((z) -> generatedTasks == in.size() || kontinue.getAsBoolean() ) );
+
+            if (sinceLastFrameStart >= dur) {
+                pixelsSinceLastStart = 0;
+                lastFrameStart = now;
+            } else {
+                pixelsSinceLastStart += pixelsRead;
+                if (pixelsSinceLastStart >= area) {
+                    long untilNext = dur + lastFrameStart;
+                    if (untilNext > now)
+                        sleepUntil(untilNext);
+                }
+            }
+
             if (pixelsRead > 0) {
                 this.lastPixel = (pixelsRead + this.lastPixel ) % totalPixels;
                 in.commit();

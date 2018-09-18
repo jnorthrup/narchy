@@ -8,6 +8,8 @@ import nars.term.Term;
 import java.util.concurrent.Semaphore;
 import java.util.function.BooleanSupplier;
 
+import static nars.time.Tense.TIMELESS;
+
 /**
  * instruments the runtime resource consumption of its iteratable procedure.
  * this determines a dynamically adjusted strength parameter
@@ -27,6 +29,8 @@ abstract public class Causable extends NARService {
     @Deprecated public volatile int scheduledID = -1;
 
     final Semaphore instance;
+
+    private volatile long sleepUntil = TIMELESS;
 
     @Deprecated
     protected Causable(NAR nar) {
@@ -62,6 +66,32 @@ abstract public class Causable extends NARService {
      */
     protected boolean singleton() {
         return true;
+    }
+
+    /** sytem time, not necessarily realtime */
+    protected void sleepUntil(long time) {
+        this.sleepUntil = time;
+    }
+
+    public boolean sleeping(NAR nar) {
+        if (sleepUntil == TIMELESS)
+            return false;
+        return sleeping(nar.time());
+    }
+
+    public boolean sleeping(long now) {
+        if (sleepUntil == TIMELESS)
+            return false;
+        if (sleepUntil < now) {
+            sleepUntil = TIMELESS;
+            return true;
+        }
+
+        return true;
+    }
+
+    protected void sleepRemainderOfCycle() {
+        sleepUntil(nar.time()+1);
     }
 
     /**

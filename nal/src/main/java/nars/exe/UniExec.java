@@ -1,5 +1,6 @@
 package nars.exe;
 
+import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Offs;
@@ -25,6 +26,8 @@ public class UniExec extends AbstractExec {
     //new Focus.AERevaluator(new SplitMix64Random(1));
     //new Focus.DefaultRevaluator();
 
+    final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
+
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 
     protected static final int inputQueueCapacityPerThread = 512;
@@ -49,7 +52,7 @@ public class UniExec extends AbstractExec {
     /**
      * increasing the rate closer to 1 reduces the dynamic range of the temporal allocation
      */
-    public final FloatRange explorationRate = FloatRange.unit(0.001f);
+    public final FloatRange explorationRate = FloatRange.unit(0.1f);
 
     public final class InstrumentedCausable extends InstrumentedWork {
 
@@ -146,8 +149,18 @@ public class UniExec extends AbstractExec {
 
                     double[] valMin = {Double.POSITIVE_INFINITY}, valMax = {Double.NEGATIVE_INFINITY};
 
+                    long now = nar.time();
+
                     this.forEach((InstrumentedWork s) -> {
-                        double v = ((Causable) s.who).value();
+                        Causable c = (Causable) s.who;
+
+                        boolean sleeping = c.sleeping(now);
+                        UniExec.this.sleeping.set(c.scheduledID, sleeping);
+                        if (sleeping) {
+                            return;
+                        }
+
+                        double v = c.value();
                         if (v == v) {
                             s.valueNext = v;
                             if (v > valMax[0]) valMax[0] = v;
@@ -164,8 +177,14 @@ public class UniExec extends AbstractExec {
 
                         final double[] valRateMin = {Double.POSITIVE_INFINITY}, valRateMax = {Double.NEGATIVE_INFINITY};
                         this.forEach((InstrumentedWork s) -> {
+                            Causable c = (Causable) s.who;
+                            if (sleeping.get(c.scheduledID))
+                                return;
+
 //                            Causable x = (Causable) s.who;
                             //if (x instanceof Causable) {
+
+
 
                             double value = s.valueNext;
                             if (value != value)
@@ -184,7 +203,14 @@ public class UniExec extends AbstractExec {
                             float explorationRate = UniExec.this.explorationRate.floatValue();
 
                             double valueRateSum[] = {0};
+
                             forEach((InstrumentedWork s) -> {
+                                Causable c = (Causable) s.who;
+                                if (sleeping.get(c.scheduledID)) {
+                                    s.pri(0);
+                                    return;
+                                }
+
                                 double v = s.valuePerSecond, vv = explorationRate;
                                 if (v == v) {
                                     double vn = (v - valRateMin[0]) / valRateRange;
@@ -197,6 +223,10 @@ public class UniExec extends AbstractExec {
 
                             if (valueRateSum[0] > Double.MIN_NORMAL) {
                                 forEach((InstrumentedWork s) -> {
+                                    Causable c = (Causable) s.who;
+                                    if (sleeping.get(c.scheduledID))
+                                        return;
+
                                     double v = s.valuePerSecondNormalized;
 //                                    if (v == v) {
                                         s.pri(
@@ -218,8 +248,17 @@ public class UniExec extends AbstractExec {
                     }
 
                     /** flat */
+                    n -= sleeping.cardinality();
                     float flatDemand = n > 1 ? (1f / n) : 1f;
-                    forEach((InstrumentedWork s) -> s.pri(flatDemand));
+                    forEach((InstrumentedWork s) -> {
+                        Causable c = (Causable) s.who;
+                        if (sleeping.get(c.scheduledID)) {
+                            s.pri(0);
+                            return;
+                        }
+
+                        s.pri(flatDemand);
+                    });
 
 
                     return this;

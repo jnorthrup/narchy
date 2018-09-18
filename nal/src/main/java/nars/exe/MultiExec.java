@@ -393,12 +393,19 @@ abstract public class MultiExec extends UniExec {
                     InstrumentedCausable c = can.getIndex(rng);
                     if (c == null) break; //empty
 
+                    int id = c.c.scheduledID;
+
+                    if (sleeping.get(id))
+                        continue;
+
                     boolean singleton = c.c.singleton();
                     if (!singleton || c.c.instance.tryAcquire()) {
                         try {
                             long runtimeNS = Util.lerp(c.pri(), minTime, jiffyTime);
                             long start = System.nanoTime();
                             c.runUntil(start, runtimeNS);
+//                            if (c.c.sleeping(nar))
+//                                sleeping.set(id, true);
 
                         } finally {
                             if (singleton)

@@ -55,8 +55,8 @@ import static jcog.Util.ITEM;
  */
 public class SortedArray<X> extends AbstractList<X> {
 
-    public static final int BINARY_SEARCH_THRESHOLD = 8;
-    private static final float GROWTH_RATE = 1.5f;
+    public static final int BINARY_SEARCH_THRESHOLD = 3;
+    private static final float GROWTH_RATE = 1.25f;
 
     public volatile X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
 
