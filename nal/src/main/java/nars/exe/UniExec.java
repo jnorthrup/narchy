@@ -30,7 +30,7 @@ public class UniExec extends AbstractExec {
 
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 
-    protected static final int inputQueueCapacityPerThread = 512;
+    protected static final int inputQueueCapacityPerThread = 1024;
     final MetalConcurrentQueue in;
 
     static float timeSliceMomentum = 0.5f;

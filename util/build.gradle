@@ -1,7 +1,7 @@
 description = ''
 dependencies {
     
-    compile group: 'org.jetbrains', name: 'annotations', version: '16.0.2'
+    compile group: 'org.jetbrains', name: 'annotations', version: '16.0.3'
 
     compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.2.0'
 

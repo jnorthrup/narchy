@@ -32,7 +32,7 @@ abstract public class SortedListTable<X, Y> extends ArrayListTable<X, Y> impleme
 
     
     @Override
-    public Iterator<Y> iterator() {
+    public final Iterator<Y> iterator() {
         return items.iterator();
     }
 

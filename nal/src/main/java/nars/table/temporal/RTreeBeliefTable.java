@@ -282,7 +282,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 return;
             }
 
-            FloatFunction timeDist = TimeConfRange.distanceFunction(0 /* tableDur() */, time);
+            FloatFunction timeDist = TimeConfRange.distanceFunction( /* tableDur() */ time);
 
 //            if (s <= MIN_TASKS_PER_LEAF*2 || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
                 //single iterator

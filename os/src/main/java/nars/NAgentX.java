@@ -301,8 +301,8 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(32);
 
         n.forgetRate.set(0.8f);
-        n.activateConceptRate.set(0.01f);
-        n.activateLinkRate.set(0.01f);
+        n.activateConceptRate.set(0.1f);
+        n.activateLinkRate.set(0.1f);
 
 
         n.beliefConfDefault.set(0.9f);
