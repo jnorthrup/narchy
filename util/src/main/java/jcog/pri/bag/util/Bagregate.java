@@ -55,18 +55,18 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 //        try {
 
 
-            bag.commit();
+        bag.commit();
 
-            float scale = this.scale.floatValue();
+        float scale = this.scale.floatValue();
 
-            src.forEach(x -> {
-                X xx = x.get();
-                if (include(xx)) {
-                    float pri = x.pri();
-                    if (pri==pri)
-                        bag.putAsync(new PLink<>(xx, pri * scale));
-                }
-            });
+        src.forEach(x -> {
+            X xx = x.get();
+            if (include(xx)) {
+                float pri = x.pri();
+                if (pri==pri)
+                    bag.putAsync(new PLink<>(xx, pri * scale));
+            }
+        });
 
 
 

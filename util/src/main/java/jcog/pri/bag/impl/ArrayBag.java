@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static jcog.Util.ITEM;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
@@ -190,6 +191,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         float above = Float.POSITIVE_INFINITY;
         int mustSort = -1;
         int s = size();
+        float m = 0;
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
             assert y != null;
@@ -201,7 +203,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             if (p == p) {
 //                min = Math.min(min, p);
 //                max = Math.max(max, p);
-                mass += p;
+
+                m += p;
                 if (p - above >= ScalarValue.EPSILON)
                     mustSort = i;
 
@@ -215,7 +218,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             }
         }
 
-        ArrayBag.MASS.set(this, mass);
+        ArrayBag.MASS.set(this, m);
 
 
         int c = capacity;
@@ -663,7 +666,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         Object[] yy = items.array();
         List<ObjectIntPair<Y>> removals = null;
         for (int i = 0; i < s; i++) {
-            Object y0 = yy[i];
+            Object y0 = ITEM.getOpaque(yy, i);
             if (y0 == null)
                 continue; //throw new WTF();
 

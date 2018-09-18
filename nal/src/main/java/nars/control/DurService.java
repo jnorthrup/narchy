@@ -150,7 +150,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
         } catch (Throwable e) {
 
-            logger.error("{} {}", this, e);
+            logger.error("STOP {} {}", this, e);
 
         } finally {
 
