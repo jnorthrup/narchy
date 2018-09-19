@@ -1,6 +1,8 @@
 package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
+import jcog.Util;
+import jcog.pri.ScalarValue;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.audio.WaveCapture;
 import spacegraph.input.finger.Finger;
@@ -111,9 +113,11 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
         if (sStart==sStart) {
             float sEnd = selectEnd;
             if (sEnd==sEnd) {
-                float ss = x(selectStart);
+                float ss = Util.clamp(x(selectStart), left(), right());
                 gl.glColor4f(1f, 0.8f, 0, 0.5f);
-                Draw.rect(gl, x() + ss, y(), x(selectEnd)- ss, h());
+                float ee = Util.clamp(x(selectEnd), left(), right());
+                if (ee - ss > ScalarValue.EPSILON)
+                    Draw.rect(gl, x() + ss, y(), ee - ss, h());
                 //System.out.println("select: " + sStart + ".." + sEnd);
             }
         }

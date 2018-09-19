@@ -2,25 +2,13 @@ package spacegraph.audio.speech;
 
 import jcog.Util;
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.signal.buffer.CircularFloatBuffer;
-import spacegraph.SpaceGraph;
-import spacegraph.audio.Audio;
 import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.meter.WaveView;
-import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.windo.Port;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Java port of tss.js -- Tiny Speech Synthesizer in JavaScript
@@ -34,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class TinySpeech {
 
-    static final int SAMPLE_FREQUENCY = 44100;
+    public static final int SAMPLE_FREQUENCY = 44100;
     final static float PI = (float) Math.PI;
     final static float PI_2 = 2 * (float) Math.PI;
 
@@ -51,7 +39,8 @@ public class TinySpeech {
         return (float) (0.5 - (x - Math.floor(x / PI_2) * PI_2) / PI_2);
     }
 
-    static final Map g_phonemes;
+    /** HACK */
+    @Deprecated static final Map g_phonemes;
 
     static {
         Map g;
@@ -92,7 +81,7 @@ public class TinySpeech {
 
 
     // Synthesizes speech and adds it to specified buffer
-    static float[] say(String text, float f0, float speed) {
+    public static float[] say(String text, float f0, float speed) {
 
         XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(1);
         float[] buf = new float[10 * SAMPLE_FREQUENCY];
@@ -146,7 +135,7 @@ public class TinySpeech {
                     // Anticlick function
                     x *= CutLevel((float) (Math.sin((PI * s) / sl) * 5), 1)*10f;
                     buf[thisBufPos++] = buf[thisBufPos]/2+x;
-                    buf[thisBufPos++] = buf[thisBufPos]/2+x;
+//                    buf[thisBufPos++] = buf[thisBufPos]/2+x;
                     //buf.add(z);
 
 //                    if (buf[thisBufPos - 1] < minBuf) minBuf = buf[thisBufPos - 1];
@@ -154,7 +143,7 @@ public class TinySpeech {
                 }
             }
             // Overlap neighbour phonemes
-            bufPos += Math.round( ((3*sl/4)<<1) + ((((int)p.get("plosive"))==1) ? (sl & 0xfffffe) : 0));
+            bufPos += Math.round( ((3*sl/4)) + ((((int)p.get("plosive"))==1) ? (sl & 0xfffffe) : 0));
         }
 
 
@@ -173,55 +162,5 @@ public class TinySpeech {
 
 
 
-    public static void main(String[] args) {
-        //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
-        GraphEdit<Surface> g = new GraphEdit<>(1000, 1000);
-
-        {
-            TextEdit e = new TextEdit("a b c d e", true);
-            Port p = new Port();
-            e.on(p::out);
-            g.add(
-                    new Bordering(e).set(Bordering.E, p, 0.1f)
-            ).pos(0, 0, 250, 250);
-        }
-
-        {
-            CircularFloatBuffer buffer = new CircularFloatBuffer(2*SAMPLE_FREQUENCY);
-//            for (int i = 0; i < buffer.capacity()/2; i++) {
-//                buffer.write(new float[]{(float) Math.sin(i / 500f)});
-//                buffer.write(new float[]{(float) Math.sin(i / 500f)});
-//            }
-
-            WaveView wave = new WaveView(buffer, 600, 400);
-            AtomicBoolean busy = new AtomicBoolean(false);
-            Port p = new Port();
-            p.on((String text) -> {
-                if (busy.compareAndSet(false, true)) {
-                    try {
-                        buffer.clear();
-                        buffer.write( TinySpeech.say(text, 60, 1.5f) );
-                        wave.update();
-                    } finally {
-                        busy.set(false);
-                    }
-                } else {
-                    //pending.set(true);
-                }
-            });
-            g.add(
-                    new Bordering(wave)
-                            .set(Bordering.W, p, 0.1f)
-                            .set(Bordering.S, new Gridding(
-                                PushButton.awesome("play").click(()->{
-                                    Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, SAMPLE_FREQUENCY)));
-                                })
-                            ), 0.1f)
-            ).pos(300, 0, 850, 550);
-        }
-
-        SpaceGraph.window(g, 1000, 1000);
-
-    }
 }

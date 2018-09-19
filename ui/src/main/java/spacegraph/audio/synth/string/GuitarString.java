@@ -166,8 +166,8 @@ public class GuitarString extends KarplusStrongString {
     double v0;
     @Override
     public double sample() {
-//        double v = lowPass(v0, super.sample(), lowPass);
-//        resonate();
+        //double v = lowPass(v0, super.sample(), lowPass);
+        //resonate();
         double v = super.sample();
         return v0 = v;
     }

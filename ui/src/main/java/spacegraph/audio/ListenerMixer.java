@@ -36,18 +36,6 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
         boolean updating = (soundSource != null);
 
         this.removeIf(sound -> !updating || !sound.update(soundSource, alpha));
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     @Override

@@ -103,9 +103,9 @@ final class StdAudio {
     public static void play(double sample) {
 
         // clip if outside [-1, +1]
-        if (Double.isNaN(sample)) throw new IllegalArgumentException("sample is NaN");
-        if (sample < -1.0) sample = -1.0;
-        if (sample > +1.0) sample = +1.0;
+//        if (Double.isNaN(sample)) throw new IllegalArgumentException("sample is NaN");
+//        if (sample < -1.0) sample = -1.0;
+//        if (sample > +1.0) sample = +1.0;
 
         // convert to bytes
         short s = (short) (MAX_16_BIT * sample);

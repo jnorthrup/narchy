@@ -23,7 +23,6 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static jcog.Util.ITEM;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
@@ -666,7 +665,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         Object[] yy = items.array();
         List<ObjectIntPair<Y>> removals = null;
         for (int i = 0; i < s; i++) {
-            Object y0 = ITEM.getOpaque(yy, i);
+
+            Object y0 =
+                    //ITEM.getOpaque(yy, i); //<- works but may be slightly slower
+                    yy[i];
+
             if (y0 == null)
                 continue; //throw new WTF();
 

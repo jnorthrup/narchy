@@ -22,7 +22,7 @@ public class SineWave implements SoundProducer, SoundProducer.Amplifiable {
     }
 
 
-    @Override public float read(float[] buf, int readRate) {
+    @Override public void read(float[] buf, int readRate) {
         float dt = 1.0f / readRate;
 
 
@@ -35,7 +35,6 @@ public class SineWave implements SoundProducer, SoundProducer.Amplifiable {
         }
         x = X;
 
-        return 0;
     }
 
     @Override

@@ -16,7 +16,7 @@ public class SamplePlayer implements SoundProducer {
     }
 
     @Override
-    public float read(float[] buf, int readRate) {
+    public void read(float[] buf, int readRate) {
         float step = (sample.rate ) / readRate;
 
         float[] sb = sample.buf;
@@ -34,7 +34,6 @@ public class SamplePlayer implements SoundProducer {
         }
 
 
-        return 1;
     }
 
     @Override

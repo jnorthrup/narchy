@@ -1,6 +1,7 @@
 package spacegraph.audio;
 
 import jcog.Util;
+import jcog.WTF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.audio.sample.SoundSample;
@@ -10,7 +11,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 
 
 public class Audio implements Runnable {
@@ -38,19 +38,19 @@ public class Audio implements Runnable {
     private final SourceDataLine sdl;
 
     private final int rate = 44100;
-    private final int bufferSize = rate / 20;
+    private final int bufferSize = rate / 10;
 
     private final ListenerMixer listenerMixer;
 
 
     private final ByteBuffer soundBuffer = ByteBuffer.allocate(bufferSize * 4);
-    private final ShortBuffer soundBufferShort = soundBuffer.asShortBuffer();
+    //private final ShortBuffer soundBufferShort = soundBuffer.asShortBuffer();
 
     private final float[] leftBuf, rightBuf;
     
     
     private boolean alive = true;
-    private float now;
+
 
 
     private FileOutputStream rec;
@@ -200,6 +200,7 @@ public class Audio implements Runnable {
     }
 
     private static final int max16 = Short.MAX_VALUE;
+    private static final int min16 = Short.MIN_VALUE;
 
     void tick() {
         
@@ -210,30 +211,35 @@ public class Audio implements Runnable {
         
 
 
-        soundBufferShort.clear();
+        soundBuffer.clear();
+        //soundBufferShort.clear();
 
         float gain = max16;
 
-        //byte[] ba = soundBuffer.array();
+        byte[] ba = soundBuffer.array();
 
 
+        int b = 0;
         for (int i = 0; i < bufferSize; i++) {
-            short l = ((short)Util.clampSafe(leftBuf[i] * gain, -max16, max16));
-            soundBufferShort.put(l);
-            //ba[b++] = (byte) (l & 0x00ff);
-            //ba[b++] = (byte) (l >> 8);
-            short r = ((short)Util.clampSafe(rightBuf[i] * gain, -max16, max16));
-            soundBufferShort.put(r);
-            //ba[b++] = (byte) (r & 0x00ff);
-            //ba[b++] = (byte) (r >> 8);
+            short l = ((short)Util.clampSafe(leftBuf[i] * gain, min16, max16));
+            //soundBufferShort.put(l);
+            ba[b++] = (byte) (l & 0x00ff);
+            ba[b++] = (byte) (l >> 8);
+            short r = ((short)Util.clampSafe(rightBuf[i] * gain, min16, max16));
+            //soundBufferShort.put(r);
+            ba[b++] = (byte) (r & 0x00ff);
+            ba[b++] = (byte) (r >> 8);
         }
 
-        int bs = bufferSize * 2 * 2;
-        byte[] ba = soundBuffer.array();
-        sdl.write(ba, 0, bs);
+        int bw = bufferSize * 2 * 2;
+//        byte[] ba = soundBuffer.array();
+        int br = sdl.write(ba, 0, bw);
+        if (br!=bw)
+            throw new WTF();
+
         if (rec != null) {
             try {
-                rec.write(ba, 0, bs);
+                rec.write(ba, 0, bw);
                 rec.flush();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -243,7 +249,7 @@ public class Audio implements Runnable {
 
     @Override
     public void run() {
-        now = System.currentTimeMillis();
+
         int idle = 0;
         while (alive) {
 
@@ -253,17 +259,12 @@ public class Audio implements Runnable {
                 idle = 0;
             }
 
-            now = System.currentTimeMillis() - now;
 
-            clientTick(now);
+            clientTick(0);
 
             tick();
 
         }
     }
 
-
-    public void setNow(float now) {
-        this.now = now;
-    }
 }

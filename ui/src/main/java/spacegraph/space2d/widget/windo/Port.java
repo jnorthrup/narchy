@@ -23,7 +23,7 @@ public class Port extends Widget implements Wiring.Wireable {
     private boolean enabled = true;
 
     /** input handler */
-    private In in = null;
+    protected In in = null;
 
     /** prototype (example) builder.  stipulates a protocol as specified by an example instance */
     private Supplier specifyHow = null;
@@ -123,10 +123,10 @@ public class Port extends Widget implements Wiring.Wireable {
          *          local buffers (ex: QueueLock), synch, threadpool, etc
          * */
 
-        /** test before typed wire connection */
-        default boolean accept(T proto) {
-            return true;
-        }
+//        /** test before typed wire connection */
+//        default boolean canAccept(T proto) {
+//            return true;
+//        }
 
         void accept(Wire from, T t);
 
@@ -288,4 +288,5 @@ public class Port extends Widget implements Wiring.Wireable {
     public void enable(boolean b) {
         this.enabled = b;
     }
+
 }

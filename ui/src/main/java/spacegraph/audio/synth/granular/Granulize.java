@@ -161,9 +161,8 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	}
 
     @Override
-    public float read(float[] buf, int readRate) {
+    public void read(float[] buf, int readRate) {
         process(buf, readRate);
-        return 0.0f;
     }
 
     @Override

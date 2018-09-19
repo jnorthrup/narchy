@@ -55,7 +55,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
     }
 
     @Override
-    public float read(float[] buf, int readRate) {
+    public void read(float[] buf, int readRate) {
 
         int samples = buf.length;
         context.setBufferSize(samples);
@@ -70,7 +70,6 @@ public class UGenOutput extends AudioIO implements SoundProducer {
             buf[c++] = vi;
         }
 
-        return 1f;
 
 
     }

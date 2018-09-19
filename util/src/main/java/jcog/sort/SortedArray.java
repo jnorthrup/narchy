@@ -253,7 +253,7 @@ public class SortedArray<X> extends AbstractList<X> {
             return 4;
         else if (size < 64)
             return 6;
-        else if (size < 256)
+        else if (size < 128)
             return 8;
         else if (size < 2048)
             return 16;

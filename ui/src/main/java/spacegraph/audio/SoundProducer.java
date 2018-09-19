@@ -2,7 +2,7 @@ package spacegraph.audio;
 
 /** Monaural sound source */
 public interface SoundProducer {
-    float read(float[] buf, int readRate);
+    void read(float[] buf, int readRate);
     void skip(int samplesToSkip, int readRate);
     boolean isLive();
 

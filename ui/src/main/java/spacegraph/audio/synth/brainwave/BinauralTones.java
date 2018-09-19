@@ -24,7 +24,7 @@ public class BinauralTones implements SoundProducer {
     }
 
 
-    @Override public float read(float[] buf, int readRate) {
+    @Override public void read(float[] buf, int readRate) {
         float dt = 1.0f / readRate;
 
         float leftRate = (carrier - (beat / 2.0f)) * (float)(Math.PI* 2.0f);
@@ -35,7 +35,6 @@ public class BinauralTones implements SoundProducer {
             x += dt;
         }
 
-        return 0;
     }
 
     @Override

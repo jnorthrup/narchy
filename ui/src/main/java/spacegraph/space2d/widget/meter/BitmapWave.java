@@ -122,13 +122,13 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
             int iEnd = Util.clamp((int) Math.floor(sEnd), 0, sn - 1);
             float amp = 0;
 
-            amp += (iStart - sStart) * buffer.peek(iStart);
-            amp += buffer.sum(iStart+1, iEnd);
+            amp += iStart > 0 ? (iStart - sStart) * buffer.peek(iStart-1) : 0;
+            amp += buffer.sum(iStart, iEnd);
             amp += (sEnd - iEnd) * buffer.peek(iEnd);
 
             amp /= (sEnd - sStart);
 
-            float ampNormalized = (amp - minValue) / yRange;
+            float ampNormalized = (amp) / yRange;
 
             float intensity = Math.abs(amp) / absRange;
 
