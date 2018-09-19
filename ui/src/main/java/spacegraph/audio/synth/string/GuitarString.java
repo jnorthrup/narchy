@@ -1,7 +1,5 @@
 package spacegraph.audio.synth.string;
 
-import java.util.Random;
-
 import static java.lang.Math.sin;
 
 public class GuitarString extends KarplusStrongString {
@@ -35,7 +33,7 @@ public class GuitarString extends KarplusStrongString {
         filterOut = 0;
     }
 
-    final Random rng = new Random();
+
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
         setDeltaVolume(pluckDelta);

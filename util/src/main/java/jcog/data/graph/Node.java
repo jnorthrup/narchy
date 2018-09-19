@@ -31,4 +31,7 @@ public interface Node<N, E> {
         });
     }
 
+    default int edgeCount(boolean in, boolean out) {
+        return (int) ((in ? streamIn().count() : 0) + (out ? streamOut().count() : 0));
+    }
 }

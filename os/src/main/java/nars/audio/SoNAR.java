@@ -35,7 +35,7 @@ public class SoNAR extends TimerTask {
 
     private final NAR nar;
     public final Audio audio;
-    
+
     private long now;
 
     public static class SampleDirectory {
@@ -58,7 +58,7 @@ public class SoNAR extends TimerTask {
          * gets a random sample from what is loaded
          */
         public SoundSample sample(int hash) {
-            List<SoundSample> l = samples.values().stream().collect(Collectors.toList());         
+            List<SoundSample> l = samples.values().stream().collect(Collectors.toList());
             if (l != null && !l.isEmpty()) {
                 SoundSample s;
                 do {
@@ -81,7 +81,7 @@ public class SoNAR extends TimerTask {
     }
 
     public SoNAR(NAR n) {
-        this(n, new Audio(32));
+        this(n, new Audio(16));
     }
 
 
@@ -103,17 +103,17 @@ public class SoNAR extends TimerTask {
                 return true;
             }
         };
-        
 
 
 
 
 
-        
 
-        
 
-        
+
+
+
+
 
     }
 
@@ -158,14 +158,14 @@ public class SoNAR extends TimerTask {
     private boolean update(@NotNull Concept c, Sound s) {
 
 
-        
-        
 
-        
+
+
+
 
         Truth b = nar.goalTruth(c, now);
 
-        
+
 
         float thresh = 0.55f;
         if (b != null && b.freq() > thresh) {
@@ -177,29 +177,29 @@ public class SoNAR extends TimerTask {
                 ((Granulize) s.producer).setStretchFactor(stretchFactor);
             }
             if (s.producer instanceof SoundProducer.Amplifiable) {
-                
+
                 ((SoundProducer.Amplifiable) s.producer).setAmplitude(2f * (b.freq() - 0.5f));
             }
-            
-            
+
+
             return true;
         } else {
             if (s.producer instanceof SoundProducer.Amplifiable) {
                 ((SoundProducer.Amplifiable) s.producer).setAmplitude(0f);
             }
             return false;
-            
-            
+
+
         }
 
-        
-        
-        
-        
-        
 
-        
-        
+
+
+
+
+
+
+
     }
 
     public void join() throws InterruptedException {
@@ -209,7 +209,7 @@ public class SoNAR extends TimerTask {
     public static void main(String[] args) throws InterruptedException, Narsese.NarseseException {
         NAR n = new NARS().get();
 
-        
+
         n.input("a:b. :|: (--,b:c). c:d. d:e. (--,e:f). f:g. b:f. a:g?");
         n.startPeriodMS(16);
         SoNAR s = new SoNAR(n);

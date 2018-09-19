@@ -26,36 +26,45 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
 
     }
     
-    public boolean update(SoundSource listener, float alpha)
-    {
-        x = source.getX(alpha)-listener.getX(alpha);
-        y = source.getY(alpha)-listener.getY(alpha);
-        
-        float distSqr = x*x+y*y+z*z;
-        float dist = (float)Math.sqrt(distSqr);
-        
-        float REFERENCE_DISTANCE = 1;
-        float ROLLOFF_FACTOR = 2;
-        
+    public boolean update(SoundSource listener, float alpha) {
+        if (!isLive())
+            return false;
 
-        float dB = (float)(volume - 20*Math.log(1 + ROLLOFF_FACTOR*(dist-REFERENCE_DISTANCE)/REFERENCE_DISTANCE )/ l10);
-        if (dB != dB) dB = 0;
+        if (volume > 0) {
 
-        dB = Math.min(dB, +6);
+            x = source.getX(alpha) - listener.getX(alpha);
+            y = source.getY(alpha) - listener.getY(alpha);
 
-        
-        score = dB*priority;
+            float distSqr = x * x + y * y + z * z;
+            float dist = (float) Math.sqrt(distSqr);
+
+            float REFERENCE_DISTANCE = 1;
+            float ROLLOFF_FACTOR = 2;
 
 
-		
-        float p = -x;
-        if (p<-1) p = -1;
-        if (p>1) p = 1;
+            float dB = (float) (volume - 20 * Math.log(1 + ROLLOFF_FACTOR * (dist - REFERENCE_DISTANCE) / REFERENCE_DISTANCE) / l10);
+            if (dB != dB) dB = 0;
 
-        pan = p;
-        amplitude = volume / (1.0f + dist); 
+            dB = Math.min(dB, +6);
 
-        return isLive();
+
+            score = dB * priority;
+
+
+            float p = -x;
+            if (p < -1) p = -1;
+            if (p > 1) p = 1;
+
+            pan = p;
+            amplitude = volume / (1.0f + dist);
+
+        } else {
+            score = 0;
+            amplitude = 0;
+            pan = 0;
+        }
+
+        return true;
     }
 
     public void read(float[] buf, int readRate)    {
@@ -91,5 +100,15 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
     @Override
     public float getY(float alpha) {
         return source.getY(alpha);
+    }
+
+
+    public Sound<S> volume(float volume) {
+        this.volume = volume;
+        return this;
+    }
+
+    public float volume() {
+        return volume;
     }
 }

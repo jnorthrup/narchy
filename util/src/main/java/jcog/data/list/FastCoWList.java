@@ -180,7 +180,7 @@ public class FastCoWList<X> extends FasterList<X> {
         if (source.isEmpty())
             return false;
         synchronized (this) {
-            source.forEach(this::addDirect);
+            super.addAll(source);
             commit();
             return true;
         }
@@ -198,19 +198,23 @@ public class FastCoWList<X> extends FasterList<X> {
 
     @Override
     public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
-        if (super.removeIf(predicate)) {
-            commit();
-            return true;
+        synchronized (this) {
+            if (super.removeIf(predicate)) {
+                commit();
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     public boolean removeFirstInstance(X x) {
-        if (super.removeFirstInstance(x)) {
-            commit();
-            return true;
+        synchronized (this) {
+            if (super.removeFirstInstance(x)) {
+                commit();
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     @Override public final X get(int index) {

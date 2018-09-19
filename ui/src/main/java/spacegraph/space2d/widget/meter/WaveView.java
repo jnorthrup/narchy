@@ -63,7 +63,7 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
     final Fingering select = new FingerDragging(SELECT_BUTTON) {
 
         float sample(float x) {
-            return vis.first + (vis.last - vis.first) * (x / w());
+            return vis.start + (vis.end - vis.start) * (x / w());
         }
 
         @Override
@@ -126,8 +126,8 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
     }
 
     float x(float sample) {
-        long f = vis.first;
-        return (sample - f)/(vis.last - f) * w();
+        long f = vis.start;
+        return (sample - f)/(vis.end - f) * w();
     }
 
     @Override
@@ -144,5 +144,9 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
 
     public void update() {
         vis.update();
+    }
+
+    public void updateLive() {
+        vis.updateLive();
     }
 }

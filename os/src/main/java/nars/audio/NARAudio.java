@@ -107,9 +107,9 @@ public class NARAudio extends WaveIn {
 
                         @Override
                         public void update() {
-                            long width= vis.last-vis.first;
-                            vis.last = a.capture.buffer._viewPtr; //getPeekPosition();
-                            vis.first = Math.max(0, vis.last - (width));
+                            long width= vis.end -vis.start;
+                            vis.end = a.capture.buffer._viewPtr; //getPeekPosition();
+                            vis.start = Math.max(0, vis.end - (width));
                             super.update();
                         }
 

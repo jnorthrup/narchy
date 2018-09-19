@@ -1,23 +1,24 @@
 package spacegraph.audio;
 
 
+import jcog.data.list.FastCoWList;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 
-public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements StereoSoundProducer {
+public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProducer {
 
     private float[] buf = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
-    private final int maxChannels;
+    private final int audibleSources;
 
     private SoundSource soundSource;
 
-    public ListenerMixer(int maxChannels) {
-        this.maxChannels = maxChannels;
+    public SoundMixer(int audibleSources) {
+        super(Sound[]::new);
+        this.audibleSources = audibleSources;
     }
 
     public void setSoundListener(SoundSource soundSource) {
@@ -32,17 +33,18 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
         return s;
     }
 
-    public void update(float alpha) {
+    public void update(float receiverBalance) {
         boolean updating = (soundSource != null);
 
-        this.removeIf(sound -> !updating || !sound.update(soundSource, alpha));
+        this.removeIf(sound -> !updating || !sound.update(soundSource, receiverBalance));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void read(float[] leftBuf, float[] rightBuf, int readRate) {
 
-        int s = size();
+        Sound[] ss = array();
+        int s = ss.length;
 
         if (s == 0)
             return;
@@ -50,17 +52,17 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
         if (buf.length != leftBuf.length)
             buf = new float[leftBuf.length];
 
-        if (s > maxChannels) {
+        if (s > audibleSources) {
             Collections.sort(this);
         }
 
         Arrays.fill(leftBuf, 0);
         Arrays.fill(rightBuf, 0);
 
-        for (int i = 0; i < s && i >= 0; ) {
-            Sound sound = get(i);
+        for (int i = 0; i < s; i++) {
+            Sound sound = ss[i];
 
-            if (i < maxChannels) {
+            if (i < audibleSources) {
                 float[] buf = this.buf;
 
                 sound.read(buf, readRate);
@@ -74,14 +76,8 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
                 int j;
                 for (j = 0; j < l; j++) {
                     float bj = buf[j];
-
-                    float lb = leftBuf[j];
-                    lb += bj * lp;
-                    leftBuf[j] = lb;
-
-                    float rb = rightBuf[j];
-                    rb += bj * rp;
-                    rightBuf[j] = rb;
+                    leftBuf[j] += bj * lp;
+                    rightBuf[j] += bj * rp;
                 }
 
 
@@ -91,7 +87,6 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
                 sound.skip(leftBuf.length, readRate);
             }
 
-            i++;
         }
 
     }

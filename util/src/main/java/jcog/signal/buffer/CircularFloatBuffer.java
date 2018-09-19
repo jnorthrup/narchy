@@ -29,7 +29,7 @@ package jcog.signal.buffer;
  * CircularFloatBuffer
  */
 @SuppressWarnings("unused")
-public class CircularFloatBuffer extends CircularBuffer{
+public class CircularFloatBuffer extends CircularBuffer {
     public float[] data;
 
     public CircularFloatBuffer() {
@@ -39,6 +39,7 @@ public class CircularFloatBuffer extends CircularBuffer{
     public CircularFloatBuffer(int capacity) {
         super(capacity);
     }
+
     public CircularFloatBuffer(float[] data) {
         super(data.length);
         this.data = data;
@@ -46,7 +47,7 @@ public class CircularFloatBuffer extends CircularBuffer{
 
     @Override
     protected void setCapacityInternal(int capacity) {
-        if (data==null || data.length!=capacity)
+        if (data == null || data.length != capacity)
             data = new float[capacity];
     }
 
@@ -64,39 +65,45 @@ public class CircularFloatBuffer extends CircularBuffer{
     }
 
     public int write(float[] data, int offset, int length, boolean blocking) {
+        if (length <= 0) return 0;
+
         int len = length;
+
         _lock.lock();
         try {
-            if (length > 0) {
-                int emptySize = this.data.length - _bufferSize.get();
-                while (blocking && emptySize < length) {
-                    try {
-                        _writeCondition.await();
-                    } catch (InterruptedException e) {
-                        return -1;
-                    }
-                    emptySize = this.data.length - _bufferSize.get();
-                }
-                if (emptySize > 0) {
-                    if (len > emptySize)
-                        len = emptySize;
 
-                    int tmpIdx = _bufEnd + len;
-                    int tmpLen;
-                    if (tmpIdx > this.data.length) {
-                        tmpLen = this.data.length - _bufEnd;
-                        System.arraycopy(data, offset, this.data, _bufEnd, tmpLen);
-                        _bufEnd = (tmpIdx) % this.data.length;
-                        System.arraycopy(data, tmpLen + offset, this.data, 0, _bufEnd);
-                    } else {
-                        System.arraycopy(data, offset, this.data, _bufEnd, len);
-                        _bufEnd = (tmpIdx) % this.data.length;
-                    }
-                    _bufferSize.addAndGet(len);
-                    return len;
+            int capacity = this.data.length;
+            int available = capacity - _bufferSize.get();
+            while (blocking && available < length) {
+                try {
+                    _writeCondition.await();
+                } catch (InterruptedException e) {
+                    return -1;
                 }
+                available = capacity - _bufferSize.get();
             }
-            return 0;
+            if (available > 0) {
+                if (len > available)
+                    len = available;
+
+                int tmpIdx = _bufEnd + len;
+                int tmpLen;
+                if (tmpIdx > capacity) {
+                    tmpLen = capacity - _bufEnd;
+                    System.arraycopy(data, offset, this.data, _bufEnd, tmpLen);
+                    _bufEnd = (tmpIdx) % capacity;
+                    System.arraycopy(data, tmpLen + offset, this.data, 0, _bufEnd);
+                } else {
+                    System.arraycopy(data, offset, this.data, _bufEnd, len);
+                    _bufEnd = (tmpIdx) % capacity;
+                }
+                _bufferSize.addAndGet(len);
+                return len;
+            } else {
+                return 0;
+            }
+
+
         } finally {
             _readCondition.signalAll();
             _lock.unlock();
@@ -105,12 +112,25 @@ public class CircularFloatBuffer extends CircularBuffer{
         }
     }
 
+
     public float[] peekLast(float[] data) {
         return peekLast(data, data.length);
     }
 
     public float peek(long sample) {
         return data[Math.toIntExact(sample % data.length)];
+    }
+
+    public float peek(int sample) {
+        int idx = idx(sample);
+        return data[idx];
+    }
+
+    public int idx(int sample) {
+        while (sample < 0)
+            sample += data.length; //HACK use non-iterative negative modulo
+
+        return sample % data.length;
     }
 
     public float[] peekLast(float[] data, int len) {
@@ -135,7 +155,9 @@ public class CircularFloatBuffer extends CircularBuffer{
     }
 
 
-    /** this manipulates some cursor position variables, TODO make that optional and combine with peekLast API to select any part of the buffer */
+    /**
+     * this manipulates some cursor position variables, TODO make that optional and combine with peekLast API to select any part of the buffer
+     */
     public int peek(float[] data, int length) {
         int len = length;
         _lock.lock();
@@ -250,12 +272,41 @@ public class CircularFloatBuffer extends CircularBuffer{
     }
 
 
-    /** from inclusive, to exclusive */
+    /**
+     * from inclusive, to exclusive
+     */
     public float sum(int from, int to) {
         float s = 0;
         //TODO optimize cursor
         for (int i = from; i < to; i++)
             s += peek(i);
         return s;
+    }
+
+    /**
+     * interpolates fractional areas
+     * from inclusive, to exclusive (next integer ceiling)
+     */
+    public float sum(float sStart, float sEnd) {
+        int iStart = (int) Math.ceil(sStart);
+        int iEnd = (int) Math.floor(sEnd);
+
+        float sum = 0;
+        int i = idx(iStart - 1);
+        sum += iStart > 0 ? (iStart - sStart) * data[i++] : 0;
+
+        for (int k = iStart; k < iEnd; k++) {
+            if (i == data.length) i = 0;
+            sum += data[i++];
+        }
+
+        if (i == data.length) i = 0;
+        sum += (sEnd - iEnd) * data[i];
+        return sum;
+    }
+
+    public float mean(float sStart, float sEnd) {
+        float sum = sum(sStart, sEnd);
+        return sum / (sEnd - sStart);
     }
 }

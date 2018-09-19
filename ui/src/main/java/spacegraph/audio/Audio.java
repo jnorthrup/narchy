@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.WTF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.audio.sample.SoundSample;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -24,7 +23,7 @@ public class Audio implements Runnable {
     public synchronized static Audio the() {
 
             if (defaultAudio == null) {
-                defaultAudio = new Audio(2);
+                defaultAudio = new Audio(16);
             }
 
         return defaultAudio;
@@ -34,13 +33,15 @@ public class Audio implements Runnable {
 
     private final int bufferBytes;
     private final int maxChannels;
-    private final SoundSample silentSample;
+
     private final SourceDataLine sdl;
 
     private final int rate = 44100;
-    private final int bufferSize = rate / 10;
 
-    private final ListenerMixer listenerMixer;
+    /** TODO make dynamically reconfigurable */
+    private final int bufferSize = rate / 20; /* 50ms */
+
+    private final SoundMixer mixer;
 
 
     private final ByteBuffer soundBuffer = ByteBuffer.allocate(bufferSize * 4);
@@ -57,10 +58,9 @@ public class Audio implements Runnable {
     public Thread thread;
 
 
-    public Audio(int maxChannels) {
+    public Audio(int polyphony) {
 
-        this.maxChannels = maxChannels;
-        silentSample = new SoundSample(new float[]{0}, 44100);
+        this.maxChannels = polyphony;
         Mixer mixer = AudioSystem.getMixer(null);
 
         bufferBytes = bufferSize * 2 * 2;
@@ -90,7 +90,7 @@ public class Audio implements Runnable {
             System.out.println("Failed to set the sound volume");
         }
 
-        listenerMixer = new ListenerMixer(maxChannels);
+        this.mixer = new SoundMixer(polyphony);
         setListener(SoundSource.center);
 
         leftBuf = new float[bufferSize];
@@ -142,7 +142,7 @@ public class Audio implements Runnable {
     }
 
     public void setListener(SoundSource soundSource) {
-        listenerMixer.setSoundListener(soundSource);
+        mixer.setSoundListener(soundSource);
     }
 
     public void shutDown() {
@@ -191,23 +191,23 @@ public class Audio implements Runnable {
     public <S extends SoundProducer> Sound<S> play(S p, SoundSource soundSource, float volume, float priority) {
 
 
-        return listenerMixer.addSoundProducer(p, soundSource, volume, priority);
+        return mixer.addSoundProducer(p, soundSource, volume, priority);
     }
 
 
     void clientTick(float alpha) {
-        listenerMixer.update(alpha);
+        mixer.update(alpha);
     }
 
     private static final int max16 = Short.MAX_VALUE;
-    private static final int min16 = Short.MIN_VALUE;
+    private static final int min16 = -Short.MAX_VALUE;
 
     void tick() {
         
 
         
         
-        listenerMixer.read(leftBuf, rightBuf, rate);
+        mixer.read(leftBuf, rightBuf, rate);
         
 
 
@@ -253,7 +253,7 @@ public class Audio implements Runnable {
         int idle = 0;
         while (alive) {
 
-            if (listenerMixer.isEmpty()) {
+            if (mixer.isEmpty()) {
                 Util.pauseNextIterative(idle++);
             } else {
                 idle = 0;

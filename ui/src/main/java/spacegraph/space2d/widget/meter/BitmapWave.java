@@ -23,8 +23,8 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
     /**
      * visualization bounds
      */
-    public long first;
-    public long last;
+    public long start;
+    public long end;
 
     public BitmapWave(int w, int h, CircularFloatBuffer buffer) {
         this.w = w;
@@ -32,8 +32,8 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
         this.yMin = -1;
         this.yMax = +1;
         this.buffer = buffer;
-        this.first = 0;
-        this.last = buffer.capacity();
+        this.start = 0;
+        this.end = buffer.capacity();
         update();
     }
 
@@ -83,6 +83,11 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
         update = true;
     }
 
+    public void updateLive() {
+        this.end = buffer._bufEnd;
+        this.start = this.end - buffer.capacity();
+        update = true;
+    }
 
     @Override
     public synchronized void update(BufferedImage buf, int[] pix) {
@@ -100,35 +105,32 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
         float maxValue = this.yMax;
 
 
-        float yRange = ((maxValue) - (minValue));
+//        float yRange = ((maxValue) - (minValue));
         float absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
         if (absRange < Float.MIN_NORMAL) absRange = 1;
 
 
 //        float alpha = 0.9f; //1f / ns;
 
-        long first = this.first, last = this.last;
+//        this.start = buffer._bufStart;
+//        this.end = buffer._bufEnd;
+//        System.out.println(start + ".." + end);
 
-        int sn = buffer.capacity();
+        long start = this.start;
+        long end = this.end;
+
+//        int sn = buffer.capacity();
 
         //System.out.println(first + " "+ last);
 
         for (int x = 0; x < w; x++) {
 
-            float sStart = first + (last - first) * (x/((float)w));
-            float sEnd = first + (last - first) * ((x+1)/((float)w));
+            float sStart = start + (end - start) * (x/((float)w));
+            float sEnd = start + (end - start) * ((x+1)/((float)w));
 
-            int iStart = Util.clamp((int) Math.ceil(sStart), 0, sn - 1);
-            int iEnd = Util.clamp((int) Math.floor(sEnd), 0, sn - 1);
-            float amp = 0;
+            float amp = buffer.mean(sStart, sEnd);
 
-            amp += iStart > 0 ? (iStart - sStart) * buffer.peek(iStart-1) : 0;
-            amp += buffer.sum(iStart, iEnd);
-            amp += (sEnd - iEnd) * buffer.peek(iEnd);
-
-            amp /= (sEnd - sStart);
-
-            float ampNormalized = (amp) / yRange;
+            float ampNormalized = (amp) / absRange;
 
             float intensity = Math.abs(amp) / absRange;
 
@@ -148,10 +150,10 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
 //    }
 
     public synchronized void pan(float pct) {
-        long width = last - first;
+        long width = end - start;
         int N = buffer.capacity();
         if (width < N) {
-            long mid = ((first + last)/2L);
+            long mid = ((start + end)/2L);
             long nextMid = Math.round(mid + (pct * width));
 
             long first = nextMid - width/2;
@@ -164,8 +166,8 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
                 first = last -width;
             }
 
-            this.first = first;
-            this.last = last;
+            this.start = first;
+            this.end = last;
             update();
         }
 
@@ -173,7 +175,7 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
 
     public synchronized void scale(float pct) {
 
-        long first = this.first, last = this.last;
+        long first = this.start, last = this.end;
         long width = last - first;
         long mid = (last + first) / 2;
         long viewNext = Util.clamp(Math.round(width * pct), 2, buffer.capacity());
@@ -189,8 +191,8 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
             last = first + viewNext;
         }
 
-        this.first = first;
-        this.last = last;
+        this.start = first;
+        this.end = last;
         update();
     }
 

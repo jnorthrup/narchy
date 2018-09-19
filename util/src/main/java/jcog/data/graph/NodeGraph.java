@@ -123,8 +123,8 @@ public abstract class NodeGraph<N, E> {
             this.out = out;
         }
 
-        public int edgeCount() {
-            return ins() + outs();
+        @Override public int edgeCount(boolean in, boolean out) {
+            return (in ? ins() : 0) + (out ? outs() : 0);
         }
 
         @Override

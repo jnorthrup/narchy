@@ -43,8 +43,8 @@ public abstract class CircularBuffer {
 
     private static final int DEFAULT_BUFFER_SIZE = 3530752;
 
-    protected int _bufStart = 0;
-    protected int _bufEnd = 0;
+    public int _bufStart = 0;
+    public int _bufEnd = 0;
     public int _viewPtr = 0; //TODO long?
     protected final AtomicInteger _currOffset = new AtomicInteger();
     protected final AtomicInteger _bufferSize = new AtomicInteger();

@@ -288,5 +288,8 @@ public class Port extends Widget implements Wiring.Wireable {
     public void enable(boolean b) {
         this.enabled = b;
     }
+    public boolean active() {
+        return enabled && node!=null && node.edgeCount(true,true) > 0;
+    }
 
 }

@@ -9,8 +9,11 @@ import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.tensor.TensorLERP;
 import jcog.tree.rtree.rect.RectFloat2D;
+import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.Audio;
+import spacegraph.audio.Sound;
 import spacegraph.audio.SoundProducer;
 import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
@@ -32,7 +35,6 @@ import spacegraph.space2d.widget.windo.*;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static spacegraph.space2d.container.Gridding.HORIZONTAL;
 import static spacegraph.space2d.container.Gridding.VERTICAL;
@@ -347,22 +349,17 @@ public class WallTest {
             h.amp(1f);
 
             {
-                AtomicReference<CircularFloatBuffer> targetBuffer = new AtomicReference(null);
+//                AtomicReference<CircularFloatBuffer> targetBuffer = new AtomicReference(null);
                 PushButton e = new PushButton("p");
 
 //                e.click(()->{
 //                    Synth
 //                })
-                Port p = new Port((target)->{
-                    CircularFloatBuffer buffer = (CircularFloatBuffer) target;
-                    targetBuffer.set(buffer);
-                    if (buffer!=null) {
-                        int avail = buffer.capacity();
-                        h.next(buffer, avail);
-                    }
+                Port p = new Port((ObjectIntPair<float[]> mixTarget)->{
+                    h.next(mixTarget.getOne());
                 });
                 g.add(
-                        new Bordering(new Gridding(e, new FloatSlider(h.amp(), 0, 2f ).on(a->{
+                        new Bordering(new Gridding(e, new FloatSlider(h.amp(), 0, 8f ).on(a->{
                             h.amp(a);
                         }))).set(Bordering.E, p, 0.1f)
                 ).pos(0, 0, 250, 250);
@@ -370,7 +367,7 @@ public class WallTest {
             }
 
             {
-                CircularFloatBuffer buffer = new CircularFloatBuffer(4000);
+                CircularFloatBuffer buffer = new CircularFloatBuffer(44100 * 2);
 //            for (int i = 0; i < buffer.capacity()/2; i++) {
 //                buffer.write(new float[]{(float) Math.sin(i / 500f)});
 //                buffer.write(new float[]{(float) Math.sin(i / 500f)});
@@ -378,6 +375,7 @@ public class WallTest {
 
                 WaveView wave = new WaveView(buffer, 600, 400);
                 Port p = new Port();
+
 
 //                p.on((String text) -> {
 //                    if (busy.compareAndSet(false, true)) {
@@ -392,24 +390,31 @@ public class WallTest {
 //                        //pending.set(true);
 //                    }
 //                });
-                Audio.the().play(new SoundProducer() {
-
+                Sound playing = Audio.the().play(new SoundProducer() {
+                    {
+                        int c = buffer.capacity();
+                        for (int i = 0; i < c; i++) {
+                            buffer.write(new float[] { 0 });
+                        }
+                    }
                     @Override
                     public void read(float[] buf, int readRate) {
 
-                        p.out(buffer /* TODO buffer mix command object */);
+                        if (p.active()) {
+                            p.out(PrimitiveTuples.pair(buf /* TODO buffer mix command object */, readRate));
 
-                        wave.update();
+                            buffer.flush(buf.length);
+                            buffer.write(buf);
 
-                        buffer.read(buf, buf.length, true);
-
+                            wave.updateLive();
+                        }
                     }
 
                     @Override
                     public void skip(int samplesToSkip, int readRate) {
                         //TODO
                         //buffer.skip(..);
-                        System.out.println("skip " + samplesToSkip);
+                        //System.out.println("skip " + samplesToSkip);
                     }
 
                     @Override
@@ -422,6 +427,8 @@ public class WallTest {
 
                     }
                 });
+                //playing.volume(0); //initially off
+
                 g.add(
                         new Bordering(wave)
                                 .set(Bordering.W, p, 0.1f)
