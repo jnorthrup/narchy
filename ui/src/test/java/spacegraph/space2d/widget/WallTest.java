@@ -439,4 +439,24 @@ public class WallTest {
 
         }
     }
+
+    public static class SproutTest {
+        public static void main(String[] args) {
+            GraphEdit<Surface> g = new GraphEdit<>(1000, 1000) {
+                @Override
+                protected void starting() {
+                    super.starting();
+
+                    Windo x = add(new FloatPort(0.5f, 0, 1));
+                    x.pos(100, 100, 400, 400);
+                    Windo y = sprout(x, new PushButton("+"), 0.15f);
+
+                }
+            };
+            SpaceGraph.window(g, 1000, 1000);
+
+
+
+        }
+    }
 }

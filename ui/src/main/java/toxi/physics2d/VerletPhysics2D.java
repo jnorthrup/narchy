@@ -238,7 +238,7 @@ public class VerletPhysics2D {
      * @param s spring to remove
      * @return true, only if spring AND particles have been removed successfully
      */
-    public boolean removeSpringElements(VerletSpring2D s) {
+    public boolean removeSpringAndItsParticles(VerletSpring2D s) {
         if (removeSpring(s)) {
             removeParticle(s.a);
             removeParticle(s.b);

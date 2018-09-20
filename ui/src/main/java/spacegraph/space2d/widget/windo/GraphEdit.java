@@ -3,6 +3,8 @@ package spacegraph.space2d.widget.windo;
 import jcog.data.graph.*;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -65,9 +67,11 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     private final DoubleClicking doubleClicking;
 
     @Override
-    protected final void starting() {
+    protected void starting() {
 
         physics.start(this);
+        physics.pos(bounds);
+
         raw.start(this);
 
         super.starting();
@@ -343,10 +347,25 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         raw.removeChild(x);
     }
 
+    public Windo sprout(S from, S toAdd, float scale) {
+        Windo to = add(toAdd);
+        to.pos(RectFloat2D.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
+
+        VerletParticle2D toParticle = physics.addParticleBind(to, VerletSurface.VerletSurfaceBinding.Center, false);
+
+        VerletParticle2D fromParticle = physics.addParticleBind(from, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
+
+        physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10,0.1f ));
+
+        cable(from, fromParticle, to, toParticle);
+
+        return to;
+    }
+
 
     static class Cable extends Wire {
 
-        final Windo grip;
+        Windo grip;
 
         Cable(Wire wire, Windo grip) {
             super(wire);
@@ -354,7 +373,12 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         }
 
         public final void remove() {
-            grip.remove();
+            synchronized (this) {
+                if (grip != null) {
+                    grip.remove();
+                    grip = null;
+                }
+            }
         }
     }
 
@@ -362,9 +386,26 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     public Cable cable(Wire w, Surface grip) {
         Surface a = w.a;
         Surface b = w.b;
+        return cable(w, grip, a, b);
+    }
+
+    @NotNull
+    public GraphEdit.Cable cable(Wire w, Surface grip, Surface a, Surface b) {
         VerletParticle2D ap = physics.addParticleBind(a, VerletSurface.VerletSurfaceBinding.Center);
         VerletParticle2D bp = physics.addParticleBind(b, VerletSurface.VerletSurfaceBinding.Center);
 
+        return cable(w, a, ap, b, bp, grip);
+    }
+
+    public Cable cable(Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
+        return cable(a, ap, b, bp,null);
+    }
+
+    public Cable cable(Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp, @Nullable Surface grip) {
+        return cable(null, a, ap, b, bp,grip);
+    }
+
+    protected Cable cable(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp, @Nullable Surface grip) {
         float m = 8; //TODO dynamic based on surface area, density
         ap.mass(m);
         bp.mass(m);
@@ -377,32 +418,44 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         VerletParticle2D first = points.get(0);
         VerletParticle2D last = points.get(points.size()-1);
 
-        VerletParticle2D mid = points.get(points.size()/2);
+
 
 //        if (first!=mid) {
 //            mid.addBehaviorGlobal(new AttractionBehavior2D<>(mid, 300, -1));
 //        }
 
-        Windo gripWindow = add(grip, (g)->{ return new Windo(new MetaFrame(g)) {
-                @Override
-                protected void stopping() {
+        Windo gripWindow;
+        if (grip!=null) {
+            VerletParticle2D mid = points.get(points.size() / 2);
 
-                    unlink(a, b);
+            gripWindow = add(grip, (g) -> {
+                return new Windo(new MetaFrame(g)) {
+                    @Override
+                    protected void stopping() {
 
-                    //destroy the chain
-                    points.clear();
-                    List<VerletSpring2D> springs = chain.getTwo();
-                    springs.forEach(physics.physics::removeSpringElements);
-                    springs.clear();
+                        unlink(a, b);
 
-                    super.stopping();
-                }
-            };
-        }).pos(RectFloat2D.XYWH(mid.x, mid.y, 20, 20));
+                        //destroy the chain
+                        points.clear();
+                        List<VerletSpring2D> springs = chain.getTwo();
+                        springs.forEach(physics.physics::removeSpringAndItsParticles);
+                        springs.clear();
 
-        physics.bind(gripWindow,  mid, false, VerletSurface.VerletSurfaceBinding.Center);
+                        super.stopping();
+                    }
+                };
+            }).pos(RectFloat2D.XYWH(mid.x, mid.y, 20, 20));
+
+            physics.bind(gripWindow, mid, false, VerletSurface.VerletSurfaceBinding.Center);
+        } else {
+            gripWindow = null;
+        }
+
+        if (w == null)
+            w = new Wire(a, b);
 
         return new Cable(w, gripWindow);
+
     }
 
 

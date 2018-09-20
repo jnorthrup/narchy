@@ -119,7 +119,7 @@ public class ParticleString2D {
      */
     public void clear() {
         for (VerletSpring2D s : links) {
-            physics.removeSpringElements(s);
+            physics.removeSpringAndItsParticles(s);
         }
         particles.clear();
         links.clear();

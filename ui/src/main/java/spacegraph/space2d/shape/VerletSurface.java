@@ -137,7 +137,8 @@ public class VerletSurface extends Surface implements Animated {
 
             @Override
             public Vec2D targetSurface(VerletParticle2D p, Surface ss) {
-                //unsupported
+//                if (p.distanceTo(new Vec2D(ss.cx(), ss.cy())) > Math.max(ss.w(), ss.h()))
+//                    return new Vec2D(p.x, p.y); //TODO actually relative to nearest border point
                 return null;
             }
         };
@@ -150,8 +151,12 @@ public class VerletSurface extends Surface implements Animated {
 
 
     public VerletParticle2D addParticleBind(Surface a, VerletSurfaceBinding b) {
+        return addParticleBind(a, b, true);
+    }
+    public VerletParticle2D addParticleBind(Surface a, VerletSurfaceBinding b, boolean surfaceOverrides) {
         VerletParticle2D ap = new VerletParticle2D(a.cx(), a.cy());
-        bind(a, ap, true, b);
+        ap.constrainAll(physics.bounds);
+        bind(a, ap, surfaceOverrides, b);
 
         physics.addParticle(ap);
         return ap;
@@ -168,9 +173,8 @@ public class VerletSurface extends Surface implements Animated {
 
         WeakReference<Surface> wrs = new WeakReference<>(s);
 
-        float speed = 0.5f;
+        //float speed = 0.9f;
 
-        //if (!surfaceOverrides) {
             v.addBehavior((vv) -> {
                 Surface ss = wrs.get();
 
@@ -178,13 +182,15 @@ public class VerletSurface extends Surface implements Animated {
                 if (pNext != null) {
                     //p.next.set(pNext);
                     //System.out.println(vv.id + " " + vv.x + "," + vv.y);
-                    vv.addForce(pNext.sub(vv).scaleSelf(speed));
+                    //vv.addForce(pNext.sub(vv).scaleSelf(speed));
+                    vv.next.set(pNext);
+
 //                    vv.set(pNext);
 //                    vv.prev.set(pNext);
                     //vv.next.set(pNext);
                 }
             });
-        //}
+
 
         v.set(b.targetVerlet(v, s));
         v.constrainAll(physics.bounds);
