@@ -1,11 +1,13 @@
 package nars.concept.action;
 
+import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.control.channel.CauseChannel;
 import nars.control.proto.Remember;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.task.ITask;
+import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -36,6 +38,8 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
 
         in = n.newChannel(this);
+
+        pCuri = new RandomPhasor(n.time(), n.random());
     }
 
 
@@ -64,36 +68,60 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
         Truth goal = actionTruth;
 
-        boolean curi;
-        Random rng = n.random();
-        if (rng.nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
+        Truth curi = curiosity(n);
 
-            goal = $.t(rng.nextFloat(), curiConf);
-            goal = goal.ditherFreq(resolution().floatValue());
-            curi = true;
-        } else {
-            curi = false;
-        }
-
-        Truth fb = this.motor.apply(null, goal);
+        Truth fb = this.motor.apply(null, curi!=null ? (goal!=null ? Revision.revise(curi, goal) : curi) : goal);
 
         in.input(
             Stream.of(
                     feedback(fb, now, next, n),
-                    (curi ? curiosity($.t(fb.freq(), curiConf) /*goal*/, prev, now, n) : null))
+                    (curi!=null ? curiosity($.t(fb.freq(), curiConf) /*goal*/, prev, now, n) : null))
 
 
         );
     }
-//
-//    @Override
-//    public void add(Remember r, NAR n) {
-//        if (r.punc()==GOAL) {
-//            System.out.println("goal sdfjlsj: " + r);
-//        }
-//        super.add(r, n);
-//    }
 
+    protected Truth curiosity0(NAR n) {
+        Random rng = n.random();
+        if (rng.nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
 
+            Truth curi = $.t(rng.nextFloat(), curiConf);
+            curi = curi.ditherFreq(resolution().floatValue());
+            return curi;
+        } else {
+            return null;
+        }
+    }
+
+    static class RandomPhasor {
+        float fMin, fMax;
+        float f, theta;
+        long lastUpdate;
+        float phaseShiftAmount = 1;
+        float freqChangeAmount = 0.1f;
+
+        public RandomPhasor(long start, Random random) {
+            this.fMax = 1;
+            this.lastUpdate = start;
+            theta = (float) (random.nextFloat() * Math.PI*2); //TODO random
+        }
+
+        public float update(long t, int dur, Random rng) {
+            fMin = 1f/(dur*dur);
+            theta +=  (1 + (rng.nextFloat()-0.5f)*2f * phaseShiftAmount);
+            f += Util.clamp( (rng.nextFloat()-0.5f)*2f * freqChangeAmount , fMin, fMax);
+            return (float) ((1 + Math.sin( theta + (t*Math.PI*2) * f))/2.0);
+        }
+    }
+    final RandomPhasor pCuri;
+    protected Truth curiosity(NAR n) {
+        Random rng = n.random();
+        if (rng.nextFloat() < curiosityRate) { // * (1f - (goal != null ? goal.conf() : 0))) {
+
+            return $.t(pCuri.update(n.time(), n.dur(), n.random()), curiConf);
+        } else {
+            return null;
+        }
+    }
 
 }

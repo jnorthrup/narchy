@@ -362,7 +362,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
 
     /** intersects only the time dimension */
-    default boolean intersectsTime(TaskRegion x) {
+    default boolean intersectsTime(LongInterval x) {
         return this == x || intersects(x.start(), x.end());
     }
 

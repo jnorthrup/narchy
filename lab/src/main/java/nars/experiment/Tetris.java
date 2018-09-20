@@ -71,17 +71,20 @@ public class Tetris extends NAgentX implements Bitmap2D {
             state.timePerFall = Math.round(this.timePerFall.floatValue());
             state.next();
         });
-        reward("height", () -> state.score());
-        reward("density", () -> {
-            return 1 - (float) state.rowsFilled / state.height;
-//            int filled = 0;
-//            for (float s : state.grid) {
-//                if (s > 0) {
-//                    filled++;
-//                }
-//            }
-//
-//            return 0.5f - ((float)filled)/state.grid.length;
+        rewardNormalized("height", 0, 1, () ->
+                //state.score()
+                1 - ((float) state.rowsFilled) / state.height
+        );
+        rewardNormalized("density", 0, 1, () -> {
+
+            int filled = 0;
+            for (float s : state.grid) {
+                if (s > 0) {
+                    filled++;
+                }
+            }
+
+            return ((float)filled)/(state.rowsFilled * state.width);
         });
 
         addCamera(

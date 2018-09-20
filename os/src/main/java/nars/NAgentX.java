@@ -10,6 +10,7 @@ import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import nars.agent.SimpleReward;
+import nars.concept.Concept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -52,6 +53,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
+import java.util.stream.StreamSupport;
 
 import static jcog.Util.lerp;
 import static nars.$.$$;
@@ -179,10 +181,15 @@ abstract public class NAgentX extends NAgent {
                 motivation.timing = new ActionTiming(n);
 
 
+                Iterable<Concept> rewards = ()->a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false) ).iterator();
+                Iterable<? extends Concept> actions = a.actions;
+
                 //Gridding aa = new Gridding(
                 TabPane aa = new TabPane().addToggles(Map.of(
                     a.toString(), () -> NARui.agent(a),
-                    "emotion", () -> new EmotionPlot(128, a)
+                    "emotion", () -> new EmotionPlot(128, a),
+                    "reward", () -> NARui.beliefCharts( rewards, n),
+                    "actions", () -> NARui.beliefCharts( actions, n)
                 ) );
 
                 window(new Gridding(aa, NARui.top(n)), 1200, 900);
@@ -301,7 +308,7 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(32);
 
-        n.forgetRate.set(0.95f);
+        n.forgetRate.set(0.5f);
         n.activateConceptRate.set(0.1f);
         n.activateLinkRate.set(0.1f);
 
@@ -317,7 +324,7 @@ abstract public class NAgentX extends NAgent {
 
         n.emotion.want(MetaGoal.Perceive, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.01f);
+        n.emotion.want(MetaGoal.Believe, 0.0f);
         n.emotion.want(MetaGoal.Desire, 0.01f);
         n.emotion.want(MetaGoal.Action, +1f);
 

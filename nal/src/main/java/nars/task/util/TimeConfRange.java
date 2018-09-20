@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.Util;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.time.Tense;
@@ -38,7 +39,8 @@ public class TimeConfRange extends TimeRange {
         } else if (a.start != a.end) {
             //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
             //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
-            return b -> -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
+            // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
+            return b -> -Util.mean(a.minTimeTo(b.start()), a.minTimeTo(b.end()));
         } else {
             return b -> -b.minTimeTo(a.start); // -b.range()/tableDur;
         }

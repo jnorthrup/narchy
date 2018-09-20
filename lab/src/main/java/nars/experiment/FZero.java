@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
-import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -14,7 +13,6 @@ import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
-import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
@@ -22,7 +20,6 @@ import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +29,6 @@ import java.awt.image.BufferedImage;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
-import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 3/21/17.
@@ -100,9 +96,9 @@ public class FZero extends NAgentX {
                 //initBipolarRotateDirect(false, 0.9f);
                 initBipolarRotateDirect(false, 0.85f);
 
-        window(new Gridding(
-                //new CameraSensorView(c, this).withControls(),
-                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
+//        window(new Gridding(
+//                //new CameraSensorView(c, this).withControls(),
+//                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
 
 
@@ -173,7 +169,7 @@ public class FZero extends NAgentX {
             return race;
         });
 
-        reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
+        //reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
 
 //        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
 //                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
@@ -233,7 +229,7 @@ public class FZero extends NAgentX {
 
         );
         addSensor(s);
-        window(NARui.beliefCharts(s.sensors, nar), 300, 300);
+        //window(NARui.beliefCharts(s.sensors, nar), 300, 300);
     }
 
     private void initToggleLeftRight() {
@@ -324,8 +320,8 @@ public class FZero extends NAgentX {
 
         float inputThresh = 0f;
         float curve = //curve exponent
-                //1;
-                3;
+                1;
+                //3;
 
         FloatToFloatFunction d = (dHeading) -> {
 

@@ -2,7 +2,6 @@ package nars.gui;
 
 import nars.NAR;
 import nars.control.DurService;
-import nars.util.TimeAware;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.UnitContainer;
 
@@ -51,7 +50,7 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
         return get(x, n, (nn)->eachDur.run());
     }
 
-    public static DurSurface get(Surface x, NAR n, Consumer<TimeAware> eachDur) {
+    public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {
         return new DurSurface(x, n) {
             @Override
             protected void update() {
@@ -66,7 +65,7 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     }
 
     public static DurSurface get(Surface narConsumer, NAR n) {
-        return get(narConsumer, n, (Consumer<TimeAware>)narConsumer);
+        return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }
 
 }

@@ -1,5 +1,6 @@
 package nars.agent;
 
+import com.google.common.collect.Iterators;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatNormalizer;
 import jcog.math.FloatPolarNormalizer;
@@ -7,10 +8,13 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Param;
+import nars.concept.Concept;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
 import nars.table.eternal.EternalTable;
 import nars.term.Term;
+
+import java.util.Iterator;
 
 import static jcog.Util.compose;
 import static nars.Op.GOAL;
@@ -68,6 +72,11 @@ public class DetailedReward extends Reward {
             }
         }
 
+    }
+
+    @Override
+    public Iterator<Concept> iterator() {
+        return Iterators.transform(concept.components.iterator(), x-> x);
     }
 
     @Override

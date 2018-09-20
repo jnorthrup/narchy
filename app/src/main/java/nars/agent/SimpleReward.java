@@ -1,11 +1,16 @@
 package nars.agent;
 
+import com.google.common.collect.Iterators;
 import jcog.math.FloatSupplier;
 import nars.NAR;
+import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
 
 import static nars.Op.GOAL;
 
@@ -30,6 +35,12 @@ public class SimpleReward extends Reward {
 //            Random rng = nar.random();
 //            return IMPL.the(agent.actions.get(rng).term().negIf(rng.nextBoolean()), dt, concept.term());
 //        }, true);
+    }
+
+    @NotNull
+    @Override
+    public Iterator<Concept> iterator() {
+        return Iterators.singletonIterator(concept);
     }
 
     @Override

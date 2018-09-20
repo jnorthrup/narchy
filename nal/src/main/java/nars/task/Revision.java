@@ -2,6 +2,7 @@ package nars.task;
 
 import jcog.Util;
 import jcog.data.set.MetalLongSet;
+import jcog.math.Longerval;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -237,26 +238,32 @@ public class Revision {
     }
 
 
+
+    /** 2-ary merge with quick overlap filter */
+    @Nullable public static Task merge(NAR nar, TaskRegion x, TaskRegion y) {
+        long xs = x.start(), ys;
+        //allow overlap if the time ranges are disjoint
+        if ((xs==ETERNAL || ((ys = y.start())==ETERNAL) || Longerval.intersectLength(xs, x.end(), ys, y.end()) <= 0)
+                &&
+                Stamp.overlapsAny((Task)x, (Task)y))
+            return null;
+        else
+            return merge(nar, new TaskRegion[] { x, y });
+    }
+
+    @Nullable
+    private static Task merge(NAR nar, TaskRegion... tt) {
+        assert tt.length > 1;
+        long[] u = Tense.union(tt);
+        return merge(nar,  u[0], u[1], tt);
+    }
+
     /**
      * warning: output task will have zero priority and input tasks will not be affected
      * this is so a merge construction can be attempted without actually being budgeted
      *
      * also cause merge is deferred in the same way
      */
-    @Nullable
-    public static Task merge(NAR nar, TaskRegion... tt) {
-        assert tt.length > 1;
-        long[] u = Tense.union(tt);
-        return merge(nar,  u[0], u[1], tt);
-    }
-
-    /** 2-ary merge with quick overlap filter */
-    @Nullable public static Task merge(NAR nar, TaskRegion x, TaskRegion y) {
-        if (Stamp.overlapsAny((Task)x, (Task)y))
-            return null;
-        return merge(nar, new TaskRegion[] { x, y });
-    }
-
     @Nullable
     private static Task merge(NAR nar, long start, long end, TaskRegion... tasks) {
 

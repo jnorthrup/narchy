@@ -145,24 +145,30 @@ public class NARio extends NAgentX {
                 mario.y : 0).resolution(0.02f);
 
 
-        reward("goRight", () -> {
-            float reward = 0;
+        rewardNormalized("goRight", -1, +1, () -> {
 
+            float reward;
             float curX = mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).mario.x : Float.NaN;
             if (lastX == lastX && lastX < curX) {
-                reward += unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
+                reward = unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
+            } else {
+                reward = -1;
             }
             lastX = curX;
 
             return reward;
         });
-        reward("getCoins",  () -> {
+        rewardNormalized("getCoins", -1, +1, () -> {
             int coins = Mario.coins;
-            float reward = (coins - lastCoins) * EarnCoin.floatValue();
+            int deltaCoin = coins - lastCoins;
+            if (deltaCoin <= 0)
+                return -1;
+
+            float reward = deltaCoin * EarnCoin.floatValue();
             lastCoins = coins;
             return Math.max(0,reward);
         });
-        reward("alive", -1, +1, () -> {
+        rewardNormalized("alive", -1, +1, () -> {
 //            if (dead)
 //                return -1;
 //
@@ -173,7 +179,8 @@ public class NARio extends NAgentX {
                     return 0f;
             }
 
-            int t = theMario.deathTime > 0 ? -1 : +1;
+            System.out.println(theMario.deathTime);
+            int t = theMario.deathTime > 0  ? -1 : +1;
 //            if (t == -1) {
 //                System.out.println("Dead");
 //                theMario.deathTime = 0;
@@ -187,7 +194,6 @@ public class NARio extends NAgentX {
         });
     }
 
-    boolean dead = false;
 
 
     public int tile(int dx, int dy) {
@@ -249,7 +255,7 @@ public class NARio extends NAgentX {
                     mario.scene.key(Mario.KEY_JUMP, press);
                     return press;
                 });
-        window(NARui.beliefCharts(nar, j), 800, 800);
+
 
         actionToggle($$("down(nario)"),
                 n -> mario.scene.key(Mario.KEY_DOWN, n));

@@ -199,6 +199,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         startGame();
 
 
+
+
     }
 
     @Override

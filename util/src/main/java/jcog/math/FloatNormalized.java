@@ -46,4 +46,5 @@ public class FloatNormalized implements FloatSupplier {
         normalizer.updateRange(x);
         return this;
     }
+
 }

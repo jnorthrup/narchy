@@ -342,7 +342,12 @@ public class LevelScene extends Scene implements SpriteContext {
         }
 
         if (mario.deathTime > 0) {
-            renderer.levelFailed();
+            if (mario.deathTime-- > 2) {
+                //pause
+            } else {
+                mario.deathTime = 0;
+                renderer.levelFailed();
+            }
 
 
         }

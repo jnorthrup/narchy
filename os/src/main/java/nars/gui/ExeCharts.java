@@ -5,9 +5,9 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
-import nars.NARLoop;
 import nars.control.DurService;
 import nars.control.MetaGoal;
+import nars.exe.NARLoop;
 import nars.exe.UniExec;
 import nars.time.clock.RealTime;
 import spacegraph.space2d.Surface;
@@ -17,6 +17,7 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -41,7 +42,7 @@ public class ExeCharts {
                 Util.tanhFast(
                         gain.floatValue() * nar.causes.get(i).value()
                 ),
-                
+
                 s, Math.max(1, (int) Math.ceil(sqrt(s))),
                 Draw::colorBipolar) {
 
@@ -102,14 +103,23 @@ public class ExeCharts {
     }
 
     public static Surface exePanel(NAR n) {
-        return new Splitting(new ObjectSurface<>(n.loop),
-                col(
-                        
-                        row(
-                                metaGoalPlot(n),
-                                metaGoalControls(n)
-                        )),
-                0.9f);
+        int plotHistory = 100;
+        Plot2D exeQueue = new Plot2D(plotHistory, Plot2D.Line)
+                .add("queueSize", ((UniExec) n.exe)::queueSize);
+        Plot2D busy = new Plot2D(plotHistory, Plot2D.Line)
+                .add("Busy", n.emotion.busyVol::getSum);
+        return col(
+                new ObjectSurface<>(n.loop),
+                DurSurface.get(exeQueue, n, exeQueue::update),
+                DurSurface.get(busy, n, busy::update)
+        );
+    }
+
+    public static Surface valuePanel(NAR n) {
+        return row(
+                metaGoalPlot(n),
+                metaGoalControls(n)
+        );
     }
 
     static class CausableWidget extends Widget {
@@ -118,7 +128,7 @@ public class ExeCharts {
 
         CausableWidget(UniExec.InstrumentedCausable c) {
             this.c = c;
-            label =new VectorLabel(c.c.can.id);
+            label = new VectorLabel(c.c.can.id);
             set(label);
 
         }
@@ -131,37 +141,39 @@ public class ExeCharts {
         fd.repelSpeed.set(0.5f);
 
         Graph2D<UniExec.InstrumentedCausable> s = new Graph2D<UniExec.InstrumentedCausable>()
-            .render((node, g)->{
-                UniExec.InstrumentedCausable c = node.id;
+                .render((node, g) -> {
+                    UniExec.InstrumentedCausable c = node.id;
 
-                final float epsilon = 0.01f;
-                float p = Math.max(c.priElse(epsilon), epsilon);
-                float v = c.c.value();
-                node.color(p, v, 0.25f);
+                    final float epsilon = 0.01f;
+                    float p = Math.max(c.priElse(epsilon), epsilon);
+                    float v = c.c.value();
+                    node.color(p, v, 0.25f);
 
 
-                //Graph2D G = node.parent(Graph2D.class);
+                    //Graph2D G = node.parent(Graph2D.class);
 //                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
 //                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
 
-                node.pri = Math.max(epsilon, p);
-            })
-            //.layout(fd)
-            .update(new TreeMap2D<>())
-            .build((node)->{
-                node.set(new Scale(new CausableWidget(node.id), 0.9f));
-            });
+                    node.pri = Math.max(epsilon, p);
+                })
+                //.layout(fd)
+                .update(new TreeMap2D<>())
+                .build((node) -> {
+                    node.set(new Scale(new CausableWidget(node.id), 0.9f));
+                });
 
 
         return DurSurface.get(
-            new Splitting(s, s.configWidget(), 0.1f),
-            nar, () -> {
-                s.set(((UniExec) nar.exe).can::valueIterator);
-            });
+                new Splitting(s, s.configWidget(), 0.1f),
+                nar, () -> {
+                    s.set(((UniExec) nar.exe).can::valueIterator);
+                });
     }
 
 
-    /** adds duration control */
+    /**
+     * adds duration control
+     */
     static class NARLoopPanel extends LoopPanel {
 
         private final NAR nar;
@@ -170,29 +182,29 @@ public class ExeCharts {
 
         public NARLoopPanel(NARLoop loop) {
             super(loop);
-            this.nar = loop.nar;
+            this.nar = loop.nar();
             if (nar.time instanceof RealTime) {
-                time = ((RealTime)nar.time);
+                time = ((RealTime) nar.time);
                 add(
                         new FloatSlider("Dur*", dur)
                 );
                 dur.set(time.durRatio(loop));
             } else {
-                
+
                 time = null;
             }
         }
 
         @Override
         public void update() {
-            
-                super.update();
-                if (loop.isRunning()) {
-                    if (time != null) {
-                        time.durRatio(loop, dur.floatValue());
-                    }
+
+            super.update();
+            if (loop.isRunning()) {
+                if (time != null) {
+                    time.durRatio(loop, dur.floatValue());
                 }
-            
+            }
+
         }
     }
 
@@ -205,7 +217,6 @@ public class ExeCharts {
         );
         return DurSurface.get(p, n, control::update);
     }
-
 
 
 }

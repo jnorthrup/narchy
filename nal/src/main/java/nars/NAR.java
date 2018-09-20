@@ -32,6 +32,7 @@ import nars.control.proto.Remember;
 import nars.eval.Facts;
 import nars.exe.Attention;
 import nars.exe.Exec;
+import nars.exe.NARLoop;
 import nars.index.concept.ConceptIndex;
 import nars.link.Activate;
 import nars.subterm.Subterms;

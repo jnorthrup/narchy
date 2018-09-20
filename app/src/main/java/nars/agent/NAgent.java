@@ -5,12 +5,12 @@ import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
+import jcog.math.FloatClamped;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.action.AbstractGoalActionConcept;
@@ -310,21 +310,21 @@ public class NAgent extends NARService implements NSense, NAct {
         return $.func($$(reward), id);
     }
 
-    public Off reward(String reward, float min, float max, FloatSupplier rewardFunc) {
-        return reward(rewardTerm(reward), min, max, rewardFunc);
+    public Off rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {
+        return rewardNormalized(rewardTerm(reward), min, max, rewardFunc);
     }
 
     public Off reward(Term reward, FloatSupplier rewardFunc) {
-        return reward(reward, 0, 0, rewardFunc);
+        return reward(new SimpleReward(reward, rewardFunc, this));
     }
 
     /**
      * set a default (bi-polar) reward supplier
      */
-    public Off reward(Term reward, float min, float max, FloatSupplier rewardFunc) {
-        return reward(new SimpleReward(reward,
-                new FloatNormalized(rewardFunc, min, max, false).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-                this));
+    public Off rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
+        FloatNormalized f = new FloatNormalized(new FloatClamped(rewardFunc, min, max), min, max, false);
+                //.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
+        return reward(reward, f);
     }
     @Deprecated
     public Off rewardDetailed(String reward, FloatSupplier rewardFunc) {

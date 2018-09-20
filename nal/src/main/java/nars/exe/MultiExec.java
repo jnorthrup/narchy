@@ -9,7 +9,6 @@ import jcog.exe.Exe;
 import jcog.exe.realtime.FixedRateTimedFuture;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
-import nars.NARLoop;
 import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -25,7 +24,7 @@ import java.util.function.Consumer;
 abstract public class MultiExec extends UniExec {
 
 
-    public static final float inputQueueSizeSafetyThreshold = 0.2f;
+    public static final float inputQueueSizeSafetyThreshold = 0.75f;
     private final Revaluator revaluator;
 
     protected volatile long idleTimePerCycle;

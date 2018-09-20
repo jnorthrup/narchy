@@ -260,7 +260,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         boolean mustContain = !(time.intersectOrContain);
 
-        if (!mustContain || bounds.intersects(time)) { //else nothing would match
+        if (!mustContain || time.intersects(bounds)) { //else nothing would match
 
             Predicate<TaskRegion> each = !mustContain ?
                             TaskRegion.asTask(m::tryAccept)

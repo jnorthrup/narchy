@@ -154,11 +154,11 @@ public class PoleCart extends NAgentX {
         );
 
 
-        final float SPEED = 0.5f;
+        final float SPEED = 3f;
         BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
             float a =
-                    //x * SPEED;
-                    (x * x * x) * SPEED;
+                    x * SPEED;
+                    //(x * x * x) * SPEED;
             this.action = a;
             return x;
         });
@@ -294,7 +294,7 @@ public class PoleCart extends NAgentX {
         });
 
 
-        reward(this::update);
+        rewardNormalized("balanced", -1, +1, this::update);
     }
 
 

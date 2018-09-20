@@ -91,6 +91,7 @@ public class NARui {
                                                         "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
                                                         "nar", () -> new ObjectSurface<>(n),
                                                         "exe", () -> ExeCharts.exePanel(n),
+                                                        "val", () -> ExeCharts.valuePanel(n),
                                                         "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
                                                         "grp", () -> BagregateConceptGraph2D.get(n).widget(),
                                                         "svc", () -> new ServicesTable(n.services),
