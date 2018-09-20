@@ -63,7 +63,7 @@ public class WizardFrame extends Splitting {
 
     private void close() {
         synchronized (this) {
-            parent(Windo.class).detach();
+            parent(Windo.class).remove();
         }
     }
 }

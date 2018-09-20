@@ -5,7 +5,9 @@ import spacegraph.space2d.Surface;
 
 import java.lang.reflect.Array;
 
-/** undirected edge */
+/** undirected edge
+ * see: https://github.com/apache/nifi/blob/master/nifi-api/src/main/java/org/apache/nifi/processor/ProcessContext.java
+ * */
 public class Wire {
 
     private final int hash;
@@ -15,6 +17,12 @@ public class Wire {
     private volatile int aTypeHash = 0, bTypeHash = 0;
 
     final Surface a, b;
+
+    protected Wire(Wire copy) {
+        this.a = copy.a;
+        this.b = copy.b;
+        this.hash = copy.hash;
+    }
 
     public Wire(Surface a, Surface b) {
         assert(a!=b);
@@ -109,5 +117,9 @@ public class Wire {
             return (aOrB ? bTypeHash : aTypeHash ); 
         else
             return x;
+    }
+
+    public void remove() {
+
     }
 }

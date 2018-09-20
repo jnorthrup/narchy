@@ -154,7 +154,9 @@ abstract public class Surface implements SurfaceBase {
         assert(parent!=null);
         SurfaceBase p = PARENT.getAndSet(this, parent);
         if (p == null || p == parent) {
-            starting();
+            synchronized (this) {
+                starting();
+            }
             return true;
         }
         return false;
@@ -172,7 +174,9 @@ abstract public class Surface implements SurfaceBase {
     public boolean stop() {
         if (PARENT.getAndSet(this, null) != null) {
             showing = false;
-            stopping();
+            synchronized (this) {
+                stopping();
+            }
             return true;
         }
         return false;
@@ -288,7 +292,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     /** detach from parent, if possible */
-    public boolean detach() {
+    public boolean remove() {
         SurfaceBase p = this.parent;
         if (p instanceof AbstractMutableContainer) {
             return ((AbstractMutableContainer) p).removeChild(this);

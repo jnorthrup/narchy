@@ -22,7 +22,7 @@ import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.index.concept.HijackConceptIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.Factorize;
 import nars.op.Introduction;
@@ -102,6 +102,7 @@ abstract public class NAgentX extends NAgent {
 
 
         Param.STRONG_COMPOSITION = true;
+        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
         RealTime clock =
@@ -142,8 +143,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(128 * 1024, 4)
+                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        //new HijackConceptIndex(128 * 1024, 4)
 
 
                 )
@@ -300,7 +301,7 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(32);
 
-        n.forgetRate.set(0.8f);
+        n.forgetRate.set(0.95f);
         n.activateConceptRate.set(0.1f);
         n.activateLinkRate.set(0.1f);
 

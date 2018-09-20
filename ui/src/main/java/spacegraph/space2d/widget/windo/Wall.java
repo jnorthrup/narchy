@@ -40,7 +40,7 @@ public class Wall<S extends Surface> extends MutableMapContainer<Surface, Windo>
 //        }
 //    }
 
-    public final Windo add(Surface x) {
+    public Windo add(Surface x) {
         return add(x, (xx) -> new Windo(new MetaFrame(xx)));
     }
 

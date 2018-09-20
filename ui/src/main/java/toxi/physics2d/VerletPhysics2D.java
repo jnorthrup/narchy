@@ -38,8 +38,6 @@ import toxi.physics2d.behaviors.GravityBehavior2D;
 import toxi.physics2d.behaviors.ParticleBehavior2D;
 import toxi.physics2d.constraints.ParticleConstraint2D;
 
-import java.util.List;
-
 /**
  * 3D particle physics engine using Verlet integration based on:
  * http://en.wikipedia.org/wiki/Verlet_integration
@@ -48,12 +46,15 @@ import java.util.List;
 public class VerletPhysics2D {
 
 
+    /** maximum distance to consider moved */
+    float epsilon = 0.0005f;
+
     /**
      * TODO use FastIteratingConcurrentHashMap indexed by particle ID
      */
     public final FastCoWList<VerletParticle2D> particles = new FastCoWList<>(VerletParticle2D[]::new);
 
-    public final List<VerletSpring2D> springs = new FastCoWList<>(VerletSpring2D[]::new);
+    public final FastCoWList<VerletSpring2D> springs = new FastCoWList<>(VerletSpring2D[]::new);
 
     public final FastCoWList<ParticleBehavior2D> behaviors = new FastCoWList<>(ParticleBehavior2D[]::new);
 
@@ -313,8 +314,13 @@ public class VerletPhysics2D {
     private void index(boolean force) {
         if (index != null) {
             for (VerletParticle2D p : particles)
-                if (force || p.changed())
+
+                if (force || p.changed(epsilon)) {
                     index.reindex(p, VerletParticle2D::commit);
+                } else {
+                    p.commitInactive();
+                }
+
         } else {
             for (VerletParticle2D p : particles)
                 p.commit();

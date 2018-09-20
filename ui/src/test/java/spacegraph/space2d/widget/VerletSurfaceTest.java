@@ -12,6 +12,7 @@ import spacegraph.space2d.shape.VerletSurface;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Windo;
+import spacegraph.space2d.widget.windo.Wire;
 import spacegraph.util.animate.Animated;
 import toxi.geom.QuadtreeIndex;
 import toxi.geom.Vec2D;
@@ -198,7 +199,7 @@ class VerletSurfaceTest {
             Surface a = add(new PushButton("x")).pos(100, 100, 200, 200);
             Surface b = add(new PushButton("y")).pos(300, 300, 400, 400);
 
-            cable(a, b, new PushButton("xy").click((r)->r.parent(Windo.class).detach()));
+            cable(new Wire(a, b), new PushButton("xy").click((r)->r.parent(Windo.class).remove()));
 
 
         }

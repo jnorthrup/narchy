@@ -50,7 +50,7 @@ public class AtomicRoulette<X> {
             return "empty";
         else
             return Joiner.on("\n").join(IntStream.range(0, choice.size()).mapToObj(
-                    x -> pri.get(x) + "=" + choice.getSafe(x)
+                    x -> pri.get(x) + "=" + choice.get(x)
             ).iterator());
     }
 
@@ -90,7 +90,7 @@ public class AtomicRoulette<X> {
         int i;
         int s = choice.size();
         for (i = 0; i < s; i++) {
-            X ci = choice.getSafe(i);
+            X ci = choice.get(i);
             if (ci == null)
                 return i;
             else if (ci == x)

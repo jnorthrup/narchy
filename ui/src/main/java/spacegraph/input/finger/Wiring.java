@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 /**
  * the process of drawing a wire between two surfaces
  */
-public class Wiring extends FingerDragging {
+abstract public class Wiring extends FingerDragging {
 
 
     public interface Wireable {
@@ -104,17 +104,16 @@ public class Wiring extends FingerDragging {
      * @param y
      * @param wall
      */
-    protected void wired(Surface start, Surface end, Wire y, GraphEdit wall) {
-
-    }
+    abstract protected Wire wire(Wire y, GraphEdit wall);
 
     protected boolean tryWire() {
-        Wire x = new Wire(start, end);
         GraphEdit wall = graph();
+        Wire x = //new Wire(start, end);
+                wire(new Wire(start, end), wall);
         Wire y = wall.link(x);
         if (y == x) {
             start.root().debug(start, 1, () -> "wire(" + wall + ",(" + start + ',' + end + "))");
-            wired(start, end, y, wall);
+            //wire(start, end, y, wall);
             return true;
         }
         return false;

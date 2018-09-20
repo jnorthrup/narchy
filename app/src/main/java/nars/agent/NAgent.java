@@ -31,8 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -68,7 +66,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final AtomicBoolean trace = new AtomicBoolean(false);
 
-    public final List<Sensor> sensors = new FastCoWList<>(Sensor[]::new);
+    public final FastCoWList<Sensor> sensors = new FastCoWList<>(Sensor[]::new);
 
     public final FastCoWList<ActionConcept> actions = new FastCoWList<>(ActionConcept[]::new);
 
@@ -80,7 +78,7 @@ public class NAgent extends NARService implements NSense, NAct {
         @Nullable Task get(long prev, long now, long next);
     }
 
-    private final List<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
+    private final FastCoWList<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
 
     @Deprecated
     private CauseChannel<ITask> in = null;
@@ -143,8 +141,8 @@ public class NAgent extends NARService implements NSense, NAct {
     public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),
                 ETERNAL, ETERNAL,
-                nar.evidence()
-                //Stamp.UNSTAMPED
+                //nar.evidence()
+                Stamp.UNSTAMPED
         );
 
         always.add((prev,now,next) -> t);
@@ -342,7 +340,7 @@ public class NAgent extends NARService implements NSense, NAct {
      * default reward module
      */
     final public synchronized Off reward(Reward r) {
-        if (rewards.anySatisfy(e-> e.term().equals(r.term())))
+        if (rewards.OR(e-> e.term().equals(r.term())))
             throw new RuntimeException("reward exists with the ID: " + r.term());
 
         rewards.add(r);
@@ -526,7 +524,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
-    public Collection<ActionConcept> actions() {
+    public FastCoWList<ActionConcept> actions() {
         return actions;
     }
 

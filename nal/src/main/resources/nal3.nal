@@ -36,52 +36,46 @@
         //(M --> X), (N --> S), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((N --> without(S,X)), N, M), (Belief:DecomposeNegativePositivePositive)
 
      //DIFFi
-     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositiveNegativePositive)
-     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNegativeNegativeNegative)
+     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposeDiffX)
+     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeDiffX)
         (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositivePositiveNegative)
         (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNegativePositivePositive)
 
      //DIFFe
-     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositiveNegativePositive)
-     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativeNegativeNegative)
+     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposeDiffX)
+     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeDiffX)
         (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositivePositiveNegative)
         (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativePositivePositive)
 
     //Raw DIFFe
-    S, (S ~ P) |- P, (Belief:DecomposePositiveNegativePositive)
+    S, (S ~ P) |- P, (Belief:DecomposeDiffX)
+    P, (S ~ P) |- S, (Belief:DecomposeDiffX)
         S, (S ~ P) |- P, (Belief:DecomposePositivePositiveNegative)
         P, (S ~ P) |- S, (Belief:DecomposeNegativePositivePositive)
-    P, (S ~ P) |- S, (Belief:DecomposeNegativeNegativeNegative)
 
      //similarity (S==P)! (symmetric: DecomposeNegative....)
-     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativePositivePositive)
-     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeNegativePositivePositive)
-     (S ~ P),         S         |- P,         (Goal:DecomposeNegativePositivePositive)
-        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeNegativePositivePositive)
-        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeNegativePositivePositive)
-        (S ~ P),         P         |- S,         (Goal:DecomposeNegativePositivePositive)
-           ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativeNegativeNegative)
-           (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeNegativeNegativeNegative)
-           (S ~ P),         S         |- P,         (Goal:DecomposeNegativeNegativeNegative)
-              ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeNegativeNegativeNegative)
-              (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeNegativeNegativeNegative)
-              (S ~ P),         P         |- S,         (Goal:DecomposeNegativeNegativeNegative)
+     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
+     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
+     (S ~ P),         S         |- P,         (Goal:DecomposeDiff)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
+        (S ~ P),         P         |- S,         (Goal:DecomposeDiff)
 
      //difference --(S==P)! (asymmetric: DecomposePositive... )
-     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositiveNegative)
-     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositiveNegative)
-     (S ~ P),         S         |- P,         (Goal:DecomposePositivePositiveNegative)
-        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePositiveNegativePositive)
-        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePositiveNegativePositive)
-        (S ~ P),         P         |- S,         (Goal:DecomposePositiveNegativePositive)
+     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP)
+     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP)
+     (S ~ P),         S         |- --P,         (Goal:DecomposePP)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN)
+        (S ~ P),         P         |- S,         (Goal:DecomposePN)
 
 
 
      //intersection conditional goal decompose
-     ((|,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositivePositive)
-     ((&,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositiveNegativePositive)
-     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositivePositive)
-     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePositiveNegativePositive)
+     ((|,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePP)
+     ((&,P,S,A..*) --> M), (S --> M) |- (P --> M), (Goal:DecomposePN)
+     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePP)
+     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePN)
 
 
 //NAL3 single premise decompose

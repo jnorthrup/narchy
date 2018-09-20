@@ -31,25 +31,26 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
 
     /** returns the removed element */
     public S put(int index, S s) {
-        S r = children.getAndSet(index, s);
-        if (r != s) {
-            if (r != null) {
-                r.stop();
-            }
+        return children.getAndUpdate(index, (r) -> {
+            if (r != s) {
+                if (r != null) {
+                    r.stop();
+                }
 
-            if (s!=null) {
-                assert (s.parent == null);
+                if (s!=null) {
+                    assert (s.parent == null);
 
-                synchronized (this) {
-                    if (parent != null) {
-                        s.start(this);
+                    synchronized (this) {
+                        if (parent != null) {
+                            s.start(this);
+                        }
                     }
                 }
             }
-        }
+            layout();
 
-
-        return r;
+            return s;
+        });
     }
 
     @Override
@@ -61,7 +62,6 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
 
     @Override
     protected void doLayout(int dtMS) {
-
     }
 
     @Override

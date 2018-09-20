@@ -256,7 +256,7 @@ public class Premise {
                 Concept taskConcept = n.concept(task.term(), true);
 
 
-                float pri = termLink.priElseZero();
+                float pri = termLink.priElseZero() * n.activateLinkRate.floatValue();
 
 
                 Term moreConstantTerm = beliefConcept.term();

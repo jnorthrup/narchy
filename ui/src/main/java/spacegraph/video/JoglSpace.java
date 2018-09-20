@@ -40,7 +40,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     public final v3 camUp;
     private final float[] mat4f = new float[16];
 
-    private final List<Surface> layers = new FastCoWList(Surface[]::new);
+    private final FastCoWList<Surface> layers = new FastCoWList(Surface[]::new);
     private final Queue<Runnable> pending = new ConcurrentLinkedQueue();
     private final float cameraSpeed = 100f;
     private final float cameraRotateSpeed = cameraSpeed;

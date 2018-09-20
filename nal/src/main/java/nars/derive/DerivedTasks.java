@@ -55,10 +55,10 @@ public interface DerivedTasks {
          * temporary buffer for derivations before input so they can be merged in case of duplicates
          */
         final PriArrayBag<Task> tasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
-            @Override
-            protected boolean fastMergeMaxReject() {
-                return true;
-            }
+//            @Override
+//            protected boolean fastMergeMaxReject() {
+//                return true;
+//            }
 
             //            @Override
 //            public Task put(Task incoming, NumberX overflow) {

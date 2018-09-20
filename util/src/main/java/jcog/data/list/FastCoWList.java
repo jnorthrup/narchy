@@ -22,7 +22,9 @@ import java.util.stream.Stream;
  *
  * TODO size inherited from FasterList is not volatile
  */
-public class FastCoWList<X> extends FasterList<X> {
+public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ implements Iterable<X> {
+
+    final FasterList<X> list;
 
     private final IntFunction<X[]> arrayBuilder;
 
@@ -35,13 +37,21 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     public FastCoWList(int capacity, IntFunction<X[]> arrayBuilder) {
-        super(0, arrayBuilder.apply(capacity));
+        list = new FasterList<>(capacity);
         this.copy.set( (this.arrayBuilder = arrayBuilder).apply(0) );
     }
-
-    @Override
+    
     protected Object[] newArray(int newCapacity) {
         return arrayBuilder.apply(newCapacity);
+    }
+
+    public void sort() {
+        synchronized (list) {
+            if (list.size() > 1) {
+                list.sortThis();
+                commit();
+            }
+        }
     }
 
     public void commit() {
@@ -49,44 +59,44 @@ public class FastCoWList<X> extends FasterList<X> {
         copy.set(null);
     }
 
-    @Override
+    //@Override
     public Iterator<X> iterator() {
         return ArrayIterator.get(array());
     }
 
 
 
-    @Override
+    //@Override
     public final int size() {
         X[] x = this.array();
         //return (this.size = (x != null ? x.length : 0));
         return x.length;
     }
 
-    @Override
+    //@Override
     public void clear() {
-        synchronized (this) {
-            if (super.clearIfChanged())
+        synchronized (list) {
+            if (list.clearIfChanged())
                 commit();
         }
     }
 
-    @Override
+    //@Override
     public X set(int index, X element) {
 
-        synchronized (this) {
-            if (size <= index) {
-                ensureCapacity(index + 1);
+        synchronized (list) {
+            if (list.size() <= index) {
+                list.ensureCapacity(index + 1);
                 if (element != null) {
-                    super.setFast(index, element);
-                    size = index + 1;
+                    list.setFast(index, element);
+                    list.setSize(index + 1);
                     commit();
                 }
                 return null;
             }
         }
 
-        X[] ii = items;
+        X[] ii = list.array();
         X old = ii[index];
         if (old!=element) {
             ii[index] = element;
@@ -96,33 +106,33 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     public void set(Collection<X> newContent) {
-        synchronized (this) {
-            super.clear();
-            super.addAll(newContent);
+        synchronized (list) {
+            list.clear();
+            list.addAll(newContent);
             commit();
         }
     }
 
 
-    @Override
-    public void forEach(Consumer c) {
+    //@Override
+    public void forEach(Consumer<? super X> c) {
         for (X x : array())
             c.accept(x);
     }
 
-    @Override
+
     public <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
         for (X x : array())
             c.accept(x, y);
     }
 
 
-    @Override
+    //@Override
     public Stream<X> stream() {
         return ArrayIterator.stream(array());
     }
 
-    @Override
+
     public void reverseForEach(Procedure c) {
         X[] copy = array();
         if (copy != null) {
@@ -134,16 +144,16 @@ public class FastCoWList<X> extends FasterList<X> {
 
     public X[] array() {
         return copy.updateAndGet((current)->{
-            if (current == null)
-                return fillArray(arrayBuilder.apply(super.size()), false);
-            else
+            if (current == null) {
+                return list.fillArray(arrayBuilder.apply(list.size()), false);
+            } else
                 return current;
         });
     }
 
-    @Override
+    //@Override
     public boolean remove(Object o) {
-        synchronized (this) {
+        synchronized (list) {
             if (removeDirect(o)) {
                 commit();
                 return true;
@@ -153,15 +163,15 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     private boolean addDirect(X o) {
-        return super.add(o);
+        return list.add(o);
     }
     private boolean removeDirect(Object o) {
-        return super.remove(o);
+        return list.remove(o);
     }
 
-    @Override
+    //@Override
     public boolean add(X o) {
-        synchronized (this) {
+        synchronized (list) {
             if (addDirect(o)) {
                 commit();
                 return true;
@@ -170,36 +180,35 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
-    @Override
+    //@Override
     public boolean contains(Object object) {
         return ArrayUtils.indexOf(array(), object)!=-1;
     }
 
-    @Override
+    //@Override
     public boolean addAll(Collection<? extends X> source) {
         if (source.isEmpty())
             return false;
-        synchronized (this) {
-            super.addAll(source);
+        synchronized (list) {
+            list.addAll(source);
             commit();
             return true;
         }
     }
 
-    @Override
+    //@Override
     public boolean removeAll(Collection<?> collection) {
         throw new TODO();
     }
 
-    @Override
+    //@Override
     public void add(int index, X element) {
         throw new TODO();
     }
 
-    @Override
     public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
-        synchronized (this) {
-            if (super.removeIf(predicate)) {
+        synchronized (list) {
+            if (list.removeIf(predicate)) {
                 commit();
                 return true;
             }
@@ -208,8 +217,8 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     public boolean removeFirstInstance(X x) {
-        synchronized (this) {
-            if (super.removeFirstInstance(x)) {
+        synchronized (list) {
+            if (list.removeFirstInstance(x)) {
                 commit();
                 return true;
             }
@@ -217,7 +226,8 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
-    @Override public final X get(int index) {
+    //@Override
+    public final X get(int index) {
         X[] c = array();
         return c.length > index ? c[index] : null;
     }
@@ -242,17 +252,33 @@ public class FastCoWList<X> extends FasterList<X> {
     public void set(X[] newValues) {
 
 
-        synchronized (this) {
+        synchronized (list) {
             if (newValues.length == 0) {
                 clear();
             } else {
-                items = newValues;
-                size = newValues.length;
+                list.clear();
+                list.addingAll(newValues);
                 commit();
             }
         }
     }
 
+    public boolean isEmpty() { return size() == 0; }
+
+    public boolean AND(Predicate<X> o) {
+        for (X x : array()) {
+            if (!o.test(x))
+                return false;
+        }
+        return true;
+    }
+    public boolean OR(Predicate<X> o) {
+        for (X x : array()) {
+            if (o.test(x))
+                return true;
+        }
+        return false;
+    }
     public boolean whileEach(Predicate<X> o) {
         for (X x : array()) {
             if (x!=null && !o.test(x))

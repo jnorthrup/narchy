@@ -45,7 +45,8 @@ public class NARService extends Service<NAR> implements Termed {
 
     /** attach a handler.  should only be called in starting() implementations */
     public void on(Off... x) {
-        ons.addingAll(x);
+        for (Off xx : x)
+            ons.add(xx);
     }
 
     @Override

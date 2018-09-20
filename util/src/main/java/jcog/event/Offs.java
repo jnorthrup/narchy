@@ -1,7 +1,5 @@
 package jcog.event;
 
-import java.util.Collections;
-
 /**
  * essentially holds a list of registrations but forms an activity context
  * from the dynamics of its event reactivity
@@ -18,7 +16,8 @@ public class Offs extends jcog.data.list.FastCoWList<Off> implements Off {
 
     public Offs(Off... r) {
         this(r.length);
-        Collections.addAll(this, r);
+        for (Off o : r)
+            add(o);
     }
 
 

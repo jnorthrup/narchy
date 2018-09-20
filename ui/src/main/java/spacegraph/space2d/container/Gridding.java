@@ -86,7 +86,7 @@ public class Gridding extends MutableListContainer {
     public void doLayout(int dtMS) {
 
         Surface[] children = this.children();
-        if (children == null) return;
+
         int n = children.length;
         if (n == 0) return;
 

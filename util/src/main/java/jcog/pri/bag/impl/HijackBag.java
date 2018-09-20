@@ -288,7 +288,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                         case PUT:
                             if (p == incoming) {
                                 toReturn = p;
+                                pressurize(-incomingPri); //release
                             } else {
+                                float priBefore = pri(p);
                                 V next = merge(p, incoming, overflowing);
                                 if (next != null && (next == p || map.weakCompareAndSetAcquire(i, p, next))) {
                                     if (next != p) {
@@ -296,6 +298,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                                         toAdd = next;
                                     }
                                     toReturn = next;
+                                    pressurize(Math.max(-incomingPri, (priBefore - pri(next)))); //release
                                 }
                             }
                             break;

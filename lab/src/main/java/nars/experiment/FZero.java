@@ -322,7 +322,7 @@ public class FZero extends NAgentX {
         //final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.4f);
         final FloatAveraged lp = new FloatAveraged(0.6f);
 
-        float inputThresh = 0.1f;
+        float inputThresh = 0f;
         float curve = //curve exponent
                 //1;
                 3;

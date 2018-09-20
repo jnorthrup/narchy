@@ -319,6 +319,7 @@ public class Derivation extends PreDerivation {
         this.taskPunc = nextTask.punc();
         if ((taskPunc == BELIEF || taskPunc == GOAL)) {
             this.taskTruth = nextTask.truth();
+            
             assert (taskTruth != null);
         } else {
             this.taskTruth = null;

@@ -26,7 +26,7 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
     }
 
     private void _set(Surface next) {
-        if (the!=null && the.parent!=null)
+        if (the!=null)
             the.stop();
 
 

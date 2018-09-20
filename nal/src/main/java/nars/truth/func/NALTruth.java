@@ -308,10 +308,24 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    DecomposePositivePositivePositive() {
+    DecomposeDiff() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions2.decomposeDiff(T, B, minConf);
+        }
+    },
+
+    Decompose() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.decompose(T, B, true, true, true, minConf);
+        }
+    },
+
+    @Deprecated DecomposePositivePositivePositive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return NALTruth.Decompose.apply(T, B, m, minConf);
         }
     },
 

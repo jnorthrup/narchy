@@ -28,7 +28,6 @@
 package toxi.physics2d;
 
 import jcog.data.list.FasterList;
-import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import toxi.geom.Polygon2D;
@@ -246,7 +245,7 @@ public class VerletParticle2D extends Vec2D {
         return next.constrain(min, max);
     }
 
-    public void commit() {
+    public final void commit() {
         prev.set(this);
         set(next);
     }
@@ -417,8 +416,8 @@ public class VerletParticle2D extends Vec2D {
         }
     }
 
-    public boolean changed() {
-        return !equalsWithTolerance(next, ScalarValue.EPSILON);
+    public boolean changed(float epsilon) {
+        return !equalsWithTolerance(next, epsilon);
     }
 
     public void constrainAll(RectFloat2D bounds) {
@@ -429,4 +428,9 @@ public class VerletParticle2D extends Vec2D {
     }
 
 
+    /** undo activities in this cycle */
+    public void commitInactive() {
+        prev.set(this);
+        next.set(this);
+    }
 }

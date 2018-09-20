@@ -6,6 +6,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.shape.VerletSurface;
 import spacegraph.space2d.widget.meta.MetaFrame;
@@ -41,7 +42,14 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     /**
      * TODO use more efficient graph representation
      */
-    final MapNodeGraph<Surface, Wire> links = new MapNodeGraph();
+    final MapNodeGraph<Surface, Wire> links = new MapNodeGraph<>() {
+        @Override
+        protected void onRemoved(Node<Surface, Wire> r) {
+            r.edges(true, true).forEach(e -> {
+                e.id().remove();
+            });
+        }
+    };
 
 
     /** for links and other supporting geometry that is self-managed */
@@ -66,6 +74,26 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     }
 
+    public Windo add(Surface x) {
+        return add(x, (xx) -> new Windo(new MetaFrame(xx)) {
+            @Override
+            protected void stopping() {
+                //remove any associated links, recursively
+                if (xx instanceof Container) {
+                    ((Container)xx).forEachRecursively(GraphEdit.this::removingComponent);
+                } else {
+                    removingComponent(xx);
+                }
+                super.stopping();
+            }
+        });
+    }
+
+    private void removingComponent(Surface s) {
+        synchronized (links) {
+            links.removeNode(s);
+        }
+    }
 
     @Override
     public void doLayout(int dtMS) {
@@ -316,24 +344,24 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
 
-    static class Cable {
-        final Surface a, b;
+    static class Cable extends Wire {
+
         final Windo grip;
 
-        Cable(Surface a, Windo grip, Surface b) {
-            this.a = a;
-            this.b = b;
+        Cable(Wire wire, Windo grip) {
+            super(wire);
             this.grip = grip;
         }
-        //Windo aPort, bPort;
 
-        public final void detach() {
-            grip.detach();
+        public final void remove() {
+            grip.remove();
         }
     }
 
     /** returns the grip window */
-    public Cable cable(Surface a, Surface b, Surface grip) {
+    public Cable cable(Wire w, Surface grip) {
+        Surface a = w.a;
+        Surface b = w.b;
         VerletParticle2D ap = physics.addParticleBind(a, VerletSurface.VerletSurfaceBinding.Center);
         VerletParticle2D bp = physics.addParticleBind(b, VerletSurface.VerletSurfaceBinding.Center);
 
@@ -374,7 +402,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
         physics.bind(gripWindow,  mid, false, VerletSurface.VerletSurfaceBinding.Center);
 
-        return new Cable(a, gripWindow, b);
+        return new Cable(w, gripWindow);
     }
 
 

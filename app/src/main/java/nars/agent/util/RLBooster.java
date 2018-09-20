@@ -75,7 +75,7 @@ public class RLBooster implements Consumer<NAR> {
         input = new float[inD];
 
         this.actionDiscretization = 1;
-        this.actions = env.actions().toArray(new ActionConcept[0]);
+        this.actions = env.actions().array();
         this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * actionDiscretization /* pos/neg for each action */;
 
         logger.info("{} {} in={} out={}", rl, env, inD, outD);

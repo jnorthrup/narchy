@@ -21,12 +21,15 @@ public class MutableListContainer extends AbstractMutableContainer {
     private final FastCoWList<Surface> children;
 
     public MutableListContainer(Surface... children) {
-        this(new FastCoWList(NEW_SURFACE_ARRAY), children);
-    }
-
-    private MutableListContainer(FastCoWList<Surface> childrenModel, Surface... children) {
         super();
-        this.children = childrenModel;
+        this.children = new FastCoWList(NEW_SURFACE_ARRAY) {
+            @Override
+            public void commit() {
+                super.commit();
+                layout();
+            }
+        };
+
         if (children.length > 0)
             set(children);
     }
@@ -73,7 +76,7 @@ public class MutableListContainer extends AbstractMutableContainer {
 
                     next.start(this);
 
-                    layout();
+
                 }
                 return existing;
             }
@@ -106,7 +109,7 @@ public class MutableListContainer extends AbstractMutableContainer {
             } //else: wait until attached
         }
 
-        layout();
+
 
     }
 
@@ -115,7 +118,6 @@ public class MutableListContainer extends AbstractMutableContainer {
         if (removed) {
             if (s.stop()) {
 //                if (!(children instanceof BufferedCoWList))
-                layout();
                 return true;
             }
         }
@@ -160,7 +162,6 @@ public class MutableListContainer extends AbstractMutableContainer {
                             add(n);
                     }
 
-                    layout();
                 }
             }
 
@@ -207,7 +208,6 @@ public class MutableListContainer extends AbstractMutableContainer {
                 if (!children.isEmpty()) {
                     children.forEach(Surface::stop);
                     children.clear();
-                    layout();
                 }
             }
         }

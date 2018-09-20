@@ -99,8 +99,19 @@ public class BiPolarAction extends AbstractSensor {
 
         float x = model.update(p, n, prev, now);
 
-        if (x==x)
+        if (x==x) {
             x = Util.clamp(x, -1f, +1f);
+
+            //filter negative result
+            if (Math.abs(x) < 0.5f) {
+                x = 0;
+            } else {
+                if (x > 0) x -= 0.5f;
+                else x += 0.5f;
+                x *= 2;
+            }
+
+        }
 
         float y = motor.valueOf(x);
 

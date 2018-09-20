@@ -2,7 +2,6 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.learn.MLPMap;
 import nars.$;
 import nars.NAR;
@@ -18,7 +17,6 @@ import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.video.CameraSensorView;
-import nars.video.PixelBag;
 import nars.video.Scale;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
@@ -94,10 +92,11 @@ public class Recog2D extends NAgentX {
                 //$.inst($.the( ii), $.the("x"))
                 $.p(ii)
                 , maxImages, this);
-        train = new Training(
-                sp.src instanceof PixelBag ?
-                    new FasterList(sensors).with(((PixelBag) sp.src).actions) : sensors,
-                outs, nar);
+//        train = new Training(
+//                sp.src instanceof PixelBag ?
+//                    new FasterList(sensors).with(((PixelBag) sp.src).actions) : sensors,
+//                outs, nar);
+        train = null;
 
         reward(()->{
             float error = 0;

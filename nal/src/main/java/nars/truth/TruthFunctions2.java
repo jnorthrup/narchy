@@ -194,5 +194,11 @@ public enum TruthFunctions2 {
     }
 
 
-
+    /** output polarity matches Y's polarity. X determines pre and post negations */
+    public static Truth decomposeDiff(Truth X, Truth Y, float minConf) {
+        boolean xPos = X.isPositive();
+        boolean yPos = Y.isPositive();
+        Truth t = TruthFunctions.decompose(X, Y, xPos, yPos, yPos, minConf);
+        return t!=null ? t.negIf(xPos) : null;
+    }
 }

@@ -112,7 +112,8 @@ abstract public class Web implements HttpModel {
 
         public NARConnection(NAR n, Off... ons) {
             this.nar = n;
-            addingAll(ons);
+            for (Off o : ons)
+                add(o);
         }
     }
 

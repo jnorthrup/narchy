@@ -2,7 +2,8 @@ package spacegraph.audio.synth.string;
 
 import java.util.Iterator;
 
-public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
+/** TODO try IntArrayFIFOQueue */
+@Deprecated public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     private int first;
     private int last;
     private final T[] rb;

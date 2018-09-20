@@ -69,7 +69,7 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
     /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
     public static final Predicate<Op> eternalizeInDerivation = (o) -> {
@@ -83,7 +83,7 @@ public abstract class Param {
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
     /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
     public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -99,7 +99,7 @@ public abstract class Param {
     public static final int TASK_EVAL_FORK_LIMIT = 8;
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
-    public static float ANSWER_COMPLETENESS = 1.5f;
+    public static float ANSWER_COMPLETENESS = 1.25f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;

@@ -9,8 +9,6 @@ import net.beadsproject.beads.ugens.*;
 public class arpeggiator_01 {
     private float frequency = 100.0f;
     private int tick = 0;
-    private FuncGen arpeggiator;
-    private WavePlayer square;
 
     private Envelope gainEnvelope;
     private Gain gain;
@@ -20,8 +18,7 @@ public class arpeggiator_01 {
     private Clock beatClock;
 
     public static void main(String[] args) {
-        arpeggiator_01 synth = new arpeggiator_01();
-        synth.setup();
+        new arpeggiator_01().setup();
     }
 
 
@@ -32,7 +29,7 @@ public class arpeggiator_01 {
         gainEnvelope = new Envelope(ac, 0.0f);
 
 
-        arpeggiator = new FuncGen(gainEnvelope) {
+        FuncGen arpeggiator = new FuncGen(gainEnvelope) {
 
             @Override
             public float floatValueOf(float[] anObject) {
@@ -49,21 +46,21 @@ public class arpeggiator_01 {
         ac.out(arpeggiator);
 
 
-        square = new WavePlayer(ac, arpeggiator, WaveFactory.SQUARE);
+        WavePlayer wav = new WavePlayer(ac, arpeggiator, WaveFactory.SINE);
 
 
 
         beatClock = new Clock(ac, 800.0f);
         beatClock.setTicksPerBeat(4);
         beatClock.on(arpeggiator);
-        ac.out.dependsOn(beatClock);
 
 
         gain = new Gain(ac, 1, gainEnvelope);
         gain.setGain(1f);
-        gain.in(square);
+        gain.in(wav);
 
 
+        ac.out.dependsOn(beatClock);
         ac.out.in(gain);
 
 
@@ -83,7 +80,7 @@ public class arpeggiator_01 {
     }
 
     private void keyDown(int midiPitch) {
-        if (square != null && gainEnvelope != null) {
+        if (gainEnvelope != null) {
             lastKeyPressed = midiPitch;
 
 

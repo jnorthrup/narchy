@@ -12,9 +12,9 @@ public class LinkingWiring extends Wiring {
     }
 
     @Override
-    protected void wired(Surface start, Surface end, Wire y, GraphEdit wall) {
+    protected Wire wire(Wire w, GraphEdit wall) {
 
-        wall.cable(start, end, new PushButton("x").click((r)->r.parent(Windo.class).detach()));
+        return wall.cable(w, new PushButton("x").click((r)->r.parent(Windo.class).remove()));
 
 //        PathSurface p = new PathSurface(2);
 //        p.set(0, start.cx(), start.cy());

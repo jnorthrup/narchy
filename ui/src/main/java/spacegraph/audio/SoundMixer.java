@@ -5,7 +5,6 @@ import jcog.data.list.FastCoWList;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 
 public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProducer {
@@ -53,7 +52,8 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
             buf = new float[leftBuf.length];
 
         if (s > audibleSources) {
-            Collections.sort(this);
+            //Collections.sort(this);
+            sort();
         }
 
         Arrays.fill(leftBuf, 0);
@@ -90,6 +90,8 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
         }
 
     }
+
+
 
     @Override
     public void skip(int samplesToSkip, int readRate) {

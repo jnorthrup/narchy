@@ -6,6 +6,7 @@ import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.v2;
 
@@ -21,7 +22,14 @@ abstract public class Container extends Surface {
     private volatile boolean mustLayout = true;
 
 
-
+    @Override
+    public boolean start(SurfaceBase parent) {
+        if (super.start(parent)) {
+            layout();
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public final void layout() {
@@ -195,12 +203,26 @@ abstract public class Container extends Surface {
     public boolean stop() {
         if (super.stop()) {
             forEach(Surface::stop);
+            //TODO: clear();
             return true;
         }
         return false;
     }
 
     abstract public void forEach(Consumer<Surface> o);
+
+    public void forEachRecursively(Consumer<Surface> o) {
+
+        o.accept(this);
+
+        forEach(z -> {
+           if (z instanceof Container)
+               ((Container)z).forEachRecursively(o);
+           else
+               o.accept(z);
+        });
+
+    }
 
     protected abstract boolean whileEach(Predicate<Surface> o);
 

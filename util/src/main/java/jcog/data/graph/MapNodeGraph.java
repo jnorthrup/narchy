@@ -89,7 +89,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     }
 
-    private void onRemoved(Node<N, E> r) {
+    protected void onRemoved(Node<N, E> r) {
 
     }
 

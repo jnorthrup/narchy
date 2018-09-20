@@ -39,6 +39,7 @@ public class TaskBagDrainer extends AbstractTask {
 
             int n = rateControl.apply(bag.size(), bag.capacity());
             if (n > 0) {
+
                 if (bag instanceof ArrayBag) {
                     FasterList<ITask> batch = new FasterList(n);
                     ((ArrayBag) bag).popBatch(n, batch);
