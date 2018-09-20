@@ -447,9 +447,11 @@ public class WallTest {
                 protected void starting() {
                     super.starting();
 
-                    Windo x = add(new FloatPort(0.5f, 0, 1));
+                    FloatPort f = new FloatPort(0.5f, 0, 1);
+                    Windo x = add(f);
                     x.pos(100, 100, 400, 400);
-                    Windo y = sprout(x, new PushButton("+"), 0.15f);
+                    Windo xPlus = sprout(x, new PushButton("+").click(()->f.f.add(0.1f)), 0.15f);
+                    Windo xMinus = sprout(x, new PushButton("-").click(()->f.f.subtract(0.1f)), 0.15f);
 
                 }
             };

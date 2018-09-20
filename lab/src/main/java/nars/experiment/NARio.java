@@ -179,7 +179,7 @@ public class NARio extends NAgentX {
                     return 0f;
             }
 
-            System.out.println(theMario.deathTime);
+            //System.out.println(theMario.deathTime);
             int t = theMario.deathTime > 0  ? -1 : +1;
 //            if (t == -1) {
 //                System.out.println("Dead");

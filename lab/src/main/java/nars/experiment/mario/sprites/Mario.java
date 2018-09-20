@@ -130,7 +130,7 @@ public class Mario extends Sprite {
         }
 
         if (deathTime > 0) {
-            deathTime--;
+            //deathTime--;
             if (deathTime < 11) {
                 xa = 0;
                 ya = 0;

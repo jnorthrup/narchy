@@ -44,7 +44,7 @@ class PullBackSpring2D extends VerletSpring2D {
 
     @Override
     protected void update(boolean applyConstraints) {
-        if (b.distanceToSquared(a) > restLengthSquared) {
+        if (b.distanceToSquared(a) > (restLength*restLength)) {
             super.update(applyConstraints);
         }
     }

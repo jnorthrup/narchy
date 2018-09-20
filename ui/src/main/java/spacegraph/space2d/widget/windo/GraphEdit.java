@@ -357,7 +357,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
         physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10,0.1f ));
 
-        cable(from, fromParticle, to, toParticle);
+//        cable(from, fromParticle, to, toParticle);
 
         return to;
     }

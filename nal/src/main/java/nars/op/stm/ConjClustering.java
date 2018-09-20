@@ -269,7 +269,7 @@ public class ConjClustering extends Causable {
                                     float confFactor =
                                             (conf / (conf + confMax));
 
-                                    m.pri(Priority.fund(priMin * freqFactor * cmplFactor * confFactor, false, uu));
+                                    m.pri(Priority.fund(Math.min(priMax, priMin * freqFactor * cmplFactor * confFactor), false, uu));
 
                                     for (Task aa : actualTasks)
                                         bag.remove(aa);

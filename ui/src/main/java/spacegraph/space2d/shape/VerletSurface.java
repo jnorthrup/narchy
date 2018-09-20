@@ -173,7 +173,7 @@ public class VerletSurface extends Surface implements Animated {
 
         WeakReference<Surface> wrs = new WeakReference<>(s);
 
-        //float speed = 0.9f;
+
 
             v.addBehavior((vv) -> {
                 Surface ss = wrs.get();
@@ -182,8 +182,14 @@ public class VerletSurface extends Surface implements Animated {
                 if (pNext != null) {
                     //p.next.set(pNext);
                     //System.out.println(vv.id + " " + vv.x + "," + vv.y);
-                    //vv.addForce(pNext.sub(vv).scaleSelf(speed));
-                    vv.next.set(pNext);
+
+
+                    //gradual
+                    float speed = 0.5f;
+                    vv.addForce(pNext.sub(vv).scaleSelf(speed));
+
+                    //immediate
+                    //vv.next.set(pNext);
 
 //                    vv.set(pNext);
 //                    vv.prev.set(pNext);

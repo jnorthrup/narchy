@@ -14,7 +14,7 @@ public class FloatPort extends /*Source*/Port {
     private static final float EPSILON = 0.001f;
 
     private float curValue = Float.NaN;
-    private final FloatRange f;
+    public final FloatRange f;
 
     public FloatPort(float val, float min, float max) {
         this(new FloatRange(val, min, max));
