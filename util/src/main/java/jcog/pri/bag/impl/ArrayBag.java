@@ -371,6 +371,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         }
 
         float p = incoming.priElseZero();
+        pressurize(p); //release
 
 
         //HACK special case for saving a lot of unnecessary work when merge=Max
@@ -400,7 +401,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 } else {
                     if (overflow != null)
                         overflow.add(p);
-                    pressurize(-p); //release
                     return incoming; //exact same instance
                 }
             } /* else { ...*/
@@ -534,8 +534,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             overflow.add(oo);
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
-
-            pressurize(-delta); //release
 
             items.adjust(posBefore, this);
 

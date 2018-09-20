@@ -12,8 +12,6 @@ import nars.truth.polation.TruthIntegration;
 
 import java.util.function.Predicate;
 
-import static nars.truth.polation.TruthIntegration.evi;
-
 
 /**
  * https://en.wikipedia.org/wiki/Compressed_sensing
@@ -50,14 +48,20 @@ public interface TemporalBeliefTable extends BeliefTable {
 
         //factor in the evidence loss (and originality?) loss to reduce priority
         float exy = TruthIntegration.evi(xy);
-        float pFactor = exy / (TruthIntegration.evi(x) + TruthIntegration.evi(y));
+        long xys = xy.start();
+        long xye = xy.end();
+        float eXplusY = TruthIntegration.evi(x, xys, xye, 0) + TruthIntegration.evi(y, xys, xye, 0);
+
+        //assert(eXplusY >= exy);
+        float pFactor = Math.min(1, exy / eXplusY);
+
         //assert(pFactor <= 1f);
         //float oxy = xy.originality();
         //float px = Util.unitize(exy/ eviInteg(x) ); // * (oxy * x.originality()));
         //float py = Util.unitize(exy/ eviInteg(y) ); // * (oxy * y.originality()));
-        xy.take(x, pFactor, false, false);
+        xy.take(x, pFactor/2, false, false);
         r.forget(x);
-        xy.take(y, pFactor, false, false);
+        xy.take(y, pFactor/2, false, false);
         r.forget(y);
 
 

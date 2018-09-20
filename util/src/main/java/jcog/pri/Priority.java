@@ -21,6 +21,7 @@ public interface Priority extends Prioritized, ScalarValue {
         if (amountOrFraction) {
             amount = p;
         } else {
+            assert(p <= 1f);
             amount = source.priElseZero() * p;
         }
         if (amount < ScalarValue.EPSILON) return 0;
