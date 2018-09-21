@@ -26,6 +26,7 @@ public class TextEdit extends ConsoleGUI {
 
     private static final float DEFAULT_ALPHA = 0.9f;
 
+    private final Topic<KeyStroke> onKey;
 
 
     public TextEdit() {
@@ -46,6 +47,11 @@ public class TextEdit extends ConsoleGUI {
     public TextEdit(TextEditUI ui) {
         super(ui);
         text.alpha(DEFAULT_ALPHA);
+        this.onKey = ((TextEditUI) term).onKey;
+    }
+
+    public Off onKey(Consumer<KeyStroke> s) {
+        return onKey.on(s);
     }
 
     @Override
@@ -73,6 +79,8 @@ public class TextEdit extends ConsoleGUI {
 
         /** fired when text changes */
         final Topic<String> onText = new ListTopic();
+
+        final Topic<KeyStroke> onKey = new ListTopic();
 
         public TextEditUI(int c, int r) {
             this(c, r, "");
@@ -136,6 +144,7 @@ public class TextEdit extends ConsoleGUI {
                             beforePos = null;
                             break;
                     }
+
 
                     Result r = super.handleKeyStroke(keyStroke);
 
@@ -214,6 +223,9 @@ public class TextEdit extends ConsoleGUI {
          * returns whether to allow the keystroke into the console (true), or whether it was intercepted (false)
          */
         private boolean onKey(KeyStroke keyStroke) {
+
+            onKey.emit(keyStroke);
+
             KeyType kt = keyStroke.getKeyType();
 
             if (kt == KeyType.Enter) {

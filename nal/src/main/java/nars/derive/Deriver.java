@@ -9,7 +9,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.control.DurService;
-import nars.derive.budget.DefaultDeriverBudgeting;
+import nars.derive.budget.DefaultPriWeightedDeriverBudgeting;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
@@ -43,7 +43,8 @@ import java.util.stream.Stream;
 abstract public class Deriver extends Causable {
 
     public final DeriverBudgeting budgeting =
-            new DefaultDeriverBudgeting();
+            //new DefaultDeriverBudgeting();
+            new DefaultPriWeightedDeriverBudgeting();
 
     /** determines the time for beliefs to be matched during premise formation
      *    input: premise Task, premise belief term

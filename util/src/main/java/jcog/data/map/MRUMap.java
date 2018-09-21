@@ -6,11 +6,11 @@ import java.util.Map;
 /**
  * most recently used cache based on (non-thread_safe) LinkedHashMap
  */
-public class MRUCache<K, V> extends LinkedHashMap<K, V> {
+public class MRUMap<K, V> extends LinkedHashMap<K, V> {
 
     protected int capacity;
 
-    public MRUCache(int capacity) {
+    public MRUMap(int capacity) {
         super(capacity, 0.99f, true);
         this.capacity = capacity;
     }
@@ -22,7 +22,7 @@ public class MRUCache<K, V> extends LinkedHashMap<K, V> {
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> entry) {
-        if (this.size() > capacity) {
+        if (this.size() >= capacity) {
             onEvict(entry);
             return true;
         }

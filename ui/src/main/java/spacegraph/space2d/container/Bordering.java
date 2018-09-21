@@ -163,6 +163,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
             } else {
                 c.pos(X + x1, Y + y1, X + x2, Y + y2);
                 c.show();
+                c.layout();
             }
         }
 

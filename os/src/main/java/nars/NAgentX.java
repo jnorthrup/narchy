@@ -10,7 +10,6 @@ import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import nars.agent.SimpleReward;
-import nars.concept.Concept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -21,7 +20,6 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
-import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
@@ -45,15 +43,12 @@ import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.widget.tab.TabPane;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
-import java.util.stream.StreamSupport;
 
 import static jcog.Util.lerp;
 import static nars.$.$$;
@@ -181,18 +176,7 @@ abstract public class NAgentX extends NAgent {
                 motivation.timing = new ActionTiming(n);
 
 
-                Iterable<Concept> rewards = ()->a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false) ).iterator();
-                Iterable<? extends Concept> actions = a.actions;
-
-                //Gridding aa = new Gridding(
-                TabPane aa = new TabPane().addToggles(Map.of(
-                    a.toString(), () -> NARui.agent(a),
-                    "emotion", () -> new EmotionPlot(128, a),
-                    "reward", () -> NARui.beliefCharts( rewards, n),
-                    "actions", () -> NARui.beliefCharts( actions, n)
-                ) );
-
-                window(new Gridding(aa, NARui.top(n)), 1200, 900);
+                window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);
 
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);
@@ -424,9 +408,7 @@ abstract public class NAgentX extends NAgent {
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
         addSensor(c);
-        //nar().runLater(() -> {
-            c.readAdaptively();
-        //});
+        c.readAdaptively(enabled::get);
         return c;
     }
 

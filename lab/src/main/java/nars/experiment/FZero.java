@@ -118,7 +118,8 @@ public class FZero extends NAgentX {
                         $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 angles,
-                DigitizedScalar.FuzzyNeedle
+                DigitizedScalar.Needle
+                //DigitizedScalar.FuzzyNeedle
         ).resolution(r);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);

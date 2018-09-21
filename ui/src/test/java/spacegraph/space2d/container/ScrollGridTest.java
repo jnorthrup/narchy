@@ -68,7 +68,7 @@ class ScrollGridTest {
                 return new CheckBox(n);
             } ;
             SpaceGraph.window(
-                    ScrollGrid.list(builder, list)
+                    ScrollGrid.array(builder, list)
                     , 800, 800);
         }
 

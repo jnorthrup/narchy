@@ -92,6 +92,10 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         return null;
     }
 
+    public PriProxy<X, Y> put(X x, Y y) {
+        return bag.put(computation(x, y));
+    }
+
     @Override
     @Nullable
     public final Y apply(X x) {
@@ -233,8 +237,14 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
         @Override
         public void onRemove(PriProxy<X, Y> value) {
+            removed(value);
             value.delete();
             evict.getAndIncrement();
         }
+    }
+
+    /** subclasses can implement removal handler here */
+    protected void removed(PriProxy<X,Y> value) {
+
     }
 }

@@ -90,9 +90,9 @@ public class TrackXY extends NAgentX {
             this.cam = null;
         }
 
-        actionPushButtonMutex();
+        //actionPushButtonMutex();
         //actionSwitch();
-        //actionTriState();
+        actionTriState();
 
 
         reward(this::act);
@@ -156,9 +156,7 @@ public class TrackXY extends NAgentX {
         }
             if (nars) {
 
-                window(new Gridding(
-                        //new CameraSensorView(c, this).withControls(),
-                        NARui.beliefCharts(a.actions, n)), 400, 400);
+
 
                 Deriver d = new MatrixDeriver(Derivers.nal(n,
 //                        6, 8
@@ -173,7 +171,7 @@ public class TrackXY extends NAgentX {
                 };
 
 
-                ((MatrixDeriver) d).conceptsPerIteration.set(8);
+                ((MatrixDeriver) d).conceptsPerIteration.set(16);
 
 
                 new STMLinkage(n, 2) {
@@ -207,9 +205,10 @@ public class TrackXY extends NAgentX {
 
 
             n.runLater(() -> {
-
-                window(NARui.agent(a), 800, 800);
-
+                window(
+                        //new CameraSensorView(c, this).withControls(),
+                        NARui.agent(a)
+                        , 400, 400);
                 window(new Gridding(NARui.top(n), new EmotionPlot(128, a)), 800, 250);
 
 //            NARui.agentWindow(t);

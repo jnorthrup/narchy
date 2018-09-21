@@ -156,15 +156,17 @@ public abstract class Param {
     //PriMerge.avgGeoSlow;
 
     /**
-     * budget factor for double-premise derivations: depends on the task and belief budget
+     * budget factor for combining 2 tasks in derivation
+     * ex: double-premise derivations which depends on the task and belief budget
      */
-    public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
+    public static final FloatFloatToFloatFunction DerivationPri =
             (t, b) ->
+                    Util.and(t, b);
+                    //Math.max(t, b);
                     //il.aveAri(t, b);
                     //Util.aveGeo(t, b);
-                    //Util.and(t, b);
                     //Util.or(t, b);
-                    Util.unitize(t+b);
+                    //Util.unitize(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget

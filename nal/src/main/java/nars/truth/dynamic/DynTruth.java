@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -51,25 +52,28 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         return new TaskRegion[newCapacity];
     }
 
-    public float pri(long start, long end) {
+    protected float pri(long start, long end) {
 
-        int s = size;
-        assert (s > 0);
+        //TODO maybe instead of just range use evi integration
 
-        if (start == ETERNAL)
-            return meanValue(DynTruth::pri);
+        if (start == ETERNAL) {
+            //TODO if any sub-tasks are non-eternal, maybe combine in proportion to their relative range / evidence
+            return reapply(DynTruth::pri, Param.DerivationPri);
+        } else {
 
-        double total = 0;
-        double range = (end-start)+1;
-        for (TaskRegion d : this) {
-            float p = DynTruth.pri(d);
-            if (d.task().isEternal()) {
-                total += p;
-            } else {
-                total += Util.unitize(p * d.range() / range);
-            }
+
+            long range = (end - start) + 1;
+
+            return reapply(sub -> {
+                float subPri = DynTruth.pri(sub);
+                if (sub.isEternal() || sub.range() >= range) {
+                    return subPri;
+                } else {
+                    return (float)(subPri * ((double)sub.range()) / range);
+                }
+            }, Param.DerivationPri);
+
         }
-        return (float) total/s /* average */;
     }
 
     @Override
@@ -133,28 +137,32 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         long start, end;
         if (size() > 1) {
             if (op == CONJ) {
-                long min = TIMELESS;
-                long minRange = 0;
+                long earliest = TIMELESS;
+                long minRange = TIMELESS;
                 boolean eternals = false;
                 for (int i = 0, thisSize = size(); i < thisSize; i++) {
                     LongInterval ii = get(i);
                     long iis = ii.start();
                     if (iis != ETERNAL) {
-                        min = Math.min(min, iis);
-                        minRange = Math.min(minRange, ii.end() - iis);
+                        earliest = Math.min(earliest, iis);
+                        long tRange = ii.end() - iis;
+                        minRange = (minRange != TIMELESS) ? Math.min(minRange, tRange) : tRange;
                     } else {
                         eternals = true;
                     }
                 }
 
-                if (eternals && min == TIMELESS) {
+
+                if (eternals && earliest == TIMELESS) {
                     start = end = ETERNAL;
                 } else {
-                    assert (min != TIMELESS);
+                    assert (earliest != TIMELESS);
 
+                    if (minRange == TIMELESS)
+                        minRange = 0;
 
-                    start = min;
-                    end = (min + minRange);
+                    start = earliest;
+                    end = (earliest + minRange);
                 }
 
 
@@ -188,7 +196,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
         dyn.cause = cause();
 
-        dyn.pri(pri(start, end));
+        dyn.pri(Math.max(ScalarValue.EPSILON, pri(start, end)));
 
         if (Param.DEBUG_EXTRA)
             dyn.log("Dynamic");

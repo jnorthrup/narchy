@@ -1,6 +1,5 @@
 package spacegraph.space2d.container;
 
-import jcog.TODO;
 import jcog.Util;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableArrayContainer;
@@ -65,29 +64,39 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     @Override
     public void doLayout(int dtMS) {
 
+        Surface a = T(), b = B();
 
-        
+        if (a!=null && b!=null) {
 
+            float X = x(), Y = y(), h = h(), w = w();
 
-        if (!vertical)
-            throw new TODO();
+            if (vertical) {
 
-        float X = x();
-        float Y = y();
-        float h = h();
-        float w = w();
-        float Ysplit = Y + split * h;
+                float Ysplit = Y + split * h;
 
-        Surface top = T();
-        if (top!=null) {
-            top.pos(X, Ysplit, X+w, Y+h);
+                if (a != null)
+                    a.pos(X, Ysplit, X + w, Y + h);
+
+                if (b != null)
+                    b.pos(X, Y, X + w, Ysplit);
+            } else {
+                float Xsplit = X + split * w;
+
+                if (a != null)
+                    a.pos(X, Y, Xsplit, Y + h);
+
+                if (b != null)
+                    b.pos(Xsplit, Y, X + w, Y + h);
+
+            }
+        } else if (a!=null) {
+            a.pos(bounds);
+        } else if (b!=null) {
+            b.pos(bounds);
         }
 
-        Surface bottom = B();
-        if (bottom != null) {
-            bottom.pos(X,  Y, X+w, Ysplit);
-        }
-
+        if (a != null) a.layout();
+        if (b != null) b.layout();
     }
 
     public final Splitting<X, Y> T(X s) {

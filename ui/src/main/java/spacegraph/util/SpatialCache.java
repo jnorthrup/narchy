@@ -1,6 +1,6 @@
 package spacegraph.util;
 
-import jcog.data.map.MRUCache;
+import jcog.data.map.MRUMap;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
 
@@ -9,12 +9,12 @@ import java.util.function.Function;
 
 class SpatialCache<X, Y extends Spatial<X>> {
 
-    private final MRUCache<X, Y> cache;
+    private final MRUMap<X, Y> cache;
     private final SpaceGraphPhys3D<X> space;
 
     public SpatialCache(SpaceGraphPhys3D<X> space, int capacity) {
         this.space = space;
-        cache = new MRUCache<>(capacity) {
+        cache = new MRUMap<>(capacity) {
             @Override
             protected void onEvict(Map.Entry<X, Y> entry) {
                 space.remove(entry.getValue());

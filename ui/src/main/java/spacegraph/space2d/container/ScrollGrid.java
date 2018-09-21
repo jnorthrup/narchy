@@ -3,6 +3,7 @@ package spacegraph.space2d.container;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.CellMap;
+import jcog.data.map.MRUMap;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,8 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import static jcog.Util.short2Int;
 import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
@@ -68,6 +71,11 @@ public class ScrollGrid<X> extends Bordering {
         this.render = render;
 
         set(C, new Clipped(content = new ScrollGridContainer<X>() {
+
+            @Override
+            protected void hide(X x, Surface s) {
+                render.hide(x, s);
+            }
 
             @Override
             protected Surface surface(short x, short y, X nextValue) {
@@ -339,7 +347,53 @@ public class ScrollGrid<X> extends Bordering {
 
     @FunctionalInterface
     public interface GridRenderer<X> {
+
+        /** adapter for value-only usage */
+        static <X> GridRenderer<X> value(Function<X, Surface> builder) {
+            return (x, y, v) -> builder.apply(v);
+        }
+
+        static <X> GridRenderer<X> valueCached(Function<X, Surface> builder, int capacity) {
+            return new GridRenderer<X>() {
+
+//                final HijackMemoize<X,Surface> cache = new HijackMemoize<X,Surface>((x->{
+//                    throw new UnsupportedOperationException();
+//                }), capacity, 3, true) {
+//                    @Override
+//                    protected void removed(PriProxy<X, Surface> value) {
+//                        Surface s = value.get();
+//                        assert(s!=null);
+//                        s.stop();
+//                    }
+//                };
+
+                final MRUMap<X,Surface> cache = new MRUMap<X,Surface>(capacity) {
+                    @Override
+                    protected void onEvict(Map.Entry<X, Surface> entry) {
+                        entry.getValue().stop();
+                    }
+                };
+
+                @Override
+                public Surface apply(int x, int y, X value) {
+                    @Nullable Surface s = cache.computeIfAbsent(value, builder);
+                    //s.show();
+                    return s;
+                }
+
+                @Override
+                public void hide(X key, Surface s) {
+                    //nothing
+                }
+            };
+        }
+
         Surface apply(int x, int y, X value);
+
+
+        default void hide(X key, Surface s) {
+            s.stop();
+        }
     }
 
 
@@ -420,9 +474,9 @@ public class ScrollGrid<X> extends Bordering {
                         if (s == null)
                             continue;
 
+                        doLayout(s, sx, sy);
                         if (s.parent==null)
                             s.start(this);
-                        doLayout(s, sx, sy);
                     }
                 }
             }
@@ -430,10 +484,9 @@ public class ScrollGrid<X> extends Bordering {
         }
 
 
-
         void doLayout(Surface s, short sx, short sy) {
             float cx = dx + (sx - view.x + 0.5f) * cw;
-            float cy = dy + (sy - view.y + 0.5f) * ch;
+            float cy = dy + h() - ((sy - view.y + 0.5f) * ch);
             cellVisible(s, cw, ch, cx, cy);
         }
 
@@ -477,11 +530,18 @@ public class ScrollGrid<X> extends Bordering {
 
     }
 
-    public static <X> ScrollGrid<X> list(GridRenderer<X> builder, X... list) {
+
+    public static <X> ScrollGrid<X> array(GridRenderer<X> builder, X... list) {
         return new ScrollGrid<>( ListModel.of(list), builder);
     }
     public static <X> ScrollGrid<X> list(GridRenderer<X> builder, List<X> list) {
         return new ScrollGrid<>( ListModel.of(list), builder);
+    }
+    public static <X> ScrollGrid<X> list(Function<X,Surface> builder, List<X> list) {
+        return new ScrollGrid<>( ListModel.of(list), GridRenderer.value(builder));
+    }
+    public static <X> ScrollGrid<X> listCached(Function<X,Surface> builder, List<X> list, int cacheCapacity) {
+        return new ScrollGrid<>( ListModel.of(list), GridRenderer.valueCached(builder, cacheCapacity));
     }
 
 }

@@ -74,11 +74,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     private transient Consumer<NodeVis<X>> builder = DEFAULT_NODE_BUILDER;
 
     public Graph2D() {
-        update(NullUpdater);
+        this(NullUpdater);
     }
 
     public Graph2D(Graph2DUpdater<X> updater) {
-        this();
+        super();
         update(updater);
     }
 
@@ -101,6 +101,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
      */
     public Graph2D<X> update(Graph2DUpdater<X> u) {
         this.updater = u;
+        layout();
         return this;
     }
 
@@ -129,7 +130,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Override
     protected void doLayout(int dtMS) {
-
+        System.out.println("layout");
     }
 
     @Override
@@ -188,8 +189,13 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
         nodes.forEach(x -> {
-            CellMap.CacheCell<X, NodeVis<X>> xxx = cells.compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
+            CellMap.CacheCell<X, NodeVis<X>> xxx =
+                    compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
+
+
             NodeVis<X> cv = xxx.value;
+            ((SurfaceCacheCell)xxx).surface = cv;
+
             if (cv.parent == null) {
                 cv.start(this);
                 cv.show();

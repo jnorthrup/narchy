@@ -1,29 +1,39 @@
 package nars.gui;
 
+import com.googlecode.lanterna.input.KeyType;
+import jcog.data.list.FasterList;
+import jcog.event.Off;
+import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Task;
+import nars.TextUI;
 import nars.agent.NAgent;
+import nars.concept.Concept;
 import nars.gui.graph.run.BagregateConceptGraph2D;
+import nars.term.Term;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
+import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
+import spacegraph.space2d.widget.slider.FloatGuage;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.math.Color3f;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -85,31 +95,93 @@ public class NARui {
 
 
     public static Surface top(NAR n) {
+        Map<String, Supplier<Surface>> m = Map.of(
+                "shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
+                "nar", () -> new ObjectSurface<>(n),
+                "exe", () -> ExeCharts.exePanel(n),
+                "val", () -> ExeCharts.valuePanel(n),
+                "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
+                "grp", () -> BagregateConceptGraph2D.get(n).widget(),
+                "svc", () -> new ServicesTable(n.services),
+                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n)
+        );
+        HashMap<String, Supplier<Surface>> mm = new HashMap();
+        mm.putAll(m);
+        mm.put(
+                "snp", () -> memoryView(n)
+        );
+        mm.put(
+                "tsk", () -> taskView(n)
+        );
+        mm.put("mem", () -> ScrollGrid.list(
+                        (int x, int y, Term v) -> new PushButton(m.toString()).click(() ->
+                                window(
+                                        ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(v).collect(toList())), 800, 800, true)
+                        ),
+                        n.memory.roots().collect(toList())
+                )
+        );
         return
                 new Bordering(
-                        new TabPane().addToggles(Map.of(
-                                                        "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
-                                                        "nar", () -> new ObjectSurface<>(n),
-                                                        "exe", () -> ExeCharts.exePanel(n),
-                                                        "val", () -> ExeCharts.valuePanel(n),
-                                                        "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
-                                                        "grp", () -> BagregateConceptGraph2D.get(n).widget(),
-                                                        "svc", () -> new ServicesTable(n.services),
-                                                        "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n),
-                                                        "snp", () -> memoryView(n),
-                                                        "mem", () -> ScrollGrid.list(
-                                                                (x, y, m) -> new PushButton(m.toString()).click((mm) ->
-
-                                                                        window(
-                                                                                ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(m).collect(toList())), 800, 800, true)
-                                                                ),
-                                                                n.memory.roots().collect(toList())
-                                                        )
-                                                ))
+                        new TabPane().addToggles(mm)
                 )
                         .north(ExeCharts.runPanel(n))
                         //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
                 ;
+    }
+
+    private static Surface taskView(NAR n) {
+
+        int cap = 32;
+        float rate = 1f;
+
+        CheckBox updating = new CheckBox("Update");
+        updating.set(true);
+
+        /** TODO make multithread better */
+        PLinkArrayBag<Task> b = new PLinkArrayBag<>(PriMerge.replace, cap);
+        List<Task> taskList = new FasterList();
+
+        ScrollGrid<Task> tasks = ScrollGrid.listCached(t ->
+                new Splitting(new FloatGuage(0,1, t::priElseZero),
+                        new PushButton(new VectorLabel(t.toStringWithoutBudget())).click(()->{
+                            conceptWindow(t, n);
+                        }),
+                        false, 0.1f),
+                taskList, 64);
+
+        TextEdit input = new TextEdit(16, 1);
+        input.onKey((k)->{
+           if (k.getKeyType()== KeyType.Enter) {
+               //input
+           }
+        });
+
+
+        Surface s = new Splitting(
+            tasks,
+            new Gridding(updating, input /* ... */)
+        , 0.1f);
+
+        Off onTask = n.onTask((t) -> {
+            if (updating.get()) {
+                b.put(new PLink<>(t, t.pri() * rate));
+            }
+        });
+        return DurSurface.get(s, n, (nn)->{
+
+        }, (nn) -> {
+            if (updating.get()) {
+                synchronized (tasks) {
+                    taskList.clear();
+                    b.commit();
+                    b.forEach(x -> taskList.add(x.get()));
+                    tasks.layout(); //HACK
+                }
+            }
+        }, (nn) -> {
+            onTask.off();
+        });
     }
 
     private static Surface memoryView(NAR n) {
@@ -134,8 +206,18 @@ public class NARui {
         window(new ConceptSurface(t, n), 500, 500);
     }
 
-    public static ObjectSurface<NAgent> agent(NAgent a) {
-        return new ObjectSurface<>(a, 4);
+    public static Surface agent(NAgent a) {
+
+        Iterable<Concept> rewards = ()->a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false) ).iterator();
+        Iterable<? extends Concept> actions = a.actions;
+
+        TabPane aa = new TabPane().addToggles(Map.of(
+                a.toString(), () -> new ObjectSurface<>(a, 4),
+                "emotion", () -> new EmotionPlot(128, a),
+                "reward", () -> NARui.beliefCharts( rewards, a.nar()),
+                "actions", () -> NARui.beliefCharts( actions, a.nar())
+        ) );
+        return aa;
 //            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) ->
 //                new PushButton(b.id.toString()).click(()-> {
 //                    window(new AspectAlign(
@@ -339,7 +421,7 @@ public class NARui {
 
     }
 
-//    static class NarseseJShellModel extends OmniBox.JShellModel {
+    //    static class NarseseJShellModel extends OmniBox.JShellModel {
 //        private final NAR nar;
 //
 //        public NarseseJShellModel(NAR n) {

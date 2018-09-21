@@ -106,7 +106,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 TaskRegion bb = gg.bounds();
                 if (bb!=null) {
                     long s = bb.start();
-                    Task tc = gg.matching(s, s, 1, term, x -> x instanceof SeriesBeliefTable.SeriesTask, n).any();
+                    Task tc = Answer.relevance(true, 1,
+                            s, s, term, x -> x instanceof CuriosityTask, n)
+                            .match(gg).any();
                     if (tc!=null) {
                         gg.removeTask(tc);
                         t.forget(tc );

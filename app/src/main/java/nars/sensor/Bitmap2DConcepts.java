@@ -161,6 +161,19 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         return getSafe(i, j);
     }
 
+    public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, BooleanSupplier enable, NAR nar) {
+        return new Bitmap2DReader(in, mode, nar) {
+            @Override
+            protected void next(NAR nar, BooleanSupplier kontinue) {
+                if (!enable.getAsBoolean()) {
+                    sleeping(nar);
+                    return;
+                }
+                super.next(nar, kontinue);
+            }
+        };
+    }
+
     public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
         return new Bitmap2DReader(in, mode, nar);
     }
@@ -171,7 +184,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     protected class Bitmap2DReader extends Causable {
 
         private int lastPixel;
-        private long lastUpdate, lastFrameStart;
+        private long lastFrameStart;
 
 
         final BufferedCauseChannel<ITask> in;
@@ -184,7 +197,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
         public Bitmap2DReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
             super();
-            lastFrameStart = lastUpdate = nar.time();
+            lastFrameStart = nar.time();
 
 
             int maxPendingHistory = 8;
@@ -218,7 +231,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             Bitmap2DConcepts.this.update();
 
             long sinceLastFrameStart = now - lastFrameStart;
-            this.lastUpdate = now;
 
             priPixel.set(priPixel(pri.floatValue()));
 
@@ -248,16 +260,16 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             }
 
             //TODO stop using Stream<> its not necessary here
-            int generatedTasks = in.size();
-            int pixelsRead = (int) in.input(s.takeWhile((z) -> generatedTasks == in.size() || kontinue.getAsBoolean() ) );
+            int beforeStart = in.size();
+            int pixelsRead = (int) in.input(s.takeWhile((z) -> beforeStart == in.size() || kontinue.getAsBoolean() ) );
 
-            if (sinceLastFrameStart >= dur) {
+            if (sinceLastFrameStart > dur) {
                 pixelsSinceLastStart = 0;
                 lastFrameStart = now;
             } else {
                 pixelsSinceLastStart += pixelsRead;
                 if (pixelsSinceLastStart >= area) {
-                    long untilNext = dur + lastFrameStart;
+                    long untilNext = Math.max(1, dur - 1) + lastFrameStart;
                     if (untilNext > now)
                         sleepUntil(untilNext);
                 }
@@ -281,8 +293,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
     private float priPixel(float pri) {
+        return pri;
         //return pri/area;
-        return (float) (pri / Math.sqrt(area));
+        //return (float) (pri / Math.sqrt(area));
     }
 
 

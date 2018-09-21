@@ -20,7 +20,6 @@ import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 
-import static jcog.Util.unitize;
 import static nars.$.$$;
 import static nars.agent.FrameTrigger.fps;
 import static nars.experiment.mario.level.Level.*;
@@ -28,7 +27,7 @@ import static spacegraph.SpaceGraph.window;
 
 public class NARio extends NAgentX {
 
-    private final MarioComponent mario;
+    private final MarioComponent game;
 //    private final AbstractSensor cam;
 
     static final float fps = 24;
@@ -41,14 +40,14 @@ public class NARio extends NAgentX {
 //        nar.freqResolution.set(0.1f);
 
 
-        mario = new MarioComponent(
+        game = new MarioComponent(
 
                 640, 480
         );
         JFrame frame = new JFrame("Infinite NARio");
         frame.setIgnoreRepaint(true);
 
-        frame.setContentPane(mario);
+        frame.setContentPane(game);
 
         frame.pack();
         frame.setResizable(false);
@@ -59,9 +58,9 @@ public class NARio extends NAgentX {
         frame.setVisible(true);
 
 
-        mario.start();
+        game.start();
 
-        PixelBag cc = PixelBag.of(() -> mario.image, 32, 24);
+        PixelBag cc = PixelBag.of(() -> game.image, 32, 24);
         cc.addActions(id, this, false, false, true);
         cc.actions.forEach(a -> a.resolution(0.5f));
 
@@ -115,21 +114,23 @@ public class NARio extends NAgentX {
         }
 
 
+
         onFrame((z) -> {
 
-
-            Scene scene1 = mario.scene;
+            Scene scene1 = game.scene;
 
             if (scene1 instanceof LevelScene) {
-                LevelScene scene = (LevelScene) scene1;
-                float xCam = scene.xCam;
-                float yCam = scene.yCam;
-                Mario M = ((LevelScene) this.mario.scene).mario;
+                LevelScene level = (LevelScene) game.scene;
+                theMario = level.mario;
+                float xCam = level.xCam;
+                float yCam = level.yCam;
+                Mario M = level.mario;
                 float x = (M.x - xCam) / 320f;
                 float y = (M.y - yCam) / 240f;
                 cc.setXRelative(x);
                 cc.setYRelative(y);
-
+            } else {
+                theMario = null;
             }
 
         });
@@ -139,18 +140,17 @@ public class NARio extends NAgentX {
         //initBipolar();
 
 
-        Signal dvx = senseNumberDifference($$("vx(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
-                mario.x : 0).resolution(0.02f);
-        Signal dvy = senseNumberDifference($$("vy(nario)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
-                mario.y : 0).resolution(0.02f);
+        Signal dvx = senseNumberDifference($$("vx(nario)"), () -> theMario!=null ? theMario.x : 0).resolution(0.02f);
+        Signal dvy = senseNumberDifference($$("vy(nario)"), () -> theMario!=null ? theMario.y : 0).resolution(0.02f);
 
 
         rewardNormalized("goRight", -1, +1, () -> {
 
             float reward;
-            float curX = mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).mario.x : Float.NaN;
+            float curX = theMario!=null ? theMario.x : Float.NaN;
             if (lastX == lastX && lastX < curX) {
-                reward = unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
+                reward = //unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
+                         1;
             } else {
                 reward = -1;
             }
@@ -163,6 +163,7 @@ public class NARio extends NAgentX {
             int deltaCoin = coins - lastCoins;
             if (deltaCoin <= 0)
                 return -1;
+                //return Float.NaN;
 
             float reward = deltaCoin * EarnCoin.floatValue();
             lastCoins = coins;
@@ -173,13 +174,9 @@ public class NARio extends NAgentX {
 //                return -1;
 //
             if (theMario ==null) {
-                if (mario.scene instanceof LevelScene)
-                    theMario = ((LevelScene) mario.scene).mario;
-                else
-                    return 0f;
+                return 0f;
             }
 
-            //System.out.println(theMario.deathTime);
             int t = theMario.deathTime > 0  ? -1 : +1;
 //            if (t == -1) {
 //                System.out.println("Dead");
@@ -196,9 +193,9 @@ public class NARio extends NAgentX {
 
 
 
-    public int tile(int dx, int dy) {
-        if (this.mario.scene instanceof LevelScene) {
-            LevelScene s = (LevelScene) mario.scene;
+    int tile(int dx, int dy) {
+        if (this.game.scene instanceof LevelScene) {
+            LevelScene s = (LevelScene) game.scene;
             Level ll = s.level;
             if (ll != null) {
                 //System.out.println(s.mario.x + " " + s.mario.y);
@@ -221,17 +218,17 @@ public class NARio extends NAgentX {
         actionPushButtonMutex(
                 $$("left(nario)"),
                 $$("right(nario)"),
-                n -> mario.scene.key(Mario.KEY_LEFT, n),
-                n -> mario.scene.key(Mario.KEY_RIGHT, n));
+                n -> game.scene.key(Mario.KEY_LEFT, n),
+                n -> game.scene.key(Mario.KEY_RIGHT, n));
 
         GoalActionConcept j = actionPushButton($$("jump(nario)"),
                 n -> {
 
-                    Scene s = mario.scene;
+                    Scene s = game.scene;
                     int jumpTime = s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0;
                     //System.out.println(jumpTime);
                     boolean jumping = jumpTime > 0;
-                    boolean wasPressed = mario.scene.key(Mario.KEY_JUMP);
+                    boolean wasPressed = game.scene.key(Mario.KEY_JUMP);
 
                     boolean press;
                     if (!n) {
@@ -252,15 +249,15 @@ public class NARio extends NAgentX {
                         else
                             press = false;
                     }
-                    mario.scene.key(Mario.KEY_JUMP, press);
+                    game.scene.key(Mario.KEY_JUMP, press);
                     return press;
                 });
 
 
         actionToggle($$("down(nario)"),
-                n -> mario.scene.key(Mario.KEY_DOWN, n));
+                n -> game.scene.key(Mario.KEY_DOWN, n));
         actionToggle($$("speed(nario)"),
-                n -> mario.scene.key(Mario.KEY_SPEED, n));
+                n -> game.scene.key(Mario.KEY_SPEED, n));
 
 
     }
@@ -284,8 +281,8 @@ public class NARio extends NAgentX {
                 default:
                     throw new RuntimeException();
             }
-            mario.scene.key(Mario.KEY_LEFT, n);
-            mario.scene.key(Mario.KEY_RIGHT, p);
+            game.scene.key(Mario.KEY_LEFT, n);
+            game.scene.key(Mario.KEY_RIGHT, p);
             return true;
         });
         actionTriState($.inh($.the("y"), id), i -> {
@@ -306,9 +303,9 @@ public class NARio extends NAgentX {
                 default:
                     throw new RuntimeException();
             }
-            mario.scene.key(Mario.KEY_DOWN, n);
+            game.scene.key(Mario.KEY_DOWN, n);
 
-            mario.scene.key(Mario.KEY_JUMP, p);
+            game.scene.key(Mario.KEY_JUMP, p);
             return true;
         });
 
@@ -323,21 +320,21 @@ public class NARio extends NAgentX {
 
             float boostThresh = 0.75f;
             if (x <= -thresh) {
-                mario.scene.key(Mario.KEY_LEFT, true);
-                mario.scene.key(Mario.KEY_RIGHT, false);
-                mario.scene.key(Mario.KEY_SPEED, x <= -boostThresh);
+                game.scene.key(Mario.KEY_LEFT, true);
+                game.scene.key(Mario.KEY_RIGHT, false);
+                game.scene.key(Mario.KEY_SPEED, x <= -boostThresh);
 
                 return x <= -boostThresh ? -1 : -boostThresh;
             } else if (x >= +thresh) {
-                mario.scene.key(Mario.KEY_RIGHT, true);
-                mario.scene.key(Mario.KEY_LEFT, false);
-                mario.scene.key(Mario.KEY_SPEED, x >= +boostThresh);
+                game.scene.key(Mario.KEY_RIGHT, true);
+                game.scene.key(Mario.KEY_LEFT, false);
+                game.scene.key(Mario.KEY_SPEED, x >= +boostThresh);
 
                 return x >= +boostThresh ? +1 : +boostThresh;
             } else {
-                mario.scene.key(Mario.KEY_LEFT, false);
-                mario.scene.key(Mario.KEY_RIGHT, false);
-                mario.scene.key(Mario.KEY_SPEED, false);
+                game.scene.key(Mario.KEY_LEFT, false);
+                game.scene.key(Mario.KEY_RIGHT, false);
+                game.scene.key(Mario.KEY_SPEED, false);
 
 
                 return 0f;
@@ -347,18 +344,18 @@ public class NARio extends NAgentX {
         BiPolarAction Y = actionBipolarFrequencyDifferential($.p(id, $.the("y")), false, (y) -> {
 
             if (y <= -thresh) {
-                mario.scene.key(Mario.KEY_DOWN, true);
-                mario.scene.key(Mario.KEY_JUMP, false);
+                game.scene.key(Mario.KEY_DOWN, true);
+                game.scene.key(Mario.KEY_JUMP, false);
                 return -1f;
 
             } else if (y >= +thresh) {
-                mario.scene.key(Mario.KEY_JUMP, true);
-                mario.scene.key(Mario.KEY_DOWN, false);
+                game.scene.key(Mario.KEY_JUMP, true);
+                game.scene.key(Mario.KEY_DOWN, false);
                 return +1f;
 
             } else {
-                mario.scene.key(Mario.KEY_JUMP, false);
-                mario.scene.key(Mario.KEY_DOWN, false);
+                game.scene.key(Mario.KEY_JUMP, false);
+                game.scene.key(Mario.KEY_DOWN, false);
 
                 return 0f;
 

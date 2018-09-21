@@ -33,8 +33,8 @@ import static nars.truth.TruthFunctions.w2cSafe;
 public class Answer implements Consumer<Task> {
 
     public final static int TASK_LIMIT_DEFAULT =
-            //Param.STAMP_CAPACITY-1;
-            Param.STAMP_CAPACITY / 2;
+            Param.STAMP_CAPACITY-1;
+            //Param.STAMP_CAPACITY / 2;
 
 
     public final NAR nar;
@@ -80,7 +80,8 @@ public class Answer implements Consumer<Task> {
 
     @Deprecated
     public static Answer relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
-        return relevance(beliefOrQuestion, beliefOrQuestion ? TASK_LIMIT_DEFAULT : 1, start, end, template, filter, nar);
+        return relevance(beliefOrQuestion,
+                beliefOrQuestion ? TASK_LIMIT_DEFAULT : 1, start, end, template, filter, nar);
     }
 
     /**
@@ -97,7 +98,9 @@ public class Answer implements Consumer<Task> {
     }
 
     public static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, NAR nar) {
-        int dur = nar.dur();
+        int dur =
+                nar.dur();
+                //1;
 
         FloatRank<Task> strength =
                 beliefOrQuestion ?
@@ -176,7 +179,7 @@ public class Answer implements Consumer<Task> {
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
-                                return pri * (1 / ((float) (t.minTimeTo(start, end) / ((double) dur))));
+                                return pri / (1 + ((float) (t.minTimeTo(start, end) / ((double) dur))));
                             return Float.NaN;
                         };
 
@@ -417,11 +420,12 @@ public class Answer implements Consumer<Task> {
     /** consume a limited 'tries' iteration. also applies the filter.
      *  a false return value should signal a stop to any iteration supplying results */
     public boolean tryAccept(Task t) {
-        if (triesRemain-- < 0)
-            return false;
 
-        if (filter==null || filter.test(t))
+        if (filter==null || filter.test(t)) {
+            if (triesRemain-- < 0)
+                return false;
             accept(t);
+        }
 
         return true;
     }

@@ -83,13 +83,11 @@ public interface TaskTable {
     }
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return matching(start, end, Answer.TASK_LIMIT_DEFAULT, template, filter, nar);
+        return !isEmpty() ? Answer.relevance(!(this instanceof QuestionTable),
+                start, end, template, filter, nar)
+                .match(this) : null;
     }
 
-    default Answer matching(long start, long end, int limit, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return Answer.relevance(!(this instanceof QuestionTable), limit, start, end, template, filter, nar)
-                .match(this);
-    }
 
     @Nullable default Task answer(long start, long end, Term template, NAR n) {
         return answer(start, end, template, null, n);

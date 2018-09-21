@@ -1,6 +1,6 @@
 package nars.table.question;
 
-import jcog.data.map.MRUCache;
+import jcog.data.map.MRUMap;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * this impl sucks actually
  * TODO make one based on ArrayHashSet
  */
-public class MRUMapQuestionTable extends MRUCache<Task, Task> implements QuestionTable {
+public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionTable {
 
 
     public MRUMapQuestionTable() {

@@ -506,7 +506,7 @@ public class Occurrify extends TimeGraph {
          */
         TaskRange() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 return solveDT(d, x, d.occ.reset(x));
             }
 
@@ -540,7 +540,7 @@ public class Occurrify extends TimeGraph {
          */
         Default() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
 
                 Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x));
@@ -623,7 +623,7 @@ public class Occurrify extends TimeGraph {
 
         TaskPlusBeliefDT() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false)), +1);
             }
 
@@ -636,7 +636,7 @@ public class Occurrify extends TimeGraph {
         },
         TaskMinusBeliefDT() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false)), -1);
             }
 
@@ -653,7 +653,7 @@ public class Occurrify extends TimeGraph {
          */
         TaskRelative() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
                 return solveDT(d, x, d.occ.reset(x, false));
             }
@@ -675,7 +675,7 @@ public class Occurrify extends TimeGraph {
          */
         TaskSubEventPos() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 return solveSubEvent(d, x, false);
             }
 
@@ -694,7 +694,7 @@ public class Occurrify extends TimeGraph {
          */
         TaskSubEventNeg() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 return solveSubEvent(d, x, true);
             }
 
@@ -714,7 +714,7 @@ public class Occurrify extends TimeGraph {
          */
         BeliefRelative() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 return solveDT(d, x, d.occ.reset(x, false));
             }
 
@@ -736,7 +736,7 @@ public class Occurrify extends TimeGraph {
          */
         Relative() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
 
                 if (x.op() != CONJ || x.subs() != 2) {
@@ -811,7 +811,7 @@ public class Occurrify extends TimeGraph {
          */
         Intersect() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 return solveOccDT(d, x, d.occ.reset(x));
             }
 
@@ -851,7 +851,7 @@ public class Occurrify extends TimeGraph {
          */
         Union() {
             @Override
-            public Pair<Term, long[]> solve(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 //return solveOccDTWithGoalOverride(d, x);
                 return solveOccDT(d, x, d.occ.reset(x));
             }
@@ -964,7 +964,7 @@ public class Occurrify extends TimeGraph {
             return term;
         }
 
-        abstract public Pair<Term, long[]> solve(Derivation d, Term x);
+        abstract public Pair<Term, long[]> occurrence(Derivation d, Term x);
 
         protected Pair<Term, long[]> solveOccDT(Derivation d, Term x, Occurrify o) {
             ArrayHashSet<Event> solutions = o.solutions(x);

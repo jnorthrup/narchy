@@ -72,33 +72,42 @@ public interface NSense {
     default <E extends Enum> void senseSwitch(String term, Supplier<E> value) throws Narsese.NarseseException {
         E[] values = ((Class<? extends E>) value.get().getClass()).getEnumConstants();
         for (E e : values) {
-            Term t = switchTerm(term, e.toString());
-            sense(t, () -> value.get() == e);
+            sense(switchTerm(term, e.toString()), () -> value.get() == e);
         }
     }
 
     default void senseSwitch(Term term, IntSupplier value, int min, int max) {
-        senseSwitch(value, Util.intSequence(min, max), (e) -> switchTerm(term, the(e)));
+        assert(max-min> 1): "too few options for switch";
+        senseSwitch(value, Util.intArray(min, max), (e) -> switchTerm(term, the(e)));
     }
+
+//    static class EnumSignal extends AbstractSensor {
+//
+//        @Override
+//        public void update(long last, long now, long next, NAR nar) {
+//
+//        }
+//
+//        @Override
+//        public Iterable<Termed> components() {
+//            return null;
+//        }
+//    }
 
     /**
      * interpret an int as a selector between (enumerated) integer values
      */
     default void senseSwitch(IntSupplier value, int[] values, IntFunction<Term> termizer) {
-        for (int e : values) {
-            Term t = termizer.apply(e);
-            sense(t, () -> value.getAsInt() == e);
-        }
+        for (int e : values)
+            sense(termizer.apply(e), () -> value.getAsInt() == e);
     }
 
     /**
      * interpret an int as a selector between (enumerated) object values
      */
     default <O> void senseSwitch(String term, Supplier<O> value, O... values) throws Narsese.NarseseException {
-        for (O e : values) {
-            Term t = switchTerm(term, '"' + e.toString() + '"');
-            sense(t, () -> value.get().equals(e));
-        }
+        for (O e : values)
+            sense(switchTerm(term, '"' + e.toString() + '"'), () -> value.get().equals(e));
     }
 
     /*

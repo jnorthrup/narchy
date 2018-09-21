@@ -40,6 +40,7 @@ public class Remember extends AbstractTask {
 
     @Nullable
     public static Remember the(Task input, NAR n) {
+
         if (!input.isCommand()) {
             try {
                 TaskConcept concept = (TaskConcept) n.conceptualize(input);

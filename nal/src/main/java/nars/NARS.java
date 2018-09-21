@@ -2,7 +2,7 @@ package nars;
 
 import jcog.TODO;
 import jcog.data.list.FasterList;
-import jcog.data.map.MRUCache;
+import jcog.data.map.MRUMap;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -157,7 +157,7 @@ public class NARS {
                 
                 new MapConceptIndex(
 
-                        new MRUCache<>(8*1024) {
+                        new MRUMap<>(8*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();

@@ -136,7 +136,7 @@ public class SliderModel extends Surface {
             return x;
     }
     private static float pVertical(v2 hitPoint) {
-        float y = hitPoint.y;
+        float y = 1 - hitPoint.y;
         if (y <= margin)
             return 0;
         else if (y >= (1f-margin))
@@ -195,13 +195,13 @@ public class SliderModel extends Surface {
             float knobWidth = 0.05f;
             float W = 1;
             float H = 1;
-            float x = W * p;
+            float y = H * (1-p);
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
             Draw.rect(gl, 0, 0, W, H);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(gl, 0, x-knobWidth/2f, W, knobWidth);
+            Draw.rect(gl, 0, y-knobWidth/2f, W, knobWidth);
         }
 
         @Override

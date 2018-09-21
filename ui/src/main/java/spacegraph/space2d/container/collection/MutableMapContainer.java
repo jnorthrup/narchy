@@ -7,10 +7,7 @@ import spacegraph.space2d.container.AbstractMutableContainer;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
@@ -124,12 +121,21 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
         CellMap.CacheCell<K, V> entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
 
-        ((SurfaceCacheCell) entry).update(key, nextValue, renderer);
+        ((SurfaceCacheCell<K,V>) entry).update(key, nextValue, renderer, (BiConsumer<V,Surface>)this::hide);
 
         return cells.update(key, entry, entry.key != null);
 
     }
 
+
+    /** default behavior is to call Surface.stop() but caching can be implemented here */
+    protected void hide(V key, Surface s) {
+//        if (cache == null) {
+            s.stop();
+//        } else {
+//            s.hide();
+//        }
+    }
 
     public V remove(Object key) {
         CellMap.CacheCell<K, V> c = cells.remove(key);
@@ -185,42 +191,44 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
             }
         }
 
-        @Override
-        protected void set(V next) {
-            super.set(next);
-            if (next instanceof Surface) {
-                setSurface((Surface) next);
-            }
-        }
 
-        private void setSurface(Surface next) {
+        /** returns previous surface, or null if unchanged */
+        private Surface setSurface(Surface next) {
             ///assert (surface == null);
-            if (next != surface) {
-                if (this.surface != null) {
-                    this.surface.stop();
-                }
+            Surface prev = this.surface;
+            if (next != prev) {
                 this.surface = next;
+                return prev;
             }
+            else
+                return null;
         }
 
         /**
          * return true to keep or false to remove from the map
          */
-        void update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer) {
+        void update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer, BiConsumer<V, Surface> hider) {
 
+            Surface removed;
             if (nextValue == null) {
                 this.key = null;
-
+                set(null);
+                removed = setSurface(null);
             } else {
 
                 if (!Objects.equals(this.value, nextValue) || surface == null) {
-                    this.key = null;
                     Surface nextSurface = renderer.apply(nextKey, nextValue);
                     set(nextValue);
-                    setSurface(nextSurface);
+                    removed = setSurface(nextSurface);
+                } else {
+                    removed = null;
                 }
 
                 this.key = nextKey; //ready
+            }
+
+            if (removed!=null) {
+                hider.accept(nextValue, removed);
             }
 
         }

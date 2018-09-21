@@ -1,6 +1,6 @@
 package jcog.memoize;
 
-import jcog.data.map.MRUCache;
+import jcog.data.map.MRUMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -8,7 +8,7 @@ import java.util.function.Function;
 import static jcog.Texts.n2;
 
 
-public class LinkedMRUMemoize<X, Y> extends MRUCache<X, Y> implements Memoize<X, Y> {
+public class LinkedMRUMemoize<X, Y> extends MRUMap<X, Y> implements Memoize<X, Y> {
 
     public final Function<X, Y> f;
 

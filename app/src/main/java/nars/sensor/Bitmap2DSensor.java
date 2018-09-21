@@ -18,6 +18,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BooleanSupplier;
+
 import static nars.Op.BELIEF;
 
 /**
@@ -86,6 +88,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
 
     public Bitmap2DConcepts.Bitmap2DReader readAdaptively() {
         return concepts.newReader(in, mode, nar);
+    }
+    public Bitmap2DConcepts.Bitmap2DReader readAdaptively(BooleanSupplier enable) {
+        return concepts.newReader(in, mode, enable, nar);
     }
 
 //    public DurService readDirectEachDuration() {

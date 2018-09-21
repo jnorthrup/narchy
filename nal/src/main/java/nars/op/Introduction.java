@@ -36,6 +36,7 @@ public abstract class Introduction extends LeakBack  {
                     int yc = y.complexity();
                     float priSharePct =
                             1f - (yc / (xc + yc));
+                    yy.pri(0);
                     yy.take(xx, priSharePct, false, false);
 
                     input(yy);

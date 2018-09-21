@@ -1461,7 +1461,7 @@ public enum Util {
     /**
      * range [a, b)
      */
-    public static int[] intSequence(int a, int b) {
+    public static int[] intArray(int a, int b) {
         int ba = b - a;
         int[] x = new int[ba];
         for (int i = 0; i < ba; i++) {

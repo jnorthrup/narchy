@@ -74,6 +74,7 @@ public class NALTask extends UnitPri implements Task {
 
     }
 
+
     @Override
     public final int hashCode() {
         return hash;

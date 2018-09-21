@@ -1,6 +1,7 @@
 package jcog.data.list;
 
 import jcog.Util;
+import jcog.util.FloatFloatToFloatFunction;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -244,6 +245,21 @@ public class FasterList<X> extends FastList<X> {
 
     public float meanValue(FloatFunction<? super X> function) {
         return (float) (sumOfFloat(function) / size());
+    }
+
+    /** reduce */
+    public float reapply(FloatFunction<? super X> function, FloatFloatToFloatFunction combine) {
+        int n = size;
+        switch (n) {
+            case 0: return Float.NaN;
+            case 1: return function.floatValueOf(items[0]);
+            default:
+                float x = function.floatValueOf(items[0]);
+                for (int i = 1; i < n; i++) {
+                    x = combine.apply(x, function.floatValueOf(items[i]));
+                }
+                return x;
+        }
     }
 
     public int maxIndex(Comparator<? super X> comparator) {

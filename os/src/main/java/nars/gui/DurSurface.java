@@ -63,7 +63,31 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
             }
         };
     }
+    public static DurSurface get(Surface x, NAR n, Consumer<NAR> start, Consumer<NAR> eachDur, Consumer<NAR> stop) {
+        return new DurSurface(x, n) {
+            @Override
+            protected void update() {
+                eachDur.accept(n);
+            }
 
+            @Override
+            protected void starting() {
+                super.starting();
+                start.accept(nar);
+            }
+
+            @Override
+            protected void stopping() {
+                stop.accept(nar);
+                super.stopping();
+            }
+
+            @Override
+            public String toString() {
+                return "DurSurface[" + x + "," + eachDur + "]";
+            }
+        };
+    }
     public static DurSurface get(Surface narConsumer, NAR n) {
         return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }

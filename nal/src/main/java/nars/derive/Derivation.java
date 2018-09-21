@@ -453,7 +453,7 @@ public class Derivation extends PreDerivation {
         this.pri =
                 _belief == null ?
                         Param.TaskToDerivation.valueOf(taskPri) :
-                        Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
+                        Param.DerivationPri.apply(taskPri, _belief.priElseZero());
 
 
         long[] t = belief!=null && taskStart!=ETERNAL && beliefStart != ETERNAL ?

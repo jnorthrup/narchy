@@ -23,7 +23,7 @@ public class RUCache<K, V> {
     public RUCache(final int capacity) {
         lru = new WeakHashMap<K, V>(capacity);
 
-        mru = new MRUCache<K,V>(capacity) {
+        mru = new MRUMap<K,V>(capacity) {
             @Override
             protected void onEvict(Map.Entry<K, V> entry) {
                 lru.put(entry.getKey(), entry.getValue());

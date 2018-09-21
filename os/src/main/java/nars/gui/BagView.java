@@ -30,9 +30,10 @@ public class BagView<X extends Prioritized> extends TabPane {
                                 Prioritized p = n.id;
                                 float pri = n.pri = Math.max(p.priElseZero(), 1/(2*bag.capacity()));
                                 n.color(pri, 0.25f, 0.25f);
-                                if (n.childrenCount()==0) {
-                                    n.set(new PushButton(p.toString())/*.click(()->{})*/);
-                                }
+
+                                if (n.the()==null)
+                                    n.set(new PushButton(new VectorLabel(p.toString())/*.click(()->{})*/));
+
                             }) {
                                 DurService on;
 
