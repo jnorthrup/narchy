@@ -55,7 +55,7 @@ public class BitmapLabel extends BitmapTextGrid {
     protected void layoutText() {
         if (cols > 0 && rows > 0) {
 
-            textBounds = AspectAlign.the(bounds, (rows * charAspect) / cols);
+            textBounds = AspectAlign.innerBounds(bounds, (rows * charAspect) / cols);
 
         } else
             textBounds = bounds; //nothing

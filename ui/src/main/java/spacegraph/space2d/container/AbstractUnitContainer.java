@@ -1,5 +1,6 @@
 package spacegraph.space2d.container;
 
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Surface;
 
 import java.util.function.Consumer;
@@ -12,15 +13,19 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
 
     @Override
     protected void starting() {
+        if (parent!=null)
         the().start(this);
     }
 
     /** default behavior: inherit bounds directly */
     @Override
-    @Deprecated protected void doLayout(int dtMS) {
+    @Deprecated protected final void doLayout(int dtMS) {
         S t = the();
-        t.pos(bounds);
+        t.pos(innerBounds());
         t.layout();
+    }
+    protected RectFloat2D innerBounds() {
+        return bounds;
     }
 
 
@@ -30,8 +35,13 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
     }
 
     @Override
-    public void forEach(Consumer<Surface> o) {
-        o.accept(the());
+    public final void forEach(Consumer<Surface> o) {
+
+        S t = the();
+        assert(t!=null);
+        //if (t!=null) {
+            o.accept(t);
+        //}
     }
 
     @Override

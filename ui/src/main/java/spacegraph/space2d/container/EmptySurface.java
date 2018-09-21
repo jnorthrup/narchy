@@ -33,10 +33,6 @@ public class EmptySurface extends Surface {
         return this; 
     }
 
-    @Override
-    public boolean showing() {
-        return false;
-    }
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {

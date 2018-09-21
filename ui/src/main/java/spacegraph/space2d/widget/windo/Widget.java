@@ -49,11 +49,7 @@ public class Widget extends MutableUnitContainer<Surface> {
 
 
     public Widget(Surface content) {
-        super();
-
-        content(content);
-
-
+        super(content);
     }
 
     @Override
@@ -165,8 +161,9 @@ public class Widget extends MutableUnitContainer<Surface> {
         }
     }
 
+
     @Override
-    protected void doLayout(int dtMS) {
+    protected RectFloat2D innerBounds() {
         RectFloat2D r = bounds;
         float b;
         if (r.w >= r.h) {
@@ -175,14 +172,6 @@ public class Widget extends MutableUnitContainer<Surface> {
             b = border * r.w;
         }
         b *= 2;
-        RectFloat2D rr = r.size(r.w - b, r.h - b);
-        forEach(c -> c.pos(rr));
+        return r.size(r.w - b, r.h - b);
     }
-
-    public Widget content(Surface next) {
-        set(next);
-        return this;
-    }
-
-
 }

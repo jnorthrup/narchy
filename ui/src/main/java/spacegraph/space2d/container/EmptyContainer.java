@@ -19,11 +19,11 @@ abstract public class EmptyContainer extends Container {
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        return false;
+        return true;
     }
 }

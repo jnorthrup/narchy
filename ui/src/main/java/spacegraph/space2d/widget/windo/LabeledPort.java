@@ -12,7 +12,7 @@ public class LabeledPort<X> extends Port {
     }
 
     private LabeledPort(Function<X, String> toString) {
-        content(l);
+        set(l);
         on((v)->l.text(toString.apply((X) v)));
     }
 

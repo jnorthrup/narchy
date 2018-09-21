@@ -53,12 +53,11 @@ public class FloatSlider extends Widget {
     private FloatSlider(FloatSliderModel m) {
         super();
 
-        content(new Stacking(
+        set(new Stacking(
                 new Scale(slider = m, 0.95f),
                 new Scale(label, 0.85f)
         ));
     }
-
 
     public FloatSlider text(String label) {
         this.labelText = label;
@@ -86,11 +85,13 @@ public class FloatSlider extends Widget {
     public boolean prePaint(SurfaceRender r) {
 
         slider.update();
+
         float nextValue = get();
         if (lastValue != nextValue) {
             updateText();
+            lastValue = nextValue;
         }
-        lastValue = nextValue;
+
 
         return super.prePaint(r);
     }

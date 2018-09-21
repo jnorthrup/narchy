@@ -1,5 +1,6 @@
 package spacegraph.space2d.container;
 
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Surface;
 
 public class Scale extends UnitContainer {
@@ -22,29 +23,13 @@ public class Scale extends UnitContainer {
 
 
     @Override
-    protected void doLayout(int dtMS) {
-
-        
-
-
-
+    protected RectFloat2D innerBounds() {
         float w = w();
-        float vw = w * scale; 
+        float vw = w * scale;
         float h = h();
         float vh = h * scale;
         float marginAmt = (1f - scale) / 2;
         float tx = x() + w * marginAmt, ty = y() + h * marginAmt;
-
-        the.pos(tx, ty, tx+vw, ty+vh);
+        return RectFloat2D.XYXY(tx, ty, tx+vw, ty+vh);
     }
-
-
-
-
-
-
-
-
-
-
 }

@@ -5,6 +5,7 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProced
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.EmptySurface;
 import spacegraph.video.ImageTexture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,13 +23,14 @@ public class ToggleButton extends AbstractButton {
     ToggleButton() {
         this(false);
     }
+
     private ToggleButton(boolean startingValue) {
+        super(new EmptySurface());
         on.set(startingValue);
     }
 
     public ToggleButton(Surface view) {
-        super();
-        set(view);
+        super(view);
     }
 
 

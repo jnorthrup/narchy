@@ -83,7 +83,7 @@ abstract public class Container extends Surface {
             showing = true;
         }
 
-        
+
         if (mustLayout) {
             mustLayout = false;
             doLayout(dtMS);
@@ -99,7 +99,11 @@ abstract public class Container extends Surface {
     }
 
     public final void renderContents(GL2 gl, SurfaceRender r) {
-        forEach(c -> c.render(gl, r));
+        forEach(c -> {
+            if (c.parent==null)
+                throw new NullPointerException(c + " is unparented child of " + Container.this);
+            c.render(gl, r);
+        });
     }
 
     protected boolean prePaint(SurfaceRender r) {
@@ -107,7 +111,8 @@ abstract public class Container extends Surface {
         return true;
     }
 
-    @Deprecated public void prePaint(int dtMS) {
+    @Deprecated
+    public void prePaint(int dtMS) {
 
     }
 
@@ -118,9 +123,9 @@ abstract public class Container extends Surface {
         if (!showing())
             return null;
 
-        if (childrenCount() > 0) { 
+        if (childrenCount() > 0) {
 
-            
+
             if (finger == null) {
                 forEach(c -> c.finger(null));
                 return null;
@@ -128,31 +133,18 @@ abstract public class Container extends Surface {
 
                 Surface[] found = new Surface[1];
 
-                
+
                 float fx = finger.pos.x;
                 float fy = finger.pos.y;
 
-                
+
                 whileEachReverse(c -> {
 
 
-
-
-                    
-
-                    
-                    
-
-                    
-
-                    
-
-                    
-
                     if (!c.showing())
-                        return true; 
+                        return true;
 
-                    if ((c instanceof Container && !((Container)c).clipBounds) || (
+                    if ((c instanceof Container && !((Container) c).clipBounds) || (
                             fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
 
 
@@ -161,7 +153,7 @@ abstract public class Container extends Surface {
 
 
                             found[0] = s;
-                            return false; 
+                            return false;
                         }
                     }
 
@@ -185,7 +177,7 @@ abstract public class Container extends Surface {
 
     @Override
     public boolean key(KeyEvent e, boolean pressed) {
-        if (visible() && !super.key(e, pressed)) {
+        if (showing() && !super.key(e, pressed)) {
             return whileEach(c -> c.key(e, pressed));
         }
         return false;
@@ -193,7 +185,7 @@ abstract public class Container extends Surface {
 
     @Override
     public boolean key(v2 hitPoint, char charCode, boolean pressed) {
-        if (visible() && !super.key(hitPoint, charCode, pressed)) {
+        if (showing() && !super.key(hitPoint, charCode, pressed)) {
             return whileEach(c -> c.key(hitPoint, charCode, pressed));
         }
         return false;
@@ -216,10 +208,10 @@ abstract public class Container extends Surface {
         o.accept(this);
 
         forEach(z -> {
-           if (z instanceof Container)
-               ((Container)z).forEachRecursively(o);
-           else
-               o.accept(z);
+            if (z instanceof Container)
+                ((Container) z).forEachRecursively(o);
+            else
+                o.accept(z);
         });
 
     }

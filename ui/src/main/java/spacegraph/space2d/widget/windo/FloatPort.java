@@ -24,7 +24,7 @@ public class FloatPort extends /*Source*/Port {
         this.f = f;
 
         FloatSlider s = new FloatSlider(f);
-        content(new Gridding(0.25f, new EmptySurface(), s));
+        set(new Gridding(0.25f, new EmptySurface(), s));
     }
 
     @Override

@@ -164,10 +164,7 @@ public class Gridding extends MutableListContainer {
 
 
 
-        float X = x();
-        float Y = y();
-        float W = w();
-        float H = h();
+        float X = x(), Y = y(), W = w(), H = h();
 
         for (int y = 0; y < ny; y++) {
 

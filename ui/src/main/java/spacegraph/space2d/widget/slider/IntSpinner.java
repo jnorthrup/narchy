@@ -23,7 +23,7 @@ public class IntSpinner extends Widget {
         this.max = max;
         this.i = i;
         this.labeller = labeller;
-        content(
+        set(
             new Splitting(
                 label = new VectorLabel(),
                 new Gridding(Gridding.HORIZONTAL,

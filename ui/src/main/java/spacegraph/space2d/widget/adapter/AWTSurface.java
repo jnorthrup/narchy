@@ -95,7 +95,7 @@ public class AWTSurface extends Widget {
             component.validate();
 
 
-            content(tex.view());
+            set(tex.view());
 
 
             AtomicBoolean busy = new AtomicBoolean(false);

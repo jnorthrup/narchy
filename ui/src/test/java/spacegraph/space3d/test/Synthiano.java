@@ -87,7 +87,7 @@ public class Synthiano extends Widget {
 
 
 
-        content(new BitmapMatrixView(4,4, (x,y)->0) {
+        set(new BitmapMatrixView(4,4, (x, y)->0) {
 
             @Override
             public void updateTouch(Finger finger) {

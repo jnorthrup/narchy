@@ -38,7 +38,7 @@ abstract public class Surface implements SurfaceBase {
      * scale can remain the unit 1 vector, normally
      */
 
-    public volatile RectFloat2D bounds = RectFloat2D.Unit;
+    public volatile RectFloat2D bounds = RectFloat2D.Zero;
     public volatile SurfaceBase parent;
     protected volatile boolean visible = true, showing = false;
 

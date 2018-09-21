@@ -1,7 +1,6 @@
 package spacegraph.space2d.container;
 
 import jcog.TODO;
-import jcog.pri.ScalarValue;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableArrayContainer;
 
@@ -106,7 +105,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         for (int i = 0, childrenLength = l; i < childrenLength; i++) {
             S c = get(i);
 
-            if (c == null)
+            if (c == null || !c.visible())
                 continue;
 
             float x1, y1, x2, y2;
@@ -158,13 +157,13 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
                     throw new TODO();
             }
 
-            if (x2 - x1 < ScalarValue.EPSILON || y2-y1 < ScalarValue.EPSILON) {
-                c.hide();
-            } else {
+//            if (x2 - x1 < ScalarValue.EPSILON || y2-y1 < ScalarValue.EPSILON) {
+//                c.hide();
+//            } else {
                 c.pos(X + x1, Y + y1, X + x2, Y + y2);
-                c.show();
+//                c.show();
                 c.layout();
-            }
+//            }
         }
 
     }

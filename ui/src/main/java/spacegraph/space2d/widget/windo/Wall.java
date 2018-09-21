@@ -5,7 +5,6 @@ import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Animating;
-import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.widget.meta.MetaFrame;
@@ -78,7 +77,11 @@ public class Wall<S extends Surface> extends MutableMapContainer<Surface, Windo>
     @Override
     public void doLayout(int dtMS) {
         //w.fence(bounds);
-        forEachValue(Container::layout);
+        forEach(w -> {
+            if (w.parent==null)
+                w.start(Wall.this);
+            w.layout();
+        });
     }
     public @Nullable Windo get(Surface t) {
         return getValue(t);

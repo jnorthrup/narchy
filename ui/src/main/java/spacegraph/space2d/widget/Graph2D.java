@@ -194,7 +194,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
             NodeVis<X> cv = xxx.value;
-            ((SurfaceCacheCell)xxx).surface = cv;
+
 
             if (cv.parent == null) {
                 cv.start(this);

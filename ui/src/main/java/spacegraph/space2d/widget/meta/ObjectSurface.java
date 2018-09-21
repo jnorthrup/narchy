@@ -346,7 +346,7 @@ public class ObjectSurface<X> extends Gridding {
 
             });
 
-            content(new ObjectMetaFrame(x, new Gridding(l)));
+            set(new ObjectMetaFrame(x, new Gridding(l)));
         }
     }
 

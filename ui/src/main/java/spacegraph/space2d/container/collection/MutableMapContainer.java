@@ -55,6 +55,8 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 //                throw new NullPointerException();
 
             Surface s = ((SurfaceCacheCell) e).surface;
+            if ((s == null) && (e.value instanceof Surface))
+                s = (Surface)e.value; //HACK
             if (s != null)
                 each.accept(s);
         });
@@ -110,11 +112,19 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     }
 
     public CellMap.CacheCell<K, V> compute(K key, Function<V, V> builder) {
-        return cells.compute(key, builder);
+        CellMap.CacheCell<K, V> y = cells.compute(key, builder);
+        V v = y.value;
+        if(v instanceof Surface)
+            ((SurfaceCacheCell)y).surface = (Surface) v;
+        return y;
     }
 
     public CellMap.CacheCell<K, V> computeIfAbsent(K key, Function<K, V> builder) {
-        return cells.computeIfAbsent(key, builder);
+        CellMap.CacheCell<K, V> y = cells.computeIfAbsent(key, builder);
+        V v = y.value;
+        if(v instanceof Surface)
+            ((SurfaceCacheCell)y).surface = (Surface) v;
+        return y;
     }
 
     protected CellMap.CacheCell<K, V> put(K key, V nextValue, BiFunction<K, V, Surface> renderer) {

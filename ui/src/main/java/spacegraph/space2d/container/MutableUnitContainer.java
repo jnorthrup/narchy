@@ -34,8 +34,10 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
         the = next;
 
 
-        if (parent!=null)
+        if (parent!=null) {
             next.start(this);
+            layout();
+        }
     }
 
     @Override

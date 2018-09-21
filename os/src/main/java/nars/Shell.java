@@ -11,21 +11,11 @@ import com.googlecode.lanterna.terminal.IOSafeTerminal;
 import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
-import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.Texts;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
-import spacegraph.input.finger.Finger;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
-import spacegraph.space2d.widget.slider.XYSlider;
-import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.Widget;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,8 +24,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class Shell {
@@ -226,72 +214,72 @@ public class Shell {
 
         }
 
-        public static class ConsoleWidget extends Widget {
-
-            private final ConsoleTerminal console;
-            AtomicBoolean menuShown = new AtomicBoolean(false);
-
-            public ConsoleWidget(VirtualTerminal term) {
-
-
-                Surface menu = new Scale(new LabeledPane("Text Scale", new Gridding(
-                        new XYSlider()
-                )), 0.5f);
-
-                this.console = new ConsoleTerminal(term) {
-
-                    float charAspect = 1.6f;
-
-                    
-                    
-
-                    float scale = 80f;
-
-                    Predicate<Finger> pressable = Finger.clicked(0, () -> {
-                        if (menuShown.compareAndSet(false, true)) {
-                            content(menu);
-                        } else if (menuShown.compareAndSet(true, false)) {
-                            content(new EmptySurface());
-                        }
-                    });
-
-
-                    @Override
-                    public void onFinger(@Nullable Finger finger) {
-                        super.onFinger(finger);
-                        pressable.test(finger);
-                    }
-
-
-                    @Override
-                    public void doLayout(int dtMS) {
-
-//                        text.doLayout(dtMS);
-
-                        float cc, rr;
-                        float boundsAspect = text.h() / text.w();
-                        if (boundsAspect >= 1) {
-                            
-                            cc = scale / boundsAspect;
-                            rr = cc / charAspect;
-                            
-                        } else {
-                            
-                            cc = scale;
-                            rr = cc * (boundsAspect / charAspect);
-                            
-                        }
-
-                        resize(Math.max(2, Math.round(cc)), Math.max(2, Math.round(rr)));
-
-                    }
-
-                };
-
-
-                content(console);
-            }
-        }
+//        public static class ConsoleWidget extends Widget {
+//
+//            private final ConsoleTerminal console;
+//            AtomicBoolean menuShown = new AtomicBoolean(false);
+//
+//            public ConsoleWidget(VirtualTerminal term) {
+//
+//
+//                Surface menu = new Scale(new LabeledPane("Text Scale", new Gridding(
+//                        new XYSlider()
+//                )), 0.5f);
+//
+//                this.console = new ConsoleTerminal(term) {
+//
+//                    float charAspect = 1.6f;
+//
+//
+//
+//
+//                    float scale = 80f;
+//
+//                    Predicate<Finger> pressable = Finger.clicked(0, () -> {
+//                        if (menuShown.compareAndSet(false, true)) {
+//                            set(menu);
+//                        } else if (menuShown.compareAndSet(true, false)) {
+//                            set(new EmptySurface());
+//                        }
+//                    });
+//
+//
+//                    @Override
+//                    public void onFinger(@Nullable Finger finger) {
+//                        super.onFinger(finger);
+//                        pressable.test(finger);
+//                    }
+//
+//
+//                    @Override
+//                    public void doLayout(int dtMS) {
+//
+////                        text.doLayout(dtMS);
+//
+//                        float cc, rr;
+//                        float boundsAspect = text.h() / text.w();
+//                        if (boundsAspect >= 1) {
+//
+//                            cc = scale / boundsAspect;
+//                            rr = cc / charAspect;
+//
+//                        } else {
+//
+//                            cc = scale;
+//                            rr = cc * (boundsAspect / charAspect);
+//
+//                        }
+//
+//                        resize(Math.max(2, Math.round(cc)), Math.max(2, Math.round(rr)));
+//
+//                    }
+//
+//                };
+//
+//
+//                set(console);
+//            }
+//        }
 
         /**
          * the original SwingTerminalFrame avoids any means of reasonable configuration :(

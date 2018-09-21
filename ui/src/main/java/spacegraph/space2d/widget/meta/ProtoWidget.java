@@ -116,7 +116,7 @@ public class ProtoWidget extends Widget {
             categories.put(t, ()->new Gridding( fields ) );
         });
 
-        content(new TabPane(categories, (l)->{
+        set(new TabPane(categories, (l)->{
             String icon;
             switch (l) {
                 case "Control":

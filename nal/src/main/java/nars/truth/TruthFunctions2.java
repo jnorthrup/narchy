@@ -1,5 +1,6 @@
 package nars.truth;
 
+import jcog.TODO;
 import nars.$;
 import org.jetbrains.annotations.Nullable;
 
@@ -201,4 +202,15 @@ public enum TruthFunctions2 {
         Truth t = TruthFunctions.decompose(X, Y, xPos, yPos, yPos, minConf);
         return t!=null ? t.negIf(xPos) : null;
     }
+
+    /** X, (X ==> Y) |- Y */
+    public static Truth pre(Truth X, Truth XimplY, float minConf) {
+        throw new TODO();
+    }
+
+    /** Y, (X ==> Y) |- X */
+    public static Truth post(Truth Y, Truth XimplY, float minConf) {
+        throw new TODO();
+    }
+
 }

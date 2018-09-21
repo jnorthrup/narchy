@@ -6,7 +6,7 @@ public class IconToggleButton extends ColorToggle {
 
     public IconToggleButton(ImageTexture icon) {
         super(0.5f,0.5f,0.5f);
-        content(icon.view(1f));
+        set(icon.view(1f));
     }
 
 

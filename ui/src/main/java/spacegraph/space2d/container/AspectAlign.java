@@ -67,20 +67,21 @@ public class AspectAlign extends UnitContainer {
         return this;
     }
 
+
     @Override
-    protected void doLayout(int dtMS) {
-        the.pos(the(bounds, scaleX, scaleY, aspect, align));
+    protected RectFloat2D innerBounds() {
+        return innerBounds(bounds, scaleX, scaleY, aspect, align);
     }
 
-    public static RectFloat2D the(RectFloat2D bounds, float aspect) {
-        return the(bounds, aspect, Align.Center);
+    public static RectFloat2D innerBounds(RectFloat2D bounds, float aspect) {
+        return innerBounds(bounds, aspect, Align.Center);
     }
 
-    public static RectFloat2D the(RectFloat2D bounds, float aspect, Align align) {
-        return the(bounds, 1, 1, aspect, align);
+    public static RectFloat2D innerBounds(RectFloat2D bounds, float aspect, Align align) {
+        return innerBounds(bounds, 1, 1, aspect, align);
     }
 
-    public static RectFloat2D the(RectFloat2D bounds, float scaleX, float scaleY, float aspect, Align align) {
+    public static RectFloat2D innerBounds(RectFloat2D bounds, float scaleX, float scaleY, float aspect, Align align) {
         final float w = bounds.w;
         final float h = bounds.h;
 
