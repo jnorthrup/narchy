@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.table.TaskTable;
+import nars.task.util.Answer;
 import nars.term.Term;
 
 import java.util.function.Consumer;
@@ -24,6 +25,11 @@ public interface QuestionTable extends TaskTable {
         @Override
         public Stream<? extends Task> streamTasks() {
             return Stream.empty();
+        }
+
+        @Override
+        public void match(Answer m) {
+
         }
 
         @Override

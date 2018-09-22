@@ -420,10 +420,10 @@ public class Answer implements Consumer<Task> {
     /** consume a limited 'tries' iteration. also applies the filter.
      *  a false return value should signal a stop to any iteration supplying results */
     public boolean tryAccept(Task t) {
+        if (triesRemain-- < 0)
+            return false;
 
         if (filter==null || filter.test(t)) {
-            if (triesRemain-- < 0)
-                return false;
             accept(t);
         }
 

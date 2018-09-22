@@ -1,9 +1,11 @@
 package nars.table.question;
 
+import jcog.TODO;
 import jcog.data.map.MRUMap;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
+import nars.task.util.Answer;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -42,7 +44,11 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
         }
 
     }
-
+    @Override
+    public void match(Answer m) {
+        //sample(m.nar.random(), size(), m::tryAccept);
+        throw new TODO();
+    }
 
     @Override
     public Stream<? extends Task> streamTasks() {

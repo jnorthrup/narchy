@@ -66,12 +66,13 @@ public interface TaskTable {
         return streamTasks().toArray(Task[]::new);
     }
 
-    default void match(Answer m) {
-        if (isEmpty())
-            return;
-
-        forEachTask(m);
-    }
+    void match(Answer m);
+//        if (isEmpty())
+//            return;
+//
+//        forEachTask(m);
+//        throw new TODO();
+//    }
 
     @Nullable default Task match(long when, Term template, NAR nar) {
         return match(when, when, template, nar);
@@ -79,7 +80,7 @@ public interface TaskTable {
     @Nullable default Task match(long start, long end, Term template, NAR nar) { return match(start, end, template, null, nar); }
 
     @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return !isEmpty() ? matching(start, end, template, filter, nar).task(false, true, false) : null;
+        return !isEmpty() ? matching(start, end, template, filter, nar).task(true, true, false) : null;
     }
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {

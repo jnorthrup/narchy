@@ -1,6 +1,5 @@
 package nars.truth;
 
-import jcog.TODO;
 import nars.$;
 import org.jetbrains.annotations.Nullable;
 
@@ -203,14 +202,29 @@ public enum TruthFunctions2 {
         return t!=null ? t.negIf(xPos) : null;
     }
 
-    /** X, (X ==> Y) |- Y */
+    /**  X, (  X ==> Y) |- Y
+     * --X, (--X ==> Y) |- Y
+     * frequency determined by the impl
+     * */
     public static Truth pre(Truth X, Truth XimplY, float minConf) {
-        throw new TODO();
+        float c = TruthFunctions.confCompose(X, XimplY);
+        if(c < minConf) return null;
+        float cc = c * X.freq(); //match amplitude
+        if(cc < minConf) return null;
+        return $.t(XimplY.freq(), cc);
     }
 
-    /** Y, (X ==> Y) |- X */
+    /**    Y, (X ==>   Y) |- X
+     *   --Y, (X ==> --Y) |- X
+     * */
     public static Truth post(Truth Y, Truth XimplY, float minConf) {
-        throw new TODO();
+
+        float c = TruthFunctions.confCompose(Y, XimplY);
+        if(c < minConf) return null;
+        float freqAlignment = 1f - Math.abs(Y.freq() - XimplY.freq());
+        float cc = c * freqAlignment;
+        if (cc < minConf) return null;
+        return $.t(1f, cc);
     }
 
 }

@@ -112,6 +112,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     if (tc!=null) {
                         gg.removeTask(tc);
                         t.forget(tc );
+                        return;
                     }
                 }
 

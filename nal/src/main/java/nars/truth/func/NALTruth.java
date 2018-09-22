@@ -60,6 +60,25 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+    /** experimental */ Pre() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions2.pre(T, B, minConf);
+        }
+    },
+    /** experimental */ Post() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions2.post(T, B, minConf);
+        }
+    },
+    /** experimental */ @AllowOverlap PreRecursive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return NALTruth.Pre.apply(T, B, m, minConf);
+        }
+    },
+
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

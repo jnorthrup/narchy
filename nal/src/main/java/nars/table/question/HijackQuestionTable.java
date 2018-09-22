@@ -5,6 +5,7 @@ import jcog.pri.bag.impl.hijack.PriorityHijackBag;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
+import nars.task.util.Answer;
 import nars.term.Term;
 
 import java.util.function.Consumer;
@@ -21,6 +22,11 @@ public class HijackQuestionTable extends PriorityHijackBag<Task, Task> implement
         return existing;
     }
 
+
+    @Override
+    public void match(Answer m) {
+        sample(m.nar.random(), size(), m::tryAccept);
+    }
 
     /** optimized for cases with zero and one stored tasks */
     @Override public Task match(long start, long end, Term template, NAR nar) {

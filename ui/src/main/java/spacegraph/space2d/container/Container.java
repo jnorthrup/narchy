@@ -100,9 +100,10 @@ abstract public class Container extends Surface {
 
     public final void renderContents(GL2 gl, SurfaceRender r) {
         forEach(c -> {
-            if (c.parent==null)
-                throw new NullPointerException(c + " is unparented child of " + Container.this);
-            c.render(gl, r);
+            if (c.parent!=null) {
+                c.render(gl, r);
+            }
+            //else throw new NullPointerException(c + " is unparented child of " + Container.this);
         });
     }
 

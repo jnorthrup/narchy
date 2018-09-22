@@ -108,9 +108,12 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Called exactly once on each task.
      */
     public void add(Remember t, NAR n) {
-        if (Param.DEBUG_EXTRA)
-            assert(t.input.term().concept().equals(term));
-        table(t.input.punc()).add(t, n);
+        Task ti = t.input;
+        if (ti!=null) {
+            if (Param.DEBUG_EXTRA)
+                assert (ti.term().concept().equals(term));
+            table(ti.punc()).add(t, n);
+        }
     }
 
     public void value(Task t, NAR n) {

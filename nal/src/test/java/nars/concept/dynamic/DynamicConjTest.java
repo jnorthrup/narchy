@@ -83,7 +83,7 @@ class DynamicConjTest {
             Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
             assertTrue(
                     //$.t(0.00f, 0.90f)
-                    $.t(0.32f, 0.87f)
+                    $.t(0.32f, 0.90f /*0.87f*/)
                             .equalsIn(tNow, n), ()->"was " + tNow + " at " + now);
 
         }

@@ -558,18 +558,16 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void sample(/*@NotNull*/ Random random, Function<? super V, SampleReaction> each) {
-        final int s = size();
-        if (s <= 0)
-            return;
+        int s;
 
         //System.out.println(); System.out.println();
 
         restart:
-        while (true) {
+        while ((s = size()) > 0) {
             final AtomicReferenceArray<V> map = this.map;
             int c = map.length();
             if (c == 0)
-                return;
+                break;
 
             int i = random.nextInt(c);
 
@@ -579,7 +577,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             final int windowCap = Math.min(s,
 
                     //(1 + reprobes)
-                    2 * reprobes
+                    Math.min(s, 2 * reprobes)
             );
             final int entryCell = windowCap - 1;
 
@@ -626,9 +624,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 //slide
                 float p;
 
-                if (v0 == null || (p = pri(v0)) != p) {
-                    if (++mapNullSeen == c)
-                        break;
+                if (v0 == null) {
+                    if (mapNullSeen++ >= c)
+                        break restart;
+                } else if ((p = pri(v0)) != p) {
+                    evict(map, i, v0);
+                    if (mapNullSeen++ >= c)
+                        break restart;
                 } else {
                     mapNullSeen = 0;
 
@@ -651,7 +653,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                     SampleReaction next = each.apply(v);
                     if (next.remove) {
-                        evict(map, i, v);
+                        //evict(map, i, v);
+                        remove(key(v));
                     }
 
                     if (next.stop) {
@@ -667,6 +670,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             ArrayUtils.swap(wVal, 0, which);
                             ArrayUtils.swap(wPri, 0, which);
                         }
+                        remove(key(v));
                     }
 
 
@@ -686,7 +690,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     private void evict(AtomicReferenceArray<V> map, int i, V v, boolean updateSize) {
-        if (map.weakCompareAndSetVolatile(i, v, null)) {
+        if (map.compareAndSet(i, v, null)) {
 
             //if the map is still active
             if (this.map == map) {
