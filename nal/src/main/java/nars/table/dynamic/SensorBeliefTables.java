@@ -1,6 +1,5 @@
 package nars.table.dynamic;
 
-import jcog.WTF;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
@@ -65,8 +64,8 @@ public class SensorBeliefTables extends BeliefTables {
     public void add(Remember r, NAR n) {
 
         if (r.input instanceof SeriesBeliefTable.SeriesTask) {
-            if (Param.DEBUG)
-                throw new WTF();
+//            if (Param.DEBUG)
+//                throw new WTF();
             r.input = null;
             return;
         }

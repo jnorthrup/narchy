@@ -520,62 +520,62 @@ class NAL8EternalMixTest extends NALTest {
                 .mustGoal(cycles, "a:b", 0.0f, 0.43f, WHEN_REALIZED);
     }
 
-    @Test
-    void testInductionAntigoalNP() {
-
-        test
-
-                .input("--S! |")
-                .input("(S =|> R).")
-                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
-    }
-    @Test
-    void testInductionAntigoalNN() {
-
-        test
-
-                .input("--S! |")
-                .input("--(S =|> R).")
-                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
-    }
-    @Test
-    void testInductionAntigoalP() {
-
-        test
-
-                .input("S! |")
-                .input("(--S =|> R).")
-                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
-    }
-    @Test
-    void testInductionAntigoalPN() {
-
-        test
-
-                .input("S! |")
-                .input("--(--S =|> R).")
-                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
-    }
-
-    @Test
-    void testDeductionAntigoalPos() {
-
-        test
-
-                .input("R! |")
-                .input("(S =|> --R).")
-                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
-    }
-
-    @Test
-    void testDeductionAntigoalNeg() {
-
-        test
-
-                .input("--R! |")
-                .input("(S =|> R).")
-                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
-    }
+//    @Test
+//    void testInductionAntigoalNP() {
+//
+//        test
+//
+//                .input("--S! |")
+//                .input("(S =|> R).")
+//                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
+//    }
+//    @Test
+//    void testInductionAntigoalNN() {
+//
+//        test
+//
+//                .input("--S! |")
+//                .input("--(S =|> R).")
+//                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
+//    }
+//    @Test
+//    void testInductionAntigoalP() {
+//
+//        test
+//
+//                .input("S! |")
+//                .input("(--S =|> R).")
+//                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
+//    }
+//    @Test
+//    void testInductionAntigoalPN() {
+//
+//        test
+//
+//                .input("S! |")
+//                .input("--(--S =|> R).")
+//                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
+//    }
+//
+//    @Test
+//    void testDeductionAntigoalPos() {
+//
+//        test
+//
+//                .input("R! |")
+//                .input("(S =|> --R).")
+//                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
+//    }
+//
+//    @Test
+//    void testDeductionAntigoalNeg() {
+//
+//        test
+//
+//                .input("--R! |")
+//                .input("(S =|> R).")
+//                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
+//    }
 
     @Test
     void testImplicationTerm2() {

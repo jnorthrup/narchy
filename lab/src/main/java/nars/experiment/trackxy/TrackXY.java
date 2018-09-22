@@ -52,7 +52,7 @@ public class TrackXY extends NAgentX {
 
     float sx, sy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.5f, 0, 4f);
+    public final FloatRange controlSpeed = new FloatRange(0.15f, 0, 4f);
 
     public final FloatRange targetSpeed = new FloatRange(0.02f, 0, 2f);
 
@@ -109,6 +109,7 @@ public class TrackXY extends NAgentX {
             boolean nars = true, rl = false;
 //        boolean rl = false;
 
+            Param.DEBUG = true;
             int W = 4;
             int H = 4;
             int dur =
@@ -117,11 +118,11 @@ public class TrackXY extends NAgentX {
                     //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 
             NARS nb = new NARS.DefaultNAR(1, true)
-                    .attention(() -> new Attention(64))
+                    .attention(() -> new Attention(96))
                     .exe(new UniExec())
                     .time(new CycleTime().dur(dur))
                     .index(
-                            new CaffeineIndex(2 * 1024 * 10)
+                            new CaffeineIndex(4 * 1024 * 10)
                             //new HijackConceptIndex(4 * 1024, 4)
                     );
 
@@ -138,8 +139,8 @@ public class TrackXY extends NAgentX {
 
 
 //            n.termVolumeMax.set(9);
-//            n.freqResolution.set(0.25f);
-//            n.confResolution.set(0.05f);
+            n.freqResolution.set(0.1f);
+            n.confResolution.set(0.05f);
 
 
             TrackXY a = new TrackXY(n, W, H);
@@ -171,10 +172,10 @@ public class TrackXY extends NAgentX {
                 };
 
 
-                ((MatrixDeriver) d).conceptsPerIteration.set(16);
+                ((MatrixDeriver) d).conceptsPerIteration.set(4);
 
 
-                new STMLinkage(n, 2) {
+                new STMLinkage(n, 1) {
                     @Override
                     public boolean hold(Task newEvent) {
                         return newEvent.isGoal();
@@ -184,7 +185,7 @@ public class TrackXY extends NAgentX {
                 ConjClustering cjB = new ConjClustering(n, BELIEF,
                         //x -> true,
                         Task::isInput,
-                        2, 4);
+                        2, 8);
 
 
 //            window(new Gridding(
@@ -199,7 +200,7 @@ public class TrackXY extends NAgentX {
                     if (tt instanceof DerivedTask && tt.isGoal()) {
                         System.out.println(tt.proof());
                     }
-                });
+                }, GOAL);
 
             }
 

@@ -100,7 +100,7 @@ public class Occurrify extends TimeGraph {
     private transient Termed curBelief;
     private transient Map<Term, Term> prevUntransform = Map.of();
     private transient boolean single;
-    private boolean decomposeEvents;
+    private boolean decomposeEvents, taskOccurrence, beliefOccurrence;
 
 
     public Occurrify(Derivation d) {
@@ -194,11 +194,18 @@ public class Occurrify extends TimeGraph {
     }
 
     public Occurrify reset(Term pattern) {
-        boolean decomposeEvents = d.truthFunction != NALTruth.Identity;
-        return reset(pattern, decomposeEvents);
+        return reset(pattern, true);
     }
 
+    public Occurrify reset(boolean taskOccurrence, boolean beliefOccurrence, Term pattern) {
+        boolean decomposeEvents = d.truthFunction != NALTruth.Identity;
+        return reset(taskOccurrence, beliefOccurrence, pattern, decomposeEvents);
+    }
     public Occurrify reset(Term pattern, boolean decomposeEvents) {
+        return reset(true, true, pattern, decomposeEvents);
+    }
+
+    public Occurrify reset(boolean taskOccurrence, boolean _beliefOccurrence, Term pattern, boolean decomposeEvents) {
 
 
         seen.clear();
@@ -234,8 +241,11 @@ public class Occurrify extends TimeGraph {
         }
 
 
+        boolean beliefOccurrence = _beliefOccurrence && beliefStart!=TIMELESS;
         boolean reUse =
                 this.decomposeEvents == decomposeEvents &&
+                this.taskOccurrence == taskOccurrence &&
+                this.beliefOccurrence == beliefOccurrence &&
                         this.single == single &&
                         Objects.equals(autoNeg, autoNegNext) &&
                         Objects.equals(d.task, curTask) &&
@@ -261,6 +271,8 @@ public class Occurrify extends TimeGraph {
 
 
             this.decomposeEvents = decomposeEvents;
+            this.taskOccurrence = taskOccurrence;
+            this.beliefOccurrence = beliefOccurrence;
             this.single = single;
 
             expanded.clear();
@@ -269,14 +281,19 @@ public class Occurrify extends TimeGraph {
             autoNeg.clear();
             autoNeg.addAll(autoNegNext);
 
-            know(task, taskStart, taskEnd);
+            if (taskOccurrence)
+                know(task, taskStart, taskEnd);
+            else
+                know(taskTerm);
 
 
             if (!(this.single)) {
-                know(task, taskStart, taskEnd);
 
                 if (!belief.equals(task)) {
-                    know(belief, beliefStart, beliefEnd);
+                    if (beliefOccurrence)
+                        know(belief, beliefStart, beliefEnd);
+                    else
+                        know(beliefTerm);
                 }
             }
 
@@ -630,7 +647,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return occIntersect(d, OccIntersect.Task);
+                return rangeCombine(d, OccIntersect.Task);
             }
 
         },
@@ -642,7 +659,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return occIntersect(d, OccIntersect.Task);
+                return rangeCombine(d, OccIntersect.Task);
             }
         },
 
@@ -660,7 +677,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return occIntersect(d, OccIntersect.Task);
+                return rangeCombine(d, OccIntersect.Task);
             }
 
             @Override
@@ -668,6 +685,71 @@ public class Occurrify extends TimeGraph {
                 return BeliefProjection.Raw;
             }
 
+        },
+
+        TaskInBelief() {
+            @Override
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+
+                if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
+                    return solveDT(d, x, d.occ.reset(true, false, x)); //special
+                } else {
+                    return solveOccDT(d, x, d.occ.reset(x)); //normal
+                }
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+
+                long base;
+                long range;
+                if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL) {
+                    return new long[] { ETERNAL, ETERNAL };
+                }
+
+                if (d.taskStart == ETERNAL) {
+                    base = d.beliefStart;
+                    range = d._belief.range()-1;
+                } else {
+                    if (d.beliefStart==ETERNAL)
+                        range = d._task.range()-1;
+                    else
+                        range = Math.min(d._task.range(), d._belief.range())-1;
+                    base = d.taskStart;
+                }
+                assert(base!=ETERNAL && base!=TIMELESS);
+
+                int shift = d.beliefTerm.subTimeFirst(d.taskTerm);
+                if (shift==DTERNAL) {
+                    shift = d.beliefTerm.subTimeFirst(d.taskTerm.neg()); //try negative
+                    if (shift==DTERNAL)
+                        return null;
+                }
+                long start = base + shift;
+
+                return new long[] {start, start + range };
+
+            }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Task;
+            }
+        },
+        BeliefInTask() {
+            @Override
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+
+                return solveOccDT(d, x, d.occ.reset(false,true, x));
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return rangeCombine(d, OccIntersect.Belief);
+            }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Task;
+            }
         },
 
         /**
@@ -720,7 +802,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return occIntersect(d, OccIntersect.Belief);
+                return rangeCombine(d, OccIntersect.Belief);
             }
 
             @Override
@@ -797,7 +879,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return occIntersect(d, OccIntersect.Earliest);
+                return rangeCombine(d, OccIntersect.Earliest);
             }
 
             @Override
@@ -1145,7 +1227,7 @@ public class Occurrify extends TimeGraph {
         Task, Belief, Earliest
     }
 
-    private static long[] occIntersect(Derivation d, OccIntersect mode) {
+    private static long[] rangeCombine(Derivation d, OccIntersect mode) {
         long beliefStart = d.beliefStart;
         if (d.belief == null || d.beliefStart==ETERNAL)
             return occ(d._task);

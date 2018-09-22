@@ -839,24 +839,24 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
     }
 
-    @Test void testGoalBeliefDecomposeTimeRangingRepeat() {
-        /*
-        $.03 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.03% {1536601090589: } ((%1,%2,eventOf(%2,%1)),(conjDropIfLatest(%2,%1),((Desire-->Goal))))
-            //belief timing ignored
-
-            $1.0 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.15% {1536601088494: }
-                    37S
-
-            $.09 (vel(fz,move) &&+460 vel(fz,move)). 1536601089440⋈1536601089580 %.39;.82% {1536601090008: ÖqdUçëípß;ÖqdUçëíqc;ÖqdUçëíqO} ((%1,%2,(--,is(%2,"==>")),(--,is(%1,"==>"))),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief),(Relative-->Time),(VarIntro-->Also))))
-                    140ms, at the correct start
-         */
-        test
-            .input("x! +0..+100")
-            .input("(x &&+5 x). +20..+30")
-            .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t > 20 /* dropping 2nd event */)
-            .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10));
-
-    }
+//    @Test void testGoalBeliefDecomposeTimeRangingRepeat() {
+//        /*
+//        $.03 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.03% {1536601090589: } ((%1,%2,eventOf(%2,%1)),(conjDropIfLatest(%2,%1),((Desire-->Goal))))
+//            //belief timing ignored
+//
+//            $1.0 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.15% {1536601088494: }
+//                    37S
+//
+//            $.09 (vel(fz,move) &&+460 vel(fz,move)). 1536601089440⋈1536601089580 %.39;.82% {1536601090008: ÖqdUçëípß;ÖqdUçëíqc;ÖqdUçëíqO} ((%1,%2,(--,is(%2,"==>")),(--,is(%1,"==>"))),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief),(Relative-->Time),(VarIntro-->Also))))
+//                    140ms, at the correct start
+//         */
+//        test
+//            .input("x! +0..+100")
+//            .input("(x &&+5 x). +20..+30")
+//            .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t > 20 /* dropping 2nd event */)
+//            .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10));
+//
+//    }
     @Test void testGoalBeliefDecomposeTimeRangingDiffer() {
         test
                 .input("x! +0..+100")
@@ -865,9 +865,27 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "x", GOAL, (t) -> true /* shouldnt drop first event */)
                 .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10))
                 .mustNotOutput(cycles, "y", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10));
-        ;
+
 
     }
 
+
+    @Test void decomposeConjuncitonGoalBeliefRelative() {
+        /*
+        wrong: output should be relative to belief
+        $.01 ((Y-->trackXY),"+")! 2428⋈2432 %1.0;.20% {3101: Gæ;IM;IÂ} ((%1,%2,eventOfNeg(%1,%2)),(conjDropIfEarliest(%1,(--,%2)),((DeductionPN-->Belief),(DesirePN-->Goal))))
+            $.50 ((--,((X-->trackXY),"+")) &&+8 (--,((Y-->trackXY),"+")))! 2420⋈2424 %0.0;.20% {3101: IM;IÂ}
+            $.49 ((X-->trackXY),"+"). 2340⋈2576 %0.0;.90% {2340: Gæ}
+        */
+        test.nar.time.dur(16);
+//        Param.DEBUG = true;
+        test
+//                .log()
+                .inputAt(0, "(y &&+5 x)! |")
+                .inputAt(2, "y. |")
+                .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t >= 7)
+                .mustNotOutput(cycles, "x", GOAL, (t) -> t < 7)
+        ;
+    }
 
 }

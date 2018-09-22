@@ -344,11 +344,11 @@
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
     //CONJ
-    S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositivePositivePositive)
-    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativePositivePositive)
+    S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositivePositivePositive, Time:TaskInBelief)
+    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativePositivePositive, Time:TaskInBelief)
     //DISJ
-    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative)
-    S, D, eventOf(D,S) |- conjWithout(D,S), (Belief:DecomposePositiveNegativeNegative)
+    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative, Time:TaskInBelief)
+    S, D, eventOf(D,S) |- conjWithout(D,S), (Belief:DecomposePositiveNegativeNegative, Time:TaskInBelief)
 
 
 
@@ -411,16 +411,16 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire,Time:TaskInBelief)
         //conjDropIfLatestFiltered
-    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN)
+    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN,Time:TaskInBelief)
         //conjDropIfLatestFiltered
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
 
-    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction,Goal:Desire)
+    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction,Goal:Desire,Time:BeliefInTask)
 
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DesirePN)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DesirePN,Time:BeliefInTask)
 
         //conjDropIfEarliestFiltered
 

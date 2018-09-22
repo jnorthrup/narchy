@@ -482,7 +482,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_abduction_viaMultiConditionalSyllogismSimple2() {
-        test.nar.termVolumeMax.set(9);
+        test.nar.termVolumeMax.set(11);
 
         test
                 .believe("((&&,x1,x2) ==> y)")

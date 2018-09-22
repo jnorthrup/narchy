@@ -1,18 +1,12 @@
 package spacegraph;
 
-import jcog.exe.Exe;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.event.Level;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.video.JoglSpace;
-
-import java.util.function.Supplier;
 
 public enum SpaceGraph { ;
 
@@ -51,42 +45,42 @@ public enum SpaceGraph { ;
     }
 
 
-    /** creates window with new 2d physics "wall" containing the provided widgets */
-    @Deprecated public static GraphEdit wall(int width, int height) {
-        GraphEdit s = new GraphEdit();
-        s.pos(-1, -1, 1, 1);
-
-
-        ZoomOrtho ortho = new ZoomOrtho(s) {
-
-
-            @Override
-            public boolean autoresize() {
-                return false;
-            }
-
-            @Override
-            public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
-
-
-            }
-
+//    /** creates window with new 2d physics "wall" containing the provided widgets */
+//    @Deprecated public static GraphEdit wall(int width, int height) {
+//        GraphEdit s = new GraphEdit();
+//        s.pos(-1, -1, 1, 1);
+//
+//
+//        ZoomOrtho ortho = new ZoomOrtho(s) {
+//
+//
 //            @Override
-//            protected boolean tangible() {
-//                return true;
+//            public boolean autoresize() {
+//                return false;
 //            }
-        };
-
-        Exe.invokeLater(()->{
-            SpaceGraphFlat g = new SpaceGraphFlat(ortho);
-            g.show(width, height);
-            Exe.invokeLater(()->{
-                ortho.zoom(s);
-            });
-        });
-
-
-
-        return s;
-    }
+//
+//            @Override
+//            public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
+//
+//
+//            }
+//
+////            @Override
+////            protected boolean tangible() {
+////                return true;
+////            }
+//        };
+//
+//        Exe.invokeLater(()->{
+//            SpaceGraphFlat g = new SpaceGraphFlat(ortho);
+//            g.show(width, height);
+//            Exe.invokeLater(()->{
+//                ortho.zoom(s);
+//            });
+//        });
+//
+//
+//
+//        return s;
+//    }
 }
