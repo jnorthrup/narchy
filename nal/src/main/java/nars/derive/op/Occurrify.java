@@ -691,11 +691,11 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
-                if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
+//                if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
                     return solveDT(d, x, d.occ.reset(true, false, x)); //special
-                } else {
-                    return solveOccDT(d, x, d.occ.reset(x)); //normal
-                }
+//                } else {
+//                    return solveOccDT(d, x, d.occ.reset(x)); //normal
+//                }
             }
 
             @Override
@@ -768,7 +768,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw; //N/A
+                return BeliefProjection.Raw; //N/A structuraldeduction
             }
         },
         /**
@@ -787,7 +787,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw; //N/A
+                return BeliefProjection.Raw; //N/A structuraldeduction
             }
         },
         /**

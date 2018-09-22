@@ -154,8 +154,8 @@ class NAL8EternalMixTest extends NALTest {
 
         TestNAR tester = test;
         tester.input("x:y!");
-        tester.inputAt(3, "(goto(z) ==>+5 x:y). :|:");
-        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t) -> t >= 3);
+        tester.inputAt(2, "(goto(z) ==>+1 x:y). |");
+        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t) -> t >= 1);
     }
 
 
