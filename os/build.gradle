@@ -1,9 +1,9 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "2.0.4"
+    id 'application'
+    id 'java'
 }
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'application'
 
+mainClassName = 'nars.Shell'
 
 dependencies {
     compile project(':app')
@@ -22,44 +22,45 @@ dependencies {
 }
 
 
-shadowJar {
-
-    exclude 'org/bytedeco/javacpp/macosx-x86_64/*'
-    exclude 'org/bytedeco/javacpp/windows-x86_64/*'
-
-    exclude 'natives/android-aarch64/*'
-    exclude 'natives/android-armv6/*'
-    exclude 'natives/macosx-universal/*'
-    exclude 'natives/solaris-amd64/*'
-    exclude 'natives/solaris-i586/*'
-//    exclude 'natives/windows-amd64/*'
-//    exclude 'natives/windows-i586/*'
-    exclude 'natives/linux-i586/*'
-
-//    exclude 'com/sun/jna/platform/win32/*'
-    exclude 'com/sun/jna/platform/wince/*'
-    exclude 'com/sun/jna/platform/mac/*'
-//    exclude 'com/sun/jna/win32*'
-    exclude 'com/sun/jna/darwin/*'
-    exclude 'com/sun/jna/sunos*'
-    exclude 'com/sun/jna/aix*'
-    exclude 'Conversant*.png'
-    exclude '/*.txt'
-    exclude '/*.html'
-
-//    exclude 'org/apache/lucene/codecs/lucene50/*'
-//    exclude 'org/apache/lucene/codecs/lucene60/*'
-//    exclude 'org/apache/lucene/codecs/lucene62/*'
-    mainClassName = 'nars.Shell'
-
-//   baseName = 'nars_app'
-//   classifier = null
-//   version = null
-
-    //exclude 'a2.properties'
-    /* dependencies {
-       exclude(dependency('shadow:d:1.0'))
-    }*/
-
-
-}
+//shadowJar {
+//
+//    exclude 'org/bytedeco/javacpp/macosx-x86_64/*'
+//    exclude 'org/bytedeco/javacpp/windows-x86_64/*'
+//
+//    exclude 'natives/android-aarch64/*'
+//    exclude 'natives/android-armv6/*'
+//    exclude 'natives/macosx-universal/*'
+//    exclude 'natives/solaris-amd64/*'
+//    exclude 'natives/solaris-i586/*'
+////    exclude 'natives/windows-amd64/*'
+////    exclude 'natives/windows-i586/*'
+//    exclude 'natives/linux-i586/*'
+//
+////    exclude 'com/sun/jna/platform/win32/*'
+//    exclude 'com/sun/jna/platform/wince/*'
+//    exclude 'com/sun/jna/platform/mac/*'
+////    exclude 'com/sun/jna/win32*'
+//    exclude 'com/sun/jna/darwin/*'
+//    exclude 'com/sun/jna/sunos*'
+//    exclude 'com/sun/jna/aix*'
+//    exclude 'Conversant*.png'
+//    exclude '/*.txt'
+//    exclude '/*.html'
+//
+////    exclude 'org/apache/lucene/codecs/lucene50/*'
+////    exclude 'org/apache/lucene/codecs/lucene60/*'
+////    exclude 'org/apache/lucene/codecs/lucene62/*'
+//
+////   baseName = 'nars_app'
+////   classifier = null
+////   version = null
+//
+//    //exclude 'a2.properties'
+//    /* dependencies {
+//       exclude(dependency('shadow:d:1.0'))
+//    }*/
+//
+//
+//    setMainClassName('nars.Shell')
+//
+//}

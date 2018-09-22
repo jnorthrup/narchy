@@ -89,7 +89,7 @@ public class Gradius extends NAgentX {
         initToggle();
         //initBipolar();
 
-        rewardDetailed("alive", ()->{
+        rewardNormalized("alive", -1, +1, ()->{
             if (g.playerDead > 1)
                 return -1f;
             else if (g.paused)
@@ -98,7 +98,7 @@ public class Gradius extends NAgentX {
                 return +1;
         });
 
-        rewardDetailed("destroy", ()->{
+        rewardNormalized("destroy",0, 1, ()->{
 
             if (g.paused)
                 return 0;

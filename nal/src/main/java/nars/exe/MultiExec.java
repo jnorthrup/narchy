@@ -1,6 +1,7 @@
 package nars.exe;
 
 import jcog.TODO;
+import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
@@ -10,6 +11,7 @@ import jcog.exe.realtime.FixedRateTimedFuture;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.control.DurService;
+import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
@@ -24,13 +26,15 @@ import java.util.function.Consumer;
 abstract public class MultiExec extends UniExec {
 
 
-    public static final float inputQueueSizeSafetyThreshold = 0.75f;
+    public static final float inputQueueSizeSafetyThreshold = 0.9f;
     private final Revaluator revaluator;
 
     protected volatile long idleTimePerCycle;
 
     /** global sleep nap period */
     private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
+
+    float queueLatencyMeasurementProbability = 0.05f;
 
     public MultiExec(Revaluator revaluator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -93,11 +97,25 @@ abstract public class MultiExec extends UniExec {
                 cpu.cycleTimeNS.set(Math.max(1, Math.round(cycleNS * throttle)));
             }
 
+
+            if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
+                execute(new QueueLatencyMeasurement(System.nanoTime()));
+            }
+
         } else
             throw new TODO();
 
         sharing.commit();
 
+    }
+
+    /** measure queue latency "ping" */
+    private void queueLatency(long start, long end) {
+        long latencyNS = end - start;
+        double cycles = latencyNS / ((double)nar.loop.cycleTimeNS);
+        if (cycles > 1) {
+            logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
+        }
     }
 
     @Override
@@ -358,7 +376,7 @@ abstract public class MultiExec extends UniExec {
                     int batchSize =
                             Util.lerp(nar.loop.throttle.floatValue(),
                                     available, /* all of it if low throttle. this allows other threads to remains asleep while one awake thread takes care of it all */
-                                    (int) Math.ceil((((float) available) / Math.max(1, (concurrency()/2))))
+                                    (int) Math.ceil((((float) available) / Math.max(1, (concurrency()-1))))
                             );
 
                     int drained = in.remove(schedule, batchSize);
@@ -448,6 +466,22 @@ abstract public class MultiExec extends UniExec {
 
         private boolean queueSafe() {
             return in.availablePct(inputQueueCapacityPerThread) >= inputQueueSizeSafetyThreshold;
+        }
+    }
+
+    private class QueueLatencyMeasurement extends AbstractTask {
+
+        private final long start;
+
+        public QueueLatencyMeasurement(long start) {
+            this.start = start;
+        }
+
+        @Override
+        public ITask next(NAR n) {
+            long end = System.nanoTime();
+            queueLatency(start, end);
+            return null;
         }
     }
 

@@ -133,26 +133,26 @@ public abstract class AbstractTask implements ITask, Priority {
     }
 
 
-    public static class NARTask extends AbstractTask {
-
-        final Consumer run;
-
-        public NARTask(Consumer<NAR> runnable) {
-            run = runnable;
-        }
-
-        @Override
-        public String toString() {
-            return run.toString();
-        }
-
-        @Override
-        public ITask next(NAR x) {
-            run.accept(x);
-            return null;
-        }
-
-    }
+//    public static class NARTask extends AbstractTask {
+//
+//        final Consumer run;
+//
+//        public NARTask(Consumer<NAR> runnable) {
+//            run = runnable;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return run.toString();
+//        }
+//
+//        @Override
+//        public ITask next(NAR x) {
+//            run.accept(x);
+//            return null;
+//        }
+//
+//    }
 //    public final static class TasksCollection extends AbstractTask {
 //        private final Collection<ITask> tasks;
 //

@@ -287,6 +287,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //            if (s <= MIN_TASKS_PER_LEAF*2 || time.start()==ETERNAL || time.range() <= Math.min(3, m.nar.dtDither())) {
                 //single iterator
                 read((tree)-> {
+                    if (tree.root().size()==0)
+                        return;
+
                     HyperIterator2<TaskRegion> ii = new HyperIterator2(tree, timeDist);
 
                     while (ii.hasNext() && each.test(ii.next())) {
