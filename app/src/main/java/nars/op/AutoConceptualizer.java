@@ -49,7 +49,7 @@ public class AutoConceptualizer extends AbstractSensor {
 
     @Override
     protected void starting(NAR nar) {
-        ons.add(
+        on(
             DurService.on(nar, this::update)
         );
     }

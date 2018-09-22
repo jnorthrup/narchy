@@ -161,8 +161,8 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction DerivationPri =
             (t, b) ->
-                    Util.and(t, b);
-                    //Math.max(t, b);
+                    //Util.and(t, b);
+                    Math.max(t, b);
                     //il.aveAri(t, b);
                     //Util.aveGeo(t, b);
                     //Util.or(t, b);
@@ -247,7 +247,7 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)

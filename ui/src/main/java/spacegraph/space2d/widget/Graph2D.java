@@ -6,9 +6,11 @@ import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.map.CellMap;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
+import jcog.data.map.MRUMap;
 import jcog.data.pool.DequePool;
 import jcog.data.pool.Pool;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Scale;
@@ -21,6 +23,7 @@ import spacegraph.video.Draw;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -39,14 +42,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private List<Graph2DRenderer<X>> renderers = new FasterList<>();
 
-    private final DequePool<NodeVis<X>> nodePool = new DequePool<>() {
-        @Override
-        public NodeVis<X> create() {
-            NodeVis<X> v = new NodeVis<>();
-            v.start(Graph2D.this);
-            return v;
-        }
-    };
+//    private final DequePool<NodeVis<X>> nodePool = new DequePool<>() {
+//        @Override
+//        public NodeVis<X> create() {
+//            NodeVis<X> v = new NodeVis<>();
+//            v.start(Graph2D.this);
+//            return v;
+//        }
+//    };
     private final DequePool<EdgeVis<X>> edgePool = new DequePool<>() {
         @Override
         public EdgeVis<X> create() {
@@ -60,6 +63,21 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     };
 
+    final MRUMap<X, NodeVis<X>> nodeCache = new MRUMap<X,NodeVis<X>>(8 * 1024) {
+        @Override
+        protected void onEvict(Map.Entry<X, NodeVis<X>> entry) {
+
+            NodeVis<X> s = entry.getValue();
+            if (s.id==null)
+                s.stop();
+        }
+    }; //TODO set capacity good
+
+
+    @Override
+    protected void hide(NodeVis<X> key, Surface s) {
+        s.hide();
+    }
 
     private volatile Graph2DUpdater<X> updater;
 
@@ -130,7 +148,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Override
     protected void doLayout(int dtMS) {
-        System.out.println("layout");
+
     }
 
     @Override
@@ -181,6 +199,17 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         return this;
     }
 
+    @Override
+    protected void stopping() {
+        super.stopping();
+        synchronized (this) {
+            nodeCache.values().forEach(n -> {
+                n.stop();
+            });
+            nodeCache.clear();
+            edgePool.delete();
+        }
+    }
 
     private void updateNodes(Iterable<X> nodes, boolean addOrReplace) {
         if (!addOrReplace) {
@@ -192,14 +221,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             CellMap.CacheCell<X, NodeVis<X>> xxx =
                     compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
 
-
             NodeVis<X> cv = xxx.value;
-
-
             if (cv.parent == null) {
                 cv.start(this);
-                cv.show();
             }
+
+            cv.show();
         });
 
         if (!wontRemain.isEmpty()) {
@@ -210,13 +237,21 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
     private Graph2D.NodeVis<X> materialize(X x) {
-        NodeVis<X> xx;
-        xx = nodePool.get();
-        xx.start(x);
-        builder.accept(xx);
-        updater.init(this, xx);
-        //xx.show();
-        return xx;
+        NodeVis<X> yy = nodeCache.computeIfAbsent(x, x0 -> {
+            NodeVis<X> y = new NodeVis();
+            y.start(x0);
+            builder.accept(y);
+            return y;
+        });
+        updater.init(this, yy);
+//        yy.show();
+        return yy;
+//        xx = nodePool.get();
+//        xx.start(x);
+//        builder.accept(xx);
+//        updater.init(this, xx);
+//        //xx.show();
+//        return xx;
     }
 
     /**
@@ -231,7 +266,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Override
     protected void unmaterialize(NodeVis<X> v) {
         v.end(edgePool);
-        nodePool.put(v);
+//        nodePool.put(v);
     }
 
     private void render() {
@@ -357,7 +392,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             this.id = id;
             pri = 0.5f;
             r = g = b = 0.5f;
-            show();
         }
 
         void end(Pool<EdgeVis<X>> edgePool) {
@@ -419,7 +453,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
          */
         private EdgeVis<X> out(NodeVis<X> target, Pool<EdgeVis<X>> pool) {
 
-            EdgeVis<X> y = outs.compute(target.id, (tt, yy) -> {
+            X tid = target.id;
+            if (tid == null)
+                return null;
+
+            EdgeVis<X> y = outs.compute(tid, (tt, yy) -> {
                 if (yy == null) {
                     yy = pool.get();
                     yy.to = target;

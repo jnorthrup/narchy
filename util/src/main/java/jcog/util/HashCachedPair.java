@@ -32,14 +32,13 @@ public class HashCachedPair<T1, T2> implements Pair<T1, T2> {
     }
 
     @Override
-    public void put(Map<T1, T2> map) {
+    public void put(Map<? super T1, ? super T2> map) {
         map.put(this.one, this.two);
     }
 
     @Override
     public Pair<T2, T1> swap() {
         throw new TODO();
-        
     }
 
     @Override
@@ -70,10 +69,13 @@ public class HashCachedPair<T1, T2> implements Pair<T1, T2> {
 
     @Override
     public int compareTo(Pair<T1, T2> other) {
+        if (this == other)
+            return 0;
+
         int i = ((Comparable<T1>) this.one).compareTo(other.getOne());
-        if (i != 0) {
+        if (i != 0)
             return i;
-        }
+
         return ((Comparable<T2>) this.two).compareTo(other.getTwo());
     }
 }

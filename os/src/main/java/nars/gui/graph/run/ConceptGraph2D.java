@@ -90,7 +90,6 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             public void update(Graph2D<Concept> g, int dtMS) {
 
                 g.forEachValue(nn -> {
-                    if (nn.showing())
                         updateNode(nn);
                 });
 
@@ -101,12 +100,15 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
     void updateNode(NodeVis<Concept> nn) {
+        Concept i = nn.id;
+        if (i!=null && nn.visible()) {
 
-        float pri = Math.max(nar.attn.pri(nn.id, 0f), ScalarValue.EPSILON);
+            float pri = Math.max(nar.attn.pri(i, 0f), ScalarValue.EPSILON);
 
-        nn.color(pri, pri / 2f, 0f);
+            nn.color(pri, pri / 2f, 0f);
 
-        nn.pri = pri;
+            nn.pri = pri;
+        }
     }
 
     /** updates the source */

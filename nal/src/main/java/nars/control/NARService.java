@@ -18,9 +18,9 @@ public class NARService extends Service<NAR> implements Termed {
     public final Term id;
 
     /** TODO encapsulate */
-    protected final Offs ons = new Offs();
+    private final Offs ons = new Offs();
 
-    protected volatile NAR nar;
+    protected NAR nar;
 
     protected NARService() {
         this((NAR)null);
@@ -44,7 +44,7 @@ public class NARService extends Service<NAR> implements Termed {
     }
 
     /** attach a handler.  should only be called in starting() implementations */
-    public void on(Off... x) {
+    protected final void on(Off... x) {
         for (Off xx : x)
             ons.add(xx);
     }
@@ -58,7 +58,7 @@ public class NARService extends Service<NAR> implements Termed {
 
         this.nar = nar;
 
-        ons.add(nar.eventClear.on(n -> clear()));
+        on(nar.eventClear.on(n -> clear()));
 
         starting(nar);
 

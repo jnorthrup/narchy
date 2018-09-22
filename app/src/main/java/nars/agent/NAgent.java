@@ -27,6 +27,7 @@ import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.util.TimeAware;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,6 @@ import java.util.function.Supplier;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
 
 /**
  * an integration of sensor concepts and motor functions
@@ -241,7 +240,6 @@ public class NAgent extends NARService implements NSense, NAct {
         return timeAware != null ? timeAware.random() : ThreadLocalRandom.current();
     }
 
-
     public String summary() {
 
 
@@ -322,10 +320,15 @@ public class NAgent extends NARService implements NSense, NAct {
      * set a default (bi-polar) reward supplier
      */
     public Off rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
-        FloatNormalized f = new FloatNormalized(new FloatClamped(rewardFunc, min, max), min, max, false);
-                //.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
-        return reward(reward, f);
+        //.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
+        return reward(reward, normalize(rewardFunc, min, max));
     }
+
+    @NotNull
+    public FloatNormalized normalize(FloatSupplier rewardFunc, float min, float max) {
+        return new FloatNormalized(new FloatClamped(rewardFunc, min, max), min, max, false);
+    }
+
     @Deprecated
     public Off rewardDetailed(String reward, FloatSupplier rewardFunc) {
         return rewardDetailed(rewardTerm(reward), rewardFunc);
@@ -334,6 +337,12 @@ public class NAgent extends NARService implements NSense, NAct {
     @Deprecated
     public Off rewardDetailed(Term reward, FloatSupplier rewardFunc) {
         return reward(new DetailedReward(reward, rewardFunc, this));
+    }
+    public Off rewardDetailed(String reward, float min, float max, FloatSupplier rewardFunc) {
+        return rewardDetailed(rewardTerm(reward), min, max, rewardFunc);
+    }
+    public Off rewardDetailed(Term reward, float min, float max, FloatSupplier rewardFunc) {
+        return reward(new DetailedReward(reward, normalize(rewardFunc, min, max), this));
     }
 
     /**
@@ -451,7 +460,8 @@ public class NAgent extends NARService implements NSense, NAct {
         float curiConf =
                         //nar.confMin.floatValue() * 2;
                         //nar.confMin.floatValue();
-                        w2c(c2w(nar.confDefault(GOAL))/3);
+                        nar.confDefault(GOAL)/2;
+                        //w2c(c2w(nar.confDefault(GOAL))/3);
                         //w2c(c2w(nar.confDefault(GOAL))/2);
                         //nar.confDefault(GOAL);
 
@@ -485,34 +495,46 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
+//    public float dexterity() {
+//        return dexterity(nar.time());
+//    }
+
+//    public float dexterity(long when) {
+////        long now = nar.time();
+////        long d = frameTrigger.next(now) - now;
+////        return dexterity(when - d / 2, when + d / 2);
+//        return dexterity(when,when);
+//    }
+
+//    /**
+//     * average confidence of actions
+//     * see: http:
+//     */
+//    public float dexterity(long start, long end) {
+//        int n = actions.size();
+//        if (n == 0)
+//            return 0;
+//
+//        final double[] m = {0};
+//        actions.forEach(a -> {
+//            m[0] += a.dexterity(start, end, nar);
+//        });
+//
+//        return (float) (m[0] / n);
+//    }
+
     public float dexterity() {
-        return dexterity(nar.time());
-    }
-
-    public float dexterity(long when) {
-//        long now = nar.time();
-//        long d = frameTrigger.next(now) - now;
-//        return dexterity(when - d / 2, when + d / 2);
-        return dexterity(when,when);
-    }
-
-    /**
-     * average confidence of actions
-     * see: http:
-     */
-    public float dexterity(long start, long end) {
         int n = actions.size();
         if (n == 0)
             return 0;
 
         final double[] m = {0};
         actions.forEach(a -> {
-            m[0] += a.dexterity(start, end, nar);
+            m[0] += a.dexterity();
         });
 
         return (float) (m[0] / n);
     }
-
 
     public Off onFrame(Consumer/*<NAR>*/ each) {
         return eventFrame.on(each);

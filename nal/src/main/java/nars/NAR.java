@@ -631,11 +631,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * asynchronously adds the service
      */
     public final void on(NARService s) {
-        services.add(s.term(), s, true);
+        services.set(s.term(), s, true);
     }
 
     public final void off(NARService s) {
-        services.add(s.term(), s, false);
+        services.set(s.term(), s, false);
     }
 
     /**

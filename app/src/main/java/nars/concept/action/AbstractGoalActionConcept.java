@@ -49,7 +49,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Override
-    public float dexterity(long start, long end, NAR n) {
+    public float dexterity() {
         Truth t = this.actionTruthAuthentic;
         return t!=null ? t.conf() : 0;
     }
@@ -68,7 +68,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long s = now - rad/2;
         long e = now + rad/2;
         int actionDur = Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
-        int limit = Answer.TASK_LIMIT_DEFAULT * 2;
+        int limit = Answer.TASK_LIMIT_DEFAULT;
 
         TruthPolation aWithCuri = Answer.
                 relevance(true, limit, s, e, term, null, n).match(goals()).truthpolation(actionDur);
@@ -76,12 +76,20 @@ public class AbstractGoalActionConcept extends ActionConcept {
         if (aWithCuri!=null) {
             aWithCuri = aWithCuri.filtered();
             actionNonAuthentic = aWithCuri.truth();
+
+//            System.out.println(actionNonAuthentic);
+//            aWithCuri.print();
+//            System.out.println();
+//            System.out.println();
+
         } else
             actionNonAuthentic = null;
 
         TruthPolation aWithoutCuri = Answer.
                 relevance(true, limit, s, e, term, withoutCuriosity, n).match(goals()).truthpolation(actionDur);
         if (aWithoutCuri!=null) {
+
+
             //aWithoutCuri = aWithoutCuri.filtered();
             actionTruthAuthentic = aWithoutCuri.truth();
         } else {

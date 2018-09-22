@@ -43,7 +43,7 @@ public class Vocalization extends NARService {
     @Override
     protected void starting(NAR nar) {
         //nar.runLater(()->{
-            ons.add( DurService.on(nar, ()->{
+            on( DurService.on(nar, ()->{
                 energy = Math.min(1f, energy + 1f/(this.durationsPerWord));
                 if (energy >= 1f) {
                     energy = 0;

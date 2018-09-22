@@ -599,12 +599,21 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void deductionGoalWithVariable() {
+    void GoalMatchSubjOfImplWithVariable() {
         test
                 .believe("(x($1)==>y($1))", 1.00f, 0.90f)
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
                 .mustGoal(cycles, "y(a)", 1.00f, 0.45f);
     }
+
+    @Test
+    void GoalMatchPredOfImplWithVariable() {
+        test
+                .believe("(x($1)==>y($1))", 1.00f, 0.90f)
+                .goal("y(a)", Tense.Eternal, 1.00f, 0.90f)
+                .mustGoal(cycles, "x(a)", 1.00f, 0.81f);
+    }
+
     @Test
     void variable_elimination_deduction() {
 

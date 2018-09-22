@@ -36,13 +36,13 @@ public class DetailedReward extends Reward {
 
                 nar,
 
-                pair(id,
-                        new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
+                pair(id, (x)->x),
+                        //new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
 
                 pair($.func("chronic", id), compose(
-                        new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-                        new FloatAveraged(0.02f)
+                        new FloatAveraged(0.02f),
+                        new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)
                 )),
 
 

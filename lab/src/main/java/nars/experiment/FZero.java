@@ -54,6 +54,8 @@ public class FZero extends NAgentX {
                 n);
 
 
+//        Param.DEBUG = true;
+
         this.fz = new FZeroGame();
 
 
@@ -149,7 +151,7 @@ public class FZero extends NAgentX {
 //        });
 
 
-        rewardDetailed("race", ()->{
+        rewardDetailed("race", -1, +1, ()->{
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 
@@ -158,22 +160,21 @@ public class FZero extends NAgentX {
 
             fz.update();
 
-            float race = Util.clamp(
+            float race =
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                            deltaDistance / (fps * 0.2f)), -1f, +1f);
+                            deltaDistance / (fps * 0.2f));
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 
             fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 
-            return race;
+            float bias = 0.25f;
+            return race - bias;
         });
 
         //reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
 
-//        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
-//                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
 
     }

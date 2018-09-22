@@ -22,16 +22,8 @@ public class Offs extends jcog.data.list.FastCoWList<Off> implements Off {
 
 
     public void off() {
-        for (int i = 0; i < size(); i++) {
-            get(i).off();
-        }
+        forEach(Off::off);
         clear();
     }
-
-
-
-
-
-
 
 }

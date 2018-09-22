@@ -115,7 +115,7 @@ abstract public class Deriver extends Causable {
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
-        ons.add(DurService.on(nar, this::update));
+        on(DurService.on(nar, this::update));
     }
 
     @Override

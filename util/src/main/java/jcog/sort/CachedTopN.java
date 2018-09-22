@@ -52,7 +52,7 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
         throw new UnsupportedOperationException("use accept");
     }
 
-    public boolean accept(X x) {
+    public final boolean accept(X x) {
 
         if (!contains(x) && valid(x)) {
             float r = rank.floatValueOf(x);

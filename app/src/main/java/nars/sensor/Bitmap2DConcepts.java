@@ -293,9 +293,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
     private float priPixel(float pri) {
-        return pri;
+        //return pri;
         //return pri/area;
-        //return (float) (pri / Math.sqrt(area));
+        return (float) (pri / Math.sqrt(area));
     }
 
 

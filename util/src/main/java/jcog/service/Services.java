@@ -13,9 +13,10 @@
  */
 package jcog.service;
 
-import com.google.common.util.concurrent.MoreExecutors;
+import jcog.WTF;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
+import jcog.exe.Exe;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -85,13 +86,96 @@ import java.util.stream.Stream;
  */
 public class Services<C /* context */, K /* service key */> {
 
-    final Logger logger;
     public final C id;
-    private final Executor exe;
-    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>() {
-
-    };
+    final Logger logger;
+    protected final Executor exe;
+    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
     private final ConcurrentMap<K, Service<C>> services;
+
+
+    public Services(C id) {
+        this(id,
+                Exe.executor()
+                //MoreExecutors.directExecutor()
+                /*ForkJoinPool.commonPool()*/
+        );
+    }
+
+    /**
+     * Constructs a new instance for managing the given services.
+     *
+     * @param services The services to manage
+     * @param x
+     * @throws IllegalArgumentException if not all services are {@linkplain ServiceState#NEW new} or if there
+     *                                  are any duplicate services.
+     */
+    public Services(@Nullable C id, Executor exe) {
+        this.id = id == null ? (C) this : id;
+        this.logger = LoggerFactory.getLogger(id.toString());
+        this.exe = exe;
+        this.services = new ConcurrentHashMap<>(32);
+    }
+
+    public final Stream<Service<C>> stream() {
+        return services.values().stream();
+    }
+
+    public final Set<Map.Entry<K, Service<C>>> entrySet() {
+        return services.entrySet();
+    }
+
+    public final void add(K key, Service<C> s) {
+        set(key, s, true);
+    }
+
+    public final void remove(K serviceID) {
+        set(serviceID, null, false);
+    }
+
+    public final void set(K key, @Nullable Service<C> added, boolean start) {
+
+        if (added == null && start)
+            throw new WTF();
+
+        Service<C> removed = added!=null ? services.put(key, added) : services.remove(key);
+
+        if (added!=removed) {
+            if (removed != null) {
+
+                removed.stop(this, start ? () -> added.start(this, exe) : null);
+
+            } else {
+
+                if (start)
+                    added.start(this);
+            }
+        } else {
+            if (start && added.isOff()) {
+                added.start(this);
+            } else if (!start && added.isOn()) {
+                added.stop(this);
+            }
+        }
+    }
+
+
+
+    public Services<C, K> stop() {
+        for (Service<C> service: services.values()) {
+            service.stop(this);
+        }
+        return this;
+    }
+
+    public int size() {
+        return services.size();
+    }
+
+
+    public void print(PrintStream out) {
+        services.forEach((k, s) -> out.println(k + " " + s.get()));
+    }
+
 
     enum ServiceState {
         Off {
@@ -118,99 +202,6 @@ public class Services<C /* context */, K /* service key */> {
                 return "+-";
             }
         }
-//        Deleted {
-//            @Override
-//            public String toString() {
-//                return ".";
-//            }
-//        }
     }
-
-
-    protected Services() {
-        this(null);
-    }
-
-    public Services(C id) {
-        this(id,
-                MoreExecutors.directExecutor()
-                /*ForkJoinPool.commonPool()*/
-        );
-    }
-
-    /**
-     * Constructs a new instance for managing the given services.
-     *
-     * @param services The services to manage
-     * @param x
-     * @throws IllegalArgumentException if not all services are {@linkplain ServiceState#NEW new} or if there
-     *                                  are any duplicate services.
-     */
-    public Services(@Nullable C id, Executor exe) {
-        this.id = id == null ? (C) this : id;
-        this.logger = LoggerFactory.getLogger(id.toString());
-        this.exe = exe;
-        this.services = new ConcurrentHashMap<>(64);
-    }
-
-    public Stream<Service<C>> stream() {
-        return services.values().stream();
-    }
-
-    public Set<Map.Entry<K, Service<C>>> entrySet() {
-        return services.entrySet();
-    }
-
-    public void add(K key, Service<C> s) {
-        add(key, s, true);
-    }
-
-    public void add(K key, Service<C> s, boolean start) {
-        Service<C> removed = services.put(key, s);
-
-        if (removed != null) {
-
-            removed.stop(this, exe, start ? () -> s.start(this, exe) : null);
-        } else {
-            if (start) {
-                s.start(this, exe);
-            }
-        }
-    }
-
-    public boolean remove(K serviceID) {
-        Service<C> s = services.remove(serviceID);
-        if (s != null) {
-            s.stop(this, exe, () -> {
-            });
-            return true;
-        } else {
-            //logger.error("can not remove unknown service: {}", serviceID);
-            return false;
-        }
-    }
-
-    /**
-     * Initiates service {@linkplain Service#stopAsync shutdown} if necessary on all the services
-     * being managed.
-     *
-     * @return this
-     */
-    public Services<C, K> stop() {
-        for (Service<C> service: services.values()) {
-            service.stop(this, exe, null);
-        }
-        return this;
-    }
-
-    public int size() {
-        return services.size();
-    }
-
-
-    public void print(PrintStream out) {
-        services.forEach((k, s) -> out.println(k + " " + s.get()));
-    }
-
 
 }

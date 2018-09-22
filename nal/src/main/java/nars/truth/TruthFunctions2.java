@@ -207,10 +207,12 @@ public enum TruthFunctions2 {
      * --X, (--X ==> Y) |- Y
      * frequency determined by the impl
      * */
-    public static Truth pre(Truth X, Truth XimplY, float minConf) {
+    public static Truth pre(Truth X, Truth XimplY, boolean weak, float minConf) {
         float c = TruthFunctions.confCompose(X, XimplY);
         if(c < minConf) return null;
         float cc = c * X.freq(); //match amplitude
+        if (weak)
+            cc = w2cSafe(cc);
         if(cc < minConf) return null;
         return $.t(XimplY.freq(), cc);
     }
@@ -218,12 +220,13 @@ public enum TruthFunctions2 {
     /**    Y, (X ==>   Y) |- X
      *   --Y, (X ==> --Y) |- X
      * */
-    public static Truth post(Truth Y, Truth XimplY, float minConf) {
+    public static Truth post(Truth Y, Truth XimplY, boolean strong, float minConf) {
 
         float c = TruthFunctions.confCompose(Y, XimplY);
         if(c < minConf) return null;
-        float freqAlignment = 1f - Math.abs(Y.freq() - XimplY.freq());
-        float cc = w2cSafe(c * freqAlignment);
+        //frequency alignment
+        c *= 1f - Math.abs(Y.freq() - XimplY.freq());
+        float cc = strong ? c : w2cSafe(c );
         if (cc < minConf) return null;
         return $.t(1f, cc);
     }

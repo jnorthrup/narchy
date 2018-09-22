@@ -43,16 +43,15 @@ public class HyperIterator2<X> {
                     }
             );
 
+    public HyperIterator2(RTree<X> tree, FloatFunction<HyperRegion> rank) {
+        this(tree.model, tree.root(), rank);
+    }
+
     public HyperIterator2(Spatialization model, Node<X> start, FloatFunction<HyperRegion> rank) {
-//        this.model = model;
-
-//        this.target = target;
-
-        FloatFunction rr = r -> rank.floatValueOf(
-                r instanceof Node? ((Node)r).bounds() : model.bounds(r)
-        );
         this.plan = /*new CachedTopN(32, rank);*/
-                    pool.get().get().clear(rr);
+                    pool.get().get().clear(r -> rank.floatValueOf(
+                            r instanceof Node ? ((Node)r).bounds() : model.bounds(r)
+                    ));
 
         plan.accept(start);
     }
@@ -82,13 +81,9 @@ public class HyperIterator2<X> {
      * surveys the contents of the node, producing a new 'stack frame' for navigation
      */
     private void expand(Node<X> at) {
-        //initialize plan at current node
         int atSize = at.size();
-        if (atSize == 0) {
+        if (atSize == 0)
             return;
-        } /* TODO : else if (at.isLeaf() && atSize == 1) {
-
-        } */
 
         boolean notNodeFiltering = (nodeFilter == null || plan.isEmpty()); //dont filter root node (traversed while plan is null)
 
@@ -96,18 +91,19 @@ public class HyperIterator2<X> {
             if (itemOrNode instanceof Node) {
                 Node node = (Node) itemOrNode;
 
-//                //inline 1-arity branches for optimization
-//                while (node.size() == 1) {
-//                    Object first = node.get(0);
-//                    if (first instanceof Node)
-//                        node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
-//                    else {
-//                        if (notNodeFiltering || nodeFilter.tryVisit(node)) {
-//                            plan.accept(first);
-//                        }
-//                        return;
-//                    }
-//                }
+                //inline 1-arity branches for optimization
+                while (node.size() == 1) {
+                    Object first = node.get(0);
+                    if (first instanceof Node)
+                        node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
+                    else {
+
+                        if (notNodeFiltering || nodeFilter.tryVisit(node)) {
+                            plan.accept(first);
+                        }
+                        return;
+                    }
+                }
 
                 if (notNodeFiltering || nodeFilter.tryVisit(node))
                     plan.accept(node);

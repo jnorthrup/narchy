@@ -66,78 +66,30 @@ public class MatrixDeriver extends Deriver {
 
         NAR n = d.nar;
 
-        FasterList<Premise> premises = d.premiseBuffer;
-        premises.clear();
-
-//        final int[] tried = {0};
-
+        int matchTTL = matchTTL(), deriveTTL = n.deriveBranchTTL.intValue();
 
         do {
 
-            if (premises.isEmpty()) {
 
+            int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept;
 
-                int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept;
+            FasterList<Premise> premises = hypothesize(premisesMax, d);
 
-                hypothesize(premisesMax, (t, termlink) -> {
-
-                    Premise premise = new Premise(t, termlink);
-                    if (!premises.add(premise)) {
-                        //n.emotion.premiseBurstDuplicate.increment();
-                    }
-                    return true;
-                }, d);
-
-                int s = premises.size();
-                if (s == 0)
-                    return;
-
-                if (s > 2)
-                    premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
-            }
-
-
-
-            int matchTTL = matchTTL(), deriveTTL = n.deriveBranchTTL.intValue();
-
-            for (Premise p : premises) {
-
+            for (Premise p : premises)
                 p.derive(d, matchTTL, deriveTTL);
 
-            }
             premises.clear();
 
         } while (kontinue.getAsBoolean());
 
 
-
-    }
-
-    protected void premiseUnmatched(Premise p) {
-        //p.termLink.priMult(0.9f); //HACK simple decay
-        //TODO use the original concept and tasklink bag to determine appropriate decay
-    }
-
-    protected void premiseUnderivable(Premise p, Derivation d) {
-//        System.out.println(nar.time() + " premise underiveable: " + p + " " + d._belief);
-//        try {
-//            Concept c = nar.concept(p.term());
-//            if (c != null)
-//                System.out.println("\t" + c.beliefs().streamTasks().collect(Collectors.toList()));
-//        } catch (Throwable t) { }
-
-
-        //p.termLink.priMult(0.9f); //HACK simple decay
-        //TODO use the original concept and tasklink bag to determine appropriate decay
-    }
-
-    protected void premiseFired(Premise p, Derivation d) {
-        //System.out.println(nar.time() + " premise fired: " + p + " " + d._belief);
     }
 
 
-    /** forms premises */
-    private void hypothesize(int premisesMax, BiPredicate<Task, PriReference<Term>> each, Derivation d) {
+    /**
+     * forms premises
+     */
+    private FasterList<Premise> hypothesize(int premisesMax, Derivation d) {
 
         int premisesRemain[] = new int[]{premisesMax};
         int premisePerConceptRemain[] = new int[1];
@@ -145,8 +97,14 @@ public class MatrixDeriver extends Deriver {
         int tasklinks = Math.max(1, Math.round(premisesMax / ((float) termLinksPerTaskLink)));
 
 
-        @Deprecated BiPredicate<Task, PriReference<Term>> continueHypothesizing = (tasklink, termlink) ->
-                (premisePerConceptRemain[0]-- > 0) && each.test(tasklink, termlink) && (--premisesRemain[0] > 0);
+        FasterList<Premise> premises = d.premiseBuffer;
+        premises.clear();
+
+        @Deprecated BiPredicate<Task, PriReference<Term>> continueHypothesizing = (tasklink, termlink) -> {
+            Premise premise = new Premise(tasklink, termlink);
+            premises.add(premise);
+            return (premisePerConceptRemain[0]-- > 0) && (--premisesRemain[0] > 0);
+        };
 
         int[] conceptsRemain = new int[]{2 * (int) Math.ceil(premisesMax / ((float) (termLinksPerTaskLink * termLinksPerTaskLink)))};
 
@@ -161,14 +119,21 @@ public class MatrixDeriver extends Deriver {
             return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
         });
 
-    }
 
+        int s = premises.size();
+
+        if (s > 2)
+            premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
+
+
+        return premises;
+    }
 
 
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    public void premiseMatrix(Activate a, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
+    private void premiseMatrix(Activate a, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
 
         nar.emotion.conceptFire.increment();
 

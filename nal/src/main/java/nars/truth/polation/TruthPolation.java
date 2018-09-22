@@ -362,6 +362,10 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return get(i).task;
     }
 
+    public void print() {
+        forEach(t -> System.out.println(t.task.proof()));
+    }
+
 
     protected static class TaskComponent {
         final Task task;

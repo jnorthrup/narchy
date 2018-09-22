@@ -29,6 +29,8 @@ public class TaskBagDrainer extends AbstractTask {
         this.rateControl = rateControl;
     }
 
+    static final ThreadLocal<FasterList<ITask>> batch = ThreadLocal.withInitial(FasterList::new);
+
     @Override
     public ITask next(NAR nar) {
 
@@ -41,12 +43,13 @@ public class TaskBagDrainer extends AbstractTask {
             if (n > 0) {
 
                 if (bag instanceof ArrayBag) {
-                    FasterList<ITask> batch = new FasterList(n);
+                    FasterList<ITask> batch = TaskBagDrainer.batch.get();
                     ((ArrayBag) bag).popBatch(n, batch);
                     if (!batch.isEmpty()) {
-                        //nar.input(batch);
                         batch.forEachWith(ITask::run, nar);
+                        batch.clear();
                     }
+
                 } else {
                     bag.pop(null, n, nar::input); //per item.. may be slow
                 }

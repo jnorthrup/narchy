@@ -1,20 +1,28 @@
 package nars.task;
 
+import jcog.data.list.FasterList;
 import jcog.math.MultiStatistics;
 import jcog.signal.meter.event.CSVOutput;
+import jcog.tree.rtree.HyperIterator2;
 import nars.*;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
+import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.task.util.TaskRegion;
+import nars.task.util.TimeConfRange;
+import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
@@ -27,7 +35,7 @@ class RTreeBeliefTableTest {
     private static final LongToFloatFunction stepFunction = (t) -> (Math.sin(t) / 2f + 0.5f) >= 0.5 ? 1f : 0f;
 
     @NotNull
-    private static Task add(RTreeBeliefTable r, Termed x, float freq, float conf, int start, int end, NAR n) {
+    private static Task add(BeliefTable r, Termed x, float freq, float conf, long start, long end, NAR n) {
         Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).apply(n);
         a.pri(0.5f);
         r.add(Remember.the(a, n), n);
@@ -41,10 +49,6 @@ class RTreeBeliefTableTest {
         n.time.dur(dur);
 
         Term term = $.p("x");
-
-        
-
-        
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
         @NotNull BeliefTables cb = true ? c.beliefs() : c.goals();
@@ -225,4 +229,59 @@ class RTreeBeliefTableTest {
         testAccuracy(1, 1, 7, 5, stepFunction);
     }
 
+    @Test void testHyperIterator() {
+        NAR n = NARS.shell();
+
+        n.time.dur(1);
+
+        Term term = $.p("x");
+
+        TaskConcept c = (TaskConcept) n.conceptualize(term);
+        BeliefTables cb = true ? c.beliefs() : c.goals();
+
+        int cap = 16;
+
+        RTreeBeliefTable table = cb.tableFirst(RTreeBeliefTable.class);
+        table.setCapacity(cap);
+
+
+        int horizon = 50;
+        int maxRange = 8;
+
+        //populate table randomly
+        for (int i= 0; i < cap; i++) {
+            long start = n.random().nextInt(horizon);
+            long end = start + n.random().nextInt(maxRange);
+            add(table, term, 1f, 0.9f, start, end, n);
+        }
+        table.print();
+
+
+        List<TaskRegion> shouldBeAscendingTimes = seek(table, -1, -1);
+        print("shouldBeAscendingTimes", shouldBeAscendingTimes);
+        List<TaskRegion> shouldBeDescendingTimes = seek(table, horizon+1, horizon+1);
+        print("shouldBeDescendingTimes", shouldBeDescendingTimes);
+        List<TaskRegion> shouldOscillateOutwardFromMidpoint = seek(table, horizon/2, horizon/2);
+        print("shouldOscillateOutwardFromMidpoint", shouldOscillateOutwardFromMidpoint);
+    }
+
+    static List<TaskRegion> seek(RTreeBeliefTable table, long s, long e) {
+        List<TaskRegion> seq = new FasterList(table.capacity());
+        table.read(t->{
+
+            HyperIterator2<TaskRegion> h = new HyperIterator2(t, TimeConfRange.distanceFunction( new TimeRange(s, e)));
+            while (h.hasNext()) {
+                seq.add(h.next());
+            }
+        });
+        return seq;
+    }
+
+    static void print(String msg, List<TaskRegion> seq) {
+        System.out.println(msg);
+        int i = 0;
+        for (TaskRegion t : seq)
+            System.out.println("\t" + (i++) + ": "+ t);
+        System.out.println();
+    }
 }

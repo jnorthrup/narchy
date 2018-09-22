@@ -50,9 +50,10 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
         return List.of(this);
     }
 
-    /** estimates the organic (derived, excluding curiosity) goal confidence for the given time interval
-     * TODO exclude input tasks from the calculation */
-    abstract public float dexterity(long start, long end, NAR n);
+//    /** estimates the organic (derived, excluding curiosity) goal confidence for the given time interval
+//     * TODO exclude input tasks from the calculation */
+//    abstract public float dexterity(long start, long end, NAR n);
+    abstract public float dexterity();
 
     @Override
     public FloatRange resolution() {

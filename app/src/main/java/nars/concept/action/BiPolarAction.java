@@ -80,14 +80,14 @@ public class BiPolarAction extends AbstractSensor {
         Truth p, n;
         boolean pCuri, nCuri;
         if (rng.nextFloat() < pos.curiosityRate) {
-            p = $.t(0.5f+rng.nextFloat()/2, pos.curiConf);
+            p = $.t(rng.nextFloat(), pos.curiConf);
             pCuri = true;
         } else {
             p = pos.actionTruth();
             pCuri = false;
         }
         if (rng.nextFloat() < neg.curiosityRate) {
-            n = $.t(0.5f+rng.nextFloat()/2, neg.curiConf);
+            n = $.t(rng.nextFloat(), neg.curiConf);
             nCuri = true;
         } else {
             n = neg.actionTruth();
@@ -98,13 +98,11 @@ public class BiPolarAction extends AbstractSensor {
 
         float x = model.update(p, n, prev, now);
 
+        //System.out.println(p + " vs " + n + " -> " + x);
+
         if (x==x) {
             x = Util.clamp(x, -1f, +1f);
 
-            //filter negative result
-            if (Math.abs(x) < 0.5f) {
-                x = 0;
-            }
 
         }
 
@@ -185,7 +183,6 @@ public class BiPolarAction extends AbstractSensor {
 
 
         /** how much coherence can shrink the amplitude of the resulting bipolar signal. 0 means not at all, +1 means fully attenuable */
-        private float coherenceRange = 0.5f;
         private final boolean fair;
 
         boolean freqOrExp;
@@ -255,6 +252,12 @@ public class BiPolarAction extends AbstractSensor {
             else x = Float.NaN;
 
             lastX[0] = x;
+
+
+//            //filter negative result
+//            if (Math.abs(x) < 0.5f) {
+//                x = 0;
+//            }
 
             return x;
 

@@ -39,7 +39,6 @@ package jcog.data.set;
 
 import jcog.TODO;
 import jcog.data.list.FasterList;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -188,7 +187,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     public Set<X> newSet() {
-        return new UnifiedSet<>(2);
+
+        //return new UnifiedSet<>(2);
+        return new HashSet(2);
     }
 
     @Override

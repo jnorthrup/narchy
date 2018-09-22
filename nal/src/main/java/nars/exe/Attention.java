@@ -76,11 +76,6 @@ public class Attention extends DurService implements Sampler<Concept> {
     protected void starting(NAR nar) {
 
 
-        on(
-            nar.eventClear.on(this::clear),
-            nar.eventActivate.on(this::activate)
-        );
-
         active =
                 nar.exe.concurrent() ?
 
@@ -109,6 +104,11 @@ public class Attention extends DurService implements Sampler<Concept> {
 
                         }
         ;
+
+        on(
+                nar.eventClear.on(this::clear),
+                nar.eventActivate.on(this::activate)
+        );
 
         super.starting(nar);
 
