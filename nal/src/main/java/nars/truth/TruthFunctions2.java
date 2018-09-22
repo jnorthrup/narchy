@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
 import static nars.$.t;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 public enum TruthFunctions2 {
     ;
@@ -173,7 +174,7 @@ public enum TruthFunctions2 {
     }
     public static float weak(float c) {
         //return w2cSafe(c);
-        return c * TruthFunctions.w2cSafe(1.0f);
+        return c * w2cSafe(1.0f);
     }
 
     @Deprecated public static Truth weak(Truth t) {
@@ -222,7 +223,7 @@ public enum TruthFunctions2 {
         float c = TruthFunctions.confCompose(Y, XimplY);
         if(c < minConf) return null;
         float freqAlignment = 1f - Math.abs(Y.freq() - XimplY.freq());
-        float cc = c * freqAlignment;
+        float cc = w2cSafe(c * freqAlignment);
         if (cc < minConf) return null;
         return $.t(1f, cc);
     }

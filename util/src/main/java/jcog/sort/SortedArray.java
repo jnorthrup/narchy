@@ -446,16 +446,22 @@ public class SortedArray<X> extends AbstractList<X> {
         if (list.length == oldSize) {
             if (!grows()) {
                 rejectExisting(list[index]);
-            }
+                list[index] = element;
+                return true;
+            } else {
+                int newCapacity = grow(oldSize);
+                assert (newCapacity > list.length);
+                this.items = list = copyOfArray(list, newCapacity);
 
-            int newCapacity = grow(oldSize);  assert(newCapacity > list.length);
-            this.items = list = copyOfArray(list, newCapacity);
+            }
         }
+
 
         SIZE.getAndIncrement(this);
         System.arraycopy(list, index, list, index + 1, oldSize - index);
         list[index] = element;
         return true;
+
     }
 
 

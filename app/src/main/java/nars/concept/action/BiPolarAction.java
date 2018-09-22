@@ -1,7 +1,6 @@
 package nars.concept.action;
 
 import jcog.Util;
-import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -81,14 +80,14 @@ public class BiPolarAction extends AbstractSensor {
         Truth p, n;
         boolean pCuri, nCuri;
         if (rng.nextFloat() < pos.curiosityRate) {
-            p = $.t(rng.nextFloat(), pos.curiConf);
+            p = $.t(0.5f+rng.nextFloat()/2, pos.curiConf);
             pCuri = true;
         } else {
             p = pos.actionTruth();
             pCuri = false;
         }
         if (rng.nextFloat() < neg.curiosityRate) {
-            n = $.t(rng.nextFloat(), neg.curiConf);
+            n = $.t(0.5f+rng.nextFloat()/2, neg.curiConf);
             nCuri = true;
         } else {
             n = neg.actionTruth();
@@ -105,10 +104,6 @@ public class BiPolarAction extends AbstractSensor {
             //filter negative result
             if (Math.abs(x) < 0.5f) {
                 x = 0;
-            } else {
-                if (x > 0) x -= 0.5f;
-                else x += 0.5f;
-                x *= 2;
             }
 
         }
@@ -128,8 +123,12 @@ public class BiPolarAction extends AbstractSensor {
 //            yn = 1f - yp;
 
             //only one side gets feedback:
-            float thresh = nar.freqResolution.floatValue();
-            if (Math.abs(y) <= thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
+            float thresh = nar.freqResolution.floatValue()*2;
+//            if (Math.abs(y) <= thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
+
+            if (Math.abs(y) <= thresh) { yp = yn = 0; } //Float.NaN; }
+            else if (y > 0) { yp = 0.5f + y/2; yn = 0; }
+            else { yn = 0.5f - y/2; yp = 0; }
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {
 //                float zeroThresh = ScalarValue.EPSILON;
@@ -155,8 +154,8 @@ public class BiPolarAction extends AbstractSensor {
 
             float feedbackConf = nar.confDefault(BELIEF);
 
-            Pb = yp == yp ? $.t(yp, feedbackConf) : null;
-            Nb = yn == yn ? $.t(yn, feedbackConf) : null;
+            Pb = yp == yp ? $.t(yp, feedbackConf).dithered(nar) : null;
+            Nb = yn == yn ? $.t(yn, feedbackConf).dithered(nar) : null;
 
         } else {
             Pb = Nb = null;
@@ -164,10 +163,10 @@ public class BiPolarAction extends AbstractSensor {
 
 
         feedback.input(
-                pos.feedback(Pb.dithered(nar), now, next, nar), neg.feedback(Nb.dithered(nar), now, next, nar),
+                pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar),
 
-                (pCuri ? pos.curiosity($.t(Pb.freq(), pos.curiConf).dithered(nar)/* p*/, prev, now, nar) : null),
-                (nCuri ? neg.curiosity($.t(Nb.freq(), pos.curiConf).dithered(nar)/* n*/, prev, now, nar) : null)
+                (pCuri && Pb!=null) ? pos.curiosity($.t(Pb.freq(), pos.curiConf).dithered(nar)/* p*/, prev, now, nar) : null,
+                (nCuri && Nb!=null) ? neg.curiosity($.t(Nb.freq(), neg.curiConf).dithered(nar)/* n*/, prev, now, nar) : null
         );
     }
 
@@ -193,9 +192,9 @@ public class BiPolarAction extends AbstractSensor {
         boolean latch = false;
 
         /** adjustable q+ lowpass filters */
-        final FloatAveraged fp = new FloatAveraged(0.99f, true);
+        //final FloatAveraged fp = new FloatAveraged(0.99f, true);
         /** adjustable q- lowpass filters */
-        final FloatAveraged fn = new FloatAveraged(0.99f, true);
+        //final FloatAveraged fn = new FloatAveraged(0.99f, true);
         private boolean normalize = false;
 
         public DefaultPolarization(boolean fair, NSense s) {
@@ -213,10 +212,12 @@ public class BiPolarAction extends AbstractSensor {
 
             //fill in missing NaN values
             float pg, ng;
-            if (pq!=pq) pg = latch ? fp.floatValue() : 0;
-            else pg = fp.valueOf(pq);
-            if (nq!=nq) ng = latch ? fn.floatValue() : 0;
-            else ng = fn.valueOf(nq);
+//            if (pq!=pq) pg = latch ? fp.floatValue() : 0;
+//            else pg = fp.valueOf(pq);
+//            if (nq!=nq) ng = latch ? fn.floatValue() : 0;
+//            else ng = fn.valueOf(nq);
+            pg = pq == pq ? pq : 0;
+            ng = nq == nq ? nq : 0;
 
             float pe = c(pos), ne = c(neg);
             float eMax = Math.max(pe, ne);

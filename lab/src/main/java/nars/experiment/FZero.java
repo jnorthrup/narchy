@@ -94,7 +94,7 @@ public class FZero extends NAgentX {
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.85f);
+                initBipolarRotateDirect(false, 0.15f);
 
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
@@ -326,7 +326,7 @@ public class FZero extends NAgentX {
 
         FloatToFloatFunction d = (dHeading) -> {
 
-            dHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
+            //float ddHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
 
             fz.playerAngle += Math.pow((dHeading), curve) * rotFactor; //bipolar
 
