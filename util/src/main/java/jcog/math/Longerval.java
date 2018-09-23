@@ -110,24 +110,25 @@ public class Longerval implements LongInterval {
 
 	@Nullable
 	public Longerval intersection(long otherA, long otherB) {
-		long a = max(this.a, otherA);
-		long b = min(this.b, otherB);
-		if (a == this.a && b == this.b) return this;
-		else return a > b ? null : new Longerval(a, b);
+		long x = this.a, y = this.b;
+		long a = max(x, otherA), b = min(y, otherB);
+		return a > b ? null : ((a == x && b == y) ?  this : new Longerval(a, b));
 	}
 
 	@Nullable public static Longerval intersection(long myA, long myB, long otherA, long otherB) {
-		long a = max(myA, otherA), b = min(myB, otherB);
-		return a > b ? null : new Longerval(a, b);
+		return new Longerval(myA, myB).intersection(otherA, otherB);
 	}
 	@Nullable public static long[] intersectionArray(long myA, long myB, long otherA, long otherB) {
-		long a = max(myA, otherA), b = min(myB, otherB);
-		return a > b ? null : new long[] { a, b };
+		@Nullable Longerval x = intersection(myA, myB, otherA, otherB);
+		return x== null ? null : x.intervalArray();
+	}
+
+	private long[] intervalArray() {
+		return new long[] { a,b };
 	}
 
 	public static long[] unionArray(long myA, long myB, long otherA, long otherB) {
-		Longerval u = union(myA, myB, otherA, otherB);
-		return new long[] { u.a, u.b };
+		return union(myA, myB, otherA, otherB).intervalArray();
 	}
 
 

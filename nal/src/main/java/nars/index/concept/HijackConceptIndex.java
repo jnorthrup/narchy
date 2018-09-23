@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class HijackConceptIndex extends MaplikeConceptIndex {
 
     private final PLinkHijackBag<Termed> table;
-    
+
 
     private int forgetEveryDurs = 32;
     private float forgetTemperature = 0.5f;
@@ -30,11 +30,11 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
      */
     private final float initial = 0.5f;
     private final float getBoost = 0.02f;
-    
-//    private long now;
+
+    //    private long now;
 //    private int dur;
     private DurService onDur;
-    
+
 
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
@@ -42,7 +42,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         this.table = new PLinkHijackBag<>(capacity, reprobes) {
 
             {
-                resize(capacity); 
+                resize(capacity);
             }
 
 
@@ -62,25 +62,15 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
             }
 
             @Override
-            protected float replace(float incomingPower, PLinkHashCached<Termed> existing) {
+            protected boolean replace(float incomingPri, PLinkHashCached<Termed> existing) {
 
                 boolean existingPermanent = existing.id instanceof PermanentConcept;
-
                 if (existingPermanent) {
-
-
-
-
-                    return incomingPower; 
+                    return false;
                 }
 
-
-
-                return super.replace(incomingPower, existing);
+                return super.replace(incomingPri, existing);
             }
-
-
-
 
 
         };
@@ -94,8 +84,11 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         onDur.durs(forgetEveryDurs);
     }
 
-    /** measures accesses for eviction, so do not elide */
-    @Override protected final boolean elideConceptGets() {
+    /**
+     * measures accesses for eviction, so do not elide
+     */
+    @Override
+    protected final boolean elideConceptGets() {
         return false;
     }
 
@@ -104,14 +97,14 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public @Nullable Termed get( Term key, boolean createIfMissing) {
+    public @Nullable Termed get(Term key, boolean createIfMissing) {
         @Nullable PLink<Termed> x = table.get(key);
         if (x != null) {
-            
-            
+
+
             boost(x, getBoost);
-            return x.id; 
-            
+            return x.id;
+
         }
 
         if (createIfMissing) {
@@ -122,9 +115,8 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
                     return kc;
 
 
-
                 } else {
-                    table.put(new PLinkHashCached<>(kc, initial)); 
+                    table.put(new PLinkHashCached<>(kc, initial));
                     return null;
                 }
             }
@@ -140,7 +132,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
 
     @Override
-    public void set( Term src, Termed target) {
+    public void set(Term src, Termed target) {
         remove(src);
         PLink<Termed> inserted = table.put(new PLinkHashCached<>(target, 1f));
         if (inserted == null && target instanceof PermanentConcept) {
@@ -154,10 +146,10 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public void forEach( Consumer<? super Termed> c) {
-        
+    public void forEach(Consumer<? super Termed> c) {
+
         table.forEachKey(c);
-        
+
     }
 
     @Override
@@ -166,14 +158,14 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public  String summary() {
-        return table.size() + " concepts"; 
+    public String summary() {
+        return table.size() + " concepts";
     }
 
     @Override
     public Termed remove(Term entry) {
         PLinkHashCached<Termed> e = table.remove(entry);
-        return e!=null ? e.id : null;
+        return e != null ? e.id : null;
     }
 
     @Override

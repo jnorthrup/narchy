@@ -590,18 +590,48 @@ public class NAL6Test extends NALTest {
 //    }
 
     @Test
-    void abductionBeliefWeakPositiveButNotNegative() {
+    void abductionBeliefWeakPositivesButNotNegative() {
 
         test
-                .believe("(a==>b)", 0.6f, 0.90f)
-                .believe("b", 0.6f, 0.90f)
+                .believe("(a==>b)", 0.9f, 0.90f)
+                .believe("b", 0.9f, 0.90f)
                 .mustBelieve(cycles, "a",
-                        //0.6f, 0.31f
-                        //1f, 0.45f
-                        0.82f, 0.45f
+                        0.82f, 0.40f
+                );
+    }
+    @Test
+    void abductionBeliefWeakNegativesButNotNegative() {
+
+        test
+                .believe("(a==>b)", 0.1f, 0.90f)
+                .believe("b", 0.1f, 0.90f)
+                .mustBelieve(cycles, "a",
+                        0.82f, 0.40f
+                );
+    }
+    @Test
+    void abductionBeliefPositiveNegativeButNotTotalFail() {
+
+        test.nar.confMin.set(0.1f);
+        test
+                .believe("(a==>b)", 0.55f, 0.90f)
+                .believe("b", 0.45f, 0.90f)
+                .mustBelieve(cycles, "a",
+                        0.5f, 0.29f
                 );
     }
 
+    @Test
+    void abductionBeliefOffCenteredPositiveNegativeButNotTotalFail() {
+
+        test.nar.confMin.set(0.1f);
+        test
+                .believe("(a==>b)", 0.9f, 0.95f)
+                .believe("b", 0.45f, 0.95f)
+                .mustBelieve(cycles, "a",
+                        0.46f, 0.29f
+                );
+    }
     @Test
     void GoalMatchSubjOfImplWithVariable() {
         test

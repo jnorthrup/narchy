@@ -23,7 +23,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     private final Function<X, Y> func;
     private final boolean soft;
 
-    protected float DEFAULT_VALUE, CACHE_HIT_BOOST;
+    protected float DEFAULT_VALUE, CACHE_HIT_BOOST, CACHE_REJECT_CUT;
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
         this(f, initialCapacity, reprobes, false);
@@ -33,7 +33,6 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes, boolean soft) {
         this.soft = soft;
         this.func = f;
-        this.DEFAULT_VALUE = 0.5f / reprobes;
 
         bag = newBag(initialCapacity, reprobes);
         bag.resize(initialCapacity);
@@ -182,22 +181,33 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             super.resize(newSpace);
         }
 
+
+
         @Override
-        public void setCapacity(int i) {
-            super.setCapacity(i);
+        public void setCapacity(int c) {
+            super.setCapacity(c);
+//
+//            float boost = i > 0 ?
+//                    (float) (1f / Math.sqrt(capacity()))
+//                    : 0;
+//
+//
+//            float cut = boost / (reprobes / 2f);
+//
+//            assert (cut > ScalarValue.EPSILON);
+//            HijackMemoize.this.DEFAULT_VALUE = 0.5f / reprobes;
+//            HijackMemoize.this.CACHE_HIT_BOOST = boost;
 
-            float boost = i > 0 ?
-                    (float) (1f / Math.sqrt(capacity()))
-                    : 0;
+            float sc = (float) Math.sqrt(c);
+            HijackMemoize.this.DEFAULT_VALUE =
+                    //0.5f / reprobes;
+                    1f / sc;
+            HijackMemoize.this.CACHE_HIT_BOOST = 1f/sc;
+            HijackMemoize.this.CACHE_REJECT_CUT = CACHE_HIT_BOOST / reprobes;
 
-
-            float cut = boost / (reprobes / 2f);
-
-            assert (cut > ScalarValue.EPSILON);
-
-            HijackMemoize.this.CACHE_HIT_BOOST = boost;
-
-
+            assert(DEFAULT_VALUE > ScalarValue.EPSILON);
+            assert(CACHE_HIT_BOOST > ScalarValue.EPSILON);
+            assert(CACHE_REJECT_CUT > ScalarValue.EPSILON);
         }
 
         @Override
@@ -223,6 +233,17 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         @Override
         public X key(PriProxy<X, Y> value) {
             return value.x();
+        }
+
+        @Override
+        protected boolean replace(float incomingPri, PriProxy<X, Y> existing) {
+            if (super.replace(incomingPri, existing)) {
+                return true;
+            } else {
+                //remains, gradually weaken
+                existing.priSub(CACHE_REJECT_CUT);
+                return false;
+            }
         }
 
         @Override

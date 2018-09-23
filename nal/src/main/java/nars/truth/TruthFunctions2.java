@@ -224,22 +224,21 @@ public enum TruthFunctions2 {
 
         float c = TruthFunctions.confCompose(Y, XimplY);
         if(c < minConf) return null;
-        float cc = strong ? c : w2cSafe(c );
-        if (cc < minConf) return null;
 
         //frequency alignment
         float yF = Y.freq();
         float impF = XimplY.freq();
         float f;
 
-        //c *= 1f - Math.abs( yF - impF);
-        //f = 1f;
-
-        float yFp = 2* (yF - 0.5f);
+        //polarized: -1..+1
+        float yFp = 2 * (yF - 0.5f);
         float impFp = 2 * (impF - 0.5f);
-        f = Math.max( yFp * impFp, (-yFp) * (-impFp) );///2f + 0.5f;
-        if (f < 0) return null;
+        float alignment = (((yFp * impFp) /*-1..+1*/)+1)/2;
+        c *= alignment;
+        f = alignment;
 
+        float cc = strong ? c : w2cSafe(c );
+        if (cc < minConf) return null;
         return $.t(f, cc);
     }
 
