@@ -16,9 +16,9 @@ import org.jetbrains.annotations.Nullable;
 public interface Variable extends Atomic {
 
 
-    static boolean commonalizableVariable(Op x) {
-        return x.in(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
-    }
+//    static boolean commonalizableVariable(Op x) {
+//        return x.in(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
+//    }
 
     @Override
     @Nullable

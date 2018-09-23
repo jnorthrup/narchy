@@ -82,7 +82,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
         }
     }
 
-    protected final void apply(Concept c) {
+    private void apply(Concept c) {
         c.termlinks().setCapacity(linkCap(c, true));
         c.tasklinks().setCapacity(linkCap(c, false));
     }
@@ -96,7 +96,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
         }
     }
 
-    protected final void apply(TaskConcept c) {
+    private void apply(TaskConcept c) {
         c.beliefs().tables.forEach(t -> setBeliefTableCapacity(c, t, true));
         c.goals().tables.forEach(t -> setBeliefTableCapacity(c, t, false));
         c.questions().setCapacity(questionCap(c, true));
@@ -104,7 +104,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
     }
 
 
-    protected final int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
+    private int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
         return (beliefOrGoal ?
                 (eternalOrTemporal ?
                         beliefsEteCapacity : beliefsTempCapacity) :
@@ -112,11 +112,11 @@ public final class ConceptAllocator implements Consumer<Concept> {
                         goalsEteCapacity : goalsTempCapacity)).applyAsInt(concept);
     }
 
-    protected final int linkCap(Concept concept, boolean termOrTask) {
+    private int linkCap(Concept concept, boolean termOrTask) {
         return (termOrTask ?  termlinksCapacity : tasklinksCapacity).applyAsInt(concept);
     }
 
-    protected final int questionCap(TaskConcept concept, boolean questionOrQuest) {
+    private int questionCap(TaskConcept concept, boolean questionOrQuest) {
         return (questionOrQuest ? questionsCapacity : questsCapacity).applyAsInt(concept);
     }
 

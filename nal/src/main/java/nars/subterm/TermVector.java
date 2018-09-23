@@ -18,7 +18,7 @@ import static nars.Op.NEG;
 public abstract class TermVector extends TermMetadata implements Subterms, The {
 
     private transient boolean normalized;
-    final boolean the;
+    private final boolean the;
 
     /** called by AnonVector */
     protected TermVector(SubtermMetadataCollector s) {
@@ -46,7 +46,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
         return x.op() == NEG ? contains(x.unneg()) : (hasAny(NEG) && contains(x.neg()));
     }
 
-    protected void equivalentTo(TermVector that) {
+    void equivalentTo(TermVector that) {
 
 
         boolean an, bn = that.normalized;

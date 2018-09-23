@@ -10,7 +10,7 @@ import java.util.Set;
 /** uses a predefined set of terms that will be mapped */
 public abstract class SeedConceptMap extends ConceptMap {
 
-    public final Set<Term> terms;
+    private final Set<Term> terms;
 
     protected SeedConceptMap(@NotNull NAR nar, Set<Term> terms) {
         super(nar);

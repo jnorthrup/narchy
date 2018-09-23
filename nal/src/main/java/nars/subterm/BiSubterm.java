@@ -17,7 +17,8 @@ import java.util.function.ToIntFunction;
  */
 public class BiSubterm extends TermVector {
 
-    protected final Term x, y;
+    protected final Term x;
+    protected final Term y;
 
     public static class ReversibleBiSubterm extends BiSubterm {
 

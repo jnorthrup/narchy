@@ -47,7 +47,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
 
 
-    protected Map newBagMap(int volume) {
+    private static Map newBagMap(int volume) {
 
 
         //return new UnifiedMap(0, 0.99f);

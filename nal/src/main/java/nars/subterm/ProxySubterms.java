@@ -2,11 +2,11 @@ package nars.subterm;
 
 import nars.term.Term;
 
-public class ProxySubterms implements Subterms {
+class ProxySubterms implements Subterms {
 
-    protected final Subterms ref;
+    final Subterms ref;
 
-    public ProxySubterms(Subterms ref) {
+    ProxySubterms(Subterms ref) {
         this.ref = ref;
     }
 

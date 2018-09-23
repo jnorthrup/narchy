@@ -6,6 +6,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayUnenforcedSortedSet;
 import nars.$;
 import nars.Op;
 import nars.subterm.util.DisposableTermList;
@@ -65,8 +66,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
     static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
         if ((a.structure() & b.structure()) != 0) {
 
-            Set<Term> as = a.toSet();
-            SortedSet<Term> ab = b.toSetSorted(as::contains);
+            Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
+            SortedSet<Term> ab = b.toSetSorted(contains);
             if (ab != null)
                 return ab;
         }
@@ -211,11 +212,34 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t) {
-        TreeSet<Term> u = new TreeSet<>();
-        forEach(x -> {
-            if (t.test(x)) u.add(x);
-        });
-        return u;
+        int s = subs();
+        if (s == 1) {
+            Term the = sub(0);
+            if (t.test(the))
+                return ArrayUnenforcedSortedSet.the(the);
+            else
+                return ArrayUnenforcedSortedSet.empty;
+        } else if (s ==2 ) {
+            Term a = sub(0);
+            Term b = sub(1);
+            boolean aok = t.test(a);
+            boolean bok = t.test(b);
+            if (aok && bok) {
+                return ArrayUnenforcedSortedSet.the(a, b);
+            } else if (!bok && !bok) {
+                return ArrayUnenforcedSortedSet.empty;
+            } else if (!bok) {
+                return ArrayUnenforcedSortedSet.the(a);
+            } else
+                return ArrayUnenforcedSortedSet.the(b);
+        } else {
+            TreeSet<Term> u = new TreeSet<>();
+            forEach(x -> {
+                if (t.test(x)) u.add(x);
+            });
+            return u;
+        }
+
     }
 
 
@@ -231,14 +255,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default /*@NotNull*/ MutableSet<Term> toSet() {
         int s = subs();
-        UnifiedSet u = new UnifiedSet(s * 2);
+        UnifiedSet u = new UnifiedSet(s, 0.99f);
         if (s > 0) {
             forEach(u::add);
-
         }
         return u;
-
-
     }
 
     default @Nullable MutableSet<Term> toSet(Predicate<Term> ifTrue) {

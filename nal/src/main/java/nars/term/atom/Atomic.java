@@ -101,6 +101,7 @@ public interface Atomic extends Term {
         return t.op() == NEG && equals(t.unneg());
     }
 
+
 //    @Override
 //    default boolean equalsNegRoot(Term t) {
 //        return equalsNeg(t.root());

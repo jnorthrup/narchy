@@ -23,15 +23,15 @@ import java.util.stream.Stream;
 public class NodeConcept implements Concept {
 
     public final Term term;
-    public final Bag<?, TaskLink> taskLinks;
-    public final Bag<Term, PriReference<Term>> termLinks;
+    private final Bag<?, TaskLink> taskLinks;
+    private final Bag<Term, PriReference<Term>> termLinks;
 
     private final TermLinker linker;
 
     /** cached here, == term.hashCode() */
     private final int hash;
 
-    protected final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
+    private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
     public NodeConcept(Term term, NAR nar) {
         this(term, nar.conceptBuilder);
@@ -48,7 +48,7 @@ public class NodeConcept implements Concept {
         this(term, linker, b.newLinkBags(term));
     }
 
-    public NodeConcept(Term term, TermLinker linker, Bag[] bags) {
+    NodeConcept(Term term, TermLinker linker, Bag[] bags) {
         assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
         this.termLinks = bags[0];

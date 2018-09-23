@@ -32,11 +32,11 @@ import static nars.Op.INH;
  */
 public class Operator extends NodeConcept implements PermanentConcept, Atomic, The {
 
-    public static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594)); 
+    private static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594));
 
     public final BiFunction<Task, NAR, Task> model;
 
-    public Operator(Atom atom, BiFunction<Task, NAR, Task> model) {
+    private Operator(Atom atom, BiFunction<Task, NAR, Task> model) {
         super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
         this.model = model;
     }
@@ -79,7 +79,7 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic, T
     }
 
 
-    static Task command(Term content, long when) {
+    private static Task command(Term content, long when) {
         return new NALTask(content, Op.COMMAND, null, when, when, when, ArrayUtils.EMPTY_LONG_ARRAY);
     }
 
@@ -87,7 +87,7 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic, T
         return Operator.command(LOG_FUNCTOR, when, $.the(content));
     }
 
-    static Task command(String func, long now, @NotNull Term... args) {
+    private static Task command(String func, long now, @NotNull Term... args) {
         return Operator.command($.func(func, args), now);
     }
 
@@ -96,11 +96,11 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic, T
     }
 
 
-    public static class SimpleOperatorModel implements BiFunction<Task, NAR, Task> {
+    static class SimpleOperatorModel implements BiFunction<Task, NAR, Task> {
 
         private final BiFunction<Task, NAR, Task> exe;
 
-        public SimpleOperatorModel(BiFunction<Task, NAR, Task> exe) {
+        SimpleOperatorModel(BiFunction<Task, NAR, Task> exe) {
             this.exe = exe;
         }
 
@@ -129,7 +129,7 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic, T
             }
         }
 
-        public boolean executeGoal(Task goal) {
+        static boolean executeGoal(Task goal) {
             return goal.expectation() > 0.5f;
         }
     }

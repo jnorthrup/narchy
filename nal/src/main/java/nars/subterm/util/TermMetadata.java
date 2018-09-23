@@ -108,6 +108,7 @@ abstract public class TermMetadata implements Termlike {
             if (x < 0) x = (short) -x;
             int varID = AnonID.isVariable(x, -1);
             if (varID == -1) {
+                /*..*/
             } else if (varID == minID) {
                 //same order, ok
                 int type = AnonID.idToMask(x);

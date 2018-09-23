@@ -2,10 +2,7 @@ package jcog.data.set;
 
 import jcog.data.list.FasterList;
 
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Helper for efficiently representing small sets whose elements are known to be unique by
@@ -17,10 +14,10 @@ import java.util.Set;
  * behavior (ordered); the fact that it subclasses ArrayList should be considered an implementation
  * detail.
  *
- * @param <E> the element type
+ * @param <X> the element type
  * @author John V. Sichi
  */
-public class ArrayUnenforcedSet<E> extends FasterList<E> implements Set<E> {
+public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
     private static final long serialVersionUID = -7413250161201811238L;
 
     /**
@@ -36,7 +33,7 @@ public class ArrayUnenforcedSet<E> extends FasterList<E> implements Set<E> {
      * @param c the collection whose elements are to be placed into this set
      * @throws NullPointerException if the specified collection is null
      */
-    public ArrayUnenforcedSet(Collection<? extends E> c) {
+    public ArrayUnenforcedSet(Collection<? extends X> c) {
         super((Iterable)c);
     }
 
@@ -50,6 +47,10 @@ public class ArrayUnenforcedSet<E> extends FasterList<E> implements Set<E> {
         super(n);
     }
 
+    public ArrayUnenforcedSet(X... x) {
+        super(x.length, x);
+    }
+
     @Override
     public boolean equals(Object o) {
         return new SetForEquality().equals(o);
@@ -60,12 +61,13 @@ public class ArrayUnenforcedSet<E> extends FasterList<E> implements Set<E> {
         return new SetForEquality().hashCode();
     }
 
+
     /**
      * Multiple inheritance helper.
      */
-    private class SetForEquality extends AbstractSet<E> {
+    private class SetForEquality extends AbstractSet<X> {
         @Override
-        public Iterator<E> iterator() {
+        public Iterator<X> iterator() {
             return ArrayUnenforcedSet.this.iterator();
         }
 
@@ -74,4 +76,5 @@ public class ArrayUnenforcedSet<E> extends FasterList<E> implements Set<E> {
             return ArrayUnenforcedSet.this.size();
         }
     }
+
 }

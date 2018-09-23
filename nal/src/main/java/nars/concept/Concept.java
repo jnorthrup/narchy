@@ -38,7 +38,6 @@ import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -223,14 +222,14 @@ public interface Concept extends Termed, MetaMap {
         return tasks(true,true,true,true);
     }
 
-    default void printSummary(PrintStream out, NAR n) {
-        long now = n.time();
-        out.println(term() +
-                "\t" +
-                "belief=" + beliefs().truth(now, n) + " $" + " , " +
-                "goal=" +   goals().truth(now, n)+ " $"
-        );
-    }
+//    default void printSummary(PrintStream out, NAR n) {
+//        long now = n.time();
+//        out.println(term() +
+//                "\t" +
+//                "belief=" + beliefs().truth(now, n) + " $" + " , " +
+//                "goal=" +   goals().truth(now, n)+ " $"
+//        );
+//    }
 
     default void remove(Task t) {
         table(t.punc()).removeTask(t);

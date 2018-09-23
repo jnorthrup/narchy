@@ -63,7 +63,7 @@ public class Recog2D extends NAgentX {
     int image;
     final int maxImages = 4;
 
-    int imagePeriod = 24;
+    int imagePeriod = 8;
 
 
     public Recog2D(NAR n) {
@@ -98,7 +98,7 @@ public class Recog2D extends NAgentX {
 //                outs, nar);
         train = null;
 
-        reward(()->{
+        rewardNormalized("correct", -1, +1, ()->{
             float error = 0;
             for (int i = 0; i < maxImages; i++) {
 
@@ -121,7 +121,7 @@ public class Recog2D extends NAgentX {
 
         //Plot2D p;
 
-        int history = 256;
+//        int history = 256;
 
         Gridding g = new Gridding(
 
@@ -162,7 +162,7 @@ public class Recog2D extends NAgentX {
 
                         );
 
-                        float m = 0.5f * conf;
+                        //float m = 0.5f * conf;
 
                         Draw.rect(bounds, gl);
 
@@ -411,7 +411,7 @@ public class Recog2D extends NAgentX {
                         return a.action(tt, (bb, x) -> {
 
 
-                            float predictedFreq = x != null ? x.expectation() : 0.5f;
+                            float predictedFreq = x != null ? x.freq() : 0.5f;
 
 
                             n.actual(predictedFreq, x != null ? x.conf() : 0);

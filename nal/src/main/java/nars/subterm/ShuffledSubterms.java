@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public final class ShuffledSubterms extends ProxySubterms {
 
-    final ShuffledPermutations shuffle;
+    private final ShuffledPermutations shuffle;
 
 
     public ShuffledSubterms(Subterms subterms, Random rng) {
@@ -31,7 +31,7 @@ public final class ShuffledSubterms extends ProxySubterms {
         return Subterms.toString(this);
     }
 
-    protected void reset(Random rng) {
+    private void reset(Random rng) {
         shuffle.restart(subs(), rng);
     }
 

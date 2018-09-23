@@ -64,13 +64,6 @@ public class Int implements Intlike, The {
         }
     }
 
-
-
-    @Override
-    public final void collectMetadata(SubtermMetadataCollector s) {
-        s.collectNonVar(op(), hashCode());
-    }
-
     @Override
     public final byte[] bytes() {
         return bytesCached;

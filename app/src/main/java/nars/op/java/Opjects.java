@@ -197,8 +197,8 @@ public class Opjects extends DefaultTermizer {
     }
 
     public Opjects(NAR n) {
-        nar = n;
-        in = n.newChannel(this);
+        in = (nar = n).newChannel(this);
+        update(n);
         this.on = DurService.on(n, this::update);
     }
 

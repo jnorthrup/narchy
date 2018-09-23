@@ -33,19 +33,19 @@ import static nars.Op.*;
  */
 public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed> {
 
-    protected final Map<Term, Conceptor> conceptors = new ConcurrentHashMap<>();
+    private final Map<Term, Conceptor> conceptors = new ConcurrentHashMap<>();
 
     public abstract QuestionTable questionTable(Term term, boolean questionOrQuest);
 
     public abstract BeliefTables newTable(Term t, boolean beliefOrGoal);
 
-    public abstract EternalTable newEternalTable(Term c);
+    protected abstract EternalTable newEternalTable(Term c);
 
     public abstract TemporalBeliefTable newTemporalTable(Term c);
 
     public abstract Bag[] newLinkBags(Term term);
 
-    public Concept taskConcept(final Term t) {
+    private Concept taskConcept(final Term t) {
         DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
         if (dmt != null) {
 
@@ -77,7 +77,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         }
     }
 
-    protected BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
+    private BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
         return new BeliefTables(
                 newTemporalTable(t),
                 newEternalTable(t),
@@ -92,13 +92,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     }
 
 
-    public static final Predicate<Term> validDynamicSubterm = x -> Task.taskConceptTerm(x.unneg());
+    private static final Predicate<Term> validDynamicSubterm = x -> Task.taskConceptTerm(x.unneg());
 
 
-    public static boolean validDynamicSubterms(Subterms subterms) {
+    private static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);
     }
-    public static boolean validDynamicSubtermsAndNoSharedVars(Term conj) {
+    private static boolean validDynamicSubtermsAndNoSharedVars(Term conj) {
         Subterms conjSubterms = conj.subterms();
         if (validDynamicSubterms(conjSubterms)) {
             if (conjSubterms.hasAny(VAR_DEP)) {
@@ -198,7 +198,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return null;
     }
 
-    public static DynamicTruthModel dynamicInh(Term t) {
+    private static DynamicTruthModel dynamicInh(Term t) {
 
         //quick pre-test
         Subterms tt = t.subterms();
@@ -310,10 +310,10 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        public TaskConcept taskConcept(Term t) {
-            throw new UnsupportedOperationException();
-        }
+//        @Override
+//        public TaskConcept taskConcept(Term t) {
+//            throw new UnsupportedOperationException();
+//        }
 
         @Override
         public TermLinker termlinker(Term term) {

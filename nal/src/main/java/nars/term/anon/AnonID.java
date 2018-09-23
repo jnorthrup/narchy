@@ -136,7 +136,7 @@ public abstract class AnonID implements Atomic, The {
     public static SubtermMetadataCollector subtermMetadata(short[] s) {
         SubtermMetadataCollector c = new SubtermMetadataCollector();
         for (short x : s)
-            idToTerm(x).collectMetadata(c);
+            c.collectMetadata(idToTerm(x));
         return c;
     }
 

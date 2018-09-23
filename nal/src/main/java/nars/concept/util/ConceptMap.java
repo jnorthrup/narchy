@@ -12,20 +12,20 @@ import org.jetbrains.annotations.NotNull;
 public abstract class ConceptMap {
 
 	@NotNull
-	public final TimeAware timeAware;
+	private final TimeAware timeAware;
 
-	Offs regs;
-	int frame = -1;
-	protected int cycleInFrame = -1;
+	private final Offs regs;
+	private int frame = -1;
+	private int cycleInFrame = -1;
 
 	public int frame() {
 		return frame;
 	}
 
-	public void reset() {
+	private void reset() {
 	}
 
-	protected ConceptMap(@NotNull NAR nar) {
+	ConceptMap(NAR nar) {
 
         regs = new Offs(
         nar.eventClear.on(n -> {
@@ -49,7 +49,7 @@ public abstract class ConceptMap {
 
 	}
 
-	protected void onFrame() {
+	private void onFrame() {
 	}
 
 

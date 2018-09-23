@@ -29,7 +29,6 @@ import nars.Op;
 import nars.The;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
-import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.anon.Anom;
 import nars.term.anon.AnonID;
 import nars.term.atom.Atomic;
@@ -673,24 +672,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     @Override
     default int structure() {
         return Termed.super.structure() | op().bit;
-    }
-
-    default void collectMetadata(SubtermMetadataCollector s) {
-
-        int xstructure = structure();
-        s.structure |= xstructure;
-
-        if ((xstructure & VAR_PATTERN.bit) != 0)
-            s.varPattern += varPattern();
-        if ((xstructure & VAR_DEP.bit) != 0)
-            s.varDep += varDep();
-        if ((xstructure & VAR_INDEP.bit) != 0)
-            s.varIndep += varIndep();
-        if ((xstructure & VAR_QUERY.bit) != 0)
-            s.varQuery += varQuery();
-
-        s.vol += volume();
-        s.hash = Util.hashCombine(s.hash, hashCode());
     }
 
     default boolean the() {

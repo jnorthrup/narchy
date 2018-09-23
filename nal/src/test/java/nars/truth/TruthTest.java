@@ -168,8 +168,8 @@ class TruthTest {
         float step = 0.01f;
         int subSteps = 9;
         float subStep = 0.001f;
-        for (int i = 0; i < steps; i++) {
-            for (int j = 0; j < subSteps; j++) {
+        for (int i = 1; i < steps; i++) {
+            for (int j = 1; j < subSteps; j++) {
                 float c = step * i + (subStep) * j;
                 @Nullable PreciseTruth p = t(1f, c).dithered(n);
                 if (p!=null)
