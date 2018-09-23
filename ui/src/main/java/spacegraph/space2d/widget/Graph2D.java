@@ -139,7 +139,13 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (super.prePaint(r)) {
-            updater.update(this, r.dtMS);
+            if (busy.compareAndSet(false, true)) {
+                try {
+                    updater.update(this, r.dtMS);
+                } finally {
+                    busy.set(false);
+                }
+            }
             return true;
         }
         return false;

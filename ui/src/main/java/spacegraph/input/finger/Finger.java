@@ -410,7 +410,7 @@ public class Finger {
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             if (focused)
-                renderer.paint(posPixel, Finger.this, gl);
+                renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
         }
     }
 

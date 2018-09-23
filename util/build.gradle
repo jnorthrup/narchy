@@ -61,6 +61,9 @@ dependencies {
         exclude(module: 'guava')
     }
 
+//    compile group: 'com.oracle.truffle', name: 'truffle-api', version: '1.0.0-rc6'
+
+
 //// https://mvnrepository.com/artifact/com.squareup/javapoet
 //    compile group: 'com.squareup', name: 'javapoet', version: '1.11.1'
 

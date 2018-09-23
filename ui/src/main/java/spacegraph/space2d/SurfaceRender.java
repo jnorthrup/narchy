@@ -16,8 +16,6 @@ public class SurfaceRender {
     public final int dtMS;
     private float scaleX, scaleY;
     private float x1, x2, y1, y2;
-    private float pixelScaleX;
-    private float pixelScaleY;
 
     public SurfaceRender(float pw, float ph, int dtMS) {
         this.pw = pw;
@@ -62,8 +60,6 @@ public class SurfaceRender {
         this.x2 = cx + sxh;
         this.y1 = cy - syh;
         this.y2 = cy + syh;
-        this.pixelScaleX = pw/(x2-x1);
-        this.pixelScaleY = ph/(y2-y1);
         return this;
     }
 

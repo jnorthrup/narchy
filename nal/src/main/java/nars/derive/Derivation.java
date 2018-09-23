@@ -5,7 +5,6 @@ import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
-import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import nars.*;
 import nars.concept.Concept;
@@ -309,6 +308,7 @@ public class Derivation extends PreDerivation {
         }
         if (this._task == null || this._task != nextTask) {
             this.task = new SpecialTermTask(taskTerm, nextTask);
+            this.taskEvi = Float.NaN; //invalidate
         }
 
 
@@ -355,6 +355,7 @@ public class Derivation extends PreDerivation {
 
             beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
             this.belief = new SpecialTermTask(beliefTerm, nextBelief);
+            this.beliefEvi = Float.NaN;
         } else {
 
             boolean shiftBeliefTerm = !(nextBeliefTerm instanceof Variable);
@@ -456,12 +457,6 @@ public class Derivation extends PreDerivation {
                         Param.DerivationPri.apply(taskPri, _belief.priElseZero());
 
 
-        long[] t = belief!=null && taskStart!=ETERNAL && beliefStart != ETERNAL ?
-                Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd ) :
-                ( belief != null && taskStart==ETERNAL ? new long[] { beliefStart, beliefEnd } :
-                        new long[] { taskStart, taskEnd });
-        this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task, t, 0) : 0;
-        this.beliefEvi = belief != null ? TruthIntegration.evi(_belief, t, 0) : 0;
 
 
         setTTL(ttl);
@@ -622,6 +617,19 @@ public class Derivation extends PreDerivation {
         return cc >= confMin && (this.concTruth = $.t(concTruth.freq(), cc)) != null;
     }
 
+    public float parentEvi() {
+        //            long[] t = belief!=null && taskStart!=ETERNAL && beliefStart != ETERNAL ?
+//                    Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd ) :
+//                    ( belief != null && taskStart==ETERNAL ? new long[] { beliefStart, beliefEnd } :
+//                            new long[] { taskStart, taskEnd });
+        if (taskEvi!=taskEvi) {
+            this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task) : 0;
+        }
+        if (!concSingle && beliefEvi!=beliefEvi) {
+            this.beliefEvi = belief != null ? TruthIntegration.evi(_belief) : 0;
+        }
+        return concSingle ? taskEvi : Math.max(taskEvi, beliefEvi);
+    }
 }
 
 

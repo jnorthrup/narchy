@@ -280,8 +280,14 @@ public class Timeline2D<E> extends Graph2D<E> {
         public void update(Graph2D<E> g, int dtMS) {
             next.clear();
 
-            g.forEachValue(next::add);
-            next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
+            g.forEachValue(t -> {
+                if (t.id!=null) {
+                    next.add(t);
+                }
+            });
+            next.sortThis((x, y) -> {
+                return model.compareDurThenStart(x.id, y.id);
+            });
             if (next.isEmpty())
                 return;
 

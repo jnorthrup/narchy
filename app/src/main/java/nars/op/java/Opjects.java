@@ -16,11 +16,10 @@ import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.subterm.Subterms;
 import nars.task.ITask;
-import nars.task.signal.SignalTask;
-import nars.task.signal.Truthlet;
-import nars.task.signal.TruthletTask;
+import nars.task.NALTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.truth.PreciseTruth;
 import nars.util.AtomicExec;
 import nars.util.TimeAware;
 import net.bytebuddy.ByteBuddy;
@@ -253,7 +252,6 @@ public class Opjects extends DefaultTermizer {
         public void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
 
 
-            SignalTask value;
 
             long now = nar.time();
             int dur = nar.dur();
@@ -264,51 +262,19 @@ public class Opjects extends DefaultTermizer {
 
             boolean isVoid = method.getReturnType() == void.class;
 
+            NALTask value;
 
             if (!isVoid) {
-                Term nextTerm = opTerm(instance, method, args, nextValue);
-                Term nt = nextTerm;
-                if (nt.op() == NEG) {
-                    nt = nt.unneg();
-                    f = 1 - f;
-                }
-
-                value = new TruthletTask(nt, BELIEF,
-
-                        Truthlet.step(
-                                doubtFreq, start,
-                                f, beliefEvi,
-                                end, doubtFreq,
-                                doubtEvi
-                        ),
-                        nar);
-
-                if (Param.DEBUG) value.log("Invoke Result");
-
-                value.priMax(beliefPri);
+                value = value(opTerm(instance, method, args, nextValue), f, start, end, nar);
             } else {
                 value = null;
             }
 
             boolean evokedOrInvoked = evoking.get().get();
 
-            SignalTask feedback;
+            NALTask feedback;
             if (isVoid || evokedOrInvoked) {
-                feedback = new TruthletTask(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), BELIEF,
-
-
-                        Truthlet.step(
-                                uninvokeFreq, start,
-                                invokeFreq, invokeEvi,
-                                end, uninvokeFreq,
-                                uninvokeEvi
-                        ),
-
-
-                        nar);
-                if (Param.DEBUG) feedback.log("Invoked");
-                feedback.priMax(beliefPri);
-
+                feedback = feedback(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), start, end, nar);
             } else {
                 feedback = null;
             }
@@ -320,6 +286,47 @@ public class Opjects extends DefaultTermizer {
                 in.input(feedback, value);
 
 
+        }
+
+        public NALTask feedback(Term nt, long start, long end, NAR nar) {
+
+            NALTask feedback =
+//                new TruthletTask(nt, BELIEF,
+//                    Truthlet.step(
+//                            uninvokeFreq, start,
+//                            invokeFreq, invokeEvi,
+//                            end, uninvokeFreq,
+//                            uninvokeEvi
+//                    ), nar);
+                new NALTask(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, invokeEvi), start, start, end, nar.evidence());
+            if (Param.DEBUG) feedback.log("Invoked");
+            feedback.priMax(beliefPri);
+            return feedback;
+        }
+
+
+        public NALTask value(Term nextTerm, float freq, long start, long end, NAR nar) {
+            Term nt = nextTerm;
+            if (nt.op() == NEG) {
+                nt = nt.unneg();
+                freq = 1 - freq;
+            }
+
+            NALTask value =
+//                new TruthletTask(nt, BELIEF,
+//                    Truthlet.step(
+//                            doubtFreq, start,
+//                            f, beliefEvi,
+//                            end, doubtFreq,
+//                            doubtEvi
+//                    ),
+//                    nar);
+                    new NALTask(nt, BELIEF, PreciseTruth.byEvi(freq, beliefEvi), start, start, end, nar.evidence());
+
+            if (Param.DEBUG) value.log("Invoke Result");
+
+            value.priMax(beliefPri);
+            return value;
         }
     }
 

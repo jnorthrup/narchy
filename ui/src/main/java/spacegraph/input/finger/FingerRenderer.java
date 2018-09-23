@@ -1,14 +1,15 @@
 package spacegraph.input.finger;
 
 import com.jogamp.opengl.GL2;
+import jcog.math.FloatAveraged;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
 /** cursor renderer */
 @FunctionalInterface public interface FingerRenderer {
-    void paint(v2 posPixel, Finger finger, GL2 gl);
+    void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl);
 
-    FingerRenderer rendererCrossHairs1 = (posPixel, finger, gl) -> {
+    FingerRenderer rendererCrossHairs1 = (posPixel, finger, dtMS, gl) -> {
 
         float smx = posPixel.x, smy = posPixel.y;
 
@@ -34,10 +35,23 @@ import spacegraph.video.Draw;
         float lineWidth = 4;
         float rad = 32f;
 
+        float pixelDistSq = 0;
+        final v2 lastPixel = new v2();
+        final FloatAveraged smoothedRad = new FloatAveraged(0.25f);
+        long timeMS = 0;
+
         @Override
-        public void paint(v2 posPixel, Finger finger, GL2 gl) {
+        public void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl) {
 
             float smx = posPixel.x, smy = posPixel.y;
+
+            pixelDistSq = lastPixel.distanceSq(posPixel);
+            lastPixel.set(posPixel);
+
+            timeMS += dtMS;
+
+            float freq = 8f;
+            float phaseSec = (float) Math.sin(freq * ((double)timeMS) / (2 * Math.PI * 1000));
 
             gl.glPushMatrix();
             {
@@ -49,23 +63,23 @@ import spacegraph.video.Draw;
                 } else if (finger.pressing(2)) {
                     gl.glColor4f(0.5f, 0.5f, 1f, alpha);
                 } else {
-                    gl.glColor4f(1, 1, 1, alpha);
+                    gl.glColor4f((phaseSec * 0.5f) + 0.5f, 0.25f, ((1-phaseSec) * 0.5f) + 0.5f, alpha);
                 }
 
-                renderOutside(gl);
-
-                renderInside(gl);
+                float r = smoothedRad.valueOf(this.rad + (pixelDistSq / 50));
+                renderOutside(r, gl);
+                renderInside(r, gl);
             }
             gl.glPopMatrix();
         }
 
-        protected void renderInside(GL2 gl) {
+        protected void renderInside(float rad, GL2 gl) {
             float radh = rad * 0.75f;
             Draw.line(gl, 0, -radh, 0, +radh);
             Draw.line(gl, -radh, 0, +radh, 0);
         }
 
-        protected void renderOutside(GL2 gl) {
+        protected void renderOutside(float rad, GL2 gl) {
             gl.glLineWidth(lineWidth);
             Draw.poly(8, rad, false, gl);
         }
@@ -85,8 +99,8 @@ import spacegraph.video.Draw;
         }
 
         @Override
-        protected void renderInside(GL2 gl) {
-            super.renderInside(gl);
+        protected void renderInside(float rad, GL2 gl) {
+            super.renderInside(rad, gl);
 
             float w = rad/2;
             float x1 = rad * 0.5f;

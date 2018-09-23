@@ -97,7 +97,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         window(new CameraSensorView(pixels, this), 400, 900);
 
 
-        //actionsReflect();
+        actionsReflect();
 
         //actionsToggle();
         actionsTriState();

@@ -39,8 +39,6 @@ public class OpjectsTest {
 
         List<Term> evokes = new FasterList();
         final Opjects objs = new Opjects(n) {
-
-
             @Override
             protected boolean evoked(Term method, Object instance, Object[] params) {
                 evokes.add(method);

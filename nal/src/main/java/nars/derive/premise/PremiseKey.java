@@ -1,11 +1,9 @@
 package nars.derive.premise;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.Util;
 import jcog.data.byt.DynBytes;
 import jcog.memoize.byt.ByteKey;
 import nars.derive.Derivation;
-import nars.term.control.PREDICATE;
 
 import static nars.Op.*;
 
