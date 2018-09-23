@@ -595,7 +595,11 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(a==>b)", 0.6f, 0.90f)
                 .believe("b", 0.6f, 0.90f)
-                .mustBelieve(cycles, "a", 0.6f, 0.31f);
+                .mustBelieve(cycles, "a",
+                        //0.6f, 0.31f
+                        //1f, 0.45f
+                        0.82f, 0.45f
+                );
     }
 
     @Test

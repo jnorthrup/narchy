@@ -4,6 +4,7 @@ import jcog.TODO;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.SortedSet;
 
@@ -26,6 +27,12 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
     public ArrayUnenforcedSortedSet(X... xx) {
         super((X[])xx);
     }
+
+    @Override
+    public boolean add(X newItem) {
+        throw new TODO();
+    }
+
 
     public static <X> SortedSet<X> the(X x) {
         return new One(x);

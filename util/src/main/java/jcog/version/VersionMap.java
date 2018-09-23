@@ -2,7 +2,6 @@ package jcog.version;
 
 import jcog.data.set.ArrayUnenforcedSet;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractMap;
@@ -85,7 +84,6 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     /**
      * avoid using this if possible because it involves transforming the entries from the internal map to the external form
      */
-    @NotNull
     @Override
     public Set<Entry<X, Y>> entrySet() {
         ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>();
@@ -217,7 +215,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return map.containsKey(key);
     }
 
-    @NotNull
+
     @Override
     public Set<X> keySet() {
         throw new UnsupportedOperationException(); 

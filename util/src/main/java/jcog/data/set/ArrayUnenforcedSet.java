@@ -1,5 +1,7 @@
 package jcog.data.set;
 
+import com.google.common.collect.Iterables;
+import jcog.TODO;
 import jcog.data.list.FasterList;
 
 import java.util.*;
@@ -34,33 +36,49 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
      * @throws NullPointerException if the specified collection is null
      */
     public ArrayUnenforcedSet(Collection<? extends X> c) {
-        super((Iterable)c);
+        super((Iterable) c);
     }
 
-    /**
-     * Constructs an empty set with the specified initial capacity.
-     *
-     * @param n the initial capacity of the set
-     * @throws IllegalArgumentException if the specified initial capacity is negative
-     */
-    public ArrayUnenforcedSet(int n) {
-        super(n);
-    }
 
     public ArrayUnenforcedSet(X... x) {
         super(x.length, x);
     }
 
     @Override
-    public boolean equals(Object o) {
-        return new SetForEquality().equals(o);
+    public final boolean equals(Object o) {
+        return this == o || (o instanceof Iterable) && Iterables.elementsEqual(this, (Iterable) o);// new SetForEquality().equals(o);
     }
 
     @Override
-    public int hashCode() {
-        return new SetForEquality().hashCode();
+    public final int hashCode() {
+        //throw new TODO("which is right?");
+
+//        int h = 0;
+//        Iterator<X> i = this.iterator();
+//
+//        while(i.hasNext()) {
+//            X obj = i.next();
+//            if (obj != null) {
+//                h += obj.hashCode();
+//            }
+//        }
+//
+//        return h;
+
+        //Obeying (Abstract)Set<> semantics:
+        int hashCode = 0, s = this.size;
+        X[] ii = this.items;
+        for (int i = 0; i < s; i++)
+            hashCode += ii[i].hashCode();
+
+        return hashCode;
     }
 
+
+    @Override
+    public boolean addAll(Collection<? extends X> source) {
+        throw new TODO();
+    }
 
     /**
      * Multiple inheritance helper.

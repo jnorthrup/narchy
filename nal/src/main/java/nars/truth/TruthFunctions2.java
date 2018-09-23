@@ -224,11 +224,23 @@ public enum TruthFunctions2 {
 
         float c = TruthFunctions.confCompose(Y, XimplY);
         if(c < minConf) return null;
-        //frequency alignment
-        c *= 1f - Math.abs(Y.freq() - XimplY.freq());
         float cc = strong ? c : w2cSafe(c );
         if (cc < minConf) return null;
-        return $.t(1f, cc);
+
+        //frequency alignment
+        float yF = Y.freq();
+        float impF = XimplY.freq();
+        float f;
+
+        //c *= 1f - Math.abs( yF - impF);
+        //f = 1f;
+
+        float yFp = 2* (yF - 0.5f);
+        float impFp = 2 * (impF - 0.5f);
+        f = Math.max( yFp * impFp, (-yFp) * (-impFp) );///2f + 0.5f;
+        if (f < 0) return null;
+
+        return $.t(f, cc);
     }
 
 }
