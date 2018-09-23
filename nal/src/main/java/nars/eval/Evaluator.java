@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  * discovers functors within the provided term, or the term itself.
  * transformation results should not be interned, that is why DirectTermTransform used here
  */
-public class Evaluator implements DirectTermTransform {
+public class Evaluator extends DirectTermTransform {
 
     public final Function<Atom, Functor> funcResolver;
 
@@ -35,23 +35,22 @@ public class Evaluator implements DirectTermTransform {
     @Nullable protected ArrayHashSet<Term> discover(Term x, Evaluation e) {
         if (!x.hasAny(Op.FuncBits))
             return null;
-        ArrayHashSet<Term> funcAble = new ArrayHashSet(1);
+        final ArrayHashSet<Term>[] funcAble = new ArrayHashSet[]{null};
         x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
-            if (!funcAble.contains(xx)) {
+            //if (!funcAble[0].contains(xx)) {
                 if (Functor.isFunc(xx)) {
                     Term yy = this.transform(xx);
                     if (yy.sub(1) instanceof Functor) {
-                        if (funcAble.add(yy)) {
-                            ///changed = true;
-                        }
+                        if (funcAble[0] == null)
+                            funcAble[0] = new ArrayHashSet<>(1);
+
+                        funcAble[0].add(yy);
                     }
                 }
-            }
+            //}
             return true;
         }, null);
-        if(funcAble.isEmpty())
-            return null;
-        return funcAble;
+        return funcAble[0]==null ? null : funcAble[0];
     }
 
 

@@ -34,7 +34,7 @@ class NarseseTimeUnitTest {
 
     @Test
     void testCycleTimeOccurenceRange() throws Narsese.NarseseException {
-        @Deprecated Task now = task("(a-->b). :|:");
+//        @Deprecated Task now = task("(a-->b). :|:");
 
         Task now1 = task("(a-->b). +1..2");
         assertEquals(1 , now1.start());

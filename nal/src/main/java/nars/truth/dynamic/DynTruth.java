@@ -28,7 +28,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static nars.Op.*;
 
@@ -36,7 +35,6 @@ import static nars.Op.*;
  * Created by me on 12/4/16.
  */
 public class DynTruth extends FasterList<Task> implements TaskRegion {
-
 
 
     public DynTruth(int initialCap) {
@@ -56,6 +54,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
         //TODO maybe instead of just range use evi integration
 
+
         if (start == ETERNAL) {
             //TODO if any sub-tasks are non-eternal, maybe combine in proportion to their relative range / evidence
             return reapply(DynTruth::pri, Param.DerivationPri);
@@ -66,10 +65,11 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
             return reapply(sub -> {
                 float subPri = DynTruth.pri(sub);
-                if (sub.isEternal() || sub.range() >= range) {
+                long subRange;
+                if (sub.isEternal() || ((subRange = sub.range()) >= range)) {
                     return subPri;
                 } else {
-                    return (float)(subPri * ((double)sub.range()) / range);
+                    return (float)(subPri * ((double)subRange) / range);
                 }
             }, Param.DerivationPri);
 
@@ -111,20 +111,12 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         return true;
     }
 
-    public final Task task(Term term, Truth t, Function<Random, long[]> stamp, boolean beliefOrGoal, NAR n) {
-        //private Truthed eval(Supplier<Term> superterm, Truth t, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
-        assert(t!=null);
-        return task(()->term, t, stamp, beliefOrGoal, n);
 
-    }
+    public Task task(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, NAR nar) {
 
-
-    public Task task(Supplier<Term> term, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, NAR nar) {
-
-        Term content = term.get();
         if (content == null) {
-            //throw new NullPointerException("template is null; missing information how to build");
-            return null;
+            throw new NullPointerException("template is null; missing information how to build");
+            //return null;
         }
 
         Op op = content.op();

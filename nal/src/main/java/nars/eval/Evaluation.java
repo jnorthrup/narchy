@@ -16,8 +16,8 @@ import nars.term.atom.Bool;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -171,7 +171,7 @@ public class Evaluation {
             main:
             do {
                 prev = y;
-                ListIterator<Term> ii = operations.listIterator();
+                Iterator<Term> ii = operations.iterator();
                 vStart = now();
                 mutStart = termutators();
                 tried = 0;

@@ -782,6 +782,10 @@ public enum $ {
         }, Term[]::new, s);
     }
 
+    public static Term func(Atomic f, List<Term> args) {
+        return $.func(f, args.toArray(Op.EmptyTermArray));
+    }
+
 
 
 

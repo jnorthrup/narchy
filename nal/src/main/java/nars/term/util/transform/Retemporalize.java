@@ -9,25 +9,25 @@ import org.jetbrains.annotations.Nullable;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
-@FunctionalInterface
-public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
+
+public abstract class Retemporalize extends TermTransform.NegObliviousTermTransform {
 
 
-    Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);
-//    Retemporalize retemporalizeAllToZero = new RetemporalizeAll(0);
-    Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
-    Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
+    public static final Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);
+////    Retemporalize retemporalizeAllToZero = new RetemporalizeAll(0);
+    public static final Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
+    public static final Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 
 
     /**
      * un-temporalize
      */
-    Retemporalize root = new Retemporalize() {
+    public final static Retemporalize root = new Retemporalize() {
 
         @Override
         public Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
-            return Retemporalize.super.transformCompound(x, xo, xo.temporal ? XTERNAL : DTERNAL); // && dtNext == DTERNAL ? XTERNAL : DTERNAL);
+            return super.transformCompound(x, xo, xo.temporal ? XTERNAL : DTERNAL); // && dtNext == DTERNAL ? XTERNAL : DTERNAL);
 
             //Term y = Retemporalize.super.transformTemporal(x, dtNext);
             //return y != x ? xternalIfNecessary(x, y, dtNext) : x;
@@ -40,20 +40,16 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
     };
 
 
-    int dt(Compound x);
+    abstract int dt(Compound x);
 
     @Nullable
     @Override
-    default Term transformCompound(final Compound x) {
-        if (requiresTransform(x)) {
-            return transformTemporal(x, dt(x));
-        } else {
-            return x;
-        }
+    protected final Term transformNonNegCompound(final Compound x) {
+        return requiresTransform(x) ? transformTemporal(x, dt(x)) : x;
     }
 
 
-    default Term transformTemporal(Compound x, int dtNext) {
+    protected Term transformTemporal(Compound x, int dtNext) {
         int xdt = x.dt();
         if (xdt == dtNext && !requiresTransform(x.subterms()))
             return x;
@@ -61,9 +57,9 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
             Op xo = x.op();
             int n = xo.temporal ? dtNext : DTERNAL;
             if (n == xdt)
-                return NegObliviousTermTransform.super.transformCompound(x); //fast fail if dt doesnt change
+                return super.transformNonNegCompound(x); //fast fail if dt doesnt change
             else {
-                return NegObliviousTermTransform.super.transformCompound(x, xo, n);
+                return super.transformCompound(x, xo, n);
             }
         }
     }
@@ -73,12 +69,12 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
      * some implementations will have more specific cases that can elide the
      * need for descent. ex: isTemporal() is narrower than x.hasAny(Op.Temporal)
      */
-    default boolean requiresTransform(Termlike x) {
+    protected static boolean requiresTransform(Termlike x) {
         return x.hasAny(Op.Temporal);
     }
 
     @Deprecated
-    final class RetemporalizeAll implements Retemporalize {
+    public final static class RetemporalizeAll extends Retemporalize {
 
         final int targetDT;
 
@@ -92,7 +88,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
         }
     }
 
-    final class RetemporalizeFromTo implements Retemporalize {
+    public final static class RetemporalizeFromTo extends Retemporalize {
 
         final int from, to;
 

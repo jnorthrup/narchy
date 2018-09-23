@@ -211,11 +211,11 @@ public interface TermTransform {
     /**
      * operates transparently through negation subterms
      */
-    interface NegObliviousTermTransform extends TermTransform {
+    class NegObliviousTermTransform implements TermTransform {
 
         @Override
         @Nullable
-        default Term transformCompound(Compound x) {
+        public final Term transformCompound(Compound x) {
 
             if (x.op()==NEG) {
                 Term xx = x.unneg();
@@ -226,9 +226,14 @@ public interface TermTransform {
                 return yy == xx ? x : yy.neg();
 
             } else {
-                return TermTransform.super.transformCompound(x);
+                return transformNonNegCompound(x);
             }
 
+        }
+
+        /** default implementation */
+        protected Term transformNonNegCompound(Compound x) {
+            return TermTransform.super.transformCompound(x);
         }
 
     }

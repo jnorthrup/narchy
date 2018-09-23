@@ -1012,7 +1012,7 @@ public class PremiseRuleSource extends ProxyTerm  {
     };
 
 
-    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform.NegObliviousTermTransform {
+    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform {
 
         static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
                 Atomic.the("Belief"),

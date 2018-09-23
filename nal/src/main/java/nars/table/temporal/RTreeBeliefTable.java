@@ -497,9 +497,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task
+    private static boolean compress(Space<TaskRegion> tree, @Nullable Task
             input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
-                                     remember, NAR nar) {
+                                            remember, NAR nar) {
 
 
         float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
@@ -534,16 +534,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private boolean mergeOrDelete(Space<TaskRegion> treeRW,
-                                  @Nullable Task I /* input */,
-                                  @Nullable Top<TaskRegion> closest,
-                                  Top<TaskRegion> weakest,
-                                  Top<Leaf<TaskRegion>> weakLeaf,
-                                  FloatFunction<Task> taskStrength,
-                                  float inputStrength,
-                                  FloatFunction<TaskRegion> weakness,
-                                  Remember r,
-                                  NAR nar) {
+    private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
+                                         @Nullable Task I /* input */,
+                                         @Nullable Top<TaskRegion> closest,
+                                         Top<TaskRegion> weakest,
+                                         Top<Leaf<TaskRegion>> weakLeaf,
+                                         FloatFunction<Task> taskStrength,
+                                         float inputStrength,
+                                         FloatFunction<TaskRegion> weakness,
+                                         Remember r,
+                                         NAR nar) {
 
 
         Task A, B, W, AB, IC, C;

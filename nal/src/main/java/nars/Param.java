@@ -158,15 +158,12 @@ public abstract class Param {
     /**
      * budget factor for combining 2 tasks in derivation
      * ex: double-premise derivations which depends on the task and belief budget
+     * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-            (t, b) ->
-                    //Util.and(t, b);
-                    Math.max(t, b);
-                    //il.aveAri(t, b);
-                    //Util.aveGeo(t, b);
-                    //Util.or(t, b);
-                    //Util.unitize(t+b);
+        Math::max;
+        //Util::and;
+        //Util.unitize(t+b);
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget

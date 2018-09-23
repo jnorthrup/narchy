@@ -10,9 +10,12 @@ import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
 import nars.task.signal.SignalTask;
+import nars.term.Compound;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.util.Conj;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
@@ -27,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.*;
 
 /**
  * Internal Experience (NAL9)
@@ -53,50 +56,64 @@ abstract public class Inperience extends LeakBack {
     /** semanticize, as much as possible, a term so it can enter higher order
      * TODO merge with NLPGen stuff
      * */
-    final TermTransform Described = new TermTransform() {
+    final static TermTransform Described = new TermTransform.NegObliviousTermTransform() {
 
-        private final Atomic events = Atomic.the("so"); //so, then, thus
-        private final Atomic duration = Atomic.the("dur");
+        private final Atomic and = Atomic.the("and");
+        //private final Atomic so = Atomic.the("so"); //so, then, thus
+        private final Atomic seq = Atomic.the("seq"); //so, then, thus
+        private final Atomic dt = Atomic.the("dt");
         private final Atomic If = Atomic.the("if");
         private final Atomic inherits = Atomic.the("is");
         private final Atomic similar = Atomic.the("alike"); //similarity
 
         @Override
-        public Term transform(Term term) {
+        protected Term transformNonNegCompound(Compound term) {
+            int dt = term.dt();
             switch (term.op()) {
 
-                case INH:
-                    return $.func(inherits, transform(term.sub(0)), transform(term.sub(1)) );
+                case NEG: {
+                    throw new UnsupportedOperationException("shouldnt be called due to NegObliviosity");
+                }
+
+                case INH: {
+                    if (Functor.isFunc(term)) {
+                        //preserve functor form
+                        return INH.the(PROD.the(term.sub(0).subterms().transformSubs(this, PROD)), term.sub(1));
+                    } else {
+                        return $.func(inherits, transform(term.sub(0)), transform(term.sub(1)));
+                    }
+                }
 
                 case SIM:
                     return $.func(similar, SETe.the(transform(term.sub(0)), transform(term.sub(1)) ));
 
                 case IMPL:
                     //TODO insert 'dur' for dt()'s
-                    return $.func(events, $.func(If, transform(term.sub(0))), transform(term.sub(1)) );
+                    if (dt == DTERNAL || dt == XTERNAL) {
+                        return $.func(If, transform(term.sub(0)), transform(term.sub(1)));
+                    } else {
+                        return $.func(If, transform(term.sub(0)), transform(term.sub(1)), $.func(this.dt, Int.the(dt)));
+                    }
 
                 case CONJ:
 
-                    if (Conj.concurrent(term.dt())) {
-                        return $.func(events, SETe.the(term.subterms().transformSubs(this, SETe)));
+                    if (Conj.concurrent(dt)) {
+                        return $.func(and, SETe.the(term.subterms().transformSubs(this, SETe)));
                     } else {
-                        int dur = nar.dur();
-                        List<Term> seq = new FasterList();
+                        List<Term> ss = new FasterList(3);
                         final long[] last = {0};
                         term.eventsWhile((when,what)->{
-                            if (!seq.isEmpty()) {
-                                long interval = when- last[0];
-                                int durs = Math.round(interval/((float)dur));
-                                if (durs > 0) {
-                                    seq.add($.func(duration, $.the(durs)));
-                                }
+                            if (!ss.isEmpty()) {
+                                long interval = when - last[0];
+                                if (interval > 0)
+                                    ss.add($.func(this.dt, $.the(interval)));
                             }
-                            seq.add(transform(what));
+                            ss.add(transform(what));
                             last[0] = when;
                             return true;
                         },0, false, false, false,0);
 
-                        return $.func(events, seq.toArray(Op.EmptyTermArray));
+                        return $.func(seq, ss);
 
                     }
             }
@@ -193,7 +210,11 @@ abstract public class Inperience extends LeakBack {
     public static class Wonder extends Inperience {
 
         public Wonder(NAR n, int capacity) {
-            super(n, QUESTION, capacity);
+            this(n, QUESTION, capacity);
+        }
+
+        protected Wonder(NAR n, byte punc, int capacity) {
+            super(n, punc, capacity);
         }
 
         @Override
@@ -201,27 +222,29 @@ abstract public class Inperience extends LeakBack {
             return true;
         }
 
+        private Term reifyQuestion(Term x, byte punc, NAR nar) {
+            x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
+            if (x instanceof Bool) return Bool.Null;
+
+            return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), Described.transform(x));
+        }
+
         @Override
         protected Term reify(Task t) {
-            return reifyQuestion(t.term().eval(nar), t.punc(), nar);
+            return reifyQuestion(
+                    //t.term().eval(nar),
+                    t.term(),
+                    t.punc(), nar);
         }
     }
 
-    public static class Plan extends Inperience {
+    public static class Plan extends Wonder {
 
         public Plan(NAR n, int capacity) {
             super(n, QUEST, capacity);
         }
 
-        @Override
-        public boolean acceptTask(Task t) {
-            return true;
-        }
-
-        @Override
-        protected Term reify(Task t) {
-            return reifyQuestion(t.term().eval(nar), t.punc(), nar);
-        }
     }
 
     protected Inperience(NAR n, byte punc, int capacity) {
@@ -273,6 +296,8 @@ abstract public class Inperience extends LeakBack {
         Term c = reify(x).normalize();
         if (!c.op().conceptualizable)
             return 0;
+        if (c.volume() > nar.termVolumeMax.intValue())
+            return 0; //TODO try to prevent
 
         float polarity = x.isQuestionOrQuest() ? 0.5f : x.polarity();
         PreciseTruth t = $.t(1, Util.lerp(polarity, nar.confMin.floatValue()*2, nar.confDefault(Op.BELIEF))).dithered(nar);
@@ -307,12 +332,5 @@ abstract public class Inperience extends LeakBack {
     }
 
 
-    @Deprecated private static Term reifyQuestion(Term x, byte punc, NAR nar) {
-        x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-        x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
-        if (x instanceof Bool) return Bool.Null;
-
-        return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), x);
-    }
 
 }

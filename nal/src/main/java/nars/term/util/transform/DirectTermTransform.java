@@ -7,17 +7,17 @@ import nars.term.util.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;
 
 /** bypasses interning and */
-public interface DirectTermTransform extends TermTransform.NegObliviousTermTransform {
+public abstract class DirectTermTransform extends TermTransform.NegObliviousTermTransform {
 
-    TermBuilder localBuilder = HeapTermBuilder.the;
+    final static TermBuilder localBuilder = HeapTermBuilder.the;
 
     @Override
-    default Term the(Op op, int dt, Term[] t) {
+    public Term the(Op op, int dt, Term[] t) {
         return localBuilder.compound(op, dt, t);
     }
 
     @Override
-    default Term the(Op op, int dt, Subterms t) {
+    public Term the(Op op, int dt, Subterms t) {
         return localBuilder.theCompound(op, dt, t);
     }
 

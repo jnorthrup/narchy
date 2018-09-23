@@ -128,7 +128,7 @@ public class PatternIndex extends MapConceptIndex {
         }
 
         @Override
-        public Term transformCompound(Compound x) {
+        protected Term transformNonNegCompound(Compound x) {
             /** process completely to resolve built-in functors,
              * to override VariableNormalization's override */
             return transformCompound(x, x.op(), x.dt());
@@ -470,12 +470,12 @@ public class PatternIndex extends MapConceptIndex {
 
 
         @Override
-        public @Nullable Term transformCompound(Compound x) {
+        protected @Nullable Term transformNonNegCompound(Compound x) {
             Term __x = Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x);
             if (!(__x instanceof Compound))
                 return __x;
 
-            Term _x = NegObliviousTermTransform.super.transformCompound((Compound) __x);
+            Term _x = super.transformNonNegCompound((Compound) __x);
             if (!(_x instanceof Compound)) {
                 return _x;
             }

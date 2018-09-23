@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * //return new DirectTermTransform() {
  * //return new TermTransform.NegObliviousTermTransform() {
  */
-public class Anon extends ByteAnonMap implements TermTransform.NegObliviousTermTransform {
+public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTermTransform*/ {
 
     private boolean putOrGet = true;
 
