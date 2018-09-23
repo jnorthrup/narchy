@@ -82,32 +82,32 @@ public abstract class TaskLeak extends Causable {
     @Override
     protected void next(NAR nar, BooleanSupplier kontinue) {
 
-        if (queue == null /* HACK */ || queue.isEmpty())
+        if (queue == null /* HACK */)
             return;
-
-
-        Random rng = nar.random();
 
         Bag<Task, PriReference<Task>> bag = queue.bag;
 
-
-
         if (!bag.commit(bagUpdateFn).isEmpty()) {
-            bag.sample(rng, (PriReference<Task> v) -> {
-                Task t = v.get();
-                if (t.isDeleted())
-                    return Sampler.SampleReaction.Remove;
-
-                float cost = this.leak(t);
-
-                return kontinue.getAsBoolean() ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
-            });
-        }
-
+            leak(nar, kontinue, bag);
+        } else {
 //        if (bag.isEmpty())
 //            sleepRemainderOfCycle();
+        }
+
     }
 
+    protected void leak(NAR nar, BooleanSupplier kontinue, Bag<Task, PriReference<Task>> bag) {
+        Random rng = nar.random();
+        bag.sample(rng, (PriReference<Task> v) -> {
+            Task t = v.get();
+            if (t.isDeleted())
+                return Sampler.SampleReaction.Remove;
+
+            float cost = this.leak(t);
+
+            return kontinue.getAsBoolean() ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
+        });
+    }
 
 
     public final void accept(Task t) {

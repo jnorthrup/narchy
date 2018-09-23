@@ -3,10 +3,7 @@ package nars.op.mental;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
 import nars.task.signal.SignalTask;
@@ -28,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -42,6 +40,7 @@ import static nars.time.Tense.*;
 abstract public class Inperience extends LeakBack {
 
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
+
     private static final Atomic believe = Atomic.the("believe");
     private static final Atomic want = Atomic.the("want");
 
@@ -51,6 +50,7 @@ abstract public class Inperience extends LeakBack {
     private static final Atomic reflect = Atomic.the("reflect");
     private static final ImmutableSet<Atomic> operators = Sets.immutable.of(
             believe, want, wonder, evaluate, reflect);
+
 
 
     /** semanticize, as much as possible, a term so it can enter higher order
@@ -126,8 +126,9 @@ abstract public class Inperience extends LeakBack {
      * multiplier for he sensory task priority to determine inperienced task priority
      * should be < 1.0 to avoid feedback overload
      */
-    public final FloatRange priFactor = new FloatRange(0.5f, 0, 2);
+    public final FloatRange priFactor = new FloatRange(0.75f, 0, 2);
 
+    private transient int volMaxPost, volMaxPre;
 
     public static class Believe extends Inperience {
 
@@ -251,6 +252,7 @@ abstract public class Inperience extends LeakBack {
         super(capacity, n, punc);
     }
 
+
     /** prefilter on task punc */
     abstract public boolean acceptTask(Task t);
 
@@ -266,23 +268,33 @@ abstract public class Inperience extends LeakBack {
     protected byte puncResult() { return BELIEF; }
 
 
+    /** minimum expected reification overhead for filtering candidates by volume limit */
+    final static int MIN_REIFICATION_OVERHEAD = 2 + 1 /* 1 extra to be safe */;
 
-
-
+    @Override
+    protected void next(NAR nar, BooleanSupplier kontinue) {
+        volMaxPre = (volMaxPost = nar.termVolumeMax.intValue()) - MIN_REIFICATION_OVERHEAD;
+        super.next(nar, kontinue);
+    }
 
     @Override
     public boolean filter(Task next) {
 
 
-        if (next.isCommand() || next.isInput() || !acceptTask(next)
+        if (//next.isInput() ||
+            !acceptTask(next)
             /*|| task instanceof InperienceTask*/)
             return false;
 
 
         Term nextTerm = next.term();
+        if (nextTerm.volume() > volMaxPre)
+            return false;
+
+        nextTerm = Image.imageNormalize(nextTerm);
         if (nextTerm.op() == INH) {
-            Term nextTermInh = Image.imageNormalize(nextTerm);
-            Term pred = nextTermInh.sub(1);
+            //prevent immediate cyclic feedback
+            Term pred = nextTerm.sub(1);
             return pred.op() != ATOM || !operators.contains(pred);
         }
 
@@ -296,7 +308,7 @@ abstract public class Inperience extends LeakBack {
         Term c = reify(x).normalize();
         if (!c.op().conceptualizable)
             return 0;
-        if (c.volume() > nar.termVolumeMax.intValue())
+        if (c.volume() > volMaxPost)
             return 0; //TODO try to prevent
 
         float polarity = x.isQuestionOrQuest() ? 0.5f : x.polarity();
@@ -324,7 +336,15 @@ abstract public class Inperience extends LeakBack {
         });
         if (y!=null) {
             y.priCauseMerge(x);
-            input(y.log("Inperience").priSet(x.priElseZero() * priFactor.floatValue()));
+
+            if (Param.DEBUG)
+                y.log("Inperience");
+
+            y.priSet(x.priElseZero() * priFactor.floatValue());
+
+            //System.out.println(y);
+
+            input(y);
             return 1;
         }
 

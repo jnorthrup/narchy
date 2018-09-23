@@ -288,7 +288,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 //single iterator
                 read((tree)-> {
                     if (tree.root().size()==0)
-                        return;
+                        return; //became null while waiting for lock
 
                     HyperIterator2<TaskRegion> ii = new HyperIterator2(tree, timeDist);
 
