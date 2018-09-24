@@ -888,4 +888,18 @@ public class NAL8Test extends NALTest {
         ;
     }
 
+    @Test void testRepeatConjDropWTF() {
+        /* wrong:
+        $.02 reward(trackXY)! 172⋈216 %1.0;.50% {11461: 9;b;3e} ((%1,%2,eventOfNeg(%2,%1)),(conjDropIfLatest(%2,(--,%1)),((DesireN-->Goal),(TaskInBelief-->Time))))
+            $1.0 reward(trackXY)! 172⋈276 %1.0;.95% {626: }
+            $.32 ((--,reward(trackXY)) &&+172 (--,reward(trackXY))). 172⋈216 %1.0;.65% {969: 9;b;3e©} ((%1,%2,eventOfNeg(%1,%2)),(conjWithout(%1,(--,%2)),((StructuralDeduction-->Belief))))
+            */
+        test.confTolerance(0.01f);
+        test
+                .inputAt(2, "x! |")
+                .inputAt(0, "(--x &&+2 --x).")
+                .mustNotOutput(cycles, "x", GOAL, 0, 1, 0, 0.85f, t->true)
+        ;
+
+    }
 }

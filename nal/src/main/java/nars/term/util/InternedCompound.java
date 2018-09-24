@@ -63,7 +63,7 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
     }
 
     public static InternedCompound get(Op o, int dt, Term... subs) {
-        DynBytes key = new DynBytes(128 * subs.length /* ESTIMATE */);
+        DynBytes key = new DynBytes(128 );//* subs.length /* ESTIMATE */);
 
         key.writeByte((o.id));
 

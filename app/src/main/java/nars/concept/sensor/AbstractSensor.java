@@ -65,7 +65,7 @@ abstract public class AbstractSensor extends NARService implements Sensor {
 
     /** convenience class for updating a set of signals */
     protected void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in) {
-        signals.forEach(s -> in.input(s.update(last, now, truther, nar)));
+        signals.forEach(s -> in.input(s.update(last, now, truther, now - last, nar)));
     }
 
 }

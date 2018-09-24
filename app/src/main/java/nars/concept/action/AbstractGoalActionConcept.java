@@ -67,8 +67,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long s = now - rad/2;
         long e = now + rad/2;
         int actionDur =
-                0;
-                //1;
+                //0;
+                1;
                 //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
         int limit = Answer.TASK_LIMIT_DEFAULT;
 
@@ -147,8 +147,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     }
 
-    @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, NAR nar) {
-        return ((SensorBeliefTables) beliefs()).add(f, now, next, this, nar);
+    @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float dur, NAR nar) {
+        return ((SensorBeliefTables) beliefs()).add(f, now, next, this, dur, nar);
     }
 
 

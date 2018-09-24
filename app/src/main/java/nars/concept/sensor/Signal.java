@@ -117,11 +117,16 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     @Nullable
     @Deprecated
     public ITask update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
-        return update(time - dur / 2, time + Math.max(0, (dur / 2 - 1)), truther, n);
+        return update(time - dur / 2, time + Math.max(0, (dur / 2 - 1)), truther, dur, n);
     }
 
     @Nullable
-    public ITask update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
+    public final ITask update(long prev, long now, FloatFloatToObjectFunction<Truth> truther, NAR n) {
+        return update(prev, now, truther, now - prev, n);
+    }
+
+    @Nullable
+    public ITask update(long start, long end, FloatFloatToObjectFunction<Truth> truther, float dur, NAR n) {
 
         float prevValue = currentValue;
         float nextValue = floatValueOf(term);
@@ -129,7 +134,8 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
             Truth nextTruth = truther.value(prevValue, nextValue);
             if (nextTruth != null) {
                 SensorBeliefTables s = (SensorBeliefTables) beliefs();
-                return s.add(nextTruth, start, end, this, n);
+                assert(dur > 0);
+                return s.add(nextTruth, start, end, this, dur, n);
             }
         }
         return null;
@@ -153,7 +159,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Override
     public void update(long prev, long now, long next, NAR nar) {
-        in.input(update(prev, now, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar));
+        in.input(update(prev, now, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),nar));
     }
 
     public Signal setPri(FloatRange pri) {

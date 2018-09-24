@@ -1,17 +1,17 @@
-package nars.term;
+package nars.term.util;
 
-import jcog.data.list.FasterList;
+import jcog.data.bit.MetalBitSet;
 import nars.Op;
 import nars.op.SetFunc;
 import nars.subterm.Subterms;
+import nars.term.Compound;
+import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.TermException;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -108,7 +108,7 @@ public class SetSectDiff {
                     if (roots == null) {
                         if (i == 0)
                             break; //last one, dont need to check
-                        roots = new UnifiedSet(t.length);
+                        roots = new UnifiedSet(i);
                     }
                     if (!roots.add(x.root())) {
                         //repeat detected
@@ -281,24 +281,25 @@ public class SetSectDiff {
         if (a.equals(b))
             return Null;
 
+        Subterms aa = a.subterms();
 
-        int size = a.subs();
-        Collection<Term> xx = o.commutative ? new TreeSet() : new FasterList(size);
+        int size = aa.subs();
+        MetalBitSet removals = MetalBitSet.bits(size);
 
         for (int i = 0; i < size; i++) {
-            Term x = a.sub(i);
-            if (!b.contains(x)) {
-                xx.add(x);
+            Term x = aa.sub(i);
+            if (b.contains(x)) {
+                removals.set(i);
             }
         }
 
-        int retained = xx.size();
+        int retained = size - removals.cardinality();
         if (retained == size) {
             return a;
         } else if (retained == 0) {
             return Null;
         } else {
-            return o.the(xx);
+            return o.the(aa.subsExcept(removals));
         }
 
     }

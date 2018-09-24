@@ -73,7 +73,8 @@ public class SensorBeliefTables extends BeliefTables {
         super.add(r, n);
     }
 
-    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, NAR n) {
+
+    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, float dur, NAR n) {
 
 
         if (value==null)
@@ -82,7 +83,7 @@ public class SensorBeliefTables extends BeliefTables {
         value = value.ditherFreq(Math.max(n.freqResolution.asFloat(), res.asFloat()));
 
         SeriesBeliefTable.SeriesTask x = series.series.add(value,
-                start, end, n.dur(),
+                start, end, dur,
                 series.term, series.punc(),
                 n);
 

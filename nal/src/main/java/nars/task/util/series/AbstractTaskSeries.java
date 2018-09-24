@@ -32,7 +32,7 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
         return Param.SIGNAL_STRETCH_DUR;
     }
 
-    public T add(Truth next, long nextStart, long nextEnd, int dur, Term term, byte punc, NAR nar) {
+    public T add(Truth next, long nextStart, long nextEnd, float dur, Term term, byte punc, NAR nar) {
 
         T nextT = null;
         T last = last();
@@ -48,7 +48,7 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
 
                 double stretchDurs = ((double)(nextEnd - lastStart)) / dur;
                 if (stretchDurs <= latchDur()) {
-                    Truth lastEnds = last.truth(lastEnd, dur);
+                    Truth lastEnds = last.truth(lastEnd, 0);
                     if (lastEnds.equals(next)) {
                         //stretch
                         last.setEnd(nextEnd);

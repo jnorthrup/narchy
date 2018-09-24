@@ -66,7 +66,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 //        else {
 //            return ArrayIterator.streamNonNull((Task[]) list, size);
 //        }
-        return super.stream();
+        return stream();
     }
 
     @Override protected final Task[] copyOfArray(Object[] x, int s) {
@@ -76,7 +76,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
-    public void match(Answer t) {
+    public final void match(Answer t) {
         forEach(t);
     }
 

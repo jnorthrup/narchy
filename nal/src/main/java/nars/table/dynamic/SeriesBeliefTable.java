@@ -59,9 +59,9 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     protected Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
 
-        Task exact = series.firstContaining(start, end);
-        if (exact != null && (filter==null || filter.test(exact)))
-            return exact;
+//        Task exact = series.firstContaining(start, end);
+//        if (exact != null && (filter==null || filter.test(exact)))
+//            return exact;
 
 
 
@@ -70,6 +70,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
             return null;
         if (d.size() == 1)
             return d.get(0);
+
 
 //        if (taskOrJustTruth) {
 //            if (d.size() == 1) {

@@ -47,8 +47,18 @@ public class Memoizers {
     }
 
     public <X, Y, M extends Memoize<X,Y>> Function<X, Y> add(String id, M m) {
-        memoize.add(new MemoizationStatistics(id, m));
-        return m::apply;
+        synchronized (memoize) {
+            //HACK just use a map
+            int n = memoize.size();
+            for (int i = 0; i < n; i++) {
+                MemoizationStatistics ii = memoize.get(i);
+                if (ii.name.equals(id)) {
+                    return ((M)ii.memoize)::apply;
+                }
+            }
+            memoize.add(new MemoizationStatistics(id, m));
+            return m::apply;
+        }
     }
 
     /** provides default memoizer implementation */

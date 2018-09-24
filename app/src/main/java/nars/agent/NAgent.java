@@ -458,8 +458,9 @@ public class NAgent extends NARService implements NSense, NAct {
 //        ArrayUtils.shuffle(aaa, random());
 
         float curiConf =
-                        nar.confMin.floatValue() * 2;
+                        //nar.confMin.floatValue() * 4;
                         //nar.confMin.floatValue();
+                        nar.confDefault(GOAL)/3;
                         //nar.confDefault(GOAL)/2;
                         //w2c(c2w(nar.confDefault(GOAL))/3);
                         //w2c(c2w(nar.confDefault(GOAL))/2);

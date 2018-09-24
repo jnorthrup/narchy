@@ -269,7 +269,8 @@ public interface NSense {
                     case -1:
                         return -1f;
                     case 0:
-                        return 0f;
+                        //return 0f;
+                        return Float.NaN;
                     case +1:
                         return +1f;
                     default:

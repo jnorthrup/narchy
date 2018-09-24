@@ -84,6 +84,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 //                    }
                 }.setPri(priPixel).setResolution(res);
 
+
                 matrix[x][y] = sss;
             }
         }
@@ -124,8 +125,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     /**
      * streams (potentially) all pixels
      */
-    public final Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int dur, NAR nar) {
-        return stream(truther, 0, area, dur, nar);
+    public final Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, NAR nar) {
+        return stream(truther, 0, area, nar);
     }
 
     private long last;
@@ -133,14 +134,15 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     /**
      * stream of tasks containing changes in all updated pixels
      */
-    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int pixelStart, int pixelEnd, int dur, NAR nar) {
+    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int pixelStart, int pixelEnd, NAR nar) {
 
         long now = nar.time();
 
         long tStart = last; //now - dur / 2;
         long tEnd = now;// + Math.max(0, dur / 2 - 1);
         last = now;
-        return pixels(pixelStart, pixelEnd).map(p -> p.update(tStart, tEnd, truther, nar));
+        float dur = nar.dur() * area;
+        return pixels(pixelStart, pixelEnd).map(p -> p.update(tStart, tEnd, truther, dur, nar));
     }
 
     /**
@@ -252,11 +254,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
             if (end > totalPixels) {
                 s = Stream.concat(
-                        stream(mode, start, totalPixels, dur, nar),
-                        stream(mode, 0, end - totalPixels, dur, nar)
+                        stream(mode, start, totalPixels, nar),
+                        stream(mode, 0, end - totalPixels, nar)
                 );
             } else {
-                s = Bitmap2DConcepts.this.stream(mode, start, end, dur, nar);
+                s = Bitmap2DConcepts.this.stream(mode, start, end, nar);
             }
 
             //TODO stop using Stream<> its not necessary here

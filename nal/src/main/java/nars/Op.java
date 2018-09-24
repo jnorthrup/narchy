@@ -5,7 +5,7 @@ import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.SetSectDiff;
+import nars.term.util.SetSectDiff;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.Anom;

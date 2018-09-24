@@ -30,8 +30,12 @@ public interface TaskSeries<T extends Task> {
 
         DynStampTruth d = new DynStampTruth(Math.min(size, limit));
 
-        TopN<Task> inner = new TopN<>(new Task[Math.min(size(), limit)],
-                (t, min) -> -t.minTimeTo(start, end) //assuming they are all the same evidence
+        TopN<Task> inner = new TopN<>(new Task[Math.min(size, limit)],
+                //this assumes they are all of the same evidence which is not true if the ranges differ
+                filter!=null ?
+                    (t, min) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
+                    :
+                    (t, min) -> -t.minTimeTo(start, end)
                 //TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
         );
 
@@ -42,9 +46,9 @@ public interface TaskSeries<T extends Task> {
         if (l > 0) {
             Task[] ii = inner.items;
             int i;
-            for (i = 0; i < l; i++) {
-                d.addIf(filter).accept(ii[i]);
-            }
+            for (i = 0; i < l; i++)
+                d.add(ii[i]);
+
             return d;
         }
 
@@ -104,20 +108,20 @@ public interface TaskSeries<T extends Task> {
         });
     }
 
-    default T firstContaining(long start, long end) {
-        if (start == ETERNAL)
-            return last();
-
-        final Task[] found = new Task[1];
-        whileEach(start, end, true, (x)->{
-            if (x.contains(start, end)) {
-                found[0] = x;
-                return false; //found
-            }
-            return true; //keep looking
-        });
-        return (T) found[0];
-    }
+//    default T firstContaining(long start, long end) {
+//        if (start == ETERNAL)
+//            return last();
+//
+//        final Task[] found = new Task[1];
+//        whileEach(start, end, true, (x)->{
+//            if (x.contains(start, end)) {
+//                found[0] = x;
+//                return false; //found
+//            }
+//            return true; //keep looking
+//        });
+//        return (T) found[0];
+//    }
 
     T first();
     T last();

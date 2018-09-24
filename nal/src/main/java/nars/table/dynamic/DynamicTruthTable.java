@@ -1,6 +1,8 @@
 package nars.table.dynamic;
 
+import jcog.WTF;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -41,7 +43,14 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         if (t == null)
             return null;
 
-        return yy.task(model.reconstruct(template, yy, nar), t, yy::stamp,  beliefOrGoal, nar);
+        Term reconstruct = model.reconstruct(template, yy, nar);
+        if (reconstruct == null) {
+            if (Param.DEBUG)
+                throw new WTF("could not reconstruct: " + template + " " +  yy);
+            return null;
+        }
+
+        return yy.task(reconstruct, t, yy::stamp,  beliefOrGoal, nar);
     }
 
 

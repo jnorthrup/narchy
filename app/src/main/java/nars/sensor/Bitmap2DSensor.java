@@ -74,12 +74,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
     }
 
     public void input() {
-        input(dur(), mode);
+        input(mode);
     }
 
     /** manually inputs the contents of the current frame */
-    public void input(int dur, FloatFloatToObjectFunction<Truth> mode) {
-        in.input( concepts.stream(mode, dur, nar) );
+    public void input(FloatFloatToObjectFunction<Truth> mode) {
+        in.input( concepts.stream(mode, nar) );
     }
 
     protected int dur() {

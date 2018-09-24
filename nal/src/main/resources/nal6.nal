@@ -411,9 +411,9 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Desire,Time:TaskInBelief)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Deduction,Time:TaskInBelief)
         //conjDropIfLatestFiltered
-    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DesireN,Time:TaskInBelief)
+    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskInBelief)
         //conjDropIfLatestFiltered
 
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)

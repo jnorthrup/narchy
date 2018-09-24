@@ -115,7 +115,6 @@ public interface TermTransform {
     /** called after subterms transform has been applied */
     @Nullable default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         Term y;
-        //Subterms xx = x.subterms();
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
             if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
@@ -136,24 +135,6 @@ public interface TermTransform {
         } else {
             y = x.dt(dt);
         }
-
-//        if (eval()) {
-//            if ((op = y.op()) == INH) {
-//                yy = y.subterms();
-//                if (yy.subs() == 2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit)) {
-//                    Term pred;
-//                    if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) {
-//                        Term args = yy.sub(0);
-//                        if (args.op() == PROD) {
-//                            Term v = ((Functor.InlineFunctor) pred).applyInline(args);
-//                            if (v != null)
-//                                return v;
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
         return y;
     }

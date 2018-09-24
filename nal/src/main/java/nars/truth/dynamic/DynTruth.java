@@ -197,15 +197,6 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
     }
 
 
-
-    public <T extends Task> Consumer<T> addIf(@Nullable Predicate<Task> filter) {
-        return filter==null ? this::add : (T x) -> {
-            if (filter.test(x))
-                add(x);
-        };
-    }
-
-
     static class DynamicTruthTask extends NALTask {
 
         DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, TimeAware n, long start, long end, long[] stamp) throws TaskException {

@@ -269,6 +269,7 @@ public interface NAct {
 
         float[] lr = new float[2];
 
+        NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
             float ll = g != null ? g.freq() : 0;
             boolean x = ll > thresh;
@@ -281,7 +282,7 @@ public interface NAct {
             lr[0] = ll;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
-            return $.t(x ? 1 : 0, nar().confDefault(BELIEF));
+            return $.t(x?1:0, n.confDefault(BELIEF));
         });
         GoalActionConcept RA = action(r, (b, g) -> {
             float rr = g != null ? g.freq() : 0;
@@ -295,10 +296,23 @@ public interface NAct {
             lr[1] = rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
-            return $.t(x ? 1 : 0, nar().confDefault(BELIEF));
+            return $.t(x?1:0, n.confDefault(BELIEF));
         });
-        LA.resolution(1f);
-        RA.resolution(1f);
+
+        for (GoalActionConcept x : new GoalActionConcept[] {LA,RA}) {
+//            float freq = 0.5f;
+//            float conf = 0.05f; //less than curiosity
+//            x.goals().tables.add(new EternalTable(1));
+//            x.goals().tableFirst(EternalTable.class).add(
+//                    Remember.the(new NALTask(x.term(), GOAL,
+//                            $.t(freq, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
+//            x.beliefs().tables.add(new EternalTable(1));
+//            x.beliefs().tableFirst(EternalTable.class).add(
+//                    Remember.the(new NALTask(x.term(), BELIEF,
+//                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
+
+            x.resolution(1f);
+        }
 
     }
 

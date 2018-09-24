@@ -74,7 +74,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
         in.input(
             Stream.of(
-                    feedback(fb, now, next, n),
+                    feedback(fb, now, next, now-prev, n),
                     (((curi != null) && (fb != null)) ? curiosity($.t(fb.freq(), curiConf) /*goal*/, prev, now, n) : null))
 
 
