@@ -257,11 +257,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         int mutexTicket = -1;
         V toAdd = null, toRemove = null, toReturn = null;
-        try {
 
-            int start = (hash % c);
-            if (start < 0)
-                start += c;
+        int start = (hash % c);
+        if (start < 0)
+            start += c;
+
+        try {
 
             if (mode != GET) {
                 mutexTicket = mutex.start(id, hash);
@@ -310,8 +311,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             if (mode == PUT && toReturn == null) {
 
-
-
                 int victim = -1, j = 0;
                 float victimPri = Float.POSITIVE_INFINITY;
                 for (int i = start; j < reprobes; j++ ) {
@@ -319,7 +318,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     float mp;
                     if (mi == null || ((mp = pri(mi)) != mp)) {
                         if (map.compareAndSet(i, mi, incoming)) {
-                            toReturn = toAdd = incoming; /** became free, take the slot */
+                            toReturn = toAdd = incoming; /** became empty or deleted, take the slot */
                             break;
                         } else {
                             continue; //retry the slot since it had changed
@@ -335,41 +334,22 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 if (toReturn == null) {
                     assert(victim!=-1);
 
-//                    ArrayUtils.sort(rank, r -> -rpri[r]);
-
-                    float power = incomingPri;
-
-
-//                    combative_insert:
-//                    for (int f = 0; f < reprobes; f++) {
-//                        int i = rank[f] + start;
-//                        if (i >= c) i -= c;
-
                     V existing = map.getOpaque(victim);
                     if (existing == null) {
-
+                        //acquired new empty cell
                         toReturn = toAdd = incoming;
 
                     } else {
-                        if (replace(power, existing) && map.compareAndSet(victim, existing, incoming)) {
+                        if (replace(incomingPri, existing) && map.compareAndSet(victim, existing, incoming)) {
                             //acquired
                             toRemove = existing;
                             toReturn = toAdd = incoming;
                         }
                     }
 
-
                 }
 
             }
-
-            ready:
-            {
-                int delta = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
-                if (delta != 0)
-                    SIZE.addAndGet(this, delta);
-            }
-
 
         } catch (Throwable t) {
 
@@ -380,10 +360,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 mutex.end(mutexTicket);
         }
 
+
+        int size = SIZE.addAndGet(this, (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0));
+
+
         if (toAdd != null) {
             _onAdded(toAdd);
 
-            int size = size();
             if (attemptRegrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
 
                 if (toRemove != null) {
@@ -399,13 +382,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             }
         }
 
-        if (mode == PUT && toAdd == null) {
-
-            if (attemptRegrowForSize(size() + 1)) {
-                return update(k, incoming, PUT, overflowing);
-            }
-
-        }
+//        if (mode == PUT && toAdd == null) {
+//
+//            if (attemptRegrowForSize(size() + 1)) {
+//                return update(k, incoming, PUT, overflowing);
+//            }
+//
+//        }
 
         return toReturn;
     }

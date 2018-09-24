@@ -6,7 +6,7 @@ import jcog.learn.gng.impl.Centroid;
 import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
@@ -65,16 +65,18 @@ public class BagClustering<X> {
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-        this.bag = new ArrayBag<>(PriMerge.max, initialCap) {
-
-            @Nullable
-            @Override
-            public X key(VLink<X> x) {
-                return x.id;
-            }
+//        this.bag = new ArrayBag<>(PriMerge.max, initialCap) {
+//
+//            @Nullable
+//            @Override
+//            public X key(VLink<X> x) {
+//                return x.id;
+//            }
+//
+//        };
+        this.bag = new PriLinkHijackBag<X,VLink<X>>(PriMerge.max, initialCap, 4) {
 
         };
-
 
     }
 

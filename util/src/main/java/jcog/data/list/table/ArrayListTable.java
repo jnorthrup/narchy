@@ -1,6 +1,7 @@
 package jcog.data.list.table;
 
 import jcog.WTF;
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -15,10 +16,11 @@ import java.util.function.Consumer;
  */
 abstract public class ArrayListTable<K, V> implements Table<K, V> {
 
+    static final MetalAtomicIntegerFieldUpdater CAPACITY = new MetalAtomicIntegerFieldUpdater(ArrayListTable.class, "capacity");
 
     public final Map<K, V> map;
 
-    protected volatile int capacity;
+    private volatile int capacity;
 
     public ArrayListTable(Map<K, V> map) {
         this.map = map;
@@ -59,16 +61,20 @@ abstract public class ArrayListTable<K, V> implements Table<K, V> {
 
     @Override
     public final int capacity() {
-        return capacity;
+        return CAPACITY.getOpaque(this);
+    }
+
+
+    @Override
+    public void setCapacity(int newCapacity) {
+        CAPACITY.set(this, newCapacity);
     }
 
     /**
      * returns whether the capacity has changed
      */
-    @Override
-    public void setCapacity(int newCapacity) {
-        this.capacity = newCapacity;
-
+    protected boolean setCapacityIfChanged(int newCapacity) {
+        return CAPACITY.getAndSet(this, newCapacity)!=newCapacity;
     }
 
 

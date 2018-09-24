@@ -84,16 +84,6 @@ class NAL8EternalMixTest extends NALTest {
 
     }
 
-    @Test
-    void ded_with_depvar_temporal() {
-
-        test.nar.termVolumeMax.set(9);
-        test
-
-                .input("goto({t003}). :|:")
-                .inputAt(10, "(goto(#1) ==>+5 at(SELF,#1)).")
-                .mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.81f, 5);
-    }
 
     @Test
     void ded_with_var_temporal2() {

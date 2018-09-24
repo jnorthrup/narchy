@@ -5,7 +5,7 @@ import jcog.data.NumberX;
 import jcog.pri.PriProxy;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.HijackBag;
-import jcog.pri.bag.impl.hijack.PriorityHijackBag;
+import jcog.pri.bag.impl.hijack.PriHijackBag;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
 
@@ -159,7 +159,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     }
 
 
-    protected class MyHijackBag extends PriorityHijackBag<X, PriProxy<X,Y>> {
+    protected class MyHijackBag extends PriHijackBag<X, PriProxy<X,Y>> {
         public MyHijackBag(int cap, int reprobes) {
             super(cap, reprobes);
         }

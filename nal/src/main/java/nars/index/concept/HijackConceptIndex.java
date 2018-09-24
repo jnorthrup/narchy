@@ -2,7 +2,7 @@ package nars.index.concept;
 
 import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;
-import jcog.pri.bag.impl.hijack.PLinkHijackBag;
+import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import nars.NAR;
 import nars.concept.PermanentConcept;
 import nars.control.DurService;
@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  */
 public class HijackConceptIndex extends MaplikeConceptIndex {
 
-    private final PLinkHijackBag<Termed> table;
+    private final PriLinkHijackBag<Termed,PLink<Termed>> table;
 
 
     private int forgetEveryDurs = 32;
@@ -39,7 +39,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
 
-        this.table = new PLinkHijackBag<>(capacity, reprobes) {
+        this.table = new PriLinkHijackBag<>(capacity, reprobes) {
 
             {
                 resize(capacity);
@@ -47,7 +47,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
 
             @Override
-            public Termed key(PLinkHashCached<Termed> value) {
+            public Termed key(PLink<Termed> value) {
                 return value.id.term();
             }
 
@@ -57,12 +57,12 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
             }
 
             @Override
-            protected boolean keyEquals(Object k, PLinkHashCached<Termed> p) {
-                return k.hashCode() == p.hash && p.id.equals(k);
+            protected boolean keyEquals(Object k, PLink<Termed> p) {
+                return k.hashCode() == p.hashCode() && p.id.equals(k);
             }
 
             @Override
-            protected boolean replace(float incomingPri, PLinkHashCached<Termed> existing) {
+            protected boolean replace(float incomingPri, PLink<Termed> existing) {
 
                 boolean existingPermanent = existing.id instanceof PermanentConcept;
                 if (existingPermanent) {
@@ -164,7 +164,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public Termed remove(Term entry) {
-        PLinkHashCached<Termed> e = table.remove(entry);
+        PLink<Termed> e = table.remove(entry);
         return e != null ? e.id : null;
     }
 

@@ -35,9 +35,9 @@ public abstract class TaskLeak extends Causable {
      */
     private final byte[] puncs;
 
-    protected TaskLeak(int capacity, NAR n, byte... puncs) {
+    protected TaskLeak(int capacity, @Nullable NAR n, byte... puncs) {
         this(
-                new PLinkArrayBag<Task>(Param.taskMerge, capacity)
+                new PLinkArrayBag<>(Param.taskMerge, capacity)
                 , n, puncs
         );
     }
@@ -58,13 +58,15 @@ public abstract class TaskLeak extends Causable {
      */
     abstract protected float leak(Task next);
 
-    TaskLeak(Bag<Task, PriReference<Task>> bag, NAR n, byte... puncs) {
+    TaskLeak(Bag<Task, PriReference<Task>> bag, @Nullable NAR n, byte... puncs) {
         super();
 
         this.puncs = puncs;
 
         this.queue = new Leak<>(bag);
-        n.on(this);
+
+        if (n!=null)
+            n.on(this);
     }
 
 

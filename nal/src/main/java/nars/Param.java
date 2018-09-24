@@ -94,7 +94,7 @@ public abstract class Param {
     /** within how many durations a difference in dt is acceptable for term unification */
     public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 0.5f;
 
-    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
+//    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
 
     public static final int TASK_EVAL_FORK_LIMIT = 8;
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;

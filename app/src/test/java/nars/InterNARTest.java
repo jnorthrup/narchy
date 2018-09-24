@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
 import static nars.$.$$;
+import static nars.Op.QUESTION;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -38,9 +39,9 @@ public class InterNARTest {
 
         final int MAX_CONNECT_INTERVALS = 10;
         final int CONNECT_INTERVAL_MS = 30;
-        int outRate = 8;
 
-        final float NET_FPS = 20f;
+
+        final float NET_FPS = 25f;
         final float NAR_FPS = NET_FPS * 2;
         final int INTERACT_TIME = 700;
 
@@ -55,13 +56,15 @@ public class InterNARTest {
         a.termVolumeMax.set(volMax);
         b.termVolumeMax.set(volMax);
 
-        beforeConnect.accept(a, b);
 
         for (int i = 0; i < preCycles; i++) {
             a.run(1);
             b.run(1);
         }
+        a.synch();
+        b.synch();
 
+        beforeConnect.accept(a, b);
 
         InterNAR ai = new InterNAR(a, 0, false) {
             @Override
@@ -82,9 +85,6 @@ public class InterNARTest {
         assertTrue(!ai.addr().equals(bi.addr()));
         assertTrue(!ai.peer.name().equals(bi.peer.name()));
 
-        /* init */
-        a.run(1);
-        b.run(1);
 
         ai.peer.ping(bi.peer);
 
@@ -136,7 +136,7 @@ public class InterNARTest {
             a.onTask(task -> {
                 if (task.toString().contains("(?1-->y)"))
                     aRecvQuestionFromB.set(true);
-            });
+            }, QUESTION);
 
 
             try {

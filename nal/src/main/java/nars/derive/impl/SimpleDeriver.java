@@ -3,7 +3,6 @@ package nars.derive.impl;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
@@ -18,6 +17,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
@@ -49,13 +49,24 @@ public class SimpleDeriver extends Deriver {
         this(source, rules, ConceptTermLinker);
     }
 
-    public SimpleDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules, BiFunction<Concept, Derivation, LinkModel> linking) {
+    public SimpleDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules,
+                         BiFunction<Concept, Derivation, LinkModel> linking) {
         super(source, rules);
         this.linking = linking;
     }
 
     /** randomly samples from list of concepts */
-    public static SimpleDeriver forConcepts(NAR n, List<Concept> concepts) {
+    public static SimpleDeriver forConcepts(NAR n, PremiseDeriverRuleSet rules, List<Concept> concepts) {
+
+        return forConcepts(n, rules, concepts, GlobalTermLinker);
+    }
+
+
+    public static SimpleDeriver forConcepts(NAR n, PremiseDeriverRuleSet rules, List<Concept> concepts, List<Term> terms) {
+        return forConcepts(n, rules, concepts, ListTermLinker(terms));
+    }
+
+    public static SimpleDeriver forConcepts(NAR n, PremiseDeriverRuleSet rules, List<Concept> concepts, BiFunction<Concept, Derivation, LinkModel> linker) {
         int cc = concepts.size();
         assert(cc>0);
         Random rng = n.random();
@@ -65,9 +76,9 @@ public class SimpleDeriver extends Deriver {
                 return;
             while (x.test(new Activate(c, 1f))) ;
         };
-        PremiseDeriverRuleSet rules = Derivers.nal(n, 1, 8);
 
-        return new SimpleDeriver(forEach, rules, GlobalTermLinker);
+
+        return new SimpleDeriver(forEach, rules, linker);
     }
 
     public static SimpleDeriver forTasks(NAR n, List<Task> tasks) {
@@ -115,7 +126,7 @@ public class SimpleDeriver extends Deriver {
 
             d.firedTaskLinks.clear();
             ArrayHashSet<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue(), d.firedTaskLinks);
-            Supplier<PriReference<Term>> termlinker = model.termlinks();
+            Supplier<Term> beliefTerms = model.beliefTerms();
 
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
 //            float taskPriSum = 0;
@@ -128,17 +139,12 @@ public class SimpleDeriver extends Deriver {
                 Task task = tasklink.get(nar);
                 if (task != null) {
 
-//                    taskPriSum += task.priElseZero();
-
                     for (int z = 0; z < termlinks; z++) {
 
-                        PriReference<Term> termlink = termlinker.get();
-                        if (termlink != null) {
+                        Term b = beliefTerms.get();
+                        if (b != null)
+                            new Premise(task, b).derive(d, matchTTL, deriveTTL);
 
-                            Premise premise = new Premise(task, termlink);
-                            premise.derive(d, matchTTL, deriveTTL);
-
-                        }
                     }
 
                 }
@@ -155,7 +161,7 @@ public class SimpleDeriver extends Deriver {
         /** buffer is not automatically cleared here, do that first if neceessary */
         ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer);
 
-        Supplier<PriReference<Term>> termlinks();
+        Supplier<Term> beliefTerms();
     }
 
     /**
@@ -182,9 +188,12 @@ public class SimpleDeriver extends Deriver {
         }
 
         @Override
-        public Supplier<PriReference<Term>> termlinks() {
+        public Supplier<Term> beliefTerms() {
             Sampler<PriReference<Term>> ct = c.termlinks();
-            return () -> ct.sample(rng);
+            return () -> {
+                @Nullable PriReference<Term> t = ct.sample(rng);
+                return t != null ? t.get() : null;
+            };
         }
     };
 
@@ -209,13 +218,40 @@ public class SimpleDeriver extends Deriver {
         }
 
         @Override
-        public Supplier<PriReference<Term>> termlinks() {
+        public Supplier<Term> beliefTerms() {
             return () -> {
                 Activate a = n.attn.fire();
-                return a != null ? new PLink(a.term(), a.pri()) : null;
+                return a != null ? a.term() : null;
             };
         }
     };
+
+    public static BiFunction<Concept, Derivation, LinkModel> ListTermLinker(List<Term> terms) {
+        return (c, d) -> new LinkModel() {
+
+            final NAR n = d.nar;
+            final Random rng = d.random;
+
+            {
+                Deriver.commit(n, c.tasklinks(), null);
+            }
+
+            @Override
+            public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
+                c.tasklinks().sample(rng, max, x -> {
+                    if (x != null) buffer.add(x);
+                });
+                return buffer;
+            }
+
+            @Override
+            public Supplier<Term> beliefTerms() {
+                return () -> {
+                    return terms.get(rng.nextInt(terms.size()));
+                };
+            }
+        };
+    }
 
 
 }

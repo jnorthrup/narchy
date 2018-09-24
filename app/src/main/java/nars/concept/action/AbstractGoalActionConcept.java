@@ -13,7 +13,6 @@ import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
@@ -67,7 +66,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long rad = (now - prev);
         long s = now - rad/2;
         long e = now + rad/2;
-        int actionDur = Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
+        int actionDur =
+                0;
+                //1;
+                //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
         int limit = Answer.TASK_LIMIT_DEFAULT;
 
         TruthPolation aWithCuri = Answer.

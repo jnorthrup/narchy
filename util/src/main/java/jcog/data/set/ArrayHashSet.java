@@ -90,7 +90,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
         @Override
         public Iterator iterator() {
-            return Collections.emptyIterator();
+            return Collections.emptyListIterator();
         }
     };
 
@@ -139,7 +139,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     @Override
     public ListIterator<X> listIterator() {
-        return new ArrayHashSetIterator();
+        return size()==0 ? Collections.emptyListIterator() : new ArrayHashSetIterator();
     }
 
     @Override
@@ -188,14 +188,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     public Set<X> newSet() {
-
         return new UnifiedSet<>(2);
         //return new HashSet(2);
     }
 
     @Override
     public Iterator<X> iterator() {
-        return new ArrayHashSetIterator();
+        return listIterator();
     }
 
 
@@ -264,16 +263,16 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         Collections.shuffle(list, random);
     }
 
-    private class ArrayHashSetIterator implements ListIterator<X> {
+    private final class ArrayHashSetIterator implements ListIterator<X> {
 
         private final ListIterator<X> arrayListIterator;
         private X lastElementProvided;
 
-        public ArrayHashSetIterator() {
+        ArrayHashSetIterator() {
             this(-1);
         }
 
-        public ArrayHashSetIterator(int index) {
+        ArrayHashSetIterator(int index) {
             this.arrayListIterator = index == -1 ? list.listIterator() : list.listIterator(index);
         }
 

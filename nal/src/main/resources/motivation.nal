@@ -29,15 +29,9 @@
     X, Y, task("@") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
 
 
-    //antigoal in sequence
-    X, C, eventOfNeg(C,X)   |- --C, (Goal:DesireWeak)
+    X, (Y==>X), task("!") |- (Y &&   X), (Goal:Intersection)
+    X, (Y==>X), task("!") |- (Y && --X), (Goal:IntersectionNN)
 
-        //is there another sequence that doesnt involve what i dont want?
-        //X, C, eventOfNeg(C,X), task("!") |- substitute(C, --X, X), (Punctuation:Quest)
-    X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN)
-
-        //is there another sequence that doesnt involve what i dont want?
-        //X, C, eventOf(C,X), task("!")    |- substitute(C, X, --X), (Punctuation:Quest)
 
 
 //G, A, task("!")  |- (polarize(G,task) && polarize(A,belief)), (Goal:DesireWeakDepolarized, Time:Relative, Also:VarIntro)

@@ -58,7 +58,7 @@ public class LambdaMemoizer {
         public final Object[] args;
         private final int hash;
 
-        private ArgKey(int methodID, Object[] args) {
+        protected ArgKey(int methodID, Object[] args) {
             this.methodID = methodID;
             this.args = args;
             this.hash = Util.hashCombine(methodID, args != null ? Arrays.hashCode(args) : 1);

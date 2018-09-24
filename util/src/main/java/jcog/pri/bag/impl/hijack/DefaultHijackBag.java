@@ -5,7 +5,7 @@ import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
 
 
-public class DefaultHijackBag<K> extends PriorityHijackBag<K, PriReference<K>> {
+public class DefaultHijackBag<K> extends PriHijackBag<K, PriReference<K>> {
 
     private final PriMerge merge;
 

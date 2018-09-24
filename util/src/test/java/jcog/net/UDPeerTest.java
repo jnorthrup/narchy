@@ -33,10 +33,10 @@ class UDPeerTest {
 
         UDPeer x = new UDPeer();
         UDPeer y = new UDPeer();
-        x.setFPS(4);
-        y.setFPS(4);
+        x.setFPS(16);
+        y.setFPS(16);
 
-        Util.sleepMS(2000);
+        Util.sleepMS(5000);
 
         assertTrue(x.them.contains(y.me));
         assertFalse(x.them.contains(x.me));

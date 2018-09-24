@@ -7,10 +7,10 @@ import jcog.pri.bag.impl.HijackBag;
 /**
  * Created by me on 2/17/17.
  */
-abstract public class PriorityHijackBag<K,V extends Priority> extends HijackBag<K, V> {
+abstract public class PriHijackBag<K,V extends Priority> extends HijackBag<K, V> {
 
 
-    protected PriorityHijackBag(int cap, int reprobes) {
+    protected PriHijackBag(int cap, int reprobes) {
         super(cap, reprobes);
     }
 

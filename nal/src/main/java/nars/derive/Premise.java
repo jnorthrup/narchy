@@ -5,9 +5,10 @@
 package nars.derive;
 
 import com.netflix.servo.monitor.Counter;
-import jcog.pri.PLink;
-import jcog.pri.PriReference;
-import nars.*;
+import nars.Emotion;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
@@ -33,7 +34,7 @@ public class Premise {
 
     public final Task task;
 
-    public final PriReference<Term> termLink;
+    public final Term beliefTerm;
 
     /**
      * specially constructed hash that is useful for sorting premises by:
@@ -45,12 +46,12 @@ public class Premise {
      */
     public final long hash;
 
-    public Premise(Task task, PriReference<Term> termLink) {
+    public Premise(Task task, Term beliefTerm) {
         super();
 
         this.task = task;
 
-        this.termLink = termLink;
+        this.beliefTerm = beliefTerm;
 
         this.hash =
                 //task's lower 23 bits in bits 40..64
@@ -58,11 +59,11 @@ public class Premise {
                         | //task term's lower 20 bits in bits 20..40
                         (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
                         | //termlink's lower 20 bits in bits 0..20
-                        ((termLink.hashCode() & 0b00000000000011111111111111111111));
+                        ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
     }
 
     public Term beliefTerm() {
-        return termLink.get();
+        return beliefTerm;
     }
 
     /**
@@ -185,9 +186,9 @@ public class Premise {
         if (belief == null)
             belief = tryMatch(beliefTerm, beliefTable, d);
 
-        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
-            linkVariable(unifiedBelief, d.nar, beliefConcept);
-        }
+//        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
+//            linkVariable(unifiedBelief, d.nar, beliefConcept);
+//        }
 
         return belief;
     }
@@ -249,32 +250,32 @@ public class Premise {
         return d.deriver.timing.apply(task, beliefTerm);
     }
 
-    private void linkVariable(boolean unifiedBelief, NAR n, Concept beliefConcept) {
-        if (unifiedBelief) {
-            Concept originalBeliefConcept = n.conceptualize(beliefTerm());
-            if (originalBeliefConcept != null) {
-                Concept taskConcept = n.concept(task.term(), true);
-
-
-                float pri = termLink.priElseZero() * n.activateLinkRate.floatValue();
-
-
-                Term moreConstantTerm = beliefConcept.term();
-                Term lessConstantTerm = originalBeliefConcept.term();
-
-
-                beliefConcept.termlinks().putAsync(new PLink<>(lessConstantTerm, pri / 2f));
-
-                originalBeliefConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri / 2f));
-
-
-                if (taskConcept != null)
-                    taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
-
-
-            }
-        }
-    }
+//    private void linkVariable(boolean unifiedBelief, NAR n, Concept beliefConcept) {
+//        if (unifiedBelief) {
+//            Concept originalBeliefConcept = n.conceptualize(beliefTerm());
+//            if (originalBeliefConcept != null) {
+//                Concept taskConcept = n.concept(task.term(), true);
+//
+//
+//                float pri = termLink.priElseZero() * n.activateLinkRate.floatValue();
+//
+//
+//                Term moreConstantTerm = beliefConcept.term();
+//                Term lessConstantTerm = originalBeliefConcept.term();
+//
+//
+//                beliefConcept.termlinks().putAsync(new PLink<>(lessConstantTerm, pri / 2f));
+//
+//                originalBeliefConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri / 2f));
+//
+//
+//                if (taskConcept != null)
+//                    taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+//
+//
+//            }
+//        }
+//    }
 
 ////    private boolean validMatch(@Nullable Task x) {
 ////        return x != null && !x.isDeleted() && !x.equals(task);

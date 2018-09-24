@@ -19,7 +19,7 @@ import jcog.pri.Priority;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.HijackBag;
-import jcog.pri.bag.impl.hijack.PriorityHijackBag;
+import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
@@ -63,7 +63,7 @@ public class UDPeer extends UDP {
     public final HashMapTagSet need = new HashMapTagSet("N");
 
     public final Bag<Integer, UDProfile> them;
-    public final PriorityHijackBag<Msg, Msg> seen;
+    public final PriHijackBag<Msg, Msg> seen;
 
     public final UDiscover<Discoverability> discover;
     public Every discoverEvery;
@@ -111,11 +111,11 @@ public class UDPeer extends UDP {
      * assigned a random port
      */
     public UDPeer(boolean discovery) throws IOException {
-        this(null, 0, discovery);
+        this(InetAddress.getLocalHost(), 0, discovery);
     }
 
     public UDPeer(int port) throws IOException {
-        this(null, port, true);
+        this(InetAddress.getLocalHost(), port, true);
     }
 
     public UDPeer(InetAddress address, int port) throws IOException {
@@ -123,7 +123,7 @@ public class UDPeer extends UDP {
     }
 
     public UDPeer(int port, boolean discovery) throws IOException {
-        this(null, port, discovery);
+        this(InetAddress.getLocalHost(), port, discovery);
     }
 
     public UDPeer(InetAddress address, int port, boolean discovery) throws IOException {
@@ -196,7 +196,7 @@ public class UDPeer extends UDP {
 
         them.setCapacity(PEERS_CAPACITY);
 
-        seen = new PriorityHijackBag<>(SEEN_CAPACITY, 3) {
+        seen = new PriHijackBag<>(SEEN_CAPACITY, 3) {
 
             @NotNull
             @Override
@@ -976,15 +976,7 @@ public class UDPeer extends UDP {
         return x;
     }
 
-    private static void ipv6(byte[] address, byte[] target, int offset) {
-        if (address.length == 4) {
-            Arrays.fill(target, offset, 10, (byte)0);
-            Arrays.fill(target, offset+10, 12, (byte)(0xff));
-            System.arraycopy(address, 0, target, offset+12, 4);
-        } else {
-            System.arraycopy(address, 0, target, offset, 16);
-        }
-    }
+
 
 
 }

@@ -65,13 +65,11 @@ public interface Truth extends Truthed {
         if (!Float.isFinite(freq) || freq < 0 || freq > 1)
             throw new TruthException("invalid freq", freq);
 
-        int freqHash = Util.floatToInt(freq, discreteness);
-
         if (!Float.isFinite(conf) || conf < 0)
             throw new TruthException("invalid conf", conf);
 
+        int freqHash = Util.floatToInt(freq, discreteness);
         int confHash = Util.floatToInt(Math.min(Param.TRUTH_MAX_CONF, conf), discreteness);
-
         return (freqHash << 16) | confHash;
     }
 
@@ -138,7 +136,6 @@ public interface Truth extends Truthed {
     }
 
     static float freq(float f, float epsilon) {
-        assert (f == f) : "invalid freq: " + f;
         return Util.unitize(Util.round(f, epsilon));
     }
 

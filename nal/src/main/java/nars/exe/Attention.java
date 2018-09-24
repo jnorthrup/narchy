@@ -3,7 +3,7 @@ package nars.exe;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.hijack.PriorityHijackBag;
+import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
@@ -79,7 +79,7 @@ public class Attention extends DurService implements Sampler<Concept> {
         active =
                 nar.exe.concurrent() ?
 
-                        new PriorityHijackBag<>(Math.round(concepts * 1.5f /* estimate */), 4) {
+                        new PriHijackBag<>(Math.round(concepts * 1.5f /* estimate */), 4) {
 
                             @Override
                             public Term key(Activate value) {

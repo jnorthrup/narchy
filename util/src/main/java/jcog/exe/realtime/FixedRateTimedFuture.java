@@ -39,7 +39,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
     @Override
     public void run() {
-        if (pending.weakCompareAndSetAcquire(true, false)) { //coalesce
+        if (pending.compareAndSet(true, false)) { //coalesce
             //System.out.println(" run " + this);
             super.run();
         } else {

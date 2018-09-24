@@ -364,19 +364,23 @@ public class FZero extends NAgentX {
     }
 
     public ActionConcept initUnipolarLinear(float fwdFactor) {
-        final float[] _a = {0};
-        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
+//        final float[] _a = {0};
+//        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
-        return actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> 0.5f, (a0) -> {
+        return actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                 //_a[0] = (float) fwdFilter.out(_a[0], a0);
                 a0;
 
-            if (a >= 0.5f) {
-                float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdFactor * fwdSpeed);
+            float thresh = nar.freqResolution.floatValue();
+            if (a > 0.5f + thresh) {
+                float thrust = /*+=*/ (2 * (a - 0.5f)) *  (fwdFactor * fwdSpeed);
                 fz.vehicleMetrics[0][6] = thrust;
-            } else
-                fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f)));
+            } else if (a < 0.5f - thresh)
+                fz.vehicleMetrics[0][6] *= Util.unitize(Math.max(0.5f, (1f - (0.5f - a) * 2f)));
+            else
+                return Float.NaN;
+
             return a0;
         }).resolution(0.1f);
     }

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.function.BooleanSupplier;
 
 import static jcog.net.UDPeer.Command.TELL;
 
@@ -60,7 +59,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
      * @throws UnknownHostException
      */
     public InterNAR(NAR nar, int port, boolean discover) {
-        super(256, nar);
+        super(256, null);
 
         this.nar = nar;
 
@@ -85,12 +84,15 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
            }
         });
 
+        nar.on(this);
+
     }
 
     @Override
     protected void starting(NAR nar) {
         try {
             peer = new UDPeer(port, discover);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -109,16 +111,6 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     @Override
     public float value() {
         return recv.value();
-    }
-
-    @Override
-    protected void next(NAR nar, BooleanSupplier kontinue) {
-        if (enabled())
-            super.next(nar, kontinue);
-    }
-
-    private boolean enabled() {
-        return peer != null && peer.connected();
     }
 
     @Override
@@ -208,12 +200,12 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     }
 
     public void runFPS(float fps) {
-        nar.runLater(()->{
+        //nar.runLater(()->{
             if (peer!=null)
                 peer.setFPS(fps);
             else
                 logger.error("did not start InterNARS TODO"); //HACK
-        });
+        //});
     }
 
     public InetSocketAddress addr() {

@@ -678,12 +678,13 @@ public enum Util {
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
      */
     public static float round(float value, float epsilon) {
-//        assertFinite(epsilon);
-//        assertFinite(value);
-//
-//        if (epsilon <= Float.MIN_NORMAL) return value;
-//        else return Math.round(value / epsilon) * epsilon;
-        return (float)round((double)value, (double)epsilon);
+        assertFinite(epsilon);
+        assertFinite(value);
+
+        if (epsilon <= Float.MIN_NORMAL) return value;
+        else return Math.round(value / epsilon) * epsilon;
+
+        //return (float)round((double)value, (double)epsilon);
     }
 
     public static double round(double value, double epsilon) {

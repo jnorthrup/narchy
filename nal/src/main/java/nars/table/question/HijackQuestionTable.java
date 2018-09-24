@@ -1,7 +1,7 @@
 package nars.table.question;
 
 import jcog.data.NumberX;
-import jcog.pri.bag.impl.hijack.PriorityHijackBag;
+import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
@@ -11,7 +11,7 @@ import nars.term.Term;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class HijackQuestionTable extends PriorityHijackBag<Task, Task> implements QuestionTable {
+public class HijackQuestionTable extends PriHijackBag<Task, Task> implements QuestionTable {
 
     public HijackQuestionTable(int cap, int reprobes) {
         super(cap, reprobes);

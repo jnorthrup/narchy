@@ -95,19 +95,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public final void setCapacity(int nextCapacity) {
 
-        //TODO use atomic field setter
-        if (nextCapacity != this.capacity) {
+        if (setCapacityIfChanged(nextCapacity)) {
             synchronized (items) {
-                if (nextCapacity != this.capacity) {
-
-                    this.capacity = nextCapacity;
-
-                    if (size() > nextCapacity)
-                        commit(null);
-                }
+                if (size() > nextCapacity)
+                    commit(null);
             }
-
         }
+
     }
 
     /**
@@ -220,7 +214,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         ArrayBag.MASS.set(this, m);
 
 
-        int c = capacity;
+        int c = capacity();
 
         while (s > c) {
             trash.add(this.items.removeLast());
@@ -347,7 +341,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         synchronized (items) {
             if (items.get(suspectedPosition) == y) {
                 items.remove(suspectedPosition);
-                mapRemove(y);
+                removeFromMap(y);
                 removed = true;
             } else {
                 removed = false;
@@ -363,7 +357,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public Y put(final Y incoming, final NumberX overflow) {
 
-        final int capacity = this.capacity;
+        final int capacity = this.capacity();
 
         if (capacity == 0) {
             incoming.delete();
@@ -393,7 +387,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         synchronized (items) {
 
-            Y existing = getExisting(key);
+            Y existing = map.get(key);
 
             if (existing != null) {
                 if (existing != incoming) {
@@ -403,66 +397,35 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                         overflow.add(p);
                     return incoming; //exact same instance
                 }
-            } /* else { ...*/
-
-            int s = size();
-
-            if (s >= capacity) {
-
-                trash = new FasterList<>(4);
-
-                inserted = tryInsertFull(incoming, p, null, false, trash);
-
             } else {
-                int i = items.add(incoming, -p, this);
-                assert i >= 0;
 
-                inserted = true;
-                trash = null;
-            }
+                int s = size();
 
-            if (inserted) {
-                MASS.add(this, p);
-                map.put(key, incoming);
-            }
+                if (s >= capacity) {
 
-            /*
-            inserted = map.compute(key, (kk, existing) -> {
-                Y v;
-                if (existing != null) {
-                    if (existing != incoming) {
-                        v = merge(existing, incoming, overflow);
-                    } else {
-                        if (overflow != null)
-                            overflow.add(p);
-                        v = existing;
-                    }
+                    trash = new FasterList<>(4);
+
+                    inserted = tryInsertFull(incoming, p, null, false, trash);
+
+                    if (trash != null && !trash.isEmpty())
+                        trash.forEach(this::removeFromMap);
+                    else
+                        trash = null;
+
                 } else {
-                    if (insert(incoming, trash)) {
-                        v = incoming;
-                    } else {
-                        v = null;
-                    }
+                    int i = items.add(incoming, -p, this);
+                    assert i >= 0;
+
+                    inserted = true;
+                    trash = null;
                 }
-                return v;
-            });
-            */
 
+                if (inserted) {
+                    map.put(key, incoming);
+                }
 
-//            trash.removeIf(x -> {
-//                if (x != incoming) {
-//                    mapRemove(x);
-//                    return false; //keep
-//                }
-//                return true; //exclude from trash
-//            });
+            }
 
-            if (trash != null && !trash.isEmpty())
-                trash.forEach(this::mapRemove);
-            else
-                trash = null;
-
-            //assert(map.size()==items.size());
         }
 
 
@@ -479,6 +442,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             return null;
 
         } else {
+            MASS.add(this, p);
 
             onAdd(incoming);
 
@@ -489,10 +453,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     protected boolean fastMergeMaxReject() {
         return false;
-    }
-
-    protected Y getExisting(X key) {
-        return map.get(key);
     }
 
     /**
@@ -513,22 +473,24 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //                }
 //            }
 //            if (posBefore == -1)
-            throw new RuntimeException("Bag Map and List became unsynchronized: " + existing + " not found");
+            throw new RuntimeException("Bag fault: " + existing + " not found in array");
         }
+
+        Y result;
 
         float priBefore = existing.priCommit();
-        Y result;
-        float delta;
-
-        float oo = merge(existing, incoming);
+        float oo = mergeFunction.merge(existing, incoming);
         float priAfter = existing.pri();
         if (priAfter != priAfter) {
-            throw new WTF("incoming deleted existing"); //just for detection but maybe helpful in some merge fucntions
+            //got deleted
+            remove(key(existing));
+            priAfter = 0;
+            result = null;
+        } else {
+            result = existing;
         }
 
-        delta = existing.priElseZero() - priBefore;
-
-        result = existing;
+        float delta = priAfter - priBefore;
 
         if (overflow != null)
             overflow.add(oo);
@@ -545,11 +507,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         return result;
     }
 
-    private float merge(Y existing, Y incoming) {
-        return mergeFunction.merge(existing, incoming);
-    }
-
-    private Y mapRemove(Y x) {
+    private Y removeFromMap(Y x) {
         Y removed = map.remove(key(x));
         if (removed == null)
             throw new WTF();
@@ -559,21 +517,17 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {
 
+        FasterList<Y> trash = new FasterList(4);
 
+        synchronized (items) {
 
-        /*if ((update != null && s > 0) || (update == null && s > capacity))*/
-        {
-            @Nullable FasterList<Y> trash = new FasterList(4);
-            synchronized (items) {
+            clean(trash, update, true);
 
-                clean(trash, update, true);
-
-                trash.forEach(this::mapRemove);
-            }
-
-
-            trash.forEach(this::removed);
+            trash.forEach(this::removeFromMap);
         }
+
+
+        trash.forEach(this::removed);
 
         return this;
     }
@@ -635,7 +589,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
                 int toRemove = n == -1 ? s : Math.min(s, n);
 
-                items.removeRange(0, toRemove, (e) -> popped.add(mapRemove(e)));
+                items.removeRange(0, toRemove, (e) -> popped.add(removeFromMap(e)));
 
             }
         }

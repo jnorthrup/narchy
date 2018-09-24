@@ -100,9 +100,8 @@ public class MatrixDeriver extends Deriver {
         FasterList<Premise> premises = d.premiseBuffer;
         premises.clear();
 
-        @Deprecated BiPredicate<Task, PriReference<Term>> continueHypothesizing = (tasklink, termlink) -> {
-            Premise premise = new Premise(tasklink, termlink);
-            premises.add(premise);
+        @Deprecated BiPredicate<Task, Term> continueHypothesizing = (task, beliefTerm) -> {
+            premises.add( new Premise(task, beliefTerm ));
             return (premisePerConceptRemain[0]-- > 0) && (--premisesRemain[0] > 0);
         };
 
@@ -133,7 +132,7 @@ public class MatrixDeriver extends Deriver {
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    private void premiseMatrix(Activate a, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
+    private void premiseMatrix(Activate a, BiPredicate<Task, Term> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
 
         nar.emotion.conceptFire.increment();
 
@@ -171,7 +170,7 @@ public class MatrixDeriver extends Deriver {
 
                     if (!termlinks.isEmpty()) {
                         termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
-                            if (!continueHypothesizing.test(task, termlink)) {
+                            if (!continueHypothesizing.test(task, termlink.get())) {
                                 //conceptTTL[0] = 0;
                                 return false;
                             } else {

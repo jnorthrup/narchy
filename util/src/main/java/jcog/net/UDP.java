@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
+import java.util.Arrays;
 
 /**
  * generic UDP server & utilities
@@ -21,15 +22,23 @@ import java.nio.channels.SelectionKey;
  */
 public class UDP extends Loop {
 
+//
+//    static {
+//        System.setProperty("java.net.preferIPv6Addresses",
+//                "true"
+//                //"false"
+//        );
+//    }
 
-    static {
-        System.setProperty("java.net.preferIPv6Addresses",
-                "true"
-                //"false"
-        );
+    static void ipv6(byte[] address, byte[] target, int offset) {
+        if (address.length == 4) {
+            Arrays.fill(target, offset, 10, (byte)0);
+            Arrays.fill(target, offset+10, 12, (byte)(0xff));
+            System.arraycopy(address, 0, target, offset+12, 4);
+        } else {
+            System.arraycopy(address, 0, target, offset, 16);
+        }
     }
-
-
     /**
      * in bytes
      */
@@ -47,25 +56,53 @@ public class UDP extends Loop {
     public UDP(@Nullable InetAddress a, int port) throws IOException {
         super();
 
+        if (a instanceof Inet4Address) {
+            byte[] target = new byte[16];
+            ipv6(a.getAddress(), target, 0);
+
+            a = Inet6Address.getByAddress(a.getHostName(), target,
+                    null
+                    //NetworkInterface.getByInetAddress(a)
+//                    NetworkInterface.networkInterfaces().filter(x-> {
+//                        try {
+//                            return x.isUp();
+//                        } catch (SocketException e) {
+//                            //e.printStackTrace();
+//                            return false;
+//                        }
+//                    }).findFirst().get()
+            );
+        }
+
         c = DatagramChannel.open();
         c.configureBlocking(false);
 
         c.setOption(StandardSocketOptions.SO_RCVBUF, 1024 * 128);
         c.setOption(StandardSocketOptions.SO_SNDBUF, 1024 * 128);
-        //c.socket().setBroadcast(true);
-        ///c.setOption(StandardSocketOptions.SO_BROADCAST, true);
-        c.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-        c.setOption(StandardSocketOptions.SO_REUSEPORT, true);
-        c.bind(new InetSocketAddress(a, port));
+
+//        c.socket().setBroadcast(true);
+//        c.setOption(StandardSocketOptions.SO_BROADCAST, true);
+
+//        c.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+//        c.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+
+        InetSocketAddress aa = new InetSocketAddress(a, port);
+        c.bind(aa);
 
 
-        this.addr = (InetSocketAddress) c.getLocalAddress();
-        this.port = ((InetSocketAddress) c.getLocalAddress()).getPort();
+        port = this.port = ((InetSocketAddress)c.getLocalAddress()).getPort();
+        this.addr = new InetSocketAddress(a, port); //(InetSocketAddress) c.getLocalAddress();
 
+
+
+    }
+
+    @Override
+    protected void starting() {
         logger.info("start {}", addr);
     }
 
-//    public UDP(int port) throws IOException {
+    //    public UDP(int port) throws IOException {
 //        this(null, port);
 //    }
 //
@@ -99,11 +136,14 @@ public class UDP extends Loop {
     public boolean next() {
         try {
 
-            SocketAddress from;
-            while ((from = c.receive(b.rewind())) != null) {
-                if (!isRunning())
-                    return false;
-                in((InetSocketAddress) from, b.array(), b.position());
+            synchronized (this) {
+                SocketAddress from;
+                //System.out.println(this.addr + " recv");
+                while ((from = c.receive(b.rewind())) != null) {
+                    if (!isRunning())
+                        return false;
+                    in((InetSocketAddress) from, b.array(), b.position());
+                }
             }
         } catch (ClosedChannelException closed) {
             return false;
@@ -146,6 +186,8 @@ public class UDP extends Loop {
 
     public boolean outBytes(byte[] data, InetSocketAddress to) {
         try {
+            //System.out.println(this.addr + " send " + to);
+
             int sent = c.send(ByteBuffer.wrap(data), to);
             if (sent < data.length) {
                 logger.warn("output overflow: {}/{} bytes sent to {}", sent, data.length, to);

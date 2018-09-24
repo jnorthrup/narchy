@@ -47,7 +47,7 @@ public class PriForget<P extends Priority> implements Consumer<P> {
             float eachMustForgetPct =
                     temperature *
                         (((float)s)/cap) *
-                        Math.min(1f, pressure / mass)
+                        Math.min(1f, pressure / (pressure + mass))
             ;
 
             if (eachMustForgetPct > cap * ScalarValue.EPSILON) {

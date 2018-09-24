@@ -16,6 +16,8 @@ import nars.concept.sensor.Signal;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.SimpleDeriver;
+import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
@@ -27,7 +29,6 @@ import nars.op.Factorize;
 import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
@@ -49,7 +50,9 @@ import java.awt.image.BufferedImage;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
+import java.util.stream.StreamSupport;
 
+import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -166,13 +169,17 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
-                        Derivers.nal(n, 6, 8, "motivation.nal")) {
-//                    @Override
-//                    public float puncFactor(byte conclusion) {
-//                        return conclusion == GOAL ? 1 : 0.5f;
-//                    }
-                };
+                PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8, "motivation.nal");
+                SimpleDeriver motivation = SimpleDeriver.forConcepts(n, rules,
+                        a.actions.stream().collect(toList()),
+                        a.sensors.stream().flatMap(x -> StreamSupport.stream(x.components().spliterator(), false)).map(x -> x.term()).collect(toList()));
+//                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
+//                        rules) {
+////                    @Override
+////                    public float puncFactor(byte conclusion) {
+////                        return conclusion == GOAL ? 1 : 0.5f;
+////                    }
+//                };
                 motivation.timing = new ActionTiming(n);
 
 
@@ -323,7 +330,7 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 5, 6));
         new MatrixDeriver(Derivers.rules(n, "motivation.nal"));
 
-        new STMLinkage(n, 1);
+        //new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);

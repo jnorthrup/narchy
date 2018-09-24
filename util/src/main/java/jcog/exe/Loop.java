@@ -83,8 +83,9 @@ abstract public class Loop implements Runnable {
         return this;
     }
 
-    public final void ready() {
-        executing.setRelease(false);
+    private void ready() {
+        if (!async())
+            executing.set(false);
     }
 
     static int fpsToMS(float fps) {
@@ -170,7 +171,7 @@ abstract public class Loop implements Runnable {
     @Override
     public final void run() {
 
-        if (!executing.weakCompareAndSetAcquire(false, true))
+        if (!executing.compareAndSet(false, true))
             return;
 
         beforeNext();
@@ -182,8 +183,7 @@ abstract public class Loop implements Runnable {
             thrown(e);
         } finally {
             afterNext();
-            if (!async())
-                ready();
+            ready();
         }
 
     }

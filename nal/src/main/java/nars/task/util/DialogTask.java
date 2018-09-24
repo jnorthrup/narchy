@@ -6,6 +6,7 @@ import jcog.event.Offs;
 import nars.NAR;
 import nars.Task;
 import nars.derive.Deriver;
+import nars.derive.Derivers;
 import nars.derive.impl.SimpleDeriver;
 
 import java.util.Collection;
@@ -31,7 +32,8 @@ public class DialogTask {
 
         ons= new Offs(
 
-            deriver = SimpleDeriver.forConcepts(n, tasks.asList().stream().map(t -> {
+            deriver = SimpleDeriver.forConcepts(n, Derivers.nal(n, 1, 8),
+                    tasks.asList().stream().map(t -> {
 
                 nar.input(t);
 
