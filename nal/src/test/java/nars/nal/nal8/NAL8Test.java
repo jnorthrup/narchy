@@ -3,7 +3,6 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.Param;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -364,8 +363,6 @@ public class NAL8Test extends NALTest {
     void testInhibition0() {
         test.nar.termVolumeMax.set(5);
 
-        Param.DEBUG = true;
-        test.nar.log();
         test
                 .goal("reward")
                 .believe("(bad ==> --reward)", 1, 0.9f)
@@ -878,9 +875,9 @@ public class NAL8Test extends NALTest {
             $.49 ((X-->trackXY),"+"). 2340⋈2576 %0.0;.90% {2340: Gæ}
         */
         test.nar.time.dur(16);
-//        Param.DEBUG = true;
+
         test
-//                .log()
+
                 .inputAt(0, "(y &&+5 x)! |")
                 .inputAt(2, "y. |")
                 .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t >= 7)

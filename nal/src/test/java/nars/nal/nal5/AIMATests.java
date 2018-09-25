@@ -38,7 +38,7 @@ class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", 3500);
+        assertBelief(n, true, "Q", 6500);
 
     }
 
@@ -54,7 +54,7 @@ class AIMATests {
 //        n.beliefPriDefault.set(0.25f);
 //        n.questionPriDefault.set(0.5f);
 
-        n.termVolumeMax.set(13);
+        n.termVolumeMax.set(14);
        // n.log();
 
 
@@ -83,7 +83,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(6000);
+        n.run(9000);
 //        n.synch();
 
         n.concept(Q).print();

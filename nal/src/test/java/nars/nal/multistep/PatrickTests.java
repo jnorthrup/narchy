@@ -71,7 +71,7 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 7000;
+        int cycles = 10000;
 
         tt.confTolerance(0.5f);
 
@@ -81,7 +81,7 @@ public class PatrickTests extends NALTest {
 
         int dur = cycles / 4;
         tt.nar.time.dur(dur);
-        tt.nar.termVolumeMax.set(24);
+        tt.nar.termVolumeMax.set(16);
 
 
         tt.input(

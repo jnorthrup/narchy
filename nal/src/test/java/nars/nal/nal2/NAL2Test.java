@@ -16,14 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 320;
+    private static final int cycles = 150;
 
 
     @Override
     protected NAR nar() {
 
         NAR n = NARS.tmp(2);
-        n.termVolumeMax.set(9);
+        n.termVolumeMax.set(7);
         return n;
     }
 

@@ -20,46 +20,46 @@ public class NAL1MultistepTest extends NALTest {
 
     @Test
     void multistepInh2() {
-        new DeductiveChainTest(test, 2, 1000, inh);
+        new DeductiveChainTest(test, 2, 200, inh);
     }
 
     @Test
     void multistepSim2() {
-        new DeductiveChainTest(test, 2, 1000, sim);
+        new DeductiveChainTest(test, 2, 200, sim);
     }
 
     @Test
     void multistepInh3() {
-        new DeductiveChainTest(test, 3, 8000, inh);
+        new DeductiveChainTest(test, 3, 200, inh);
     }
     @Test
     void multistepSim3() {
 
-        new DeductiveChainTest(test, 3, 1000, sim);
+        new DeductiveChainTest(test, 3, 200, sim);
     }
 
     @Test
     void multistepInh4() {
-        new DeductiveChainTest(test, 4, 16000, inh);
+        new DeductiveChainTest(test, 4, 200, inh);
     }
 
     @Test public void multistepSim4() {
-        new DeductiveChainTest(test, 4, 16000, sim);
+        new DeductiveChainTest(test, 4, 200, sim);
     }
 
     @Test
     void multistepImpl2() {
-        new DeductiveChainTest(test, 2, 1000, impl);
+        new DeductiveChainTest(test, 2, 200, impl);
     }
 
     @Test
     void multistepImpl4() {
-        new DeductiveChainTest(test, 4, 2000, impl);
+        new DeductiveChainTest(test, 4, 200, impl);
     }
 
     @Test
     void multistepImpl5() {
-        new DeductiveChainTest(test, 5, 4000, impl);
+        new DeductiveChainTest(test, 5, 200, impl);
     }
 
 }

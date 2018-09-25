@@ -13,11 +13,11 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    private static final int cycles = 300;
+    private static final int cycles = 200;
     
     @Override protected NAR nar() {
         NAR n= NARS.tmp(3);
-        n.termVolumeMax.set(8);
+        n.termVolumeMax.set(7);
         return n;
     }
 
