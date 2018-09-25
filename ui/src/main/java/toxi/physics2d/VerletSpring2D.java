@@ -138,12 +138,26 @@ public class VerletSpring2D {
      * distance, weight and spring configuration *
      * @param applyConstraints
      */
-    protected void update(boolean applyConstraints) {
+    protected final boolean update(boolean applyConstraints) {
+        float am = a.mass;
+        if (am != am)
+            return false; //a deleted
+
+        float bm = b.mass;
+        if (bm != bm)
+            return false; // b deleted
+
+        updateSpring(applyConstraints, am, bm);
+        return true;
+    }
+
+    protected void updateSpring(boolean applyConstraints, float am, float bm) {
         Vec2D delta = b.sub(a);
         // add minute offset to avoid div-by-zero errors
         float dist = delta.magnitude() + EPS;
-        float aInvMass = 1/a.mass;
-        float bInvMass = 1/b.mass;
+        float aInvMass = 1/ am;
+
+        float bInvMass = 1/ bm;
         float normDistStrength = (dist - restLength)
                 / (dist * (aInvMass + bInvMass)) * strength;
         if (!a.isLocked && !isALocked) {

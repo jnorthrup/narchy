@@ -27,6 +27,7 @@ public interface ScalarValue {
      * TODO find if there is a better number
      */
     float EPSILON = 0.000002f;
+    float EPSILONsqrt = (float)Math.sqrt(EPSILON);
 
     /** setter
      *  @return value after set

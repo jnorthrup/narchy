@@ -34,7 +34,6 @@ import toxi.geom.Polygon2D;
 import toxi.geom.ReadonlyVec2D;
 import toxi.geom.Rect;
 import toxi.geom.Vec2D;
-import toxi.physics2d.behaviors.AttractionBehavior2D;
 import toxi.physics2d.behaviors.ParticleBehavior2D;
 import toxi.physics2d.constraints.ParticleConstraint2D;
 
@@ -143,11 +142,23 @@ public class VerletParticle2D extends Vec2D {
     }
 
     /** adds a behavior that affects other verlets */
-    public VerletParticle2D addBehaviorGlobal(AttractionBehavior2D<VerletParticle2D> b) {
+    public VerletParticle2D addBehaviorGlobal(ParticleBehavior2D b) {
         if (behaviorsGlobal == null)
             behaviorsGlobal = new FasterList<>(1);
         behaviorsGlobal.add(b);
         return this;
+    }
+
+    public void delete() {
+        this.mass = Float.NaN;
+        this.behaviors = this.behaviorsGlobal = null;
+        this.constraints = null;
+        this.bounds = null;
+    }
+
+    public boolean isDeleted() {
+        float m = this.mass;
+        return m!=m;
     }
 
 //    public VerletParticle2D addBehaviors(Iterable<ParticleBehavior2D> behaviors) {
@@ -397,7 +408,7 @@ public class VerletParticle2D extends Vec2D {
         return this;
     }
 
-    public void preUpdate(VerletPhysics2D p) {
+    public boolean preUpdate(VerletPhysics2D p, float subDT) {
 
         if (!isLocked) {
             if (behaviors != null) {
@@ -405,8 +416,12 @@ public class VerletParticle2D extends Vec2D {
             }
         }
 
-        if (behaviorsGlobal!=null)
+        if (behaviorsGlobal!=null) {
+            behaviorsGlobal.forEach(x -> x.configure(subDT));
             behaviorsGlobal.forEachWith(ParticleBehavior2D::applyGlobal, p);
+        }
+
+        return !isDeleted();
     }
 
     public void postUpdate(float drag) {

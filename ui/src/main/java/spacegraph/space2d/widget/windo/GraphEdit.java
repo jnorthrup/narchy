@@ -18,6 +18,7 @@ import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.util.math.v2;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletSpring2D;
+import toxi.physics2d.behaviors.AttractionBehavior2D;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -353,10 +354,12 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         to.pos(RectFloat2D.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
 
         VerletParticle2D toParticle = physics.addParticleBind(to, VerletSurface.VerletSurfaceBinding.Center, false);
+        toParticle.addBehaviorGlobal(new AttractionBehavior2D<>(toParticle, 100 /* TODO auto radius*/, -20));
 
         VerletParticle2D fromParticle = physics.addParticleBind(from, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
 
-        physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10,0.1f ));
+
+        physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10,0.5f ));
 
 //        cable(from, fromParticle, to, toParticle);
 

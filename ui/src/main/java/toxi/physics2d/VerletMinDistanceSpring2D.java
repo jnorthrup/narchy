@@ -42,9 +42,9 @@ public class VerletMinDistanceSpring2D extends VerletSpring2D {
     }
 
     @Override
-    protected void update(boolean applyConstraints) {
+    protected void updateSpring(boolean applyConstraints, float am, float bm) {
         if (b.distanceToSquared(a) < (restLength*restLength)) {
-            super.update(applyConstraints);
+            super.updateSpring(applyConstraints, am, bm);
         }
     }
 }

@@ -185,11 +185,11 @@ public class VerletSurface extends Surface implements Animated {
 
 
                     //gradual
-                    float speed = 0.5f;
-                    vv.addForce(pNext.sub(vv).scaleSelf(speed));
+//                    float force = 5.5f;
+//                    vv.addForce(pNext.sub(vv).normalize().scaleSelf(force));
 
                     //immediate
-                    //vv.next.set(pNext);
+                    vv.next.set(pNext);
 
 //                    vv.set(pNext);
 //                    vv.prev.set(pNext);
@@ -221,7 +221,8 @@ public class VerletSurface extends Surface implements Animated {
                 if (sNext != null) {
                     //ss.pos(Util.lerp(0.5f, sNext.x, ss.x()))
                     //ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
-                    ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.5f));
+                    ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.75f));
+                    //ss.pos(sNext.x, sNext.y);
                 }
 //            } else {
 

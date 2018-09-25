@@ -135,24 +135,6 @@ public class VerletPhysics2D {
         return this;
     }
 
-    /**
-     * Applies all global constraints and constrains all particle positions to
-     * the world bounding rect set.
-     */
-    protected void constrain() {
-        boolean hasGlobalConstraints = !constraints.isEmpty();
-        particles.forEach(p -> {
-            if (hasGlobalConstraints) {
-                constraints.forEachWith(ParticleConstraint2D::accept, p);
-            }
-            if (p.bounds != null) {
-                p.constrain(p.bounds);
-            }
-            if (bounds != null) {
-                p.constrain(bounds);
-            }
-        });
-    }
 
     public VerletPhysics2D clear() {
         behaviors.clear();
@@ -302,10 +284,9 @@ public class VerletPhysics2D {
             b.configure(subDT);
 
         for (int i = ii - 1; i >= 0; i--) {
-            preUpdate();
+            preUpdate(subDT);
             spring(subDT);
             postUpdate();
-            constrain();
             index(false /*true*/ /* TODO: if bounds changed */);
         }
         return this;
@@ -313,14 +294,14 @@ public class VerletPhysics2D {
 
     private void index(boolean force) {
         if (index != null) {
-            for (VerletParticle2D p : particles)
-
+            particles.forEach(p -> {
+                assert(p!=null);
                 if (force || p.changed(epsilon)) {
                     index.reindex(p, VerletParticle2D::commit);
                 } else {
                     p.commitInactive();
                 }
-
+            });
         } else {
             for (VerletParticle2D p : particles)
                 p.commit();
@@ -330,17 +311,32 @@ public class VerletPhysics2D {
     /**
      * Updates all particle positions
      */
-    protected void preUpdate() {
+    protected void preUpdate(float subDT) {
 
         //local behaviors
-        particles.forEachWith(VerletParticle2D::preUpdate, this);
+        particles.removeIf((t)->{
+            return !t.preUpdate(VerletPhysics2D.this, subDT);
+        });
 
         //global behaviors
         behaviors.forEachWith(ParticleBehavior2D::applyGlobal, this);
     }
 
     protected void postUpdate() {
-        particles.forEach(p -> p.postUpdate(drag));
+        boolean hasGlobalConstraints = !constraints.isEmpty();
+        particles.forEach(p -> {
+            p.postUpdate(drag);
+
+            if (hasGlobalConstraints) {
+                constraints.forEachWith(ParticleConstraint2D::accept, p);
+            }
+            if (p.bounds != null) {
+                p.constrain(p.bounds);
+            }
+            if (bounds != null) {
+                p.constrain(bounds);
+            }
+        });
     }
 
     /**
@@ -349,7 +345,7 @@ public class VerletPhysics2D {
      * @param subDT
      */
     protected void spring(float subDT) {
-        springs.forEach(s -> s.update(false));
+        springs.removeIf(s -> !s.update(false));
     }
 
     public void bounds(RectFloat2D bounds) {

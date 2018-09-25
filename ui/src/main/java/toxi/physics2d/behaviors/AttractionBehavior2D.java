@@ -27,18 +27,19 @@
 
 package toxi.physics2d.behaviors;
 
+import jcog.pri.ScalarValue;
 import toxi.geom.SpatialIndex;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D {
 
     protected V attractor;
-    protected float attrStrength;
 
-    protected float radius, radiusSquared;
+    protected float radius;
     protected float strength;
     protected float jitter;
     protected float timeStep;
@@ -59,16 +60,32 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     @Override
     public void accept(VerletParticle2D p) {
+        if (p == attractor)
+            return;
         Vec2D delta = attractor.sub(p);
-        float dist = delta.magSquared();
-        if (dist < radiusSquared) {
-            move(p, delta, dist);
+        float distSq = delta.magSquared();
+        if (distSq < radius*radius) {
+            move(p, delta, distSq);
         }
     }
 
-    public void move(VerletParticle2D p, Vec2D delta, float dist) {
-        Vec2D f = delta.normalizeTo((1.0f - dist / radiusSquared))
-                .jitter(rng, jitter).scaleSelf(attrStrength);
+
+    private void move(VerletParticle2D p, Vec2D delta, float distSq) {
+        Vec2D f;
+        if (distSq <= ScalarValue.EPSILONsqrt) {
+           if (strength < 0) {
+               //random direction
+               float theta = (float) (((rng==null ? ThreadLocalRandom.current() : rng).nextFloat()) * Math.PI * 2);
+               float rx = (float) (Math.cos(theta) * strength * timeStep);
+               float ry = (float) (Math.sin(theta) * strength * timeStep);
+               f = new Vec2D(rx, ry);
+           } else {
+               return; //no effect
+           }
+        } else {
+            f = delta.normalizeTo((1.0f - distSq / (radius * radius)))
+                    .jitter(rng, jitter).scaleSelf(strength * timeStep);
+        }
         p.addForce(f);
     }
 
@@ -79,7 +96,6 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     public void configure(float timeStep) {
         this.timeStep = timeStep;
-        setStrength(strength);
     }
 
     /**
@@ -128,7 +144,6 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     public final void setRadius(float r) {
         this.radius = r;
-        this.radiusSquared = r * r;
     }
 
     /**
@@ -137,7 +152,6 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
      */
     public void setStrength(float strength) {
         this.strength = strength;
-        this.attrStrength = strength * timeStep;
     }
 
     @Override
