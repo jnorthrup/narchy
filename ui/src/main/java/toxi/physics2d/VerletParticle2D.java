@@ -34,8 +34,8 @@ import toxi.geom.Polygon2D;
 import toxi.geom.ReadonlyVec2D;
 import toxi.geom.Rect;
 import toxi.geom.Vec2D;
-import toxi.physics2d.behaviors.ParticleBehavior2D;
-import toxi.physics2d.constraints.ParticleConstraint2D;
+import toxi.physics2d.behavior.ParticleBehavior2D;
+import toxi.physics2d.constraint.ParticleConstraint2D;
 
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +51,7 @@ public class VerletParticle2D extends Vec2D {
 
     public final Vec2D next;
     public final Vec2D prev;
-    protected boolean isLocked;
+    public boolean isLocked;
 
     /**
      * Bounding box, by default set to null to disable
@@ -69,7 +69,7 @@ public class VerletParticle2D extends Vec2D {
     /**
      * Particle weight, default = 1
      */
-    protected float mass;
+    public float mass;
 
     protected final Vec2D force = new Vec2D();
 

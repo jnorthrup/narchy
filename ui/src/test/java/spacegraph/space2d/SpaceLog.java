@@ -17,7 +17,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Clipped;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Scale;
-import spacegraph.space2d.widget.Timeline2D;
+import spacegraph.space2d.container.Timeline2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space3d.widget.OsmSpace;

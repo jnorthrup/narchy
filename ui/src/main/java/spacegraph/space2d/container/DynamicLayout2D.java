@@ -2,7 +2,6 @@ package spacegraph.space2d.container;
 
 import jcog.data.list.FasterList;
 import jcog.data.pool.DequePool;
-import spacegraph.space2d.widget.Graph2D;
 import spacegraph.util.MovingRectFloat2D;
 
 public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements Graph2D.Graph2DUpdater<X> {

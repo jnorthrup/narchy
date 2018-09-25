@@ -58,6 +58,10 @@ public class ToggleButton extends AbstractButton {
         return on.getOpaque();
     }
 
+    public ToggleButton on(Runnable a) {
+        return on((x)->{ if (x) a.run(); });
+    }
+
     public ToggleButton on(BooleanProcedure a) {
         return on((thizz, x)->a.value(x));
     }

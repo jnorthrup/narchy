@@ -12,7 +12,7 @@ import nars.exe.UniExec;
 import nars.time.clock.RealTime;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
-import spacegraph.space2d.widget.Graph2D;
+import spacegraph.space2d.container.Graph2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -21,7 +21,7 @@ import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
 
 import java.util.stream.IntStream;

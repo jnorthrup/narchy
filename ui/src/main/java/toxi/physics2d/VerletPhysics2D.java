@@ -34,9 +34,9 @@ import org.jetbrains.annotations.Nullable;
 import toxi.geom.Rect;
 import toxi.geom.SpatialIndex;
 import toxi.geom.Vec2D;
-import toxi.physics2d.behaviors.GravityBehavior2D;
-import toxi.physics2d.behaviors.ParticleBehavior2D;
-import toxi.physics2d.constraints.ParticleConstraint2D;
+import toxi.physics2d.behavior.ParticleBehavior2D;
+import toxi.physics2d.constraint.ParticleConstraint2D;
+import toxi.physics2d.spring.VerletSpring2D;
 
 /**
  * 3D particle physics engine using Verlet integration based on:
@@ -81,17 +81,16 @@ public class VerletPhysics2D {
     /**
      * Initializes an Verlet engine instance with the passed in configuration.
      *
-     * @param gravity       3D gravity vector
      * @param numIterations iterations per time step for verlet solver
      * @param drag          drag value 0...1
      */
-    public VerletPhysics2D(Vec2D gravity, int numIterations, float drag) {
+    public VerletPhysics2D(int numIterations, float drag) {
 
         this.maxIterations = numIterations;
         setDrag(drag);
-        if (gravity != null) {
-            addBehavior(new GravityBehavior2D(gravity));
-        }
+//        if (gravity != null) {
+//            addBehavior(new GravityBehavior2D(gravity));
+//        }
     }
 
     public final ParticleBehavior2D addBehavior(ParticleBehavior2D behavior) {

@@ -5,7 +5,7 @@ import jcog.math.FloatSupplier;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
 
 import java.util.function.Supplier;

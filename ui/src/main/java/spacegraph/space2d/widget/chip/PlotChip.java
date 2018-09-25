@@ -1,0 +1,33 @@
+package spacegraph.space2d.widget.chip;
+
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.port.Port;
+
+public class PlotChip extends Gridding {
+    final Port in;
+    private final Plot2D plot;
+    double nextValue = Double.NaN;
+
+    public PlotChip() {
+        super();
+
+        this.plot = new Plot2D(256, Plot2D.Line);
+        plot.add("x", ()->nextValue);
+
+        this.in = new Port().on((Object x)->{
+            if (x instanceof Number) {
+                nextValue = ((Number)x).floatValue();
+            } else if (x instanceof Boolean) {
+                nextValue = ((Boolean)x) ? 1 : 0;
+            } else {
+                return;
+            }
+            plot.update();
+        });
+
+        set(in, plot);
+
+
+    }
+}

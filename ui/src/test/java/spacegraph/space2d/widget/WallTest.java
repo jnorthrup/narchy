@@ -20,13 +20,21 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.chip.FunctionSelectChip;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meter.WaveView;
+import spacegraph.space2d.widget.port.FloatRangePort;
+import spacegraph.space2d.widget.port.LabeledPort;
+import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TogglePort;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.*;
+import spacegraph.space2d.widget.windo.GraphEdit;
+import spacegraph.space2d.widget.windo.Wall;
+import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Boolean.TRUE;
@@ -404,6 +412,10 @@ public class WallTest {
                             }
                         };
                         add(inverter).pos(70, 70, 140, 140);
+
+                        //add(new SwitchChip(4)).pos(170, 170, 240, 240);
+                        add(new FunctionSelectChip<Double,Double>(
+                                Map.of("sin", Math::sin, "cos", Math::cos))).pos(170, 170, 240, 240);
                     }
 
                     //add(LabeledPort.generic()).pos(10, 10, 50, 50);

@@ -11,14 +11,15 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.collection.MutableListContainer;
-import spacegraph.space2d.shape.VerletSurface;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
+import spacegraph.space2d.widget.port.util.Wire;
+import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.util.math.v2;
 import toxi.physics2d.VerletParticle2D;
-import toxi.physics2d.VerletSpring2D;
-import toxi.physics2d.behaviors.AttractionBehavior2D;
+import toxi.physics2d.spring.VerletSpring2D;
+import toxi.physics2d.behavior.AttractionBehavior2D;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -46,7 +47,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     /**
      * TODO use more efficient graph representation
      */
-    final MapNodeGraph<Surface, Wire> links = new MapNodeGraph<>() {
+    public final MapNodeGraph<Surface, Wire> links = new MapNodeGraph<>() {
         @Override
         protected void onRemoved(Node<Surface, Wire> r) {
             r.edges(true, true).forEach(e -> {
@@ -300,8 +301,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //        return s;
 //    }
 
-    public Iterable<FromTo<Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire>, Wire>> edges(Surface s) {
-        Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire> n = links.node(s);
+    public Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges(Surface s) {
+        Node<spacegraph.space2d.Surface, Wire> n = links.node(s);
         return n != null ? n.edges(true, true) : List.of();
     }
 
@@ -328,7 +329,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     protected void doubleClick(v2 pos) {
         float h = 100;
         float w = 100;
-        add(
+        Windo z = add(
                 new WizardFrame(new ProtoWidget()) {
                     @Override
                     protected void become(Surface next) {
@@ -342,7 +343,9 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //                        }
 
                     }
-                }).pos(RectFloat2D.XYWH(pos.x, pos.y, w, h));
+                });
+        z.pos(RectFloat2D.XYWH(pos.x, pos.y, w, h));
+        z.root().zoom(z);
     }
 
     public void removeRaw(Surface x) {
@@ -474,10 +477,10 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
             NodeGraph.MutableNode<Surface, Wire> A = links.addNode(aa);
 
-            Iterable<FromTo<Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire>, Wire>> edges = A.edges(false, true);
+            Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges = A.edges(false, true);
             if (edges != null) {
 
-                for (FromTo<Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire>, Wire> e : edges) {
+                for (FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire> e : edges) {
                     Wire ee = e.id();
                     if (wire.equals(ee))
                         return ee;
@@ -513,9 +516,9 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     private Wire unlink(Surface source, Surface target) {
         synchronized (links) {
             Wire wire = new Wire(source, target);
-            Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire> an = links.node(wire.a);
+            Node<spacegraph.space2d.Surface, Wire> an = links.node(wire.a);
             if (an != null) {
-                Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire> bn = links.node(wire.b);
+                Node<spacegraph.space2d.Surface, Wire> bn = links.node(wire.b);
                 if (bn != null) {
                     boolean removed = links.edgeRemove(new ImmutableDirectedEdge<>(
                             an, wire, bn)

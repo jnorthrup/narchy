@@ -7,7 +7,7 @@ import net.beadsproject.beads.ugens.*;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 
 import static net.beadsproject.beads.arpeggiator_01.midiPitchToFrequency;
 

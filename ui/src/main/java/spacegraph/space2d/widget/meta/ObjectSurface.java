@@ -16,6 +16,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
@@ -23,7 +24,6 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.tab.ButtonSet;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.Widget;
 
 import java.lang.reflect.Field;
 import java.util.*;

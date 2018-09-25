@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 
 import java.io.OutputStream;
 import java.util.TreeSet;

@@ -5,10 +5,10 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Widget;
 
 /**
  * super repl

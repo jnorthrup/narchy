@@ -46,7 +46,6 @@ import com.jogamp.opengl.fixedfunc.GLPointerFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.packrect.BackingStoreManager;
 import com.jogamp.opengl.util.packrect.Rect;
-import com.jogamp.opengl.util.packrect.RectVisitor;
 import com.jogamp.opengl.util.packrect.RectanglePacker;
 import com.jogamp.opengl.util.texture.TextureCoords;
 import jogamp.opengl.Debug;

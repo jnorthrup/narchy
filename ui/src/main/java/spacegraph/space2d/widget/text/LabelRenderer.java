@@ -168,7 +168,7 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
             float cy = bounds.cy();
             //Pmv.glTranslatef(cx/sx, cy/sx, -0.2f);
 
-            Pmv.glTranslatef(-(float) ( bounds.cx()/1000), 0, 0f);
+            Pmv.glTranslatef(-( bounds.cx()/1000), 0, 0f);
             //Pmv.glScalef(sx, sx, 1f);
 
 

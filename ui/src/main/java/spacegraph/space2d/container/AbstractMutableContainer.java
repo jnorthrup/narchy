@@ -1,7 +1,6 @@
 package spacegraph.space2d.container;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 
 public abstract class AbstractMutableContainer extends Container {
 

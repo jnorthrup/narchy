@@ -7,7 +7,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.key.Keyboard;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.util.AWTCamera;
 import spacegraph.util.math.v2;
 import spacegraph.video.Tex;

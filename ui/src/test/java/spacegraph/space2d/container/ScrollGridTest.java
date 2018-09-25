@@ -7,7 +7,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
 
 import java.util.Map;

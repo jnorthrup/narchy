@@ -2,30 +2,21 @@ package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.jogamp.opengl.GL2;
-import jcog.Util;
-import jcog.learn.Autoencoder;
-import jcog.learn.gng.NeuralGasNet;
-import jcog.learn.gng.impl.Centroid;
-import jcog.math.IntRange;
-import jcog.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
-import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.chip.Cluster2DChip;
+import spacegraph.space2d.widget.chip.PlotChip;
+import spacegraph.space2d.widget.port.FloatRangePort;
+import spacegraph.space2d.widget.port.LabeledPort;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.FloatRangePort;
-import spacegraph.space2d.widget.windo.LabeledPort;
-import spacegraph.space2d.widget.windo.Port;
-import spacegraph.space2d.widget.windo.Widget;
-import spacegraph.video.Draw;
 import spacegraph.video.WebCam;
 
 import java.util.HashMap;
@@ -156,106 +147,4 @@ public class ProtoWidget extends Widget {
                         replacement.get()));
     }
 
-    static class PlotChip extends Gridding {
-        final Port in;
-        private final Plot2D plot;
-        double nextValue = Double.NaN;
-
-        PlotChip() {
-            super();
-
-            this.plot = new Plot2D(256, Plot2D.Line);
-            plot.add("x", ()->nextValue);
-
-            this.in = new Port().on((Object x)->{
-                if (x instanceof Number) {
-                    nextValue = ((Number)x).floatValue();
-                } else if (x instanceof Boolean) {
-                    nextValue = ((Boolean)x) ? 1 : 0;
-                } else {
-                    return;
-                }
-                plot.update();
-            });
-
-            set(in, plot);
-
-
-        }
-    }
-    static class Cluster2DChip extends Gridding {
-
-        private final Port in;
-        private final Surface display;
-
-        Autoencoder ae;
-        NeuralGasNet g;
-        class Config {
-            final IntRange clusters = new IntRange(16, 2, 32);
-
-            synchronized void reset(int dim) {
-                if (ae == null || ae.inputs()!=dim) {
-                    g = new NeuralGasNet(dim, clusters.intValue(), Centroid.DistanceFunction::distanceCartesianManhattan);
-                    ae = new Autoencoder(dim, 2, new XoRoShiRo128PlusRandom(1));
-                }
-            }
-        }
-
-        final Config config = new Config();
-
-        Cluster2DChip() {
-            super();
-
-            config.reset(2);
-
-            in = new Port().on((float[] x)->{
-                synchronized (g) {
-                    config.reset(x.length);
-                    g.put(Util.toDouble(x));
-                }
-            });
-            display = new Surface() {
-
-                @Override
-                protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                    Draw.bounds(bounds, gl, this::paint);
-                }
-
-                void paint(GL2 gl) {
-                    synchronized (g) {
-                        NeuralGasNet g = Cluster2DChip.this.g;
-
-
-
-
-
-
-                        float cw = 0.1f;
-                        float ch = 0.1f;
-                        for (Centroid c : g.centroids) {
-                            float a = (float) (1.0 / (1 + c.localError()));
-                            ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
-                            float x = 
-                                    0.5f*(1+ae.y[0]);
-
-
-                            float y = 
-                                    0.5f*(1+ae.y[1]);
-
-
-
-
-
-
-
-                            Draw.colorHash(gl, c.id, a);
-                            Draw.rect(x-cw/2, y-ch/2, cw, ch, gl);
-                        }
-                    }
-                }
-
-            };
-            set(in, new ObjectSurface(config), display);
-        }
-    }
 }

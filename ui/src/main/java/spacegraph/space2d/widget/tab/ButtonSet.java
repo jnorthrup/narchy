@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.tab;
 
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.set.ArrayHashSet;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +32,10 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
     }
 
     public ButtonSet(Mode mode, T... buttons) {
+        this(mode, ArrayIterator.iterable(buttons));
+    }
+
+    public ButtonSet(Mode mode, Iterable<T> buttons) {
         super();
 
         this.mode = mode;
@@ -63,7 +68,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
         }
 
-        set(buttons);
+        set(this.buttons.list);
 
         if (mode == Mode.One) {
             

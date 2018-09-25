@@ -195,7 +195,7 @@ public class MutableListContainer extends AbstractMutableContainer {
         return children.whileEachReverse(o);
     }
 
-    protected int size() {
+    public int size() {
         return children.size();
     }
 

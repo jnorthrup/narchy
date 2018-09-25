@@ -8,7 +8,7 @@ import jcog.event.Off;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
 
 import java.awt.*;

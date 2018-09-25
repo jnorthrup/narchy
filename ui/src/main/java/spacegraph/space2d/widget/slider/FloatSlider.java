@@ -12,8 +12,8 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Widget;
 
 /**
  * Created by me on 11/18/16.

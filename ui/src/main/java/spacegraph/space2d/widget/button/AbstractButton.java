@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.button;
 
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.Widget;
 
 import java.util.function.Predicate;
 

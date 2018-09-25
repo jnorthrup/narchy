@@ -4,9 +4,9 @@ import jcog.Util;
 import jcog.math.MutableInteger;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.function.IntFunction;
 

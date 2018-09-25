@@ -12,11 +12,11 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.PortVector;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Port;
-import spacegraph.space2d.widget.windo.TogglePort;
 import spacegraph.space2d.widget.windo.Wall;
 import spacegraph.video.Draw;
 
@@ -124,24 +124,10 @@ public class TensorGlow {
                         }))
                 ).pos(100, 100, 200, 200);
 
-        p.add(new TogglePort()).pos(200, 200, 300, 300);
+        //p.add(new TogglePort()).pos(200, 200, 300, 300);
 
-        Gridding hw = haiQWindow(q, in);
-        hw.add(new LabeledPane("input", new Port((float[] i) -> {
-            System.arraycopy(i, 0, in, 0, i.length);
-        })));
-        p.add(hw).pos(350, 350, 500, 500);
-
-        Loop.of(() -> {
-            lerpVector.update();
-            q.act((((float) Math.random()) - 0.5f) * 2, in);
-        }).setFPS(25);
-
-    }
-
-
-    public static Gridding haiQWindow(HaiQae q, float[] in) {
-        return new Gridding(
+        PortVector outs;
+        Gridding hw = new Gridding(
                 new VectorLabel("HaiQ"),
                 new ObjectSurface(q),
                 new Gridding(VERTICAL,
@@ -154,8 +140,24 @@ public class TensorGlow {
                         new AutoUpdateMatrixView(q.q),
                         new AutoUpdateMatrixView(q.et)
                 )
-
         );
+        hw.add(new LabeledPane("input", new Port((float[] i) -> {
+            System.arraycopy(i, 0, in, 0, i.length);
+        })));
+        hw.add(new LabeledPane("act", outs = new PortVector(q.actions)));
+
+        p.add(hw).pos(350, 350, 500, 500);
+
+        Loop.of(() -> {
+            lerpVector.update();
+            int a = q.act((((float) Math.random()) - 0.5f) * 2, in);
+            int n = outs.size();
+            for (int i = 0; i < n; i++) {
+                outs.out(i, (i == a));
+            }
+        }).setFPS(25);
+
     }
+
 
 }

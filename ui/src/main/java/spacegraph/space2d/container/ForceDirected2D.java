@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.space2d.widget.Graph2D;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
