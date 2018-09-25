@@ -29,8 +29,6 @@
     X, Y, task("@") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
 
 
-    X, (Y==>X), task("!") |- (Y &&   X), (Goal:Intersection)
-    X, (Y==>X), task("!") |- (Y && --X), (Goal:IntersectionNN)
 
 
 

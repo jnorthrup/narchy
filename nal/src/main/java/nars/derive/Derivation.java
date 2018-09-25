@@ -187,7 +187,7 @@ public class Derivation extends PreDerivation {
     private transient int taskUniques;
     private transient MetalLongSet taskStamp;
     public transient boolean overlapDouble, overlapSingle;
-    public transient float pri;
+    public transient float priSingle, priDouble;
     public transient short[] parentCause;
     public transient boolean concSingle;
     public transient float parentComplexitySum;
@@ -451,10 +451,10 @@ public class Derivation extends PreDerivation {
                 _task.cause();
 
         float taskPri = _task.priElseZero();
-        this.pri =
-                _belief == null ?
-                        Param.TaskToDerivation.valueOf(taskPri) :
-                        Param.DerivationPri.apply(taskPri, _belief.priElseZero());
+        this.priSingle = taskPri;
+        this.priDouble = _belief == null ?
+            taskPri :
+            Param.DerivationPri.apply(taskPri, _belief.priElseZero());
 
 
 
@@ -629,6 +629,10 @@ public class Derivation extends PreDerivation {
             this.beliefEvi = belief != null ? TruthIntegration.evi(_belief) : 0;
         }
         return concSingle ? taskEvi : Math.max(taskEvi, beliefEvi);
+    }
+
+    public float parentPri() {
+        return (concSingle ? priSingle : priDouble);
     }
 }
 

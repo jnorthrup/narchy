@@ -64,11 +64,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
         long rad = (now - prev);
-        long s = now - rad/2;
-        long e = now + rad/2;
+        long s = now - rad;
+        long e = now + rad;
         int actionDur =
-                //0;
-                1;
+                0;
+                //1;
                 //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
         int limit = Answer.TASK_LIMIT_DEFAULT;
 

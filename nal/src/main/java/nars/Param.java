@@ -13,7 +13,6 @@ import nars.term.atom.Atom;
 import nars.time.Tense;
 import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
-import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.function.Predicate;
 
@@ -165,10 +164,6 @@ public abstract class Param {
         //Util::and;
         //Util.unitize(t+b);
 
-    /**
-     * budget factor for single-premise derivations: depends only on the task budget
-     */
-    public static final FloatToFloatFunction TaskToDerivation = (t) -> t;
 
     public static final PriMerge taskMerge =
             PriMerge.max;

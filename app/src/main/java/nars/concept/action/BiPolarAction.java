@@ -100,9 +100,11 @@ public class BiPolarAction extends AbstractSensor {
 
         //System.out.println(p + " vs " + n + " -> " + x);
 
+        float freqRes = nar.freqResolution.floatValue();
         if (x==x) {
             x = Util.clamp(x, -1f, +1f);
-
+            if (Math.abs(x) < freqRes/2)
+                x = 0;
 
         }
 
@@ -121,7 +123,7 @@ public class BiPolarAction extends AbstractSensor {
 //            yn = 1f - yp;
 
             //only one side gets feedback:
-            float thresh = nar.freqResolution.floatValue()*1;
+            float thresh = freqRes*1;
 //            if (Math.abs(y) <= thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
 
             if (Math.abs(y) <= thresh) {

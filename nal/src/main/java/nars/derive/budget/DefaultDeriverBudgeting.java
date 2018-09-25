@@ -41,7 +41,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             factor *= factorPolarity(f);
         }
 
-        return Util.clamp(d.pri * factor, ScalarValue.EPSILON, 1f);
+        return Util.clamp( d.parentPri() * factor, ScalarValue.EPSILON, 1f);
     }
 
     float factorComplexity(Task t, Derivation d) {

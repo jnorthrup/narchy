@@ -35,7 +35,7 @@ public class NormalizingDeriverBudgeting implements DeriverBudgeting {
                 clear();
             }
 
-            premisePri = d.pri; 
+            premisePri = d.parentPri();
         }
     }
 
