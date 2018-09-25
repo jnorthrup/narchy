@@ -251,8 +251,11 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * whether is constant with respect to the current matched variable type
      */
-    public boolean constant(Termlike x) {
-        return !x.hasAny(varBits) || (x instanceof ImDep);
+    public final boolean constant(Termlike x) {
+        return !x.hasAny(varBits);// || (x instanceof ImDep);
+    }
+    public final boolean constant(int structure) {
+        return !Op.hasAny(structure, varBits);// || (x instanceof ImDep);
     }
 
 

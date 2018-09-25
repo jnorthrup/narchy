@@ -49,4 +49,8 @@ public class ByteAnonMap {
     public void readonly() {
         termToId.clear();
     }
+
+    public int size() {
+        return idToTerm.size();
+    }
 }

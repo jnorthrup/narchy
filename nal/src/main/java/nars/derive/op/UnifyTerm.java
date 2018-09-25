@@ -38,8 +38,10 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
          */
         private final int subterm;
 
+        private static final Atomic UNIFY = (Atomic) $.the("unify");
+
         public NextUnify(int subterm, Term pattern) {
-            super($.func("unify", UnifyTerm.label(subterm), pattern), pattern);
+            super($.funcFast(UNIFY, UnifyTerm.label(subterm), pattern), pattern);
             this.subterm = subterm;
         }
 

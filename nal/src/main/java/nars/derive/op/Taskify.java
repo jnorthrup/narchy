@@ -34,7 +34,7 @@ public class Taskify extends AbstractPred<Derivation> {
     private static final Atomic TASKIFY = Atomic.the("taskify");
 
     public Taskify(PremiseRuleProto.RuleCause channel) {
-        super(  $.func(TASKIFY, $.the(channel.id)) );
+        super(  $.funcFast(TASKIFY, $.the(channel.id)) );
         this.channel = channel;
     }
 

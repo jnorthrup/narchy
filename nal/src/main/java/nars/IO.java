@@ -634,30 +634,25 @@ public class IO {
             p.append(closer);
         }
 
-        static void operationAppend(Compound argsProduct, Atomic operator, Appendable p) throws IOException {
+        static void operationAppend(Compound argsProduct, Atomic operator, Appendable w) throws IOException {
+
+            operator.appendTo(w);
+
+            w.append(Op.COMPOUND_TERM_OPENER);
 
 
-            Term[] xt = argsProduct.arrayShared();
+            argsProduct.forEachWith((t, n)->{
+                try {
+                    if (n != 0)
+                        w.append(Op.ARGUMENT_SEPARATOR);
 
-            p.append(operator.toString());
-
-            p.append(Op.COMPOUND_TERM_OPENER);
-
-            int n = 0;
-            for (Term t: xt) {
-                if (n != 0) {
-                    p.append(Op.ARGUMENT_SEPARATOR);
-                    /*if (pretty)
-                        p.append(' ');*/
+                    t.appendTo(w);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            });
 
-                t.appendTo(p);
-
-
-                n++;
-            }
-
-            p.append(Op.COMPOUND_TERM_CLOSER);
+            w.append(Op.COMPOUND_TERM_CLOSER);
 
         }
 

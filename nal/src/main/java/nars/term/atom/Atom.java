@@ -122,17 +122,9 @@ public class Atom extends AbstractAtomic implements The {
     }
 
     @Override
-    public final int structure() {
-        return ATOM.bit;
-    }
-
-
-    @Override
     public final int vars() {
         return 0;
     }
-
-
 
     @Override
     public final boolean hasVars() {

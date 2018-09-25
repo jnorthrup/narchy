@@ -57,4 +57,9 @@ public final class ImDep extends VarDep {
         return str;
     }
 
+    @Override
+    public final boolean hasAny(int structuralVector) {
+        return false;
+    }
+
 }

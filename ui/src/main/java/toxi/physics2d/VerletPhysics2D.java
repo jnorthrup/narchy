@@ -114,7 +114,7 @@ public class VerletPhysics2D {
         p.constrainAll(bounds);
 
         if (!index.index(p)) {
-            throw new WTF();
+            throw new WTF("could not index: " + p);
         }
 
         particles.add(p);

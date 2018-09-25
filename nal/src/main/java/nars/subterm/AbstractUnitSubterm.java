@@ -5,6 +5,7 @@ import jcog.Util;
 import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -41,6 +42,10 @@ abstract class AbstractUnitSubterm implements Subterms {
         return p.test(sub());
     }
 
+    @Override
+    public final void forEachWith(ObjectIntProcedure<Term> t) {
+        t.accept(sub(), 0);
+    }
 
     @Override
     public boolean equals(Object obj) {

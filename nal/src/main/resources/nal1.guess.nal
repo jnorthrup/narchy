@@ -1,3 +1,8 @@
+    (X --> Y), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Question)
+        //(X --> Y), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Quest)
+    (Y --> X), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Question)
+        //(Y --> X), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Quest)
+
 
     //(X --> Y), (Z --> W), subOf(Y,Z), task(".") |- (X --> W),   (Punctuation:Question)
 
@@ -8,12 +13,8 @@
 
     //(X --> Y), X, task("."), --is(X,"?") |- (?1 --> Y),   (Punctuation:Question)
         //(X --> Y), X, task("!"), --is(X,"?") |- (?1 --> Y),   (Punctuation:Quest)
-    (X --> Y), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Question)
-        (X --> Y), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Quest)
     //(Y --> X), X, task("."), --is(X,"?") |- (Y --> ?1),   (Punctuation:Question)
         //(Y --> X), X, task("!"), --is(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
-    (Y --> X), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Question)
-        (Y --> X), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
 //NAL1-------------
 //Conversion

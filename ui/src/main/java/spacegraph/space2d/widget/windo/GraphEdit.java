@@ -36,12 +36,12 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public GraphEdit(float w, float h) {
-
         this(RectFloat2D.X0Y0WH(0,0 , w, h));
     }
     public GraphEdit(RectFloat2D bounds) {
         this();
         pos(bounds);
+        physics.pos(bounds);
     }
 
     /**

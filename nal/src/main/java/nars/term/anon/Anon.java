@@ -1,27 +1,42 @@
 package nars.term.anon;
 
-import jcog.WTF;
+import jcog.data.list.FasterList;
 import nars.Op;
-import nars.Param;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.ByteAnonMap;
+import nars.term.util.TermBuilder;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.ImDep;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * term anonymization context, for canonicalization and generification of compounds
  * //return new DirectTermTransform() {
  * //return new TermTransform.NegObliviousTermTransform() {
  */
-public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTermTransform*/ {
+public class Anon extends TermTransform.NegObliviousTermTransform {
+
+    final static TermBuilder localBuilder = HeapTermBuilder.the;
+
+    final ByteAnonMap map;
+
+    @Override
+    public Term the(Op op, int dt, Term[] t) {
+        return putOrGet ? localBuilder.theCompound(op, dt, t) : super.the(op, dt, t);
+    }
+
+    @Override
+    public Term the(Op op, int dt, Subterms t) {
+        return putOrGet ? localBuilder.theCompound(op, dt, t) : super.the(op, dt, t);
+    }
 
     private boolean putOrGet = true;
 
@@ -30,11 +45,11 @@ public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTer
     }
 
     public Anon(int estSize) {
-        super(estSize);
+        this.map = new ByteAnonMap(estSize);
     }
 
     public int uniques() {
-        return idToTerm.size();
+        return map.size();
     }
 
     /**
@@ -42,12 +57,14 @@ public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTer
      */
     public boolean rollback(int toUniques) {
         if (toUniques == 0) {
-            clear();
+            map.clear();
             return true;
         }
 
         int max;
         if (toUniques < (max = uniques())) {
+            ObjectByteHashMap<Term> termToId = map.termToId;
+            FasterList<Term> idToTerm = map.idToTerm;
             for (int i = toUniques; i < max; i++)
                 termToId.removeKey(idToTerm.get(i));
             idToTerm.removeAbove(toUniques);
@@ -73,7 +90,7 @@ public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTer
                 return x; //HACK
             }
 
-            return Anom.the[intern(x)];
+            return Anom.the[map.intern(x)];
 
         } else {
             return putCompound((Compound) x);
@@ -86,41 +103,6 @@ public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTer
     }
 
 
-    private static final AtomicBoolean validateLock = new AtomicBoolean();
-
-    void validate(Term x, Term y, boolean putOrGet) {
-
-        if (Param.DEBUG) {
-            if (!validateLock.compareAndSet(false, true))
-                return;
-            try {
-
-//            if (termToId.isEmpty() || idToTerm.isEmpty())
-//                throw new WTF("termToId is empty: " + x + " -> " + y);
-
-                if (y.op() != x.op())
-                    throw new WTF("anon changed op: " + x + " -> " + y);
-                if (y.volume() != x.volume())
-                    throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
-
-
-//            if (putOrGet) {
-//                Term z = get(y);
-//                if (!z.equals(x)) {
-//                    /* temporary for debug: */ get(y);
-//                    throw new WTF("invalid put:\n\t" + x + "\n\t" + y + "\n\t" + z);
-//                }
-//            } else {
-//                Term z = put(y);
-//                if (!z.equals(x))
-//                    throw new WTF("invalid get:\n\t" + x + "\n\t" + y + "\n\t" + z);
-//
-//            }
-            } finally {
-                validateLock.set(false);
-            }
-        }
-    }
 
 
     public final Term get(Term x) {
@@ -128,7 +110,7 @@ public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTer
             return getCompound((Compound) x);
         } else {
             if (x instanceof Anom) {
-                return interned((byte) ((Anom) x).id);
+                return map.interned((byte) ((Anom) x).id);
             } else {
                 return x;
             }
@@ -149,6 +131,10 @@ public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTer
 
 //        validate(x, y, true);
         return y;
+    }
+
+    public void clear() {
+        map.clear();
     }
 
     public static class AnonWithVarShift extends Anon {
@@ -205,3 +191,38 @@ public class Anon extends ByteAnonMap implements TermTransform/*.NegObliviousTer
         }
     }
 }
+//    private static final AtomicBoolean validateLock = new AtomicBoolean();
+//
+//    void validate(Term x, Term y, boolean putOrGet) {
+//
+//        if (Param.DEBUG) {
+//            if (!validateLock.compareAndSet(false, true))
+//                return;
+//            try {
+//
+////            if (termToId.isEmpty() || idToTerm.isEmpty())
+////                throw new WTF("termToId is empty: " + x + " -> " + y);
+//
+//                if (y.op() != x.op())
+//                    throw new WTF("anon changed op: " + x + " -> " + y);
+//                if (y.volume() != x.volume())
+//                    throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
+//
+//
+////            if (putOrGet) {
+////                Term z = get(y);
+////                if (!z.equals(x)) {
+////                    /* temporary for debug: */ get(y);
+////                    throw new WTF("invalid put:\n\t" + x + "\n\t" + y + "\n\t" + z);
+////                }
+////            } else {
+////                Term z = put(y);
+////                if (!z.equals(x))
+////                    throw new WTF("invalid get:\n\t" + x + "\n\t" + y + "\n\t" + z);
+////
+////            }
+//            } finally {
+//                validateLock.set(false);
+//            }
+//        }
+//    }

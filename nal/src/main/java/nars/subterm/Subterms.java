@@ -18,6 +18,7 @@ import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
@@ -72,6 +73,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return ab;
         }
         return null;
+    }
+
+    default void forEachWith(ObjectIntProcedure<Term> t) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            t.accept(sub(i), i);
     }
 
     /**
@@ -589,8 +596,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     case 1:
                         return xx.get(0).unify(yy.get(0), u);
                     default: {
-                        if (!u.constant(xx) || (u.symmetric && !u.constant(yy))) {
-                            if (Terms.commonStructureTest(xx, yy, u)) {
+                        int xs = xx.structure();
+                        if (!u.constant(xs) || (u.symmetric && !u.constant(yy))) {
+                            if (Terms.commonStructureTest(xs, yy, u)) {
 
 
                                 u.termutes.add(new CommutivePermutations(xx, yy));

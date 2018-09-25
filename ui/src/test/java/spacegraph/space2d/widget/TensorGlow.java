@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget;
 
+import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
 import jcog.experiment.TrackXY;
 import jcog.learn.ql.HaiQae;
@@ -7,6 +8,8 @@ import jcog.math.FloatRange;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.TensorLERP;
+import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -17,7 +20,8 @@ import spacegraph.space2d.widget.port.PortVector;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.Wall;
+import spacegraph.space2d.widget.windo.GraphEdit;
+import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
 import java.util.Random;
@@ -31,7 +35,7 @@ public class TensorGlow {
 
     public static void main(String[] args) {
 
-      Wall p = WallTest.newWallWindow();
+        GraphEdit p = WallTest.newWallWindow();
 
 //        p.W.setGravity(new v2(0, -2.8f));
 //        staticBox(p.W, -5, -8, +5, 2f, false, true, true, true);
@@ -51,8 +55,6 @@ public class TensorGlow {
 //            f.material = new Uniform();
 //            f.material.m_rigidity = 1.0f;
 //        }
-
-
 
 
 //        {
@@ -92,20 +94,44 @@ public class TensorGlow {
 //            p.W.addParticles(pd);
 //        }
 
-        HaiQae q = new HaiQae(8, 2);
+        HaiQae q = new HaiQae(8, 4);
         float[] in = new float[q.ae.inputs()];
 
         final Tensor randomVector = Tensor.randomVectorGauss(in.length, 0, 1, rng);
         final FloatRange lerpRate = new FloatRange(0.01f, 0, 1f);
         final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
-        TrackXY track = new TrackXY(4,4) ;
-        BitmapMatrixView trackView = new BitmapMatrixView(track.W, track.H, (x, y) -> Draw.rgbInt(track.grid.brightness(x, y), 0, 0));
-        Loop.of(()->{
-            track.act();
-            trackView.update();
-        }).setFPS(10f);
-        p.add(new Bordering(trackView)).pos(500, 500, 600, 600);
+        {
+            TrackXY track = new TrackXY(4, 4);
+            BitmapMatrixView trackView = new BitmapMatrixView(track.W, track.H, (x, y) -> Draw.rgbInt(track.grid.brightness(x, y), 0, 0)) {
+                @Override
+                protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                    super.paint(gl, surfaceRender);
+
+                    RectFloat2D at = cellRect(track.cx, track.cy, 0.5f, 0.5f);
+                    gl.glColor4f(0, 0, 1, 0.9f);
+                    Draw.rect(at.move(x(), y(), 0.01f), gl);
+                }
+            };
+            Loop.of(() -> {
+                track.act();
+                trackView.update();
+            }).setFPS(10f);
+
+            Port state = new Port() {
+
+            };
+            Port reward = new Port() {
+
+            };
+            Windo trackWin = p.add(new Bordering(trackView).set(Bordering.S, state, 0.05f).set(Bordering.E, reward, 0.05f));
+            trackWin.pos(500, 500, 600, 600);
+
+            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(-1, 0); }), 0.25f);
+            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(0, -1); }), 0.25f);
+            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(+1, 0); }), 0.25f);
+            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(0, +1); }), 0.25f);
+        }
 
         p.add(new Gridding(0.25f,
                         new AutoUpdateMatrixView(

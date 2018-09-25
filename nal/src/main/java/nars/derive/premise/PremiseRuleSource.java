@@ -136,9 +136,10 @@ public class PremiseRuleSource extends ProxyTerm  {
                 throw new RuntimeException("invalid precondition: " + p);
 
             String predicateNameStr = name.toString();
-            Term[] args = Functor.funcArgsArray(p);
-            Term X = args.length > 0 ? args[0] : null;
-            Term Y = args.length > 1 ? args[1] : null;
+            Subterms args = Operator.args(p);
+            int an = args.subs();
+            Term X = an > 0 ? args.sub(0) : null;
+            Term Y = an > 1 ? args.sub(1) : null;
 
 
 

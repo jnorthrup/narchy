@@ -78,6 +78,11 @@ public class TrackXY  {
         return (-2 * distance / maxDist) + 1;
     }
 
+    public void control(float dcx, float dcy) {
+        cx = Util.clamp(cx + dcx, 0, W-1);
+        cy = Util.clamp(cy + dcy, 0, H-1);
+    }
+
 
     public enum TrackXYMode implements Consumer<TrackXY> {
 
