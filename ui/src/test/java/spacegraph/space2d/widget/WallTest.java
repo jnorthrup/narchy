@@ -44,7 +44,9 @@ public class WallTest {
     static GraphEdit newWallWindow() {
         GraphEdit w = new GraphEdit(RectFloat2D.X0Y0WH(0,0,1000, 900));
         SpaceGraph.window(
-                new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()), 1000, 900);
+                //new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()),
+                w,
+                1000, 900);
         return w;
     }
 
@@ -53,6 +55,7 @@ public class WallTest {
         public static void main(String[] args) {
 
             Wall w = newWallWindow();
+
 
             w.add(new PushButton("X")).pos(RectFloat2D.XYXY(10, 10, 200, 200));
             w.add(new PushButton("Y")).pos(RectFloat2D.XYXY(50, 10, 200, 200));

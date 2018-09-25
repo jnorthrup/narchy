@@ -177,8 +177,11 @@ public class MutableListContainer extends AbstractMutableContainer {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        children.forEach((z) -> {
-            if (z != null) o.accept(z);
+        children.forEach((c) -> {
+            if (c != null) {
+                SurfaceBase cp = c.parent; assert (cp == null || cp == MutableListContainer.this) : c + " has parent " + cp + " when trying to add to " + MutableListContainer.this;
+                o.accept(c);
+            }
         });
     }
 

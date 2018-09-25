@@ -144,16 +144,6 @@ public class ZoomOrtho extends Ortho {
         super.mouseExited(e);
     }
 
-    @Override
-    public void mouseWheelMoved(MouseEvent e) {
-        if (e.isConsumed())
-            return;
-
-        super.mouseWheelMoved(e);
-
-
-    }
-
 
     public class HUD extends Windo {
 

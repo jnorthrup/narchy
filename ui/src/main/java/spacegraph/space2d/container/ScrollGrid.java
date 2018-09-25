@@ -497,12 +497,6 @@ public class ScrollGrid<X> extends Bordering {
         }
 
 
-
-        @Override
-        public boolean tangible() {
-            return true;
-        }
-
         public final void set(short x, short y, @Nullable X v) {
             set(x, y, v, false);
         }

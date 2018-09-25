@@ -7,8 +7,9 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.math.v2;
+import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -55,7 +56,7 @@ public class Finger {
     /**
      * widget above which this finger currently hovers
      */
-    public final AtomicReference<Widget> touching = new AtomicReference<>();
+    public final AtomicReference<Surface> touching = new AtomicReference<>();
     private boolean focused = false;
 
 
@@ -107,7 +108,7 @@ public class Finger {
     }
 
     public Surface touching() {
-        return touching.get();
+        return touching.getOpaque();
     }
 
     private static v2 relative(v2 x, Surface c) {
@@ -130,22 +131,6 @@ public class Finger {
      */
     public void enter() {
         focused = true;
-    }
-
-    /**
-     * synch update: should be called periodically during update loop
-     * for handling that involves the real timing of events
-     */
-    public void update() {
-
-
-        Widget t = this.touching.get();
-        if (t != null) {
-            t.onFinger(this);
-        }
-
-
-
     }
 
     /** commit all buttons */
@@ -209,7 +194,7 @@ public class Finger {
             r.getAndZero();
 
 
-        on(touchedNext instanceof Widget ? (Widget) touchedNext : null);
+        @Nullable Surface touchPrev = touch(touchedNext);
 
         if (ff != Fingering.Null) {
 
@@ -223,34 +208,31 @@ public class Finger {
         return touchedNext;
     }
 
+    private Surface touch(Surface next) {
+        Surface prev = touching.getAndSet(next);
+        if (prev!=next) {
+            if (prev!=null)
+                prev.fingerTouch(this, false);
+
+            if (next!=null)
+                next.fingerTouch(this, true);
+        }
+        return prev;
+    }
+
     private boolean dragging(int button) {
         v2 g = pressPosPixel[button];
         return (g.distanceSq(posPixel) > DRAG_THRESHOLD_PIXELS * DRAG_THRESHOLD_PIXELS);
     }
 
-    private void on(@Nullable Widget touchNext) {
 
-        @Nullable Widget touchPrev = touching.getAndSet(touchNext);
-
-        if (touchPrev == touchNext)
-            return;
-
-        if (touchPrev != null) {
-            touchPrev.onFinger(null);
-        }
-
-        if (touchNext != null) {
-            touchNext.onFinger(this);
-        }
-    }
 
     /**
      * allows a fingered object to push the finger off it
      */
-    public boolean off(Object fingered) {
-        Widget t = this.touching.get();
-        if (t != null && t == fingered) {
-            on(null);
+    public boolean off(Surface fingered) {
+        if (touching.compareAndSet(fingered, null)) {
+            fingered.fingerTouch(this, false);
             return true;
         }
         return false;
@@ -342,9 +324,9 @@ public class Finger {
         return false;
     }
 
-    public boolean isFingering() {
-        return fingering.get() != Fingering.Null;
-    }
+//    public boolean isFingering() {
+//        return fingering.get() != Fingering.Null;
+//    }
 
     public v2 relativePos(Surface c) {
         return relative(pos, c);
@@ -391,8 +373,12 @@ public class Finger {
     /**
      * visual overlay representation of the Finger; ie. cursor
      */
-    public Surface layer() {
+    public Surface cursorSurface() {
         return new FingerRendererSurface();
+    }
+
+    public Surface zoomBoundsSurface(Ortho.Camera cam) {
+        return new FingerZoomBoundsSurface(cam);
     }
 
 
@@ -411,6 +397,46 @@ public class Finger {
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             if (focused)
                 renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
+        }
+    }
+    private final class FingerZoomBoundsSurface extends Surface {
+
+        private final Ortho.Camera cam;
+
+        {
+            clipBounds = false;
+        }
+
+        public FingerZoomBoundsSurface(Ortho.Camera cam) {
+            this.cam = cam;
+        }
+
+        @Override
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+            if (focused) {
+                //renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
+                Surface t = touching();
+
+                if (t!=null && t.showing()) {
+
+                    float alpha = 0.75f;
+
+                    float sw = surfaceRender.pw, sh = surfaceRender.ph;
+                    v2 p = cam.worldToScreen(sw, sh, t.x(), t.y());
+                    v2 q = cam.worldToScreen(sw, sh,t.x()+t.w(), t.y() + t.h());
+
+                    //System.out.println(t.bounds +" -> " + p + ", " + q);
+
+                    float thick = 6;
+
+                    float px = p.x - thick;
+                    float py = p.y - thick;
+
+                    gl.glLineWidth(thick);
+                    Draw.colorHash(gl, t.getClass().hashCode(), alpha);
+                    Draw.rectStroke(gl, px, py, q.x+thick-px, q.y+thick-py);
+                }
+            }
         }
     }
 

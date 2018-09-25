@@ -143,7 +143,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             } else {
 
                 if (this.finger != null) {
-                    this.finger.off(this);
+                    this.finger.off(front);
                     this.finger = null;
                 }
             }

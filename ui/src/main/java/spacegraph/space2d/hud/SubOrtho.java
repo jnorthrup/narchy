@@ -27,11 +27,6 @@ public class SubOrtho extends Ortho {
 //        return true;
 //    }
 
-    @Override
-    protected boolean tangible() {
-        return false;
-    }
-
     /** position and size relative to the containing window (1=width, 1=height)*/
     public Ortho posWindow(float x, float y, float w, float h) {
         this.boundsWin = RectFloat2D.XYWH(x, y, w, h);

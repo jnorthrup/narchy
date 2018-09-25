@@ -33,7 +33,7 @@ public class AnimVector3f extends v3 implements Animated {
         LERP {
             @Override
             public void interp(float dt, AnimVector3f v) {
-                float rate = 0.5f; 
+                float rate = 10f * dt;
                 v3 w = v.target;
                 if (rate >= 1) {
                     v.setDirect(w);

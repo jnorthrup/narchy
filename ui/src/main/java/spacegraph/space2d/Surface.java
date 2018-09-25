@@ -299,4 +299,9 @@ abstract public class Surface implements SurfaceBase {
         }
         return false;
     }
+
+    /** may implement state-changing behavior */
+    public void fingerTouch(Finger finger, boolean touching) {
+
+    }
 }

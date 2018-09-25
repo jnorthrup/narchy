@@ -167,14 +167,11 @@ abstract public class Container extends Surface {
             }
         }
 
-        return tangible() ? this : null;
+        return null;
     }
 
     protected abstract int childrenCount();
 
-    protected boolean tangible() {
-        return false;
-    }
 
     @Override
     public boolean key(KeyEvent e, boolean pressed) {

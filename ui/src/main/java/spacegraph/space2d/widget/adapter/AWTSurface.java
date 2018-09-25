@@ -5,6 +5,7 @@ import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.Keyboard;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.AWTCamera;
@@ -198,10 +199,19 @@ public class AWTSurface extends Widget {
         return false;
     }
 
-
     @Override
-    public void onFinger(@Nullable Finger finger) {
-        boolean wasTouching = isTouched();
+    public Surface finger(Finger finger) {
+        Surface s = super.finger(finger);
+        if (s == this) {
+            awtFinger(finger);
+        }
+        return s;
+    }
+
+
+    /** TODO re-test */
+    public void awtFinger(Finger finger) {
+        boolean wasTouching = false; //isTouched();
 
 
         long now = System.currentTimeMillis();

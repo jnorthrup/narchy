@@ -14,7 +14,6 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 import spacegraph.util.math.v2;
@@ -74,7 +73,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             if (focused())
                 finger();
         };
-        addOverlay(this.finger.layer());
+
+        addOverlay(this.finger.cursorSurface());
+        addOverlay(this.finger.zoomBoundsSurface(cam));
 
         setSurface(content);
     }
@@ -303,7 +304,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     private void zoom(float x, float y, float sx, float sy, float margin) {
-        zoom(x, y, targetDepth(Math.max(sx, sy) /*(Math.sqrt(sx*sx + sy*sy)*/ * (1 + margin)));
+        zoom(x, y, targetDepth( /*Math.max(sx, sy)*/ (float) (Math.sqrt(sx*sx + sy*sy) * (1 + margin))));
     }
 
     public final void zoom(v3 v) {
@@ -390,7 +391,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         if (e.isConsumed())
             return;
 
-        Widget t = finger.touching.get();
+        Surface t = finger.touching();
         if (t != null) {
             if (!t.key(e, pressOrRelease))
                 e.setConsumed(true);
@@ -425,7 +426,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
 
         if (update(false, e, e.getButtonsDown())) {
-            if (finger.touching.get() != null)
+            if (finger.touching() != null)
                 e.setConsumed(true);
         }
     }
@@ -442,7 +443,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         update(false, e, bd);
 
-        if (finger.touching.get() != null)
+        if (finger.touching() != null)
             e.setConsumed(true);
 
     }
@@ -453,7 +454,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
 
         if (update(true, e))
-            if (finger.touching.get() != null)
+            if (finger.touching() != null)
                 e.setConsumed(true);
     }
 
@@ -510,8 +511,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         Surface r = finger.on(surface);
 
-        finger.update();
-
         return r;
 
     }
@@ -561,6 +560,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void mouseWheelMoved(MouseEvent e) {
+        if (e.isConsumed())
+            return;
+
+
         finger.rotationAdd(e.getRotation());
     }
 
@@ -600,7 +603,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
 
 
-    protected class Camera extends AnimVector3f {
+    public class Camera extends AnimVector3f {
 
         float CAM_RATE = 2f;
 
@@ -647,7 +650,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
                 float dy = finger.rotationY(false);
                 if (dy != 0) {
-                    cam.set(cam.x, cam.y, cam.z * (1f + (dy * zoomRate)));
+                    float zx = finger.pos.x;
+                    float zy = finger.pos.y;
+                    cam.set(zx, zy, cam.z * (1f + (dy * zoomRate)));
                 }
             }
 
@@ -681,6 +686,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             v3 t = new v3(target);
             t.add(-x,-y,-z);
             return t.lengthSquared();
+        }
+
+        public v2 worldToScreen(float sw, float sh, float wx, float wy) {
+            return new v2(
+                    ((wx - cam.x) * scale.x) + sw/2,
+                    ((wy - cam.y) * scale.y) + sh/2
+            );
         }
     }
 }

@@ -10,7 +10,7 @@ public class SurfaceRender {
 
 
     /** viewable pixel resolution */
-    private final float pw, ph;
+    public final float pw, ph;
 
     /** ms since last update */
     public final int dtMS;

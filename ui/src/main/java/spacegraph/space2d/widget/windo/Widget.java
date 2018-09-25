@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -27,12 +26,6 @@ public class Widget extends MutableUnitContainer<Surface> {
      */
     protected float dz = 0;
 
-    /**
-     * if non-null, a finger which is currently hovering on this
-     */
-    @Nullable
-    private Finger touchedBy;
-
 
     /**
      * indicates current level of activity of this component, which can be raised by various
@@ -42,6 +35,8 @@ public class Widget extends MutableUnitContainer<Surface> {
      * negative: disabled, hidden, irrelevant
      */
     private float temperature = 0;
+
+    private transient Finger touchedBy = null;
 
     public Widget() {
         this(new EmptySurface());
@@ -56,20 +51,20 @@ public class Widget extends MutableUnitContainer<Surface> {
     public boolean prePaint(SurfaceRender r) {
         if (super.prePaint(r)) {
 
-            int dtMS = r.dtMS;
-
-            if (dtMS > 0) {
-                if (touchedBy != null) {
-                    temperature = Math.min(1f, temperature + dtMS / 100f);
-                }
-
-                if (temperature != 0) {
-                    float decayRate = (float) Math.exp(-dtMS / 1000f);
-                    temperature *= decayRate;
-                    if (Math.abs(temperature) < 0.01f)
-                        temperature = 0f;
-                }
-            }
+//            int dtMS = r.dtMS;
+//
+//            if (dtMS > 0) {
+//                if (touchedBy != null) {
+//                    temperature = Math.min(1f, temperature + dtMS / 100f);
+//                }
+//
+//                if (temperature != 0) {
+//                    float decayRate = (float) Math.exp(-dtMS / 1000f);
+//                    temperature *= decayRate;
+//                    if (Math.abs(temperature) < 0.01f)
+//                        temperature = 0f;
+//                }
+//            }
             return true;
         }
         return false;
@@ -79,7 +74,7 @@ public class Widget extends MutableUnitContainer<Surface> {
     @Override
     protected void paintBelow(GL2 gl, SurfaceRender rr) {
 
-        if (Widget.this.tangible()) {
+        /*if (Widget.this.tangible())*/ {
             float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
             float bri = 0.25f * dim;
             float r, g, b;
@@ -112,17 +107,14 @@ public class Widget extends MutableUnitContainer<Surface> {
 
     @Override
     protected void paintAbove(GL2 gl, SurfaceRender r) {
-        if (touchedBy != null) {
-            Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
-
-            gl.glLineWidth(6 + dz * 6);
-            Draw.rectStroke(gl, x(), y(), w(), h());
-        }
+//        if (touchedBy != null) {
+//            Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
+//
+//            gl.glLineWidth(6 + dz * 6);
+//            Draw.rectStroke(gl, x(), y(), w(), h());
+//        }
     }
 
-    protected boolean isTouched() {
-        return touchedBy != null;
-    }
 
     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
 
@@ -130,19 +122,9 @@ public class Widget extends MutableUnitContainer<Surface> {
 
 
     @Override
-    public boolean tangible() {
-        return true;
-    }
-
-    public void onFinger(@Nullable Finger finger) {
-
-        touchedBy = finger;
-        if (finger != null) {
-
-//            if (finger.clickedNow(1, this)) {
-//
-//
-//            }
+    public Surface finger(Finger finger) {
+        Surface s = super.finger(finger);
+        if (s == null) {
             if (finger.clickedNow(2 /*right button*/, this)) {
 
 
@@ -157,10 +139,10 @@ public class Widget extends MutableUnitContainer<Surface> {
                 }
 
             }
-
+            return this;
         }
+        return s;
     }
-
 
     @Override
     protected RectFloat2D innerBounds() {
@@ -174,4 +156,14 @@ public class Widget extends MutableUnitContainer<Surface> {
         b *= 2;
         return r.size(r.w - b, r.h - b);
     }
+
+    @Override
+    public void fingerTouch(Finger finger, boolean touching) {
+        if (touching) {
+            touchedBy = finger;
+        } else {
+            touchedBy = null;
+        }
+    }
+
 }

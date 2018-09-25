@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.button;
 
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Widget;
@@ -24,11 +23,17 @@ public abstract class AbstractButton extends Widget {
         super(content);
     }
 
+
     @Override
-    public void onFinger(@Nullable Finger finger) {
-        super.onFinger(finger);
-        pressable.test(finger);
+    public Surface finger(Finger finger) {
+        Surface f = super.finger(finger);
+        if (f == this) {
+            if (pressable.test(finger))
+                return this;
+        }
+        return f;
     }
+
 
     protected abstract void onClick(Finger f);
 

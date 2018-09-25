@@ -9,6 +9,7 @@ import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.shape.VerletSurface;
 import spacegraph.space2d.widget.meta.MetaFrame;
@@ -79,7 +80,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public Windo add(Surface x) {
-        return add(x, (xx) -> new Windo(new MetaFrame(xx)) {
+        return add(x, (xx) -> new Windo(new Scale(new MetaFrame(xx),0.98f)) {
             @Override
             protected void stopping() {
                 //remove any associated links, recursively
@@ -429,7 +430,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
             VerletParticle2D mid = points.get(points.size() / 2);
 
             gripWindow = add(grip, (g) -> {
-                return new Windo(new MetaFrame(g)) {
+                return new Windo(new MetaFrame(g) {
                     @Override
                     protected void stopping() {
 
@@ -443,7 +444,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
                         super.stopping();
                     }
-                };
+                });
             }).pos(RectFloat2D.XYWH(mid.x, mid.y, 20, 20));
 
             physics.bind(gripWindow, mid, false, VerletSurface.VerletSurfaceBinding.Center);
