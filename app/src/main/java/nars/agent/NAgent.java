@@ -26,7 +26,6 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.truth.Stamp;
-import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -236,8 +235,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
     public Random random() {
-        TimeAware timeAware = this.nar;
-        return timeAware != null ? timeAware.random() : ThreadLocalRandom.current();
+        NAR n = this.nar;
+        return n != null ? n.random() : ThreadLocalRandom.current();
     }
 
     public String summary() {
