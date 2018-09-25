@@ -1,13 +1,9 @@
 package spacegraph.space2d.widget;
 
+import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.exe.Loop;
-import jcog.learn.ql.HaiQae;
-import jcog.math.FloatRange;
-import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
-import jcog.signal.tensor.TensorLERP;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -20,22 +16,20 @@ import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.speech.TinySpeech;
 import spacegraph.audio.synth.string.GuitarHero;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.slider.FloatSlider;
-import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.*;
+import spacegraph.video.Draw;
 
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.Boolean.TRUE;
 import static spacegraph.space2d.container.Gridding.HORIZONTAL;
 import static spacegraph.space2d.container.Gridding.VERTICAL;
 
@@ -105,10 +99,10 @@ public class WallTest {
             )), new LabeledPane("->", new Port()));
             s.add(mux).pos(RectFloat2D.Unit.transform(250, 0, 250));
 
-            Port A = new FloatPort(0.5f, 0, 1);
+            Port A = new FloatRangePort(0.5f, 0, 1);
             s.add(A).pos(RectFloat2D.Unit.transform(250, 250, 250));
 
-            Port B = new FloatPort(0.5f, 0, 1);
+            Port B = new FloatRangePort(0.5f, 0, 1);
             s.add(B).pos(RectFloat2D.Unit.transform(250, 500, 250));
 
             Port Y = LabeledPort.generic();
@@ -323,12 +317,96 @@ public class WallTest {
                 protected void starting() {
                     super.starting();
 
-                    FloatPort f = new FloatPort(0.5f, 0, 1);
-                    Windo x = add(f);
+                    FloatRangePort f = new FloatRangePort(50f, 1, 100);
+                    Windo x = add(new LabeledPane("ms", f));
                     x.pos(100, 100, 400, 400);
                     Windo xPlus = sprout(x, new PushButton("+").click(()->f.f.add(0.1f)), 0.15f);
                     Windo xMinus = sprout(x, new PushButton("-").click(()->f.f.subtract(0.1f)), 0.15f);
 
+                    Port periodMS = new Port();
+                    //TODO phase
+                    Port pulse = new Port();
+                    Gridding tick = new Gridding(
+                        new LabeledPane("period(MS)", periodMS),
+                        new LabeledPane("trigger", pulse)
+                    ) {
+                        float p = Float.NaN;
+                        Loop loop = null;
+                        AtomicBoolean busy = new AtomicBoolean();
+
+                        protected void tick() {
+                            if (busy.compareAndSet(false, true)) {
+                                try {
+                                    pulse.out(TRUE);
+                                } finally {
+                                    busy.set(false);
+                                }
+                            }
+                        }
+
+                        @Override
+                        protected void stopping() {
+                            super.stopping();
+                            if (loop!=null) {
+                                loop.stop();
+                                loop = null;
+                            }
+                        }
+
+                        {
+                            periodMS.on(x ->{
+                                synchronized (this) {
+
+                                    if (x instanceof Number) {
+                                        p = ((Number) x).floatValue();
+                                    } else {
+                                        p = Float.NaN;
+                                    }
+
+                                    if (p > 0.5f) {
+                                        if (loop == null)
+                                            loop = Loop.of(this::tick);
+                                        loop.setPeriodMS(Math.round(p));
+                                    }
+
+                                    if ((p!=p || p < 0.5f)) {
+                                        if (loop != null)
+                                            loop.stop();
+                                    }
+
+                                }
+                            });
+                        }
+                    };
+                    add(tick).pos(0, 0, 200, 200);
+
+                    {
+
+                        AtomicBoolean state = new AtomicBoolean(false);
+                        Port out = LabeledPort.generic();
+                        Port in = new Port((z)->{
+                            if (z == TRUE) {
+                                out.out(state.getAndSet(!state.getOpaque())); //TODO really make atomic
+                            }
+                        });
+
+                        Gridding inverter = new Gridding(new LabeledPane("trigger", in), new LabeledPane("state", out)) {
+                            @Override
+                            protected void paintBelow(GL2 gl, SurfaceRender r) {
+
+                                if (state.getOpaque()) {
+                                    gl.glColor4f(0, 0.5f, 0, 0.5f);
+                                } else {
+                                    gl.glColor4f(0.5f, 0f, 0, 0.5f);
+                                }
+
+                                Draw.rect( bounds, gl);
+                            }
+                        };
+                        add(inverter).pos(70, 70, 140, 140);
+                    }
+
+                    //add(LabeledPort.generic()).pos(10, 10, 50, 50);
                 }
             };
             SpaceGraph.window(g, 1000, 1000);

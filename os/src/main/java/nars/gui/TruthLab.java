@@ -127,7 +127,7 @@ public class TruthLab extends Gridding {
                 float y = (1f - sh) / 2f;
 
                 gl.glColor4f(1 - f, f, 0, c);
-                Draw.rect(gl, x, y, sw, sh);
+                Draw.rect(x, y, sw, sh, gl);
                 gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
                 Draw.rectStroke(gl, x, y, sw, sh);
             }

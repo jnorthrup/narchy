@@ -60,7 +60,7 @@ public class HistogramChart extends Surface {
 
             gl.glColor3f(Util.lerp(v, ra, rb), Util.lerp(v, ga, gb), Util.lerp(v, ba, bb));
 
-            Draw.rect(gl, x, 0, dx, v);
+            Draw.rect(x, 0, dx, v, gl);
 
             x += dx;
         }

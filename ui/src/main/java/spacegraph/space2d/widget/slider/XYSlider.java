@@ -118,19 +118,15 @@ public class XYSlider extends Surface {
         float kw = bounds.x+(px* bw);
         float kh = bounds.y+(py* bh);
         float KTH = KT / 2;
-        Draw.rectAlphaCorners(gl,
-                bounds.x, kh - KTH,
-                kw - KTH, kh + KTH, knobColor, lefAlphaCorners);
-        Draw.rectAlphaCorners(gl,
-                kw + KTH, kh - KTH,
-                bounds.x + bw, kh + KTH, knobColor, rihAlphaCorners);
+        Draw.rectAlphaCorners(bounds.x, kh - KTH, kw - KTH, kh + KTH, knobColor, lefAlphaCorners, gl
+        );
+        Draw.rectAlphaCorners(kw + KTH, kh - KTH, bounds.x + bw, kh + KTH, knobColor, rihAlphaCorners, gl
+        );
 
-        Draw.rectAlphaCorners(gl,
-                kw - KTH, bounds.y,
-                kw + KTH, kh- KTH, knobColor, botAlphaCorners);
-        Draw.rectAlphaCorners(gl,
-                kw - KTH, kh + KTH,
-                kw + KTH, bounds.y + bh, knobColor, topAlphaCorners);
+        Draw.rectAlphaCorners(kw - KTH, bounds.y, kw + KTH, kh- KTH, knobColor, botAlphaCorners, gl
+        );
+        Draw.rectAlphaCorners(kw - KTH, kh + KTH, kw + KTH, bounds.y + bh, knobColor, topAlphaCorners, gl
+        );
 
         
 

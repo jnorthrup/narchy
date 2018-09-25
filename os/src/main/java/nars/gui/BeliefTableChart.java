@@ -166,9 +166,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
 
                 float y = freq - ph / 2;
-                Draw.rect(gl,
-                        start, y,
-                        Math.max(taskWidthMin,end-start), ph);
+                Draw.rect(start, y, Math.max(taskWidthMin,end-start), ph, gl
+                );
 
 
             });

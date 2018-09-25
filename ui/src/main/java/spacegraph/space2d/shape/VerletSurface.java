@@ -103,7 +103,7 @@ public class VerletSurface extends Surface implements Animated {
 
             @Override
             public Vec2D targetSurface(VerletParticle2D p, Surface ss) {
-                return new Vec2D(p.x, p.y );
+                return new Vec2D(p.x, p.y);
             }
         },
         NearestSurfaceEdge {
@@ -150,10 +150,11 @@ public class VerletSurface extends Surface implements Animated {
     }
 
 
-    public VerletParticle2D addParticleBind(Surface a, VerletSurfaceBinding b) {
-        return addParticleBind(a, b, true);
+    public VerletParticle2D bind(Surface a, VerletSurfaceBinding b) {
+        return bind(a, b, true);
     }
-    public VerletParticle2D addParticleBind(Surface a, VerletSurfaceBinding b, boolean surfaceOverrides) {
+
+    public VerletParticle2D bind(Surface a, VerletSurfaceBinding b, boolean surfaceOverrides) {
         VerletParticle2D ap = new VerletParticle2D(a.cx(), a.cy());
         ap.constrainAll(physics.bounds);
         bind(a, ap, surfaceOverrides, b);
@@ -174,28 +175,31 @@ public class VerletSurface extends Surface implements Animated {
         WeakReference<Surface> wrs = new WeakReference<>(s);
 
 
+        v.addBehavior((vv) -> {
+            Surface ss = wrs.get();
+            if (ss == null || ss.parent == null) {
+                vv.delete();
+                return;
+            }
 
-            v.addBehavior((vv) -> {
-                Surface ss = wrs.get();
-
-                Vec2D pNext = b.targetVerlet(vv, ss);
-                if (pNext != null) {
-                    //p.next.set(pNext);
-                    //System.out.println(vv.id + " " + vv.x + "," + vv.y);
+            Vec2D pNext = b.targetVerlet(vv, ss);
+            if (pNext != null) {
+                //p.next.set(pNext);
+                //System.out.println(vv.id + " " + vv.x + "," + vv.y);
 
 
-                    //gradual
+                //gradual
 //                    float force = 5.5f;
 //                    vv.addForce(pNext.sub(vv).normalize().scaleSelf(force));
 
-                    //immediate
-                    vv.next.set(pNext);
+                //immediate
+                vv.next.set(pNext);
 
 //                    vv.set(pNext);
 //                    vv.prev.set(pNext);
-                    //vv.next.set(pNext);
-                }
-            });
+                //vv.next.set(pNext);
+            }
+        });
 
 
         v.set(b.targetVerlet(v, s));
@@ -206,9 +210,9 @@ public class VerletSurface extends Surface implements Animated {
 
         if (!surfaceOverrides) {
 
-        //pre
-        v.addConstraint(vv -> {
-            Surface ss = wrs.get();
+            //pre
+            v.addConstraint(vv -> {
+                Surface ss = wrs.get();
 //                vv.next.set(b.targetVerlet(vv, ss));
 //                vv.constrainAll(physics.bounds);
 
@@ -291,7 +295,7 @@ public class VerletSurface extends Surface implements Animated {
         for (VerletParticle2D p : physics.particles) {
             float t = 2 * p.mass();
             Draw.colorGrays(gl, 0.3f + 0.7f * Util.tanhFast(p.getSpeed()), 0.7f);
-            Draw.rect(gl, p.x - t / 2, p.y - t / 2, t, t);
+            Draw.rect(p.x - t / 2, p.y - t / 2, t, t, gl);
         }
 
         gl.glColor3f(0, 0.5f, 0);

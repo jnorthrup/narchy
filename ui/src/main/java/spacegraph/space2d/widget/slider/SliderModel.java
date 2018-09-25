@@ -154,11 +154,11 @@ public class SliderModel extends Surface {
 
             
             gl.glColor4f(0f, 0f, 0f, 0.5f);
-            Draw.rect(gl, barSize, 0, W-barSize, H);
+            Draw.rect(barSize, 0, W-barSize, H, gl);
 
             
             gl.glColor4f(0.75f * 1f - p, 0.75f * p, 0f, 0.8f);
-            Draw.rect(gl, 0, 0, barSize, H);
+            Draw.rect(0, 0, barSize, H, gl);
         }
 
         @Override
@@ -177,10 +177,10 @@ public class SliderModel extends Surface {
             float x = W * p;
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
-            Draw.rect(gl, 0, 0, W, H);
+            Draw.rect(0, 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(gl, x-knobWidth/2f, 0, knobWidth, H);
+            Draw.rect(x-knobWidth/2f, 0, knobWidth, H, gl);
         }
 
         @Override
@@ -198,10 +198,10 @@ public class SliderModel extends Surface {
             float y = H * (1-p);
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
-            Draw.rect(gl, 0, 0, W, H);
+            Draw.rect(0, 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(gl, 0, y-knobWidth/2f, W, knobWidth);
+            Draw.rect(0, y-knobWidth/2f, W, knobWidth, gl);
         }
 
         @Override

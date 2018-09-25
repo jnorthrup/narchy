@@ -172,7 +172,7 @@ public class TsneTest {
                         y *= scale;
 
                         Draw.colorHash(gl, i, 0.75f);
-                        Draw.rect(gl, x, y, w, h);
+                        Draw.rect(x, y, w, h, gl);
                     }
                 }
             };

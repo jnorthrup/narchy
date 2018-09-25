@@ -196,7 +196,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             gl.glColor4f(1f, 1f, 1f, 0.5f);
             gl.glRotated(Math.random() * 360.0, Math.random() - 0.5f, Math.random() - 0.5f, Math.random() - 0.5f);
             
-            Draw.rect(gl, -0.5f, -0.5f, 1, 1);
+            Draw.rect(-0.5f, -0.5f, 1, 1, gl);
             
             gl.glPopMatrix();
         }

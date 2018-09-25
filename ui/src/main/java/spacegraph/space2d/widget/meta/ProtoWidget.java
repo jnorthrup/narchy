@@ -21,7 +21,7 @@ import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.windo.FloatPort;
+import spacegraph.space2d.widget.windo.FloatRangePort;
 import spacegraph.space2d.widget.windo.LabeledPort;
 import spacegraph.space2d.widget.windo.Port;
 import spacegraph.space2d.widget.windo.Widget;
@@ -71,8 +71,8 @@ public class ProtoWidget extends Widget {
             }
         }, "Hardware");
 
-        add("x[0..1]", ()->new FloatPort(0.5f, 0, 1f), "Signal");
-        add("Rng", ()->new FloatPort(0.5f, 0, 1f), "Signal");
+        add("x[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
+        add("Rng", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
         add("Wave", TODO, "Signal");
 
         add("Split", TODO, "Signal");
@@ -167,8 +167,14 @@ public class ProtoWidget extends Widget {
             this.plot = new Plot2D(256, Plot2D.Line);
             plot.add("x", ()->nextValue);
 
-            this.in = new Port().on((Float x)->{
-                nextValue = x;
+            this.in = new Port().on((Object x)->{
+                if (x instanceof Number) {
+                    nextValue = ((Number)x).floatValue();
+                } else if (x instanceof Boolean) {
+                    nextValue = ((Boolean)x) ? 1 : 0;
+                } else {
+                    return;
+                }
                 plot.update();
             });
 
@@ -243,7 +249,7 @@ public class ProtoWidget extends Widget {
 
 
                             Draw.colorHash(gl, c.id, a);
-                            Draw.rect(gl, x-cw/2, y-ch/2, cw, ch);
+                            Draw.rect(x-cw/2, y-ch/2, cw, ch, gl);
                         }
                     }
                 }

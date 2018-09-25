@@ -503,14 +503,14 @@ public enum Draw {
 
     }
 
-    public static void rect(GL2 gl, float x1, float y1, float w, float h) {
+    public static void rect(float x1, float y1, float w, float h, GL2 gl) {
 
         gl.glRectf(x1, y1, x1 + w, y1 + h);
 
 
     }
 
-    public static void rectAlphaCorners(GL2 gl, float x1, float y1, float x2, float y2, float[] color, float[] cornerAlphas) {
+    public static void rectAlphaCorners(float x1, float y1, float x2, float y2, float[] color, float[] cornerAlphas, GL2 gl) {
         gl.glBegin(GL2.GL_QUADS);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[0]);
         gl.glVertex3f(x1, y1, 0);
@@ -532,7 +532,7 @@ public enum Draw {
 
     public static void rect(GL2 gl, float x1, float y1, float w, float h, float z) {
         if (z == 0) {
-            rect(gl, x1, y1, w, h);
+            rect(x1, y1, w, h, gl);
         } else {
 
             gl.glBegin(GL2.GL_QUADS);
@@ -851,7 +851,7 @@ public enum Draw {
     }
 
     public static void rect(RectFloat2D bounds, GL2 gl) {
-        Draw.rect(gl, bounds.x, bounds.y, bounds.w, bounds.h);
+        Draw.rect(bounds.x, bounds.y, bounds.w, bounds.h, gl);
     }
 
     public static void rectStroke(RectFloat2D bounds, GL2 gl) {

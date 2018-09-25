@@ -353,10 +353,10 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         Windo to = add(toAdd);
         to.pos(RectFloat2D.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
 
-        VerletParticle2D toParticle = physics.addParticleBind(to, VerletSurface.VerletSurfaceBinding.Center, false);
+        VerletParticle2D toParticle = physics.bind(to, VerletSurface.VerletSurfaceBinding.Center, false);
         toParticle.addBehaviorGlobal(new AttractionBehavior2D<>(toParticle, 100 /* TODO auto radius*/, -20));
 
-        VerletParticle2D fromParticle = physics.addParticleBind(from, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
+        VerletParticle2D fromParticle = physics.bind(from, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
 
 
         physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10,0.5f ));
@@ -395,8 +395,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     @NotNull
     public GraphEdit.Cable cable(Wire w, Surface grip, Surface a, Surface b) {
-        VerletParticle2D ap = physics.addParticleBind(a, VerletSurface.VerletSurfaceBinding.Center);
-        VerletParticle2D bp = physics.addParticleBind(b, VerletSurface.VerletSurfaceBinding.Center);
+        VerletParticle2D ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.Center);
+        VerletParticle2D bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.Center);
 
         return cable(w, a, ap, b, bp, grip);
     }

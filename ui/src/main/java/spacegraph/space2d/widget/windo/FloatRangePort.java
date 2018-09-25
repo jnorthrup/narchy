@@ -9,18 +9,18 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 
 import javax.annotation.Nullable;
 
-public class FloatPort extends /*Source*/Port {
+public class FloatRangePort extends /*Source*/Port {
 
     private static final float EPSILON = 0.001f;
 
     private float curValue = Float.NaN;
     public final FloatRange f;
 
-    public FloatPort(float val, float min, float max) {
+    public FloatRangePort(float val, float min, float max) {
         this(new FloatRange(val, min, max));
     }
 
-    private FloatPort(FloatRange f/*, Consumer<Runnable> updater*/) {
+    private FloatRangePort(FloatRange f/*, Consumer<Runnable> updater*/) {
         this.f = f;
 
         FloatSlider s = new FloatSlider(f);

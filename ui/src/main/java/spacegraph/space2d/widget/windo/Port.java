@@ -262,7 +262,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
 
     /** TODO Supplier-called version of this */
-    private void out(Port sender, Object x) {
+    protected void out(Port sender, Object x) {
         
         if (enabled) {
             Node<spacegraph.space2d.Surface,spacegraph.space2d.widget.windo.Wire> n = this.node;
