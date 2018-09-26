@@ -54,7 +54,7 @@ public class ToggleButton extends AbstractButton {
         return this;
     }
 
-    public boolean get() {
+    public final boolean get() {
         return on.getOpaque();
     }
 
@@ -79,6 +79,6 @@ public class ToggleButton extends AbstractButton {
     }
 
     private void toggle() {
-        set(!on.get());
+        set(!get());
     }
 }

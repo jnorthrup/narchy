@@ -11,6 +11,7 @@ import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -35,8 +36,7 @@ public class Finger {
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
-    private final v2[] pressPos = new v2[MAX_BUTTONS];
-    protected final v2[] pressPosPixel = new v2[MAX_BUTTONS];
+    public final v2[] pressPos = new v2[MAX_BUTTONS], pressPosPixel = new v2[MAX_BUTTONS];
 
     {
         for (int i = 0; i < MAX_BUTTONS; i++) {
@@ -74,33 +74,36 @@ public class Finger {
 
     public static Predicate<Finger> clicked(int button, Consumer<Finger> clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
 
-        final boolean[] idle = {true};
-
         if (becameIdle != null)
             becameIdle.run();
+
+        final AtomicBoolean idle = new AtomicBoolean(false);
 
         return (finger) -> {
 
             Surface what;
             if (finger != null && (what = finger.touching()) != null) {
-                if ((clicked != null) && finger.clickedNow(button, what)) {
 
+                idle.set(false);
 
+                if (finger.clickedNow(button, what)) {
 
-                    clicked.accept(finger);
+                    if (clicked != null)
+                        clicked.accept(finger);
 
-                    return true;
-                } else if ((armed != null) && finger.pressing(button)) {
-                    armed.run();
-                    return true;
+                } else if (finger.pressing(button) ) {
+                    if (armed!=null)
+                        armed.run();
+
                 } else {
-                    if (hover != null) hover.run();
+                    if (hover != null)
+                        hover.run();
                 }
-                idle[0] = false;
+
             } else {
-                if (becameIdle != null && !idle[0]) {
-                    becameIdle.run();
-                    idle[0] = true;
+                if (idle.compareAndSet(false, true)) {
+                    if (becameIdle != null)
+                        becameIdle.run();
                 }
             }
             return false;
