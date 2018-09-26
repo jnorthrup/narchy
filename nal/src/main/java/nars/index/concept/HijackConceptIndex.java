@@ -17,19 +17,19 @@ import java.util.stream.Stream;
 /**
  * Created by me on 2/20/17.
  */
-public class HijackConceptIndex extends MaplikeConceptIndex {
+public class HijackConceptIndex extends ConceptIndex {
 
     private final PriLinkHijackBag<Termed,PLink<Termed>> table;
 
 
-    private int forgetEveryDurs = 32;
-    private float forgetTemperature = 0.5f;
+    private int forgetPeriodDurs = 16;
+    private float forgetTemperature = 1f;
 
     /**
      * how many items to visit during update
      */
-    private final float initial = 0.5f;
-    private final float getBoost = 0.02f;
+    private final float initial;
+    private final float getBoost;
 
     //    private long now;
 //    private int dur;
@@ -38,6 +38,9 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
+
+        initial = 1f/(reprobes+1);
+        getBoost = (float) (1f/Math.sqrt(capacity));
 
         this.table = new PriLinkHijackBag<>(capacity, reprobes) {
 
@@ -72,16 +75,19 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
                 return super.replace(incomingPri, existing);
             }
 
-
+            @Override
+            public void onRemove(PLink<Termed> value) {
+                HijackConceptIndex.this.onRemove(value.get());
+            }
         };
 
     }
 
     @Override
-    public void init(NAR nar) {
-        super.init(nar);
+    public void start(NAR nar) {
+        super.start(nar);
         onDur = DurService.on(nar, this::commit);
-        onDur.durs(forgetEveryDurs);
+        onDur.durs(forgetPeriodDurs);
     }
 
     /**
@@ -112,12 +118,9 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
             if (kc != null) {
                 PLink<Termed> inserted = table.put(new PLinkHashCached<>(kc, initial));
                 if (inserted != null) {
-                    return kc;
-
-
+                    return inserted.get();
                 } else {
-                    table.put(new PLinkHashCached<>(kc, initial));
-                    return null;
+                    return null; //could not insert
                 }
             }
         }
@@ -132,11 +135,14 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
 
     @Override
-    public void set(Term src, Termed target) {
-        remove(src);
-        PLink<Termed> inserted = table.put(new PLinkHashCached<>(target, 1f));
-        if (inserted == null && target instanceof PermanentConcept) {
-            throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + ' ' + target);
+    public void set(Term key, Termed value) {
+        PLink<Termed> existing = table.get(key);
+        if (existing==null || existing.id!=value) {
+            remove(key);
+            PLink<Termed> inserted = table.put(new PLinkHashCached<>(value, 1f));
+            if (inserted == null && value instanceof PermanentConcept) {
+                throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + ' ' + value);
+            }
         }
     }
 

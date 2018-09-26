@@ -1,12 +1,10 @@
 package nars.index.concept;
 
 import jcog.WTF;
-import jcog.pri.Priority;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.concept.TaskConcept;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +47,7 @@ public abstract class ConceptIndex implements Iterable<Termed> {
     abstract public void clear();
 
 
-    public void init(NAR nar) {
+    public void start(NAR nar) {
         this.nar = nar;
     }
 
@@ -152,25 +150,13 @@ public abstract class ConceptIndex implements Iterable<Termed> {
     }
 
     final void onRemove(Termed value) {
-        if (value instanceof Concept) {
+//        if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
-
                 nar.runLater(() -> set(value));
-
             } else {
-
-                Concept c = (Concept) value;
-                if (c instanceof TaskConcept)
-                    forget((TaskConcept) c);
-
-                c.delete(nar);
+                ((Concept) value).delete(nar);
             }
-        }
+//        }
     }
-
-    private void forget(TaskConcept tc) {
-        tc.forEachTask(Priority::delete);
-    }
-
 
 }

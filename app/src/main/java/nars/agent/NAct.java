@@ -202,17 +202,17 @@ public interface NAct {
         });
     }
 
-    default void actionToggle(Term s, BooleanProcedure onChange) {
+    default GoalActionConcept actionToggle(Term s, BooleanProcedure onChange) {
 
 
-        actionPushButton(s, onChange);
+        return actionPushButton(s, onChange);
 
     }
 
-    default void actionPushReleaseButton(Term t, BooleanProcedure on) {
+    default GoalActionConcept actionPushReleaseButton(Term t, BooleanProcedure on) {
 
         float thresh = 0.1f;
-        action(t, (b, g) -> {
+        return action(t, (b, g) -> {
             float G = g != null ? g.expectation() : 0.0f;
             boolean positive;
             if (G > 0.5f) {
@@ -226,8 +226,8 @@ public interface NAct {
         });
     }
 
-    default void actionPushButton(Term t, BooleanProcedure on) {
-        actionPushButton(t, (x) -> {
+    default GoalActionConcept actionPushButton(Term t, BooleanProcedure on) {
+        return actionPushButton(t, (x) -> {
             on.value(x);
             return x;
         });

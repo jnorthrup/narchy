@@ -42,13 +42,13 @@ public class Remember extends AbstractTask {
     public static Remember the(Task input, NAR n) {
 
         if (!input.isCommand()) {
-            try {
+//            try {
                 TaskConcept concept = (TaskConcept) n.conceptualize(input);
                 return concept != null ? new Remember(input, concept) : null;
-            } catch (Throwable t) {
-                if (Param.DEBUG)
-                    logger.warn("not conceptualizable: {}", input);
-            }
+//            } catch (Throwable t) {
+//                if (Param.DEBUG)
+//                    logger.warn("not conceptualizable: {}", input);
+//            }
         }
 
         return null;

@@ -146,7 +146,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.conceptBuilder = conceptBuilder;
 
-        concepts.init(this);
+        concepts.start(this);
         Builtin.init(this);
 
         this.emotion = new Emotion(this);

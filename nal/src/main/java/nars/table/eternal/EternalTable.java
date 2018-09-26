@@ -138,6 +138,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     @Override
     public void clear() {
         synchronized (this) {
+            forEach(t -> {
+                t.delete();
+            });
             super.clear();
         }
     }

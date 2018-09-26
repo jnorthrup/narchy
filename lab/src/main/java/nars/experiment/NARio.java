@@ -226,41 +226,43 @@ public class NARio extends NAgentX {
         GoalActionConcept j = actionPushButton($$("jump(nario)"),
                 n -> {
 
-                    Scene s = game.scene;
-                    int jumpTime = s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0;
-                    //System.out.println(jumpTime);
-                    boolean jumping = jumpTime > 0;
-                    boolean wasPressed = game.scene.key(Mario.KEY_JUMP);
-
-                    boolean press;
-                    if (!n) {
-                        press = wasPressed || (!wasPressed && jumping);
-                    } else {
-
-
-
-
-//                        //System.out.println(jumping + " " + (s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0));
-//                        if (wasPressed && !jumping) {
+//                    Scene s = game.scene;
+//                    int jumpTime = s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0;
+//                    //System.out.println(jumpTime);
+//                    boolean jumping = jumpTime > 0;
+//                    boolean wasPressed = game.scene.key(Mario.KEY_JUMP);
+//
+//                    boolean press;
+//                    if (!n) {
+//                        press = wasPressed || (!wasPressed && jumping);
+//                    } else {
+//
+//
+//
+//
+////                        //System.out.println(jumping + " " + (s instanceof LevelScene ? ((LevelScene) s).mario.jumpTime : 0));
+////                        if (wasPressed && !jumping) {
+////                            press = false;
+////                        } else {
+////                            press = (!wasPressed) || jumping;
+////                        }
+//                        if (!wasPressed || (wasPressed && jumping))
+//                            press = true;
+//                        else
 //                            press = false;
-//                        } else {
-//                            press = (!wasPressed) || jumping;
-//                        }
-                        if (!wasPressed || (wasPressed && jumping))
-                            press = true;
-                        else
-                            press = false;
-                    }
-                    game.scene.key(Mario.KEY_JUMP, press);
-                    return press;
+//                    }
+                    game.scene.key(Mario.KEY_JUMP, n);
+                    return n;
                 });
+        j.actionDur(1);
 
 
         actionToggle($$("down(nario)"),
                 n -> game.scene.key(Mario.KEY_DOWN, n));
-        actionToggle($$("speed(nario)"),
-                n -> game.scene.key(Mario.KEY_SPEED, n));
 
+        GoalActionConcept s = actionToggle($$("speed(nario)"),
+                n -> game.scene.key(Mario.KEY_SPEED, n));
+        s.actionDur(1);
 
     }
 

@@ -98,6 +98,12 @@ public class BeliefTables implements BeliefTable {
     public void clear() {
         tables.forEach(TaskTable::clear);
     }
+
+    public final void delete() {
+        clear();
+        tables.clear();
+    }
+
     /** gets first matching table of the provided type */
     @Nullable
     public <X extends TaskTable> X tableFirst(Class<? extends X> t) {

@@ -702,6 +702,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
+    public void clear() {
+        write((t)->{
+            t.forEach(r -> ((Task)r).delete());
+            t.clear();
+        });
+    }
+
+    @Override
     public void whileEach(Predicate<? super Task> each) {
         whileEachIntersecting(root().bounds(), TaskRegion.asTask(each));
     }
