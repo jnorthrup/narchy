@@ -215,11 +215,13 @@ public class NARio extends NAgentX {
 
     private void initButton() {
 
-        actionPushButtonMutex(
+        for (GoalActionConcept c : actionPushButtonMutex(
                 $$("left(nario)"),
                 $$("right(nario)"),
                 n -> game.scene.key(Mario.KEY_LEFT, n),
-                n -> game.scene.key(Mario.KEY_RIGHT, n));
+                n -> game.scene.key(Mario.KEY_RIGHT, n))) {
+            c.actionDur(1);
+        }
 
         GoalActionConcept j = actionPushButton($$("jump(nario)"),
                 n -> {

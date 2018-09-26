@@ -12,11 +12,11 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.chip.SwitchChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.port.Port;
-import spacegraph.space2d.widget.port.PortVector;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -152,7 +152,7 @@ public class TensorGlow {
 
         //p.add(new TogglePort()).pos(200, 200, 300, 300);
 
-        PortVector outs;
+        Port outs;
         Gridding hw = new Gridding(
                 new VectorLabel("HaiQ"),
                 new ObjectSurface(q),
@@ -170,19 +170,22 @@ public class TensorGlow {
         hw.add(new LabeledPane("input", new Port((float[] i) -> {
             System.arraycopy(i, 0, in, 0, i.length);
         })));
-        hw.add(new LabeledPane("act", outs = new PortVector(q.actions)));
+        hw.add(new LabeledPane("act", outs = new Port()));
 
         p.add(hw).pos(350, 350, 500, 500);
 
         Loop.of(() -> {
             lerpVector.update();
             int a = q.act((((float) Math.random()) - 0.5f) * 2, in);
-            int n = outs.size();
-            for (int i = 0; i < n; i++) {
-                outs.out(i, (i == a));
-            }
+            outs.out(a);
+//            int n = outs.size();
+//            for (int i = 0; i < n; i++) {
+//                outs.out(i, (i == a));
+//            }
         }).setFPS(25);
 
+        SwitchChip outDemultiplexer = new SwitchChip (4);
+        p.add(outDemultiplexer).pos(450, 450, 510, 510);
     }
 
 

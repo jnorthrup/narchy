@@ -44,7 +44,14 @@ public final class AtomicFloatFieldUpdater<X>  {
 //    }
 
     public void add(X x, float add) {
-        updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
+
+        //updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
+
+        //adapted from AtomicDouble:
+        int i;
+        do {
+            i = updater.get(x);
+        } while (!updater.compareAndSet(x, i, Float.floatToIntBits(intBitsToFloat(i) +add)));
     }
 
     private float updateGet(X x, IntUnaryOperator y) {
@@ -90,14 +97,10 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     public float get(X x) {
-        return get(updater.get(x));
+        return intBitsToFloat(updater.get(x));
     }
     public float getOpaque(X x) {
-        return get(updater.getOpaque(x));
-    }
-
-    public static float get(int x) {
-        return intBitsToFloat(x);
+        return intBitsToFloat(updater.getOpaque(x));
     }
 
     public void zero(X v, FloatConsumer with) {

@@ -162,7 +162,7 @@ public interface ScalarValue {
     }
 
     abstract class AtomicScalarValue implements ScalarValue {
-        protected static final AtomicFloatFieldUpdater<AtomicScalarValue> FLOAT =
+        protected static final AtomicFloatFieldUpdater<AtomicScalarValue> PRI =
                 new AtomicFloatFieldUpdater(AtomicScalarValue.class, "pri");
 
         private static final VarHandle INT;
@@ -181,6 +181,10 @@ public interface ScalarValue {
 
         private volatile int pri;
 
+        @Override
+        public String toString() {
+            return String.valueOf(pri());
+        }
 
         public final float priElseZero() {
             int i = _pri();
@@ -226,22 +230,22 @@ public interface ScalarValue {
 
         /** update */
         @Override public final float pri(FloatSupplier update) {
-            return FLOAT.updateAndGet(this, update);
+            return PRI.updateAndGet(this, update);
         }
 
         /** update */
         @Override public final float pri(FloatToFloatFunction update) {
-            return FLOAT.updateAndGet(this, update, this::_v);
+            return PRI.updateAndGet(this, update, this::_v);
         }
 
         /** update */
         @Override public final float pri(FloatFloatToFloatFunction update, float x) {
-            return FLOAT.updateAndGet(this, x, update, this::_v);
+            return PRI.updateAndGet(this, x, update, this::_v);
         }
 
         @Override
         public final void priUpdate(FloatFloatToFloatFunction update, float x) {
-            FLOAT.update(this, x, update, this::_v);
+            PRI.update(this, x, update, this::_v);
         }
     }
 }

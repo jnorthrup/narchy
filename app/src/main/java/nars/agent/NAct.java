@@ -261,7 +261,7 @@ public interface NAct {
         });
     }
 
-    default void actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
+    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
                 0.5f;
@@ -314,6 +314,7 @@ public interface NAct {
             x.resolution(1f);
         }
 
+        return new GoalActionConcept[] {LA,RA};
     }
 
     default GoalActionConcept actionPushButton(Term t, BooleanToBooleanFunction on) {

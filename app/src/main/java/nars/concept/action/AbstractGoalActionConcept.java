@@ -53,6 +53,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return t!=null ? t.conf() : 0;
     }
 
+    int actionDur = 0;
+
+    public AbstractGoalActionConcept actionDur(int actionDur) {
+        this.actionDur = actionDur;
+        return this;
+    }
+
+
     @Override
     public void update(long prev, long now, long next, NAR n) {
 
@@ -67,7 +75,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long s = now - rad;
         long e = now + rad;
         int actionDur =
-                0;
+                this.actionDur;
+                //0;
                 //1;
                 //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
         int limit = Answer.TASK_LIMIT_DEFAULT;
